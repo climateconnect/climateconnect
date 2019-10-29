@@ -1,24 +1,15 @@
 import React from "react";
-import Link from "next/link";
 import styled from "styled-components";
-import Button from "../ui/Button";
+import Link from "../ui/Link";
 
 const Header = () => (
   <Container>
     <img src="https://climateconnect.earth/logo.png"></img>
     <LinkContainer>
-      <Link href={"forum"} passHref>
-        <StyledLink>Forum</StyledLink>
-      </Link>
-      <Link href={"browse"} passHref>
-        <StyledLink>Browse</StyledLink>
-      </Link>
-      <Link href={"create"} passHref>
-        <StyledLink>Create A Project</StyledLink>
-      </Link>
-      <Link href={"signin"}>
-        <StyledLink className="button">SIGN IN</StyledLink>
-      </Link>
+      <Link href="forum" text="Forum" passHref></Link>
+      <Link href="browse" text="Browse" passHref></Link>
+      <Link href="create" text="Create A Project" passHref></Link>
+      <Link href="signin" text="SIGN IN" passHref type="button"></Link>
     </LinkContainer>
   </Container>
 );
@@ -40,29 +31,3 @@ const Container = styled.nav`
 `;
 
 const LinkContainer = styled.div``;
-
-const StyledLink = styled.a`
-  padding: 6px;
-  color: hsla(185, 56%, 30%, 1);
-  margin-right: 24px;
-  text-decoration: none;
-  cursor: pointer;
-  font-size: 1.1rem;
-  transition: 0.25s ease-in-out;
-
-  :hover {
-    color: hsla(185, 56%, 30%, 1);
-    transition: 0.25s ease-in-out;
-  }
-
-  &.button {
-    border: 1px solid hsla(0, 0%, 55%, 1);
-    padding: 6px 16px;
-    border-radius: 4px;
-    color: hsla(0, 0%, 30%, 1);
-    :hover {
-      color: hsla(0, 0%, 20%, 1);
-      transition: 0.25s ease-in-out;
-    }
-  }
-`;
