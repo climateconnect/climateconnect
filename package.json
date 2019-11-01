@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "format": "prettier --write '**/*.{js,jsx,json,md}'",
     "dev": "next dev",
     "build": "next build",
     "start": "next start"
@@ -15,6 +16,9 @@
     "styled-components": "^4.4.0"
   },
   "devDependencies": {
-    "babel-plugin-styled-components": "^1.10.6"
+    "babel-plugin-styled-components": "^1.10.6",
+    "husky": "^3.0.9",
+    "prettier": "^1.18.2",
+    "pretty-quick": "^2.0.0"
   }
 }
