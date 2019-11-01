@@ -4,7 +4,7 @@ import Header from "./general/Header";
 import "./../theme.css";
 import Footer from "./general/Footer";
 import { ThemeProvider } from "styled-components";
-import theme from './../theme'
+import theme from "./../theme";
 
 export default function Layout({ children }) {
   return (
