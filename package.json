@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "pretest": "yarn run lint",
     "format": "prettier --write '**/*.{js,jsx,json,md}'",
+    "lint": "eslint .",
     "test": "jest",
     "dev": "next dev",
     "build": "next build",
@@ -18,6 +20,8 @@
   },
   "devDependencies": {
     "babel-plugin-styled-components": "^1.10.6",
+    "eslint": "^6.6.0",
+    "eslint-plugin-react": "^7.16.0",
     "husky": "^3.0.9",
     "jest": "^24.9.0",
     "prettier": "^1.18.2",
