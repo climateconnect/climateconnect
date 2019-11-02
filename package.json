@@ -11,6 +11,16 @@
     "build": "next build",
     "start": "next start"
   },
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/test/test-shim.js",
+      "<rootDir>/test/test-setup.js"
+    ],
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/test/__mocks__/fileMock.js",
+      "\\.(css|less)$": "<rootDir>/test/__mocks__/styleMock.js"
+    }
+  },
   "dependencies": {
     "@material-ui/core": "^4.5.2",
     "@zeit/next-css": "^1.0.1",
@@ -21,6 +31,8 @@
   },
   "devDependencies": {
     "babel-plugin-styled-components": "^1.10.6",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.15.1",
     "eslint": "^6.6.0",
     "eslint-plugin-react": "^7.16.0",
     "husky": "^3.0.9",
