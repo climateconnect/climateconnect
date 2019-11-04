@@ -24,6 +24,8 @@
     "eslint-plugin-react": "^7.16.0",
     "husky": "^3.0.9",
     "jest": "^24.9.0",
+    "knex": "^0.20.1",
+    "pg": "^7.12.1",
     "prettier": "^1.18.2",
     "pretty-quick": "^2.0.0"
   }
