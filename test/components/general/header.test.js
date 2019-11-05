@@ -16,10 +16,10 @@ describe("Header Component Tests", () => {
     const wrapper = shallow(<Header />);
 
     const expectedProps = [
-      { href: "forum", passHref: true, text: "Forum" },
-      { href: "browse", passHref: true, text: "Browse" },
-      { href: "create", passHref: true, text: "Create A Project" },
-      { href: "signin", passHref: true, text: "SIGN IN", type: "button" }
+      { href: "forum", text: "Forum" },
+      { href: "browse", text: "Browse" },
+      { href: "create", text: "Create A Project" },
+      { href: "signin", text: "SIGN IN", type: "button" }
     ];
 
     for (let i = 0; i < 4; i++) {
