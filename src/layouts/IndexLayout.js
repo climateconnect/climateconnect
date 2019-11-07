@@ -1,6 +1,14 @@
 import React from "react";
 import styled from "styled-components";
 import Link from "next/link";
+import TEMP_FEATURED_DATA from "./../../projects.json";
+import ProjectPreview from "./../components/project/ProjectPreview";
+
+function renderProjects() {
+  return TEMP_FEATURED_DATA.projects.map(project => {
+    return <ProjectPreview data={project} key={project.name}></ProjectPreview>;
+  });
+}
 
 export default function index() {
   return (
@@ -9,26 +17,18 @@ export default function index() {
 
       <h3>Featured</h3>
       <ProjectGrid>
-        <div>1</div>
-        <div>2</div>
-        <div>3</div>
-        <div>4</div>
-        <div>5</div>
-        <div>6</div>
+        {renderProjects()}
+        {/* Added to preview multiple projects */}
+        {renderProjects()}
+        {renderProjects()}
+        {renderProjects()}
       </ProjectGrid>
 
       <h3>New</h3>
-      <ProjectGrid>
-        <div>1</div>
-        <div>2</div>
-        <div>3</div>
-        <div>4</div>
-        <div>5</div>
-        <div>6</div>
-      </ProjectGrid>
+      <ProjectGrid>{renderProjects()}</ProjectGrid>
 
       <Link href="Browse">
-        <button>Browse</button>
+        <TempButton>Browse</TempButton>
       </Link>
     </Container>
   );
@@ -42,17 +42,17 @@ const Container = styled.div`
     font-size: ${({ theme }) => theme.fontSizes.h1};
     font-weight: 500;
   }
+`;
 
-  /* temporary */
-  button {
-    align-self: center;
-    cursor: pointer;
-    text-align: center;
-    background: ${({ theme }) => theme.colors.primary};
-    padding: 14px 84px;
-    font-size: 24px;
-    color: ${({ theme }) => theme.colors.white};
-  }
+/* temporary */
+const TempButton = styled.button`
+  align-self: center;
+  cursor: pointer;
+  text-align: center;
+  background: ${({ theme }) => theme.colors.primary};
+  padding: 14px 84px;
+  font-size: 24px;
+  color: ${({ theme }) => theme.colors.white};
 `;
 
 const ProjectGrid = styled.div`
@@ -60,9 +60,4 @@ const ProjectGrid = styled.div`
   grid-template-columns: 1fr 1fr;
   grid-gap: 16px;
   margin-bottom: 3rem;
-
-  div {
-    padding: 40px;
-    background: lightblue;
-  }
 `;
