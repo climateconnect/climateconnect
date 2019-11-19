@@ -1,13 +1,14 @@
 import React from "react";
 import styled from "styled-components";
+import Button from "../general/Button";
 
 export default function ProjectPreview({ data }) {
-    const rand = Math.ceil(Math.random() * 300)
+  const rand = Math.ceil(Math.random() * 300);
   return (
     <Container>
-      <Image src = {`https://picsum.photos/id/${rand}/260/210`}></Image>
+      <Image src={`https://picsum.photos/id/${rand}/240/210`}></Image>
       <Content>
-        <h2>{data.name}</h2>
+        <h3>{data.name}</h3>
         <Labels>{data.labels.join(", ")}</Labels>
 
         <IconRow>
@@ -15,14 +16,14 @@ export default function ProjectPreview({ data }) {
           <span>{data.organisation_name}</span>
         </IconRow>
         <IconRow>
-          <img href={data.organisation_image}></img>
+          <img src="./placeholder.svg"></img>
           <span>{data.location}</span>
         </IconRow>
         <IconRow>
-          <img href={data.organisation_image}></img>
+          <img src="./world.svg"></img>
           <span>{data.impact}</span>
         </IconRow>
-        <button>Get Involved</button>
+        <Button type="outlined" text="Get Involved"></Button>
       </Content>
     </Container>
   );
@@ -30,29 +31,30 @@ export default function ProjectPreview({ data }) {
 
 const Container = styled.div`
   display: flex;
-  border: 1px solid;
-  /* temp */
-  button {
-    margin: 8px auto 0;
-    width: 120px;
-    border: 1px solid ${({ theme }) => theme.colors.primary};
-    border-radius: 3px;
-    font-size: 0.9rem;
-  }
+  background: #fff;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,
+    rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
 `;
 
 const Image = styled.img`
-max-width: 260px;
+  max-width: 240px;
   height: auto;
   object-fit: cover;
+  margin-right: ${({ theme }) => theme.spacing.tiny};
+
+  @media (max-width: 600px) {
+    max-width: 180px;
+  }
+  @media (max-width: 450px) {
+    display: none;
+  }
 `;
 
 const Content = styled.div`
   padding: 6px;
   display: flex;
   flex-direction: column;
-  h2 {
-    font-size: ${({ theme }) => theme.fontSizes.h3};
+  h3 {
     margin: 0;
   }
 `;
@@ -63,16 +65,16 @@ const IconRow = styled.div`
   align-items: center;
   white-space: nowrap;
   text-overflow: ellipsis;
+  line-height: 20px;
   img {
-    background: lightblue;
     width: 20px;
     height: 20px;
-    margin-right: ${({ theme }) => theme.spacing.tiny};
+    margin-right: ${({ theme }) => theme.spacing.small};
   }
 `;
 
 const Labels = styled.div`
- white-space: nowrap;
+  white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 11px;
   text-transform: capitalize;

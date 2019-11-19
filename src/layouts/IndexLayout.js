@@ -3,8 +3,10 @@ import styled from "styled-components";
 import Link from "next/link";
 import TEMP_FEATURED_DATA from "./../../projects.json";
 import ProjectPreview from "./../components/project/ProjectPreview";
+import Button from "../components/general/Button.js";
 
 function renderProjects() {
+  // TEMPORARY DATA
   return TEMP_FEATURED_DATA.projects.map(project => {
     return <ProjectPreview data={project} key={project.name}></ProjectPreview>;
   });
@@ -24,11 +26,10 @@ export default function index() {
         {renderProjects()}
       </ProjectGrid>
 
-      <h3>New</h3>
-      <ProjectGrid>{renderProjects()}</ProjectGrid>
-
       <Link href="Browse">
-        <TempButton>Browse</TempButton>
+        <Button text="Browse" type="big">
+          {" "}
+        </Button>
       </Link>
     </Container>
   );
@@ -37,27 +38,19 @@ export default function index() {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  padding: 0 1rem;
   h1 {
     text-align: center;
-    font-size: ${({ theme }) => theme.fontSizes.h1};
     font-weight: 500;
   }
-`;
-
-/* temporary */
-const TempButton = styled.button`
-  align-self: center;
-  cursor: pointer;
-  text-align: center;
-  background: ${({ theme }) => theme.colors.primary};
-  padding: 14px 84px;
-  font-size: 24px;
-  color: ${({ theme }) => theme.colors.white};
 `;
 
 const ProjectGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 16px;
+  grid-gap: 32px 24px;
   margin-bottom: 3rem;
+  @media (max-width: 1000px) {
+    grid-template-columns: 1fr;
+  }
 `;
