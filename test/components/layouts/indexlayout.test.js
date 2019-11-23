@@ -3,7 +3,7 @@ import { shallow } from "enzyme";
 import IndexLayout from "./../../../src/layouts/IndexLayout";
 import Link from "next/link";
 
-describe("Layout Component Tests", () => {
+describe("Layout Component", () => {
   it("contains correct header text", () => {
     const wrapper = shallow(<IndexLayout />);
     expect(wrapper.find("h1")).toHaveLength(1);
@@ -21,6 +21,6 @@ describe("Layout Component Tests", () => {
 
   it("contains correct grid components", () => {
     // const wrapper = shallow(<IndexLayout />);
-    // add test here when Grid Container component is completed
+    // TODO: add test here when Grid Container component is completed
   });
 });
