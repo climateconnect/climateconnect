@@ -2,6 +2,7 @@ import React from "react";
 import Head from "next/head";
 import Layout from "./../src/components/layout";
 import IndexLayout from "../src/layouts/IndexLayout";
+
 const Home = () => (
   <div>
     <Head>
