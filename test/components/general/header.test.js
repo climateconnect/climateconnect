@@ -3,7 +3,7 @@ import { shallow } from "enzyme";
 import Header from "../../../src/components/general/Header";
 import Link from "../../../src/components/ui/Link";
 
-describe("Header Component Tests", () => {
+describe("Header Component", () => {
   it("contains correct image", () => {
     const wrapper = shallow(<Header />);
     expect(wrapper.find("img")).toHaveLength(1);
@@ -16,15 +16,17 @@ describe("Header Component Tests", () => {
     const wrapper = shallow(<Header />);
 
     const expectedProps = [
-      { href: "forum", text: "Forum" },
-      { href: "browse", text: "Browse" },
-      { href: "create", text: "Create A Project" },
-      { href: "signin", text: "SIGN IN", type: "button" }
+      { href: "forum" },
+      { href: "browse" },
+      { href: "create" },
+      { href: "signin", type: "button" }
     ];
+    const expectedTexts = ["Forum", "Browse", "Create A Project", "SIGN IN"];
 
     for (let i = 0; i < 4; i++) {
       const link = wrapper.find(Link).at(i);
       expect(link.props()).toEqual(expectedProps[i]);
+      expect(link.text()).toEqual(expectedTexts[i]);
     }
   });
 });
