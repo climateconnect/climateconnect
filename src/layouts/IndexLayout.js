@@ -36,6 +36,7 @@ export default function index() {
 }
 
 const Container = styled.div`
+  max-width: 1200px;
   display: flex;
   flex-direction: column;
   padding: 0 1rem;
