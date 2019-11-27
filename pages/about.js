@@ -5,7 +5,7 @@ import AboutLayout from "../src/layouts/AboutLayout";
 const Home = () => (
   <div>
     <Head>
-      <title>Browse</title>
+      <title>About</title>
       <link rel="icon" href="/favicon.ico" />
     </Head>
 
