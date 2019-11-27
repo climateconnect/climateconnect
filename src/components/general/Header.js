@@ -6,6 +6,7 @@ const Header = () => (
   <Container>
     <img src="https://climateconnect.earth/logo.png"></img>
     <LinkContainer>
+      <Link href="about" text="About"></Link>
       <Link href="forum" text="Forum"></Link>
       <Link href="browse" text="Browse"></Link>
       <Link href="create" text="Create A Project"></Link>
