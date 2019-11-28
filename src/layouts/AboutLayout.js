@@ -60,7 +60,7 @@ const members = [
     image: "michaelfischer.png",
     location: "Erlangen, Germany"
   }
-]
+];
 
 function renderBubbles(info) {
   return info.map(i => {
@@ -70,8 +70,8 @@ function renderBubbles(info) {
 
 function renderMemberInfo(members) {
   return members.map(m => {
-    return <Member data={m} key={m.name}></Member>
-  })
+    return <Member data={m} key={m.name}></Member>;
+  });
 }
 
 export default function about() {
@@ -97,21 +97,19 @@ export default function about() {
         </LinkContainer>
       </div>
       <div>
-      <LinkContainer>
-        <img src="/blueprint.svg"></img>
-        <h2>View our interactive prototype</h2>
-      </LinkContainer>
+        <LinkContainer>
+          <img src="/blueprint.svg"></img>
+          <h2>View our interactive prototype</h2>
+        </LinkContainer>
       </div>
       <div>
-      <LinkContainer>
-        <img src="/algorithm.svg"></img>
-        <h2>View our FAQ section for in depth explanations</h2>
-      </LinkContainer>
+        <LinkContainer>
+          <img src="/algorithm.svg"></img>
+          <h2>View our FAQ section for in depth explanations</h2>
+        </LinkContainer>
       </div>
       <h1>Join our Team</h1>
-      <MemberInfoGrid>
-        {renderMemberInfo(members)}
-      </MemberInfoGrid>
+      <MemberInfoGrid>{renderMemberInfo(members)}</MemberInfoGrid>
       <h2>Currently all members of our team are volunteers.</h2>
       <h1>Interested in joining us in accelerating climate action worldwide?</h1>
       <h1>Contact us at contact@climateconnect.earth</h1>
@@ -135,29 +133,32 @@ const Member = ({ data }) => (
   <MemberInfo>
     <img src={data.image}></img>
     <h2>{data.name}</h2>
-    <Location><img src="placeholder.svg"></img>{data.location}</Location>
+    <Location>
+      <img src="placeholder.svg"></img>
+      {data.location}
+    </Location>
   </MemberInfo>
-)
-
-const Location = styled.div`
-  img{
-    height: 24px;
-    width: auto;
-    margin-right: 5px;
-  }
-`;
+);
 
 const MemberInfo = styled.div`
   display: inline-block;
   margin-left: 75px;
   margin-right: 75px;
   margin-bottom: 60px;
-  img{
+  img {
     width: 250px;
   }
   div {
     font-size: 24px;
     color: #484848;
+  }
+`;
+
+const Location = styled.div`
+  img {
+    height: 24px;
+    width: auto;
+    margin-right: 5px;
   }
 `;
 
@@ -215,17 +216,17 @@ const HeadlineText = styled.div`
   padding-bottom: 3%;
   padding-right: 10%;
   padding-left: 10%;
-  @media (max-width:1075px) {
+  @media (max-width: 1075px) {
     font-size: 75px;
     padding-right: 5%;
     padding-left: 5%;
   }
-  @media (max-width:875px) {
+  @media (max-width: 875px) {
     font-size: 50px;
     padding-right: 5%;
     padding-left: 5%;
   }
-  @media (max-width:575px) {
+  @media (max-width: 575px) {
     font-size: 40px;
     padding-right: 5%;
     padding-left: 5%;
@@ -238,7 +239,7 @@ const Container = styled.div`
   h1 {
     font-weight: 500;
     font-size: 52px;
-    margin-bottom:50px;
+    margin-bottom: 50px;
   }
   h2 {
     font-size: 35px;
@@ -275,18 +276,18 @@ const IconWrapper = styled.div`
 `;
 
 const LinkContainer = styled.div`
-  display:inline-block;
+  display: inline-block;
   margin: 0 auto;
   margin-bottom: 50px;
   img {
     display: inline-block;
     margin-right: 10px;
-    height:50px;
-    margin-top:-9px;
+    height: 50px;
+    margin-top: -9px;
   }
   h2 {
     display: inline-block;
-    margin-top:0px;
-    vertical-align:top;
+    margin-top: 0px;
+    vertical-align: top;
   }
 `;
