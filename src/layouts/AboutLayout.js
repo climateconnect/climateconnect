@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import Link from "next/link";
 
 const info = [
   {
@@ -93,19 +94,34 @@ export default function about() {
       <div>
         <LinkContainer>
           <img src="/file.svg"></img>
-          <h2>Read our onepager</h2>
+          <h2>
+            {" "}
+            <a href="onepager.pdf" target="_blank" rel="noopener noreferrer">
+              Read our onepager
+            </a>
+          </h2>
         </LinkContainer>
       </div>
       <div>
         <LinkContainer>
           <img src="/blueprint.svg"></img>
-          <h2>View our interactive prototype</h2>
+          <h2>
+            <a
+              href="xd.adobe.com/view/395518bf-7e51-4eb2-6ff2-3f1b57fdaa17-4f64/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View our interactive prototype
+            </a>
+          </h2>
         </LinkContainer>
       </div>
       <div>
         <LinkContainer>
           <img src="/algorithm.svg"></img>
-          <h2>View our FAQ section for in depth explanations</h2>
+          <h2>
+            <Link href="/faq">View our FAQ section for in depth explanations</Link>
+          </h2>
         </LinkContainer>
       </div>
       <h1>Join our Team</h1>
@@ -113,6 +129,18 @@ export default function about() {
       <h2>Currently all members of our team are volunteers.</h2>
       <h1>Interested in joining us in accelerating climate action worldwide?</h1>
       <h1>Contact us at contact@climateconnect.earth</h1>
+      <div>
+        While we are looking for any motivated people to join us, these skills would be especially
+        helpful:
+      </div>
+      <RequiredSkills>
+        <li>Front end development (react)</li>
+        <li>Back end development (node, postgres)</li>
+        <li>Webdesign</li>
+        <li>Marketing (social media marketing, creation of an image video)</li>
+        <li>Knowledge in the assessment of CO2-footprints of processes / knowledge in LCA</li>
+        <li>Generally experience with founding and working in a non-profit organisation</li>
+      </RequiredSkills>
     </Container>
   );
 }
@@ -140,42 +168,18 @@ const Member = ({ data }) => (
   </MemberInfo>
 );
 
-const MemberInfo = styled.div`
-  display: inline-block;
-  margin-left: 75px;
-  margin-right: 75px;
-  margin-bottom: 60px;
-  img {
-    width: 250px;
+const Container = styled.div`
+  color: ${({ theme }) => theme.colors.primary};
+  text-align: center;
+  h1 {
+    font-weight: 500;
+    font-size: 52px;
+    margin-bottom: 50px;
+    line-height: 60px;
   }
-  div {
-    font-size: 24px;
-    color: #484848;
-  }
-`;
-
-const Location = styled.div`
-  img {
-    height: 24px;
-    width: auto;
-    margin-right: 5px;
-  }
-`;
-
-const MemberInfoGrid = styled.div`
-  max-width: 1390px;
-  margin: 0 auto;
-`;
-
-const InfoBubbleContainer = styled.div`
-  display: inline-block;
-  vertical-align: top;
-  padding-left: 50px;
-  padding-right: 50px;
-  h3 {
+  h2 {
     font-size: 35px;
   }
-  margin-bottom: 50px;
 `;
 
 const AboutImageContainer = styled.div`
@@ -197,13 +201,6 @@ const Headline = styled.div`
   display: table-cell;
   vertical-align: middle;
   width: 100%;
-`;
-
-const InfoText = styled.div`
-  max-width: 350px;
-  color: #484848;
-  margin: 0 auto;
-  font-size: 20px;
 `;
 
 const HeadlineText = styled.div`
@@ -233,19 +230,6 @@ const HeadlineText = styled.div`
   }
 `;
 
-const Container = styled.div`
-  color: ${({ theme }) => theme.colors.primary};
-  text-align: center;
-  h1 {
-    font-weight: 500;
-    font-size: 52px;
-    margin-bottom: 50px;
-  }
-  h2 {
-    font-size: 35px;
-  }
-`;
-
 const BubbleGrid = styled.div`
   margin-bottom: 3rem;
   max-width: 1390px;
@@ -257,6 +241,17 @@ const BubbleGrid = styled.div`
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
   }
+`;
+
+const InfoBubbleContainer = styled.div`
+  display: inline-block;
+  vertical-align: top;
+  padding-left: 50px;
+  padding-right: 50px;
+  h3 {
+    font-size: 35px;
+  }
+  margin-bottom: 50px;
 `;
 
 const Bubble = styled.div`
@@ -290,4 +285,48 @@ const LinkContainer = styled.div`
     margin-top: 0px;
     vertical-align: top;
   }
+  a {
+    color: hsla(185, 56%, 30%, 1);
+  }
+`;
+
+const MemberInfoGrid = styled.div`
+  max-width: 1390px;
+  margin: 0 auto;
+`;
+
+const MemberInfo = styled.div`
+  display: inline-block;
+  margin-left: 75px;
+  margin-right: 75px;
+  margin-bottom: 60px;
+  img {
+    width: 250px;
+  }
+  div {
+    font-size: 24px;
+    color: #484848;
+  }
+`;
+
+const Location = styled.div`
+  img {
+    height: 24px;
+    width: auto;
+    margin-right: 5px;
+  }
+`;
+
+const InfoText = styled.div`
+  max-width: 350px;
+  color: #484848;
+  margin: 0 auto;
+  font-size: 20px;
+`;
+
+const RequiredSkills = styled.ul`
+  text-align: left;
+  max-width: 790px;
+  margin: 0 auto;
+  margin-bottom: 35px;
 `;
