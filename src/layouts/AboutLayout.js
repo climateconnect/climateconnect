@@ -38,7 +38,15 @@ function renderBubbles(info) {
 export default function about() {
   return (
     <Container>
-      <AboutImageContainer></AboutImageContainer>
+      <AboutImageContainer>
+        <HeadlineContainer>
+          <Headline>
+            <HeadlineText>
+            CLIMATE CONNECT
+            </HeadlineText>
+          </Headline>
+        </HeadlineContainer>
+      </AboutImageContainer>
       <h2>
         We are an international team of volunteers building a non-profit climate action webplatform
       </h2>
@@ -65,17 +73,35 @@ const InfoBubble = ({ data }) => (
   </div>
 );
 
-const AboutImage = styled.img`
-  height: 373px;
-  width: auto;
-`;
-
 const AboutImageContainer = styled.div`
   width: 100%;
   height: 317px;
   background-image: url("/about_background.png");
   background-position: center;
   background-size: cover;
+`;
+
+const HeadlineContainer = styled.div`
+  display:table;
+  height: 100%;
+  width:100%;
+`;
+
+const Headline = styled.div`  
+  display: table-cell;
+  vertical-align: middle;
+  width: 100%;
+`;
+
+const HeadlineText = styled.div`
+  color:white;
+  font-size: 85px;
+  border: 5px solid white;
+  display:inline-block;
+  margin: 0 auto;
+  padding: 5px;
+  padding-right: 10px;
+  padding-left: 10px;
 `;
 
 const Container = styled.div`
