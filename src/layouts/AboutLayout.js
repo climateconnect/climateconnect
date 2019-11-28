@@ -34,10 +34,44 @@ const info = [
   }
 ];
 
+const members = [
+  {
+    name: "Christoph Stoll",
+    image: "christophstoll.png",
+    location: "Erlangen, Germany"
+  },
+  {
+    name: "Thomas Bove",
+    image: "thomasbove.png",
+    location: "Paris, France"
+  },
+  {
+    name: "Tobias Rehm",
+    image: "tobiasrehm.png",
+    location: "Erlangen, Germany"
+  },
+  {
+    name: "Reece Langerock",
+    image: "reecelangerock.png",
+    location: "Chicago, USA"
+  },
+  {
+    name: "Michael Fischer",
+    image: "michaelfischer.png",
+    location: "Erlangen, Germany"
+  }
+]
+
 function renderBubbles(info) {
   return info.map(i => {
     return <InfoBubble data={i} key={i.title}></InfoBubble>;
   });
+}
+
+function renderMemberInfo(members) {
+  return members.map(m => {
+    return <Member data={m} key={m.name}></Member>
+  })
 }
 
 export default function about() {
@@ -56,20 +90,28 @@ export default function about() {
       <h1>Our goal is to help you fight climate change most effectively</h1>
       <BubbleGrid>{renderBubbles(info)}</BubbleGrid>
       <h1>Find out more</h1>
-      <LinkContainer>
-        <img src="/file.svg"></img>
-        <h2>Read our onepager</h2>
-      </LinkContainer>
+      <div>
+        <LinkContainer>
+          <img src="/file.svg"></img>
+          <h2>Read our onepager</h2>
+        </LinkContainer>
+      </div>
+      <div>
       <LinkContainer>
         <img src="/blueprint.svg"></img>
         <h2>View our interactive prototype</h2>
       </LinkContainer>
+      </div>
+      <div>
       <LinkContainer>
         <img src="/algorithm.svg"></img>
         <h2>View our FAQ section for in depth explanations</h2>
       </LinkContainer>
+      </div>
       <h1>Join our Team</h1>
-      {/*Photo Grid*/}
+      <MemberInfoGrid>
+        {renderMemberInfo(members)}
+      </MemberInfoGrid>
       <h2>Currently all members of our team are volunteers.</h2>
       <h1>Interested in joining us in accelerating climate action worldwide?</h1>
       <h1>Contact us at contact@climateconnect.earth</h1>
@@ -88,6 +130,41 @@ const InfoBubble = ({ data }) => (
     <InfoText>{data.text}</InfoText>
   </InfoBubbleContainer>
 );
+
+const Member = ({ data }) => (
+  <MemberInfo>
+    <img src={data.image}></img>
+    <h2>{data.name}</h2>
+    <Location><img src="placeholder.svg"></img>{data.location}</Location>
+  </MemberInfo>
+)
+
+const Location = styled.div`
+  img{
+    height: 24px;
+    width: auto;
+    margin-right: 5px;
+  }
+`;
+
+const MemberInfo = styled.div`
+  display: inline-block;
+  margin-left: 75px;
+  margin-right: 75px;
+  margin-bottom: 60px;
+  img{
+    width: 250px;
+  }
+  div {
+    font-size: 24px;
+    color: #484848;
+  }
+`;
+
+const MemberInfoGrid = styled.div`
+  max-width: 1390px;
+  margin: 0 auto;
+`;
 
 const InfoBubbleContainer = styled.div`
   display: inline-block;
@@ -134,9 +211,25 @@ const HeadlineText = styled.div`
   border: 5px solid white;
   display: inline-block;
   margin: 0 auto;
-  padding: 69.5px;
-  padding-right: 291.5px;
-  padding-left: 291.5px;
+  padding-top: 3%;
+  padding-bottom: 3%;
+  padding-right: 10%;
+  padding-left: 10%;
+  @media (max-width:1075px) {
+    font-size: 75px;
+    padding-right: 5%;
+    padding-left: 5%;
+  }
+  @media (max-width:875px) {
+    font-size: 50px;
+    padding-right: 5%;
+    padding-left: 5%;
+  }
+  @media (max-width:575px) {
+    font-size: 40px;
+    padding-right: 5%;
+    padding-left: 5%;
+  }
 `;
 
 const Container = styled.div`
@@ -145,9 +238,10 @@ const Container = styled.div`
   h1 {
     font-weight: 500;
     font-size: 52px;
+    margin-bottom:50px;
   }
   h2 {
-    font-size: 32px;
+    font-size: 35px;
   }
 `;
 
@@ -181,11 +275,18 @@ const IconWrapper = styled.div`
 `;
 
 const LinkContainer = styled.div`
+  display:inline-block;
+  margin: 0 auto;
+  margin-bottom: 50px;
   img {
     display: inline-block;
     margin-right: 10px;
+    height:50px;
+    margin-top:-9px;
   }
   h2 {
     display: inline-block;
+    margin-top:0px;
+    vertical-align:top;
   }
 `;
