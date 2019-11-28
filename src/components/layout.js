@@ -26,7 +26,6 @@ const LayoutContainer = styled.div`
 `;
 
 const Content = styled.div`
-  margin: 3rem auto;
   align-content: flex-start;
   flex: 1;
 `;
