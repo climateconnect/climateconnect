@@ -8,21 +8,22 @@ describe("Header Component Tests", () => {
     const wrapper = shallow(<Header />);
     expect(wrapper.find("img")).toHaveLength(1);
   });
-  it("contains four links", () => {
+  it("contains five links", () => {
     const wrapper = shallow(<Header />);
-    expect(wrapper.find(Link)).toHaveLength(4);
+    expect(wrapper.find(Link)).toHaveLength(5);
   });
   it("links contain correct props", () => {
     const wrapper = shallow(<Header />);
 
     const expectedProps = [
+      { href: "about", text: "About" },
       { href: "forum", text: "Forum" },
       { href: "browse", text: "Browse" },
       { href: "create", text: "Create A Project" },
       { href: "signin", text: "SIGN IN", type: "button" }
     ];
 
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       const link = wrapper.find(Link).at(i);
       expect(link.props()).toEqual(expectedProps[i]);
     }
