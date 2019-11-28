@@ -75,7 +75,7 @@ const InfoBubble = ({ data }) => (
 
 const AboutImageContainer = styled.div`
   width: 100%;
-  height: 317px;
+  height: 373px;
   background-image: url("/about_background.png");
   background-position: center;
   background-size: cover;
@@ -99,9 +99,9 @@ const HeadlineText = styled.div`
   border: 5px solid white;
   display:inline-block;
   margin: 0 auto;
-  padding: 5px;
-  padding-right: 10px;
-  padding-left: 10px;
+  padding: 69.5px;
+  padding-right: 291.5px;
+  padding-left: 291.5px;
 `;
 
 const Container = styled.div`
@@ -122,12 +122,20 @@ const BubbleGrid = styled.div`
   grid-gap: 32px 24px;
   align-items: center;
   margin-bottom: 3rem;
+  max-width:1390px;
+  margin:0 auto;
+  @media (max-width: 1000px) {
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const Bubble = styled.div`
   border: 1px solid black;
   border-radius: 100%;
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   margin: auto;
 `;
