@@ -3,7 +3,16 @@ import styled from "styled-components";
 
 const Footer = () => (
   <Container>
+    <LeftSection><a href="imprint">Imprint</a></LeftSection>
     <div>© ClimateConnect 2019</div>
+    <RightSection>
+      <a href="https://github.com/climateconnect/climateconnect" target="_blank">
+        <img src="github.png"></img>
+      </a>
+      <a href="https://twitter.com/ConnectClimate" target="_blank">
+        <img src="twitter.svg"></img>
+      </a>
+    </RightSection>
   </Container>
 );
 
@@ -17,4 +26,14 @@ const Container = styled.footer`
   padding: 0.5rem 3rem;
   border-top: 1px solid hsla(0, 0%, 82%, 1);
   color: hsla(185, 56%, 30%, 1);
+`;
+
+const LeftSection = styled.div`
+  margin-right: auto;
+`;
+
+const RightSection = styled.div`
+  margin-left: auto;
+  display: flex;
+  align-items:center;
 `;
