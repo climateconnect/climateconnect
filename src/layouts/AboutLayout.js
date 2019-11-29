@@ -162,7 +162,7 @@ const Member = ({ data }) => (
     <img src={data.image}></img>
     <h2>{data.name}</h2>
     <Location>
-      <img src="placeholder.svg"></img>
+      <i className="fas fa-map-marker-alt"></i>
       {data.location}
     </Location>
   </MemberInfo>
@@ -318,9 +318,7 @@ const MemberInfo = styled.div`
 `;
 
 const Location = styled.div`
-  img {
-    height: 24px;
-    width: auto;
+  i {
     margin-right: 5px;
   }
 `;
