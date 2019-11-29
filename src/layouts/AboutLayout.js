@@ -4,31 +4,31 @@ import Link from "next/link";
 
 const info = [
   {
-    icon: "plus.svg",
+    icon: "fa-plus",
     title: "Share your actions",
     text:
       "Have you ever wondered what is being done about climate change in your region and globally? By enabling climate protectors to share their project on Climate Connect, we will provide a comprehensive up to date list of what is being done about climate change."
   },
   {
-    icon: "collaboration.svg",
+    icon: "fa-chart-bar",
     title: "Measure the impact",
     text:
       "You are thinking about getting involved in climate action, but don't know how you can be most effective? On Climate Connect each action will have an impact score. This way you can find out how you can maximize your impact"
   },
   {
-    icon: "collaboration.svg",
+    icon: "fa-users",
     title: "Collaborate globally",
     text:
       "Climate change is a global issue. This is why we want to create a global network of climate protectors. Climate Connect allows you to see where you can make the biggest difference with your personal strengths and skillset. If you're already working on an impactful project, you will be able to find collaborators here."
   },
   {
-    icon: "lightbulb.svg",
+    icon: "fa-lightbulb",
     title: "Get inspired",
     text:
       "On Climate Connect, you will find blue prints of high-impact projects, that you will be able to replicate at your location. This way you can very easily find the most effective thing you can work on with your specific skillset."
   },
   {
-    icon: "eye.svg",
+    icon: "fa-eye",
     title: "Maximum transparency",
     text:
       "Our code is available open source and can be found in our Github repository. The impact algorithm will be open source and the community will make the decisions on how to develop it further."
@@ -93,34 +93,34 @@ export default function about() {
       <h1>Find out more</h1>
       <div>
         <LinkContainer>
-          <img src="/file.svg"></img>
           <h2>
-            {" "}
             <a href="onepager.pdf" target="_blank" rel="noopener noreferrer">
-              Read our onepager
+              <i className="fas fa-file-alt"></i>Read our onepager
             </a>
           </h2>
         </LinkContainer>
       </div>
       <div>
         <LinkContainer>
-          <img src="/blueprint.svg"></img>
           <h2>
             <a
               href="xd.adobe.com/view/395518bf-7e51-4eb2-6ff2-3f1b57fdaa17-4f64/"
               target="_blank"
               rel="noopener noreferrer"
             >
-              View our interactive prototype
+              <i className="fas fa-pencil-ruler"></i>View our interactive prototype
             </a>
           </h2>
         </LinkContainer>
       </div>
       <div>
         <LinkContainer>
-          <img src="/algorithm.svg"></img>
           <h2>
-            <Link href="/faq">View our FAQ section for in depth explanations</Link>
+            <Link href="/faq">
+              <a>
+                <i className="fas fa-question"></i>View our FAQ section for in depth explanations
+              </a>
+            </Link>
           </h2>
         </LinkContainer>
       </div>
@@ -149,7 +149,7 @@ const InfoBubble = ({ data }) => (
   <InfoBubbleContainer>
     <Bubble>
       <IconWrapper>
-        <img src={data.icon}></img>
+        <i className={"fas " + data.icon}></i>
       </IconWrapper>
     </Bubble>
     <h3>{data.title}</h3>
@@ -179,6 +179,14 @@ const Container = styled.div`
   }
   h2 {
     font-size: 35px;
+  }
+  @media (max-width: 900px) {
+    h1 {
+      font-size: 30px;
+    }
+    h2 {
+      font-size: 25px;
+    }
   }
 `;
 
@@ -265,6 +273,7 @@ const Bubble = styled.div`
 
 const IconWrapper = styled.div`
   width: 75px;
+  font-size: 45px;
   display: table-cell;
   vertical-align: middle;
   margin: 0 auto;
@@ -274,11 +283,10 @@ const LinkContainer = styled.div`
   display: inline-block;
   margin: 0 auto;
   margin-bottom: 50px;
-  img {
+  i {
     display: inline-block;
     margin-right: 10px;
-    height: 50px;
-    margin-top: -9px;
+    font-size: 32px;
   }
   h2 {
     display: inline-block;
