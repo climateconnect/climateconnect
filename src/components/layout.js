@@ -26,6 +26,8 @@ const LayoutContainer = styled.div`
 `;
 
 const Content = styled.div`
+  max-width: 1200px;
+  margin: 3rem auto;
   align-content: flex-start;
   flex: 1;
 `;
