@@ -16,17 +16,22 @@ describe("Header Component", () => {
     const wrapper = shallow(<Header />);
 
     const expectedProps = [
-      { href: "forum" },
-      { href: "browse" },
-      { href: "create" },
-      { href: "signin", type: "button" }
+      { href: "forum", children: "Forum" },
+      { href: "browse", children: "Browse" },
+      { href: "create", children: "Create A Project" },
+      { href: "signin", children: "Sign In", type: "button" }
     ];
-    const expectedTexts = ["Forum", "Browse", "Create A Project", "SIGN IN"];
+    const expectedTexts = ["Forum", "Browse", "Create A Project", "Sign In"];
 
     for (let i = 0; i < 4; i++) {
       const link = wrapper.find(Link).at(i);
       expect(link.props()).toEqual(expectedProps[i]);
-      expect(link.text()).toEqual(expectedTexts[i]);
+      expect(
+        link
+          .dive()
+          .dive()
+          .text()
+      ).toEqual(expectedTexts[i]);
     }
   });
 });

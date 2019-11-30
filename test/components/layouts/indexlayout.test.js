@@ -17,7 +17,12 @@ describe("Layout Component", () => {
     const wrapper = shallow(<IndexLayout />);
     expect(wrapper.find(Link)).toHaveLength(1);
     expect(wrapper.find(Button)).toHaveLength(1);
-    expect(wrapper.find(Button).text()).toEqual("Browse");
+    expect(
+      wrapper
+        .find(Button)
+        .dive()
+        .text()
+    ).toEqual("Browse");
   });
 
   it("contains correct grid components", () => {
