@@ -11,7 +11,7 @@ export default function Layout({ children }) {
     <ThemeProvider theme={theme}>
       <LayoutContainer>
         <Header></Header>
-        {children}
+        <Content>{children}</Content>
         <Footer />
       </LayoutContainer>
     </ThemeProvider>
@@ -21,7 +21,13 @@ export default function Layout({ children }) {
 const LayoutContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   background-color: rgb(248, 248, 248);
   min-height: 100vh;
+`;
+
+const Content = styled.div`
+  max-width: 1200px;
+  margin: 3rem auto;
+  align-content: flex-start;
+  flex: 1;
 `;

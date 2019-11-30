@@ -9,3 +9,58 @@ body {
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
+button {
+  font-family: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+p {
+  font-weight: 400;
+}
+h1 {
+  font-size: 2rem;
+  line-height: 2.5rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+h4 {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+h5 {
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+}
+h1,
+h2,
+h3 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.625rem;
+}
+
+h4,
+h5,
+h6 {
+  margin-top: 0.625rem;
+  margin-bottom: 0.625rem;
+}
+
+p {
+  margin: 0 0 0.625rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
