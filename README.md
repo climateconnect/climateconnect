@@ -12,6 +12,10 @@
    [Wiki](https://github.com/climateconnect/climateconnect/wiki/Github-Branching-Guidelines) for
    more info
 
+## Testing
+
+To run tests, run `yarn test`.
+
 ## To Deploy
 
 1. Run `yarn build` to build our the website
