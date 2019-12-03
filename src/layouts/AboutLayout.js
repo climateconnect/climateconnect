@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Link from "next/link";
+import InfoBubble from "./../components/project/InfoBubble";
 
 const info = [
   {
@@ -145,17 +146,7 @@ export default function about() {
   );
 }
 
-const InfoBubble = ({ data }) => (
-  <InfoBubbleContainer>
-    <Bubble>
-      <IconWrapper>
-        <i className={"fas " + data.icon}></i>
-      </IconWrapper>
-    </Bubble>
-    <h3>{data.title}</h3>
-    <InfoText>{data.text}</InfoText>
-  </InfoBubbleContainer>
-);
+
 
 const Member = ({ data }) => (
   <MemberInfo>
@@ -251,34 +242,6 @@ const BubbleGrid = styled.div`
   }
 `;
 
-const InfoBubbleContainer = styled.div`
-  display: inline-block;
-  vertical-align: top;
-  padding-left: 50px;
-  padding-right: 50px;
-  h3 {
-    font-size: 35px;
-  }
-  margin-bottom: 50px;
-`;
-
-const Bubble = styled.div`
-  border: 1px solid black;
-  border-radius: 100%;
-  width: 150px;
-  height: 150px;
-  margin: auto;
-  display: table;
-`;
-
-const IconWrapper = styled.div`
-  width: 75px;
-  font-size: 45px;
-  display: table-cell;
-  vertical-align: middle;
-  margin: 0 auto;
-`;
-
 const LinkContainer = styled.div`
   display: inline-block;
   margin: 0 auto;
@@ -321,13 +284,6 @@ const Location = styled.div`
   i {
     margin-right: 5px;
   }
-`;
-
-const InfoText = styled.div`
-  max-width: 350px;
-  color: #484848;
-  margin: 0 auto;
-  font-size: 20px;
 `;
 
 const RequiredSkills = styled.ul`
