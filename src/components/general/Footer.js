@@ -1,10 +1,11 @@
 import React from "react";
 import styled from "styled-components";
+import Link from "../ui/Link";
 
 const Footer = () => (
   <Container>
     <LeftSection>
-      <a href="imprint">Imprint</a>
+      <Link href="imprint" text="imprint"></Link>
     </LeftSection>
     <div>© ClimateConnect 2019</div>
     <RightSection>
