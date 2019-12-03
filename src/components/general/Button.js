@@ -3,8 +3,8 @@ import styled from "styled-components";
 
 export default class Button extends Component {
   render() {
-    const { type, text } = this.props;
-    return <StyledButton type={type}>{text}</StyledButton>;
+    const { type, children } = this.props;
+    return <StyledButton type={type}>{children}</StyledButton>;
   }
 }
 

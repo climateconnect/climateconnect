@@ -8,11 +8,12 @@ import Button from "../components/general/Button.js";
 function renderProjects() {
   // TEMPORARY DATA
   return TEMP_FEATURED_DATA.projects.map(project => {
-    return <ProjectPreview data={project} key={project.name}></ProjectPreview>;
+    // TODO: replace key with project id
+    return <ProjectPreview project={project} key={project.name}></ProjectPreview>;
   });
 }
 
-export default function index() {
+export default function IndexLayout() {
   return (
     <Container>
       <h1>Share and Collaborate on projects to reach the maximum positive impact on the world</h1>
@@ -27,17 +28,13 @@ export default function index() {
       </ProjectGrid>
 
       <Link href="Browse">
-        <Button text="Browse" type="big">
-          {" "}
-        </Button>
+        <Button type="big">Browse</Button>
       </Link>
     </Container>
   );
 }
 
 const Container = styled.div`
-  max-width: 1200px;
-  margin: 3rem auto;
   display: flex;
   flex-direction: column;
   padding: 0 1rem;
@@ -52,7 +49,7 @@ const ProjectGrid = styled.div`
   grid-template-columns: 1fr 1fr;
   grid-gap: 32px 24px;
   margin-bottom: 3rem;
-  @media (max-width: 1000px) {
+  @media (max-width: 800px) {
     grid-template-columns: 1fr;
   }
 `;
