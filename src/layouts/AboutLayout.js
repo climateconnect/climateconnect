@@ -1,7 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import Link from "next/link";
-import InfoBubble from "./../components/project/InfoBubble";
+import InfoBubble from "./../components/about/InfoBubble";
+import Member from "./../components/about/Member";
 
 const info = [
   {
@@ -80,11 +81,9 @@ export default function about() {
   return (
     <Container>
       <AboutImageContainer>
-        <HeadlineContainer>
-          <Headline>
-            <HeadlineText>CLIMATE CONNECT</HeadlineText>
-          </Headline>
-        </HeadlineContainer>
+        <Headline>
+          <HeadlineText>CLIMATE CONNECT</HeadlineText>
+        </Headline>
       </AboutImageContainer>
       <h2>
         We are an international team of volunteers building a non-profit climate action webplatform
@@ -146,19 +145,6 @@ export default function about() {
   );
 }
 
-
-
-const Member = ({ data }) => (
-  <MemberInfo>
-    <img src={data.image}></img>
-    <h2>{data.name}</h2>
-    <Location>
-      <i className="fas fa-map-marker-alt"></i>
-      {data.location}
-    </Location>
-  </MemberInfo>
-);
-
 const Container = styled.div`
   color: ${({ theme }) => theme.colors.primary};
   text-align: center;
@@ -188,12 +174,7 @@ const AboutImageContainer = styled.div`
   background-position: center;
   background-size: cover;
   margin-bottom: 75px;
-`;
-
-const HeadlineContainer = styled.div`
   display: table;
-  height: 100%;
-  width: 100%;
 `;
 
 const Headline = styled.div`
@@ -264,26 +245,6 @@ const LinkContainer = styled.div`
 const MemberInfoGrid = styled.div`
   max-width: 1390px;
   margin: 0 auto;
-`;
-
-const MemberInfo = styled.div`
-  display: inline-block;
-  margin-left: 75px;
-  margin-right: 75px;
-  margin-bottom: 60px;
-  img {
-    width: 250px;
-  }
-  div {
-    font-size: 24px;
-    color: #484848;
-  }
-`;
-
-const Location = styled.div`
-  i {
-    margin-right: 5px;
-  }
 `;
 
 const RequiredSkills = styled.ul`
