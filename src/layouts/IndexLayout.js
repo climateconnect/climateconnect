@@ -36,6 +36,8 @@ export default function IndexLayout() {
 
 const Container = styled.div`
   display: flex;
+  max-width: 1200px;
+  margin: 3rem auto;
   flex-direction: column;
   padding: 0 1rem;
   h1 {
