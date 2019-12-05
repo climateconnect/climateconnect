@@ -4,7 +4,11 @@ import Link from "../ui/Link";
 
 const Header = () => (
   <Container>
-    <img src="https://climateconnect.earth/logo.png"></img>
+    <Link href="index">
+      <a>
+        <img src="https://climateconnect.earth/logo.png"></img>
+      </a>
+    </Link>
     <LinkContainer>
       <Link href="about">About</Link>
       <Link href="forum">Forum</Link>
