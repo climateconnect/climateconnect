@@ -21,7 +21,7 @@ export default InfoLink;
 const LinkContainer = styled.div`
   margin: 0 auto;
   margin-bottom: 50px;
-  i {
+  span {
     display: inline-block;
     margin-right: 10px;
     font-size: 32px;

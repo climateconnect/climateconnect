@@ -6,7 +6,7 @@ const InfoBubble = ({ data }) => (
   <InfoBubbleContainer>
     <Bubble>
       <IconWrapper>
-        <FA name={"fas " + data.icon} />
+        <FA name={data.icon} />
       </IconWrapper>
     </Bubble>
     <h3>{data.title}</h3>

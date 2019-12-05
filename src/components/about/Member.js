@@ -7,7 +7,7 @@ const Member = ({ data }) => (
     <img src={"images/" + data.image}></img>
     <h2>{data.name}</h2>
     <Location>
-      <FA name="fas fa-map-marker-alt" />
+      <FA name="map-marker-alt" />
       {data.location}
     </Location>
   </MemberInfo>
@@ -30,7 +30,7 @@ const MemberInfo = styled.div`
 `;
 
 const Location = styled.div`
-  i {
+  span {
     margin-right: 5px;
   }
 `;
