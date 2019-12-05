@@ -1,13 +1,14 @@
 import React from "react";
 import styled from "styled-components";
 import Link from "next/link";
+import FA from "react-fontawesome";
 
 const InfoLink = ({ data }) => (
   <LinkContainer>
     <h2>
       <Link href={data.href} target="_blank" rel="noopener noreferrer">
         <a>
-          <i className={data.icon}></i>
+          <FA name={data.icon} />
           {data.text}
         </a>
       </Link>

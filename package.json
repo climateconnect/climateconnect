@@ -27,7 +27,8 @@
     "next": "9.1.1",
     "react": "16.11.0",
     "react-dom": "16.11.0",
-    "styled-components": "^4.4.0"
+    "styled-components": "^4.4.0",
+    "react-fontawesome": "^1.7.1"
   },
   "devDependencies": {
     "babel-plugin-styled-components": "^1.10.6",

@@ -1,12 +1,13 @@
 import React from "react";
 import styled from "styled-components";
+import FA from "react-fontawesome";
 
 const Member = ({ data }) => (
   <MemberInfo>
     <img src={"images/" + data.image}></img>
     <h2>{data.name}</h2>
     <Location>
-      <i className="fas fa-map-marker-alt"></i>
+      <FA name="fas fa-map-marker-alt" />
       {data.location}
     </Location>
   </MemberInfo>

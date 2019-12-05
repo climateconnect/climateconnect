@@ -1,11 +1,12 @@
 import React from "react";
 import styled from "styled-components";
+import FA from "react-fontawesome";
 
 const InfoBubble = ({ data }) => (
   <InfoBubbleContainer>
     <Bubble>
       <IconWrapper>
-        <i className={"fas " + data.icon}></i>
+        <FA name={"fas " + data.icon} />
       </IconWrapper>
     </Bubble>
     <h3>{data.title}</h3>
