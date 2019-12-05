@@ -40,6 +40,8 @@ const InfoText = styled.div`
   color: #484848;
   margin: 0 auto;
   font-size: 20px;
+  line-height: 30px;
+  margin-top: 20px;
 `;
 
 const IconWrapper = styled.div`

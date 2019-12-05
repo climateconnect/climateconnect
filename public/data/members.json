@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Christoph Stoll",
+    "image": "christophstoll.png",
+    "location": "Erlangen, Germany"
+  },
+  {
+    "name": "Thomas Bove",
+    "image": "thomasbove.png",
+    "location": "Paris, France"
+  },
+  {
+    "name": "Tobias Rehm",
+    "image": "tobiasrehm.png",
+    "location": "Erlangen, Germany"
+  },
+  {
+    "name": "Reece Langerock",
+    "image": "reecelangerock.png",
+    "location": "Chicago, USA"
+  },
+  {
+    "name": "Michael Fischer",
+    "image": "michaelfischer.png",
+    "location": "Erlangen, Germany"
+  }
+]

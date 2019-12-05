@@ -1,69 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import Link from "next/link";
+import InfoLink from "./../components/about/InfoLink";
+import info from "./../../public/data/info.json";
+import members from "./../../public/data/members.json";
+import links from "./../../public/data/links.json";
 import InfoBubble from "./../components/about/InfoBubble";
 import Member from "./../components/about/Member";
-
-const info = [
-  {
-    icon: "fa-plus",
-    title: "Share your actions",
-    text:
-      "Have you ever wondered what is being done about climate change in your region and globally? By enabling climate protectors to share their project on Climate Connect, we will provide a comprehensive up to date list of what is being done about climate change."
-  },
-  {
-    icon: "fa-chart-bar",
-    title: "Measure the impact",
-    text:
-      "You are thinking about getting involved in climate action, but don't know how you can be most effective? On Climate Connect each action will have an impact score. This way you can find out how you can maximize your impact"
-  },
-  {
-    icon: "fa-users",
-    title: "Collaborate globally",
-    text:
-      "Climate change is a global issue. This is why we want to create a global network of climate protectors. Climate Connect allows you to see where you can make the biggest difference with your personal strengths and skillset. If you're already working on an impactful project, you will be able to find collaborators here."
-  },
-  {
-    icon: "fa-lightbulb",
-    title: "Get inspired",
-    text:
-      "On Climate Connect, you will find blue prints of high-impact projects, that you will be able to replicate at your location. This way you can very easily find the most effective thing you can work on with your specific skillset."
-  },
-  {
-    icon: "fa-eye",
-    title: "Maximum transparency",
-    text:
-      "Our code is available open source and can be found in our Github repository. The impact algorithm will be open source and the community will make the decisions on how to develop it further."
-  }
-];
-
-const members = [
-  {
-    name: "Christoph Stoll",
-    image: "christophstoll.png",
-    location: "Erlangen, Germany"
-  },
-  {
-    name: "Thomas Bove",
-    image: "thomasbove.png",
-    location: "Paris, France"
-  },
-  {
-    name: "Tobias Rehm",
-    image: "tobiasrehm.png",
-    location: "Erlangen, Germany"
-  },
-  {
-    name: "Reece Langerock",
-    image: "reecelangerock.png",
-    location: "Chicago, USA"
-  },
-  {
-    name: "Michael Fischer",
-    image: "michaelfischer.png",
-    location: "Erlangen, Germany"
-  }
-];
 
 function renderBubbles(info) {
   return info.map(i => {
@@ -74,6 +16,12 @@ function renderBubbles(info) {
 function renderMemberInfo(members) {
   return members.map(m => {
     return <Member data={m} key={m.name}></Member>;
+  });
+}
+
+function renderInfoLinks(links) {
+  return links.map(l => {
+    return <InfoLink data={l} key={l.name}></InfoLink>;
   });
 }
 
@@ -91,56 +39,29 @@ export default function about() {
       <h1>Our goal is to help you fight climate change most effectively</h1>
       <BubbleGrid>{renderBubbles(info)}</BubbleGrid>
       <h1>Find out more</h1>
-      <div>
-        <LinkContainer>
-          <h2>
-            <a href="onepager.pdf" target="_blank" rel="noopener noreferrer">
-              <i className="fas fa-file-alt"></i>Read our onepager
-            </a>
-          </h2>
-        </LinkContainer>
-      </div>
-      <div>
-        <LinkContainer>
-          <h2>
-            <a
-              href="xd.adobe.com/view/395518bf-7e51-4eb2-6ff2-3f1b57fdaa17-4f64/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <i className="fas fa-pencil-ruler"></i>View our interactive prototype
-            </a>
-          </h2>
-        </LinkContainer>
-      </div>
-      <div>
-        <LinkContainer>
-          <h2>
-            <Link href="/faq">
-              <a>
-                <i className="fas fa-question"></i>View our FAQ section for in depth explanations
-              </a>
-            </Link>
-          </h2>
-        </LinkContainer>
-      </div>
+      {renderInfoLinks(links)}
       <h1>Join our Team</h1>
       <MemberInfoGrid>{renderMemberInfo(members)}</MemberInfoGrid>
       <h2>Currently all members of our team are volunteers.</h2>
-      <h1>Interested in joining us in accelerating climate action worldwide?</h1>
-      <h1>Contact us at contact@climateconnect.earth</h1>
-      <div>
-        While we are looking for any motivated people to join us, these skills would be especially
-        helpful:
-      </div>
-      <RequiredSkills>
-        <li>Front end development (react)</li>
-        <li>Back end development (node, postgres)</li>
-        <li>Webdesign</li>
-        <li>Marketing (social media marketing, creation of an image video)</li>
-        <li>Knowledge in the assessment of CO2-footprints of processes / knowledge in LCA</li>
-        <li>Generally experience with founding and working in a non-profit organisation</li>
-      </RequiredSkills>
+      <ContactSection>
+        <h1>
+          Interested in joining the team?
+          <br />
+          Contact us at contact@climateconnect.earth
+        </h1>
+        <div>
+          While we are looking for any motivated people to join us, these skills would be especially
+          helpful:
+        </div>
+        <ul>
+          <li>Front end development (react)</li>
+          <li>Back end development (node, postgres)</li>
+          <li>Webdesign</li>
+          <li>Marketing (social media marketing, creation of an image video)</li>
+          <li>Knowledge in the assessment of CO2-footprints of processes / knowledge in LCA</li>
+          <li>Generally experience with founding and working in a non-profit organisation</li>
+        </ul>
+      </ContactSection>
     </Container>
   );
 }
@@ -170,7 +91,7 @@ const Container = styled.div`
 const AboutImageContainer = styled.div`
   width: 100%;
   height: 373px;
-  background-image: url("/about_background.png");
+  background-image: url("images/about_background.png");
   background-position: center;
   background-size: cover;
   margin-bottom: 75px;
@@ -223,33 +144,20 @@ const BubbleGrid = styled.div`
   }
 `;
 
-const LinkContainer = styled.div`
-  display: inline-block;
-  margin: 0 auto;
-  margin-bottom: 50px;
-  i {
-    display: inline-block;
-    margin-right: 10px;
-    font-size: 32px;
-  }
-  h2 {
-    display: inline-block;
-    margin-top: 0px;
-    vertical-align: top;
-  }
-  a {
-    color: hsla(185, 56%, 30%, 1);
-  }
-`;
-
 const MemberInfoGrid = styled.div`
   max-width: 1390px;
   margin: 0 auto;
 `;
 
-const RequiredSkills = styled.ul`
-  text-align: left;
-  max-width: 790px;
-  margin: 0 auto;
-  margin-bottom: 35px;
+const ContactSection = styled.div`
+  margin-top: 50px;
+  h1 {
+    margin-bottom: 20px;
+  }
+  ul {
+    text-align: left;
+    max-width: 790px;
+    margin: 0 auto;
+    margin-bottom: 35px;
+  }
 `;

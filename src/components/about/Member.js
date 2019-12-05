@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const Member = ({ data }) => (
   <MemberInfo>
-    <img src={data.image}></img>
+    <img src={"images/" + data.image}></img>
     <h2>{data.name}</h2>
     <Location>
       <i className="fas fa-map-marker-alt"></i>

@@ -5,7 +5,7 @@ import Link from "../ui/Link";
 const Footer = () => (
   <Container>
     <LeftSection>
-      <Link href="imprint" text="imprint"></Link>
+      <Link href="imprint">Imprint</Link>
     </LeftSection>
     <div>© ClimateConnect 2019</div>
     <RightSection>
@@ -14,10 +14,10 @@ const Footer = () => (
         target="_blank"
         rel="noopener noreferrer"
       >
-        <img src="github.png"></img>
+        <img src="images/github.png"></img>
       </a>
       <a href="https://twitter.com/ConnectClimate" target="_blank" rel="noopener noreferrer">
-        <img src="twitter.svg"></img>
+        <img src="icons/twitter.svg"></img>
       </a>
     </RightSection>
   </Container>
