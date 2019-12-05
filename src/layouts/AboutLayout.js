@@ -59,7 +59,7 @@ export default function about() {
           <li>Webdesign</li>
           <li>Marketing (social media marketing, creation of an image video)</li>
           <li>Knowledge in the assessment of CO2-footprints of processes / knowledge in LCA</li>
-          <li>Generally experience with founding and working in a non-profit organisation</li>
+          <li>Experience with founding, funding and buildin a non-profit organisation</li>
         </ul>
       </ContactSection>
     </Container>
