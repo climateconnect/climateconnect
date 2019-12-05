@@ -14,15 +14,15 @@ export default function ProjectPreview({ project }) {
         <Labels>{project.labels.join(", ")}</Labels>
 
         <IconRow>
-          <img src={project.organisation_image}></img>
+          <img src={"images/"+project.organisation_image}></img>
           <span>{project.organisation_name}</span>
         </IconRow>
         <IconRow>
-          <img src="./placeholder.svg"></img>
+          <img src="icons/placeholder.svg"></img>
           <span>{project.location}</span>
         </IconRow>
         <IconRow>
-          <img src="./world.svg"></img>
+          <img src="icons/world.svg"></img>
           <span>{project.impact}</span>
         </IconRow>
         <Button type="outlined">Get Involved</Button>
@@ -71,7 +71,6 @@ const IconRow = styled.div`
   text-overflow: ellipsis;
   line-height: 20px;
   img {
-    width: 20px;
     height: 20px;
     margin-right: ${({ theme }) => theme.spacing.small};
   }
