@@ -15,7 +15,7 @@ describe("ProjectPreview Component", () => {
     // expect(wrapper.find("Image")).toHaveLength(1);
     expect(wrapper.find("img")).toHaveLength(3);
     const images = wrapper.find("img");
-    expect(images.at(0).props()).toEqual({ src: project.organisation_image });
+    expect(images.at(0).props()).toEqual({ src: project.organization_image });
     expect(images.at(1).props()).toEqual({ src: "./placeholder.svg" });
     expect(images.at(2).props()).toEqual({ src: "./world.svg" });
   });

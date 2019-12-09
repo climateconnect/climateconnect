@@ -12,4 +12,15 @@ describe("Button Component", () => {
     const wrapper = shallow(<Button type="big">Button</Button>);
     expect(wrapper.props()).toEqual({ children: "Button", type: "big" });
   });
+
+  it("sets onClick to the value of the clickHandler prop", () => {
+    let mockFn = jest.fn();
+    const tree = shallow(
+      <Button type="big" clickHandler={mockFn}>
+        Button
+      </Button>
+    );
+    tree.simulate("click");
+    expect(mockFn).toHaveBeenCalled();
+  });
 });

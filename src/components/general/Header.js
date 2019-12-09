@@ -4,7 +4,9 @@ import Link from "../ui/Link";
 
 const Header = () => (
   <Container>
-    <img src="https://climateconnect.earth/logo.png"></img>
+    <a href="/">
+      <img src="https://climateconnect.earth/logo.png"></img>
+    </a>
     <LinkContainer>
       <Link href="forum">Forum</Link>
       <Link href="browse">Browse</Link>
@@ -24,7 +26,7 @@ const Container = styled.nav`
   height: 40px;
   align-items: center;
   padding: 12px 48px;
-  border-bottom: 1px solid hsla(0, 0%, 82%, 1);
+  border-bottom: 1px solid ${props => props.theme.colors.lightGray};
 
   img {
     height: 54px;

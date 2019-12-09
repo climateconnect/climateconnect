@@ -14,7 +14,7 @@ export default function ProjectPreview({ project }) {
         <Labels>{project.labels.join(", ")}</Labels>
 
         <IconRow>
-          <img src={project.organisation_image}></img>
+          <img src={project.organization_image}></img>
           <span>{project.organisation_name}</span>
         </IconRow>
         <IconRow>

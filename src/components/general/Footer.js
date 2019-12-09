@@ -15,6 +15,6 @@ const Container = styled.footer`
   height: 40px;
   align-items: center;
   padding: 0.5rem 3rem;
-  border-top: 1px solid hsla(0, 0%, 82%, 1);
+  border-top: 1px solid ${props => props.theme.colors.lightGray};
   color: hsla(185, 56%, 30%, 1);
 `;

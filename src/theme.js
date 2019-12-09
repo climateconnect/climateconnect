@@ -4,6 +4,7 @@ export default {
     black: "hsla(0, 0%, 0%, 1)",
     offwhite: "hsla(0, 0%, 97%, 1)",
     white: "hsla(0, 0%, 100%, 1)",
+    lightGray: "hsla(0, 0%, 82%, 1)",
     darkGray: "hsla(0, 0%, 11%, 1)",
     gray: "hsla(0, 0%, 28%, 1)"
   },

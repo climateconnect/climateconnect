@@ -1,0 +1,25 @@
+{
+  "categories": [
+    {
+      "Informing the public": {
+        "categories": [
+          {
+            "non-interactive events": {}
+          },
+          {
+            "interactive events": {}
+          },
+          {
+            "promoting climate friendly choices": {
+              "categories": [
+                {
+                  "Advertisements about banning cars": {}
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

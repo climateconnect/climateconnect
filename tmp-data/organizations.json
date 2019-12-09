@@ -1,0 +1,14 @@
+{
+  "organizations": [
+    {
+      "name": "sneep Erlangen e.V.",
+      "organization_image": "tmp-data/assets/images/sneep.png",
+      "id": 44
+    },
+    {
+      "name": "Climate Action Tech",
+      "organization_image": "tmp-data/assets/images/climate-action-tech.png",
+      "id": 45
+    }
+  ]
+}

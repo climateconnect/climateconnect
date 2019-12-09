@@ -4,7 +4,11 @@ import styled from "styled-components";
 export default class Button extends Component {
   render() {
     const { type, children } = this.props;
-    return <StyledButton type={type}>{children}</StyledButton>;
+    return (
+      <StyledButton onClick={this.props.clickHandler} type={type}>
+        {children}
+      </StyledButton>
+    );
   }
 }
 
