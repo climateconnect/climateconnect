@@ -10,7 +10,7 @@ describe("Header Component", () => {
   });
   it("contains five links", () => {
     const wrapper = shallow(<Header />);
-    expect(wrapper.find(Link)).toHaveLength(5);
+    expect(wrapper.find(Link)).toHaveLength(6);
   });
   it("links contain correct props", () => {
     const wrapper = shallow(<Header />);

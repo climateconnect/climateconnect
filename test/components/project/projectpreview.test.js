@@ -2,7 +2,7 @@ import React from "react";
 import { shallow } from "enzyme";
 import ProjectPreview from "../../../src/components/project/ProjectPreview";
 import Button from "../../../src/components/general/Button";
-import SAMPLE_DATA from "./../../../projects.json";
+import SAMPLE_DATA from "./../../../public/data/projects.json";
 
 describe("ProjectPreview Component", () => {
   const project = SAMPLE_DATA.projects[0];

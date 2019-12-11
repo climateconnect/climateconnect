@@ -6,7 +6,7 @@ const Header = () => (
   <Container>
     <Link href="index">
       <a>
-        <img src="https://climateconnect.earth/logo.png"></img>
+        <img src="/images/logo.png"></img>
       </a>
     </Link>
     <LinkContainer>
@@ -33,7 +33,6 @@ const Container = styled.nav`
 
   img {
     height: 54px;
-    width: 54px;
   }
 `;
 

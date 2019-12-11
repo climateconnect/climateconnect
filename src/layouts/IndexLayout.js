@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Link from "next/link";
-import TEMP_FEATURED_DATA from "./../../projects.json";
+import TEMP_FEATURED_DATA from "./../../public/data/projects.json";
 import ProjectPreview from "./../components/project/ProjectPreview";
 import Button from "../components/general/Button.js";
 
