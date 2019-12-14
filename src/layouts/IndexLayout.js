@@ -9,7 +9,7 @@ function renderProjects() {
   // TEMPORARY DATA
   return TEMP_FEATURED_DATA.projects.map(project => {
     // TODO: replace key with project id
-    return <ProjectPreview project={project} key={project.name}></ProjectPreview>;
+    return <ProjectPreview project={project} key={project.name} />;
   });
 }
 

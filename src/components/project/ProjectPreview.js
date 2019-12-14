@@ -8,21 +8,21 @@ export default function ProjectPreview({ project }) {
   return (
     <Container>
       {/* placeholder images */}
-      <Image src={`https://picsum.photos/id/${rand}/240/210`}></Image>
+      <Image src={`https://picsum.photos/id/${rand}/240/210`} />
       <Content>
         <h2>{project.name}</h2>
         <Labels>{project.labels.join(", ")}</Labels>
 
         <IconRow>
-          <img src={project.organisation_image}></img>
+          <img src={project.organisation_image} />
           <span>{project.organisation_name}</span>
         </IconRow>
         <IconRow>
-          <img src="./placeholder.svg"></img>
+          <img src="./placeholder.svg" />
           <span>{project.location}</span>
         </IconRow>
         <IconRow>
-          <img src="./world.svg"></img>
+          <img src="./world.svg" />
           <span>{project.impact}</span>
         </IconRow>
         <Button type="outlined">Get Involved</Button>

@@ -19,6 +19,7 @@ module.exports = {
   plugins: ["react"],
   rules: {
     "react/prop-types": "off",
+    "react/self-closing-comp": "error",
     "react/prefer-stateless-function": "error"
   },
   settings: {
