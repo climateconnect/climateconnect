@@ -18,6 +18,7 @@ module.exports = {
   },
   plugins: ["react"],
   rules: {
+    "prefer-const": "error",
     "react/prop-types": "off",
     "react/self-closing-comp": "error",
     "react/prefer-stateless-function": "error"
