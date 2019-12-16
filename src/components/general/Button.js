@@ -1,11 +1,9 @@
-import React, { Component } from "react";
+import React from "react";
 import styled from "styled-components";
 
-export default class Button extends Component {
-  render() {
-    const { type, children } = this.props;
-    return <StyledButton type={type}>{children}</StyledButton>;
-  }
+export default function Button(props) {
+  const { type, children } = props;
+  return <StyledButton type={type}>{children}</StyledButton>;
 }
 
 const StyledButton = styled.button`
