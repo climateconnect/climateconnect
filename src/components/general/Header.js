@@ -6,7 +6,6 @@ const Header = () => (
   <Container>
     <img src="https://climateconnect.earth/logo.png" />
     <LinkContainer>
-      <Link href="forum">Forum</Link>
       <Link href="browse">Browse</Link>
       <Link href="create">Create A Project</Link>
       <Link href="signin" type="button">
