@@ -11,12 +11,9 @@ export default function LinkItem({ children, type, href }) {
 }
 
 const StyledLink = styled.a`
-  padding: 6px;
   color: ${({ theme }) => theme.colors.primary};
-  margin-right: 36px;
   text-decoration: none;
   cursor: pointer;
-  font-size: 1.1rem;
   transition: 0.25s ease-in-out;
 
   :hover {
