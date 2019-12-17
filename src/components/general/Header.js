@@ -30,6 +30,12 @@ const Container = styled.nav`
     height: 54px;
     width: 54px;
   }
+
+  a {
+    padding: 6px;
+    margin-right: 36px;
+    font-size: 1.1rem;
+  }
 `;
 
 const LinkContainer = styled.div``;
