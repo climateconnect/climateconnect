@@ -10,7 +10,7 @@ export default function Layout({ children }) {
   return (
     <ThemeProvider theme={theme}>
       <LayoutContainer>
-        <Header></Header>
+        <Header />
         <Content>{children}</Content>
         <Footer />
       </LayoutContainer>

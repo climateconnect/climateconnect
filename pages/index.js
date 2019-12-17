@@ -11,7 +11,7 @@ const Home = () => (
     </Head>
 
     <Layout>
-      <IndexLayout></IndexLayout>
+      <IndexLayout />
     </Layout>
   </div>
 );
