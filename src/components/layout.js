@@ -1,20 +1,27 @@
 import React from "react";
 import styled from "styled-components";
+import Head from "next/head";
 import Header from "./general/Header";
 import "./../reset.css";
 import Footer from "./general/Footer";
 import { ThemeProvider } from "styled-components";
 import theme from "./../theme";
 
-export default function Layout({ children }) {
+export default function Layout({ title, children }) {
   return (
-    <ThemeProvider theme={theme}>
-      <LayoutContainer>
-        <Header />
-        <Content>{children}</Content>
-        <Footer />
-      </LayoutContainer>
-    </ThemeProvider>
+    <>
+      <Head>
+        <title>{title}</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <ThemeProvider theme={theme}>
+        <LayoutContainer>
+          <Header />
+          <Content>{children}</Content>
+          <Footer />
+        </LayoutContainer>
+      </ThemeProvider>
+    </>
   );
 }
 

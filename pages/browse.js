@@ -1,16 +1,10 @@
 import React from "react";
-import Head from "next/head";
 import Layout from "../src/components/layout";
 
 const Home = () => (
-  <div>
-    <Head>
-      <title>Browse</title>
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
-
-    <Layout />
-  </div>
+  <Layout title="Browse">
+    <h1>Browse Projects</h1>
+  </Layout>
 );
 
 export default Home;
