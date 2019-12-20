@@ -16,13 +16,21 @@ describe("Header Component", () => {
     const wrapper = shallow(<Header />);
 
     const expectedProps = [
+      {
+        href: "index",
+        children: (
+          <a>
+            <img src="/images/logo.png"></img>
+          </a>
+        )
+      },
       { href: "about", children: "About" },
       { href: "forum", children: "Forum" },
       { href: "browse", children: "Browse" },
       { href: "create", children: "Create A Project" },
       { href: "signin", children: "Sign In", type: "button" }
     ];
-    const expectedTexts = ["Forum", "Browse", "Create A Project", "Sign In"];
+    const expectedTexts = ["", "About", "Forum", "Browse", "Create A Project", "Sign In"];
 
     for (let i = 0; i < 5; i++) {
       const link = wrapper.find(Link).at(i);
