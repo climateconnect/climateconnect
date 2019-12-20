@@ -5,7 +5,7 @@ import Link from "../../../src/components/ui/Link";
 describe("Link Component", () => {
   it("renders the correct text", () => {
     const wrapper = shallow(<Link>Button</Link>);
-    expect(wrapper.text()).toEqual("Link");
+    expect(wrapper.dive().text()).toEqual("Button");
   });
 
   it("has the correct type", () => {

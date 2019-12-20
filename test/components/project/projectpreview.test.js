@@ -13,11 +13,12 @@ describe("ProjectPreview Component", () => {
   it("contains correct images", () => {
     //TODO: Figure out how to test styled component image
     // expect(wrapper.find("Image")).toHaveLength(1);
+    expect(wrapper.exists("img")).toEqual(true);
     expect(wrapper.find("img")).toHaveLength(3);
     const images = wrapper.find("img");
     expect(images.at(0).props()).toEqual({ src: project.organisation_image });
-    expect(images.at(1).props()).toEqual({ src: "./placeholder.svg" });
-    expect(images.at(2).props()).toEqual({ src: "./world.svg" });
+    expect(images.at(1).props()).toEqual({ src: "icons/placeholder.svg" });
+    expect(images.at(2).props()).toEqual({ src: "icons/world.svg" });
   });
 
   it("contains correct project data", () => {
