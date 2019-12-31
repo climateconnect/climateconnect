@@ -1,87 +1,67 @@
 import React from "react";
-import styled from "styled-components";
-import Button from "../general/Button";
+import {
+  Typography,
+  Card,
+  CardActionArea,
+  CardMedia,
+  CardContent,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText
+} from "@material-ui/core";
+import PlaceIcon from "@material-ui/icons/Place";
+import BarChartIcon from "@material-ui/icons/BarChart";
+import GroupIcon from "@material-ui/icons/Group";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles({
+  root: {
+    display: "flex"
+  },
+  media: {
+    width: 250,
+    backgroundSize: "cover"
+  }
+});
 
 export default function ProjectPreview({ project }) {
-  // temporary to get different images from picsum
-  const rand = Math.ceil(Math.random() * 300);
-  return (
-    <Container>
-      {/* placeholder images */}
-      <Image src={`https://picsum.photos/id/${rand}/240/210`} />
-      <Content>
-        <h2>{project.name}</h2>
-        <Labels>{project.labels.join(", ")}</Labels>
+  const classes = useStyles();
 
-        <IconRow>
-          <img src={project.organisation_image} />
-          <span>{project.organisation_name}</span>
-        </IconRow>
-        <IconRow>
-          <img src="./placeholder.svg" />
-          <span>{project.location}</span>
-        </IconRow>
-        <IconRow>
-          <img src="./world.svg" />
-          <span>{project.impact}</span>
-        </IconRow>
-        <Button type="outlined">Get Involved</Button>
-      </Content>
-    </Container>
+  return (
+    <Card className={classes.root}>
+      <CardMedia
+        className={classes.media}
+        title={project.name}
+        image={`https://picsum.photos/200/200`}
+      />
+      <CardActionArea>
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="h2">
+            {project.name}
+          </Typography>
+          <List>
+            <ListItem>
+              <ListItemIcon>
+                <PlaceIcon />
+              </ListItemIcon>
+              <ListItemText primary={project.location} />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <GroupIcon />
+              </ListItemIcon>
+              <ListItemText primary={project.organisation_name} />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <BarChartIcon />
+              </ListItemIcon>
+              <ListItemText primary={`Impact: ${project.impact}`} />
+            </ListItem>
+          </List>
+        </CardContent>
+      </CardActionArea>
+    </Card>
   );
 }
-
-const Container = styled.section`
-  display: flex;
-  background: #fff;
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,
-    rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
-`;
-
-const Image = styled.img`
-  max-width: 240px;
-  height: auto;
-  object-fit: cover;
-  margin-right: ${({ theme }) => theme.spacing.tiny};
-
-  @media (max-width: 1000px) {
-    max-width: 160px;
-    object-fit: fill;
-  }
-  @media (max-width: 450px) {
-    display: none;
-  }
-`;
-
-const Content = styled.div`
-  padding: 6px;
-  display: flex;
-  flex-direction: column;
-  h2 {
-    font-size: 1.25rem;
-    margin: 0;
-  }
-`;
-
-const IconRow = styled.div`
-  margin: ${({ theme }) => theme.spacing.tiny} 0;
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  line-height: 20px;
-  img {
-    width: 20px;
-    height: 20px;
-    margin-right: ${({ theme }) => theme.spacing.small};
-  }
-`;
-
-const Labels = styled.div`
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 11px;
-  text-transform: capitalize;
-  color: ${({ theme }) => theme.colors.gray};
-  margin: 4px 0;
-`;

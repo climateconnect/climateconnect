@@ -1,20 +1,22 @@
 import React from "react";
-import styled from "styled-components";
+import { Box } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
-const Footer = () => (
-  <Container>
-    <div>© ClimateConnect 2019</div>
-  </Container>
-);
+const useStyles = makeStyles(theme => ({
+  root: {
+    marginTop: theme.spacing(2),
+    padding: theme.spacing(3),
+    textAlign: "center",
+    borderTop: `1px solid ${theme.palette.grey[300]}`
+  }
+}));
 
-export default Footer;
+export default function Footer() {
+  const classes = useStyles();
 
-const Container = styled.footer`
-  display: flex;
-  justify-content: center;
-  height: 40px;
-  align-items: center;
-  padding: 0.5rem 3rem;
-  border-top: 1px solid hsla(0, 0%, 82%, 1);
-  color: hsla(185, 56%, 30%, 1);
-`;
+  return (
+    <Box component="footer" className={classes.root}>
+      © ClimateConnect 2019
+    </Box>
+  );
+}
