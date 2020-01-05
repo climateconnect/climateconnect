@@ -16,7 +16,7 @@ export default function Footer() {
 
   return (
     <Box component="footer" className={classes.root}>
-      © ClimateConnect 2019
+      © ClimateConnect {new Date().getFullYear()}
     </Box>
   );
 }
