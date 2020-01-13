@@ -4,7 +4,7 @@ import FA from "react-fontawesome";
 
 const Member = ({ data }) => (
   <MemberInfo>
-    <img src={"images/" + data.image}></img>
+    <img src={"images/" + data.image} />
     <h2>{data.name}</h2>
     <Location>
       <FA name="map-marker-alt" />

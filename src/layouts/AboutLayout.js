@@ -9,19 +9,19 @@ import Member from "./../components/about/Member";
 
 function renderBubbles(info) {
   return info.map(i => {
-    return <InfoBubble data={i} key={i.title}></InfoBubble>;
+    return <InfoBubble data={i} key={i.title} />;
   });
 }
 
 function renderMemberInfo(members) {
   return members.map(m => {
-    return <Member data={m} key={m.name}></Member>;
+    return <Member data={m} key={m.name} />;
   });
 }
 
 function renderInfoLinks(links) {
   return links.map(l => {
-    return <InfoLink data={l} key={l.name}></InfoLink>;
+    return <InfoLink data={l} key={l.name} />;
   });
 }
 

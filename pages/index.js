@@ -1,19 +1,16 @@
 import React from "react";
-import Head from "next/head";
 import Layout from "./../src/components/layout";
-import IndexLayout from "../src/layouts/IndexLayout";
+import ProjectPreviews from "./../src/components/project/ProjectPreviews";
+import fakeProjectData from "../projects.json";
+import { times } from "lodash";
 
-const Home = () => (
-  <div>
-    <Head>
-      <title>Home</title>
-      <link rel="icon" href="icons/favicon.ico" />
-    </Head>
+const fakeProjectTemplate = fakeProjectData.projects[0];
+const fakeProjects = times(6, () => fakeProjectTemplate);
 
-    <Layout>
-      <IndexLayout></IndexLayout>
+export default function Index() {
+  return (
+    <Layout title="Work on the most effective climate projects">
+      <ProjectPreviews projects={fakeProjects} />
     </Layout>
-  </div>
-);
-
-export default Home;
+  );
+}

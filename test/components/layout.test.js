@@ -6,7 +6,7 @@ import Footer from "./../../src/components/general/Footer";
 
 describe("Layout Component Tests", () => {
   it("contains a header and footer", () => {
-    const wrapper = shallow(<Layout />);
+    const wrapper = shallow(<Layout title="Test page" />);
     expect(wrapper.find(Header)).toHaveLength(1);
     expect(wrapper.find(Footer)).toHaveLength(1);
   });

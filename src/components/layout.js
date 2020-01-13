@@ -1,31 +1,39 @@
 import React from "react";
-import styled from "styled-components";
+import Head from "next/head";
 import Header from "./general/Header";
-import "./../reset.css";
 import Footer from "./general/Footer";
-import { ThemeProvider } from "styled-components";
-import theme from "./../theme";
+import { Container, Typography } from "@material-ui/core";
+import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
+import theme from "../theme";
 
-export default function Layout({ children }) {
+const useStyles = makeStyles(theme => ({
+  mainHeading: {
+    textAlign: "center",
+    margin: `${theme.spacing(4)}px 0`
+  }
+}));
+
+export default function Layout({ title, children }) {
+  const classes = useStyles();
+
   return (
-    <ThemeProvider theme={theme}>
-      <LayoutContainer>
-        <Header></Header>
-        <Content>{children}</Content>
+    <>
+      <Head>
+        <title>{title}</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <ThemeProvider theme={theme}>
+        <Header />
+        <Container maxWidth="lg" component="main">
+          <Container maxWidth="sm">
+            <Typography variant="h1" className={classes.mainHeading}>
+              {title}
+            </Typography>
+          </Container>
+          {children}
+        </Container>
         <Footer />
-      </LayoutContainer>
-    </ThemeProvider>
+      </ThemeProvider>
+    </>
   );
 }
-
-const LayoutContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  background-color: rgb(248, 248, 248);
-  min-height: 100vh;
-`;
-
-const Content = styled.div`
-  align-content: flex-start;
-  flex: 1;
-`;

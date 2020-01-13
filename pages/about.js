@@ -16,7 +16,7 @@ const Home = () => (
     </Head>
 
     <Layout>
-      <AboutLayout></AboutLayout>
+      <AboutLayout />
     </Layout>
   </div>
 );

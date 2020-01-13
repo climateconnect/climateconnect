@@ -1,6 +1,6 @@
 import React from "react";
-import Head from "next/head";
 import Layout from "../src/components/layout";
+import Head from "next/head";
 
 const Home = () => (
   <div>
@@ -9,7 +9,7 @@ const Home = () => (
       <link rel="icon" href="icons/favicon.ico" />
     </Head>
 
-    <Layout></Layout>
+    <Layout />
   </div>
 );
 
