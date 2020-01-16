@@ -1,4 +1,5 @@
 import React from "react";
+import Router from "next/router";
 import {
   Typography,
   Card,
@@ -29,7 +30,12 @@ export default function ProjectPreview({ project }) {
   const classes = useStyles();
 
   return (
-    <Card className={classes.root}>
+    <Card
+      className={classes.root}
+      onClick={() => {
+        Router.push(`/projects/${project.id}`);
+      }}
+    >
       <CardMedia
         className={classes.media}
         title={project.name}
