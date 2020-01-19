@@ -41,6 +41,11 @@ export default function Header() {
         </Link>
 
         <Box>
+          <Link href="/about">
+            <Button color="primary" className={classes.buttonMarginRight}>
+              About
+            </Button>
+          </Link>
           <Link href="/create">
             <Button color="primary" className={classes.buttonMarginRight}>
               Create a project
