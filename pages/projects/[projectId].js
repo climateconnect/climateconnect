@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Layout from "../../src/components/layout";
 import { Container } from "@material-ui/core";
-import TEMP_FEATURED_DATA from "../../projects.json";
+import TEMP_FEATURED_DATA from "../../public/data/projects.json";
 
 export default function ProjectPage({ project }) {
   return (
