@@ -1,36 +1,36 @@
 import React from "react";
-import styled from "styled-components";
-import FA from "react-fontawesome";
+import { Box, Icon, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
-const Member = ({ data }) => (
-  <MemberInfo>
-    <img src={"images/" + data.image} />
-    <h2>{data.name}</h2>
-    <Location>
-      <FA name="map-marker-alt" />
-      {data.location}
-    </Location>
-  </MemberInfo>
-);
-
-export default Member;
-
-const MemberInfo = styled.div`
-  display: inline-block;
-  margin-left: 75px;
-  margin-right: 75px;
-  margin-bottom: 60px;
-  img {
-    width: 250px;
+const useStyles = makeStyles({
+  root: {
+    textAlign: "center"
+  },
+  image: {
+    width: 250,
+    height: 250,
+    alignSelf: "center"
+  },
+  location: {
+    display: "inline-block"
   }
-  div {
-    font-size: 24px;
-    color: #484848;
-  }
-`;
+});
 
-const Location = styled.div`
-  span {
-    margin-right: 5px;
-  }
-`;
+export default function Member({ member }) {
+  const classes = useStyles();
+
+  return (
+    <div className={classes.root}>
+      <Box component="img" className={classes.image} src={"images/" + member.image} />
+      <Typography variant="h4" color="primary">
+        {member.name}
+      </Typography>
+      <div>
+        <Typography variant="h5" color="secondary" className={classes.location}>
+          <Icon className="fa fa-map-marker-alt" />
+          {member.location}
+        </Typography>
+      </div>
+    </div>
+  );
+}
