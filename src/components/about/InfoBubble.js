@@ -1,22 +1,21 @@
 import React from "react";
-import styled from "styled-components";
-import FA from "react-fontawesome";
+import { Icon } from "@material-ui/core";
 
 const InfoBubble = ({ data }) => (
-  <InfoBubbleContainer>
-    <Bubble>
-      <IconWrapper>
-        <FA name={data.icon} />
-      </IconWrapper>
-    </Bubble>
+  <div>
+    <div>
+      <div>
+        <Icon name={data.icon} />
+      </div>
+    </div>
     <h3>{data.title}</h3>
-    <InfoText>{data.text}</InfoText>
-  </InfoBubbleContainer>
+    <div>{data.text}</div>
+  </div>
 );
 
 export default InfoBubble;
 
-const InfoBubbleContainer = styled.div`
+/*const InfoBubbleContainer = styled.div`
   display: inline-block;
   vertical-align: top;
   padding-left: 50px;
@@ -51,4 +50,4 @@ const IconWrapper = styled.div`
   display: table-cell;
   vertical-align: middle;
   margin: 0 auto;
-`;
+`;*/

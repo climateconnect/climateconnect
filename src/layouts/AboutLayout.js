@@ -1,21 +1,16 @@
 import React from "react";
-import styled from "styled-components";
 import InfoLink from "./../components/about/InfoLink";
 import info from "./../../public/data/info.json";
 import members from "./../../public/data/members.json";
 import links from "./../../public/data/links.json";
 import InfoBubble from "./../components/about/InfoBubble";
 import Member from "./../components/about/Member";
+import { Box } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 function renderBubbles(info) {
   return info.map(i => {
     return <InfoBubble data={i} key={i.title} />;
-  });
-}
-
-function renderMemberInfo(members) {
-  return members.map(m => {
-    return <Member data={m} key={m.name} />;
   });
 }
 
@@ -25,25 +20,53 @@ function renderInfoLinks(links) {
   });
 }
 
+const useStyles = makeStyles({
+  root: {
+    textAlign: "center"
+  },
+  member: {
+    display: "inline-block",
+    marginLeft: 60,
+    marginRight: 60,
+    marginBottom: 60
+  },
+  imageContainer: {
+    width: "100%",
+    height: 373,
+    backgroundImage: `url("images/about_background.png")`,
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+    marginBottom: 75
+  }
+});
+
 export default function about() {
+  const classes = useStyles();
+
   return (
-    <Container>
-      <AboutImageContainer>
-        <Headline>
-          <HeadlineText>CLIMATE CONNECT</HeadlineText>
-        </Headline>
-      </AboutImageContainer>
+    <div className={classes.root}>
+      <Box className={classes.imageContainer}>
+        <Box>
+          <div>CLIMATE CONNECT</div>
+        </Box>
+      </Box>
       <h2>
         We are an international team of volunteers building a non-profit climate action webplatform
       </h2>
       <h1>Our goal is to help you fight climate change most effectively</h1>
-      <BubbleGrid>{renderBubbles(info)}</BubbleGrid>
+      <div>{renderBubbles(info)}</div>
       <h1>Find out more</h1>
       {renderInfoLinks(links)}
       <h1>Join our Team</h1>
-      <MemberInfoGrid>{renderMemberInfo(members)}</MemberInfoGrid>
+      <Box display="flex" flexDirection="row" flexWrap="wrap" justifyContent="center">
+        {members.map((member, index) => (
+          <Box className={classes.member} key={index}>
+            <Member member={member} />
+          </Box>
+        ))}
+      </Box>
       <h2>Currently all members of our team are volunteers.</h2>
-      <ContactSection>
+      <div>
         <h1>
           Interested in joining the team?
           <br />
@@ -61,12 +84,12 @@ export default function about() {
           <li>Knowledge in the assessment of CO2-footprints of processes / knowledge in LCA</li>
           <li>Experience with founding, funding and buildin a non-profit organisation</li>
         </ul>
-      </ContactSection>
-    </Container>
+      </div>
+    </div>
   );
 }
 
-const Container = styled.div`
+/*const Container = styled.div`
   color: ${({ theme }) => theme.colors.primary};
   text-align: center;
   h1 {
@@ -160,4 +183,4 @@ const ContactSection = styled.div`
     margin: 0 auto;
     margin-bottom: 35px;
   }
-`;
+`;*/

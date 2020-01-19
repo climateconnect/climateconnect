@@ -1,24 +1,23 @@
 import React from "react";
-import styled from "styled-components";
 import Link from "next/link";
-import FA from "react-fontawesome";
+import { Icon } from "@material-ui/core";
 
 const InfoLink = ({ data }) => (
-  <LinkContainer>
+  <div>
     <h2>
       <Link href={data.href} target="_blank" rel="noopener noreferrer">
         <a>
-          <FA name={data.icon} />
+          <Icon name={data.icon} />
           {data.text}
         </a>
       </Link>
     </h2>
-  </LinkContainer>
+  </div>
 );
 
 export default InfoLink;
 
-const LinkContainer = styled.div`
+/*const LinkContainer = styled.div`
   margin: 0 auto;
   margin-bottom: 50px;
   span {
@@ -34,4 +33,4 @@ const LinkContainer = styled.div`
   a {
     color: hsla(185, 56%, 30%, 1);
   }
-`;
+`;*/
