@@ -1,10 +1,10 @@
 import React from "react";
 import Head from "next/head";
-import Header from "./general/Header";
-import Footer from "./general/Footer";
+import Header from "../general/Header";
+import Footer from "../general/Footer";
 import { Container, Typography } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
-import theme from "../theme";
+import theme from "../../theme";
 
 const useStyles = makeStyles(theme => ({
   mainHeading: {
