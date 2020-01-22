@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import Layout from "../../src/components/layout";
+import Layout from "../../src/components/layouts/layout";
 import { Container } from "@material-ui/core";
 import TEMP_FEATURED_DATA from "../../public/data/projects.json";
 
