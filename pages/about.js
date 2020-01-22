@@ -1,7 +1,10 @@
 import React from "react";
 import Head from "next/head";
-import Layout from "../src/components/layout";
-import AboutLayout from "../src/layouts/AboutLayout";
+import Layout from "../src/components/layouts/aboutLayout";
+import AboutHeaderImage from "../src/components/about/AboutHeaderImage";
+
+const backgroundImage = `url("images/about_background.png")`;
+
 const Home = () => (
   <div>
     <Head>
@@ -16,7 +19,7 @@ const Home = () => (
     </Head>
 
     <Layout>
-      <AboutLayout />
+      <AboutHeaderImage image={{ url: backgroundImage }} />
     </Layout>
   </div>
 );
