@@ -1,53 +1,65 @@
 import React from "react";
-import { Icon } from "@material-ui/core";
+import { Icon, Typography, Container, Box } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
-const InfoBubble = ({ data }) => (
-  <div>
-    <div>
+const useStyles = makeStyles(theme => {
+  return {
+    root: {
+      width: 450,
+      padding: 0,
+      textAlign: "center",
+      display: "inline-block",
+      verticalAlign: "top",
+      paddingLeft: theme.spacing(6),
+      paddingRight: theme.spacing(6),
+      alignSelf: "center",
+      margin: "auto",
+      marginBottom: theme.spacing(6)
+    },
+    bubble: {
+      width: 150,
+      height: 150,
+      padding: 0,
+      border: "1px solid black",
+      borderRadius: "100%",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center"
+    },
+    icon: {
+      width: "auto"
+    },
+    title: {
+      paddingTop: theme.spacing(2),
+      paddingBottom: theme.spacing(2)
+    },
+    infoText: {
+      fontSize: 20
+    }
+  };
+});
+
+export default function InfoBubble({ data }) {
+  const classes = useStyles();
+  return (
+    <Container className={classes.root}>
       <div>
-        <Icon name={data.icon} />
+        <Container className={classes.bubble}>
+          <Box>
+            <Icon
+              className={`${data.icon} ${classes.icon}`}
+              color="primary"
+              style={{ fontSize: 45 }}
+            />
+          </Box>
+        </Container>
       </div>
-    </div>
-    <h3>{data.title}</h3>
-    <div>{data.text}</div>
-  </div>
-);
-
-export default InfoBubble;
-
-/*const InfoBubbleContainer = styled.div`
-  display: inline-block;
-  vertical-align: top;
-  padding-left: 50px;
-  padding-right: 50px;
-  h3 {
-    font-size: 35px;
-  }
-  margin-bottom: 50px;
-`;
-
-const Bubble = styled.div`
-  border: 1px solid black;
-  border-radius: 100%;
-  width: 150px;
-  height: 150px;
-  margin: auto;
-  display: table;
-`;
-
-const InfoText = styled.div`
-  max-width: 350px;
-  color: #484848;
-  margin: 0 auto;
-  font-size: 20px;
-  line-height: 30px;
-  margin-top: 20px;
-`;
-
-const IconWrapper = styled.div`
-  width: 75px;
-  font-size: 45px;
-  display: table-cell;
-  vertical-align: middle;
-  margin: 0 auto;
-`;*/
+      <Typography variant="h4" color="primary" className={classes.title}>
+        {data.title}
+      </Typography>
+      <Typography lineHeight={30} color="secondary" className={classes.infoText}>
+        {data.text}
+      </Typography>
+    </Container>
+  );
+}

@@ -2,6 +2,7 @@ import React from "react";
 import { Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
+//TODO: cleanup CSS, adapt to different screen sizes
 const useStyles = makeStyles({
   imageContainer: image => ({
     width: "100%",
@@ -9,7 +10,7 @@ const useStyles = makeStyles({
     backgroundImage: image.url,
     backgroundPosition: "center",
     backgroundSize: "cover",
-    marginBottom: 75,
+    marginBottom: 20,
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -30,9 +31,7 @@ const useStyles = makeStyles({
 
 //props: {headerImage:`url("images/imagepath")`}
 export default function AboutHeaderImage({ image }) {
-  console.log(image);
   const classes = useStyles(image);
-  console.log(classes);
   return (
     <Container className={classes.imageContainer} maxWidth={false}>
       <div className={classes.headlineText}>CLIMATE CONNECT</div>

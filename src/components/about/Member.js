@@ -2,18 +2,25 @@ import React from "react";
 import { Box, Icon, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles({
-  root: {
-    textAlign: "center"
-  },
-  image: {
-    width: 250,
-    height: 250,
-    alignSelf: "center"
-  },
-  location: {
-    display: "inline-block"
-  }
+const useStyles = makeStyles(theme => {
+  return {
+    root: {
+      textAlign: "center",
+      display: "inline-block",
+      marginLeft: 75,
+      marginRight: 75,
+      marginBottom: 60
+    },
+    image: {
+      width: 250,
+      height: 250,
+      alignSelf: "center"
+    },
+    location: {
+      display: "inline-block",
+      marginRight: theme.spacing(6)
+    }
+  };
 });
 
 export default function Member({ member }) {
