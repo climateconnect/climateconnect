@@ -32,11 +32,7 @@ export default function Header() {
       <Container className={classes.container}>
         <Link href="/">
           <a>
-            <img
-              src="https://climateconnect.earth/images/logo.png"
-              alt="Climate Connect"
-              className={classes.logo}
-            />
+            <img src="/images/logo.png" alt="Climate Connect" className={classes.logo} />
           </a>
         </Link>
 

@@ -14,7 +14,12 @@ const useStyles = makeStyles(theme => {
       paddingRight: theme.spacing(6),
       alignSelf: "center",
       margin: "auto",
-      marginBottom: theme.spacing(6)
+      marginBottom: theme.spacing(6),
+      "@media (max-width:600px)": {
+        width: 350,
+        paddingLeft: 0,
+        paddingRight: 0
+      }
     },
     bubble: {
       width: 150,

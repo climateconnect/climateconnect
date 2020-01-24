@@ -19,32 +19,25 @@ const useStyles = makeStyles(theme => {
 export default function InfoLink({ data }) {
   const classes = useStyles();
 
-  return (
-    <Typography variant="h4" color="primary" className={classes.root}>
-      <Link href={data.href} target="_blank" rel="noopener noreferrer" className={classes.linkText}>
-        <a className={classes.linkText}>
+  //use <Link> component only if link href is also on the climateconnect.earth domain
+  if (data.internal)
+    return (
+      <Typography variant="h4" color="primary" className={classes.root}>
+        <Link href={data.href}>
+          <a className={classes.linkText} target="_blank" rel="noopener noreferrer">
+            <Icon className={data.icon} />
+            {data.text}
+          </a>
+        </Link>
+      </Typography>
+    );
+  else
+    return (
+      <Typography variant="h4" color="primary" className={classes.root}>
+        <a href={data.href} className={classes.linkText} target="_blank" rel="noopener noreferrer">
           <Icon className={data.icon} />
           {data.text}
         </a>
-      </Link>
-    </Typography>
-  );
+      </Typography>
+    );
 }
-
-/*const LinkContainer = styled.div`
-  margin: 0 auto;
-  margin-bottom: 50px;
-  span {
-    display: inline-block;
-    margin-right: 10px;
-    font-size: 32px;
-  }
-  h2 {
-    display: inline-block;
-    margin-top: 0px;
-    vertical-align: top;
-  }
-  a {
-    color: hsla(185, 56%, 30%, 1);
-  }
-`;*/

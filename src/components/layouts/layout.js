@@ -4,7 +4,7 @@ import Header from "../general/Header";
 import Footer from "../general/Footer";
 import { Container, Typography } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
-import theme from "../../theme";
+import theme from "../../themes/theme";
 
 const useStyles = makeStyles(theme => ({
   mainHeading: {

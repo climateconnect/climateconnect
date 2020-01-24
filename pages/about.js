@@ -1,18 +1,20 @@
+//global imports
 import React from "react";
 import Head from "next/head";
 import Layout from "../src/components/layouts/aboutLayout";
-import AboutHeaderImage from "../src/components/about/AboutHeaderImage";
 import { Typography, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+//data
 import info from "../public/data/info.json";
 import members from "../public/data/members.json";
 import links from "../public/data/links.json";
+//local components
+import AboutHeaderImage from "../src/components/about/AboutHeaderImage";
 import InfoBubble from "../src/components/about/InfoBubble";
 import InfoLink from "../src/components/about/InfoLink";
 import Member from "../src/components/about/Member";
 
 const backgroundImage = `url("images/about_background.png")`;
-//TODO: adapt textBlocks to different screen sizes
 const useStyles = makeStyles(theme => {
   return {
     root: {
@@ -35,7 +37,8 @@ const useStyles = makeStyles(theme => {
       maxWidth: 1390,
       margin: "0 auto",
       textAlign: "center",
-      verticalAlign: "top"
+      verticalAlign: "top",
+      padding: 0
     }
   };
 });
@@ -43,7 +46,7 @@ const useStyles = makeStyles(theme => {
 export default function Home() {
   const classes = useStyles();
   return (
-    <div>
+    <>
       <Head>
         <link
           rel="stylesheet"
@@ -112,6 +115,6 @@ export default function Home() {
           contact@climateconnect.earth
         </Typography>
       </Layout>
-    </div>
+    </>
   );
 }
