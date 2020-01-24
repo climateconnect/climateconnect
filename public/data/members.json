@@ -15,13 +15,33 @@
     "location": "Erlangen, Germany"
   },
   {
-    "name": "Reece Langerock",
-    "image": "reecelangerock.png",
+    "name": "Evan Hahn",
+    "image": "evanhahn.jpg",
     "location": "Chicago, USA"
   },
   {
     "name": "Michael Fischer",
     "image": "michaelfischer.png",
     "location": "Erlangen, Germany"
+  },
+  {
+    "name": "Nadine Schneider",
+    "image": "nadineschneider.png",
+    "location": "Erlangen, Germany"
+  },
+  {
+    "name": "Dip Dhanesha",
+    "image": "dipdhanesha.jpg",
+    "location": "San Francisco, USA"
+  },
+  {
+    "name": "Ann-Kathrin Bernauer",
+    "image": "annkathrinbernauer.png",
+    "location": "Wuppertal, Germany"
+  },
+  {
+    "name": "Reece Langerock",
+    "image": "reecelangerock.png",
+    "location": "Chicago, USA"
   }
 ]
