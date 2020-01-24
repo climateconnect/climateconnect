@@ -1,6 +1,6 @@
 import React from "react";
 import Head from "next/head";
-import Layout from "../src/components/layout";
+import Layout from "../src/components/layouts/layout";
 
 const Home = () => (
   <div>

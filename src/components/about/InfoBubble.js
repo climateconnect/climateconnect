@@ -57,7 +57,7 @@ export default function InfoBubble({ data }) {
       <Typography variant="h4" color="primary" className={classes.title}>
         {data.title}
       </Typography>
-      <Typography lineHeight={30} color="secondary" className={classes.infoText}>
+      <Typography lineheight={30} color="secondary" className={classes.infoText}>
         {data.text}
       </Typography>
     </Container>

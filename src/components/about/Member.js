@@ -16,25 +16,32 @@ const useStyles = makeStyles(theme => {
       height: 250,
       alignSelf: "center"
     },
+    name: {
+      marginTop: theme.spacing(3),
+      marginBottom: theme.spacing(0.5)
+    },
     location: {
       display: "inline-block",
-      marginRight: theme.spacing(6)
+      textAlign: "center"
+    },
+    locationIcon: {
+      paddingRight: theme.spacing(1)
     }
   };
 });
 
 export default function Member({ member }) {
   const classes = useStyles();
-
+  const locationIconClass = "fa fa-map-marker-alt";
   return (
     <div className={classes.root}>
       <Box component="img" className={classes.image} src={"images/" + member.image} />
-      <Typography variant="h4" color="primary">
+      <Typography variant="h5" color="primary" className={classes.name}>
         {member.name}
       </Typography>
       <div>
-        <Typography variant="h5" color="secondary" className={classes.location}>
-          <Icon className="fa fa-map-marker-alt" />
+        <Typography variant="h6" color="secondary" className={classes.location}>
+          <Icon fontSize="small" className={`${classes.locationIcon} ${locationIconClass}`} />
           {member.location}
         </Typography>
       </div>
