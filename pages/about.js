@@ -1,6 +1,5 @@
 //global imports
 import React from "react";
-import Head from "next/head";
 import Layout from "../src/components/layouts/aboutLayout";
 import { Typography, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -47,14 +46,6 @@ export default function Home() {
   const classes = useStyles();
   return (
     <>
-      <Head>
-        <link
-          rel="stylesheet"
-          href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"
-          integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN"
-          crossOrigin="anonymous"
-        />
-      </Head>
       <Layout>
         <AboutHeaderImage image={{ url: backgroundImage }} />
         <Typography variant="h4" color="primary" className={`${classes.root} ${classes.textBlock}`}>
