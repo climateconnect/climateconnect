@@ -1,16 +1,13 @@
 import React from "react";
 import Layout from "../src/components/layout";
-import Head from "next/head";
+import { Typography } from "@material-ui/core";
 
 const Home = () => (
-  <div>
-    <Head>
-      <title>Sign In</title>
-      <link rel="icon" href="icons/favicon.ico" />
-    </Head>
-
-    <Layout />
-  </div>
+  <Layout title="Sign In">
+    <Typography align="center" variant="h5" color="primary" component="h2">
+      This page is coming soon!
+    </Typography>
+  </Layout>
 );
 
 export default Home;
