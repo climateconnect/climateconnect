@@ -2,7 +2,7 @@ import React from "react";
 import { mount } from "enzyme";
 import { ThemeProvider } from "@material-ui/core/styles";
 import Header from "../../../src/components/general/Header";
-import theme from "../../../src/theme";
+import theme from "../../../src/themes/theme";
 
 describe("Header Component", () => {
   it("contains a logo image", () => {
