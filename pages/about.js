@@ -38,6 +38,10 @@ const useStyles = makeStyles(theme => {
       textAlign: "center",
       verticalAlign: "top",
       padding: 0
+    },
+    mainFocuses: {
+      width: 800,
+      margin: "0 auto"
     }
   };
 });
@@ -88,18 +92,15 @@ export default function Home() {
             <Member member={member} key={index} />
           ))}
         </Container>
-        <Typography color="primary" variant="h4" className={classes.root}>
-          Interested in joining our volunteer team?
-        </Typography>
-        <Typography color="primary" variant="h6" className={classes.root}>
+        <Typography color="primary" variant="h6" className={classes.mainFocuses}>
           Current main focuses:
+          <div>-Developing the platform (frontend: react, backend: node, postgres)</div>
+          <div>-Finishing up the design</div>
+          <div>-Collecting user feedback: questionaires, interviews</div>
+          <div>-Developing our Social Media campaigns</div>
           <div>
             -Developing a generic method to assess the impact of different types of climate projects
           </div>
-          <div>-Developing in the platform (frontend: react, backend: node, postgres)</div>
-          <div>-Collecting user feedback: questionaires, interviews</div>
-          <div>-Developing our Social Media campaigns</div>
-          <div>-Finishing up the design</div>
         </Typography>
         <Typography color="primary" variant="h4" className={classes.root}>
           If you would like to join our volunteer team, please send your application to
