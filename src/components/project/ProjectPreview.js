@@ -18,7 +18,8 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
   root: {
-    display: "flex"
+    display: "flex",
+    height: 138
   },
   media: {
     width: 250,
@@ -32,14 +33,16 @@ export default function ProjectPreview({ project }) {
   return (
     <Card
       className={classes.root}
+      variant="outlined"
       onClick={() => {
         Router.push(`/projects/${project.id}`);
       }}
     >
       <CardMedia
         className={classes.media}
+        component={"img"}
         title={project.name}
-        image={`https://picsum.photos/200/200`}
+        image={project.image}
       />
       <CardActionArea>
         <CardContent>
