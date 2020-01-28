@@ -26,7 +26,7 @@ export default function Layout({ title, children }) {
         <Header />
         <Container maxWidth="lg" component="main">
           <Container maxWidth="sm">
-            <Typography variant="h1" className={classes.mainHeading}>
+            <Typography variant="h5" className={classes.mainHeading}>
               {title}
             </Typography>
           </Container>

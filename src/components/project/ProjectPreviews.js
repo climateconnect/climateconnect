@@ -18,7 +18,7 @@ export default function ProjectPreviews({ projects }) {
   return (
     <Grid container component="ul" className={`${classes.reset} ${classes.root}`} spacing={2}>
       {projects.map((project, index) => (
-        <Grid item xs={12} sm={6} component="li" key={index}>
+        <Grid item xs={12} sm={6} md={4} lg={3} component="li" key={index}>
           <ProjectPreview project={project} />
         </Grid>
       ))}
