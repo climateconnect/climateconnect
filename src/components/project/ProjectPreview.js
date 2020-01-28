@@ -1,16 +1,8 @@
 import React from "react";
 import Router from "next/router";
-import {
-  Typography,
-  Button,
-  Card,
-  CardMedia,
-  CardContent,
-  Box,
-  Container
-} from "@material-ui/core";
-import PlaceIcon from "@material-ui/icons/Place";
+import { Typography, Button, Card, CardMedia, CardContent, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import ProjectMetaData from "./ProjectMetaData";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -28,22 +20,6 @@ const useStyles = makeStyles(theme => {
     },
     bold: {
       fontWeight: "bold"
-    },
-    orgLogo: {
-      height: "0.9rem",
-      marginBottom: -2
-    },
-    cardInfo: {
-      padding: 0
-    },
-    cardIconBox: {
-      width: 40,
-      display: "inline-block"
-    },
-    cardIcon: {
-      verticalAlign: "bottom",
-      marginBottom: -2,
-      marginTop: 2
     },
     button: {
       marginTop: theme.spacing(1),
@@ -71,21 +47,10 @@ export default function ProjectPreview({ project }) {
         image={project.image}
       />
       <CardContent>
-        <Typography variant="subtitle1" component="h2" className={classes.bold}>
+        <Typography variant="subtitle1" component="h2" className={classes.bold} nowrap>
           {project.name}
         </Typography>
-        <Box>
-          <span className={classes.cardIconBox}>
-            <img src={project.organisation_image} className={`${classes.orgLogo} `} />
-          </span>
-          {project.organisation_name}
-        </Box>
-        <Box>
-          <span className={classes.cardIconBox}>
-            <PlaceIcon className={classes.cardIcon} />
-          </span>
-          {project.location}
-        </Box>
+        <ProjectMetaData project={project} />
         <Container>
           <Button variant="contained" size="small" color="primary" className={classes.button}>
             Get involved
