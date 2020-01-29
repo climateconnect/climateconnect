@@ -1,6 +1,6 @@
 import React from "react";
 import Router from "next/router";
-import { Typography, Button, Card, CardMedia, CardContent, Container } from "@material-ui/core";
+import { Typography, Card, CardMedia, CardContent } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ProjectMetaData from "./ProjectMetaData";
 
@@ -15,7 +15,6 @@ const useStyles = makeStyles(theme => {
       "-ms-user-select": "none",
       userSelect: "none",
       backgroundColor: "#fafafa",
-      border: 0,
       borderRadius: 0
     },
     bold: {
@@ -51,11 +50,6 @@ export default function ProjectPreview({ project }) {
           {project.name}
         </Typography>
         <ProjectMetaData project={project} />
-        <Container>
-          <Button variant="contained" size="small" color="primary" className={classes.button}>
-            Get involved
-          </Button>
-        </Container>
       </CardContent>
     </Card>
   );
