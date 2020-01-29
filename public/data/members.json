@@ -1,17 +1,17 @@
 [
   {
     "name": "Christoph Stoll",
-    "image": "christophstoll.png",
+    "image": "christophstoll.jpg",
     "location": "Erlangen, Germany"
   },
   {
     "name": "Thomas Bove",
-    "image": "thomasbove.png",
+    "image": "thomasbove.jpg",
     "location": "Paris, France"
   },
   {
     "name": "Tobias Rehm",
-    "image": "tobiasrehm.png",
+    "image": "tobiasrehm.jpg",
     "location": "Erlangen, Germany"
   },
   {
@@ -21,12 +21,12 @@
   },
   {
     "name": "Michael Fischer",
-    "image": "michaelfischer.png",
+    "image": "michaelfischer.jpg",
     "location": "Erlangen, Germany"
   },
   {
     "name": "Nadine Schneider",
-    "image": "nadineschneider.png",
+    "image": "nadineschneider.jpg",
     "location": "Erlangen, Germany"
   },
   {
@@ -36,12 +36,12 @@
   },
   {
     "name": "Ann-Kathrin Bernauer",
-    "image": "annkathrinbernauer.png",
+    "image": "annkathrinbernauer.jpg",
     "location": "Wuppertal, Germany"
   },
   {
     "name": "Reece Langerock",
-    "image": "reecelangerock.png",
+    "image": "reecelangerock.jpg",
     "location": "Chicago, USA"
   }
 ]

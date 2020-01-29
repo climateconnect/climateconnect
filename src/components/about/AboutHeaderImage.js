@@ -24,17 +24,20 @@ const useStyles = makeStyles(theme => {
       paddingTop: "3%",
       paddingBottom: "3%",
       paddingRight: "5%",
-      paddingLeft: "5%"
+      paddingLeft: "5%",
+      textTransform: "uppercase",
+      textShadow: "3px 3px 4px black"
     }
   };
 });
 
-export default function AboutHeaderImage({ image }) {
+export default function AboutHeaderImage() {
+  const image = { url: `url("images/about_background.jpg")` };
   const classes = useStyles(image);
   return (
     <Container className={classes.imageContainer} maxWidth={false}>
       <Typography variant="h1" className={classes.headlineText}>
-        CLIMATE CONNECT
+        Climate Connect
       </Typography>
     </Container>
   );

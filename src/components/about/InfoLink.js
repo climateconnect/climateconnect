@@ -12,6 +12,9 @@ const useStyles = makeStyles(theme => {
     linkText: {
       textDecoration: "underline",
       color: "inherit"
+    },
+    marginRight: {
+      marginRight: theme.spacing(1)
     }
   };
 });
@@ -24,8 +27,8 @@ export default function InfoLink({ data }) {
     return (
       <Typography variant="h4" color="primary" className={classes.root}>
         <Link href={data.href}>
-          <a className={classes.linkText} target="_blank" rel="noopener noreferrer">
-            <Icon className={data.icon} />
+          <a className={classes.linkText}>
+            <Icon className={`${data.icon} ${classes.marginRight}`} />
             {data.text}
           </a>
         </Link>
@@ -35,7 +38,7 @@ export default function InfoLink({ data }) {
     return (
       <Typography variant="h4" color="primary" className={classes.root}>
         <a href={data.href} className={classes.linkText} target="_blank" rel="noopener noreferrer">
-          <Icon className={data.icon} />
+          <Icon className={`${data.icon} ${classes.marginRight}`} />
           {data.text}
         </a>
       </Typography>
