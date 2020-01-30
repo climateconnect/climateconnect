@@ -1,10 +1,7 @@
 import { createMuiTheme } from "@material-ui/core/styles";
+import theme from "./theme";
 
-const theme = createMuiTheme({
-  palette: {
-    primary: { main: "#387077" },
-    secondary: { main: "#484848" }
-  },
+const aboutTheme = createMuiTheme(theme, {
   typography: {
     h1: {
       "@media (max-width:1200px)": {
@@ -24,4 +21,4 @@ const theme = createMuiTheme({
   }
 });
 
-export default theme;
+export default aboutTheme;
