@@ -26,7 +26,7 @@ export default function ProjectMetaData({ project }) {
     <Box>
       <Box>
         <span className={classes.cardIconBox}>
-          <img src={project.organisation_image} className={`${classes.orgLogo} `} />
+          <img src={project.organisation_image} className={classes.orgLogo} />
         </span>
         {project.organisation_name}
       </Box>

@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => {
       "-moz-user-select": "none",
       "-ms-user-select": "none",
       userSelect: "none",
-      backgroundColor: "#fafafa",
+      backgroundColor: "inherit",
       borderRadius: 0
     },
     bold: {
