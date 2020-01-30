@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 //data
 import about_page_info from "../public/data/about_page_info";
 import members from "../public/data/members.json";
-import links from "../public/data/links.json";
+import links from "../public/data/links.js";
 //local components
 import AboutHeaderImage from "../src/components/about/AboutHeaderImage";
 import InfoBubble from "../src/components/about/InfoBubble";

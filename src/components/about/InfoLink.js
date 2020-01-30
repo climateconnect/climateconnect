@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Icon, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => {
@@ -13,8 +13,10 @@ const useStyles = makeStyles(theme => {
       textDecoration: "underline",
       color: "inherit"
     },
-    marginRight: {
-      marginRight: theme.spacing(1)
+    icon: {
+      marginRight: theme.spacing(1),
+      fontSize: 35,
+      marginBottom: -5
     }
   };
 });
@@ -28,7 +30,7 @@ export default function InfoLink({ data }) {
       <Typography variant="h4" color="primary" className={classes.root}>
         <Link href={data.href}>
           <a className={classes.linkText}>
-            <Icon className={`${data.icon} ${classes.marginRight}`} />
+            <data.icon className={classes.icon} />
             {data.text}
           </a>
         </Link>
@@ -38,7 +40,7 @@ export default function InfoLink({ data }) {
     return (
       <Typography variant="h4" color="primary" className={classes.root}>
         <a href={data.href} className={classes.linkText} target="_blank" rel="noopener noreferrer">
-          <Icon className={`${data.icon} ${classes.marginRight}`} />
+          <data.icon className={classes.icon} />
           {data.text}
         </a>
       </Typography>

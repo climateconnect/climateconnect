@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, Icon, Typography } from "@material-ui/core";
+import { Box, Typography } from "@material-ui/core";
+import PlaceIcon from "@material-ui/icons/Place";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => {
@@ -25,14 +26,15 @@ const useStyles = makeStyles(theme => {
       textAlign: "center"
     },
     locationIcon: {
-      paddingRight: theme.spacing(1)
+      paddingRight: theme.spacing(1),
+      fontSize: 35,
+      marginBottom: -8
     }
   };
 });
 
 export default function Member({ member }) {
   const classes = useStyles();
-  const locationIconClass = "fa fa-map-marker-alt";
   return (
     <div className={classes.root}>
       <Box component="img" className={classes.image} src={"images/" + member.image} />
@@ -41,7 +43,7 @@ export default function Member({ member }) {
       </Typography>
       <div>
         <Typography variant="h6" color="secondary" className={classes.location}>
-          <Icon fontSize="small" className={`${classes.locationIcon} ${locationIconClass}`} />
+          <PlaceIcon className={classes.locationIcon} />
           {member.location}
         </Typography>
       </div>
