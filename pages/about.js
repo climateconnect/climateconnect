@@ -4,7 +4,7 @@ import AboutLayout from "../src/components/layouts/AboutLayout";
 import { Typography, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 //data
-import about_page_info from "../public/data/about_page_info.json";
+import about_page_info from "../public/data/about_page_info";
 import members from "../public/data/members.json";
 import links from "../public/data/links.json";
 //local components

@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon, Typography, Container, Box } from "@material-ui/core";
+import { Typography, Container, Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => {
@@ -51,11 +51,7 @@ export default function InfoBubble({ data }) {
       <div>
         <Container className={classes.bubble}>
           <Box>
-            <Icon
-              className={`${data.icon} ${classes.icon}`}
-              color="primary"
-              style={{ fontSize: 45 }}
-            />
+            <data.icon className={`${classes.icon}`} color="primary" style={{ fontSize: 60 }} />
           </Box>
         </Container>
       </div>
