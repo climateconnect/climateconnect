@@ -2,14 +2,13 @@ import React from "react";
 import { mount } from "enzyme";
 import AboutPage from "../../../pages/about";
 import about_page_info from "./../../../public/data/about_page_info";
-import links from "../../../public/data/links.js";
+import links from "../../../public/data/links";
 import members from "./../../../public/data/members.json";
 
 describe("About page", () => {
   const wrapper = mount(<AboutPage />);
   it("contains correct infos", () => {
     for (const info of about_page_info) {
-      //just look for the actual icon class, because looking for 2 classes in one find statement doesn't work
       expect(wrapper.exists(info.icon)).toEqual(true);
       expect(wrapper.text()).toContain(info.title);
       expect(wrapper.text()).toContain(info.text);
