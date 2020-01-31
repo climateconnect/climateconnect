@@ -30,7 +30,7 @@ export default function InfoLink({ data }) {
       <Typography variant="h4" color="primary" className={classes.root}>
         <Link href={data.href}>
           <a className={classes.linkText}>
-            <data.icon className={classes.icon} />
+            <data.icon className={classes.icon} name={data.iconName} />
             {data.text}
           </a>
         </Link>
@@ -40,7 +40,7 @@ export default function InfoLink({ data }) {
     return (
       <Typography variant="h4" color="primary" className={classes.root}>
         <a href={data.href} className={classes.linkText} target="_blank" rel="noopener noreferrer">
-          <data.icon className={classes.icon} />
+          <data.icon className={classes.icon} name={data.iconName} />
           {data.text}
         </a>
       </Typography>

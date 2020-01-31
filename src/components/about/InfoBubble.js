@@ -51,7 +51,12 @@ export default function InfoBubble({ data }) {
       <div>
         <Container className={classes.bubble}>
           <Box>
-            <data.icon className={`${classes.icon}`} color="primary" style={{ fontSize: 60 }} />
+            <data.icon
+              name={data.iconName}
+              className={`${classes.icon}`}
+              color="primary"
+              style={{ fontSize: 60 }}
+            />
           </Box>
         </Container>
       </div>
