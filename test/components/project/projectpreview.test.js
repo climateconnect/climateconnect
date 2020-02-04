@@ -11,6 +11,5 @@ describe("ProjectPreview Component", () => {
     expect(wrapper.text()).toContain(project.name);
     expect(wrapper.text()).toContain(project.location);
     expect(wrapper.text()).toContain(project.organisation_name);
-    expect(wrapper.text()).toContain(project.impact.toString());
   });
 });
