@@ -11,6 +11,9 @@ const theme = createMuiTheme({
     h1: {
       fontSize: "3rem",
       align: "center"
+    },
+    subtitle1: {
+      fontSize: "0.9rem"
     }
   }
 });

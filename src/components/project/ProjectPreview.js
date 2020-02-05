@@ -1,29 +1,31 @@
 import React from "react";
 import Router from "next/router";
-import {
-  Typography,
-  Card,
-  CardActionArea,
-  CardMedia,
-  CardContent,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText
-} from "@material-ui/core";
-import PlaceIcon from "@material-ui/icons/Place";
-import BarChartIcon from "@material-ui/icons/BarChart";
-import GroupIcon from "@material-ui/icons/Group";
+import { Typography, Card, CardMedia, CardContent } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import ProjectMetaData from "./ProjectMetaData";
 
-const useStyles = makeStyles({
-  root: {
-    display: "flex"
-  },
-  media: {
-    width: 250,
-    backgroundSize: "cover"
-  }
+const useStyles = makeStyles(theme => {
+  return {
+    root: {
+      "&:hover": {
+        cursor: "pointer"
+      },
+      "-webkit-user-select": "none",
+      "-moz-user-select": "none",
+      "-ms-user-select": "none",
+      userSelect: "none",
+      backgroundColor: "inherit",
+      borderRadius: 0
+    },
+    bold: {
+      fontWeight: "bold"
+    },
+    button: {
+      marginTop: theme.spacing(1),
+      margin: "0 auto",
+      display: "block"
+    }
+  };
 });
 
 export default function ProjectPreview({ project }) {
@@ -32,42 +34,23 @@ export default function ProjectPreview({ project }) {
   return (
     <Card
       className={classes.root}
+      variant="outlined"
       onClick={() => {
         Router.push(`/projects/${project.id}`);
       }}
     >
       <CardMedia
         className={classes.media}
+        component={"img"}
         title={project.name}
-        image={`https://picsum.photos/200/200`}
+        image={project.image}
       />
-      <CardActionArea>
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            {project.name}
-          </Typography>
-          <List>
-            <ListItem>
-              <ListItemIcon>
-                <PlaceIcon />
-              </ListItemIcon>
-              <ListItemText primary={project.location} />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <GroupIcon />
-              </ListItemIcon>
-              <ListItemText primary={project.organisation_name} />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <BarChartIcon />
-              </ListItemIcon>
-              <ListItemText primary={`Impact: ${project.impact}`} />
-            </ListItem>
-          </List>
-        </CardContent>
-      </CardActionArea>
+      <CardContent>
+        <Typography variant="subtitle1" component="h2" className={classes.bold} nowrap>
+          {project.name}
+        </Typography>
+        <ProjectMetaData project={project} />
+      </CardContent>
     </Card>
   );
 }
