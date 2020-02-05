@@ -1,6 +1,6 @@
 import React from "react";
 import { shallow } from "enzyme";
-import Layout from "./../../src/components/layout";
+import Layout from "./../../src/components/layouts/layout";
 import Header from "./../../src/components/general/Header";
 import Footer from "./../../src/components/general/Footer";
 

@@ -1,7 +1,7 @@
 import React from "react";
-import Layout from "./../src/components/layout";
+import Layout from "../src/components/layouts/layout";
 import ProjectPreviews from "./../src/components/project/ProjectPreviews";
-import fakeProjectData from "../projects.json";
+import fakeProjectData from "../public/data/projects.json";
 import { times } from "lodash";
 
 const fakeProjectTemplate = fakeProjectData.projects[0];

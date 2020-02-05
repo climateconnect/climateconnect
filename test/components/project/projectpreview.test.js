@@ -1,7 +1,8 @@
 import React from "react";
 import { mount } from "enzyme";
 import ProjectPreview from "../../../src/components/project/ProjectPreview";
-import SAMPLE_DATA from "./../../../projects.json";
+
+import SAMPLE_DATA from "./../../../public/data/projects.json";
 
 describe("ProjectPreview Component", () => {
   const project = SAMPLE_DATA.projects[0];

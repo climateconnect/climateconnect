@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Christoph Stoll",
+    "image": "christophstoll.jpg",
+    "location": "Erlangen, Germany"
+  },
+  {
+    "name": "Thomas Bove",
+    "image": "thomasbove.jpg",
+    "location": "Paris, France"
+  },
+  {
+    "name": "Tobias Rehm",
+    "image": "tobiasrehm.jpg",
+    "location": "Erlangen, Germany"
+  },
+  {
+    "name": "Evan Hahn",
+    "image": "evanhahn.jpg",
+    "location": "Chicago, USA"
+  },
+  {
+    "name": "Michael Fischer",
+    "image": "michaelfischer.jpg",
+    "location": "Erlangen, Germany"
+  },
+  {
+    "name": "Nadine Schneider",
+    "image": "nadineschneider.jpg",
+    "location": "Erlangen, Germany"
+  },
+  {
+    "name": "Dip Dhanesha",
+    "image": "dipdhanesha.jpg",
+    "location": "San Francisco, USA"
+  },
+  {
+    "name": "Ann-Kathrin Bernauer",
+    "image": "annkathrinbernauer.jpg",
+    "location": "Wuppertal, Germany"
+  },
+  {
+    "name": "Reece Langerock",
+    "image": "reecelangerock.jpg",
+    "location": "Chicago, USA"
+  }
+]

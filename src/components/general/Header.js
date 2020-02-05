@@ -15,10 +15,16 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import MenuIcon from "@material-ui/icons/Menu";
+import InfoIcon from "@material-ui/icons/Info";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 
 const LINKS = [
+  {
+    href: "/about",
+    text: "About",
+    iconForDrawer: InfoIcon
+  },
   {
     href: "/create",
     text: "Create a project",
@@ -63,11 +69,7 @@ export default function Header() {
       <Container className={classes.container}>
         <Link href="/">
           <a>
-            <img
-              src="https://climateconnect.earth/images/logo.png"
-              alt="Climate Connect"
-              className={classes.logo}
-            />
+            <img src="/images/logo.png" alt="Climate Connect" className={classes.logo} />
           </a>
         </Link>
 

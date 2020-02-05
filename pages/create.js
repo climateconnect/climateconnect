@@ -1,10 +1,6 @@
 import React from "react";
-import Layout from "../src/components/layout";
+import Layout from "../src/components/layouts/layout";
 
-const Home = () => (
-  <Layout title="Create a Project">
-    <h1>Create a Project</h1>
-  </Layout>
-);
+const Home = () => <Layout title="Create a Project" />;
 
 export default Home;
