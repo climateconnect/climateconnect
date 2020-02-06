@@ -14,11 +14,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function AboutLayout({ children }) {
+export default function AboutLayout({ children, title }) {
   const classes = useStyles();
 
   return (
-    <LayoutWrapper theme={aboutTheme}>
+    <LayoutWrapper theme={aboutTheme} title={title}>
       <Header />
       <Container maxWidth={false} component="main" className={classes.main}>
         {children}

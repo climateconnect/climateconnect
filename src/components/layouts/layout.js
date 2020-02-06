@@ -17,7 +17,7 @@ export default function Layout({ title, children }) {
   const classes = useStyles();
 
   return (
-    <LayoutWrapper theme={theme}>
+    <LayoutWrapper theme={theme} title={title}>
       <Header />
       <Container maxWidth="lg" component="main">
         <Container maxWidth="sm">
