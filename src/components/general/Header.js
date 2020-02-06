@@ -66,15 +66,20 @@ export default function Header() {
 
   return (
     <Box component="header" className={classes.root}>
-      <Container className={classes.container}>
-        <Link href="/">
-          <a>
-            <img src="/images/logo.png" alt="Climate Connect" className={classes.logo} />
-          </a>
-        </Link>
-
-        {isNarrowScreen ? <NarrowScreenLinks /> : <NormalScreenLinks />}
-      </Container>
+      {process.env.PRE_LAUNCH === "true" ? (
+        <Container className={classes.container}>
+          <img src="/images/logo.png" alt="Climate Connect" className={classes.logo} />
+        </Container>
+      ) : (
+        <Container className={classes.container}>
+          <Link href="/">
+            <a>
+              <img src="/images/logo.png" alt="Climate Connect" className={classes.logo} />
+            </a>
+          </Link>
+          {isNarrowScreen ? <NarrowScreenLinks /> : <NormalScreenLinks />}
+        </Container>
+      )}
     </Box>
   );
 }
