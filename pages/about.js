@@ -109,8 +109,8 @@ export default function Home() {
             </li>
           </ul>
         </Typography>
-        <Typography color="primary" variant="h4" className={classes.root}>
-          If you would like to join our volunteer team, please send your application to
+        <Typography color="primary" variant="h5" className={classes.centeredText}>
+          If you would like to join our volunteer team, please send your application to{" "}
           <a href="mailto:contact@climateconnect.earth">contact@climateconnect.earth</a>
         </Typography>
       </AboutLayout>
