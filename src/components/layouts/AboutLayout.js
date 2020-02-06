@@ -20,7 +20,7 @@ export default function AboutLayout({ children }) {
   return (
     <LayoutWrapper theme={aboutTheme}>
       <Header />
-      <Container maxWidth={false} component="main" className={`${classes.main}`}>
+      <Container maxWidth={false} component="main" className={classes.main}>
         {children}
       </Container>
       <Footer />

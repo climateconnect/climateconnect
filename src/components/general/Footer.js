@@ -2,11 +2,16 @@ import React from "react";
 import Link from "next/link";
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import GitHubIcon from "@material-ui/icons/GitHub";
+import TwitterIcon from "@material-ui/icons/Twitter";
+import InstagramIcon from "@material-ui/icons/Instagram";
+import FacebookIcon from "@material-ui/icons/Facebook";
 
 const useStyles = makeStyles(theme => ({
-  footer: {
+  root: {
     marginTop: theme.spacing(2),
     padding: theme.spacing(2),
+    height: theme.spacing(8),
     borderTop: `1px solid ${theme.palette.grey[300]}`,
     display: "flex",
     justifyContent: "center",
@@ -29,17 +34,11 @@ const useStyles = makeStyles(theme => ({
   },
   socialMediaLink: {
     height: 20,
-    marginLeft: theme.spacing(1)
-  },
-  footerContainer: {
-    position: "relative",
-    height: 58
+    marginLeft: theme.spacing(1),
+    color: "inherit"
   },
   inheritColor: {
     color: "inherit"
-  },
-  twitter: {
-    height: 30
   }
 }));
 
@@ -47,7 +46,7 @@ export default function Footer() {
   const classes = useStyles();
 
   return (
-    <Box component="footer" className={classes.footer}>
+    <Box component="footer" className={classes.root}>
       <Box className={classes.leftBox}>
         <Link href="/impressum">
           <a className={classes.inheritColor}>Impressum</a>
@@ -61,28 +60,33 @@ export default function Footer() {
           href="https://github.com/climateconnect/climateconnect"
           target="_blank"
           rel="noopener noreferrer"
+          className={classes.inheritColor}
         >
-          <img src="/images/github.png" className={classes.socialMediaLink} />
+          <GitHubIcon className={classes.socialMediaLink} />
         </a>
-        <a href="https://twitter.com/ConnectClimate" target="_blank" rel="noopener noreferrer">
-          <img
-            src="/icons/twitter.svg"
-            className={`${classes.socialMediaLink} ${classes.twitter}`}
-          />
+        <a
+          href="https://twitter.com/ConnectClimate"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={classes.inheritColor}
+        >
+          <TwitterIcon className={classes.socialMediaLink} />
         </a>
         <a
           href="https://www.instagram.com/climate_connect.earth/"
           target="_blank"
           rel="noopener noreferrer"
+          className={classes.inheritColor}
         >
-          <img src="/icons/instagram.svg" className={classes.socialMediaLink} />
+          <InstagramIcon className={classes.socialMediaLink} />
         </a>
         <a
           href="https://www.facebook.com/climateconnect.earth/"
           target="_blank"
           rel="noopener noreferrer"
+          className={classes.inheritColor}
         >
-          <img src="/icons/facebook.svg" className={classes.socialMediaLink} />
+          <FacebookIcon className={classes.socialMediaLink} />
         </a>
       </Box>
     </Box>

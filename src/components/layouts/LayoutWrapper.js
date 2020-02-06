@@ -2,13 +2,14 @@ import React from "react";
 import Head from "next/head";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   leaveSpaceForFooter: {
     position: "relative",
-    paddingBottom: 68,
+    //height of footer + spacing(1)
+    paddingBottom: theme.spacing(9),
     minHeight: "100vh"
   }
-});
+}));
 
 export default function Layout({ title, children, theme }) {
   const classes = useStyles();
