@@ -46,7 +46,7 @@ export default function ProjectPreview({ project }) {
         image={project.image}
       />
       <CardContent>
-        <Typography variant="subtitle1" component="h2" className={classes.bold} nowrap>
+        <Typography variant="subtitle1" component="h2" className={classes.bold}>
           {project.name}
         </Typography>
         <ProjectMetaData project={project} />
