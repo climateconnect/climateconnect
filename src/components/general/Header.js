@@ -72,8 +72,11 @@ export default function Header() {
             <img src="/images/logo.png" alt="Climate Connect" className={classes.logo} />
           </a>
         </Link>
-
-        {isNarrowScreen ? <NarrowScreenLinks /> : <NormalScreenLinks />}
+        {process.env.PRE_LAUNCH === "true" ? (
+          <></>
+        ) : (
+          <>{isNarrowScreen ? <NarrowScreenLinks /> : <NormalScreenLinks />}</>
+        )}
       </Container>
     </Box>
   );
