@@ -39,6 +39,7 @@ export default function Signin() {
               fullWidth
               autoFocus
               label="Email"
+              type="email"
               variant="outlined"
               className={classes.blockElement}
             />
@@ -47,6 +48,7 @@ export default function Signin() {
             required
             fullWidth
             label="Password"
+            type="password"
             variant="outlined"
             className={classes.blockElement}
           />
@@ -55,7 +57,6 @@ export default function Signin() {
             variant="contained"
             type="submit"
             color="primary"
-            size="large"
             className={classes.blockElement}
           >
             Sign In

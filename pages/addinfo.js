@@ -39,15 +39,18 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+//TODO: check openstreetmaps api for useful commands to check citys
+//TODO: build general "form" component, that can be reused
+
 export default function Signup() {
   const classes = useStyles();
-  const percentage = 0;
+  const percentage = 20;
 
   return (
     <Layout title="Sign Up">
       <Card className={classes.root}>
         <Typography component="h2" variant="subtitle1" className={classes.centerText}>
-          Step 1: Basic Information
+          Step 2: A little bit about yourself
         </Typography>
         <LinearProgress value={percentage} variant="determinate" className={classes.progressBar} />
         <form action="/addinfo" method="GET">
@@ -56,8 +59,8 @@ export default function Signup() {
               required
               fullWidth
               autoFocus
-              label="Email"
-              type="email"
+              label="First Name"
+              type="text"
               variant="outlined"
               className={classes.blockElement}
               onChange={() => console.log("it changed!")}
@@ -66,16 +69,24 @@ export default function Signup() {
           <TextField
             required
             fullWidth
-            label="Password"
-            type="password"
+            label="Last Name"
+            type="text"
             variant="outlined"
             className={classes.blockElement}
           />
           <TextField
             required
             fullWidth
-            label="Repeat Password"
-            type="password"
+            label="Country"
+            type="text"
+            variant="outlined"
+            className={classes.blockElement}
+          />
+          <TextField
+            required
+            fullWidth
+            label="City"
+            type="text"
             variant="outlined"
             className={classes.blockElement}
           />
