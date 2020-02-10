@@ -9,7 +9,9 @@
     "test": "jest",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "export": "next export",
+    "deploy": "npm run build && npm run export"
   },
   "jest": {
     "setupFiles": [
@@ -25,6 +27,7 @@
     "@material-ui/core": "^4.5.2",
     "@material-ui/icons": "^4.5.1",
     "@zeit/next-css": "^1.0.1",
+    "dotenv": "^8.2.0",
     "lodash": "^4.17.15",
     "next": "9.1.1",
     "react": "^16.12.0",
