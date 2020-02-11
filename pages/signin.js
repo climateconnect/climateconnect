@@ -2,7 +2,7 @@ import React from "react";
 import Layout from "../src/components/layouts/layout";
 import Form from "./../src/components/general/Form";
 
-export default function Signup() {
+export default function Signin() {
   const fields = [
     {
       required: true,
