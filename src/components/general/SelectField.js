@@ -1,5 +1,5 @@
 import React from "react";
-import { Select } from "@material-ui/core";
+import { TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
@@ -25,27 +25,26 @@ export default function SelectField({ field }) {
     setValue(event.target.value);
   };
 
+  //TODO: possibly address warnings, that are produced by this component
   return (
-    <>
-      <Select
-        required={field.required}
-        fullWidth
-        autoFocus
-        native
-        className={classes.blockElement}
-        key={field.label}
-        type={field.type}
-        value={value}
-        variant={"outlined"}
-        onChange={handleChange}
-      >
-        {!field.defaultValue || field.defaultValue === "" ? <option value="" /> : <></>}
-        {field.select.values.map(value => (
-          <option value={value} key={value}>
-            {value}
-          </option>
-        ))}
-      </Select>
-    </>
+    <TextField
+      select
+      fullWidth
+      label={field.label}
+      className={classes.blockElement}
+      value={value}
+      variant="outlined"
+      onChange={handleChange}
+      SelectProps={{
+        native: true
+      }}
+    >
+      {!field.defaultValue || field.defaultValue === "" ? <option value="" /> : <></>}
+      {field.select.values.map(value => (
+        <option value={value} key={value}>
+          {value}
+        </option>
+      ))}
+    </TextField>
   );
 }
