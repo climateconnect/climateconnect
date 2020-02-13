@@ -2,12 +2,12 @@ import React from "react";
 import Link from "next/link";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
-import OrganisationPreviews from "./../../src/components/organisation/OrganisationPreviews";
+import OrganizationPreviews from "./../../src/components/organization/OrganizationPreviews";
 import { Container, Avatar, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import TEMP_FEATURED_DATA from "../../public/data/profiles.json";
 import TEMP_PROJECT_DATA from "../../public/data/projects.json";
-import TEMP_ORGANISATION_DATA from "../../public/data/organisations.json";
+import TEMP_ORGANISATION_DATA from "../../public/data/organizations.json";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -71,12 +71,12 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function ProfilePage({ profile, projects, organisations }) {
+export default function ProfilePage({ profile, projects, organizations }) {
   console.log(profile);
   return (
     <WideLayout title={profile ? profile.name + "'s profile" : "Not found"}>
       {profile ? (
-        <ProfileLayout profile={profile} projects={projects} organisations={organisations} />
+        <ProfileLayout profile={profile} projects={projects} organizations={organizations} />
       ) : (
         <NoProfileFoundLayout />
       )}
@@ -87,12 +87,12 @@ export default function ProfilePage({ profile, projects, organisations }) {
 ProfilePage.getInitialProps = async ctx => {
   return {
     profile: await getProfileByUrlIfExists(ctx.query.profileUrl),
-    organisations: await getOrganisations(ctx.query.profileUrl),
+    organizations: await getOrganizations(ctx.query.profileUrl),
     projects: await getProjects(ctx.query.profileUrl)
   };
 };
 
-function ProfileLayout({ profile, projects, organisations }) {
+function ProfileLayout({ profile, projects, organizations }) {
   if (projects && !projects.length) {
     projects = [projects];
   }
@@ -160,11 +160,11 @@ function ProfileLayout({ profile, projects, organisations }) {
         )}
       </Container>
       <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Organisations:</div>
-        {organisations && organisations.length > 0 ? (
-          <OrganisationPreviews organisations={organisations} />
+        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Organizations:</div>
+        {organizations && organizations.length > 0 ? (
+          <OrganizationPreviews organizations={organizations} />
         ) : (
-          <Typography>This user is not involved in any organisations yet!</Typography>
+          <Typography>This user is not involved in any organizations yet!</Typography>
         )}
       </Container>
     </Container>
@@ -195,6 +195,6 @@ async function getProjects(profileUrl) {
   return TEMP_PROJECT_DATA.projects.find(({ members }) => members.includes(profileUrl));
 }
 
-async function getOrganisations(profileUrl) {
-  return TEMP_ORGANISATION_DATA.organisations.filter(org => org.members.includes(profileUrl));
+async function getOrganizations(profileUrl) {
+  return TEMP_ORGANISATION_DATA.organizations.filter(org => org.members.includes(profileUrl));
 }

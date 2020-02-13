@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function OrganisationMetaData({ organisation }) {
+export default function OrganizationMetaData({ organization }) {
   const classes = useStyles();
   return (
     <Box className={classes.root}>
@@ -40,13 +40,13 @@ export default function OrganisationMetaData({ organisation }) {
         <span className={classes.cardIconBox}>
           <PlaceIcon className={classes.cardIcon} />
         </span>
-        {organisation.location}
+        {organization.location}
       </Box>
       <Box>
         <span className={classes.cardIconBox}>
           <GroupIcon className={classes.cardIcon} />
         </span>
-        <span className={classes.textContent}>{organisation.members.length} members</span>
+        <span className={classes.textContent}>{organization.members.length} members</span>
       </Box>
     </Box>
   );

@@ -1,6 +1,6 @@
 import React from "react";
 import Router from "next/router";
-import OrganisationMetaData from "./OrganisationMetadata";
+import OrganizationMetaData from "./OrganizationMetadata";
 import { Typography, Card, CardMedia, CardContent } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function OrganisationPreview({ organisation }) {
+export default function OrganizationPreview({ organization }) {
   const classes = useStyles();
 
   return (
@@ -46,20 +46,20 @@ export default function OrganisationPreview({ organisation }) {
       className={classes.root}
       variant="outlined"
       onClick={() => {
-        Router.push(`/organisations/${organisation.url}`);
+        Router.push(`/organizations/${organization.url}`);
       }}
     >
       <CardMedia
         className={classes.media}
         component={"div"}
-        title={organisation.name}
-        image={organisation.logo}
+        title={organization.name}
+        image={organization.logo}
       />
       <CardContent>
         <Typography variant="subtitle1" component="h2" className={classes.bold}>
-          {organisation.name}
+          {organization.name}
         </Typography>
-        <OrganisationMetaData organisation={organisation} />
+        <OrganizationMetaData organization={organization} />
       </CardContent>
     </Card>
   );
