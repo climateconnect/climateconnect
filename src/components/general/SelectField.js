@@ -17,7 +17,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function SelectField({ field }) {
   const classes = useStyles();
-  console.log(field);
   const defaultValue = field.select.defaultValue ? field.select.defaultValue : "";
   const [value, setValue] = React.useState(defaultValue);
 

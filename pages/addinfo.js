@@ -24,15 +24,6 @@ export default function Signup() {
         defaultValue: ""
       }
     },
-    /*{
-      required: true,
-      label: "State",
-      type: "text",
-      select: {
-        values: countries,
-        defaultValue: ""
-      }
-    },*/
     {
       required: true,
       label: "City/Place",
