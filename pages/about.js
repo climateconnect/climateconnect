@@ -1,6 +1,6 @@
 //global imports
 import React from "react";
-import AboutLayout from "../src/components/layouts/AboutLayout";
+import WideLayout from "../src/components/layouts/WideLayout";
 import { Typography, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 //data
@@ -49,7 +49,7 @@ export default function About() {
   const classes = useStyles();
   return (
     <>
-      <AboutLayout title="About Climate Connect">
+      <WideLayout title="About Climate Connect">
         <AboutHeaderImage />
         <Typography
           component="h1"
@@ -113,7 +113,7 @@ export default function About() {
           If you would like to join our volunteer team, please send your application to{" "}
           <a href="mailto:contact@climateconnect.earth">contact@climateconnect.earth</a>
         </Typography>
-      </AboutLayout>
+      </WideLayout>
     </>
   );
 }

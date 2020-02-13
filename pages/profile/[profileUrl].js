@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import AboutLayout from "../../src/components/layouts/AboutLayout";
+import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
 import OrganisationPreviews from "./../../src/components/organisation/OrganisationPreviews";
 import { Container, Avatar, Typography } from "@material-ui/core";
@@ -74,13 +74,13 @@ const useStyles = makeStyles(theme => {
 export default function ProfilePage({ profile, projects, organisations }) {
   console.log(profile);
   return (
-    <AboutLayout title={profile ? profile.name + "'s profile" : "Not found"}>
+    <WideLayout title={profile ? profile.name + "'s profile" : "Not found"}>
       {profile ? (
         <ProfileLayout profile={profile} projects={projects} organisations={organisations} />
       ) : (
         <NoProfileFoundLayout />
       )}
-    </AboutLayout>
+    </WideLayout>
   );
 }
 
