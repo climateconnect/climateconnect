@@ -1,10 +1,10 @@
 {
-  "organisations": [
+  "organizations": [
     {
       "url": "climateconnect",
       "name": "Climate Connect",
       "shortdescription": "Connecting climate activists around the world.",
-      "logo": "/images/logo.png",
+      "logo": "logonotext.png",
       "members": [
         "tobiasrehm",
         "christophstoll",
@@ -19,13 +19,14 @@
       "admins": ["tobiasrehm", "christophstoll", "thomasbove"],
       "parentgroup": null,
       "subgroups": [],
-      "location": "International"
+      "location": "International",
+      "background_image": "/images/climateconnectbackground.jpg"
     },
     {
       "url": "sneep",
       "name": "sneep",
       "shortdescription": "student network for ethics in economics and practice",
-      "logo": "/images/sneep.png",
+      "logo": "sneep.png",
       "members": [],
       "admins": [],
       "subgroups": ["sneeperlangen", "sneepnuernberg"],
@@ -35,18 +36,19 @@
       "url": "sneeperlangen",
       "name": "sneep Erlangen",
       "shortdescription": "Our local group is especially focused on climate action.",
-      "logo": "/images/sneep.png",
+      "logo": "sneep.png",
       "members": ["tobiasrehm", "christophstoll", "reginareck"],
       "admins": ["tobiasrehm", "reginareck"],
       "parentgroup": "sneep",
       "subgroups": [],
-      "location": "Erlangen, Germany"
+      "location": "Erlangen, Germany",
+      "background_image": "sneepbackground.jpg"
     },
     {
       "url": "sneepnuernberg",
       "name": "sneep Nürnberg",
       "shortdescription": "Our local group is especially focused on ethics in economics.",
-      "logo": "/images/sneep.png",
+      "logo": "sneep.png",
       "members": ["tobiasbaume"],
       "admins": ["tobiasbaume"],
       "parentgroup": "sneep",

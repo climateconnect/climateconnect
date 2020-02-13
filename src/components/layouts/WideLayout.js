@@ -14,7 +14,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function AboutLayout({ children, title }) {
+//This layout is used for pages, where we want to use the whole width of the page.
+export default function WideLayout({ children, title }) {
   const classes = useStyles();
 
   return (
