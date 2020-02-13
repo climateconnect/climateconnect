@@ -1,0 +1,71 @@
+{
+  "profiles": [
+    {
+      "id": "1",
+      "name": "Christoph Stoll",
+      "image": "christophstoll.jpg",
+      "location": "Erlangen, Germany",
+      "background_image": "/images/background1.jpg",
+      "type": "Climate Protector",
+      "bio": "Member of sneep Erlangen since 2017 💚🌍💚 Co-founder of Climate Connect",
+      "skills": ["programming", "calculating CO2-emissions"],
+      "availability": 5
+    },
+    {
+      "id": "2",
+      "name": "Tobias Rehm",
+      "image": "tobiasrehm.jpg",
+      "location": "Erlangen, Germany",
+      "type": "Climate Protector"
+    },
+    {
+      "id": "3",
+      "name": "Thomas Bove",
+      "image": "thomasbove.jpg",
+      "location": "Paris, France",
+      "type": "Climate Protector"
+    },
+    {
+      "id": "4",
+      "name": "Michael Fischer",
+      "image": "michaelfischer.jpg",
+      "location": "Erlangen, Germany",
+      "type": "Climate Protector"
+    },
+    {
+      "id": "5",
+      "name": "Reece Langerock",
+      "image": "reecelangerock.jpg",
+      "location": "Chicago, USA",
+      "type": "Climate Protector"
+    },
+    {
+      "id": "6",
+      "name": "Evan Hahn",
+      "image": "evanhahn.jpg",
+      "location": "Chicago, USA",
+      "type": "Climate Protector"
+    },
+    {
+      "id": "7",
+      "name": "Nadine Schneider",
+      "image": "nadineschneider.jpg",
+      "location": "Erlangen, Germany",
+      "type": "Climate Protector"
+    },
+    {
+      "id": "8",
+      "name": "Dip Dhanesha",
+      "image": "dipdhanesha.jpg",
+      "location": "San Francisco, USA",
+      "type": "Climate Protector"
+    },
+    {
+      "id": "9",
+      "name": "Ann-Kathrin Bernauer",
+      "image": "annkathrinbernauer.jpg",
+      "location": "Wuppertal, Germany",
+      "type": "Climate Protector"
+    }
+  ]
+}
