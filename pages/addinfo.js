@@ -1,35 +1,39 @@
 import React from "react";
 import Layout from "../src/components/layouts/layout";
 import Form from "./../src/components/general/Form";
+import countries from "./../public/data/countries.json";
 
 export default function Signup() {
   const fields = [
     {
       required: true,
-      label: "Email",
-      type: "email"
+      label: "First Name",
+      type: "text"
     },
     {
       required: true,
-      label: "Password",
-      type: "password"
+      label: "Last Name",
+      type: "text"
     },
     {
       required: true,
-      label: "Repeat Password",
-      type: "password"
+      label: "Country",
+      type: "text",
+      select: {
+        values: countries,
+        defaultValue: ""
+      }
+    },
+    {
+      required: true,
+      label: "City/Place",
+      type: "text"
     }
   ];
 
   const messages = {
     submitMessage: "Next Step",
-    headerMessage: "Step 1: Basic Information",
-    bottomMessage: "Already have an account?"
-  };
-
-  const bottomLink = {
-    text: "Sign in",
-    href: "/signin"
+    headerMessage: "Step 2: A little bit about yourself"
   };
 
   //dummy route while we don't have backend
@@ -43,10 +47,9 @@ export default function Signup() {
       <Form
         fields={fields}
         messages={messages}
-        bottomLink={bottomLink}
         formAction={formAction}
         usePercentage={true}
-        percentage={0}
+        percentage={20}
       />
     </Layout>
   );
