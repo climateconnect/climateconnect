@@ -193,7 +193,7 @@ async function getProfileByUrlIfExists(profileUrl) {
 
 async function getProjects(profileUrl) {
   console.log("projects");
-  return TEMP_PROJECT_DATA.projects.find(({ members }) => members.includes(profileUrl));
+  return TEMP_PROJECT_DATA.projects.filter(project => project.members.includes(profileUrl));
 }
 
 async function getOrganizations(profileUrl) {
