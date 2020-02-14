@@ -20,7 +20,8 @@
       "parentgroup": null,
       "subgroups": [],
       "location": "International",
-      "background_image": "/images/climateconnectbackground.jpg"
+      "background_image": "/images/climateconnectbackground.jpg",
+      "type": "Non-profit company"
     },
     {
       "url": "sneep",
@@ -30,7 +31,8 @@
       "members": [],
       "admins": [],
       "subgroups": ["sneeperlangen", "sneepnuernberg"],
-      "location": "Europe"
+      "location": "Europe",
+      "type": "Student organisation"
     },
     {
       "url": "sneeperlangen",
@@ -42,7 +44,8 @@
       "parentgroup": "sneep",
       "subgroups": [],
       "location": "Erlangen, Germany",
-      "background_image": "sneepbackground.jpg"
+      "background_image": "/images/sneepbackground.jpg",
+      "type": "Student organisation"
     },
     {
       "url": "sneepnuernberg",
@@ -53,7 +56,8 @@
       "admins": ["tobiasbaume"],
       "parentgroup": "sneep",
       "subgroups": [],
-      "location": "Nürnberg, Germany"
+      "location": "Nürnberg, Germany",
+      "type": "Student organisation"
     }
   ]
 }

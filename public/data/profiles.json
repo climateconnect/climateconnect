@@ -9,84 +9,96 @@
       "type": "Climate Protector",
       "bio": "Member of sneep Erlangen since 2017 💚🌍💚 Co-founder of Climate Connect",
       "skills": ["programming", "calculating CO2-emissions"],
-      "availability": 5
+      "availability": 5,
+      "organizations": ["sneeperlangen", "sneep", "climateconnect"]
     },
     {
       "name": "Tobias Rehm",
       "url": "tobiasrehm",
       "image": "tobiasrehm.jpg",
       "location": "Erlangen, Germany",
-      "type": "Climate Protector"
+      "type": "Climate Protector",
+      "organizations": ["sneeperlangen", "sneep", "climateconnect"]
     },
     {
       "url": "thomasbove",
       "name": "Thomas Bove",
       "image": "thomasbove.jpg",
       "location": "Paris, France",
-      "type": "Climate Protector"
+      "type": "Climate Protector",
+      "organizations": ["climateconnect"]
     },
     {
       "url": "michaelfischer",
       "name": "Michael Fischer",
       "image": "michaelfischer.jpg",
       "location": "Erlangen, Germany",
-      "type": "Climate Protector"
+      "type": "Climate Protector",
+      "organizations": ["climateconnect"]
     },
     {
       "url": "reecelangerock",
       "name": "Reece Langerock",
       "image": "reecelangerock.jpg",
       "location": "Chicago, USA",
-      "type": "Climate Protector"
+      "type": "Climate Protector",
+      "organizations": ["climateconnect"]
     },
     {
       "url": "evanhahn",
       "name": "Evan Hahn",
       "image": "evanhahn.jpg",
       "location": "Chicago, USA",
-      "type": "Climate Protector"
+      "type": "Climate Protector",
+      "organizations": ["climateconnect"]
     },
     {
       "url": "nadineschneider",
       "name": "Nadine Schneider",
       "image": "nadineschneider.jpg",
       "location": "Erlangen, Germany",
-      "type": "Climate Protector"
+      "type": "Climate Protector",
+      "organizations": ["climateconnect"]
     },
     {
       "url": "dipdhanesha",
       "name": "Dip Dhanesha",
       "image": "dipdhanesha.jpg",
       "location": "San Francisco, USA",
-      "type": "Climate Protector"
+      "type": "Climate Protector",
+      "organizations": ["climateconnect"]
     },
     {
       "url": "annkathrinbernauer",
       "name": "Ann-Kathrin Bernauer",
       "image": "annkathrinbernauer.jpg",
       "location": "Wuppertal, Germany",
-      "type": "Climate Protector"
+      "type": "Climate Protector",
+      "organizations": ["climateconnect"]
     },
     {
       "url": "reginareck",
       "name": "Regina Reck",
       "image": null,
       "location": "Erlangen, Germany",
-      "type": "Climate Protector"
+      "type": "Climate Protector",
+      "organizations": ["sneeperlangen", "sneep"]
     },
     {
       "url": "tobiasbaume",
       "name": "Tobias Baume",
       "image": null,
       "location": "Nürnberg, Germany",
-      "type": "Climate Protector"
+      "type": "Climate Protector",
+      "organizations": ["sneeperlangen", "sneep"]
     },
     {
       "url": "emptytestuser",
       "name": "Empty Testuser",
       "image": null,
       "location": "Nowhere and everywhere",
-      "type": "Observer"
+      "type": "Observer",
+      "organizations": []
     }
   ]
 }
