@@ -1,13 +1,13 @@
 import React from "react";
 import Link from "next/link";
 import WideLayout from "../../src/components/layouts/WideLayout";
-//import ProfilePreviews from "../../src/components/profile/ProfilePreviews";
+import ProfilePreviews from "../../src/components/profile/ProfilePreviews";
 import ProjectPreviews from "../../src/components/project/ProjectPreviews";
 import { Container, Avatar, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import TEMP_FEATURED_DATA from "../../public/data/organizations.json";
 import TEMP_PROJECT_DATA from "../../public/data/projects.json";
-//import TEMP_MEMBER_DATA from "../../public/data/profiles.json";
+import TEMP_MEMBER_DATA from "../../public/data/profiles.json";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -72,11 +72,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function OrganizationPage({ organization, projects }) {
+export default function OrganizationPage({ organization, projects, members }) {
   return (
     <WideLayout title={organization ? organization.name + "'s profile" : "Not found"}>
       {organization ? (
-        <OrganizationLayout organization={organization} projects={projects} />
+        <OrganizationLayout organization={organization} projects={projects} members={members} />
       ) : (
         <NoOrganizationFoundLayout />
       )}
@@ -87,11 +87,12 @@ export default function OrganizationPage({ organization, projects }) {
 OrganizationPage.getInitialProps = async ctx => {
   return {
     organization: await getOrganizationByUrlIfExists(ctx.query.organizationUrl),
-    projects: await getProjects(ctx.query.organizationUrl)
+    projects: await getProjects(ctx.query.organizationUrl),
+    members: await getMembers(ctx.query.organizationUrl)
   };
 };
 
-function OrganizationLayout({ organization, projects }) {
+function OrganizationLayout({ organization, projects, members }) {
   if (!organization.background_image) organization.background_image = DEFAULT_BACKGROUND_IMAGE;
   const classes = useStyles();
   return (
@@ -146,6 +147,14 @@ function OrganizationLayout({ organization, projects }) {
           <Typography>This organization has not listed any projects yet!</Typography>
         )}
       </Container>
+      <Container>
+        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Members:</div>
+        {members ? (
+          <ProfilePreviews profiles={members} />
+        ) : (
+          <Typography>None of the members of this organization has signed up yet!</Typography>
+        )}
+      </Container>
     </Container>
   );
 }
@@ -175,6 +184,6 @@ async function getProjects(organizationUrl) {
   );
 }
 
-/*async function getMembers(organizationUrl) {
-  return TEMP_MEMBER_DATA.projects.filter(member => member.organizations.includes(organizationUrl));
-}*/
+async function getMembers(organizationUrl) {
+  return TEMP_MEMBER_DATA.profiles.filter(member => member.organizations.includes(organizationUrl));
+}
