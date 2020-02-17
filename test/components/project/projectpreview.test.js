@@ -11,6 +11,6 @@ describe("ProjectPreview Component", () => {
     const wrapper = mount(<ProjectPreview project={project} />);
     expect(wrapper.text()).toContain(project.name);
     expect(wrapper.text()).toContain(project.location);
-    expect(wrapper.text()).toContain(project.organisation_name);
+    expect(wrapper.text()).toContain(project.organization_name);
   });
 });

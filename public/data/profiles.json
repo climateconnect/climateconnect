@@ -1,0 +1,92 @@
+{
+  "profiles": [
+    {
+      "url": "christophstoll",
+      "name": "Christoph Stoll",
+      "image": "christophstoll.jpg",
+      "location": "Erlangen, Germany",
+      "background_image": "/images/background1.jpg",
+      "type": "Climate Protector",
+      "bio": "Member of sneep Erlangen since 2017 💚🌍💚 Co-founder of Climate Connect",
+      "skills": ["programming", "calculating CO2-emissions"],
+      "availability": 5
+    },
+    {
+      "name": "Tobias Rehm",
+      "url": "tobiasrehm",
+      "image": "tobiasrehm.jpg",
+      "location": "Erlangen, Germany",
+      "type": "Climate Protector"
+    },
+    {
+      "url": "thomasbove",
+      "name": "Thomas Bove",
+      "image": "thomasbove.jpg",
+      "location": "Paris, France",
+      "type": "Climate Protector"
+    },
+    {
+      "url": "michaelfischer",
+      "name": "Michael Fischer",
+      "image": "michaelfischer.jpg",
+      "location": "Erlangen, Germany",
+      "type": "Climate Protector"
+    },
+    {
+      "url": "reecelangerock",
+      "name": "Reece Langerock",
+      "image": "reecelangerock.jpg",
+      "location": "Chicago, USA",
+      "type": "Climate Protector"
+    },
+    {
+      "url": "evanhahn",
+      "name": "Evan Hahn",
+      "image": "evanhahn.jpg",
+      "location": "Chicago, USA",
+      "type": "Climate Protector"
+    },
+    {
+      "url": "nadineschneider",
+      "name": "Nadine Schneider",
+      "image": "nadineschneider.jpg",
+      "location": "Erlangen, Germany",
+      "type": "Climate Protector"
+    },
+    {
+      "url": "dipdhanesha",
+      "name": "Dip Dhanesha",
+      "image": "dipdhanesha.jpg",
+      "location": "San Francisco, USA",
+      "type": "Climate Protector"
+    },
+    {
+      "url": "annkathrinbernauer",
+      "name": "Ann-Kathrin Bernauer",
+      "image": "annkathrinbernauer.jpg",
+      "location": "Wuppertal, Germany",
+      "type": "Climate Protector"
+    },
+    {
+      "url": "reginareck",
+      "name": "Regina Reck",
+      "image": null,
+      "location": "Erlangen, Germany",
+      "type": "Climate Protector"
+    },
+    {
+      "url": "tobiasbaume",
+      "name": "Tobias Baume",
+      "image": null,
+      "location": "Nürnberg, Germany",
+      "type": "Climate Protector"
+    },
+    {
+      "url": "emptytestuser",
+      "name": "Empty Testuser",
+      "image": null,
+      "location": "Nowhere and everywhere",
+      "type": "Observer"
+    }
+  ]
+}

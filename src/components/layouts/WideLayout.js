@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function AboutLayout({ children, title }) {
+export default function WideLayout({ children, title }) {
   const classes = useStyles();
 
   return (
