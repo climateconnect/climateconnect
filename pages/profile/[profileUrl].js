@@ -7,7 +7,7 @@ import { Container, Avatar, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import TEMP_FEATURED_DATA from "../../public/data/profiles.json";
 import TEMP_PROJECT_DATA from "../../public/data/projects.json";
-import TEMP_ORGANISATION_DATA from "../../public/data/organizations.json";
+import TEMP_ORGANIZATION_DATA from "../../public/data/organizations.json";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -73,7 +73,6 @@ const useStyles = makeStyles(theme => {
 });
 
 export default function ProfilePage({ profile, projects, organizations }) {
-  console.log(profile);
   return (
     <WideLayout title={profile ? profile.name + "'s profile" : "Not found"}>
       {profile ? (
@@ -118,37 +117,29 @@ function ProfileLayout({ profile, projects, organizations }) {
           <Typography className={classes.subtitle}>{profile.type}</Typography>
         </Container>
         <Container className={classes.memberInfo}>
-          {profile.bio ? (
+          {profile.bio && (
             <>
               <div className={classes.subtitle}>Bio:</div>
               <div className={classes.content}>{profile.bio}</div>
             </>
-          ) : (
-            <></>
           )}
-          {profile.location ? (
+          {profile.location && (
             <>
               <div className={classes.subtitle}>Location:</div>
               <div className={classes.content}>{profile.location}</div>
             </>
-          ) : (
-            <></>
           )}
-          {profile.skills ? (
+          {profile.skills && (
             <>
               <div className={classes.subtitle}>Skills:</div>
               <div className={classes.content}>{profile.skills}</div>
             </>
-          ) : (
-            <></>
           )}
-          {profile.availability ? (
+          {profile.availability && (
             <>
               <div className={classes.subtitle}>Availability:</div>
               <div className={classes.content}>{profile.availability} hours per week</div>
             </>
-          ) : (
-            <></>
           )}
         </Container>
       </Container>
@@ -192,10 +183,9 @@ async function getProfileByUrlIfExists(profileUrl) {
 }
 
 async function getProjects(profileUrl) {
-  console.log("projects");
   return TEMP_PROJECT_DATA.projects.filter(project => project.members.includes(profileUrl));
 }
 
 async function getOrganizations(profileUrl) {
-  return TEMP_ORGANISATION_DATA.organizations.filter(org => org.members.includes(profileUrl));
+  return TEMP_ORGANIZATION_DATA.organizations.filter(org => org.members.includes(profileUrl));
 }

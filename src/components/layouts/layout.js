@@ -21,9 +21,7 @@ export default function Layout({ title, hideHeadline, children }) {
       <Header />
       <Container maxWidth="lg" component="main">
         <Container maxWidth="sm">
-          {hideHeadline ? (
-            <></>
-          ) : (
+          {!hideHeadline && (
             <Typography component="h1" variant="h5" className={classes.mainHeading}>
               {title}
             </Typography>
