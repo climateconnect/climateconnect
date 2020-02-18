@@ -6,6 +6,7 @@ import GitHubIcon from "@material-ui/icons/GitHub";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import InstagramIcon from "@material-ui/icons/Instagram";
 import FacebookIcon from "@material-ui/icons/Facebook";
+import YouTubeIcon from "@material-ui/icons/YouTube";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -87,6 +88,14 @@ export default function Footer() {
           className={classes.inheritColor}
         >
           <FacebookIcon className={classes.socialMediaLink} />
+        </a>
+        <a
+          href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={classes.inheritColor}
+        >
+          <YouTubeIcon className={classes.socialMediaLink} />
         </a>
       </Box>
     </Box>

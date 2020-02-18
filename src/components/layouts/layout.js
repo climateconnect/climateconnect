@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Layout({ title, children }) {
+export default function Layout({ title, hideHeadline, children }) {
   const classes = useStyles();
 
   return (
@@ -21,9 +21,11 @@ export default function Layout({ title, children }) {
       <Header />
       <Container maxWidth="lg" component="main">
         <Container maxWidth="sm">
-          <Typography component="h1" variant="h5" className={classes.mainHeading}>
-            {title}
-          </Typography>
+          {!hideHeadline && (
+            <Typography component="h1" variant="h5" className={classes.mainHeading}>
+              {title}
+            </Typography>
+          )}
         </Container>
         {children}
       </Container>
