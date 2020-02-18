@@ -93,9 +93,6 @@ ProfilePage.getInitialProps = async ctx => {
 };
 
 function ProfileLayout({ profile, projects, organizations }) {
-  if (projects && !projects.length) {
-    projects = [projects];
-  }
   const classes = useStyles();
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
@@ -132,7 +129,7 @@ function ProfileLayout({ profile, projects, organizations }) {
           {profile.skills && (
             <>
               <div className={classes.subtitle}>Skills:</div>
-              <div className={classes.content}>{profile.skills}</div>
+              <div className={classes.content}>{profile.skills.join(", ")}</div>
             </>
           )}
           {profile.availability && (
@@ -145,7 +142,7 @@ function ProfileLayout({ profile, projects, organizations }) {
       </Container>
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
-        {projects ? (
+        {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
         ) : (
           <Typography>This user is not involved in any projects yet!</Typography>
