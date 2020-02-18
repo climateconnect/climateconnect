@@ -3,7 +3,6 @@
     {
       "url": "climateconnect",
       "name": "Climate Connect",
-      "shortdescription": "Connecting climate activists around the world.",
       "logo": "/images/logonotext.png",
       "members": [
         "tobiasrehm",
@@ -19,45 +18,107 @@
       "admins": ["tobiasrehm", "christophstoll", "thomasbove"],
       "parentgroup": null,
       "subgroups": [],
-      "location": "International",
+      "info": [
+        {
+          "key": "location",
+          "name": "Location",
+          "value": "International"
+        },
+        {
+          "key": "shortdescription",
+          "name": "Description",
+          "value": "Connecting climate activists around the world."
+        }
+      ],
       "background_image": "/images/climateconnectbackground.jpg",
-      "type": "Non-profit company"
+      "types": ["Volunteer group", "Non-profit company"]
     },
     {
       "url": "sneep",
       "name": "sneep",
-      "shortdescription": "student network for ethics in economics and practice",
       "logo": "/images/sneep.png",
-      "members": [],
+      "members": ["christophstoll", "tobiasrehm", "nadineschneider", "reginareck", "tobiasbaume"],
       "admins": [],
       "subgroups": ["sneeperlangen", "sneepnuernberg"],
-      "location": "Europe",
-      "type": "Student organisation"
+      "info": [
+        {
+          "key": "location",
+          "name": "Location",
+          "value": "Europe"
+        },
+        {
+          "key": "shortdescription",
+          "name": "Description",
+          "value": "student network for ethics in economics and practice"
+        }
+      ],
+      "types": ["Volunteer group"]
     },
     {
       "url": "sneeperlangen",
       "name": "sneep Erlangen",
-      "shortdescription": "Our local group is especially focused on climate action.",
       "logo": "/images/sneep.png",
-      "members": ["tobiasrehm", "christophstoll", "reginareck"],
+      "members": ["tobiasrehm", "christophstoll", "reginareck", "nadineschneider"],
       "admins": ["tobiasrehm", "reginareck"],
       "parentgroup": "sneep",
       "subgroups": [],
-      "location": "Erlangen, Germany",
+      "info": [
+        {
+          "key": "location",
+          "name": "Location",
+          "value": "Erlangen, Germany"
+        },
+        {
+          "key": "school",
+          "name": "University/School",
+          "value": "FAU Erlangen-Nürnberg"
+        },
+        {
+          "key": "shortdescription",
+          "name": "Description",
+          "value": "Our local group is especially focused on climate action."
+        }
+      ],
       "background_image": "/images/sneepbackground.jpg",
-      "type": "Student organisation"
+      "types": ["Volunteer group", "Student organization"]
     },
     {
       "url": "sneepnuernberg",
       "name": "sneep Nürnberg",
-      "shortdescription": "Our local group is especially focused on ethics in economics.",
       "logo": "/images/sneep.png",
       "members": ["tobiasbaume"],
       "admins": ["tobiasbaume"],
       "parentgroup": "sneep",
       "subgroups": [],
-      "location": "Nürnberg, Germany",
-      "type": "Student organisation"
+      "info": [
+        {
+          "key": "location",
+          "name": "Location",
+          "value": "Nürnberg, Germany"
+        },
+        {
+          "key": "school",
+          "name": "University/School",
+          "value": "FAU Erlangen-Nürnberg"
+        },
+        {
+          "key": "shortdescription",
+          "name": "Description",
+          "value": "Our local group is especially focused on ethics in economics."
+        }
+      ],
+      "types": ["Volunteer group", "Student organization"]
+    },
+    {
+      "url": "emptytestorganisation",
+      "name": "We empty",
+      "info": [
+        {
+          "key": "shortdescription",
+          "name": "Description",
+          "value": "We're empty and testing."
+        }
+      ]
     }
   ]
 }

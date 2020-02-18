@@ -3,7 +3,7 @@ import Link from "next/link";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProfilePreviews from "../../src/components/profile/ProfilePreviews";
 import ProjectPreviews from "../../src/components/project/ProjectPreviews";
-import { Container, Avatar, Typography } from "@material-ui/core";
+import { Container, Avatar, Typography, Chip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import TEMP_FEATURED_DATA from "../../public/data/organizations.json";
 import TEMP_PROJECT_DATA from "../../public/data/projects.json";
@@ -39,11 +39,14 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up("sm")]: {
       display: "inline-block"
     },
-    padding: 0
+    padding: 0,
+    marginTop: theme.spacing(1)
   },
   name: {
     fontWeight: "bold",
-    padding: theme.spacing(1)
+    padding: theme.spacing(1),
+    paddingLeft: 0,
+    paddingRight: 0
   },
   subtitle: {
     color: `${theme.palette.secondary.main}`
@@ -69,6 +72,13 @@ const useStyles = makeStyles(theme => ({
   noprofile: {
     textAlign: "center",
     padding: theme.spacing(5)
+  },
+  marginTop: {
+    marginTop: theme.spacing(1)
+  },
+  chip: {
+    marginBottom: theme.spacing(1),
+    marginRight: theme.spacing(1)
   }
 }));
 
@@ -93,15 +103,25 @@ OrganizationPage.getInitialProps = async ctx => {
 };
 
 function OrganizationLayout({ organization, projects, members }) {
-  if (!organization.background_image) organization.background_image = DEFAULT_BACKGROUND_IMAGE;
   const classes = useStyles();
+
+  const displayOrganizationInfo = info =>
+    info.map(i => (
+      <div key={i.key}>
+        <div className={classes.subtitle}>{i.name}:</div>
+        <div className={classes.content}>{i.value}</div>
+      </div>
+    ));
+
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div
         style={{
-          background: `url(${organization.background_image})`,
-          "background-size": "cover",
-          "background-position": "center",
+          background: `url(${
+            organization.background_image ? organization.background_image : DEFAULT_BACKGROUND_IMAGE
+          })`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
           width: "100%",
           height: 305
         }}
@@ -112,36 +132,26 @@ function OrganizationLayout({ organization, projects, members }) {
             alt={organization.name}
             component="div"
             size="large"
-            src={"/images/" + organization.logo}
+            src={organization.logo}
             className={classes.avatar}
           />
           <Typography variant="h5" className={classes.name}>
             {organization.name}
           </Typography>
-          <Typography className={classes.subtitle}>{organization.type}</Typography>
+          <Container className={classes.noPadding}>
+            {organization.types &&
+              organization.types.map(type => (
+                <Chip label={type} key={type} className={classes.chip} />
+              ))}
+          </Container>
         </Container>
         <Container className={classes.organizationInfo}>
-          {organization.shortdescription ? (
-            <>
-              <div className={classes.subtitle}>Description:</div>
-              <div className={classes.content}>{organization.shortdescription}</div>
-            </>
-          ) : (
-            <></>
-          )}
-          {organization.location ? (
-            <>
-              <div className={classes.subtitle}>Location:</div>
-              <div className={classes.content}>{organization.location}</div>
-            </>
-          ) : (
-            <></>
-          )}
+          {displayOrganizationInfo(organization.info)}
         </Container>
       </Container>
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
-        {projects ? (
+        {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
         ) : (
           <Typography>This organization has not listed any projects yet!</Typography>
@@ -149,7 +159,7 @@ function OrganizationLayout({ organization, projects, members }) {
       </Container>
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Members:</div>
-        {members ? (
+        {members && members.length ? (
           <ProfilePreviews profiles={members} />
         ) : (
           <Typography>None of the members of this organization has signed up yet!</Typography>

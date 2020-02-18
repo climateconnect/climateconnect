@@ -1,28 +1,26 @@
 import React from "react";
-import Router from "next/router";
-import { Typography, Card, CardMedia, CardContent } from "@material-ui/core";
+import { Typography, Link, Avatar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => {
   return {
-    root: {
-      "&:hover": {
-        cursor: "pointer"
-      },
-      "-webkit-user-select": "none",
-      "-moz-user-select": "none",
-      "-ms-user-select": "none",
-      userSelect: "none",
-      backgroundColor: "inherit",
-      borderRadius: 0
+    avatarWithInfo: {
+      textAlign: "center",
+      width: theme.spacing(40)
     },
-    bold: {
-      fontWeight: "bold"
-    },
-    button: {
-      marginTop: theme.spacing(1),
+    avatar: {
+      height: theme.spacing(20),
+      width: theme.spacing(20),
       margin: "0 auto",
-      display: "block"
+      fontSize: 50,
+      border: `1px solid ${theme.palette.grey[700]}`
+    },
+    name: {
+      fontWeight: "bold",
+      padding: theme.spacing(1)
+    },
+    subtitle: {
+      color: `${theme.palette.secondary.main}`
     }
   };
 });
@@ -31,24 +29,17 @@ export default function ProfilePreview({ profile }) {
   const classes = useStyles();
 
   return (
-    <Card
-      className={classes.root}
-      variant="outlined"
-      onClick={() => {
-        Router.push(`/profiles/${profile.url}`);
-      }}
-    >
-      <CardMedia
-        className={classes.media}
-        component={"img"}
-        title={profile.name}
-        image={"/images/" + profile.image}
+    <Link href={"/profile/" + profile.url} className={classes.avatarWithInfo}>
+      <Avatar
+        alt={profile.name}
+        size="large"
+        src={"/images/" + profile.image}
+        className={classes.avatar}
       />
-      <CardContent>
-        <Typography variant="subtitle1" component="h2" className={classes.bold}>
-          {profile.name}
-        </Typography>
-      </CardContent>
-    </Card>
+      <Typography variant="h5" className={classes.name}>
+        {profile.name}
+      </Typography>
+      <Typography className={classes.subtitle}>{profile.type}</Typography>
+    </Link>
   );
 }
