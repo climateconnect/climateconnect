@@ -119,7 +119,7 @@ function ProfileLayout({ profile, projects, organizations }) {
           {profile.skills && (
             <>
               <div className={classes.subtitle}>Skills:</div>
-              <div className={classes.contbioent}>{profile.skills.join(", ")}</div>
+              <div className={classes.content}>{profile.skills.join(", ")}</div>
             </>
           )}
           {profile.availability && (
