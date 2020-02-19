@@ -28,3 +28,4 @@ yarn-error.log*
 *.pyc
 *.swp
 /__pycache__/
+.pyenv
