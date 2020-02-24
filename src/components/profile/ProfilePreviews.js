@@ -16,7 +16,7 @@ export default function ProfilePreviews({ profiles }) {
 
   // TODO: use `profile.id` instead of index when using real profiles
   return (
-    <Grid container component="ul" className={`${classes.reset} ${classes.root}`} spacing={2}>
+    <Grid container component="ul" className={classes.reset} spacing={2}>
       {profiles.map((profile, index) => (
         <Grid item xs={12} sm={6} md={4} lg={3} component="li" key={index}>
           <ProfilePreview profile={profile} />
