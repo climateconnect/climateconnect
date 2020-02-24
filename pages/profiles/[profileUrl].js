@@ -3,7 +3,8 @@ import Link from "next/link";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
 import OrganizationPreviews from "./../../src/components/organization/OrganizationPreviews";
-import { Container, Avatar, Typography } from "@material-ui/core";
+import ProfilePreview from "./../../src/components/profile/ProfilePreview";
+import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import TEMP_FEATURED_DATA from "../../public/data/profiles.json";
 import TEMP_PROJECT_DATA from "../../public/data/projects.json";
@@ -16,33 +17,21 @@ const useStyles = makeStyles(theme => {
     background: {
       width: "100%"
     },
-    avatar: {
-      height: theme.spacing(20),
-      width: theme.spacing(20),
+    profilePreview: {
       margin: "0 auto",
       marginTop: theme.spacing(-11),
-      fontSize: 50,
-      border: `1px solid ${theme.palette.grey[700]}`
-    },
-    avatarWithInfo: {
-      textAlign: "center",
-      width: theme.spacing(40),
-      margin: "0 auto",
       [theme.breakpoints.up("sm")]: {
         margin: 0,
+        marginTop: theme.spacing(-11),
         display: "inline-block",
         width: "auto"
       }
     },
-    memberInfo: {
+    memberInfoContainer: {
       [theme.breakpoints.up("sm")]: {
         display: "inline-block"
       },
       padding: 0
-    },
-    name: {
-      fontWeight: "bold",
-      padding: theme.spacing(1)
     },
     subtitle: {
       color: `${theme.palette.secondary.main}`
@@ -68,6 +57,9 @@ const useStyles = makeStyles(theme => {
     noprofile: {
       textAlign: "center",
       padding: theme.spacing(5)
+    },
+    marginTop: {
+      marginTop: theme.spacing(1)
     }
   };
 });
@@ -96,27 +88,25 @@ function ProfileLayout({ profile, projects, organizations }) {
   const classes = useStyles();
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
-      <img
-        src={profile.background_image ? profile.background_image : DEFAULT_BACKGROUND_IMAGE}
-        className={classes.background}
+      <div
+        style={{
+          background: `url(${
+            profile.background_image ? profile.background_image : DEFAULT_BACKGROUND_IMAGE
+          })`,
+          "background-size": "cover",
+          "background-position": "center",
+          width: "100%",
+          height: 305
+        }}
       />
       <Container className={classes.infoContainer}>
-        <Container className={classes.avatarWithInfo}>
-          <Avatar
-            alt={profile.name}
-            size="large"
-            src={"/images/" + profile.image}
-            className={classes.avatar}
-          />
-          <Typography variant="h5" className={classes.name}>
-            {profile.name}
-          </Typography>
-          <Typography className={classes.subtitle}>{profile.type}</Typography>
+        <Container className={classes.profilePreview}>
+          <ProfilePreview profile={profile} />
         </Container>
-        <Container className={classes.memberInfo}>
+        <Container className={classes.memberInfoContainer}>
           {profile.bio && (
             <>
-              <div className={classes.subtitle}>Bio:</div>
+              <div className={`${classes.subtitle} ${classes.marginTop}`}>Bio:</div>
               <div className={classes.content}>{profile.bio}</div>
             </>
           )}
@@ -184,5 +174,7 @@ async function getProjects(profileUrl) {
 }
 
 async function getOrganizations(profileUrl) {
-  return TEMP_ORGANIZATION_DATA.organizations.filter(org => org.members.includes(profileUrl));
+  return TEMP_ORGANIZATION_DATA.organizations.filter(
+    org => org.members && org.members.includes(profileUrl)
+  );
 }
