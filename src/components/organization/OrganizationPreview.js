@@ -53,7 +53,7 @@ export default function OrganizationPreview({ organization }) {
         className={classes.media}
         component={"div"}
         title={organization.name}
-        image={organization.logo}
+        image={organization.image}
       />
       <CardContent>
         <Typography variant="subtitle1" component="h2" className={classes.bold}>

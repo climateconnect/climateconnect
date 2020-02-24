@@ -3,14 +3,12 @@ import Link from "next/link";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
 import OrganizationPreviews from "./../../src/components/organization/OrganizationPreviews";
-import AccountPage from "./../../src/components/account/AccountPage";
+import EditAccountPage from "./../../src/components/account/EditAccountPage";
 import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import TEMP_FEATURED_DATA from "../../public/data/profiles.json";
 import TEMP_PROJECT_DATA from "../../public/data/projects.json";
 import TEMP_ORGANIZATION_DATA from "../../public/data/organizations.json";
-
-const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -64,7 +62,9 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function ProfilePage({ profile, projects, organizations }) {
+//This route should later be changed to "/editProfile" and should load the profile of the logged in person.
+
+export default function EditProfilePage({ profile, projects, organizations }) {
   return (
     <WideLayout title={profile ? profile.name + "'s profile" : "Not found"}>
       {profile ? (
@@ -76,7 +76,7 @@ export default function ProfilePage({ profile, projects, organizations }) {
   );
 }
 
-ProfilePage.getInitialProps = async ctx => {
+EditProfilePage.getInitialProps = async ctx => {
   return {
     profile: await getProfileByUrlIfExists(ctx.query.profileUrl),
     organizations: await getOrganizations(ctx.query.profileUrl),
@@ -87,11 +87,7 @@ ProfilePage.getInitialProps = async ctx => {
 function ProfileLayout({ profile, projects, organizations }) {
   const classes = useStyles();
   return (
-    <AccountPage
-      account={profile}
-      default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={"/editProfile/" + profile.url}
-    >
+    <EditAccountPage account={profile} editHref={"/editProfile/" + profile.url}>
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
         {projects && projects.length ? (
@@ -108,7 +104,7 @@ function ProfileLayout({ profile, projects, organizations }) {
           <Typography>This user is not involved in any organizations yet!</Typography>
         )}
       </Container>
-    </AccountPage>
+    </EditAccountPage>
   );
 }
 
