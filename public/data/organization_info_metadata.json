@@ -1,0 +1,23 @@
+{
+  "location": {
+    "name": "Location"
+  },
+  "shortdescription": {
+    "name": "Description"
+  },
+  "school": {
+    "name": "School/University"
+  },
+  "city": {
+    "name": "City"
+  },
+  "state": {
+    "name": "State"
+  },
+  "country": {
+    "name": "Country"
+  },
+  "organ": {
+    "name": "Organ"
+  }
+}

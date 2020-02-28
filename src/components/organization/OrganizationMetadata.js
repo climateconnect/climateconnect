@@ -40,7 +40,7 @@ export default function OrganizationMetaData({ organization }) {
         <span className={classes.cardIconBox}>
           <PlaceIcon className={classes.cardIcon} />
         </span>
-        {organization.location}
+        {organization.info.location}
       </Box>
       <Box>
         <span className={classes.cardIconBox}>
