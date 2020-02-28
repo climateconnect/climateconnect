@@ -81,7 +81,7 @@ export default function ProfilePage({ profile, projects, organizations }) {
 ProfilePage.getInitialProps = async ctx => {
   return {
     profile: await getProfileByUrlIfExists(ctx.query.profileUrl),
-    organizations: await getOrganizations(ctx.query.profileUrl),
+    organizations: await getOrganizationsByUser(ctx.query.profileUrl),
     projects: await getProjects(ctx.query.profileUrl)
   };
 };
@@ -138,7 +138,7 @@ async function getProjects(profileUrl) {
   return TEMP_PROJECT_DATA.projects.filter(project => project.members.includes(profileUrl));
 }
 
-async function getOrganizations(profileUrl) {
+async function getOrganizationsByUser(profileUrl) {
   return TEMP_ORGANIZATION_DATA.organizations.filter(
     org => org.members && org.members.includes(profileUrl)
   );

@@ -40,7 +40,6 @@ const useStyles = makeStyles(theme => {
 
 export default function OrganizationPreview({ organization }) {
   const classes = useStyles();
-
   return (
     <Card
       className={classes.root}

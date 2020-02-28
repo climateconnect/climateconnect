@@ -39,8 +39,8 @@ export default function OrganizationPage({ organization, projects, members }) {
 OrganizationPage.getInitialProps = async ctx => {
   return {
     organization: await getOrganizationByUrlIfExists(ctx.query.organizationUrl),
-    projects: await getProjects(ctx.query.organizationUrl),
-    members: await getMembers(ctx.query.organizationUrl)
+    projects: await getProjectsByOrganization(ctx.query.organizationUrl),
+    members: await getMembersByOrganization(ctx.query.organizationUrl)
   };
 };
 
@@ -92,12 +92,12 @@ async function getOrganizationByUrlIfExists(organizationUrl) {
   return TEMP_FEATURED_DATA.organizations.find(({ url }) => url === organizationUrl);
 }
 
-async function getProjects(organizationUrl) {
+async function getProjectsByOrganization(organizationUrl) {
   return TEMP_PROJECT_DATA.projects.filter(project =>
     project.organization_url.includes(organizationUrl)
   );
 }
 
-async function getMembers(organizationUrl) {
+async function getMembersByOrganization(organizationUrl) {
   return TEMP_MEMBER_DATA.profiles.filter(member => member.organizations.includes(organizationUrl));
 }
