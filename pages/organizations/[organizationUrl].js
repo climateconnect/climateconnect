@@ -1,14 +1,16 @@
 import React from "react";
 import Link from "next/link";
+import { Typography, Container } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import WideLayout from "../../src/components/layouts/WideLayout";
 import AccountPage from "../../src/components/account/AccountPage";
+import ProfilePreviews from "../../src/components/profile/ProfilePreviews";
+import ProjectPreviews from "../../src/components/project/ProjectPreviews";
+
 import TEMP_FEATURED_DATA from "../../public/data/organizations.json";
 import TEMP_PROJECT_DATA from "../../public/data/projects.json";
 import TEMP_MEMBER_DATA from "../../public/data/profiles.json";
-import { Typography, Container } from "@material-ui/core";
-import ProfilePreviews from "../../src/components/profile/ProfilePreviews";
-import ProjectPreviews from "../../src/components/project/ProjectPreviews";
-import { makeStyles } from "@material-ui/core/styles";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -23,34 +25,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function OrganizationPage({ organization, projects, members }) {
-  const classes = useStyles();
-
   return (
     <WideLayout title={organization ? organization.name + "'s profile" : "Not found"}>
       {organization ? (
-        <AccountPage
-          account={organization}
-          default_background={DEFAULT_BACKGROUND_IMAGE}
-          editHref={"/editOrganization/" + organization.url}
-          type="organization"
-        >
-          <Container>
-            <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
-            {projects && projects.length ? (
-              <ProjectPreviews projects={projects} />
-            ) : (
-              <Typography>This organization has not listed any projects yet!</Typography>
-            )}
-          </Container>
-          <Container>
-            <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Members:</div>
-            {members && members.length ? (
-              <ProfilePreviews profiles={members} />
-            ) : (
-              <Typography>None of the members of this organization has signed up yet!</Typography>
-            )}
-          </Container>
-        </AccountPage>
+        <OrganizationLayout organization={organization} projects={projects} members={members} />
       ) : (
         <NoOrganizationFoundLayout />
       )}
@@ -66,6 +44,35 @@ OrganizationPage.getInitialProps = async ctx => {
   };
 };
 
+function OrganizationLayout(organization, projects, members) {
+  const classes = useStyles();
+  return (
+    <AccountPage
+      account={organization}
+      default_background={DEFAULT_BACKGROUND_IMAGE}
+      editHref={"/editOrganization/" + organization.url}
+      type="organization"
+    >
+      <Container>
+        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
+        {projects && projects.length ? (
+          <ProjectPreviews projects={projects} />
+        ) : (
+          <Typography>This organization has not listed any projects yet!</Typography>
+        )}
+      </Container>
+      <Container>
+        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Members:</div>
+        {members && members.length ? (
+          <ProfilePreviews profiles={members} />
+        ) : (
+          <Typography>None of the members of this organization has signed up yet!</Typography>
+        )}
+      </Container>
+    </AccountPage>
+  );
+}
+
 function NoOrganizationFoundLayout() {
   const classes = useStyles();
   return (
@@ -80,7 +87,7 @@ function NoOrganizationFoundLayout() {
   );
 }
 
-// This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
+// These will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getOrganizationByUrlIfExists(organizationUrl) {
   return TEMP_FEATURED_DATA.organizations.find(({ url }) => url === organizationUrl);
 }

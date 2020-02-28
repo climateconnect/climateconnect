@@ -3,6 +3,8 @@ import { Container, Avatar, Typography, Chip, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import profile_info_metadata from "./../../../public/data/profile_info_metadata.json";
 import organization_info_metadata from "./../../../public/data/organization_info_metadata.json";
+import profile_types from "./../../../public/data/profile_types.json";
+import organization_types from "./../../../public/data/organization_types.json";
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -85,25 +87,37 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const getFullInfoElement = (key, value, type) => {
-  if (type === "profile") return { ...profile_info_metadata[key], value: value };
-  if (type === "organization") return { ...organization_info_metadata[key], value: value };
-};
-
 export default function AccountPage({ type, account, default_background, editHref, children }) {
   const classes = useStyles();
+
+  const displayInfoArrayData = (key, infoEl) => {
+    return (
+      <div key={key} className={classes.infoElement}>
+        <div className={classes.subtitle}>{infoEl.name}:</div>
+        <div className={classes.chipArray}>
+          {infoEl.value.map(entry => (
+            <Chip size="medium" label={entry} key={entry} className={classes.chip} />
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   const displayAccountInfo = info =>
     Object.keys(info).map(key => {
       const i = getFullInfoElement(key, info[key], type);
       const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
       const additionalText = i.additionalText ? i.additionalText : "";
-      return (
-        <div key={key}>
-          <div className={classes.subtitle}>{i.name}:</div>
-          <div className={classes.content}>{value + additionalText}</div>
-        </div>
-      );
+      if (i.type === "array") {
+        return displayInfoArrayData(key, i);
+      } else {
+        return (
+          <div key={key}>
+            <div className={classes.subtitle}>{i.name}:</div>
+            <div className={classes.content}>{value + additionalText}</div>
+          </div>
+        );
+      }
     });
 
   return (
@@ -136,7 +150,9 @@ export default function AccountPage({ type, account, default_background, editHre
           </Typography>
           <Container className={classes.noPadding}>
             {account.types &&
-              account.types.map(type => <Chip label={type} key={type} className={classes.chip} />)}
+              getTypesOfAccount(type, account).map(type => (
+                <Chip label={type.name} key={type.key} className={classes.chip} />
+              ))}
           </Container>
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
@@ -145,3 +161,36 @@ export default function AccountPage({ type, account, default_background, editHre
     </Container>
   );
 }
+
+//below functions will be replaced with db call later --> potentially retrieve these props directly on the page instead of on the component
+const getInfoMetadata = accountType => {
+  if (accountType !== "profile" && accountType != "organization")
+    throw new Error('accountType has to be "profile" or "organization".');
+  return accountType === "profile" ? profile_info_metadata : organization_info_metadata;
+};
+
+const getFullInfoElement = (key, value, type) => {
+  if (type === "profile") return { ...profile_info_metadata[key], value: value };
+  if (type === "organization") return { ...organization_info_metadata[key], value: value };
+};
+
+const getTypes = accountType => {
+  if (accountType !== "profile" && accountType != "organization")
+    throw new Error('accountType has to be "profile" or "organization".');
+  const types =
+    accountType === "profile" ? profile_types.profile_types : organization_types.organization_types;
+  return types.map(type => {
+    return {
+      ...type,
+      additionalInfo: type.additionalInfo.map(info => {
+        return { ...getInfoMetadata(accountType)[info], key: info };
+      })
+    };
+  });
+};
+
+const getTypesOfAccount = (type, account) => {
+  if (type !== "profile" && type != "organization")
+    throw new Error('type has to be "profile" or "organization".');
+  return getTypes(type).filter(type => account.types.includes(type.key));
+};

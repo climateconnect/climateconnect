@@ -156,63 +156,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-//TODO: These should later be replaced by db calls
-const getOrganizationTypes = () => {
-  return organization_types.organization_types.map(type => {
-    return {
-      ...type,
-      additionalInfo: type.additionalInfo.map(info => {
-        return { ...getOrganizationInfoMetadata()[info], key: info };
-      })
-    };
-  });
-};
-//TODO: possible store this function at a place where both AccountPage.js and EditAccountPage.js can access it
-const getProfileTypes = () => {
-  return profile_types.profile_types.map(type => {
-    return {
-      ...type,
-      additionalInfo: type.additionalInfo.map(info => {
-        return { ...getProfileInfoMetadata()[info], key: info };
-      })
-    };
-  });
-};
-const getMaxProfileTypes = () => {
-  console.log(profile_types.max_types);
-  return profile_types.max_types;
-};
-
-const getMaxOrganizationTypes = () => {
-  return organization_types.max_types;
-};
-const getOrganizationInfoMetadata = () => organization_info_metadata;
-const getProfileInfoMetadata = () => profile_info_metadata;
-
-const getAccountTypes = (type, types) => {
-  if (type === "organization") {
-    return getOrganizationTypes().filter(type => types.includes(type.key));
-  }
-  if (type === "profile") {
-    return getProfileTypes().filter(type => types.includes(type.key));
-  }
-  return;
-};
-
-const getMaxAccountTypes = type => {
-  if (type === "organization") {
-    return getMaxOrganizationTypes();
-  }
-  if (type === "profile") {
-    return getMaxProfileTypes();
-  }
-};
-
-const getFullInfoElement = (key, value, type) => {
-  if (type === "profile") return { ...getProfileInfoMetadata()[key], value: value };
-  if (type === "organization") return { ...getOrganizationInfoMetadata()[key], value: value };
-};
-
 export default function EditAccountPage({ account, children, type }) {
   const classes = useStyles();
   const [editedAccount, setEditedAccount] = React.useState(account);
@@ -225,11 +168,6 @@ export default function EditAccountPage({ account, children, type }) {
   const [avatarDialogOpen, setAvatarDialogOpen] = React.useState(false);
   const [addTypeDialogOpen, setAddTypeDialogOpen] = React.useState(false);
   const [confirmExitOpen, setConfirmExitOpen] = React.useState(false);
-
-  const getTypes = () => {
-    if (type === "organization") return getOrganizationTypes();
-    if (type === "profile") return getProfileTypes();
-  };
 
   const handleBackgroundClickOpen = () => {
     setBackgroundDialogOpen(true);
@@ -388,9 +326,9 @@ export default function EditAccountPage({ account, children, type }) {
     })*/
   };
 
-  const handleTypeDelete = type => {
+  const handleTypeDelete = typeToDelete => {
     const tempEditedAccount = { ...editedAccount };
-    const fullType = getTypes().filter(t => t.key === type)[0];
+    const fullType = getTypes(type).filter(t => t.key === typeToDelete)[0];
     if (fullType.additionalInfo) {
       for (const info of fullType.additionalInfo) {
         delete tempEditedAccount.info[info.key];
@@ -470,7 +408,7 @@ export default function EditAccountPage({ account, children, type }) {
           />
           {editedAccount.types && (
             <Container className={classes.noPadding}>
-              {getAccountTypes(type, editedAccount.types).map(typeObject => (
+              {getTypesOfAccount(type, editedAccount).map(typeObject => (
                 <Chip
                   label={typeObject.name}
                   key={typeObject.key}
@@ -478,7 +416,7 @@ export default function EditAccountPage({ account, children, type }) {
                   onDelete={() => handleTypeDelete(typeObject.key)}
                 />
               ))}
-              {getAccountTypes(type, editedAccount.types).length < getMaxAccountTypes(type) && (
+              {getTypesOfAccount(type, editedAccount).length < getMaxNumberOfTypes(type) && (
                 <Chip
                   label="Add Type"
                   icon={<ControlPointIcon />}
@@ -514,7 +452,7 @@ export default function EditAccountPage({ account, children, type }) {
         onClose={handleAddTypeClose}
         open={addTypeDialogOpen}
         title="Add Type"
-        values={getTypes().filter(type => !editedAccount.types.includes(type.key))}
+        values={getTypes(type).filter(type => !editedAccount.types.includes(type.key))}
         label={"Choose type"}
         supportAdditionalInfo={true}
       />
@@ -529,3 +467,41 @@ export default function EditAccountPage({ account, children, type }) {
     </Container>
   );
 }
+
+//below functions will be replaced with db call later --> potentially retrieve these props directly on the page instead of on the component
+const getInfoMetadata = accountType => {
+  if (accountType !== "profile" && accountType != "organization")
+    throw new Error('accountType has to be "profile" or "organization".');
+  return accountType === "profile" ? profile_info_metadata : organization_info_metadata;
+};
+
+const getFullInfoElement = (key, value, type) => {
+  return { ...getInfoMetadata(type)[key], value: value };
+};
+
+const getTypes = accountType => {
+  if (accountType !== "profile" && accountType != "organization")
+    throw new Error('accountType has to be "profile" or "organization".');
+  const types =
+    accountType === "profile" ? profile_types.profile_types : organization_types.organization_types;
+  return types.map(type => {
+    return {
+      ...type,
+      additionalInfo: type.additionalInfo.map(info => {
+        return { ...getInfoMetadata(accountType)[info], key: info };
+      })
+    };
+  });
+};
+
+const getTypesOfAccount = (accountType, account) => {
+  if (accountType !== "profile" && accountType != "organization")
+    throw new Error('accountType has to be "profile" or "organization".');
+  return getTypes(accountType).filter(type => account.types.includes(type.key));
+};
+
+const getMaxNumberOfTypes = accountType => {
+  if (accountType !== "profile" && accountType != "organization")
+    throw new Error('accountType has to be "profile" or "organization".');
+  return accountType === "profile" ? profile_types.max_types : organization_types.max_types;
+};
