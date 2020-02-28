@@ -1,0 +1,10 @@
+{
+  "max_types": 1,
+  "profile_types": [
+    {
+      "name": "Climate Protector",
+      "key": "climateprotector",
+      "additionalInfo": []
+    }
+  ]
+}

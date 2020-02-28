@@ -1,36 +1,22 @@
 import React from "react";
 import { TextField } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles(theme => ({
-  blockElement: {
-    display: "block",
-    maxWidth: 250,
-    height: 56,
-    margin: "0 auto",
-    marginTop: theme.spacing(2)
-  },
-  maxHeight: {
-    maxHeight: 100
-  }
-}));
-
-export default function SelectField({ field }) {
-  const classes = useStyles();
-  const defaultValue = field.select.defaultValue ? field.select.defaultValue : "";
+export default function SelectField({ defaultValue, label, values, onChange, required }) {
+  if (!defaultValue) defaultValue = "";
   const [value, setValue] = React.useState(defaultValue);
 
   const handleChange = event => {
     setValue(event.target.value);
+    onChange(event);
   };
 
   //TODO: possibly address warnings, that are produced by this component
   return (
     <TextField
       select
+      required={required}
       fullWidth
-      label={field.label}
-      className={classes.blockElement}
+      label={label}
       value={value}
       variant="outlined"
       onChange={handleChange}
@@ -38,8 +24,8 @@ export default function SelectField({ field }) {
         native: true
       }}
     >
-      {!field.defaultValue || field.defaultValue === "" ? <option value="" /> : <></>}
-      {field.select.values.map(value => (
+      {!defaultValue || defaultValue === "" ? <option value="" /> : <></>}
+      {values.map(value => (
         <option value={value} key={value}>
           {value}
         </option>

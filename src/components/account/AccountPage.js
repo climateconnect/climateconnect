@@ -1,6 +1,8 @@
 import React from "react";
 import { Container, Avatar, Typography, Chip, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import profile_info_metadata from "./../../../public/data/profile_info_metadata.json";
+import organization_info_metadata from "./../../../public/data/organization_info_metadata.json";
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -83,15 +85,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function AccountPage({ account, default_background, editHref, children }) {
+const getFullInfoElement = (key, value, type) => {
+  if (type === "profile") return { ...profile_info_metadata[key], value: value };
+  if (type === "organization") return { ...organization_info_metadata[key], value: value };
+};
+
+export default function AccountPage({ type, account, default_background, editHref, children }) {
   const classes = useStyles();
 
   const displayAccountInfo = info =>
-    info.map(i => {
+    Object.keys(info).map(key => {
+      const i = getFullInfoElement(key, info[key], type);
       const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
       const additionalText = i.additionalText ? i.additionalText : "";
       return (
-        <div key={i.key}>
+        <div key={key}>
           <div className={classes.subtitle}>{i.name}:</div>
           <div className={classes.content}>{value + additionalText}</div>
         </div>
@@ -120,7 +128,7 @@ export default function AccountPage({ account, default_background, editHref, chi
             alt={account.name}
             component="div"
             size="large"
-            src={"/images/" + account.image}
+            src={account.image}
             className={classes.avatar}
           />
           <Typography variant="h5" className={classes.name}>

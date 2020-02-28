@@ -18,7 +18,6 @@ export default function Signup() {
     {
       required: true,
       label: "Country",
-      type: "text",
       select: {
         values: countries,
         defaultValue: ""

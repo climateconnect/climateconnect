@@ -87,7 +87,7 @@ EditProfilePage.getInitialProps = async ctx => {
 function ProfileLayout({ profile, projects, organizations }) {
   const classes = useStyles();
   return (
-    <EditAccountPage account={profile} editHref={"/editProfile/" + profile.url}>
+    <EditAccountPage type="profile" account={profile} editHref={"/editProfile/" + profile.url}>
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
         {projects && projects.length ? (

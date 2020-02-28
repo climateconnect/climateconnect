@@ -18,98 +18,61 @@
       "admins": ["tobiasrehm", "christophstoll", "thomasbove"],
       "parentgroup": null,
       "subgroups": [],
-      "info": [
-        {
-          "key": "location",
-          "name": "Location",
-          "value": "International"
-        },
-        {
-          "key": "shortdescription",
-          "name": "Description",
-          "value": "Connecting climate activists around the world."
-        }
-      ],
+      "info": {
+        "location": "International",
+        "shortdescription": "Connecting climate activists around the world."
+      },
       "background_image": "/images/climateconnectbackground.jpg",
-      "types": ["Volunteer group", "Non-profit company"]
+      "types": ["volunteergroup", "nonprofitcompany"]
     },
     {
       "url": "sneep",
       "name": "sneep",
-      "image": "sneep.png",
+      "image": "/images/sneep.png",
       "members": ["christophstoll", "tobiasrehm", "nadineschneider", "reginareck", "tobiasbaume"],
       "admins": [],
       "subgroups": ["sneeperlangen", "sneepnuernberg"],
-      "info": [
-        {
-          "key": "location",
-          "name": "Location",
-          "value": "Europe"
-        },
-        {
-          "key": "shortdescription",
-          "name": "Description",
-          "value": "student network for ethics in economics and practice"
-        }
-      ],
+      "info": {
+        "location": "Europe",
+        "shortdescription": "student network for ethics in economics and practice"
+      },
+      "additionalInfo": {
+        "school": "across schools"
+      },
       "background_image": "/images/background1.jpg",
-      "types": ["Volunteer group"]
+      "types": ["volunteergroup", "studentorganization"]
     },
     {
       "url": "sneeperlangen",
       "name": "sneep Erlangen",
-      "image": "sneep.png",
+      "image": "/images/sneep.png",
       "members": ["tobiasrehm", "christophstoll", "reginareck", "nadineschneider"],
       "admins": ["tobiasrehm", "reginareck"],
       "parentgroup": "sneep",
       "subgroups": [],
-      "info": [
-        {
-          "key": "location",
-          "name": "Location",
-          "value": "Erlangen, Germany"
-        },
-        {
-          "key": "school",
-          "name": "University/School",
-          "value": "FAU Erlangen-Nürnberg"
-        },
-        {
-          "key": "shortdescription",
-          "name": "Description",
-          "value": "Our local group is especially focused on climate action."
-        }
-      ],
+      "info": {
+        "location": "Erlangen, Germany",
+        "shortdescription": "Our local group is especially focused on climate action.",
+        "school": "FAU Erlangen-Nürnberg"
+      },
       "background_image": "/images/sneepbackground.jpg",
-      "types": ["Volunteer group", "Student organization"]
+      "types": ["volunteergroup", "studentorganization"]
     },
     {
       "url": "sneepnuernberg",
       "name": "sneep Nürnberg",
-      "image": "sneep.png",
+      "image": "/images/sneep.png",
       "members": ["tobiasbaume"],
       "admins": ["tobiasbaume"],
       "parentgroup": "sneep",
       "subgroups": [],
-      "info": [
-        {
-          "key": "location",
-          "name": "Location",
-          "value": "Nürnberg, Germany"
-        },
-        {
-          "key": "school",
-          "name": "University/School",
-          "value": "FAU Erlangen-Nürnberg"
-        },
-        {
-          "key": "shortdescription",
-          "name": "Description",
-          "value": "Our local group is especially focused on ethics in economics."
-        }
-      ],
+      "info": {
+        "location": "Erlangen, Germany",
+        "shortdescription": "Our local group is especially focused on ethics in economics.",
+        "school": "FAU Erlangen-Nürnberg"
+      },
       "background_image": "/images/background1.jpg",
-      "types": ["Volunteer group", "Student organization"]
+      "types": ["volunteergroup", "studentorganization"]
     },
     {
       "url": "emptytestorganisation",
@@ -121,7 +84,8 @@
           "value": "We're empty and testing."
         }
       ],
-      "background_image": "/images/background1.jpg"
+      "background_image": "/images/background1.jpg",
+      "types": ["federalgovernment"]
     }
   ]
 }

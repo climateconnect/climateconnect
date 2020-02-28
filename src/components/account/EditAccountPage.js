@@ -2,8 +2,18 @@ import React from "react";
 import { Container, Avatar, Chip, Button, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
-import DoneIcon from "@material-ui/icons/Done";
+import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import UploadImageDialog from "./../dialogs/UploadImageDialog";
+import EnterTextDialog from "./../dialogs/EnterTextDialog";
+import ConfirmDialog from "./../dialogs/ConfirmDialog";
+import SelectField from "./../general/SelectField";
+import SelectDialog from "./../dialogs/SelectDialog";
+import profile_info_metadata from "./../../../public/data/profile_info_metadata.json";
+import organization_info_metadata from "./../../../public/data/organization_info_metadata.json";
+import organization_types from "./../../../public/data/organization_types.json";
+import profile_types from "./../../../public/data/profile_types.json";
+
+//TODO: use getInitialProps for this page
 
 const useStyles = makeStyles(theme => ({
   backgroundContainer: {
@@ -11,6 +21,11 @@ const useStyles = makeStyles(theme => ({
     height: 305,
     position: "relative",
     cursor: "pointer"
+  },
+  backgroundImage: {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover"
   },
   photoIcon: {
     position: "absolute",
@@ -72,6 +87,9 @@ const useStyles = makeStyles(theme => ({
       paddingRight: theme.spacing(17)
     }
   },
+  infoElement: {
+    marginBottom: theme.spacing(1)
+  },
   name: {
     fontWeight: "bold",
     padding: theme.spacing(1),
@@ -132,19 +150,86 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexWrap: "wrap",
     padding: theme.spacing(0.5)
+  },
+  selectOption: {
+    width: 250
   }
 }));
 
-export default function EditAccountPage({ account, children }) {
+//TODO: These should later be replaced by db calls
+const getOrganizationTypes = () => {
+  return organization_types.organization_types.map(type => {
+    return {
+      ...type,
+      additionalInfo: type.additionalInfo.map(info => {
+        return { ...getOrganizationInfoMetadata()[info], key: info };
+      })
+    };
+  });
+};
+//TODO: possible store this function at a place where both AccountPage.js and EditAccountPage.js can access it
+const getProfileTypes = () => {
+  return profile_types.profile_types.map(type => {
+    return {
+      ...type,
+      additionalInfo: type.additionalInfo.map(info => {
+        return { ...getProfileInfoMetadata()[info], key: info };
+      })
+    };
+  });
+};
+const getMaxProfileTypes = () => {
+  console.log(profile_types.max_types);
+  return profile_types.max_types;
+};
+
+const getMaxOrganizationTypes = () => {
+  return organization_types.max_types;
+};
+const getOrganizationInfoMetadata = () => organization_info_metadata;
+const getProfileInfoMetadata = () => profile_info_metadata;
+
+const getAccountTypes = (type, types) => {
+  if (type === "organization") {
+    return getOrganizationTypes().filter(type => types.includes(type.key));
+  }
+  if (type === "profile") {
+    return getProfileTypes().filter(type => types.includes(type.key));
+  }
+  return;
+};
+
+const getMaxAccountTypes = type => {
+  if (type === "organization") {
+    return getMaxOrganizationTypes();
+  }
+  if (type === "profile") {
+    return getMaxProfileTypes();
+  }
+};
+
+const getFullInfoElement = (key, value, type) => {
+  if (type === "profile") return { ...getProfileInfoMetadata()[key], value: value };
+  if (type === "organization") return { ...getOrganizationInfoMetadata()[key], value: value };
+};
+
+export default function EditAccountPage({ account, children, type }) {
   const classes = useStyles();
   const [editedAccount, setEditedAccount] = React.useState(account);
   //used for previwing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
-    image: account.image,
-    background_image: account.background_image
+    image: editedAccount.image,
+    background_image: editedAccount.background_image
   });
   const [backgroundDialogOpen, setBackgroundDialogOpen] = React.useState(false);
   const [avatarDialogOpen, setAvatarDialogOpen] = React.useState(false);
+  const [addTypeDialogOpen, setAddTypeDialogOpen] = React.useState(false);
+  const [confirmExitOpen, setConfirmExitOpen] = React.useState(false);
+
+  const getTypes = () => {
+    if (type === "organization") return getOrganizationTypes();
+    if (type === "profile") return getProfileTypes();
+  };
 
   const handleBackgroundClickOpen = () => {
     setBackgroundDialogOpen(true);
@@ -154,59 +239,124 @@ export default function EditAccountPage({ account, children }) {
     setAvatarDialogOpen(true);
   };
 
+  const handleConfirmExitOpen = () => {
+    setConfirmExitOpen(true);
+  };
+
+  const handleAddTypeClickOpen = () => {
+    setAddTypeDialogOpen(true);
+  };
   const handleBackgroundClose = image => {
     setBackgroundDialogOpen(false);
-    console.log(image);
-    console.log(image instanceof HTMLImageElement);
-    if (image && image instanceof HTMLImageElement)
+    if (image && image instanceof HTMLCanvasElement)
       setEditedAccount({ ...editedAccount, background_image: image.toDataURL() });
-    console.log(editedAccount);
   };
 
   const handleAvatarClose = image => {
     setAvatarDialogOpen(false);
-    if (image && image instanceof HTMLImageElement)
+    if (image && image instanceof HTMLCanvasElement) {
       setEditedAccount({ ...editedAccount, image: image.toDataURL() });
+    }
   };
 
-  console.log(account);
-  const displayArrayData = array => {
+  const handleAddTypeClose = (type, additionalInfo) => {
+    setAddTypeDialogOpen(false);
+    const tempAccount = editedAccount;
+    console.log(tempAccount);
+    if (additionalInfo) {
+      for (const info of additionalInfo) {
+        console.log(info);
+        tempAccount.info[info.key] = info.value;
+      }
+    }
+    tempAccount.types = [...tempAccount.types, type];
+    setEditedAccount(tempAccount);
+  };
+
+  const handleConfirmExitClose = exit => {
+    setConfirmExitOpen(false);
+    if (exit) console.log("exit page!");
+  };
+
+  const deleteFromInfoArray = (key, entry) => {
+    setEditedAccount({
+      ...editedAccount,
+      info: {
+        ...editedAccount.info,
+        [key]: editedAccount.info[key].filter(val => val !== entry)
+      }
+    });
+  };
+
+  const displayInfoArrayData = (key, infoEl) => {
+    const [arrayDialogOpen, setArrayDialogOpen] = React.useState(false);
+
+    const handleTextDialogClose = element => {
+      setArrayDialogOpen(false);
+      if (element && element.length > 0) {
+        setEditedAccount({
+          ...editedAccount,
+          info: { ...editedAccount.info, [key]: [...editedAccount.info[key], element] }
+        });
+      }
+    };
     return (
-      <div key={array.key}>
-        <div className={classes.subtitle}>{array.name}:</div>
+      <div key={key} className={classes.infoElement}>
+        <div className={classes.subtitle}>{infoEl.name}:</div>
         <div className={classes.chipArray}>
-          {array.value.map(entry => (
+          {infoEl.value.map(entry => (
             <Chip
               size="medium"
               label={entry}
-              key={array.value.indexOf(entry)}
-              /*onClick={handleClick}
-            onDelete={handleDelete}*/
+              key={entry}
               className={classes.chip}
-              deleteIcon={<DoneIcon />}
+              onDelete={() => deleteFromInfoArray(key, entry)}
             />
           ))}
+          <Chip
+            label="Add"
+            icon={<ControlPointIcon />}
+            className={classes.chip}
+            onClick={setArrayDialogOpen}
+          />
+          <EnterTextDialog
+            onClose={handleTextDialogClose}
+            open={arrayDialogOpen}
+            arrayName={infoEl.name}
+          />
         </div>
       </div>
     );
   };
 
   const displayAccountInfo = info =>
-    info.map((i, index) => {
+    Object.keys(info).map(key => {
       const handleChange = event => {
-        setEditedAccount(() => {
-          console.log(editedAccount);
-          const ret = editedAccount;
-          ret.info[index].value = event.target.value;
-          return ret;
+        setEditedAccount({
+          ...editedAccount,
+          info: { ...editedAccount.info, key: event.target.value }
         });
       };
+      const i = getFullInfoElement(key, info[key], type);
+      //TODO check if this variable can be removed
       const additionalText = i.additionalText ? i.additionalText : "";
-      if (Array.isArray(i.value)) {
-        return displayArrayData(i);
+      if (i.type === "array") {
+        return displayInfoArrayData(key, i);
+      } else if (i.type === "select") {
+        return (
+          <div key={key} className={classes.infoElement}>
+            <SelectField
+              className={classes.selectOption}
+              values={i.options}
+              label={i.name}
+              defaultValue={i.value}
+              onChange={handleChange}
+            />
+          </div>
+        );
       } else {
         return (
-          <div key={i.key}>
+          <div key={key} className={classes.infoElement}>
             <div className={classes.subtitle}>{i.name}:</div>
             <TextField fullWidth defaultValue={i.value} multiline onChange={handleChange} />
             {additionalText && <div>{additionalText}</div>}
@@ -238,6 +388,22 @@ export default function EditAccountPage({ account, children }) {
     })*/
   };
 
+  const handleTypeDelete = type => {
+    const tempEditedAccount = { ...editedAccount };
+    const fullType = getTypes().filter(t => t.key === type)[0];
+    if (fullType.additionalInfo) {
+      for (const info of fullType.additionalInfo) {
+        delete tempEditedAccount.info[info.key];
+      }
+    }
+    tempEditedAccount.types = tempEditedAccount.types.filter(t => t !== type);
+    setEditedAccount(tempEditedAccount);
+  };
+
+  const saveChanges = () => {
+    console.log(editedAccount);
+  };
+
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div className={classes.backgroundContainer}>
@@ -249,7 +415,7 @@ export default function EditAccountPage({ account, children }) {
             style={{ display: "none" }}
             onChange={onBackgroundChange}
           />
-          <img src={editedAccount.background_image} />
+          <img src={editedAccount.background_image} className={classes.backgroundImage} />
           <div className={classes.backgroundPhotoIconContainer}>
             <AddAPhotoIcon className={`${classes.photoIcon} ${classes.backgroundPhotoIcon}`} />
           </div>
@@ -260,7 +426,7 @@ export default function EditAccountPage({ account, children }) {
           className={`${classes.saveButton} ${classes.actionButton}`}
           color="primary"
           variant="contained"
-          href={"/"}
+          onClick={saveChanges}
         >
           Save Changes
         </Button>
@@ -268,7 +434,7 @@ export default function EditAccountPage({ account, children }) {
           className={`${classes.cancelButton} ${classes.actionButton}`}
           color="secondary"
           variant="contained"
-          href={"/"}
+          onClick={handleConfirmExitOpen}
         >
           Cancel
         </Button>
@@ -283,7 +449,7 @@ export default function EditAccountPage({ account, children }) {
                 onChange={onAvatarChange}
               />
               <Avatar
-                alt={account.name}
+                alt={editedAccount.name}
                 component="div"
                 size="large"
                 src={editedAccount.image}
@@ -296,16 +462,35 @@ export default function EditAccountPage({ account, children }) {
             </label>
           </div>
 
-          <TextField className={classes.name} fullWidth defaultValue={account.name} multiline />
-          {account.types && (
+          <TextField
+            className={classes.name}
+            fullWidth
+            defaultValue={editedAccount.name}
+            multiline
+          />
+          {editedAccount.types && (
             <Container className={classes.noPadding}>
-              {account.types.map(type => (
-                <Chip label={type} key={type} className={classes.chip} />
+              {getAccountTypes(type, editedAccount.types).map(typeObject => (
+                <Chip
+                  label={typeObject.name}
+                  key={typeObject.key}
+                  className={classes.chip}
+                  onDelete={() => handleTypeDelete(typeObject.key)}
+                />
               ))}
+              {getAccountTypes(type, editedAccount.types).length < getMaxAccountTypes(type) && (
+                <Chip
+                  label="Add Type"
+                  icon={<ControlPointIcon />}
+                  onClick={handleAddTypeClickOpen}
+                />
+              )}
             </Container>
           )}
         </Container>
-        <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
+        <Container className={classes.accountInfo}>
+          {displayAccountInfo(editedAccount.info)}
+        </Container>
       </Container>
       {children}
       <UploadImageDialog
@@ -324,6 +509,22 @@ export default function EditAccountPage({ account, children }) {
         borderRadius={10000}
         height={300}
         ratio={1}
+      />
+      <SelectDialog
+        onClose={handleAddTypeClose}
+        open={addTypeDialogOpen}
+        title="Add Type"
+        values={getTypes().filter(type => !editedAccount.types.includes(type.key))}
+        label={"Choose type"}
+        supportAdditionalInfo={true}
+      />
+      <ConfirmDialog
+        open={confirmExitOpen}
+        onClose={handleConfirmExitClose}
+        title="Exit"
+        text="Do you really want to exit without saving?"
+        cancelText="No"
+        confirmText="Yes"
       />
     </Container>
   );

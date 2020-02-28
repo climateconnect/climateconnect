@@ -1,0 +1,70 @@
+{
+  "max_types": 2,
+  "organization_types": [
+    {
+      "name": "Volunteer group",
+      "key": "volunteergroup",
+      "additionalInfo": []
+    },
+    {
+      "name": "NGO",
+      "key": "ngo",
+      "additionalInfo": []
+    },
+    {
+      "name": "Student organization",
+      "key": "studentorganization",
+      "additionalInfo": ["school"]
+    },
+    {
+      "name": "Social movement",
+      "key": "socialmovement",
+      "additionalInfo": []
+    },
+    {
+      "name": "For-profit company",
+      "key": "forprofitcompany",
+      "additionalInfo": []
+    },
+    {
+      "name": "Non-profit company",
+      "key": "nonprofitcompany",
+      "additionalInfo": []
+    },
+    {
+      "name": "Governmental organization",
+      "key": "governmentalorganization",
+      "additionalInfo": []
+    },
+    {
+      "name": "City government",
+      "key": "city",
+      "additionalInfo": ["city"]
+    },
+    {
+      "name": "State",
+      "key": "state",
+      "additionalInfo": ["state"]
+    },
+    {
+      "name": "Federal government",
+      "key": "federalgovernment",
+      "additionalInfo": ["country", "organ"]
+    },
+    {
+      "name": "Intergovernmental organization",
+      "key": "intergovernmentalorganization",
+      "additionalInfo": []
+    },
+    {
+      "name": "Educational facility",
+      "key": "educationalfacility",
+      "additionalInfo": []
+    },
+    {
+      "name": "Research facility",
+      "key": "researchfacility",
+      "additionalInfo": []
+    }
+  ]
+}

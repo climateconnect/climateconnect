@@ -91,6 +91,7 @@ function ProfileLayout({ profile, projects, organizations }) {
       account={profile}
       default_background={DEFAULT_BACKGROUND_IMAGE}
       editHref={"/editProfile/" + profile.url}
+      type="profile"
     >
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>

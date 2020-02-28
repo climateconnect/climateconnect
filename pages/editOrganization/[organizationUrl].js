@@ -28,7 +28,11 @@ export default function EditOrganizationPage({ organization, projects, members }
   return (
     <WideLayout title={organization ? organization.name + "'s profile" : "Not found"}>
       {organization ? (
-        <EditAccountPage account={organization} editHref={"/editOrganization/" + organization.url}>
+        <EditAccountPage
+          type="organization"
+          account={organization}
+          editHref={"/editOrganization/" + organization.url}
+        >
           <Container>
             <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
             {projects && projects.length ? (

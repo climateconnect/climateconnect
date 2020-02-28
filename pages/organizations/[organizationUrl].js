@@ -32,6 +32,7 @@ export default function OrganizationPage({ organization, projects, members }) {
           account={organization}
           default_background={DEFAULT_BACKGROUND_IMAGE}
           editHref={"/editOrganization/" + organization.url}
+          type="organization"
         >
           <Container>
             <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>

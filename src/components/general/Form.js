@@ -68,12 +68,14 @@ export default function Form({
       ) : (
         <></>
       )}
-      <form action={formAction.href} method={formAction.method}>
+      <form action={formAction && formAction.href} method={formAction && formAction.method}>
         {fields.map(field => {
           if (field.select) {
             return (
               <SelectField
-                field={field}
+                defaultValue={field.select.defaultValue}
+                values={field.select.values}
+                label={field.label}
                 className={classes.blockElement}
                 key={field.label + fields.indexOf(field)}
               />
