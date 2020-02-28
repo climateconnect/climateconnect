@@ -44,7 +44,7 @@ OrganizationPage.getInitialProps = async ctx => {
   };
 };
 
-function OrganizationLayout(organization, projects, members) {
+function OrganizationLayout({ organization, projects, members }) {
   const classes = useStyles();
   return (
     <AccountPage
