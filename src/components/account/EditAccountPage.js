@@ -153,6 +153,9 @@ const useStyles = makeStyles(theme => ({
   },
   selectOption: {
     width: 250
+  },
+  dialogWidth: {
+    width: 400
   }
 }));
 
@@ -238,6 +241,9 @@ export default function EditAccountPage({ account, children, type }) {
         });
       }
     };
+
+    const handleArrayDialogClickOpen = () => setArrayDialogOpen(true);
+
     return (
       <div key={key} className={classes.infoElement}>
         <div className={classes.subtitle}>{infoEl.name}:</div>
@@ -255,12 +261,17 @@ export default function EditAccountPage({ account, children, type }) {
             label="Add"
             icon={<ControlPointIcon />}
             className={classes.chip}
-            onClick={setArrayDialogOpen}
+            onClick={handleArrayDialogClickOpen}
           />
           <EnterTextDialog
             onClose={handleTextDialogClose}
             open={arrayDialogOpen}
             arrayName={infoEl.name}
+            title={"Add skill"}
+            inputLabel={"Skill"}
+            applyText={"Add"}
+            maxLength="5"
+            className={classes.dialogWidth}
           />
         </div>
       </div>
@@ -316,9 +327,17 @@ export default function EditAccountPage({ account, children, type }) {
     })*/
   };
 
+  const acceptedTypes = ["image/png", "image/jpeg"];
+
   const onAvatarChange = avatarEvent => {
+    const file = avatarEvent.target.files[0];
+    if (!file || !file.type || !acceptedTypes.includes(file.type)) {
+      //TODO: replace with warning Alert
+      console.log("Please upload either a png or a jpg file.");
+      return;
+    }
     setTempImages(() => {
-      return { ...tempImages, image: URL.createObjectURL(avatarEvent.target.files[0]) };
+      return { ...tempImages, image: file };
     });
     handleAvatarClickOpen();
     /*setEditedAccount(() => {
@@ -334,7 +353,7 @@ export default function EditAccountPage({ account, children, type }) {
         delete tempEditedAccount.info[info.key];
       }
     }
-    tempEditedAccount.types = tempEditedAccount.types.filter(t => t !== type);
+    tempEditedAccount.types = tempEditedAccount.types.filter(t => t !== typeToDelete);
     setEditedAccount(tempEditedAccount);
   };
 
@@ -352,6 +371,7 @@ export default function EditAccountPage({ account, children, type }) {
             id="backgroundPhoto"
             style={{ display: "none" }}
             onChange={onBackgroundChange}
+            accept=".png,.jpeg,.jpg"
           />
           <img src={editedAccount.background_image} className={classes.backgroundImage} />
           <div className={classes.backgroundPhotoIconContainer}>
@@ -385,6 +405,7 @@ export default function EditAccountPage({ account, children, type }) {
                 id="avatarPhoto"
                 style={{ display: "none" }}
                 onChange={onAvatarChange}
+                accept=".png,.jpeg,.jpg"
               />
               <Avatar
                 alt={editedAccount.name}
@@ -434,7 +455,7 @@ export default function EditAccountPage({ account, children, type }) {
       <UploadImageDialog
         onClose={handleBackgroundClose}
         open={backgroundDialogOpen}
-        image={tempImages.background_image}
+        imageUrl={tempImages.background_image}
         height={200}
         mobileHeight={80}
         mediumHeight={120}
@@ -443,7 +464,7 @@ export default function EditAccountPage({ account, children, type }) {
       <UploadImageDialog
         onClose={handleAvatarClose}
         open={avatarDialogOpen}
-        image={tempImages.image}
+        imageUrl={tempImages.image}
         borderRadius={10000}
         height={300}
         ratio={1}
@@ -455,6 +476,7 @@ export default function EditAccountPage({ account, children, type }) {
         values={getTypes(type).filter(type => !editedAccount.types.includes(type.key))}
         label={"Choose type"}
         supportAdditionalInfo={true}
+        className={classes.dialogWidth}
       />
       <ConfirmDialog
         open={confirmExitOpen}

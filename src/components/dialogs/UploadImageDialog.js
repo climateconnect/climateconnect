@@ -1,48 +1,36 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Dialog, DialogTitle, Button, IconButton, Slider } from "@material-ui/core";
-import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
+import { Slider } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
+//Package AvatarEditor returns an object {default: defaultFunction} instead of a function which triggers a warning. This is why we use <AvatarEditor.default> in the exported function.
 import AvatarEditor from "react-avatar-editor";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import GenericDialog from "./GenericDialog";
 
-const useStyles = makeStyles(theme => ({
-  dialog: {
-    [theme.breakpoints.up("sm")]: {
-      padding: theme.spacing(8)
-    }
-  },
-  dialogContent: {
-    padding: theme.spacing(2)
-  },
+const useStyles = makeStyles({
   avatarEditor: {
     margin: "0 auto",
     display: "block"
-  },
-  closeButton: {
-    position: "absolute",
-    left: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500]
-  },
-  titleText: {
-    marginLeft: theme.spacing(5)
-  },
-  applyButton: {
-    position: "absolute",
-    right: theme.spacing(2),
-    top: theme.spacing(1.5)
   },
   slider: {
     display: "block",
     margin: "0 auto"
   }
-}));
+});
 
-export default function UploadImageDialog(props) {
-  const { onClose, open, image, borderRadius, ratio, height, mobileHeight, mediumHeight } = props;
+export default function UploadImageDialog({
+  onClose,
+  open,
+  imageUrl,
+  borderRadius,
+  ratio,
+  height,
+  mobileHeight,
+  mediumHeight
+}) {
   const classes = useStyles();
   const theme = useTheme();
+  const defaultValue = 25;
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const mediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const smallScreen = useMediaQuery(theme.breakpoints.down("xs"));
@@ -55,7 +43,9 @@ export default function UploadImageDialog(props) {
   };
 
   const handleSliderChange = (e, newValue) => {
-    setScale(0.1 + newValue / 27.5);
+    /*Down allow scaling down lower than 10% for usability. 
+    Dividing newValue by (defaultValue/0.9) is done so that the scale===1 at default value*/
+    setScale(0.1 + newValue / (defaultValue / 0.9));
   };
 
   const applyImage = () => {
@@ -84,36 +74,22 @@ export default function UploadImageDialog(props) {
       : height * ratio + 100;
 
   return (
-    <Dialog
+    <GenericDialog
       className={classes.dialog}
       onClose={handleClose}
       aria-labelledby="simple-dialog-title"
       open={open}
       fullScreen={fullScreen}
-      maxWidth="md"
+      title={"Upload an image"}
+      useApplyButton={true}
+      applyText="Apply"
+      onApply={applyImage}
     >
-      <DialogTitle id="simple-dialog-title">
-        {onClose ? (
-          <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-            <KeyboardBackspaceIcon />
-          </IconButton>
-        ) : null}
-        <span className={classes.titleText}>Upload an image!</span>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.applyButton}
-          onClick={applyImage}
-        >
-          Apply
-        </Button>
-      </DialogTitle>
       <div className={classes.dialogContent}>
-        <AvatarEditor
+        <AvatarEditor.default
           className={classes.avatarEditor}
-          image={image}
+          image={imageUrl}
           ref={setEditorRef}
-          id="avatarEditor"
           width={widthToUse}
           height={heightToUse}
           border={50}
@@ -124,19 +100,22 @@ export default function UploadImageDialog(props) {
         />
         <Slider
           aria-label="Image size"
-          defaultValue={25}
+          defaultValue={defaultValue}
           className={classes.slider}
           onChange={handleSliderChange}
           style={{ maxWidth: sliderMaxWidth }}
         />
       </div>
-    </Dialog>
+    </GenericDialog>
   );
 }
 
 UploadImageDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
+  imageUrl: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired,
   ratio: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired
+  height: PropTypes.number.isRequired,
+  mobileHeight: PropTypes.number,
+  mediumHeight: PropTypes.number
 };

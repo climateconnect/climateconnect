@@ -1,29 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Dialog, DialogTitle, Button, IconButton } from "@material-ui/core";
-import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
+import { Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import GenericDialog from "./GenericDialog";
 
 const useStyles = makeStyles(theme => ({
-  dialog: {
-    [theme.breakpoints.up("sm")]: {
-      padding: theme.spacing(8)
-    }
-  },
-  dialogContent: {
-    padding: theme.spacing(2),
-    width: theme.spacing(50),
-    fontSize: "large"
-  },
-  closeButton: {
-    position: "absolute",
-    left: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500]
-  },
-  titleText: {
-    marginLeft: theme.spacing(5)
-  },
   buttonsContainer: {
     marginTop: theme.spacing(3),
     textAlign: "right"
@@ -34,7 +15,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function ConfirmDialog(props) {
-  const { onClose, open, cancelText, confirmText, text, title } = props;
+  const { onClose, open, cancelText, confirmText, text, title, className } = props;
   const classes = useStyles();
 
   const handleCancel = () => {
@@ -46,51 +27,36 @@ export default function ConfirmDialog(props) {
   };
 
   return (
-    <Dialog
-      className={classes.dialog}
-      onClose={handleCancel}
-      aria-labelledby="simple-dialog-title"
-      open={open}
-      maxWidth="md"
-    >
-      <DialogTitle id="simple-dialog-title">
-        {onClose ? (
-          <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-            <KeyboardBackspaceIcon />
-          </IconButton>
-        ) : null}
-        <span className={classes.titleText}>{title}</span>
-      </DialogTitle>
-      <div className={classes.dialogContent}>
-        <div>{text}</div>
-        <div className={classes.buttonsContainer}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleCancel}
-            className={classes.button}
-          >
-            {cancelText}
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleConfirm}
-            className={classes.button}
-          >
-            {confirmText}
-          </Button>
-        </div>
+    <GenericDialog onClose={handleCancel} open={open} title={title} className={className}>
+      <div>{text}</div>
+      <div className={classes.buttonsContainer}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleCancel}
+          className={classes.button}
+        >
+          {cancelText}
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleConfirm}
+          className={classes.button}
+        >
+          {confirmText}
+        </Button>
       </div>
-    </Dialog>
+    </GenericDialog>
   );
 }
 
 ConfirmDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  title: PropTypes.string.isRequired,
-  text: PropTypes.string.isRequired,
   cancelText: PropTypes.string.isRequired,
-  confirmText: PropTypes.string.isRequired
+  confirmText: PropTypes.string.isRequired,
+  text: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  className: PropTypes.string
 };
