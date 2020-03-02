@@ -34,16 +34,19 @@ export default function SelectField({ field }) {
       value={value}
       variant="outlined"
       onChange={handleChange}
+      required={field.required}
       SelectProps={{
         native: true
       }}
     >
       {!field.defaultValue || field.defaultValue === "" ? <option value="" /> : <></>}
-      {field.select.values.map(value => (
-        <option value={value} key={value}>
-          {value}
-        </option>
-      ))}
+      {field.select.values.map(value => {
+        return (
+          <option value={value.name} key={value.key}>
+            {value.name}
+          </option>
+        );
+      })}
     </TextField>
   );
 }
