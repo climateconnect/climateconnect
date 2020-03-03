@@ -45,14 +45,8 @@ export default function GenericDialog({
     onClose(false);
   };
   return (
-    <Dialog
-      className={classes.dialog}
-      onClose={handleCancel}
-      aria-labelledby="simple-dialog-title"
-      open={open}
-      maxWidth="md"
-    >
-      <DialogTitle id="simple-dialog-title">
+    <Dialog className={classes.dialog} onClose={handleCancel} open={open} maxWidth="md">
+      <DialogTitle>
         {onClose ? (
           <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
             <KeyboardBackspaceIcon />
@@ -78,5 +72,8 @@ export default function GenericDialog({
 GenericDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  title: PropTypes.string.isRequired
+  title: PropTypes.string.isRequired,
+  useApplyButton: PropTypes.boolean,
+  onApply: PropTypes.func,
+  applyText: PropTypes.string
 };

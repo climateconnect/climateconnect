@@ -86,7 +86,7 @@ export default function UploadImageDialog({
       onApply={applyImage}
     >
       <div className={classes.dialogContent}>
-        <AvatarEditor.default
+        <AvatarEditor
           className={classes.avatarEditor}
           image={imageUrl}
           ref={setEditorRef}

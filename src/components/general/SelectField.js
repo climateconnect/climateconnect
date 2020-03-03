@@ -33,11 +33,13 @@ export default function SelectField({
       }}
     >
       {!defaultValue || defaultValue === "" ? <option value="" /> : <></>}
-      {values.map(value => (
-        <option value={value} key={value}>
-          {value}
-        </option>
-      ))}
+      {values.map(value => {
+        return (
+          <option value={value.name} key={value.key}>
+            {value.name}
+          </option>
+        );
+      })}
     </TextField>
   );
 }
