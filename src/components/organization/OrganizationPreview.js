@@ -40,20 +40,19 @@ const useStyles = makeStyles(theme => {
 
 export default function OrganizationPreview({ organization }) {
   const classes = useStyles();
-
   return (
     <Card
       className={classes.root}
       variant="outlined"
       onClick={() => {
-        Router.push(`/organization/${organization.url}`);
+        Router.push(`/organizations/${organization.url}`);
       }}
     >
       <CardMedia
         className={classes.media}
         component={"div"}
         title={organization.name}
-        image={organization.logo}
+        image={organization.image}
       />
       <CardContent>
         <Typography variant="subtitle1" component="h2" className={classes.bold}>

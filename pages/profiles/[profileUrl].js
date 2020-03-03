@@ -1,11 +1,13 @@
 import React from "react";
 import Link from "next/link";
+import { Container, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
 import OrganizationPreviews from "./../../src/components/organization/OrganizationPreviews";
-import ProfilePreview from "./../../src/components/profile/ProfilePreview";
-import { Container, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import AccountPage from "./../../src/components/account/AccountPage";
+
 import TEMP_FEATURED_DATA from "../../public/data/profiles.json";
 import TEMP_PROJECT_DATA from "../../public/data/projects.json";
 import TEMP_ORGANIZATION_DATA from "../../public/data/organizations.json";
@@ -79,7 +81,7 @@ export default function ProfilePage({ profile, projects, organizations }) {
 ProfilePage.getInitialProps = async ctx => {
   return {
     profile: await getProfileByUrlIfExists(ctx.query.profileUrl),
-    organizations: await getOrganizations(ctx.query.profileUrl),
+    organizations: await getOrganizationsByUser(ctx.query.profileUrl),
     projects: await getProjects(ctx.query.profileUrl)
   };
 };
@@ -87,49 +89,12 @@ ProfilePage.getInitialProps = async ctx => {
 function ProfileLayout({ profile, projects, organizations }) {
   const classes = useStyles();
   return (
-    <Container maxWidth="lg" className={classes.noPadding}>
-      <div
-        style={{
-          background: `url(${
-            profile.background_image ? profile.background_image : DEFAULT_BACKGROUND_IMAGE
-          })`,
-          "background-size": "cover",
-          "background-position": "center",
-          width: "100%",
-          height: 305
-        }}
-      />
-      <Container className={classes.infoContainer}>
-        <Container className={classes.profilePreview}>
-          <ProfilePreview profile={profile} />
-        </Container>
-        <Container className={classes.memberInfoContainer}>
-          {profile.bio && (
-            <>
-              <div className={`${classes.subtitle} ${classes.marginTop}`}>Bio:</div>
-              <div className={classes.content}>{profile.bio}</div>
-            </>
-          )}
-          {profile.location && (
-            <>
-              <div className={classes.subtitle}>Location:</div>
-              <div className={classes.content}>{profile.location}</div>
-            </>
-          )}
-          {profile.skills && (
-            <>
-              <div className={classes.subtitle}>Skills:</div>
-              <div className={classes.content}>{profile.skills.join(", ")}</div>
-            </>
-          )}
-          {profile.availability && (
-            <>
-              <div className={classes.subtitle}>Availability:</div>
-              <div className={classes.content}>{profile.availability} hours per week</div>
-            </>
-          )}
-        </Container>
-      </Container>
+    <AccountPage
+      account={profile}
+      default_background={DEFAULT_BACKGROUND_IMAGE}
+      editHref={"/editProfile/" + profile.url}
+      type="profile"
+    >
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
         {projects && projects.length ? (
@@ -146,7 +111,7 @@ function ProfileLayout({ profile, projects, organizations }) {
           <Typography>This user is not involved in any organizations yet!</Typography>
         )}
       </Container>
-    </Container>
+    </AccountPage>
   );
 }
 
@@ -173,7 +138,7 @@ async function getProjects(profileUrl) {
   return TEMP_PROJECT_DATA.projects.filter(project => project.members.includes(profileUrl));
 }
 
-async function getOrganizations(profileUrl) {
+async function getOrganizationsByUser(profileUrl) {
   return TEMP_ORGANIZATION_DATA.organizations.filter(
     org => org.members && org.members.includes(profileUrl)
   );

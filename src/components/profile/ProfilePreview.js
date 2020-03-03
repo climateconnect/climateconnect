@@ -29,13 +29,8 @@ export default function ProfilePreview({ profile }) {
   const classes = useStyles();
 
   return (
-    <Link href={"/profile/" + profile.url} className={classes.avatarWithInfo}>
-      <Avatar
-        alt={profile.name}
-        size="large"
-        src={"/images/" + profile.image}
-        className={classes.avatar}
-      />
+    <Link href={"/profiles/" + profile.url} className={classes.avatarWithInfo}>
+      <Avatar alt={profile.name} size="large" src={profile.image} className={classes.avatar} />
       <Typography variant="h5" className={classes.name}>
         {profile.name}
       </Typography>
