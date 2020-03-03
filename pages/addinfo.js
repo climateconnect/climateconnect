@@ -19,7 +19,9 @@ export default function Signup() {
       required: true,
       label: "Country",
       select: {
-        values: countries,
+        values: countries.map(country => {
+          return { key: country, name: country };
+        }),
         defaultValue: ""
       }
     },
