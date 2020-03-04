@@ -11,6 +11,8 @@ import ProjectPreviews from "../../src/components/project/ProjectPreviews";
 import TEMP_FEATURED_DATA from "../../public/data/organizations.json";
 import TEMP_PROJECT_DATA from "../../public/data/projects.json";
 import TEMP_MEMBER_DATA from "../../public/data/profiles.json";
+import TEMP_ORGANIZATION_TYPES from "./../../public/data/organization_types.json";
+import TEMP_INFOMETADATA from "./../../public/data/organization_info_metadata.json";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -24,11 +26,23 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function OrganizationPage({ organization, projects, members }) {
+export default function OrganizationPage({
+  organization,
+  projects,
+  members,
+  organizationTypes,
+  infoMetadata
+}) {
   return (
     <WideLayout title={organization ? organization.name + "'s profile" : "Not found"}>
       {organization ? (
-        <OrganizationLayout organization={organization} projects={projects} members={members} />
+        <OrganizationLayout
+          organization={organization}
+          projects={projects}
+          members={members}
+          organizationTypes={organizationTypes}
+          infoMetadata={infoMetadata}
+        />
       ) : (
         <NoOrganizationFoundLayout />
       )}
@@ -40,11 +54,13 @@ OrganizationPage.getInitialProps = async ctx => {
   return {
     organization: await getOrganizationByUrlIfExists(ctx.query.organizationUrl),
     projects: await getProjectsByOrganization(ctx.query.organizationUrl),
-    members: await getMembersByOrganization(ctx.query.organizationUrl)
+    members: await getMembersByOrganization(ctx.query.organizationUrl),
+    organizationTypes: await getOrganizationTypes(),
+    infoMetadata: await getOrganizationInfoMetadata()
   };
 };
 
-function OrganizationLayout({ organization, projects, members }) {
+function OrganizationLayout({ organization, projects, members, organizationTypes, infoMetadata }) {
   const classes = useStyles();
   return (
     <AccountPage
@@ -52,6 +68,8 @@ function OrganizationLayout({ organization, projects, members }) {
       default_background={DEFAULT_BACKGROUND_IMAGE}
       editHref={"/editOrganization/" + organization.url}
       type="organization"
+      possibleAccountTypes={organizationTypes}
+      infoMetadata={infoMetadata}
     >
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
@@ -100,4 +118,12 @@ async function getProjectsByOrganization(organizationUrl) {
 
 async function getMembersByOrganization(organizationUrl) {
   return TEMP_MEMBER_DATA.profiles.filter(member => member.organizations.includes(organizationUrl));
+}
+
+async function getOrganizationTypes() {
+  return TEMP_ORGANIZATION_TYPES.organization_types;
+}
+
+async function getOrganizationInfoMetadata() {
+  return TEMP_INFOMETADATA;
 }

@@ -8,12 +8,8 @@ import EnterTextDialog from "./../dialogs/EnterTextDialog";
 import ConfirmDialog from "./../dialogs/ConfirmDialog";
 import SelectField from "./../general/SelectField";
 import SelectDialog from "./../dialogs/SelectDialog";
-import profile_info_metadata from "./../../../public/data/profile_info_metadata.json";
-import organization_info_metadata from "./../../../public/data/organization_info_metadata.json";
-import organization_types from "./../../../public/data/organization_types.json";
-import profile_types from "./../../../public/data/profile_types.json";
 
-//TODO: use getInitialProps for this page
+const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
 const useStyles = makeStyles(theme => ({
   backgroundContainer: {
@@ -159,7 +155,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function EditAccountPage({ account, children, type }) {
+export default function EditAccountPage({
+  account,
+  possibleAccountTypes,
+  maxAccountTypes,
+  infoMetadata,
+  children
+}) {
   const classes = useStyles();
   const [editedAccount, setEditedAccount] = React.useState(account);
   //used for previwing images in UploadImageDialog
@@ -167,46 +169,36 @@ export default function EditAccountPage({ account, children, type }) {
     image: editedAccount.image,
     background_image: editedAccount.background_image
   });
-  const [backgroundDialogOpen, setBackgroundDialogOpen] = React.useState(false);
-  const [avatarDialogOpen, setAvatarDialogOpen] = React.useState(false);
-  const [addTypeDialogOpen, setAddTypeDialogOpen] = React.useState(false);
-  const [confirmExitOpen, setConfirmExitOpen] = React.useState(false);
 
-  const handleBackgroundClickOpen = () => {
-    setBackgroundDialogOpen(true);
+  const [open, setOpen] = React.useState({
+    backgroundDialog: false,
+    avatarDialog: false,
+    addTypeDialog: false,
+    confirmExitDialog: false
+  });
+
+  const handleDialogClickOpen = dialogKey => {
+    setOpen({ ...open, [dialogKey]: true });
   };
 
-  const handleAvatarClickOpen = () => {
-    setAvatarDialogOpen(true);
-  };
-
-  const handleConfirmExitOpen = () => {
-    setConfirmExitOpen(true);
-  };
-
-  const handleAddTypeClickOpen = () => {
-    setAddTypeDialogOpen(true);
-  };
   const handleBackgroundClose = image => {
-    setBackgroundDialogOpen(false);
+    setOpen({ open, backgroundDialog: false });
     if (image && image instanceof HTMLCanvasElement)
       setEditedAccount({ ...editedAccount, background_image: image.toDataURL() });
   };
 
   const handleAvatarClose = image => {
-    setAvatarDialogOpen(false);
+    setOpen({ open, avatarDialog: false });
     if (image && image instanceof HTMLCanvasElement) {
       setEditedAccount({ ...editedAccount, image: image.toDataURL() });
     }
   };
 
   const handleAddTypeClose = (type, additionalInfo) => {
-    setAddTypeDialogOpen(false);
+    setOpen({ open, addTypeDialog: false });
     const tempAccount = editedAccount;
-    console.log(tempAccount);
     if (additionalInfo) {
       for (const info of additionalInfo) {
-        console.log(info);
         tempAccount.info[info.key] = info.value;
       }
     }
@@ -215,7 +207,8 @@ export default function EditAccountPage({ account, children, type }) {
   };
 
   const handleConfirmExitClose = exit => {
-    setConfirmExitOpen(false);
+    //TODO: actually exit page!
+    setOpen({ open, confirmExitDialog: false });
     if (exit) console.log("exit page!");
   };
 
@@ -257,12 +250,14 @@ export default function EditAccountPage({ account, children, type }) {
               onDelete={() => deleteFromInfoArray(key, entry)}
             />
           ))}
-          <Chip
-            label="Add"
-            icon={<ControlPointIcon />}
-            className={classes.chip}
-            onClick={handleArrayDialogClickOpen}
-          />
+          {editedAccount.info[key].length < infoEl.maxEntries && (
+            <Chip
+              label="Add"
+              icon={<ControlPointIcon />}
+              className={classes.chip}
+              onClick={handleArrayDialogClickOpen}
+            />
+          )}
           <EnterTextDialog
             onClose={handleTextDialogClose}
             open={arrayDialogOpen}
@@ -270,7 +265,7 @@ export default function EditAccountPage({ account, children, type }) {
             title={"Add skill"}
             inputLabel={"Skill"}
             applyText={"Add"}
-            maxLength="5"
+            maxLength={30}
             className={classes.dialogWidth}
           />
         </div>
@@ -281,14 +276,22 @@ export default function EditAccountPage({ account, children, type }) {
   const displayAccountInfo = info =>
     Object.keys(info).map(key => {
       const handleChange = event => {
-        setEditedAccount({
-          ...editedAccount,
-          info: { ...editedAccount.info, key: event.target.value }
-        });
+        if (event.target.type === "select-one") {
+          const value = event.target.options[event.target.options.selectedIndex].getAttribute(
+            "data-key"
+          );
+          setEditedAccount({
+            ...editedAccount,
+            info: { ...editedAccount.info, [key]: value }
+          });
+        } else {
+          setEditedAccount({
+            ...editedAccount,
+            info: { ...editedAccount.info, [key]: event.target.value }
+          });
+        }
       };
-      const i = getFullInfoElement(key, info[key], type);
-      //TODO check if this variable can be removed
-      const additionalText = i.additionalText ? i.additionalText : "";
+      const i = getFullInfoElement(infoMetadata, key, info[key]);
       if (i.type === "array") {
         return displayInfoArrayData(key, i);
       } else if (i.type === "select") {
@@ -308,30 +311,25 @@ export default function EditAccountPage({ account, children, type }) {
           <div key={key} className={classes.infoElement}>
             <div className={classes.subtitle}>{i.name}:</div>
             <TextField fullWidth defaultValue={i.value} multiline onChange={handleChange} />
-            {additionalText && <div>{additionalText}</div>}
           </div>
         );
       }
     });
 
   const onBackgroundChange = backgroundEvent => {
+    //TODO: also check file type
     setTempImages(() => {
       return {
         ...tempImages,
         background_image: URL.createObjectURL(backgroundEvent.target.files[0])
       };
     });
-    handleBackgroundClickOpen();
-    /*setEditedAccount(() => {
-      return {...editedAccount, background_image:URL.createObjectURL(backgroundEvent.target.files[0])};
-    })*/
+    handleDialogClickOpen("backgroundDialog");
   };
-
-  const acceptedTypes = ["image/png", "image/jpeg"];
 
   const onAvatarChange = avatarEvent => {
     const file = avatarEvent.target.files[0];
-    if (!file || !file.type || !acceptedTypes.includes(file.type)) {
+    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {
       //TODO: replace with warning Alert
       console.log("Please upload either a png or a jpg file.");
       return;
@@ -339,15 +337,14 @@ export default function EditAccountPage({ account, children, type }) {
     setTempImages(() => {
       return { ...tempImages, image: file };
     });
-    handleAvatarClickOpen();
-    /*setEditedAccount(() => {
-      return {...editedAccount, image:URL.createObjectURL(avatarEvent.target.files[0])};
-    })*/
+    handleDialogClickOpen("avatarDialog");
   };
 
   const handleTypeDelete = typeToDelete => {
     const tempEditedAccount = { ...editedAccount };
-    const fullType = getTypes(type).filter(t => t.key === typeToDelete)[0];
+    const fullType = getTypes(possibleAccountTypes, infoMetadata).filter(
+      t => t.key === typeToDelete
+    )[0];
     if (fullType.additionalInfo) {
       for (const info of fullType.additionalInfo) {
         delete tempEditedAccount.info[info.key];
@@ -358,6 +355,7 @@ export default function EditAccountPage({ account, children, type }) {
   };
 
   const saveChanges = () => {
+    //TODO: replace this with an API call that saves the updated account to our database
     console.log(editedAccount);
   };
 
@@ -392,7 +390,7 @@ export default function EditAccountPage({ account, children, type }) {
           className={`${classes.cancelButton} ${classes.actionButton}`}
           color="secondary"
           variant="contained"
-          onClick={handleConfirmExitOpen}
+          onClick={() => handleDialogClickOpen("confirmExitDialog")}
         >
           Cancel
         </Button>
@@ -429,19 +427,22 @@ export default function EditAccountPage({ account, children, type }) {
           />
           {editedAccount.types && (
             <Container className={classes.noPadding}>
-              {getTypesOfAccount(type, editedAccount).map(typeObject => (
-                <Chip
-                  label={typeObject.name}
-                  key={typeObject.key}
-                  className={classes.chip}
-                  onDelete={() => handleTypeDelete(typeObject.key)}
-                />
-              ))}
-              {getTypesOfAccount(type, editedAccount).length < getMaxNumberOfTypes(type) && (
+              {getTypesOfAccount(editedAccount, possibleAccountTypes, infoMetadata).map(
+                typeObject => (
+                  <Chip
+                    label={typeObject.name}
+                    key={typeObject.key}
+                    className={classes.chip}
+                    onDelete={() => handleTypeDelete(typeObject.key)}
+                  />
+                )
+              )}
+              {getTypesOfAccount(editedAccount, possibleAccountTypes, infoMetadata).length <
+                maxAccountTypes && (
                 <Chip
                   label="Add Type"
                   icon={<ControlPointIcon />}
-                  onClick={handleAddTypeClickOpen}
+                  onClick={() => handleDialogClickOpen("addTypeDialog")}
                 />
               )}
             </Container>
@@ -454,7 +455,7 @@ export default function EditAccountPage({ account, children, type }) {
       {children}
       <UploadImageDialog
         onClose={handleBackgroundClose}
-        open={backgroundDialogOpen}
+        open={open.backgroundDialog}
         imageUrl={tempImages.background_image}
         height={200}
         mobileHeight={80}
@@ -463,7 +464,7 @@ export default function EditAccountPage({ account, children, type }) {
       />
       <UploadImageDialog
         onClose={handleAvatarClose}
-        open={avatarDialogOpen}
+        open={open.avatarDialog}
         imageUrl={tempImages.image}
         borderRadius={10000}
         height={300}
@@ -471,15 +472,17 @@ export default function EditAccountPage({ account, children, type }) {
       />
       <SelectDialog
         onClose={handleAddTypeClose}
-        open={addTypeDialogOpen}
+        open={open.addTypeDialog}
         title="Add Type"
-        values={getTypes(type).filter(type => !editedAccount.types.includes(type.key))}
+        values={getTypes(possibleAccountTypes, infoMetadata).filter(
+          type => !editedAccount.types.includes(type.key)
+        )}
         label={"Choose type"}
         supportAdditionalInfo={true}
         className={classes.dialogWidth}
       />
       <ConfirmDialog
-        open={confirmExitOpen}
+        open={open.confirmExitDialog}
         onClose={handleConfirmExitClose}
         title="Exit"
         text="Do you really want to exit without saving?"
@@ -491,39 +494,23 @@ export default function EditAccountPage({ account, children, type }) {
 }
 
 //below functions will be replaced with db call later --> potentially retrieve these props directly on the page instead of on the component
-const getInfoMetadata = accountType => {
-  if (accountType !== "profile" && accountType != "organization")
-    throw new Error('accountType has to be "profile" or "organization".');
-  return accountType === "profile" ? profile_info_metadata : organization_info_metadata;
+const getFullInfoElement = (infoMetadata, key, value) => {
+  return { ...infoMetadata[key], value: value };
 };
 
-const getFullInfoElement = (key, value, type) => {
-  return { ...getInfoMetadata(type)[key], value: value };
-};
-
-const getTypes = accountType => {
-  if (accountType !== "profile" && accountType != "organization")
-    throw new Error('accountType has to be "profile" or "organization".');
-  const types =
-    accountType === "profile" ? profile_types.profile_types : organization_types.organization_types;
-  return types.map(type => {
+const getTypes = (possibleAccountTypes, infoMetadata) => {
+  return possibleAccountTypes.map(type => {
     return {
       ...type,
       additionalInfo: type.additionalInfo.map(info => {
-        return { ...getInfoMetadata(accountType)[info], key: info };
+        return { ...infoMetadata[info], key: info };
       })
     };
   });
 };
 
-const getTypesOfAccount = (accountType, account) => {
-  if (accountType !== "profile" && accountType != "organization")
-    throw new Error('accountType has to be "profile" or "organization".');
-  return getTypes(accountType).filter(type => account.types.includes(type.key));
-};
-
-const getMaxNumberOfTypes = accountType => {
-  if (accountType !== "profile" && accountType != "organization")
-    throw new Error('accountType has to be "profile" or "organization".');
-  return accountType === "profile" ? profile_types.max_types : organization_types.max_types;
+const getTypesOfAccount = (account, possibleAccountTypes, infoMetadata) => {
+  return getTypes(possibleAccountTypes, infoMetadata).filter(type =>
+    account.types.includes(type.key)
+  );
 };

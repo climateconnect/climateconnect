@@ -36,6 +36,10 @@ export default function EnterTextDialog({
     setElement(event.target.value);
   };
 
+  const handleKeyPress = event => {
+    if (event.key === "Enter") applyElement();
+  };
+
   return (
     <GenericDialog
       onClose={handleClose}
@@ -53,7 +57,8 @@ export default function EnterTextDialog({
           variant="outlined"
           onChange={handleChange}
           defaultValue={element}
-          inputProps={{ maxLength: { maxLength } }}
+          inputProps={{ maxLength: maxLength }}
+          onKeyPress={handleKeyPress}
         />
       </div>
     </GenericDialog>

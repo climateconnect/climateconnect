@@ -79,7 +79,7 @@ export default function SelectDialog({
           className={classes.textField}
           onChange={handleSelectChange}
           label={label}
-          values={supportAdditionalInfo ? values.map(x => x.name) : values}
+          values={values}
         />
         {supportAdditionalInfo &&
           additionalInfo.length > 0 &&

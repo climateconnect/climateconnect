@@ -73,7 +73,7 @@ GenericDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   title: PropTypes.string.isRequired,
-  useApplyButton: PropTypes.boolean,
+  useApplyButton: PropTypes.bool,
   onApply: PropTypes.func,
   applyText: PropTypes.string
 };

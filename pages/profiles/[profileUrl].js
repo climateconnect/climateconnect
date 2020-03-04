@@ -11,6 +11,8 @@ import AccountPage from "./../../src/components/account/AccountPage";
 import TEMP_FEATURED_DATA from "../../public/data/profiles.json";
 import TEMP_PROJECT_DATA from "../../public/data/projects.json";
 import TEMP_ORGANIZATION_DATA from "../../public/data/organizations.json";
+import TEMP_PROFILE_TYPES from "./../../public/data/profile_types.json";
+import TEMP_INFOMETADATA from "./../../public/data/profile_info_metadata.json";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -66,11 +68,25 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function ProfilePage({ profile, projects, organizations }) {
+export default function ProfilePage({
+  profile,
+  projects,
+  organizations,
+  profileTypes,
+  maxAccountTypes,
+  infoMetadata
+}) {
   return (
     <WideLayout title={profile ? profile.name + "'s profile" : "Not found"}>
       {profile ? (
-        <ProfileLayout profile={profile} projects={projects} organizations={organizations} />
+        <ProfileLayout
+          profile={profile}
+          projects={projects}
+          organizations={organizations}
+          profileTypes={profileTypes}
+          maxAccountTypes={maxAccountTypes}
+          infoMetadata={infoMetadata}
+        />
       ) : (
         <NoProfileFoundLayout />
       )}
@@ -82,11 +98,21 @@ ProfilePage.getInitialProps = async ctx => {
   return {
     profile: await getProfileByUrlIfExists(ctx.query.profileUrl),
     organizations: await getOrganizationsByUser(ctx.query.profileUrl),
-    projects: await getProjects(ctx.query.profileUrl)
+    projects: await getProjects(ctx.query.profileUrl),
+    profileTypes: await getProfileTypes(),
+    maxAccountTypes: await getMaxProfileTypes(),
+    infoMetadata: await getProfileInfoMetadata()
   };
 };
 
-function ProfileLayout({ profile, projects, organizations }) {
+function ProfileLayout({
+  profile,
+  projects,
+  organizations,
+  profileTypes,
+  maxAccountTypes,
+  infoMetadata
+}) {
   const classes = useStyles();
   return (
     <AccountPage
@@ -94,6 +120,9 @@ function ProfileLayout({ profile, projects, organizations }) {
       default_background={DEFAULT_BACKGROUND_IMAGE}
       editHref={"/editProfile/" + profile.url}
       type="profile"
+      possibleAccountTypes={profileTypes}
+      maxAccountTypes={maxAccountTypes}
+      infoMetadata={infoMetadata}
     >
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
@@ -142,4 +171,16 @@ async function getOrganizationsByUser(profileUrl) {
   return TEMP_ORGANIZATION_DATA.organizations.filter(
     org => org.members && org.members.includes(profileUrl)
   );
+}
+
+async function getProfileTypes() {
+  return TEMP_PROFILE_TYPES.profile_types;
+}
+
+async function getMaxProfileTypes() {
+  return TEMP_PROFILE_TYPES.max_types;
+}
+
+async function getProfileInfoMetadata() {
+  return TEMP_INFOMETADATA;
 }

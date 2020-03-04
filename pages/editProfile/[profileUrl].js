@@ -1,74 +1,34 @@
 import React from "react";
 import Link from "next/link";
 import WideLayout from "../../src/components/layouts/WideLayout";
-import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
-import OrganizationPreviews from "./../../src/components/organization/OrganizationPreviews";
 import EditAccountPage from "./../../src/components/account/EditAccountPage";
-import { Container, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import TEMP_FEATURED_DATA from "../../public/data/profiles.json";
-import TEMP_PROJECT_DATA from "../../public/data/projects.json";
-import TEMP_ORGANIZATION_DATA from "../../public/data/organizations.json";
+import TEMP_PROFILE_TYPES from "./../../public/data/profile_types.json";
+import TEMP_INFOMETADATA from "./../../public/data/profile_info_metadata.json";
 
 const useStyles = makeStyles(theme => {
   return {
-    background: {
-      width: "100%"
-    },
-    profilePreview: {
-      margin: "0 auto",
-      marginTop: theme.spacing(-11),
-      [theme.breakpoints.up("sm")]: {
-        margin: 0,
-        marginTop: theme.spacing(-11),
-        display: "inline-block",
-        width: "auto"
-      }
-    },
-    memberInfoContainer: {
-      [theme.breakpoints.up("sm")]: {
-        display: "inline-block"
-      },
-      padding: 0
-    },
-    subtitle: {
-      color: `${theme.palette.secondary.main}`
-    },
-    content: {
-      paddingTop: theme.spacing(1),
-      paddingBottom: theme.spacing(1),
-      color: `${theme.palette.secondary.main}`,
-      fontWeight: "bold"
-    },
-    noPadding: {
-      padding: 0
-    },
-    infoContainer: {
-      [theme.breakpoints.up("sm")]: {
-        display: "flex"
-      }
-    },
-    cardHeadline: {
-      marginTop: theme.spacing(3),
-      marginBottom: theme.spacing(1)
-    },
     noprofile: {
       textAlign: "center",
       padding: theme.spacing(5)
-    },
-    marginTop: {
-      marginTop: theme.spacing(1)
     }
   };
 });
 
 //This route should later be changed to "/editProfile" and should load the profile of the logged in person.
 
-export default function EditProfilePage({ profile, projects, organizations }) {
+export default function EditProfilePage({ profile, profileTypes, infoMetadata, maxAccountTypes }) {
   return (
     <WideLayout title={profile ? profile.name + "'s profile" : "Not found"}>
       {profile ? (
-        <ProfileLayout profile={profile} projects={projects} organizations={organizations} />
+        <ProfileLayout
+          profile={profile}
+          profileTypes={profileTypes}
+          infoMetadata={infoMetadata}
+          maxAccountTypes={maxAccountTypes}
+        />
       ) : (
         <NoProfileFoundLayout />
       )}
@@ -79,32 +39,22 @@ export default function EditProfilePage({ profile, projects, organizations }) {
 EditProfilePage.getInitialProps = async ctx => {
   return {
     profile: await getProfileByUrlIfExists(ctx.query.profileUrl),
-    organizations: await getOrganizations(ctx.query.profileUrl),
-    projects: await getProjects(ctx.query.profileUrl)
+    profileTypes: await getProfileTypes(),
+    infoMetadata: await getProfileInfoMetadata(),
+    maxAccountTypes: await getMaxProfileTypes()
   };
 };
 
-function ProfileLayout({ profile, projects, organizations }) {
-  const classes = useStyles();
+function ProfileLayout({ profile, profileTypes, infoMetadata, maxAccountTypes }) {
   return (
-    <EditAccountPage type="profile" account={profile} editHref={"/editProfile/" + profile.url}>
-      <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
-        {projects && projects.length ? (
-          <ProjectPreviews projects={projects} />
-        ) : (
-          <Typography>This user is not involved in any projects yet!</Typography>
-        )}
-      </Container>
-      <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Organizations:</div>
-        {organizations && organizations.length > 0 ? (
-          <OrganizationPreviews organizations={organizations} />
-        ) : (
-          <Typography>This user is not involved in any organizations yet!</Typography>
-        )}
-      </Container>
-    </EditAccountPage>
+    <EditAccountPage
+      type="profile"
+      account={profile}
+      editHref={"/editProfile/" + profile.url}
+      possibleAccountTypes={profileTypes}
+      infoMetadata={infoMetadata}
+      maxAccountTypes={maxAccountTypes}
+    />
   );
 }
 
@@ -127,12 +77,14 @@ async function getProfileByUrlIfExists(profileUrl) {
   return TEMP_FEATURED_DATA.profiles.find(({ url }) => url === profileUrl);
 }
 
-async function getProjects(profileUrl) {
-  return TEMP_PROJECT_DATA.projects.filter(project => project.members.includes(profileUrl));
+async function getProfileTypes() {
+  return TEMP_PROFILE_TYPES.profile_types;
 }
 
-async function getOrganizations(profileUrl) {
-  return TEMP_ORGANIZATION_DATA.organizations.filter(
-    org => org.members && org.members.includes(profileUrl)
-  );
+async function getMaxProfileTypes() {
+  return TEMP_PROFILE_TYPES.max_types;
+}
+
+async function getProfileInfoMetadata() {
+  return TEMP_INFOMETADATA;
 }
