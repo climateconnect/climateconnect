@@ -17,13 +17,17 @@
 ```
 
 3. Clone down the repo
-4. Run `pip install -r requirements.txt` to install python packages.
-5. Run `yarn install` to download all NPM packages.
+4. Go to climateconnect directory: `cd climateconnect`
+5. Run `pip install -r requirements.txt` to install python packages.
 6. Create `.env` (frontend) and `.pyenv` (backend) file for environments variables.
-7. Run `yarn build` to build js packages.
-8. Run `yarn export` to export build.
-9. Now run `./manage.py makemigrations` to run database migrations.
-10. Now run `./manage.py runserver` to start the server.
+7. Now run following command to install and build frontend packages.
+   ```
+      cd frontend
+      yarn install
+      yarn build
+   ```
+8. Go back to main directory and run `./manage.py makemigrations` to run database migrations.
+9. Now run `./manage.py runserver` to start the server.
 
 ### Development Tips
 
