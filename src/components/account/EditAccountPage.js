@@ -1,4 +1,5 @@
 import React from "react";
+import Router from "next/router";
 import { Container, Avatar, Chip, Button, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -95,12 +96,6 @@ const useStyles = makeStyles(theme => ({
   subtitle: {
     color: `${theme.palette.secondary.main}`
   },
-  content: {
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-    color: `${theme.palette.secondary.main}`,
-    fontWeight: "bold"
-  },
   noPadding: {
     padding: 0
   },
@@ -109,10 +104,6 @@ const useStyles = makeStyles(theme => ({
       display: "flex"
     },
     position: "relative"
-  },
-  noprofile: {
-    textAlign: "center",
-    padding: theme.spacing(5)
   },
   marginTop: {
     marginTop: theme.spacing(1)
@@ -160,11 +151,13 @@ export default function EditAccountPage({
   possibleAccountTypes,
   maxAccountTypes,
   infoMetadata,
+  accountHref,
   children
 }) {
   const classes = useStyles();
+
   const [editedAccount, setEditedAccount] = React.useState(account);
-  //used for previwing images in UploadImageDialog
+  //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
     image: editedAccount.image,
     background_image: editedAccount.background_image
@@ -182,20 +175,20 @@ export default function EditAccountPage({
   };
 
   const handleBackgroundClose = image => {
-    setOpen({ open, backgroundDialog: false });
+    setOpen({ ...open, backgroundDialog: false });
     if (image && image instanceof HTMLCanvasElement)
       setEditedAccount({ ...editedAccount, background_image: image.toDataURL() });
   };
 
   const handleAvatarClose = image => {
-    setOpen({ open, avatarDialog: false });
+    setOpen({ ...open, avatarDialog: false });
     if (image && image instanceof HTMLCanvasElement) {
       setEditedAccount({ ...editedAccount, image: image.toDataURL() });
     }
   };
 
   const handleAddTypeClose = (type, additionalInfo) => {
-    setOpen({ open, addTypeDialog: false });
+    setOpen({ ...open, addTypeDialog: false });
     const tempAccount = editedAccount;
     if (additionalInfo) {
       for (const info of additionalInfo) {
@@ -207,9 +200,8 @@ export default function EditAccountPage({
   };
 
   const handleConfirmExitClose = exit => {
-    //TODO: actually exit page!
-    setOpen({ open, confirmExitDialog: false });
-    if (exit) console.log("exit page!");
+    setOpen({ ...open, confirmExitDialog: false });
+    if (exit) Router.push(accountHref);
   };
 
   const deleteFromInfoArray = (key, entry) => {
@@ -236,7 +228,6 @@ export default function EditAccountPage({
     };
 
     const handleArrayDialogClickOpen = () => setArrayDialogOpen(true);
-
     return (
       <div key={key} className={classes.infoElement}>
         <div className={classes.subtitle}>{infoEl.name}:</div>
@@ -317,11 +308,14 @@ export default function EditAccountPage({
     });
 
   const onBackgroundChange = backgroundEvent => {
-    //TODO: also check file type
+    const file = backgroundEvent.target.files[0];
+    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
+      alert("Please upload either a png or a jpg file.");
+
     setTempImages(() => {
       return {
         ...tempImages,
-        background_image: URL.createObjectURL(backgroundEvent.target.files[0])
+        background_image: URL.createObjectURL(file)
       };
     });
     handleDialogClickOpen("backgroundDialog");
@@ -329,11 +323,9 @@ export default function EditAccountPage({
 
   const onAvatarChange = avatarEvent => {
     const file = avatarEvent.target.files[0];
-    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-      //TODO: replace with warning Alert
-      console.log("Please upload either a png or a jpg file.");
-      return;
-    }
+    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
+      alert("Please upload either a png or a jpg file.");
+
     setTempImages(() => {
       return { ...tempImages, image: file };
     });
@@ -345,6 +337,7 @@ export default function EditAccountPage({
     const fullType = getTypes(possibleAccountTypes, infoMetadata).filter(
       t => t.key === typeToDelete
     )[0];
+    //The additional info that has to be provided for that type isn't necessary anymore, so we delete it
     if (fullType.additionalInfo) {
       for (const info of fullType.additionalInfo) {
         delete tempEditedAccount.info[info.key];
@@ -493,7 +486,6 @@ export default function EditAccountPage({
   );
 }
 
-//below functions will be replaced with db call later --> potentially retrieve these props directly on the page instead of on the component
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };
 };

@@ -50,10 +50,10 @@ function ProfileLayout({ profile, profileTypes, infoMetadata, maxAccountTypes })
     <EditAccountPage
       type="profile"
       account={profile}
-      editHref={"/editProfile/" + profile.url}
       possibleAccountTypes={profileTypes}
       infoMetadata={infoMetadata}
       maxAccountTypes={maxAccountTypes}
+      accountHref={"/profiles/" + profile.url}
     />
   );
 }

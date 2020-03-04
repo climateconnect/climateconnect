@@ -28,10 +28,10 @@ export default function EditOrganizationPage({
         <EditAccountPage
           type="organization"
           account={organization}
-          editHref={"/editOrganization/" + organization.url}
           possibleAccountTypes={organizationTypes}
           infoMetadata={infoMetadata}
           maxAccountTypes={maxAccountTypes}
+          accountHref={"/organizations/" + organization.url}
         />
       ) : (
         <NoOrganizationFoundLayout />
