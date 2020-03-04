@@ -1,10 +1,6 @@
 import React from "react";
 import { Container, Avatar, Typography, Chip, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import profile_info_metadata from "./../../../public/data/profile_info_metadata.json";
-import organization_info_metadata from "./../../../public/data/organization_info_metadata.json";
-import profile_types from "./../../../public/data/profile_types.json";
-import organization_types from "./../../../public/data/organization_types.json";
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -87,7 +83,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function AccountPage({ type, account, default_background, editHref, children }) {
+export default function AccountPage({
+  possibleAccountTypes,
+  account,
+  default_background,
+  editHref,
+  infoMetadata,
+  children
+}) {
   const classes = useStyles();
 
   const displayInfoArrayData = (key, infoEl) => {
@@ -105,7 +108,7 @@ export default function AccountPage({ type, account, default_background, editHre
 
   const displayAccountInfo = info =>
     Object.keys(info).map(key => {
-      const i = getFullInfoElement(key, info[key], type);
+      const i = getFullInfoElement(infoMetadata, key, info[key]);
       const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
       const additionalText = i.additionalText ? i.additionalText : "";
       if (i.type === "array") {
@@ -150,7 +153,7 @@ export default function AccountPage({ type, account, default_background, editHre
           </Typography>
           <Container className={classes.noPadding}>
             {account.types &&
-              getTypesOfAccount(type, account).map(type => (
+              getTypesOfAccount(account, possibleAccountTypes, infoMetadata).map(type => (
                 <Chip label={type.name} key={type.key} className={classes.chip} />
               ))}
           </Container>
@@ -163,34 +166,24 @@ export default function AccountPage({ type, account, default_background, editHre
 }
 
 //below functions will be replaced with db call later --> potentially retrieve these props directly on the page instead of on the component
-const getInfoMetadata = accountType => {
-  if (accountType !== "profile" && accountType != "organization")
-    throw new Error('accountType has to be "profile" or "organization".');
-  return accountType === "profile" ? profile_info_metadata : organization_info_metadata;
+
+const getFullInfoElement = (infoMetadata, key, value) => {
+  return { ...infoMetadata[key], value: value };
 };
 
-const getFullInfoElement = (key, value, type) => {
-  if (type === "profile") return { ...profile_info_metadata[key], value: value };
-  if (type === "organization") return { ...organization_info_metadata[key], value: value };
-};
-
-const getTypes = accountType => {
-  if (accountType !== "profile" && accountType != "organization")
-    throw new Error('accountType has to be "profile" or "organization".');
-  const types =
-    accountType === "profile" ? profile_types.profile_types : organization_types.organization_types;
-  return types.map(type => {
+const getTypes = (possibleAccountTypes, infoMetadata) => {
+  return possibleAccountTypes.map(type => {
     return {
       ...type,
       additionalInfo: type.additionalInfo.map(info => {
-        return { ...getInfoMetadata(accountType)[info], key: info };
+        return { ...infoMetadata[info], key: info };
       })
     };
   });
 };
 
-const getTypesOfAccount = (type, account) => {
-  if (type !== "profile" && type != "organization")
-    throw new Error('type has to be "profile" or "organization".');
-  return getTypes(type).filter(type => account.types.includes(type.key));
+const getTypesOfAccount = (account, possibleAccountTypes, infoMetadata) => {
+  return getTypes(possibleAccountTypes, infoMetadata).filter(type =>
+    account.types.includes(type.key)
+  );
 };

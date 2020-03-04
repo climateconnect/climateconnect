@@ -1,25 +1,55 @@
 {
   "availability": {
     "name": "Availability",
-    "additionalText": " hours per week",
     "type": "select",
     "options": [
-      "1-2",
-      "3-5",
-      "6-10",
-      "11-15",
-      "16-20",
-      "21-25",
-      "26-30",
-      "31-35",
-      "36-40",
-      "more than 40 "
+      {
+        "name": "1-2 hours per week",
+        "key": "1-2"
+      },
+      {
+        "name": "3-5 hours per week",
+        "key": "3-5"
+      },
+      {
+        "name": "6-10 hours per week",
+        "key": "6-10"
+      },
+      {
+        "name": "11-15 hours per week",
+        "key": "11-15"
+      },
+      {
+        "name": "16-20 hours per week",
+        "key": "16-20"
+      },
+      {
+        "name": "21-25 hours per week",
+        "key": "21-25"
+      },
+      {
+        "name": "26-30 hours per week",
+        "key": "26-30"
+      },
+      {
+        "name": "31-35 hours per week",
+        "key": "31-35"
+      },
+      {
+        "name": "36-40 hours per week",
+        "key": "36-40"
+      },
+      {
+        "name": "more than 40 hours per week",
+        "key": "more than 40"
+      }
     ]
   },
   "skills": {
     "name": "Skills",
     "type": "array",
-    "addText": "Add skill"
+    "addText": "Add skill",
+    "maxEntries": 8
   },
   "bio": {
     "name": "Bio",

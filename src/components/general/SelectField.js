@@ -16,7 +16,6 @@ export default function SelectField({
     setValue(event.target.value);
     if (onChange) onChange(event);
   };
-
   //TODO: possibly address warnings, that are produced by this component
   return (
     <TextField
@@ -35,7 +34,7 @@ export default function SelectField({
       {!defaultValue || defaultValue === "" ? <option value="" /> : <></>}
       {values.map(value => {
         return (
-          <option value={value.name} key={value.key}>
+          <option value={value.name} key={value.key} data-key={value.key}>
             {value.name}
           </option>
         );
