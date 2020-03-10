@@ -75,6 +75,21 @@
       "types": ["volunteergroup", "studentorganization"]
     },
     {
+      "url": "energiewendeerhlangen",
+      "name": "Energiewende ER(H)langen",
+      "image": "/images/energiewendelogo.jpg",
+      "members": ["stefanjessenberger"],
+      "admins": ["stefanjessenberger"],
+      "parentgroup": null,
+      "subgroups": [],
+      "info": {
+        "location": "Erlangen, Germany",
+        "shortdescription": "We are trying to accelerate the transition to renewable energy in Germany."
+      },
+      "background_image": "/images/background1.jpg",
+      "types": ["volunteergroup"]
+    },
+    {
       "url": "emptytestorganisation",
       "name": "We empty",
       "info": [

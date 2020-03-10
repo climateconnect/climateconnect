@@ -11,6 +11,8 @@ import SelectField from "./../general/SelectField";
 import SelectDialog from "./../dialogs/SelectDialog";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
+const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
+const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
 const useStyles = makeStyles(theme => ({
   backgroundContainer: {
@@ -159,8 +161,10 @@ export default function EditAccountPage({
   const [editedAccount, setEditedAccount] = React.useState(account);
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
-    image: editedAccount.image,
+    image: editedAccount.image ? editedAccount.image : DEFAULT_AVATAR_IMAGE,
     background_image: editedAccount.background_image
+      ? editedAccount.background_image
+      : DEFAULT_BACKGROUND_IMAGE
   });
 
   const [open, setOpen] = React.useState({
@@ -349,7 +353,6 @@ export default function EditAccountPage({
 
   const saveChanges = () => {
     //TODO: replace this with an API call that saves the updated account to our database
-    console.log(editedAccount);
   };
 
   return (
@@ -468,7 +471,7 @@ export default function EditAccountPage({
         open={open.addTypeDialog}
         title="Add Type"
         values={getTypes(possibleAccountTypes, infoMetadata).filter(
-          type => !editedAccount.types.includes(type.key)
+          type => editedAccount.types && !editedAccount.types.includes(type.key)
         )}
         label={"Choose type"}
         supportAdditionalInfo={true}

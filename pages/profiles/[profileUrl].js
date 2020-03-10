@@ -164,7 +164,7 @@ async function getProfileByUrlIfExists(profileUrl) {
 }
 
 async function getProjects(profileUrl) {
-  return TEMP_PROJECT_DATA.projects.filter(project => project.members.includes(profileUrl));
+  return TEMP_PROJECT_DATA.projects.filter(project => project.team.includes(profileUrl));
 }
 
 async function getOrganizationsByUser(profileUrl) {
