@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Link, Avatar } from "@material-ui/core";
+import { Typography, Link, Avatar, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => {
@@ -21,11 +21,20 @@ const useStyles = makeStyles(theme => {
     },
     subtitle: {
       color: `${theme.palette.secondary.main}`
+    },
+    messageButton: {
+      margin: "0 auto"
+    },
+    additionalInfo: {
+      paddingBottom: theme.spacing(1)
+    },
+    additionalInfoEl: {
+      color: theme.palette.grey[700]
     }
   };
 });
 
-export default function ProfilePreview({ profile }) {
+export default function ProfilePreview({ profile, allowMessage, additionalInfo }) {
   const classes = useStyles();
 
   return (
@@ -34,7 +43,22 @@ export default function ProfilePreview({ profile }) {
       <Typography variant="h5" className={classes.name}>
         {profile.name}
       </Typography>
-      <Typography className={classes.subtitle}>{profile.type}</Typography>
+      {additionalInfo && (
+        <div className={classes.additionalInfo}>
+          {additionalInfo.map((i, index) => (
+            <Typography key={index} className={classes.additionalInfoEl}>
+              {i}
+            </Typography>
+          ))}
+        </div>
+      )}
+      {allowMessage && (
+        <div>
+          <Button variant="contained" color="primary" className={classes.messageButton}>
+            Send Message
+          </Button>
+        </div>
+      )}
     </Link>
   );
 }

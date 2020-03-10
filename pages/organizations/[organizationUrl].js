@@ -112,7 +112,7 @@ async function getOrganizationByUrlIfExists(organizationUrl) {
 
 async function getProjectsByOrganization(organizationUrl) {
   return TEMP_PROJECT_DATA.projects.filter(project =>
-    project.organization_url.includes(organizationUrl)
+    project.creator_url.includes(organizationUrl)
   );
 }
 

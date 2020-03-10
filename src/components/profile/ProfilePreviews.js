@@ -11,7 +11,7 @@ const useStyles = makeStyles({
   }
 });
 
-export default function ProfilePreviews({ profiles }) {
+export default function ProfilePreviews({ profiles, allowMessage, additionalInfo }) {
   const classes = useStyles();
 
   // TODO: use `profile.id` instead of index when using real profiles
@@ -19,7 +19,11 @@ export default function ProfilePreviews({ profiles }) {
     <Grid container component="ul" className={classes.reset} spacing={2}>
       {profiles.map((profile, index) => (
         <Grid item xs={12} sm={6} md={4} lg={3} component="li" key={index}>
-          <ProfilePreview profile={profile} />
+          <ProfilePreview
+            profile={profile}
+            allowMessage={allowMessage}
+            additionalInfo={additionalInfo ? additionalInfo[index] : null}
+          />
         </Grid>
       ))}
     </Grid>

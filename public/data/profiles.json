@@ -18,7 +18,7 @@
       "name": "Tobias Rehm",
       "url": "tobiasrehm",
       "image": "/images/tobiasrehm.jpg",
-      "types:": ["climateprotector"],
+      "types": ["climateprotector"],
       "organizations": ["sneeperlangen", "sneep", "climateconnect"],
       "info": {
         "location": "Erlangen, Germany",
@@ -31,7 +31,7 @@
       "name": "Lasse Rehm",
       "url": "lasserehm",
       "image": "/images/tobiasrehm.jpg",
-      "types:": ["climateprotector"],
+      "types": ["climateprotector"],
       "organizations": [],
       "info": {
         "location": "Erlangen, Germany",
@@ -50,7 +50,7 @@
         "skills": [],
         "availability": null
       },
-      "types:": ["climateprotector"],
+      "types": ["climateprotector"],
       "organizations": ["climateconnect"]
     },
     {
@@ -63,7 +63,7 @@
         "skills": [],
         "availability": null
       },
-      "types:": ["climateprotector"],
+      "types": ["climateprotector"],
       "organizations": ["climateconnect"]
     },
     {
@@ -76,7 +76,7 @@
         "skills": [],
         "availability": null
       },
-      "types:": ["climateprotector"],
+      "types": ["climateprotector"],
       "organizations": ["climateconnect"]
     },
     {
@@ -89,7 +89,7 @@
         "skills": [],
         "availability": null
       },
-      "types:": ["climateprotector"],
+      "types": ["climateprotector"],
       "organizations": ["climateconnect", "sneep", "sneeperlangen"]
     },
     {
@@ -102,7 +102,7 @@
         "skills": [],
         "availability": null
       },
-      "types:": ["climateprotector"],
+      "types": ["climateprotector"],
       "organizations": ["climateconnect"]
     },
     {
@@ -115,7 +115,7 @@
         "skills": [],
         "availability": null
       },
-      "types:": ["climateprotector"],
+      "types": ["climateprotector"],
       "organizations": ["climateconnect"]
     },
     {
@@ -128,7 +128,7 @@
         "skills": [],
         "availability": null
       },
-      "types:": ["climateprotector"],
+      "types": ["climateprotector"],
       "organizations": ["sneeperlangen", "sneep"]
     },
     {
@@ -141,7 +141,7 @@
         "skills": [],
         "availability": null
       },
-      "types:": ["climateprotector"],
+      "types": ["climateprotector"],
       "organizations": ["sneeperlangen", "sneep"]
     },
     {
@@ -156,6 +156,19 @@
       },
       "type": "Observer",
       "organizations": []
+    },
+    {
+      "url": "stefanjessenberger",
+      "name": "Stefan Jessenberger",
+      "image": null,
+      "info": {
+        "location": "Erlangen, Germany",
+        "bio": "I'm one of the founders of Energiewende ER(H)langen e.V.",
+        "skills": [],
+        "availability": null
+      },
+      "type": "Climate Protector",
+      "organizations": ["energiewendeerhlangen"]
     }
   ]
 }
