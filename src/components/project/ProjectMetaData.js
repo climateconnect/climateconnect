@@ -1,7 +1,8 @@
 import React from "react";
-import { Box } from "@material-ui/core";
+import { Box, Chip } from "@material-ui/core";
 import PlaceIcon from "@material-ui/icons/Place";
 import { makeStyles } from "@material-ui/core/styles";
+import project_status_metadata from "./../../../public/data/project_status_metadata";
 
 const useStyles = makeStyles(theme => ({
   creatorImage: {
@@ -16,6 +17,9 @@ const useStyles = makeStyles(theme => ({
   },
   creator: {
     marginBottom: 5
+  },
+  status: {
+    marginTop: theme.spacing(1)
   }
 }));
 
@@ -29,10 +33,15 @@ export default function ProjectMetaData({ project }) {
         {project.creator_name}
       </Box>
       <Box>
-        <span className={classes.cardIconBox}>
-          <PlaceIcon className={classes.cardIcon} />
-        </span>
+        <PlaceIcon className={classes.cardIcon} />
         {project.location}
+        <div>
+          <Chip
+            icon={project_status_metadata.filter(p => p.key === project.status.key)[0].icon}
+            label={project.status.name}
+            className={classes.status}
+          />
+        </div>
       </Box>
     </Box>
   );
