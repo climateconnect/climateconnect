@@ -23,3 +23,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+.pyenv*
+*/__pycache__/
+__pycache__
+*.swp
+*.swo
+*.py[cod]
