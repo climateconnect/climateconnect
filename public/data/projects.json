@@ -4,24 +4,44 @@
       "id": "78b6677c-28d2-4b2b-9825-4479706d2402",
       "name": "CO2-Labels for University Canteen",
       "image": "/images/canteen.jpg",
-      "organization_url": "sneeperlangen",
-      "organization_name": "sneep Erlangen e.V.",
-      "organization_image": "/images/sneep.png",
+      "creator_url": "sneeperlangen",
+      "creator_name": "sneep Erlangen e.V.",
+      "creator_image": "/images/sneep.png",
       "location": "Erlangen, Germany",
       "impact": 52.3,
       "number_of_followers": 142,
       "recurring_yearly": true,
-      "labels": ["nudging", "influencing a corporation"],
-      "creation_date": "2019-04-23T18:25:43.511Z",
-      "collaborators_accepted": true,
-      "helpful_skills": ["initiative", "persuasiveness", "co2-footprint calculation in food"],
-      "helpful_contacts": [
+      "labels": ["Nudging", "Influencing a corporation"],
+      "creation_date": "2020-01-23T18:25:43.511Z",
+      "start_date": "2019-04-23T18:25:43.511Z",
+      "end_date": null,
+      "collaborators_welcome": true,
+      "helpful_skills": ["Initiative", "Persuasiveness", "CO2-footprint calculation in food"],
+      "helpful_connections": [
         "FAU",
         "Studentenwerk Erlangen",
         "Any CO2 footprint accounting company in the food sector"
       ],
-      "members": ["christophstoll", "tobiasrehm"],
-      "description": "We approached the Studentenwerk, which is responsible for 2 Canteens in Erlangen, 8 Canteens in Nürnberg as well as the Canteens in Eichstätt, Ingolstadt, Ansbach and Triersdorf. A combined number of 14,000 students eats in these canteens each day We are going to propose the idea of adding CO2-labels to their dishes to encourage students to eat more climate-friendly. Update 1: They liked the idea and gave us some samples from their database which we would then use to calculate the CO2-footprints of the dishes ourselves. However, we realised that this might be a too big project for us to conduct as a student group. Update 2: We did a test run by displaying very rough CO2-estiamtes of the dishes on a banner in front of the entrance of the mensa. People were quite interested. However, because we were unable to calculate precise estimates for the dishes we let the project slide for a while. Update 3:To our surprise the Studentenwerk took this into their own hands and started negotiations with the company 'eaternity'. This company does professional CO2-calculations for food. We are very excited about this development and were allowed to accompany the process of implementing CO2-footprints to the dishes if the company and the Studentenwerk end up making a deal.",
+      "team": [
+        {
+          "url": "christophstoll",
+          "role": "Project manager",
+          "timeperweek": 2
+        },
+        {
+          "url": "tobiasrehm",
+          "role": "Member",
+          "timeperweek": 2
+        },
+        {
+          "url": "nadineschneider",
+          "role": "Member",
+          "timeperweek": 1
+        }
+      ],
+      "shortdescription": "We are convincing the organization responsible for the university canteens in our region to add a label with the CO2-footprint to each meal in the canteens. This way we are going to enable students to make more informed and climate-friendly food choices",
+      "status": "inprogress",
+      "description": "We approached the Studentenwerk, which is responsible for 2 Canteens in Erlangen, 8 Canteens in Nürnberg as well as the Canteens in Eichstätt, Ingolstadt, Ansbach and Triersdorf. A combined number of 14,000 students eats in these canteens each day We are going to propose the idea of adding CO2-labels to their dishes to encourage students to eat more climate-friendly.",
       "milestones": [
         {
           "name": "Approach Studentenwerk, get their favor for the project",
@@ -42,51 +62,241 @@
       ],
       "timeline_posts": [
         {
-          "date": "2019-07-20T18:25:43.511Z",
+          "date": "2019-04-24T18:25:43.511Z",
           "creator": {
-            "name": "sneep Lokalgruppe Erlangen",
-            "image": "/images/sneep.png",
-            "type": "organization",
-            "reputation": 104,
-            "impact": 873
+            "url": "sneeperlangen",
+            "type": "organization"
           },
-          "content": "After we had realized that calculating the CO2-footprints of all Canteen-meals would not be possible for us, we haven't been in contact with the Studentenwerk for a while. Today we met them again and we have great news for you! The Studentenwerk decided to take the issue into their own hands and is now in negotiations with a private company that does CO2-calculations for meals. They are willing to invest a significant sum of money into this project. We will be able to accompany the process and meet them every few months to control the process. The deal is not yet done but if it happens the result will be much more professional and it will be easier to copy the concept into other cities since we already know who to contact to do the CO2-calculations and how much it would cost.",
-          "likes": 44,
-          "comments": [
+          "content": "They liked the idea and gave us some samples from their database which we would then use to calculate the CO2-footprints of the dishes ourselves. However, we realised that this might be a too big project for us to conduct as a student group.",
+          "likes": 65,
+          "replies": [
             {
+              "date": "2019-04-24T18:25:43.511Z",
               "creator": {
-                "name": "test user",
-                "image": null,
-                "type": "user",
-                "reputation": 0,
-                "impact": 0
+                "url": "emptytestuser",
+                "type": "profile"
               },
-              "content": "test1"
+              "content": "not cool!"
             },
             {
+              "date": "2019-04-24T18:25:43.511Z",
               "creator": {
-                "name": "test user2",
-                "image": null,
-                "type": "user",
-                "reputation": -5,
-                "impact": 44
+                "url": "tobiasrehm",
+                "type": "profile"
               },
-              "content": "test2"
+              "content": "cool!"
             }
           ]
         },
         {
-          "date": "2019-06-20T18:25:43.511Z",
+          "date": "2019-06-24T18:25:43.511Z",
           "creator": {
-            "name": "sneep Lokalgruppe Erlangen",
-            "image": "/images/sneep.png",
-            "type": "organization",
-            "reputation": 104,
-            "impact": 873
+            "url": "sneeperlangen",
+            "type": "organization"
+          },
+          "content": "Today we have done a first test run by having a poster that displayed the CO2-footprints of the meals of today in front of the Langemarckmensa in Erlangen. Quite a few people stopped and asked about it! We weren't able to find out whether this had any impact on the decisions made by students in the actual canteen. We displayed very rough CO2-estiamtes of the dishes on a banner in front of the entrance. People were quite interested. However, we were unable to calculate precise estimates for the dishes.",
+          "likes": 24,
+          "replies": []
+        },
+        {
+          "date": "2019-07-20T18:25:43.511Z",
+          "creator": {
+            "url": "sneeperlangen",
+            "type": "organization"
           },
           "content": "After we had realized that calculating the CO2-footprints of all Canteen-meals would not be possible for us, we haven't been in contact with the Studentenwerk for a while. Today we met them again and we have great news for you! The Studentenwerk decided to take the issue into their own hands and is now in negotiations with a private company that does CO2-calculations for meals. They are willing to invest a significant sum of money into this project. We will be able to accompany the process and meet them every few months to control the process. The deal is not yet done but if it happens the result will be much more professional and it will be easier to copy the concept into other cities since we already know who to contact to do the CO2-calculations and how much it would cost.",
-          "likes": 32,
-          "comments": []
+          "likes": 44,
+          "replies": [
+            {
+              "date": "2019-04-24T18:25:43.511Z",
+              "creator": {
+                "url": "christophstoll",
+                "type": "profile"
+              },
+              "content": "Cool!"
+            },
+            {
+              "date": "2019-04-24T18:25:43.511Z",
+              "creator": {
+                "url": "emptytestuser",
+                "type": "profile"
+              },
+              "content": "Not cool!"
+            }
+          ]
+        }
+      ],
+      "comments": [
+        {
+          "date": "2019-04-24T18:25:43.511Z",
+          "creator": {
+            "url": "climateconnect",
+            "type": "organization"
+          },
+          "content": "Hey, we really like your Project! Maybe it would be possible to to display the CO2-footprint visually some how?",
+          "likes": 1,
+          "replies": [
+            {
+              "date": "2019-04-24T18:25:43.511Z",
+              "creator": {
+                "url": "sneeperlangen",
+                "type": "organization"
+              },
+              "content": "Good idea!",
+              "likes": 1
+            }
+          ]
+        },
+        {
+          "date": "2019-06-24T18:25:43.511Z",
+          "creator": {
+            "url": "thomasbove",
+            "type": "profile"
+          },
+          "content": "I would like to do the same at my university :)",
+          "likes": 4,
+          "replies": []
+        }
+      ]
+    },
+    {
+      "id": "78b6677c-g8d2-4b2b-9825-4479706d2402",
+      "name": "Climate Cubes",
+      "image": "/images/climatecube.jpg",
+      "creator_url": "energiewendeerhlangen",
+      "creator_name": "Energiewende ER(H)langen",
+      "creator_image": "/images/energiewendelogo.jpg",
+      "location": "Erlangen, Germany",
+      "impact": 52.3,
+      "number_of_followers": 30,
+      "recurring_yearly": true,
+      "labels": ["Nudging", "Informing the public"],
+      "creation_date": "2019-04-23T18:25:43.511Z",
+      "start_date": "2019-04-23T18:25:43.511Z",
+      "end_date": null,
+      "collaborators_welcome": true,
+      "helpful_skills": ["Climate communication", "Design"],
+      "helpful_connections": ["Citys"],
+      "team": [
+        {
+          "url": "stefanjessenberger",
+          "role": "Project manager",
+          "timeperweek": 1
+        }
+      ],
+      "shortdescription": "We are placing Climate Cubes in different parts of Erlangen and it's sourrundings to reach as many people as possible with our message: Climate Change is real and everybody can do something about it! ",
+      "status": "recurring",
+      "description": "Objective of the action            2019 should be the year of increased climate protection measures in Erlangen and it's sourrundings!            As many citizens as possible are to be reached with this striking action and to be encouraged to intensify own actions for climate protection.            The messages are simple:                Climate change is real!                Germany is still well ahead of the much-cited Chinese in terms of per-capita emissions and emits 10 times more CO2 than is permissible to meet the 1.5 ° target!                Every single person can (and should) do something against the threatening climate catastrophe!                There are countless possibilities for this!            Implementation            Large cubes with an edge length of 2.5 metres (!) use pictures and texts to make these messages visible at prominent places. In this way we encouraging a large number of citizens to take more personal action to save the climate. The edge length of the cube corresponds to the daily Co2 output of an average German.                        Please contact us if you are interested in replicating the Project in your city or if you want to place an existing cube somewhere in Erlangen. ",
+      "milestones": [
+        {
+          "name": "Finish design and construction plans of the first cube",
+          "date_reached": "2019-02-22T18:25:43.511Z"
+        },
+        {
+          "name": "Build and deploy first Climate Cube",
+          "date_reached": "2019-04-05T18:25:43.511Z"
+        },
+        {
+          "name": "Bulid more cubes and find more communities to place them ",
+          "date_reached": "2019-06-10T18:25:43.511Z"
+        }
+      ],
+      "timeline_posts": [
+        {
+          "date": "2019-02-22T18:25:43.511Z",
+          "creator": {
+            "url": "energiewendeerhlangen",
+            "type": "organization"
+          },
+          "content": " We found a local partner who will construct the necessary parts for the first Climate Cube. We are also finishing up the design for the for sides of the Cube. ",
+          "likes": 65,
+          "replies": [
+            {
+              "creator": {
+                "url": "emptytestuser",
+                "type": "profile"
+              },
+              "date": "2019-04-05T18:25:43.511Z",
+              "content": "not cool!"
+            },
+            {
+              "creator": {
+                "url": "tobiasrehm",
+                "type": "profile"
+              },
+              "date": "2019-04-05T18:25:43.511Z",
+              "content": "cool!"
+            }
+          ]
+        },
+        {
+          "date": "2019-04-05T18:25:43.511Z",
+          "creator": {
+            "url": "energiewendeerhlangen",
+            "type": "organization"
+          },
+          "content": "Today we deployed the first Climate Cube in Buckenhof, a small town next to Erlangen. The reactions where great and we are looking forwoard to deploy more Climate Cubes in the near future.",
+          "likes": 24,
+          "replies": []
+        },
+        {
+          "date": "2019-06-10T18:25:43.511Z",
+          "creator": {
+            "url": "energiewendeerhlangen",
+            "type": "organization"
+          },
+          "content": "Now we are looking for opportunities to share our construction plans and deploy more Climate Cubes all over Germany and possibly also in other countries. ",
+          "likes": 44,
+          "replies": [
+            {
+              "creator": {
+                "url": "christophstoll",
+                "type": "profile"
+              },
+              "date": "2019-04-05T18:25:43.511Z",
+              "content": "Cool!"
+            },
+            {
+              "creator": {
+                "url": "emptytestuser",
+                "type": "profile"
+              },
+              "date": "2019-04-05T18:25:43.511Z",
+              "content": "Nice! let's get in touch!"
+            }
+          ]
+        }
+      ],
+      "comments": [
+        {
+          "date": "2019-04-24T18:25:43.511Z",
+          "creator": {
+            "url": "climateconnect",
+            "type": "organization"
+          },
+          "content": "Hey, we really like your Project! What are the requirements for getting this cube into our city?",
+          "likes": 1,
+          "replies": [
+            {
+              "date": "2019-04-24T18:25:43.511Z",
+              "creator": {
+                "url": "sneeperlangen",
+                "type": "organization"
+              },
+              "content": "Good idea!",
+              "likes": 1
+            }
+          ]
+        },
+        {
+          "date": "2019-06-24T18:25:43.511Z",
+          "creator": {
+            "url": "thomasbove",
+            "type": "profile"
+          },
+          "content": "I would like to do the same at my university :)",
+          "likes": 4,
+          "replies": []
         }
       ]
     }

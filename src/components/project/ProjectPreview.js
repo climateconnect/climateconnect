@@ -1,5 +1,6 @@
 import React from "react";
 import Router from "next/router";
+import Truncate from "react-truncate";
 import { Typography, Card, CardMedia, CardContent } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ProjectMetaData from "./ProjectMetaData";
@@ -47,7 +48,9 @@ export default function ProjectPreview({ project }) {
       />
       <CardContent>
         <Typography variant="subtitle1" component="h2" className={classes.bold}>
-          {project.name}
+          <Truncate lines={1} ellipsis="...">
+            {project.name}
+          </Truncate>
         </Typography>
         <ProjectMetaData project={project} />
       </CardContent>
