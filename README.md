@@ -33,8 +33,9 @@ Once you clone the repository start backend server.
 
 ### Frontend
 
-1.  From main directory Run `yarn install` to download all NPM packages
-2.  Run `yarn dev` to start developing
+1. From main directory Run `yarn install` to download all NPM packages
+2. Add `.env` file for frontend environment variables.
+3. Run `yarn dev` to start developing
 
 ### To Deploy
 
