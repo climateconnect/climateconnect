@@ -456,7 +456,9 @@ async function getProjectByIdIfExists(projectId) {
         creator: await getProfileOfPostCreator(post.creator),
         comments: await Promise.all(
           post.replies.map(async reply => {
-            return { ...reply, creator: await getProfileOfPostCreator(reply.creator) };
+            const ret = reply;
+            ret.creator = await getProfileOfPostCreator(reply.creator);
+            return ret;
           })
         )
       };
@@ -469,7 +471,9 @@ async function getProjectByIdIfExists(projectId) {
         creator: await getProfileOfPostCreator(comment.creator),
         replies: await Promise.all(
           comment.replies.map(async reply => {
-            return { ...reply, creator: await getProfileOfPostCreator(reply.creator) };
+            const ret = reply;
+            ret.creator = await getProfileOfPostCreator(reply.creator);
+            return ret;
           })
         )
       };
