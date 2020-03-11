@@ -3,7 +3,6 @@ import Layout from "../src/components/layouts/layout";
 import ProjectPreviews from "./../src/components/project/ProjectPreviews";
 import fakeProjectData from "../public/data/projects.json";
 import About from "./about";
-import project_status_metadata from "./../public/data/project_status_metadata";
 
 export default function Index({ projects }) {
   return (
@@ -26,8 +25,6 @@ Index.getInitialProps = async () => {
 };
 
 async function getProjects() {
-  const projects = fakeProjectData.projects.map(p => {
-    return { ...p, status: project_status_metadata.filter(s => s.key === p.status)[0] };
-  });
+  const projects = fakeProjectData.projects;
   return [...projects, ...projects, ...projects];
 }

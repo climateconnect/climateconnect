@@ -25,7 +25,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function ProjectMetaData({ project }) {
   const classes = useStyles();
-
   return (
     <Box>
       <Box className={classes.creator}>
@@ -37,7 +36,7 @@ export default function ProjectMetaData({ project }) {
         {project.location}
         <div>
           <Chip
-            icon={project_status_metadata.filter(p => p.key === project.status.key)[0].icon}
+            icon={project_status_metadata.filter(p => p.key === project.status)[0].icon}
             label={project.status.name}
             className={classes.status}
           />
