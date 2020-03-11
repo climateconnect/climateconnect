@@ -44,23 +44,28 @@ export default function Post({ post, type, className }) {
         avatarClassName={type === "reply" ? classes.smallAvatar : classes.autoAvatar}
       />
       <Typography>{post.content}</Typography>
-      {type === "openingpost" && (
-        <>
-          <div className={classes.interactionBar}>
-            <Button variant="outlined" startIcon={<ThumbUpIcon />}>
-              {" "}
-              {post.likes}{" "}
-            </Button>
+      <div className={classes.interactionBar}>
+        <Button
+          variant="outlined"
+          size={type === "reply" ? "small" : "normal"}
+          startIcon={<ThumbUpIcon />}
+        >
+          {post.likes}
+        </Button>
+        {type === "openingpost" && (
+          <>
             {post.replies && post.replies.length > 0 && (
               <Button className={classes.viewRepliesButton} onClick={handleViewRepliesClick}>
                 {displayReplies ? "Hide " : "View "} {displayReplies ? "" : post.replies.length}{" "}
                 replies
               </Button>
             )}
-          </div>
-          <div>{displayReplies && <Posts posts={post.replies} type="reply" />}</div>
-        </>
-      )}
+          </>
+        )}
+      </div>
+      <div>
+        {displayReplies && type === "openingpost" && <Posts posts={post.replies} type="reply" />}
+      </div>
     </div>
   );
 }
