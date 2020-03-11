@@ -37,7 +37,7 @@ export default function ProjectMetaData({ project }) {
         <div>
           <Chip
             icon={project_status_metadata.filter(p => p.key === project.status)[0].icon}
-            label={project.status.name}
+            label={project_status_metadata.filter(p => p.key === project.status)[0].name}
             className={classes.status}
           />
         </div>
