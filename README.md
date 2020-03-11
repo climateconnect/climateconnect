@@ -25,19 +25,19 @@ Once you clone the repository start backend server.
 
 1.  Go to backend directory `cd backend`
 2.  Run `pip install -r requirements.txt` to install all backend libararies.
-3.  Create `.pyenv` to include backend environment variables. [Connect with other colloablators to
-    get env variables]
-4.  Run `python manage.py makemigrations` to run django migrations. [This command is used for when
-    you first start or whenever you are adding or updating database models]
+3.  Create `.pyenv` to include backend environment variables. Note: Connect with other collaborators
+    to get env variables
+4.  Run `python manage.py makemigrations` to run django migrations. Note: This command is used for
+    when you first start or whenever you are adding or updating database models.
 5.  Run server using `python manage.py runserver`.
 
 ### Frontend
 
-1. From main directory Run `yarn install` to download all NPM packages
+1. From main directory Run `yarn install` to download all npm packages
 2. Add `.env` file for frontend environment variables.
 3. Run `yarn dev` to start developing
 
 ### To Deploy
 
 1. Run `yarn build` to build our the website
-2. ??? Rest of deploy procedure is work in progress. Backend deploy Comming soon!
+2. ??? Rest of deploy procedure is work in progress. Backend deploy coming soon!
