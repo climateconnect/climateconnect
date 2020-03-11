@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 from dotenv import find_dotenv, load_dotenv
-load_dotenv(find_dotenv('.pyenv'))
+load_dotenv(find_dotenv('.backend_env'))
 env = os.environ.get
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
