@@ -34,7 +34,7 @@
     "react-dom": "^16.12.0",
     "react-avatar-editor": "^12.0.0-beta.0",
     "prop-types": "^15.7.2",
-    "react-truncate":"^2.4.0"
+    "react-truncate": "^2.4.0"
   },
   "devDependencies": {
     "enzyme": "^3.10.0",
