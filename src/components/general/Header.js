@@ -41,8 +41,10 @@ const LINKS = [
 const useStyles = makeStyles(theme => {
   return {
     root: {
-      marginBottom: theme.spacing(2),
       borderBottom: `1px solid ${theme.palette.grey[300]}`
+    },
+    spacingBottom: {
+      marginBottom: theme.spacing(2)
     },
     container: {
       padding: theme.spacing(2),
@@ -59,13 +61,16 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function Header() {
+export default function Header({ className, noSpacingBottom }) {
   const classes = useStyles();
 
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
 
   return (
-    <Box component="header" className={classes.root}>
+    <Box
+      component="header"
+      className={`${classes.root} ${className} ${!noSpacingBottom && classes.spacingBottom}`}
+    >
       <Container className={classes.container}>
         <Link href="/">
           <a>
