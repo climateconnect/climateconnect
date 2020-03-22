@@ -1,0 +1,102 @@
+{
+  "messages": [
+    {
+      "receiver": "tobiasrehm",
+      "sender": "christophstoll",
+      "content": "hello, I am here to test.\n\nJust trying it out!",
+      "date": "Thu Mar 12 2020 09:54:36 GMT+0100",
+      "read": true
+    },
+    {
+      "receiver": "christophstoll",
+      "sender": "tobiasrehm",
+      "content": "me too!",
+      "date": "Thu Mar 12 2020 09:54:45 GMT+0100",
+      "read": true
+    },
+    {
+      "receiver": "christophstoll",
+      "sender": "tobiasrehm",
+      "content": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+      "date": "Thu Mar 12 2020 10:40:29 GMT+0100",
+      "read": true
+    },
+    {
+      "receiver": "tobiasrehm",
+      "sender": "christophstoll",
+      "content": "Stop spamming, please!",
+      "date": "Thu Mar 21 2020 10:41:09 GMT+0100",
+      "read": true
+    },
+    {
+      "receiver": "christophstoll",
+      "sender": "tobiasrehm",
+      "content": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+      "date": "Thu Mar 13 2020 10:40:29 GMT+0100",
+      "read": true
+    },
+    {
+      "receiver": "reginareck",
+      "sender": "christophstoll",
+      "content": "Have you heard of this amazing climate platform?\nCheck out https://climateconnect.earth",
+      "date": "Thu Mar 17 2020 11:40:29 GMT+0100",
+      "read": true
+    },
+    {
+      "receiver": "evanhahn",
+      "sender": "christophstoll",
+      "content": "Have you heard of this amazing climate platform?\nCheck out https://climateconnect.earth",
+      "date": "Thu Mar 20 2020 11:40:29 GMT+0100",
+      "read": true
+    },
+    {
+      "receiver": "thomasbove",
+      "sender": "christophstoll",
+      "content": "Have you heard of this amazing climate platform?\nCheck out https://climateconnect.earth",
+      "date": "Thu Mar 20 2020 19:40:29 GMT+0100",
+      "read": true
+    },
+    {
+      "receiver": "nadineschneider",
+      "sender": "christophstoll",
+      "content": "Have you heard of this amazing climate platform?\nCheck out https://climateconnect.earth",
+      "date": "Thu Mar 13 2020 11:40:29 GMT+0100",
+      "read": true
+    },
+    {
+      "receiver": "michaelfischer",
+      "sender": "christophstoll",
+      "content": "Have you heard of this amazing climate platform?\nCheck out https://climateconnect.earth",
+      "date": "Thu Mar 13 2020 11:40:29 GMT+0100",
+      "read": true
+    },
+    {
+      "receiver": "tobiasbaume",
+      "sender": "christophstoll",
+      "content": "Have you heard of this amazing climate platform?\nCheck out https://climateconnect.earth",
+      "date": "Thu Mar 13 2020 11:40:29 GMT+0100",
+      "read": false
+    },
+    {
+      "receiver": "christophstoll",
+      "sender": "michaelfischer",
+      "content": "Great platform, thanks!",
+      "date": "Thu Mar 21 2020 11:40:29 GMT+0100",
+      "read": false
+    },
+    {
+      "receiver": "christophstoll",
+      "sender": "michaelfischer",
+      "content": "I will go check it out! :)",
+      "date": "Thu Mar 21 2020 11:41:29 GMT+0100",
+      "read": false
+    },
+    {
+      "receiver": "christophstoll",
+      "sender": "thomasbove",
+      "content": "Of course I heard of it, I'm the admin!",
+      "date": "Thu Mar 22 2020 09:21:29 GMT+0100",
+      "read": false
+    }
+  ]
+}
