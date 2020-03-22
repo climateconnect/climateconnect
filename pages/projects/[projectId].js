@@ -5,6 +5,7 @@ import humanizeDuration from "humanize-duration";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProfilePreviews from "./../../src/components/profile/ProfilePreviews";
 import Posts from "../../src/components/communication/Posts.js";
+import DateDisplay from "../../src/components/general/DateDisplay";
 import { Container, Typography, Chip, Button, Tabs, Tab } from "@material-ui/core";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
@@ -310,7 +311,7 @@ function ProjectContent({ project }) {
     <div>
       <div className={classes.createdBy}>
         <Typography className={`${classes.info} ${classes.smallText}`}>
-          Created <TimeAgo date={new Date(project.creation_date)} />
+          Created: <DateDisplay date={new Date(project.creation_date)} />
         </Typography>
         <div>
           <Typography component="span">
@@ -445,19 +446,23 @@ function NoProjectFoundLayout() {
   );
 }
 
+const sortByDate = (a, b) => {
+  return new Date(b.date) - new Date(a.date);
+};
+
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getProjectByIdIfExists(projectId) {
   const project = TEMP_FEATURED_DATA.projects.find(({ id }) => id === projectId);
   project.team = await getFullProfiles(project.team);
   project.timeline_posts = await Promise.all(
-    project.timeline_posts.map(async post => {
+    project.timeline_posts.sort(sortByDate).map(async post => {
       return {
         ...post,
-        creator: await getProfileOfPostCreator(post.creator),
+        creator: await getProfileOfPostCreator(post),
         comments: await Promise.all(
-          post.replies.map(async reply => {
+          post.replies.sort(sortByDate).map(async reply => {
             const ret = reply;
-            ret.creator = await getProfileOfPostCreator(reply.creator);
+            ret.creator = await getProfileOfPostCreator(reply);
             return ret;
           })
         )
@@ -465,21 +470,21 @@ async function getProjectByIdIfExists(projectId) {
     })
   );
   project.comments = await Promise.all(
-    project.comments.map(async comment => {
+    project.comments.sort(sortByDate).map(async comment => {
       return {
         ...comment,
-        creator: await getProfileOfPostCreator(comment.creator),
+        creator: await getProfileOfPostCreator(comment),
         replies: await Promise.all(
-          comment.replies.map(async reply => {
+          comment.replies.sort(sortByDate).map(async reply => {
             const ret = reply;
-            ret.creator = await getProfileOfPostCreator(reply.creator);
+            ret.creator = await getProfileOfPostCreator(reply);
             return ret;
           })
         )
       };
     })
   );
-  return project;
+  return { ...project };
 }
 
 async function getFullProfiles(shortProfiles) {
@@ -494,7 +499,8 @@ async function getFullProfiles(shortProfiles) {
   });
 }
 
-async function getProfileOfPostCreator(creator) {
+async function getProfileOfPostCreator(post) {
+  const creator = post.creator;
   if (creator.type === "organization") {
     const profile = TEMP_FEATURED_ORGANIZATION_DATA.organizations.filter(
       o => o.url === creator.url
@@ -507,6 +513,10 @@ async function getProfileOfPostCreator(creator) {
     throw new Error(
       "Unaccepted input for 'creator.type':'" +
         creator.type +
+        "' for creator '" +
+        creator.url +
+        "' on post '" +
+        post.content +
         "'. creator.type must be 'organization' or 'project'"
     );
   }
