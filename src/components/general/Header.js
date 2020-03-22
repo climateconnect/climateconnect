@@ -10,7 +10,8 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Badge
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -18,6 +19,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import InfoIcon from "@material-ui/icons/Info";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import NotificationsIcon from "@material-ui/icons/Notifications";
 
 const LINKS = [
   {
@@ -29,6 +31,17 @@ const LINKS = [
     href: "/create",
     text: "Create a project",
     iconForDrawer: AddCircleIcon
+  },
+  {
+    href: "/inbox",
+    text: "Inbox",
+    iconForDrawer: NotificationsIcon,
+    hasBadge: true,
+    //TODO: replace by user's unread notifications
+    badgeNumber: 3,
+    showIconOnNormalScreen: true,
+    icon: NotificationsIcon,
+    alwaysDisplayDirectly: true
   },
   {
     href: "/signin",
@@ -57,6 +70,9 @@ const useStyles = makeStyles(theme => {
     },
     buttonMarginLeft: {
       marginLeft: theme.spacing(1)
+    },
+    marginRight: {
+      marginRight: theme.spacing(3)
     }
   };
 });
@@ -100,11 +116,24 @@ function NormalScreenLinks() {
         if (link.isOutlinedInHeader) {
           buttonProps.variant = "outlined";
         }
+        const Icon = link.icon;
         return (
           <Link href={link.href} key={link.href}>
-            <Button color="primary" {...buttonProps}>
-              {link.text}
-            </Button>
+            {link.showIconOnNormalScreen ? (
+              <IconButton color="primary" {...buttonProps}>
+                {link.hasBadge && link.badgeNumber > 0 ? (
+                  <Badge badgeContent={link.badgeNumber} color="error">
+                    <Icon />
+                  </Badge>
+                ) : (
+                  <Icon />
+                )}
+              </IconButton>
+            ) : (
+              <Button color="primary" {...buttonProps}>
+                {link.text}
+              </Button>
+            )}
           </Link>
         );
       })}
@@ -117,37 +146,56 @@ function NarrowScreenLinks() {
 
   const openDrawer = setIsDrawerOpen.bind(null, true);
   const closeDrawer = setIsDrawerOpen.bind(null, false);
+  const classes = useStyles();
 
   return (
     <>
-      <IconButton edge="start" color="inherit" aria-label="menu" onClick={openDrawer}>
-        <MenuIcon />
-      </IconButton>
-
-      <SwipeableDrawer
-        anchor="right"
-        open={isDrawerOpen}
-        // `onOpen` is a required property, even though we don't use it.
-        onOpen={noop}
-        onClose={closeDrawer}
-        disableBackdropTransition={true}
-      >
-        <List>
-          {LINKS.map(link => {
-            const Icon = link.iconForDrawer;
-            return (
-              <Link href={link.href} key={link.href}>
-                <ListItem button component="a" onClick={closeDrawer}>
-                  <ListItemIcon>
+      <Box>
+        {LINKS.filter(link => link.alwaysDisplayDirectly).map(link => {
+          const Icon = link.iconForDrawer;
+          console.log(link);
+          return (
+            <Link href={link.href} key={link.href}>
+              <IconButton color="primary" className={classes.marginRight}>
+                {link.hasBadge && link.badgeNumber > 0 ? (
+                  <Badge badgeContent={link.badgeNumber} color="error">
                     <Icon />
-                  </ListItemIcon>
-                  <ListItemText primary={link.text} />
-                </ListItem>
-              </Link>
-            );
-          })}
-        </List>
-      </SwipeableDrawer>
+                  </Badge>
+                ) : (
+                  <Icon />
+                )}
+              </IconButton>
+            </Link>
+          );
+        })}
+        <IconButton edge="start" color="inherit" aria-label="menu" onClick={openDrawer}>
+          <MenuIcon />
+        </IconButton>
+        <SwipeableDrawer
+          anchor="right"
+          open={isDrawerOpen}
+          // `onOpen` is a required property, even though we don't use it.
+          onOpen={noop}
+          onClose={closeDrawer}
+          disableBackdropTransition={true}
+        >
+          <List>
+            {LINKS.filter(link => !link.alwaysDisplayDirectly).map(link => {
+              const Icon = link.iconForDrawer;
+              return (
+                <Link href={link.href} key={link.href}>
+                  <ListItem button component="a" onClick={closeDrawer}>
+                    <ListItemIcon>
+                      <Icon />
+                    </ListItemIcon>
+                    <ListItemText primary={link.text} />
+                  </ListItem>
+                </Link>
+              );
+            })}
+          </List>
+        </SwipeableDrawer>
+      </Box>
     </>
   );
 }
