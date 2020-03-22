@@ -38,27 +38,34 @@ export default function ProfilePreview({ profile, allowMessage, additionalInfo }
   const classes = useStyles();
 
   return (
-    <Link href={"/profiles/" + profile.url} className={classes.avatarWithInfo}>
-      <Avatar alt={profile.name} size="large" src={profile.image} className={classes.avatar} />
-      <Typography variant="h5" className={classes.name}>
-        {profile.name}
-      </Typography>
-      {additionalInfo && (
-        <div className={classes.additionalInfo}>
-          {additionalInfo.map((i, index) => (
-            <Typography key={index} className={classes.additionalInfoEl}>
-              {i}
-            </Typography>
-          ))}
-        </div>
-      )}
+    <div className={classes.avatarWithInfo}>
+      <Link href={"/profiles/" + profile.url}>
+        <Avatar alt={profile.name} size="large" src={profile.image} className={classes.avatar} />
+        <Typography variant="h5" className={classes.name}>
+          {profile.name}
+        </Typography>
+        {additionalInfo && (
+          <div className={classes.additionalInfo}>
+            {additionalInfo.map((i, index) => (
+              <Typography key={index} className={classes.additionalInfoEl}>
+                {i}
+              </Typography>
+            ))}
+          </div>
+        )}
+      </Link>
       {allowMessage && (
         <div>
-          <Button variant="contained" color="primary" className={classes.messageButton}>
+          <Button
+            variant="contained"
+            href={"/messageUser/" + profile.url}
+            color="primary"
+            className={classes.messageButton}
+          >
             Send Message
           </Button>
         </div>
       )}
-    </Link>
+    </div>
   );
 }
