@@ -2,18 +2,16 @@ import React from "react";
 import Link from "next/link";
 import TimeAgo from "react-timeago";
 import humanizeDuration from "humanize-duration";
+import { Container, Typography, Chip, Button, Tabs, Tab } from "@material-ui/core";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { makeStyles } from "@material-ui/core/styles";
+
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProfilePreviews from "./../../src/components/profile/ProfilePreviews";
 import Posts from "../../src/components/communication/Posts.js";
 import DateDisplay from "../../src/components/general/DateDisplay";
-import { Container, Typography, Chip, Button, Tabs, Tab } from "@material-ui/core";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { makeStyles } from "@material-ui/core/styles";
-import PlaceIcon from "@material-ui/icons/Place";
-import ExploreIcon from "@material-ui/icons/Explore";
-import TEMP_FEATURED_DATA from "../../public/data/projects.json";
-import TEMP_FEATURED_PROFILE_DATA from "../../public/data/profiles.json";
-import TEMP_FEATURED_ORGANIZATION_DATA from "../../public/data/organizations.json";
+import ProjectOverview from "../../src/components/project/ProjectOverview";
+
 import CheckIcon from "@material-ui/icons/Check";
 import BuildIcon from "@material-ui/icons/Build";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
@@ -23,43 +21,14 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import RotateRightIcon from "@material-ui/icons/RotateRight";
 import CancelIcon from "@material-ui/icons/Cancel";
 
+import TEMP_FEATURED_DATA from "../../public/data/projects.json";
+import TEMP_FEATURED_PROFILE_DATA from "../../public/data/profiles.json";
+import TEMP_FEATURED_ORGANIZATION_DATA from "../../public/data/organizations.json";
+
 const useStyles = makeStyles(theme => ({
   root: {
     textAlign: "center",
     color: theme.palette.grey[800]
-  },
-  projectOverview: {
-    width: "100%",
-    padding: 0,
-    textAlign: "left"
-  },
-  blockProjectInfo: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    paddingTop: theme.spacing(1)
-  },
-  fullWidthImage: {
-    width: "100%"
-  },
-  inlineImage: {
-    display: "inline-block",
-    width: "50%",
-    maxWidth: 550
-  },
-  inlineProjectInfo: {
-    display: "inline-block",
-    width: "50%",
-    verticalAlign: "top",
-    padding: theme.spacing(1),
-    [theme.breakpoints.up("md")]: {
-      paddingLeft: theme.spacing(4),
-      paddingRight: theme.spacing(4)
-    }
-  },
-  largeScreenHeader: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(2),
-    textAlign: "center"
   },
   tabsWrapper: {
     borderTop: `1px solid ${theme.palette.grey[500]}`,
@@ -72,35 +41,10 @@ const useStyles = makeStyles(theme => ({
   noPadding: {
     padding: 0
   },
-  smallScreenHeader: {
-    textAlign: "center",
-    paddingBottom: theme.spacing(2)
-  },
-  projectInfoEl: {
-    textAlign: "left",
-    paddingTop: theme.spacing(1)
-  },
   icon: {
     verticalAlign: "bottom",
     marginTop: 2,
     paddingRight: theme.spacing(0.5)
-  },
-  contactProjectButton: {
-    width: 100,
-    height: 36
-  },
-  followButton: {
-    float: "right",
-    marginRight: theme.spacing(4)
-  },
-  infoTopBar: {
-    paddingBottom: theme.spacing(2)
-  },
-  infoBottomBar: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-    display: "inline-block",
-    width: "100%"
   },
   createdBy: {
     fontSize: 16
@@ -143,11 +87,6 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(1),
     display: "block"
   },
-  flexContainer: {
-    display: "flex",
-    alignItems: "flex-start",
-    marginBottom: theme.spacing(1)
-  },
   expandButton: {
     width: "100%"
   },
@@ -184,11 +123,7 @@ function ProjectLayout({ project }) {
 
   return (
     <div className={classes.root}>
-      {isNarrowScreen ? (
-        <SmallScreenOverview project={project} />
-      ) : (
-        <LargeScreenOverview project={project} />
-      )}
+      <ProjectOverview project={project} smalScren={isNarrowScreen} />
       <div className={classes.tabsWrapper}>
         <Container className={classes.noPadding}>
           <Tabs
@@ -215,75 +150,6 @@ function ProjectLayout({ project }) {
         </TabContent>
       </Container>
     </div>
-  );
-}
-
-function SmallScreenOverview({ project }) {
-  const classes = useStyles();
-  return (
-    <Container className={classes.projectOverview}>
-      <img className={classes.fullWidthImage} src={project.image} />
-      <div className={classes.blockProjectInfo}>
-        <Typography component="h1" variant="h3" className={classes.smallScreenHeader}>
-          {project.name}
-        </Typography>
-
-        <Typography>{project.shortdescription}</Typography>
-        <div className={classes.projectInfoEl}>
-          <Typography>
-            <PlaceIcon className={classes.icon} /> {project.location}
-          </Typography>
-        </div>
-        <div className={classes.projectInfoEl}>
-          <Typography>
-            <ExploreIcon className={classes.icon} /> {project.labels.join(", ")}
-          </Typography>
-        </div>
-        <div className={classes.infoBottomBar}>
-          <Button className={classes.contactProjectButton} variant="contained" color="primary">
-            Contact
-          </Button>
-          <Button className={classes.followButton} variant="outlined" color="primary">
-            Follow
-          </Button>
-        </div>
-      </div>
-    </Container>
-  );
-}
-
-function LargeScreenOverview({ project }) {
-  const classes = useStyles();
-  return (
-    <Container className={classes.projectOverview}>
-      <Typography component="h1" variant="h1" className={classes.largeScreenHeader}>
-        {project.name}
-      </Typography>
-      <div className={classes.flexContainer}>
-        <img className={classes.inlineImage} src={project.image} />
-        <div className={classes.inlineProjectInfo}>
-          <div className={classes.infoTopBar}>
-            <Button className={classes.contactProjectButton} variant="contained" color="primary">
-              Contact
-            </Button>
-            <Button className={classes.followButton} variant="outlined" color="primary">
-              Follow
-            </Button>
-          </div>
-          <Typography>{project.shortdescription}</Typography>
-          <div className={classes.projectInfoEl}>
-            <Typography>
-              <PlaceIcon className={classes.icon} /> {project.location}
-            </Typography>
-          </div>
-          <div className={classes.projectInfoEl}>
-            <Typography>
-              <ExploreIcon className={classes.icon} /> {project.labels.join(",")}
-            </Typography>
-          </div>
-        </div>
-      </div>
-    </Container>
   );
 }
 
