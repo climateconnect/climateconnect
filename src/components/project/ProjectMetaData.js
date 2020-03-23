@@ -1,8 +1,8 @@
 import React from "react";
-import { Box, Chip } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 import PlaceIcon from "@material-ui/icons/Place";
+import ProjectStatus from "./ProjectStatus";
 import { makeStyles } from "@material-ui/core/styles";
-import project_status_metadata from "./../../../public/data/project_status_metadata";
 
 const useStyles = makeStyles(theme => ({
   creatorImage: {
@@ -35,11 +35,7 @@ export default function ProjectMetaData({ project }) {
         <PlaceIcon className={classes.cardIcon} />
         {project.location}
         <div>
-          <Chip
-            icon={project_status_metadata.filter(p => p.key === project.status)[0].icon}
-            label={project_status_metadata.filter(p => p.key === project.status)[0].name}
-            className={classes.status}
-          />
+          <ProjectStatus status={project.status} className={classes.status} />
         </div>
       </Box>
     </Box>

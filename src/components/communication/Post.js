@@ -4,6 +4,7 @@ import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import { makeStyles } from "@material-ui/core/styles";
 import Posts from "./Posts";
 import MiniProfilePreview from "./../profile/MiniProfilePreview";
+import DateDisplay from "./../general/DateDisplay";
 
 const useStyles = makeStyles(theme => ({
   postDate: {
@@ -37,7 +38,7 @@ export default function Post({ post, type, className }) {
   return (
     <div className={className}>
       <Typography variant="body2" className={classes.postDate}>
-        {new Intl.DateTimeFormat("en-US").format(new Date(post.date))}
+        <DateDisplay date={new Date(post.date)} />
       </Typography>
       <MiniProfilePreview
         profile={post.creator}

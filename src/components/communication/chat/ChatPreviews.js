@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 import Truncate from "react-truncate";
 import { makeStyles } from "@material-ui/core/styles";
-import DateDisplay from "../../general/Date";
+import DateDisplay from "../../general/DateDisplay";
 
 const useStyles = makeStyles(theme => {
   return {
