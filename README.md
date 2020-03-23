@@ -2,8 +2,7 @@
 
 ## Pre-steps
 
-1.  Create postgres database with username and password. [You will be using this for backend
-    project]
+1.  Create postgres database with username and password. You will be using this for backend project
 2.  Create 32 char random secret key for your local setup. Run `openssl rand -base64 32`. Copy the
     value you will be using this to add as SECRET_KEY for django settings.
 
@@ -25,11 +24,14 @@ Once you clone the repository start backend server.
 
 1.  Go to backend directory `cd backend`
 2.  Run `pip install -r requirements.txt` to install all backend libararies.
-3.  Create `.pyenv` to include backend environment variables. Note: Connect with other collaborators
-    to get env variables
+3.  Create `.backend_env` to include backend environment variables. Note: Connect with other
+    collaborators to get env variables
 4.  Run `python manage.py makemigrations` to run django migrations. Note: This command is used for
     when you first start or whenever you are adding or updating database models.
 5.  Run server using `python manage.py runserver`.
+6.  If you want to run tests suite use this command: `python manage.py test`. If you want to run a
+    specific test file or test class run this command:
+    `python manage.py test <file_path> or <file_path + class_name>`
 
 ### Frontend
 

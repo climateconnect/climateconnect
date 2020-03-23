@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from climateconnect_api.views.status_views import PingPongView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('ping/', PingPongView.as_view(), name='ping-pong-api')
 ]
