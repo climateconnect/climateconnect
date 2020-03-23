@@ -1,0 +1,106 @@
+{
+  "organizations": [
+    {
+      "url": "climateconnect",
+      "name": "Climate Connect",
+      "image": "/images/logonotext.png",
+      "members": [
+        "tobiasrehm",
+        "christophstoll",
+        "thomasbove",
+        "michaelfischer",
+        "reecelangerock",
+        "evanhahn",
+        "nadineschneider",
+        "dipdhanesha",
+        "annkathrinbernauer"
+      ],
+      "admins": ["tobiasrehm", "christophstoll", "thomasbove"],
+      "parentgroup": null,
+      "subgroups": [],
+      "info": {
+        "location": "International",
+        "shortdescription": "Connecting climate activists around the world."
+      },
+      "background_image": "/images/climateconnectbackground.jpg",
+      "types": ["volunteergroup", "nonprofitcompany"]
+    },
+    {
+      "url": "sneep",
+      "name": "sneep",
+      "image": "/images/sneep.png",
+      "members": ["christophstoll", "tobiasrehm", "nadineschneider", "reginareck", "tobiasbaume"],
+      "admins": [],
+      "subgroups": ["sneeperlangen", "sneepnuernberg"],
+      "info": {
+        "location": "Europe",
+        "shortdescription": "student network for ethics in economics and practice"
+      },
+      "additionalInfo": {
+        "school": "across schools"
+      },
+      "background_image": "/images/background1.jpg",
+      "types": ["volunteergroup", "studentorganization"]
+    },
+    {
+      "url": "sneeperlangen",
+      "name": "sneep Erlangen",
+      "image": "/images/sneep.png",
+      "members": ["tobiasrehm", "christophstoll", "reginareck", "nadineschneider"],
+      "admins": ["tobiasrehm", "reginareck"],
+      "parentgroup": "sneep",
+      "subgroups": [],
+      "info": {
+        "location": "Erlangen, Germany",
+        "shortdescription": "Our local group is especially focused on climate action.",
+        "school": "FAU Erlangen-Nürnberg"
+      },
+      "background_image": "/images/sneepbackground.jpg",
+      "types": ["volunteergroup", "studentorganization"]
+    },
+    {
+      "url": "sneepnuernberg",
+      "name": "sneep Nürnberg",
+      "image": "/images/sneep.png",
+      "members": ["tobiasbaume"],
+      "admins": ["tobiasbaume"],
+      "parentgroup": "sneep",
+      "subgroups": [],
+      "info": {
+        "location": "Erlangen, Germany",
+        "shortdescription": "Our local group is especially focused on ethics in economics.",
+        "school": "FAU Erlangen-Nürnberg"
+      },
+      "background_image": "/images/background1.jpg",
+      "types": ["volunteergroup", "studentorganization"]
+    },
+    {
+      "url": "energiewendeerhlangen",
+      "name": "Energiewende ER(H)langen",
+      "image": "/images/energiewendelogo.jpg",
+      "members": ["stefanjessenberger"],
+      "admins": ["stefanjessenberger"],
+      "parentgroup": null,
+      "subgroups": [],
+      "info": {
+        "location": "Erlangen, Germany",
+        "shortdescription": "We are trying to accelerate the transition to renewable energy in Germany."
+      },
+      "background_image": "/images/background1.jpg",
+      "types": ["volunteergroup"]
+    },
+    {
+      "url": "emptytestorganisation",
+      "name": "We empty",
+      "info": [
+        {
+          "key": "shortdescription",
+          "name": "Description",
+          "value": "We're empty and testing."
+        }
+      ],
+      "background_image": "/images/background1.jpg",
+      "types": ["federalgovernment"]
+    }
+  ]
+}

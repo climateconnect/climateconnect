@@ -10,16 +10,22 @@ import YouTubeIcon from "@material-ui/icons/YouTube";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    marginTop: theme.spacing(2),
     padding: theme.spacing(2),
     height: theme.spacing(8),
     borderTop: `1px solid ${theme.palette.grey[300]}`,
+    width: "100%"
+  },
+  absolutePosition: {
+    position: "absolute",
+    bottom: 0
+  },
+  spacingTop: {
+    marginTop: theme.spacing(2)
+  },
+  flexContainer: {
     display: "flex",
     justifyContent: "center",
-    alignItems: "center",
-    position: "absolute",
-    width: "100%",
-    bottom: 0
+    alignItems: "center"
   },
   centerText: {
     textAlign: "center",
@@ -43,60 +49,67 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Footer() {
+//TODO: make footer stay on bottom on normal layout again
+export default function Footer({ className, noSpacingTop, noAbsolutePosition }) {
   const classes = useStyles();
 
   return (
-    <Box component="footer" className={classes.root}>
-      <Box className={classes.leftBox}>
-        <Link href="/impressum">
-          <a className={classes.inheritColor}>Impressum</a>
-        </Link>
-      </Box>
-      <Box component="span" className={classes.centerText}>
-        © Climate Connect {new Date().getFullYear()}
-      </Box>
-      <Box component="span" className={classes.rightBox}>
-        <a
-          href="https://github.com/climateconnect/climateconnect"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={classes.inheritColor}
-        >
-          <GitHubIcon className={classes.socialMediaLink} />
-        </a>
-        <a
-          href="https://twitter.com/ConnectClimate"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={classes.inheritColor}
-        >
-          <TwitterIcon className={classes.socialMediaLink} />
-        </a>
-        <a
-          href="https://www.instagram.com/climate_connect.earth/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={classes.inheritColor}
-        >
-          <InstagramIcon className={classes.socialMediaLink} />
-        </a>
-        <a
-          href="https://www.facebook.com/climateconnect.earth/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={classes.inheritColor}
-        >
-          <FacebookIcon className={classes.socialMediaLink} />
-        </a>
-        <a
-          href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={classes.inheritColor}
-        >
-          <YouTubeIcon className={classes.socialMediaLink} />
-        </a>
+    <Box
+      component="footer"
+      className={`${className} ${classes.root} ${!noSpacingTop &&
+        classes.spacingTop} ${!noAbsolutePosition && classes.absolutePosition}`}
+    >
+      <Box className={classes.flexContainer}>
+        <Box className={classes.leftBox}>
+          <Link href="/impressum">
+            <a className={classes.inheritColor}>Impressum</a>
+          </Link>
+        </Box>
+        <Box component="span" className={classes.centerText}>
+          © Climate Connect {new Date().getFullYear()}
+        </Box>
+        <Box component="span" className={classes.rightBox}>
+          <a
+            href="https://github.com/climateconnect/climateconnect"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={classes.inheritColor}
+          >
+            <GitHubIcon className={classes.socialMediaLink} />
+          </a>
+          <a
+            href="https://twitter.com/ConnectClimate"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={classes.inheritColor}
+          >
+            <TwitterIcon className={classes.socialMediaLink} />
+          </a>
+          <a
+            href="https://www.instagram.com/climate_connect.earth/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={classes.inheritColor}
+          >
+            <InstagramIcon className={classes.socialMediaLink} />
+          </a>
+          <a
+            href="https://www.facebook.com/climateconnect.earth/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={classes.inheritColor}
+          >
+            <FacebookIcon className={classes.socialMediaLink} />
+          </a>
+          <a
+            href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={classes.inheritColor}
+          >
+            <YouTubeIcon className={classes.socialMediaLink} />
+          </a>
+        </Box>
       </Box>
     </Box>
   );

@@ -1,0 +1,7 @@
+asgiref==3.2.4
+Django==2.2.11
+djangorestframework==3.11.0
+psycopg2==2.8.4
+python-dotenv==0.12.0
+pytz==2019.3
+sqlparse==0.3.1

@@ -1,0 +1,174 @@
+{
+  "profiles": [
+    {
+      "url": "christophstoll",
+      "name": "Christoph Stoll",
+      "image": "/images/christophstoll.jpg",
+      "background_image": "/images/background1.jpg",
+      "types": ["climateprotector"],
+      "organizations": ["sneeperlangen", "sneep", "climateconnect"],
+      "info": {
+        "location": "Erlangen, Germany",
+        "bio": "Member of sneep Erlangen since 2017 💚🌍💚 Co-founder of Climate Connect",
+        "skills": ["programming", "calculating CO2-emissions"],
+        "availability": "6-10"
+      }
+    },
+    {
+      "name": "Tobias Rehm",
+      "url": "tobiasrehm",
+      "image": "/images/tobiasrehm.jpg",
+      "types": ["climateprotector"],
+      "organizations": ["sneeperlangen", "sneep", "climateconnect"],
+      "info": {
+        "location": "Erlangen, Germany",
+        "bio": "Member of sneep Erlangen since 2017 💚🌍💚 Co-founder of Climate Connect",
+        "skills": ["design", "calculating CO2-emissions"],
+        "availability": "6-10"
+      }
+    },
+    {
+      "name": "Lasse Rehm",
+      "url": "lasserehm",
+      "image": "/images/tobiasrehm.jpg",
+      "types": ["climateprotector"],
+      "organizations": [],
+      "info": {
+        "location": "Erlangen, Germany",
+        "bio": null,
+        "skills": [],
+        "availability": null
+      }
+    },
+    {
+      "url": "thomasbove",
+      "name": "Thomas Bove",
+      "image": "/images/thomasbove.jpg",
+      "info": {
+        "location": "Paris, France",
+        "bio": null,
+        "skills": [],
+        "availability": null
+      },
+      "types": ["climateprotector"],
+      "organizations": ["climateconnect"]
+    },
+    {
+      "url": "michaelfischer",
+      "name": "Michael Fischer",
+      "image": "/images/michaelfischer.jpg",
+      "info": {
+        "location": "Erlangen, Germany",
+        "bio": null,
+        "skills": [],
+        "availability": null
+      },
+      "types": ["climateprotector"],
+      "organizations": ["climateconnect"]
+    },
+    {
+      "url": "evanhahn",
+      "name": "Evan Hahn",
+      "image": "/images/evanhahn.jpg",
+      "info": {
+        "location": "Chicago, USA",
+        "bio": null,
+        "skills": [],
+        "availability": null
+      },
+      "types": ["climateprotector"],
+      "organizations": ["climateconnect"]
+    },
+    {
+      "url": "nadineschneider",
+      "name": "Nadine Schneider",
+      "image": "/images/nadineschneider.jpg",
+      "info": {
+        "location": "München, Germany",
+        "bio": null,
+        "skills": [],
+        "availability": null
+      },
+      "types": ["climateprotector"],
+      "organizations": ["climateconnect", "sneep", "sneeperlangen"]
+    },
+    {
+      "url": "dipdhanesha",
+      "name": "Dip Dhanesha",
+      "image": "/images/dipdhanesha.jpg",
+      "info": {
+        "location": "San Francisco, USA",
+        "bio": null,
+        "skills": [],
+        "availability": null
+      },
+      "types": ["climateprotector"],
+      "organizations": ["climateconnect"]
+    },
+    {
+      "url": "annkathrinbernauer",
+      "name": "Ann-Kathrin Bernauer",
+      "image": "/images/annkathrinbernauer.jpg",
+      "info": {
+        "location": "Wuppertal, Germany",
+        "bio": null,
+        "skills": [],
+        "availability": null
+      },
+      "types": ["climateprotector"],
+      "organizations": ["climateconnect"]
+    },
+    {
+      "url": "reginareck",
+      "name": "Regina Reck",
+      "image": null,
+      "info": {
+        "location": "Erlangen, Germany",
+        "bio": null,
+        "skills": [],
+        "availability": null
+      },
+      "types": ["climateprotector"],
+      "organizations": ["sneeperlangen", "sneep"]
+    },
+    {
+      "url": "tobiasbaume",
+      "name": "Tobias Baume",
+      "image": null,
+      "info": {
+        "location": "Nürnberg, Germany",
+        "bio": null,
+        "skills": [],
+        "availability": null
+      },
+      "types": ["climateprotector"],
+      "organizations": ["sneeperlangen", "sneep"]
+    },
+    {
+      "url": "emptytestuser",
+      "name": "Empty Testuser",
+      "image": null,
+      "info": {
+        "location": null,
+        "bio": null,
+        "skills": [],
+        "availability": null
+      },
+      "type": "Observer",
+      "organizations": []
+    },
+    {
+      "url": "stefanjessenberger",
+      "name": "Stefan Jessenberger",
+      "image": null,
+      "info": {
+        "location": "Erlangen, Germany",
+        "bio": "I'm one of the founders of Energiewende ER(H)langen e.V.",
+        "skills": [],
+        "availability": null
+      },
+      "type": "Climate Protector",
+      "organizations": ["energiewendeerhlangen"]
+    }
+  ]
+}
