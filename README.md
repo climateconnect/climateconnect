@@ -29,6 +29,9 @@ Once you clone the repository start backend server.
 4.  Run `python manage.py makemigrations` to run django migrations. Note: This command is used for
     when you first start or whenever you are adding or updating database models.
 5.  Run server using `python manage.py runserver`.
+6.  If you want to run tests suite use this command: `python manage.py test`. If you want to run a
+    specific test file or test class run this command:
+    `python manage.py test <file_path> or <file_path + class_name>`
 
 ### Frontend
 
