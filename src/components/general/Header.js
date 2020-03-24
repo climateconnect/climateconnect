@@ -153,7 +153,6 @@ function NarrowScreenLinks() {
       <Box>
         {LINKS.filter(link => link.alwaysDisplayDirectly).map(link => {
           const Icon = link.iconForDrawer;
-          console.log(link);
           return (
             <Link href={link.href} key={link.href}>
               <IconButton color="primary" className={classes.marginRight}>
