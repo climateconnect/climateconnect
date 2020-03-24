@@ -48,7 +48,7 @@ export default function Post({ post, type, className }) {
       <div className={classes.interactionBar}>
         <Button
           variant="outlined"
-          size={type === "reply" ? "small" : "normal"}
+          size={type === "reply" ? "small" : "medium"}
           startIcon={<ThumbUpIcon />}
         >
           {post.likes}
