@@ -39,7 +39,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-//@fields: [{required: boolean, label: text, type: CSS Input Type, select:select(see below)}, ...]
+//TODO throw error if "label" isn't unique
+
+//@fields: [{required: boolean, label: text, type: CSS Input Type, progressOnFill: number, select:select(see below)}, ...]
 //@select: {selectValues: [{label:text, value: text}], defaultValue=text}
 //@messages: {submitMessage:text, headerMessage: text, bottomMessage:text}
 //@bottomLink: {text: text, href: url}
@@ -54,6 +56,40 @@ export default function Form({
 }) {
   const classes = useStyles();
 
+  const [curPercentage, setCurPercentage] = React.useState(percentage);
+  const [values, setValues] = React.useState(
+    fields.reduce((obj, field) => {
+      if (field.select)
+        obj[field.label] = field.select.defaultValue ? field.select.defaultValue : "";
+      else obj[field.label] = "";
+      return obj;
+    }, {})
+  );
+
+  function updatePercentage(customValues) {
+    const filledFields =
+      customValues && typeof customValues === "object"
+        ? fields.filter(field => !!customValues[field.label])
+        : fields.filter(field => !!values[field.label]);
+    if (filledFields.length) {
+      const totalValue = filledFields.reduce((accumulator, curField) => {
+        return accumulator + curField.progressOnFill;
+      }, 0);
+      setCurPercentage(percentage + totalValue);
+    }
+  }
+
+  function handleValueChange(event, label, updateInstantly) {
+    const newValues = { ...values, [label]: event.target.value };
+    setValues(newValues);
+    //setValues doesn't apply instantly, so we pass the new values to the updatePercentage function
+    if (updateInstantly) updatePercentage(newValues);
+  }
+
+  function handleBlur() {
+    updatePercentage();
+  }
+
   return (
     <Card className={classes.root}>
       {messages.headerMessage ? (
@@ -64,7 +100,11 @@ export default function Form({
         <></>
       )}
       {usePercentage ? (
-        <LinearProgress value={percentage} variant="determinate" className={classes.progressBar} />
+        <LinearProgress
+          value={curPercentage}
+          variant="determinate"
+          className={classes.progressBar}
+        />
       ) : (
         <></>
       )}
@@ -73,11 +113,13 @@ export default function Form({
           if (field.select) {
             return (
               <SelectField
-                defaultValue={field.select.defaultValue}
+                value={field.select.defaultValue}
+                required={field.required}
                 values={field.select.values}
                 label={field.label}
                 className={classes.blockElement}
                 key={field.label + fields.indexOf(field)}
+                onChange={() => handleValueChange(event, field.label, true)}
               />
             );
           } else {
@@ -90,7 +132,10 @@ export default function Form({
                 key={field.label + fields.indexOf(field)}
                 type={field.type}
                 variant="outlined"
+                value={values[field.label]}
                 className={classes.blockElement}
+                onBlur={handleBlur}
+                onChange={() => handleValueChange(event, field.label)}
               />
             );
           }
