@@ -1,7 +1,12 @@
 asgiref==3.2.4
+cffi==1.14.0
+cryptography==2.8
 Django==2.2.11
+django-rest-knox==4.1.0
 djangorestframework==3.11.0
 psycopg2==2.8.4
+pycparser==2.20
 python-dotenv==0.12.0
 pytz==2019.3
+six==1.14.0
 sqlparse==0.3.1
