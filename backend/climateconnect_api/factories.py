@@ -8,5 +8,3 @@ class UserFactory(factory.DjangoModelFactory):
         django_get_or_create = ('username', 'password', 'is_active')
 
     is_active = True
-    username="test_user" 
-    password="testing@2020"
