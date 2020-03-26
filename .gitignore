@@ -30,3 +30,5 @@ __pycache__
 *.swp
 *.swo
 *.py[cod]
+.idea/
+
