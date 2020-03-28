@@ -14,12 +14,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function WideLayout({ children, title }) {
+export default function WideLayout({ children, title, loggedInUser }) {
   const classes = useStyles();
 
   return (
     <LayoutWrapper theme={aboutTheme} title={title}>
-      <Header />
+      <Header loggedInUser={loggedInUser} />
       <Container maxWidth={false} component="main" className={classes.main}>
         {children}
       </Container>

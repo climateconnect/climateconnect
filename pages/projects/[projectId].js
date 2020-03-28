@@ -57,7 +57,7 @@ function ProjectLayout({ project }) {
 
   return (
     <div className={classes.root}>
-      <ProjectOverview project={project} smalScren={isNarrowScreen} />
+      <ProjectOverview project={project} smallScreen={isNarrowScreen} />
       <div className={classes.tabsWrapper}>
         <Container className={classes.noPadding}>
           <Tabs

@@ -19,11 +19,11 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function Inbox({ chats }) {
+export default function Inbox({ chats, loggedInUser }) {
   const classes = useStyles();
   return (
     <div>
-      <WideLayout title="Inbox">
+      <WideLayout title="Inbox" loggedInUser={loggedInUser}>
         <Container maxWidth="md" className={classes.root}>
           <Typography component="h1" variant="h4" className={classes.headline}>
             Inbox
@@ -37,7 +37,8 @@ export default function Inbox({ chats }) {
 
 Inbox.getInitialProps = async ctx => {
   return {
-    chats: await getChatsOfLoggedInUser(ctx.query.profileUrl)
+    chats: await getChatsOfLoggedInUser(ctx.query.profileUrl),
+    loggedInUser: await getLoggedInUser()
   };
 };
 
@@ -47,7 +48,7 @@ async function getProfileByUrlIfExists(profileUrl) {
 }
 
 async function getLoggedInUser() {
-  return { url: "christophstoll" };
+  return TEMP_FEATURED_PROFILE_DATA.profiles.find(p => p.url === "christophstoll");
 }
 
 //This function is really ugly but it doesn't matter, because it will be replaced with a single DB call.
