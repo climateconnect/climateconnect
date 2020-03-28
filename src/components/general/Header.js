@@ -289,7 +289,7 @@ function NarrowScreenLinks({ loggedInUser }) {
                 <Link href={link.href} key={index}>
                   <ListItem button component="a" onClick={closeDrawer}>
                     <ListItemIcon>
-                      <Icon />
+                      <Icon color="primary" />
                     </ListItemIcon>
                     <ListItemText primary={link.text} />
                   </ListItem>
@@ -314,7 +314,7 @@ function NarrowScreenLinks({ loggedInUser }) {
                     <Link href={link.href} key={index}>
                       <ListItem button component="a" onClick={closeDrawer}>
                         <ListItemIcon>
-                          <Icon />
+                          <Icon color="primary" />
                         </ListItemIcon>
                         <ListItemText primary={link.text} />
                       </ListItem>
