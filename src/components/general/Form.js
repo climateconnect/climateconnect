@@ -52,16 +52,18 @@ export default function Form({
   bottomLink,
   formAction,
   usePercentage,
-  percentage
+  percentage,
+  onSubmit,
+  errorMessage
 }) {
   const classes = useStyles();
 
   const [curPercentage, setCurPercentage] = React.useState(percentage);
   const [values, setValues] = React.useState(
     fields.reduce((obj, field) => {
-      if (field.select)
-        obj[field.label] = field.select.defaultValue ? field.select.defaultValue : "";
-      else obj[field.label] = "";
+      if (field.select) obj[field.key] = field.select.defaultValue ? field.select.defaultValue : "";
+      else if (field.value) obj[field.key] = field.value;
+      else obj[field.key] = "";
       return obj;
     }, {})
   );
@@ -69,8 +71,8 @@ export default function Form({
   function updatePercentage(customValues) {
     const filledFields =
       customValues && typeof customValues === "object"
-        ? fields.filter(field => !!customValues[field.label])
-        : fields.filter(field => !!values[field.label]);
+        ? fields.filter(field => !!customValues[field.key])
+        : fields.filter(field => !!values[field.key]);
     if (filledFields.length) {
       const totalValue = filledFields.reduce((accumulator, curField) => {
         return accumulator + curField.progressOnFill;
@@ -79,8 +81,8 @@ export default function Form({
     }
   }
 
-  function handleValueChange(event, label, updateInstantly) {
-    const newValues = { ...values, [label]: event.target.value };
+  function handleValueChange(event, key, updateInstantly) {
+    const newValues = { ...values, [key]: event.target.value };
     setValues(newValues);
     //setValues doesn't apply instantly, so we pass the new values to the updatePercentage function
     if (updateInstantly) updatePercentage(newValues);
@@ -108,7 +110,16 @@ export default function Form({
       ) : (
         <></>
       )}
-      <form action={formAction && formAction.href} method={formAction && formAction.method}>
+      <form
+        action={formAction && formAction.action}
+        method={formAction && formAction.method}
+        onSubmit={() => onSubmit(event, values)}
+      >
+        {errorMessage && (
+          <Typography color="error" className={classes.centerText}>
+            {errorMessage}
+          </Typography>
+        )}
         {fields.map(field => {
           if (field.select) {
             return (
@@ -119,7 +130,7 @@ export default function Form({
                 label={field.label}
                 className={classes.blockElement}
                 key={field.label + fields.indexOf(field)}
-                onChange={() => handleValueChange(event, field.label, true)}
+                onChange={() => handleValueChange(event, field.key, true)}
               />
             );
           } else {
@@ -129,13 +140,13 @@ export default function Form({
                 fullWidth
                 autoFocus={field === fields[0]}
                 label={field.label}
-                key={field.label + fields.indexOf(field)}
+                key={field.key}
                 type={field.type}
                 variant="outlined"
-                value={values[field.label]}
+                value={values[field.key]}
                 className={classes.blockElement}
                 onBlur={handleBlur}
-                onChange={() => handleValueChange(event, field.label)}
+                onChange={() => handleValueChange(event, field.key)}
               />
             );
           }
