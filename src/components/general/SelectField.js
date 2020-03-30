@@ -23,7 +23,7 @@ export default function SelectField({
       required={required}
       fullWidth
       label={label}
-      value={value}
+      defaultValue={value}
       variant="outlined"
       onChange={handleChange}
       className={className}
