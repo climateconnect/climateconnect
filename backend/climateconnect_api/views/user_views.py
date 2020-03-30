@@ -19,6 +19,5 @@ class LoginView(KnowLoginView):
             return super(LoginView, self).post(request, format=None)
         else:
             return Response({
-                'message': 'Unable to log in with provided credentials.'
-                'Please sign up to create your account'
-            }, status=status.HTTP_400_BAD_REQUEST)
+                'message': 'Invalid password or username.'
+            }, status=status.HTTP_401_UNAUTHORIZED)
