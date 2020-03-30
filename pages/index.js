@@ -26,5 +26,5 @@ Index.getInitialProps = async () => {
 
 async function getProjects() {
   const projects = fakeProjectData.projects;
-  return [...projects, ...projects, ...projects];
+  return [...projects];
 }
