@@ -53,7 +53,8 @@ export default function Form({
   formAction,
   usePercentage,
   percentage,
-  onSubmit
+  onSubmit,
+  errorMessage
 }) {
   const classes = useStyles();
 
@@ -114,6 +115,11 @@ export default function Form({
         method={formAction && formAction.method}
         onSubmit={() => onSubmit(event, values)}
       >
+        {errorMessage && (
+          <Typography color="error" className={classes.centerText}>
+            {errorMessage}
+          </Typography>
+        )}
         {fields.map(field => {
           if (field.select) {
             return (

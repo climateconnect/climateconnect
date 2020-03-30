@@ -31,6 +31,8 @@ export default function Signin() {
     href: "/signup"
   };
 
+  const [errorMessage, setErrorMessage] = React.useState(null);
+
   const cookies = new Cookies();
 
   const handleSubmit = (event, values) => {
@@ -47,7 +49,8 @@ export default function Signin() {
         Router.push("/");
       })
       .catch(function(error) {
-        console.log(error);
+        console.log(error.response.data.message);
+        setErrorMessage(error.response.data.message);
       });
   };
 
@@ -59,6 +62,7 @@ export default function Signin() {
         bottomLink={bottomLink}
         usePercentage={false}
         onSubmit={handleSubmit}
+        errorMessage={errorMessage}
       />
     </Layout>
   );
