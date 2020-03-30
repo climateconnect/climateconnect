@@ -44,8 +44,6 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
         fields={fields}
         messages={messages}
         bottomLink={bottomLink}
-        usePercentage={true}
-        percentage={0}
         onSubmit={(event, values) => handleSubmit(event, values)}
         errorMessage={errorMessage}
       />

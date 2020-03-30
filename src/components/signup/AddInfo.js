@@ -56,8 +56,6 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
         fields={fields}
         messages={messages}
         formAction={formAction}
-        usePercentage={true}
-        percentage={50}
         onSubmit={(event, values) => handleSubmit(event, values)}
         errorMessage={errorMessage}
         onGoBack={handleGoBack}
