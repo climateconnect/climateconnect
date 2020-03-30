@@ -29,8 +29,15 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import SentimentSatisfiedIcon from "@material-ui/icons/SentimentSatisfied";
 
 const LINKS = [
+  {
+    href: "/supportus",
+    text: "Support us",
+    iconForDrawer: SentimentSatisfiedIcon,
+    isOutlinedInHeader: true
+  },
   {
     href: "/about",
     text: "About",
