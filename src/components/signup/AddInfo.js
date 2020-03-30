@@ -1,19 +1,23 @@
 import React from "react";
-import Layout from "../src/components/layouts/layout";
-import Form from "./../src/components/general/Form";
-import countries from "./../public/data/countries.json";
+import Layout from "./../layouts/layout";
+import Form from "./../general/Form";
+import countries from "./../../../public/data/countries.json";
 
-export default function Signup() {
+export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBack }) {
   const fields = [
     {
       required: true,
       label: "First Name",
-      type: "text"
+      type: "text",
+      key: "firstname",
+      value: values["firstname"]
     },
     {
       required: true,
       label: "Last Name",
-      type: "text"
+      type: "text",
+      key: "lastname",
+      value: values["lastname"]
     },
     {
       required: true,
@@ -22,13 +26,16 @@ export default function Signup() {
         values: countries.map(country => {
           return { key: country, name: country };
         }),
-        defaultValue: ""
-      }
+        defaultValue: values["country"] ? values["country"] : ""
+      },
+      key: "country"
     },
     {
       required: true,
       label: "City/Place",
-      type: "text"
+      type: "text",
+      key: "city",
+      value: values["city"]
     }
   ];
 
@@ -49,8 +56,9 @@ export default function Signup() {
         fields={fields}
         messages={messages}
         formAction={formAction}
-        usePercentage={true}
-        percentage={20}
+        onSubmit={(event, values) => handleSubmit(event, values)}
+        errorMessage={errorMessage}
+        onGoBack={handleGoBack}
       />
     </Layout>
   );
