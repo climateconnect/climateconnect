@@ -36,7 +36,7 @@ const LINKS = [
     href: "/supportus",
     text: "Support us",
     iconForDrawer: SentimentSatisfiedIcon,
-    isOutlinedInHeader: true
+    isFilledInHeader: true
   },
   {
     href: "/about",
@@ -201,6 +201,9 @@ function NormalScreenLinks({ loggedInUser }) {
         }
         if (link.isOutlinedInHeader) {
           buttonProps.variant = "outlined";
+        }
+        if (link.isFilledInHeader) {
+          buttonProps.variant = "contained";
         }
         const Icon = link.icon;
         return (
