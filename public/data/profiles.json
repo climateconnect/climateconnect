@@ -2,6 +2,11 @@
   "profiles": [
     {
       "url": "christophstoll",
+      "email": "christoph.stoll@email.com",
+      "emailPreferences": {
+        "notifications": true,
+        "suggestions": true
+      },
       "name": "Christoph Stoll",
       "image": "/images/christophstoll.jpg",
       "background_image": "/images/background1.jpg",
