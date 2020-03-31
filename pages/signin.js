@@ -49,7 +49,6 @@ export default function Signin() {
         Router.push("/");
       })
       .catch(function(error) {
-        console.log(error.response.data.message);
         setErrorMessage(error.response.data.message);
       });
   };
