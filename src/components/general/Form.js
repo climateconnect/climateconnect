@@ -1,8 +1,17 @@
 import React from "react";
 import Link from "next/link";
-import { TextField, Button, Card, Container, LinearProgress, Typography } from "@material-ui/core";
+import {
+  TextField,
+  Button,
+  Card,
+  Container,
+  LinearProgress,
+  Typography,
+  IconButton
+} from "@material-ui/core";
 import SelectField from "./SelectField";
 import { makeStyles } from "@material-ui/core/styles";
+import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,6 +45,9 @@ const useStyles = makeStyles(theme => ({
   },
   centerText: {
     textAlign: "center"
+  },
+  backButton: {
+    float: "left"
   }
 }));
 
@@ -54,7 +66,8 @@ export default function Form({
   usePercentage,
   percentage,
   onSubmit,
-  errorMessage
+  errorMessage,
+  onGoBack
 }) {
   const classes = useStyles();
 
@@ -96,6 +109,15 @@ export default function Form({
     <Card className={classes.root}>
       {messages.headerMessage ? (
         <Typography component="h2" variant="subtitle1" className={classes.centerText}>
+          {onGoBack && (
+            <IconButton
+              size="small"
+              className={classes.backButton}
+              onClick={() => onGoBack(event, values)}
+            >
+              <KeyboardBackspaceIcon />
+            </IconButton>
+          )}
           {messages.headerMessage}
         </Typography>
       ) : (
@@ -124,7 +146,7 @@ export default function Form({
           if (field.select) {
             return (
               <SelectField
-                value={field.select.defaultValue}
+                defaultValue={field.select.defaultValue}
                 required={field.required}
                 values={field.select.values}
                 label={field.label}

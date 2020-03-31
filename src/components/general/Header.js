@@ -29,8 +29,15 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import SentimentSatisfiedIcon from "@material-ui/icons/SentimentSatisfied";
 
 const LINKS = [
+  {
+    href: "/supportus",
+    text: "Support us",
+    iconForDrawer: SentimentSatisfiedIcon,
+    isFilledInHeader: true
+  },
   {
     href: "/about",
     text: "About",
@@ -194,6 +201,9 @@ function NormalScreenLinks({ loggedInUser }) {
         }
         if (link.isOutlinedInHeader) {
           buttonProps.variant = "outlined";
+        }
+        if (link.isFilledInHeader) {
+          buttonProps.variant = "contained";
         }
         const Icon = link.icon;
         return (
