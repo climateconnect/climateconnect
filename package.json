@@ -31,7 +31,7 @@
     "dotenv": "^8.2.0",
     "humanize-duration": "^3.22.0",
     "lodash": "^4.17.15",
-    "next": "9.1.1",
+    "next": "^9.3.2",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-avatar-editor": "^12.0.0-beta.0",
