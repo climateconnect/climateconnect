@@ -113,9 +113,6 @@ const sortByDate = (a, b) => {
 async function getProjectByIdIfExists(projectId) {
   const project = { ...TEMP_FEATURED_DATA.projects.find(({ id }) => id === projectId) };
   project.team = await getFullProfiles(project.team);
-  console.log(project.status);
-  console.log(project);
-  console.log(TEMP_FEATURED_DATA.projects.find(({ id }) => id === projectId));
   project.timeline_posts = await Promise.all(
     project.timeline_posts.sort(sortByDate).map(async post => {
       return {
