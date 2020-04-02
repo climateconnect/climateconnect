@@ -99,7 +99,6 @@ function MessagingLayout({ user, chatting_partner, message_history }) {
       ]);
     }
     setCurMessage("");
-    console.log(messages);
     if (event) event.preventDefault();
   };
 
