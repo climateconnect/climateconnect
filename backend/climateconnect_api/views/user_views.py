@@ -2,7 +2,13 @@ from django.contrib.auth import (authenticate, login)
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.exceptions import ValidationError
 from knox.views import LoginView as KnowLoginView
+
+# Database imports
+from django.contrib.auth.models import User
+from climateconnect_api.models import UserProfile
 
 
 class LoginView(KnowLoginView):
@@ -21,3 +27,36 @@ class LoginView(KnowLoginView):
             return Response({
                 'message': 'Invalid password or username.'
             }, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class SignUpView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        required_params = [
+            'email', 'password', 'first_name', 'last_name',
+            'country', 'state', 'city'
+        ]
+        for param in required_params:
+            if param not in request.data:
+                raise ValidationError('Required parameter is missing')
+
+        if User.objects.filter(username=request.data['email']).exists():
+            raise ValidationError("Email already in use.")
+
+        user = User.objects.create(
+            username=request.data['email'], password=request.data['password'],
+            email=request.data['email'], first_name=request.data['first_name'],
+            last_name=request.data['last_name'], is_active=True
+        )
+
+        UserProfile.objects.create(
+            user=user, country=request.data['country'],
+            state=request.data['state'], city=request.data['city']
+        )
+
+        # TODO: Call a function that sends an email to user.
+
+        message = "You're almost done! We have sent an email with a confirmation link to {}.Finish creating your account by clicking the link.".format(user.email)  # NOQA
+
+        return Response({'success': message}, status=status.HTTP_201_CREATED)

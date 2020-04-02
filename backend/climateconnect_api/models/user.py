@@ -43,6 +43,30 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    country = models.CharField(
+        help_text="User's country",
+        verbose_name="Country",
+        max_length=256,
+        blank=True,
+        null=True
+    )
+
+    state = models.CharField(
+        help_text="User's state",
+        verbose_name="State",
+        max_length=512,
+        null=True,
+        blank=True
+    )
+
+    city = models.CharField(
+        help_text="User's city",
+        verbose_name="City",
+        max_length=512,
+        null=True,
+        blank=True
+    )
+
     biography = models.TextField(
         help_text="Points to user's bio",
         verbose_name="bio",
@@ -75,6 +99,6 @@ class UserProfile(models.Model):
         db_table = "climateconnect_user_profile"
 
     def __str__(self):
-        return "Profile %d: %s %s".format(
-            self.id, self.user.first_name, self.user.last_name
+        return "%s %s [profile id: %d]" % (
+            self.user.first_name, self.user.last_name, self.id
         )
