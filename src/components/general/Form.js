@@ -7,7 +7,8 @@ import {
   Container,
   LinearProgress,
   Typography,
-  IconButton
+  IconButton,
+  Checkbox
 } from "@material-ui/core";
 import SelectField from "./SelectField";
 import { makeStyles } from "@material-ui/core/styles";
@@ -25,6 +26,16 @@ const useStyles = makeStyles(theme => ({
     height: 56,
     margin: "0 auto",
     marginTop: theme.spacing(2)
+  },
+  checkbox: {
+    display: "block",
+    maxWidth: 250,
+    margin: "0 auto",
+    marginTop: theme.spacing(1),
+    fontSize: 13
+  },
+  inlineBlockElement: {
+    display: "inline-block"
   },
   bottomMessages: {
     textAlign: "center",
@@ -76,6 +87,7 @@ export default function Form({
     fields.reduce((obj, field) => {
       if (field.select) obj[field.key] = field.select.defaultValue ? field.select.defaultValue : "";
       else if (field.value) obj[field.key] = field.value;
+      else if (field.type === "checkbox") obj[field.key] = field.checked ? field.checked : false;
       else obj[field.key] = "";
       return obj;
     }, {})
@@ -94,8 +106,17 @@ export default function Form({
     }
   }
 
-  function handleValueChange(event, key, updateInstantly) {
-    const newValues = { ...values, [key]: event.target.value };
+  function handleValueChange(event, key, type, updateInstantly) {
+    const newValues = {
+      ...values,
+      [key]: type === "checkbox" ? event.target.checked : event.target.value
+    };
+    if (type === "checkbox") {
+      const dependentFields = fields.filter(
+        f => f.onlyShowIfChecked && f.onlyShowIfChecked === key
+      );
+      if (dependentFields.length) dependentFields.map(f => (newValues[f.key] = ""));
+    }
     setValues(newValues);
     //setValues doesn't apply instantly, so we pass the new values to the updatePercentage function
     if (updateInstantly) updatePercentage(newValues);
@@ -152,10 +173,26 @@ export default function Form({
                 label={field.label}
                 className={classes.blockElement}
                 key={field.label + fields.indexOf(field)}
-                onChange={() => handleValueChange(event, field.key, true)}
+                onChange={() => handleValueChange(event, field.key, field.type, true)}
               />
             );
-          } else {
+          } else if (field.type === "checkbox") {
+            return (
+              <div className={classes.checkbox} key={field.key}>
+                <Checkbox
+                  id={"checkbox" + field.key}
+                  checked={values[field.key]}
+                  required={field.required}
+                  className={classes.inlineBlockElement}
+                  color="primary"
+                  size="small"
+                  onBlur={handleBlur}
+                  onChange={() => handleValueChange(event, field.key, field.type)}
+                />
+                <label htmlFor={"checkbox" + field.key}>{field.label}</label>
+              </div>
+            );
+          } else if (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) {
             return (
               <TextField
                 required={field.required}
@@ -168,7 +205,7 @@ export default function Form({
                 value={values[field.key]}
                 className={classes.blockElement}
                 onBlur={handleBlur}
-                onChange={() => handleValueChange(event, field.key)}
+                onChange={() => handleValueChange(event, field.key, field.type)}
               />
             );
           }

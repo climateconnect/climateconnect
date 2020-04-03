@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Router from "next/router";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import EditAccountPage from "./../../src/components/account/EditAccountPage";
 import { Typography } from "@material-ui/core";
@@ -20,6 +21,13 @@ const useStyles = makeStyles(theme => {
 //This route should later be changed to "/editProfile" and should load the profile of the logged in person.
 
 export default function EditProfilePage({ profile, profileTypes, infoMetadata, maxAccountTypes }) {
+  const saveChanges = () => {
+    //TODO: replace this with an API call that saves the updated account to our database
+  };
+  const handleCancel = () => {
+    Router.push("/profiles/" + profile.url);
+  };
+
   return (
     <WideLayout title={profile ? profile.name + "'s profile" : "Not found"}>
       {profile ? (
@@ -28,6 +36,8 @@ export default function EditProfilePage({ profile, profileTypes, infoMetadata, m
           profileTypes={profileTypes}
           infoMetadata={infoMetadata}
           maxAccountTypes={maxAccountTypes}
+          handleSubmit={saveChanges}
+          handleCancel={handleCancel}
         />
       ) : (
         <NoProfileFoundLayout />
@@ -45,7 +55,14 @@ EditProfilePage.getInitialProps = async ctx => {
   };
 };
 
-function ProfileLayout({ profile, profileTypes, infoMetadata, maxAccountTypes }) {
+function ProfileLayout({
+  profile,
+  profileTypes,
+  infoMetadata,
+  maxAccountTypes,
+  handleSubmit,
+  handleCancel
+}) {
   return (
     <EditAccountPage
       type="profile"
@@ -53,7 +70,8 @@ function ProfileLayout({ profile, profileTypes, infoMetadata, maxAccountTypes })
       possibleAccountTypes={profileTypes}
       infoMetadata={infoMetadata}
       maxAccountTypes={maxAccountTypes}
-      accountHref={"/profiles/" + profile.url}
+      handleSave={handleSubmit}
+      handleCancel={handleCancel}
     />
   );
 }

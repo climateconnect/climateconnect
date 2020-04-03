@@ -16,13 +16,13 @@
         "annkathrinbernauer"
       ],
       "admins": ["tobiasrehm", "christophstoll", "thomasbove"],
-      "parentgroup": null,
+      "parentorganization": null,
       "subgroups": [],
       "info": {
         "location": "International",
         "shortdescription": "Connecting climate activists around the world."
       },
-      "background_image": "/images/climateconnectbackground.jpg",
+      "background_image": "/images/background1.jpg",
       "types": ["volunteergroup", "nonprofitcompany"]
     },
     {
@@ -48,7 +48,7 @@
       "image": "/images/sneep.png",
       "members": ["tobiasrehm", "christophstoll", "reginareck", "nadineschneider"],
       "admins": ["tobiasrehm", "reginareck"],
-      "parentgroup": "sneep",
+      "parentorganization": "sneep",
       "subgroups": [],
       "info": {
         "location": "Erlangen, Germany",
@@ -64,7 +64,7 @@
       "image": "/images/sneep.png",
       "members": ["tobiasbaume"],
       "admins": ["tobiasbaume"],
-      "parentgroup": "sneep",
+      "parentorganization": "sneep",
       "subgroups": [],
       "info": {
         "location": "Erlangen, Germany",
@@ -80,7 +80,7 @@
       "image": "/images/energiewendelogo.jpg",
       "members": ["stefanjessenberger"],
       "admins": ["stefanjessenberger"],
-      "parentgroup": null,
+      "parentorganization": null,
       "subgroups": [],
       "info": {
         "location": "Erlangen, Germany",
