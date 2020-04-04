@@ -1,4 +1,7 @@
 from django.db import models
+from climateconnect_api.models.common import (
+    Availability, Skill
+)
 
 
 def profile_image_path(instance, filename):
@@ -90,6 +93,24 @@ class UserProfile(models.Model):
         help_text="Checks whether user's profile is verfied or not",
         verbose_name="Is profile verified",
         default=False
+    )
+
+    availability = models.ForeignKey(
+        Availability,
+        help_text="Points to user's availability for a work",
+        verbose_name="Availability",
+        null=True,
+        blank=True,
+        related_name="user_availability",
+        on_delete=models.PROTECT
+    )
+
+    skills = models.ManyToManyField(
+        Skill,
+        help_text="Points to user's skills",
+        verbose_name="Skills",
+        related_name="user_skills",
+        blank=True
     )
 
     class Meta:
