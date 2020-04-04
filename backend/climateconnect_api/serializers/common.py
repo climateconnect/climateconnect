@@ -12,7 +12,10 @@ class AvailabilitySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class SkillSerializer(serializers.ModelSerializer):
+class UserSkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skill
-        fields = ('name',)
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        return instance.name
