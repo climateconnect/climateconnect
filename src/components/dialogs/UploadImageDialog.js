@@ -43,13 +43,13 @@ export default function UploadImageDialog({
   };
 
   const handleSliderChange = (e, newValue) => {
-    /*Down allow scaling down lower than 10% for usability. 
+    /*Don't allow scaling down lower than 10% for usability. 
     Dividing newValue by (defaultValue/0.9) is done so that the scale===1 at default value*/
     setScale(0.1 + newValue / (defaultValue / 0.9));
   };
 
   const applyImage = () => {
-    onClose(editor.getImageScaledToCanvas());
+    onClose(editor.getImage());
   };
 
   const setEditorRef = editor => setEditor(editor);
