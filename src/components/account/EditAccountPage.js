@@ -26,6 +26,14 @@ const useStyles = makeStyles(theme => ({
     top: "-50%",
     cursor: "pointer"
   },
+  backgroundImage: props => ({
+    backgroundImage: `url(${props.background_image})`,
+    backgroundPosition: "center",
+    backgroundSize: "cover"
+  }),
+  backgroundColor: {
+    backgroundColor: "#e0e0e0"
+  },
   backgroundPhotoIcon: {
     fontSize: 80
   },
@@ -164,9 +172,8 @@ export default function EditAccountPage({
   submitMessage,
   handleCancel
 }) {
-  const classes = useStyles();
-
   const [editedAccount, setEditedAccount] = React.useState(account);
+  const classes = useStyles(editedAccount);
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
     image: editedAccount.image ? editedAccount.image : DEFAULT_AVATAR_IMAGE,
@@ -358,16 +365,13 @@ export default function EditAccountPage({
     tempEditedAccount.types = tempEditedAccount.types.filter(t => t !== typeToDelete);
     setEditedAccount(tempEditedAccount);
   };
-
-  const backgroundStyles = {
-    background: editedAccount.background_image
-      ? `url(${editedAccount.background_image}) no-repeat center`
-      : "#e0e0e0",
-    backgroundSize: "cover"
-  };
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
-      <div className={classes.backgroundContainer} style={backgroundStyles}>
+      <div
+        className={`${classes.backgroundContainer} ${
+          editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor
+        }`}
+      >
         <label htmlFor="backgroundPhoto" className={classes.backgroundLabel}>
           <input
             type="file"
@@ -383,12 +387,7 @@ export default function EditAccountPage({
             </div>
           ) : (
             <div className={classes.avatarButtonContainer}>
-              <Chip
-                color="primary"
-                label="Add background image"
-                icon={<ControlPointIcon />}
-                onClick={() => handleDialogClickOpen("addTypeDialog")}
-              />
+              <Chip color="primary" label="Add background image" icon={<ControlPointIcon />} />
             </div>
           )}
         </label>
