@@ -25,5 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('ping/', status_views.PingPongView.as_view(), name='ping-pong-api'),
     path('login/', user_views.LoginView.as_view(), name='login-api'),
-    path('logout/', knox_views.LogoutView.as_view(), name='logout-api')
+    path('logout/', knox_views.LogoutView.as_view(), name='logout-api'),
+    path('signup/', user_views.SignUpView.as_view(), name="signup-api"),
+    path('api/my_profile/', user_views.UserProfileView.as_view(), name='user-profile-api'),
 ]
