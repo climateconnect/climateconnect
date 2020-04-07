@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Avatar, Chip, Button, TextField } from "@material-ui/core";
+import { Container, Avatar, Chip, Button, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
@@ -159,6 +159,9 @@ const useStyles = makeStyles(theme => ({
   },
   dialogWidth: {
     width: 400
+  },
+  centerText: {
+    textAlign: "center"
   }
 }));
 
@@ -170,7 +173,8 @@ export default function EditAccountPage({
   children,
   handleSubmit,
   submitMessage,
-  handleCancel
+  handleCancel,
+  errorMessage
 }) {
   const [editedAccount, setEditedAccount] = React.useState(account);
   const classes = useStyles(editedAccount);
@@ -365,8 +369,12 @@ export default function EditAccountPage({
     tempEditedAccount.types = tempEditedAccount.types.filter(t => t !== typeToDelete);
     setEditedAccount(tempEditedAccount);
   };
+
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
+      <Typography color="error" className={classes.centerText}>
+        {errorMessage}
+      </Typography>
       <div
         className={`${classes.backgroundContainer} ${
           editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor
@@ -397,7 +405,7 @@ export default function EditAccountPage({
           className={`${classes.saveButton} ${classes.actionButton}`}
           color="primary"
           variant="contained"
-          onClick={handleSubmit}
+          onClick={() => handleSubmit(event, editedAccount)}
         >
           {submitMessage ? submitMessage : "Save Changes"}
         </Button>
