@@ -34,6 +34,7 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
 
 CUSTOM_APPS = [
     'climateconnect_api',
+    'organization'
 ]
 
 LIBRARY_APPS = [
