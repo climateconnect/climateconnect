@@ -3,6 +3,7 @@ import EnterDetailledOrganizationInfo from "./../src/components/organization/Ent
 import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
 import Layout from "./../src/components/layouts/layout";
 import WideLayout from "./../src/components/layouts/WideLayout";
+import Router from "next/router";
 
 export default function CreateOrganization() {
   const [errorMessages, setErrorMessages] = React.useState({
@@ -21,7 +22,7 @@ export default function CreateOrganization() {
     types: []
   });
   const steps = ["basicorganizationinfo", "detailledorganizationinfo"];
-  const [curStep, setCurStep] = React.useState(steps[1]);
+  const [curStep, setCurStep] = React.useState(steps[0]);
 
   const handleBasicInfoSubmit = (event, values) => {
     event.preventDefault();
@@ -42,24 +43,27 @@ export default function CreateOrganization() {
     }
   };
 
-  const requiredProps = ["image", "type"];
+  const requiredPropErrors = {
+    image: 'Please add an avatar image by clicking the "add image" button.',
+    type: 'Please choose at least one type by clicking the "add type" button.',
+    name: "Please type your organization name under the avatar image",
+    location: "Please specify your location"
+  };
 
   const handleDetailledInfoSubmit = (event, account) => {
     console.log(event);
     console.log(account);
-    for (const prop of requiredProps) {
+    for (const prop of Object.keys(requiredPropErrors)) {
       if (!account[prop]) {
         setErrorMessages({
           errorMessages,
-          detailledOrganizationInfo: "Please specify this prop: " + prop
+          detailledOrganizationInfo: requiredPropErrors[prop]
         });
         return;
       }
     }
-    setErrorMessages({
-      errorMessages,
-      detailledOrganizationInfo: "Your organization name is already taken."
-    });
+    //TODO: save organization and redirect to organization's page.
+    Router.push("/organizations/" + "climateconnect");
   };
 
   if (curStep === "basicorganizationinfo")
