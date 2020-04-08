@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Router from "next/router";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import EditAccountPage from "../../src/components/account/EditAccountPage";
 import TEMP_FEATURED_DATA from "../../public/data/organizations.json";
@@ -22,6 +23,13 @@ export default function EditOrganizationPage({
   infoMetadata,
   maxAccountTypes
 }) {
+  const saveChanges = () => {
+    //TODO: replace this with an API call that saves the updated account to our database
+  };
+  const handleCancel = () => {
+    Router.push("/organizations/" + organization.url);
+  };
+
   return (
     <WideLayout title={organization ? organization.name + "'s profile" : "Not found"}>
       {organization ? (
@@ -31,7 +39,8 @@ export default function EditOrganizationPage({
           possibleAccountTypes={organizationTypes}
           infoMetadata={infoMetadata}
           maxAccountTypes={maxAccountTypes}
-          accountHref={"/organizations/" + organization.url}
+          handleSubmit={saveChanges}
+          handleCancel={handleCancel}
         />
       ) : (
         <NoOrganizationFoundLayout />

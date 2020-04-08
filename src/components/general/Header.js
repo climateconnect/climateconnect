@@ -30,6 +30,7 @@ import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import SentimentSatisfiedIcon from "@material-ui/icons/SentimentSatisfied";
+import GroupWorkIcon from "@material-ui/icons/GroupWork";
 
 const LINKS = [
   {
@@ -85,6 +86,11 @@ const getLoggedInLinks = ({ loggedInUser }) => {
       href: "/profiles/" + loggedInUser.url,
       text: "My Profile",
       iconForDrawer: AccountCircleIcon
+    },
+    {
+      href: "/profiles/" + loggedInUser.url,
+      text: "My Projects",
+      iconForDrawer: GroupWorkIcon
     },
     {
       href: "/settings",

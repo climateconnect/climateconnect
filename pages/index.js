@@ -40,6 +40,6 @@ Index.getInitialProps = async () => {
 //TODO replace by db call. console.log is just there to pass lint
 async function getProjects(page) {
   console.log(page);
-  const projects = fakeProjectData.projects.slice(0, 6);
+  const projects = fakeProjectData.projects.slice(0, 8);
   return { projects: [...projects, ...projects], hasMore: true };
 }
