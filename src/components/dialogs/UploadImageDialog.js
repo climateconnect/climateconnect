@@ -39,6 +39,7 @@ export default function UploadImageDialog({
   const [editor, setEditor] = React.useState(null);
 
   const handleClose = () => {
+    setScale(1);
     onClose();
   };
 
@@ -49,8 +50,8 @@ export default function UploadImageDialog({
   };
 
   const applyImage = () => {
-    console.log(editor.getImage());
     onClose(editor.getImage());
+    setScale(1);
   };
 
   const setEditorRef = editor => setEditor(editor);
