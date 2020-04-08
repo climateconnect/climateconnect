@@ -160,8 +160,13 @@ const useStyles = makeStyles(theme => ({
   dialogWidth: {
     width: 400
   },
-  centerText: {
-    textAlign: "center"
+  errorMessage: {
+    textAlign: "center",
+    paddingBottom: theme.spacing(1),
+    paddingTop: theme.spacing(1)
+  },
+  cursorPointer: {
+    cursor: "pointer"
   }
 }));
 
@@ -176,6 +181,7 @@ export default function EditAccountPage({
   handleCancel,
   errorMessage
 }) {
+  const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState(account);
   const classes = useStyles(editedAccount);
   //used for previewing images in UploadImageDialog
@@ -370,9 +376,18 @@ export default function EditAccountPage({
     setEditedAccount(tempEditedAccount);
   };
 
+  const handleFileInputClick = type => {
+    setSelectedFiles({ ...selectedFiles, [type]: "" });
+  };
+
+  const handleFileSubmit = (event, type) => {
+    console.log(event.target.value);
+    console.log(type);
+  };
+
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
-      <Typography color="error" className={classes.centerText}>
+      <Typography color="error" className={errorMessage && classes.errorMessage}>
         {errorMessage}
       </Typography>
       <div
@@ -388,6 +403,9 @@ export default function EditAccountPage({
             style={{ display: "none" }}
             onChange={onBackgroundChange}
             accept=".png,.jpeg,.jpg"
+            value={selectedFiles.background}
+            onClick={() => handleFileInputClick("background")}
+            onSubmit={() => handleFileSubmit(event, "background")}
           />
           {editedAccount.background_image ? (
             <div className={classes.backgroundPhotoIconContainer}>
@@ -427,6 +445,9 @@ export default function EditAccountPage({
                 style={{ display: "none" }}
                 onChange={onAvatarChange}
                 accept=".png,.jpeg,.jpg"
+                value={selectedFiles["avatar"]}
+                onClick={() => handleFileInputClick("avatar")}
+                onSubmit={() => handleFileSubmit(event, "avatar")}
               />
               <Avatar
                 alt={editedAccount.name}
@@ -446,7 +467,7 @@ export default function EditAccountPage({
                     label="Add Image"
                     color="primary"
                     icon={<ControlPointIcon />}
-                    onClick={() => handleDialogClickOpen("addTypeDialog")}
+                    className={classes.cursorPointer}
                   />
                 </div>
               )}

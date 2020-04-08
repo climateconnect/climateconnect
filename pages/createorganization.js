@@ -1,6 +1,8 @@
 import React from "react";
 import EnterDetailledOrganizationInfo from "./../src/components/organization/EnterDetailledOrganizationInfo";
 import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
+import Layout from "./../src/components/layouts/layout";
+import WideLayout from "./../src/components/layouts/WideLayout";
 
 export default function CreateOrganization() {
   const [errorMessages, setErrorMessages] = React.useState({
@@ -19,11 +21,11 @@ export default function CreateOrganization() {
     types: []
   });
   const steps = ["basicorganizationinfo", "detailledorganizationinfo"];
-  const [curStep, setCurStep] = React.useState(steps[0]);
+  const [curStep, setCurStep] = React.useState(steps[1]);
 
   const handleBasicInfoSubmit = (event, values) => {
     event.preventDefault();
-    //TODO: add actually check if organization name is available
+    //TODO: actually check if organization name is available
     if (values.organizationname === "Climate Connect")
       setErrorMessages({
         errorMessages,
@@ -40,10 +42,20 @@ export default function CreateOrganization() {
     }
   };
 
-  const handleDetailledInfoSubmit = (event, values) => {
+  const requiredProps = ["image", "type"];
+
+  const handleDetailledInfoSubmit = (event, account) => {
     console.log(event);
-    console.log(values);
-    console.log(errorMessages);
+    console.log(account);
+    for (const prop of requiredProps) {
+      if (!account[prop]) {
+        setErrorMessages({
+          errorMessages,
+          detailledOrganizationInfo: "Please specify this prop: " + prop
+        });
+        return;
+      }
+    }
     setErrorMessages({
       errorMessages,
       detailledOrganizationInfo: "Your organization name is already taken."
@@ -52,18 +64,22 @@ export default function CreateOrganization() {
 
   if (curStep === "basicorganizationinfo")
     return (
-      <EnterBasicOrganizationInfo
-        errorMessage={errorMessages.basicOrganizationInfo}
-        handleSubmit={handleBasicInfoSubmit}
-        organizationInfo={organizationInfo}
-      />
+      <Layout title="Create an organization">
+        <EnterBasicOrganizationInfo
+          errorMessage={errorMessages.basicOrganizationInfo}
+          handleSubmit={handleBasicInfoSubmit}
+          organizationInfo={organizationInfo}
+        />
+      </Layout>
     );
   else if (curStep === "detailledorganizationinfo")
     return (
-      <EnterDetailledOrganizationInfo
-        errorMessage={errorMessages.detailledOrganizationInfo}
-        handleSubmit={handleDetailledInfoSubmit}
-        organizationInfo={organizationInfo}
-      />
+      <WideLayout title="Create an organization">
+        <EnterDetailledOrganizationInfo
+          errorMessage={errorMessages.detailledOrganizationInfo}
+          handleSubmit={handleDetailledInfoSubmit}
+          organizationInfo={organizationInfo}
+        />
+      </WideLayout>
     );
 }

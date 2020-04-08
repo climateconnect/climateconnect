@@ -49,6 +49,7 @@ export default function UploadImageDialog({
   };
 
   const applyImage = () => {
+    console.log(editor.getImage());
     onClose(editor.getImage());
   };
 

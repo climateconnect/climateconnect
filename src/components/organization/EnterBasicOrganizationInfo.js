@@ -1,5 +1,4 @@
 import React from "react";
-import Layout from "./../layouts/layout";
 import Form from "./../general/Form";
 
 export default function EnterBasicOrganizationInfo({
@@ -58,16 +57,12 @@ export default function EnterBasicOrganizationInfo({
   };
 
   return (
-    <div>
-      <Layout title="Create an organization">
-        <Form
-          fields={fields}
-          messages={messages}
-          usePercentage={false}
-          onSubmit={handleSubmit}
-          errorMessage={errorMessage}
-        />
-      </Layout>
-    </div>
+    <Form
+      fields={fields}
+      messages={messages}
+      usePercentage={false}
+      onSubmit={handleSubmit}
+      errorMessage={errorMessage}
+    />
   );
 }
