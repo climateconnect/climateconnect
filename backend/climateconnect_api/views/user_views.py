@@ -42,7 +42,7 @@ class SignUpView(APIView):
     def post(self, request):
         required_params = [
             'email', 'password', 'first_name', 'last_name',
-            'country', 'state', 'city'
+            'country', 'city'
         ]
         for param in required_params:
             if param not in request.data:
@@ -61,7 +61,7 @@ class SignUpView(APIView):
         user.save()
 
         url_slug = (user.first_name + user.last_name).lower()
-
+z
         UserProfile.objects.create(
             user=user, country=request.data['country'],
             state=request.data['state'], city=request.data['city'],
