@@ -11,7 +11,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Layout({ title, children, theme }) {
+export default function LayoutWrapper({ title, children, theme }) {
   const classes = useStyles();
 
   return (

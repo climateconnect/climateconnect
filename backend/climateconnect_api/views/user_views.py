@@ -61,7 +61,7 @@ class SignUpView(APIView):
         user.save()
 
         url_slug = (user.first_name + user.last_name).lower()
-z
+
         UserProfile.objects.create(
             user=user, country=request.data['country'],
             state=request.data['state'], city=request.data['city'],

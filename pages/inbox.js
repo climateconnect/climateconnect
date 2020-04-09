@@ -19,11 +19,11 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function Inbox({ chats, loggedInUser }) {
+export default function Inbox({ chats }) {
   const classes = useStyles();
   return (
     <div>
-      <WideLayout title="Inbox" loggedInUser={loggedInUser}>
+      <WideLayout title="Inbox">
         <Container maxWidth="md" className={classes.root}>
           <Typography component="h1" variant="h4" className={classes.headline}>
             Inbox
@@ -37,8 +37,7 @@ export default function Inbox({ chats, loggedInUser }) {
 
 Inbox.getInitialProps = async ctx => {
   return {
-    chats: await getChatsOfLoggedInUser(ctx.query.profileUrl),
-    loggedInUser: await getLoggedInUser()
+    chats: await getChatsOfLoggedInUser(ctx.query.profileUrl)
   };
 };
 
