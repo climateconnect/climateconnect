@@ -145,8 +145,7 @@ const useStyles = makeStyles(theme => {
     },
     loggedInAvatar: {
       height: 30,
-      width: 30,
-      display: "inline-block"
+      width: 30
     },
     loggedInAvatarMobile: {
       height: 60,

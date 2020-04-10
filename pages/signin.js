@@ -39,6 +39,7 @@ export default function Signin() {
 
   const handleSubmit = (event, values) => {
     //don't redirect to the post url
+    console.log(process.env.API_URL);
     event.preventDefault();
     axios
       .post(process.env.API_URL + "/login/", {

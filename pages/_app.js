@@ -40,10 +40,10 @@ export default class MyApp extends App {
       //TODO: set secure=true to make cookie only accessible through HTTPS
       this.cookies.set("token", token, { path: "/", expires: new Date(expiry), sameSite: true });
       const user = await getLoggedInUser(this.cookies);
+      if (redirect) Router.push(redirect);
       this.setState({
         user: user
       });
-      if (redirect) Router.push(redirect);
     };
   }
 
@@ -86,11 +86,7 @@ async function getLoggedInUser(cookies) {
   const token = cookies.get("token");
   if (token) {
     try {
-      const resp = await axios.get(process.env.API_URL + "/api/my_profile/", {
-        headers: {
-          Authorization: "Token " + token
-        }
-      });
+      const resp = await axios.get(process.env.API_URL + "/api/my_profile/", tokenConfig(token));
       return resp.data;
     } catch (err) {
       console.log(err);
