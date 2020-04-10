@@ -55,7 +55,6 @@ export default function Signup() {
       country: values.country,
       city: values.city
     };
-    console.log(payload);
     axios
       .post(process.env.API_URL + "/signup/", payload)
       .then(function(/*response*/) {

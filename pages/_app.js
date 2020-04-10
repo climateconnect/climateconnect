@@ -36,7 +36,6 @@ export default class MyApp extends App {
     };
 
     this.signIn = async (token, expiry, redirect) => {
-      console.log("signing in!");
       //TODO: set httpOnly=true to make cookie only accessible by server
       //TODO: set secure=true to make cookie only accessible through HTTPS
       this.cookies.set("token", token, { path: "/", expires: new Date(expiry), sameSite: true });
@@ -98,7 +97,6 @@ async function getLoggedInUser(cookies) {
       return null;
     }
   } else {
-    console.log("returning null");
     return null;
   }
 }
