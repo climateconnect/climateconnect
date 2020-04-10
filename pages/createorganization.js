@@ -51,8 +51,6 @@ export default function CreateOrganization() {
   };
 
   const handleDetailledInfoSubmit = (event, account) => {
-    console.log(event);
-    console.log(account);
     for (const prop of Object.keys(requiredPropErrors)) {
       if (!account[prop]) {
         setErrorMessages({

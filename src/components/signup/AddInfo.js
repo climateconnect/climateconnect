@@ -9,15 +9,15 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
       required: true,
       label: "First Name",
       type: "text",
-      key: "firstname",
-      value: values["firstname"]
+      key: "first_name",
+      value: values["first_name"]
     },
     {
       required: true,
       label: "Last Name",
       type: "text",
-      key: "lastname",
-      value: values["lastname"]
+      key: "last_name",
+      value: values["last_name"]
     },
     {
       required: true,

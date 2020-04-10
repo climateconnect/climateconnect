@@ -2,14 +2,15 @@ import React from "react";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
 import ConfirmEmail from "./../src/components/signup/ConfirmEmail";
+import axios from "axios";
 
 export default function Signup() {
   const [userInfo, setUserInfo] = React.useState({
     email: "",
     password: "",
     repeatpassword: "",
-    firstname: "",
-    lastname: "",
+    first_name: "",
+    last_name: "",
     country: "",
     city: ""
   });
@@ -41,19 +42,35 @@ export default function Signup() {
     event.preventDefault();
     setUserInfo({
       ...userInfo,
-      firstname: values.firstname,
-      lastname: values.lastname,
+      first_name: values.first_name,
+      last_name: values.last_name,
       country: values.country,
       city: values.city
     });
-    setCurStep(steps[2]);
+    const payload = {
+      email: userInfo.email,
+      password: userInfo.password,
+      first_name: values.first_name,
+      last_name: values.last_name,
+      country: values.country,
+      city: values.city
+    };
+    axios
+      .post(process.env.API_URL + "/signup/", payload)
+      .then(function(/*response*/) {
+        setCurStep(steps[2]);
+      })
+      .catch(function(error) {
+        console.log(error);
+        setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data.message });
+      });
   };
 
   const handleGoBackFromAddInfo = (event, values) => {
     setUserInfo({
       ...userInfo,
-      firstname: values.firstname,
-      lastname: values.lastname,
+      first_name: values.first_name,
+      last_name: values.last_name,
       country: values.country,
       city: values.city
     });

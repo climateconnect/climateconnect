@@ -5,7 +5,6 @@ import fakeProjectData from "../public/data/projects.json";
 import About from "./about";
 
 export default function Index({ projectsObject }) {
-  console.log(projectsObject);
   const [hasMore, setHasMore] = React.useState(true);
 
   const loadMoreProjects = async page => {
