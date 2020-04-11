@@ -5,7 +5,6 @@ import fakeProjectData from "../public/data/projects.json";
 import About from "./about";
 
 export default function Index({ projectsObject }) {
-  console.log(projectsObject);
   const [hasMore, setHasMore] = React.useState(true);
 
   const loadMoreProjects = async page => {
@@ -40,6 +39,6 @@ Index.getInitialProps = async () => {
 //TODO replace by db call. console.log is just there to pass lint
 async function getProjects(page) {
   console.log(page);
-  const projects = fakeProjectData.projects.slice(0, 6);
+  const projects = fakeProjectData.projects.slice(0, 8);
   return { projects: [...projects, ...projects], hasMore: true };
 }

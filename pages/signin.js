@@ -2,8 +2,9 @@ import React from "react";
 import Layout from "../src/components/layouts/layout";
 import Form from "./../src/components/general/Form";
 import axios from "axios";
-import Cookies from "universal-cookie";
 import Router from "next/router";
+import { useContext } from "react";
+import UserContext from "./../src/components/context/UserContext";
 
 export default function Signin() {
   const fields = [
@@ -33,10 +34,12 @@ export default function Signin() {
 
   const [errorMessage, setErrorMessage] = React.useState(null);
 
-  const cookies = new Cookies();
+  const { user, signIn } = useContext(UserContext);
+  if (user) Router.push("/");
 
   const handleSubmit = (event, values) => {
     //don't redirect to the post url
+    console.log(process.env.API_URL);
     event.preventDefault();
     axios
       .post(process.env.API_URL + "/login/", {
@@ -44,12 +47,11 @@ export default function Signin() {
         password: values.password
       })
       .then(function(response) {
-        cookies.set("expiry", response.data.expiry, { path: "/" });
-        cookies.set("token", response.data.token, { path: "/" });
-        Router.push("/");
+        signIn(response.data.token, response.data.expiry, "/");
       })
       .catch(function(error) {
-        setErrorMessage(error.response.data.message);
+        console.log(error);
+        if (error.response && error.response.data) setErrorMessage(error.response.data.message);
       });
   };
 

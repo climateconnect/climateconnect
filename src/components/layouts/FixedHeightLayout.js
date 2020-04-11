@@ -18,7 +18,7 @@ const useStyles = makeStyles({
   }
 });
 
-export default function FixedHeightLayout({ title, children, loggedInUser }) {
+export default function FixedHeightLayout({ title, children }) {
   const classes = useStyles();
 
   return (
@@ -28,7 +28,7 @@ export default function FixedHeightLayout({ title, children, loggedInUser }) {
       </Head>
       <ThemeProvider theme={theme}>
         <div className={classes.root}>
-          <Header noSpacingBottom className={classes.noFlex} loggedInUser={loggedInUser} />
+          <Header noSpacingBottom className={classes.noFlex} />
           {children}
           <Footer noSpacingTop noAbsolutePosition className={classes.noFlex} />
         </div>

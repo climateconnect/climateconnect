@@ -21,6 +21,9 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useContext } from "react";
+import UserContext from "./../context/UserContext";
+
 import MenuIcon from "@material-ui/icons/Menu";
 import InfoIcon from "@material-ui/icons/Info";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
@@ -30,6 +33,7 @@ import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import SentimentSatisfiedIcon from "@material-ui/icons/SentimentSatisfied";
+import GroupWorkIcon from "@material-ui/icons/GroupWork";
 
 const LINKS = [
   {
@@ -82,9 +86,14 @@ const LINKS = [
 const getLoggedInLinks = ({ loggedInUser }) => {
   return [
     {
-      href: "/profiles/" + loggedInUser.url,
+      href: "/profiles/" + loggedInUser.url_slug,
       text: "My Profile",
       iconForDrawer: AccountCircleIcon
+    },
+    {
+      href: "/profiles/" + loggedInUser.url_slug,
+      text: "My Projects",
+      iconForDrawer: GroupWorkIcon
     },
     {
       href: "/settings",
@@ -93,13 +102,13 @@ const getLoggedInLinks = ({ loggedInUser }) => {
     },
     {
       avatar: true,
-      href: "/profiles/" + loggedInUser.url,
+      href: "/profiles/" + loggedInUser.url_slug,
       src: loggedInUser.image,
       alt: loggedInUser.name,
       showOnMobileOnly: true
     },
     {
-      href: "/logouts",
+      isLogoutButton: true,
       text: "Log out",
       iconForDrawer: ExitToAppIcon
     }
@@ -136,8 +145,7 @@ const useStyles = makeStyles(theme => {
     },
     loggedInAvatar: {
       height: 30,
-      width: 30,
-      display: "inline-block"
+      width: 30
     },
     loggedInAvatarMobile: {
       height: 60,
@@ -152,9 +160,9 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function Header({ className, noSpacingBottom, loggedInUser }) {
+export default function Header({ className, noSpacingBottom }) {
   const classes = useStyles();
-
+  const { user, signOut } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
 
   return (
@@ -173,9 +181,9 @@ export default function Header({ className, noSpacingBottom, loggedInUser }) {
         ) : (
           <>
             {isNarrowScreen ? (
-              <NarrowScreenLinks loggedInUser={loggedInUser} />
+              <NarrowScreenLinks loggedInUser={user} handleLogout={signOut} />
             ) : (
-              <NormalScreenLinks loggedInUser={loggedInUser} />
+              <NormalScreenLinks loggedInUser={user} handleLogout={signOut} />
             )}
           </>
         )}
@@ -184,7 +192,7 @@ export default function Header({ className, noSpacingBottom, loggedInUser }) {
   );
 }
 
-function NormalScreenLinks({ loggedInUser }) {
+function NormalScreenLinks({ loggedInUser, handleLogout }) {
   const classes = useStyles();
 
   return (
@@ -226,12 +234,14 @@ function NormalScreenLinks({ loggedInUser }) {
           </Link>
         );
       })}
-      {loggedInUser && <LoggedInNormalScreen loggedInUser={loggedInUser} />}
+      {loggedInUser && (
+        <LoggedInNormalScreen loggedInUser={loggedInUser} handleLogout={handleLogout} />
+      )}
     </Box>
   );
 }
 
-function NarrowScreenLinks({ loggedInUser }) {
+function NarrowScreenLinks({ loggedInUser, handleLogout }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const openDrawer = setIsDrawerOpen.bind(null, true);
@@ -319,6 +329,15 @@ function NarrowScreenLinks({ loggedInUser }) {
                       />
                     </Link>
                   );
+                else if (link.isLogoutButton)
+                  return (
+                    <ListItem button component="a" onClick={handleLogout}>
+                      <ListItemIcon>
+                        <Icon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText primary={link.text} />
+                    </ListItem>
+                  );
                 else
                   return (
                     <Link href={link.href} key={index}>
@@ -338,7 +357,7 @@ function NarrowScreenLinks({ loggedInUser }) {
   );
 }
 
-const LoggedInNormalScreen = ({ loggedInUser }) => {
+const LoggedInNormalScreen = ({ loggedInUser, handleLogout }) => {
   const classes = useStyles();
   const [menuOpen, setMenuOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -376,9 +395,15 @@ const LoggedInNormalScreen = ({ loggedInUser }) => {
                 .filter(link => !link.showOnMobileOnly)
                 .map((link, index) => (
                   <MenuItem key={index}>
-                    <Link href={link.href}>
-                      <a className={classes.menuLink}>{link.text}</a>
-                    </Link>
+                    {link.isLogoutButton ? (
+                      <div onClick={handleLogout} className={classes.menuLink}>
+                        {link.text}
+                      </div>
+                    ) : (
+                      <Link href={link.href}>
+                        <a className={classes.menuLink}>{link.text}</a>
+                      </Link>
+                    )}
                   </MenuItem>
                 ))}
             </MenuList>

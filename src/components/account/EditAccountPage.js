@@ -1,6 +1,5 @@
 import React from "react";
-import Router from "next/router";
-import { Container, Avatar, Chip, Button, TextField } from "@material-ui/core";
+import { Container, Avatar, Chip, Button, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
@@ -21,16 +20,19 @@ const useStyles = makeStyles(theme => ({
     position: "relative",
     cursor: "pointer"
   },
-  backgroundImage: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover"
-  },
   photoIcon: {
     position: "absolute",
     left: "-50%",
     top: "-50%",
     cursor: "pointer"
+  },
+  backgroundImage: props => ({
+    backgroundImage: `url(${props.background_image})`,
+    backgroundPosition: "center",
+    backgroundSize: "cover"
+  }),
+  backgroundColor: {
+    backgroundColor: "#e0e0e0"
   },
   backgroundPhotoIcon: {
     fontSize: 80
@@ -43,10 +45,22 @@ const useStyles = makeStyles(theme => ({
     left: "calc(50% - 40px)",
     top: "calc(50% - 40px)"
   },
+  backgroundLabel: {
+    width: "100%",
+    height: "100%",
+    display: "block",
+    cursor: "pointer"
+  },
   avatarPhotoIconContainer: {
     position: "absolute",
     left: "calc(50% - 20px)",
     top: "calc(50% - 20px)"
+  },
+  avatarButtonContainer: {
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    transform: "translate(-50%,-50%)"
   },
   avatarWithInfo: {
     textAlign: "center",
@@ -145,6 +159,14 @@ const useStyles = makeStyles(theme => ({
   },
   dialogWidth: {
     width: 400
+  },
+  errorMessage: {
+    textAlign: "center",
+    paddingBottom: theme.spacing(1),
+    paddingTop: theme.spacing(1)
+  },
+  cursorPointer: {
+    cursor: "pointer"
   }
 }));
 
@@ -153,12 +175,15 @@ export default function EditAccountPage({
   possibleAccountTypes,
   maxAccountTypes,
   infoMetadata,
-  accountHref,
-  children
+  children,
+  handleSubmit,
+  submitMessage,
+  handleCancel,
+  errorMessage
 }) {
-  const classes = useStyles();
-
+  const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState(account);
+  const classes = useStyles(editedAccount);
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
     image: editedAccount.image ? editedAccount.image : DEFAULT_AVATAR_IMAGE,
@@ -205,7 +230,7 @@ export default function EditAccountPage({
 
   const handleConfirmExitClose = exit => {
     setOpen({ ...open, confirmExitDialog: false });
-    if (exit) Router.push(accountHref);
+    if (exit) handleCancel();
   };
 
   const deleteFromInfoArray = (key, entry) => {
@@ -351,14 +376,26 @@ export default function EditAccountPage({
     setEditedAccount(tempEditedAccount);
   };
 
-  const saveChanges = () => {
-    //TODO: replace this with an API call that saves the updated account to our database
+  const handleFileInputClick = type => {
+    setSelectedFiles({ ...selectedFiles, [type]: "" });
+  };
+
+  const handleFileSubmit = (event, type) => {
+    console.log(event.target.value);
+    console.log(type);
   };
 
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
-      <div className={classes.backgroundContainer}>
-        <label htmlFor="backgroundPhoto">
+      <Typography color="error" className={errorMessage && classes.errorMessage}>
+        {errorMessage}
+      </Typography>
+      <div
+        className={`${classes.backgroundContainer} ${
+          editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor
+        }`}
+      >
+        <label htmlFor="backgroundPhoto" className={classes.backgroundLabel}>
           <input
             type="file"
             name="backgroundPhoto"
@@ -366,11 +403,19 @@ export default function EditAccountPage({
             style={{ display: "none" }}
             onChange={onBackgroundChange}
             accept=".png,.jpeg,.jpg"
+            value={selectedFiles.background}
+            onClick={() => handleFileInputClick("background")}
+            onSubmit={() => handleFileSubmit(event, "background")}
           />
-          <img src={editedAccount.background_image} className={classes.backgroundImage} />
-          <div className={classes.backgroundPhotoIconContainer}>
-            <AddAPhotoIcon className={`${classes.photoIcon} ${classes.backgroundPhotoIcon}`} />
-          </div>
+          {editedAccount.background_image ? (
+            <div className={classes.backgroundPhotoIconContainer}>
+              <AddAPhotoIcon className={`${classes.photoIcon} ${classes.backgroundPhotoIcon}`} />
+            </div>
+          ) : (
+            <div className={classes.avatarButtonContainer}>
+              <Chip color="primary" label="Add background image" icon={<ControlPointIcon />} />
+            </div>
+          )}
         </label>
       </div>
       <Container className={classes.infoContainer}>
@@ -378,9 +423,9 @@ export default function EditAccountPage({
           className={`${classes.saveButton} ${classes.actionButton}`}
           color="primary"
           variant="contained"
-          onClick={saveChanges}
+          onClick={() => handleSubmit(event, editedAccount)}
         >
-          Save Changes
+          {submitMessage ? submitMessage : "Save Changes"}
         </Button>
         <Button
           className={`${classes.cancelButton} ${classes.actionButton}`}
@@ -400,6 +445,9 @@ export default function EditAccountPage({
                 style={{ display: "none" }}
                 onChange={onAvatarChange}
                 accept=".png,.jpeg,.jpg"
+                value={selectedFiles["avatar"]}
+                onClick={() => handleFileInputClick("avatar")}
+                onSubmit={() => handleFileSubmit(event, "avatar")}
               />
               <Avatar
                 alt={editedAccount.name}
@@ -409,9 +457,20 @@ export default function EditAccountPage({
                 className={classes.avatar}
               />
 
-              <div className={classes.avatarPhotoIconContainer}>
-                <AddAPhotoIcon className={`${classes.photoIcon} ${classes.avatarPhotoIcon}`} />
-              </div>
+              {editedAccount.image ? (
+                <div className={classes.avatarPhotoIconContainer}>
+                  <AddAPhotoIcon className={`${classes.photoIcon} ${classes.avatarPhotoIcon}`} />
+                </div>
+              ) : (
+                <div className={classes.avatarButtonContainer}>
+                  <Chip
+                    label="Add Image"
+                    color="primary"
+                    icon={<ControlPointIcon />}
+                    className={classes.cursorPointer}
+                  />
+                </div>
+              )}
             </label>
           </div>
 
@@ -437,6 +496,7 @@ export default function EditAccountPage({
                 maxAccountTypes && (
                 <Chip
                   label="Add Type"
+                  color={editedAccount.types && editedAccount.types.length ? "default" : "primary"}
                   icon={<ControlPointIcon />}
                   onClick={() => handleDialogClickOpen("addTypeDialog")}
                 />
