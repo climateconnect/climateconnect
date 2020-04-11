@@ -1,44 +1,6 @@
 from django.db import models
 
 
-class OrganizationType(models.Model):
-    name = models.CharField(
-        help_text="Points to name of the type. e.g: NGO",
-        verbose_name="Name",
-        max_length=512
-    )
-
-    key = models.CharField(
-        help_text="Points to key of the type.",
-        verbose_name="Key",
-        max_length=512,
-        null=True,
-        blank=True
-    )
-
-    # TODO (Dip): Confirm about additional info column.
-
-    created_at = models.DateTimeField(
-        help_text="Time when org type was created",
-        verbose_name="Created At",
-        auto_now_add=True
-    )
-
-    updated_at = models.DateTimeField(
-        help_text="Time when org type was updated",
-        verbose_name="Updated At",
-        auto_now=True
-    )
-
-    class Meta:
-        app_label = "organization"
-        verbose_name = "Organization Type"
-        verbose_name_plural = "Organization Types"
-
-    def __str__(self):
-        return "%s (%d)" % (self.name, self.id)
-
-
 def organization_image_path(instance, filename):
     return "organization_images/{}/profile/{}".format(
         instance.id, filename
@@ -104,13 +66,6 @@ class Organization(models.Model):
         auto_now=True
     )
 
-    types = models.ManyToManyField(
-        OrganizationType,
-        related_name="organization_types",
-        help_text="Points to type of organization.",
-        blank=True
-    )
-
     country = models.CharField(
         help_text="Points to what country the organization is located.",
         verbose_name="Country",
@@ -140,6 +95,22 @@ class Organization(models.Model):
         verbose_name="Short Description",
         null=True,
         blank=True
+    )
+
+    school = models.CharField(
+        help_text="Points to a school if the organization is school org",
+        verbose_name="School",
+        null=True,
+        blank=True,
+        max_length=512
+    )
+
+    organ = models.CharField(
+        help_text="Used for organization who is gov organization",
+        verbose_name="Organ",
+        null=True,
+        blank=True,
+        max_length=512
     )
 
     class Meta:

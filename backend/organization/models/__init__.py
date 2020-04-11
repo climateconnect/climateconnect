@@ -1,6 +1,6 @@
 # flake8: noqa
 from organization.models.organization import (
-    Organization, OrganizationType
+    Organization,
 )
 from organization.models.tags import (
     OrganizationTags, OrganizationTagging
