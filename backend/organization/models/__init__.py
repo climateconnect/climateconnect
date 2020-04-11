@@ -5,3 +5,6 @@ from organization.models.organization import (
 from organization.models.tags import (
     OrganizationTags, OrganizationTagging
 )
+from organization.models.project import (
+    Project, ProjectParents
+)
