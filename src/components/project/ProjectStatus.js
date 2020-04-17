@@ -5,6 +5,14 @@ import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import DoneAllIcon from "@material-ui/icons/DoneAll";
 import RotateRightIcon from "@material-ui/icons/RotateRight";
 import CancelIcon from "@material-ui/icons/Cancel";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles({
+  root: {
+    textTransform: "uppercase",
+    borderRadius: 10
+  }
+});
 
 const project_status_metadata = [
   {
@@ -36,5 +44,9 @@ const project_status_metadata = [
 
 export default function ProjectStatus({ status, className }) {
   const fullStatus = project_status_metadata.find(s => s.key === status);
-  return <Chip className={className} icon={fullStatus.icon} label={fullStatus.name} />;
+  const classes = useStyles();
+
+  return (
+    <Chip variant="outlined" className={`${className} ${classes.root}`} label={fullStatus.name} />
+  );
 }

@@ -18,6 +18,10 @@ export default function LayoutWrapper({ title, children, theme }) {
     <>
       <Head>
         <title>{title}</title>
+        <link
+          href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800"
+          rel="stylesheet"
+        />
       </Head>
       <ThemeProvider theme={theme}>
         <div className={classes.leaveSpaceForFooter}>{children}</div>

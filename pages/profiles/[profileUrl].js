@@ -73,7 +73,6 @@ export default function ProfilePage({
   projects,
   organizations,
   profileTypes,
-  maxAccountTypes,
   infoMetadata
 }) {
   return (
@@ -84,7 +83,6 @@ export default function ProfilePage({
           projects={projects}
           organizations={organizations}
           profileTypes={profileTypes}
-          maxAccountTypes={maxAccountTypes}
           infoMetadata={infoMetadata}
         />
       ) : (
@@ -100,19 +98,11 @@ ProfilePage.getInitialProps = async ctx => {
     organizations: await getOrganizationsByUser(ctx.query.profileUrl),
     projects: await getProjects(ctx.query.profileUrl),
     profileTypes: await getProfileTypes(),
-    maxAccountTypes: await getMaxProfileTypes(),
     infoMetadata: await getProfileInfoMetadata()
   };
 };
 
-function ProfileLayout({
-  profile,
-  projects,
-  organizations,
-  profileTypes,
-  maxAccountTypes,
-  infoMetadata
-}) {
+function ProfileLayout({ profile, projects, organizations, profileTypes, infoMetadata }) {
   const classes = useStyles();
   return (
     <AccountPage
@@ -121,7 +111,6 @@ function ProfileLayout({
       editHref={"/editProfile/" + profile.url}
       type="profile"
       possibleAccountTypes={profileTypes}
-      maxAccountTypes={maxAccountTypes}
       infoMetadata={infoMetadata}
     >
       <Container>
@@ -164,7 +153,10 @@ async function getProfileByUrlIfExists(profileUrl) {
 }
 
 async function getProjects(profileUrl) {
-  return TEMP_PROJECT_DATA.projects.filter(project => project.team.includes(profileUrl));
+  console.log(profileUrl);
+  return TEMP_PROJECT_DATA.projects.filter(
+    project => !!project.team.find(m => m.url === profileUrl)
+  );
 }
 
 async function getOrganizationsByUser(profileUrl) {
@@ -175,10 +167,6 @@ async function getOrganizationsByUser(profileUrl) {
 
 async function getProfileTypes() {
   return TEMP_PROFILE_TYPES.profile_types;
-}
-
-async function getMaxProfileTypes() {
-  return TEMP_PROFILE_TYPES.max_types;
 }
 
 async function getProfileInfoMetadata() {

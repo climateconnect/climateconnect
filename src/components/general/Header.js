@@ -39,8 +39,7 @@ const LINKS = [
   {
     href: "/supportus",
     text: "Support us",
-    iconForDrawer: SentimentSatisfiedIcon,
-    isFilledInHeader: true
+    iconForDrawer: SentimentSatisfiedIcon
   },
   {
     href: "/about",
@@ -217,7 +216,7 @@ function NormalScreenLinks({ loggedInUser, handleLogout }) {
         return (
           <Link href={link.href} key={link.href}>
             {link.onlyShowIconOnNormalScreen ? (
-              <IconButton color="primary" {...buttonProps}>
+              <IconButton color="primary" {...buttonProps} className={classes.link}>
                 {link.hasBadge && link.badgeNumber > 0 ? (
                   <Badge badgeContent={link.badgeNumber} color="error">
                     <Icon />
