@@ -20,7 +20,6 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.grey[800]
   },
   tabsWrapper: {
-    borderTop: `1px solid ${theme.palette.grey[500]}`,
     borderBottom: `1px solid ${theme.palette.grey[500]}`
   },
   noPadding: {
@@ -58,8 +57,9 @@ function ProjectLayout({ project }) {
   return (
     <div className={classes.root}>
       <ProjectOverview project={project} smallScreen={isNarrowScreen} />
-      <div className={classes.tabsWrapper}>
-        <Container className={classes.noPadding}>
+
+      <Container className={classes.noPadding}>
+        <div className={classes.tabsWrapper}>
           <Tabs
             variant={isNarrowScreen ? "fullWidth" : "standard"}
             value={tabValue}
@@ -70,8 +70,9 @@ function ProjectLayout({ project }) {
             <Tab label="Team" />
             <Tab label="Discussion" />
           </Tabs>
-        </Container>
-      </div>
+        </div>
+      </Container>
+
       <Container className={classes.tabContent}>
         <TabContent value={tabValue} index={0}>
           <ProjectContent project={project} />

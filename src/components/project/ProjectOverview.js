@@ -11,13 +11,8 @@ const useStyles = makeStyles(theme => ({
     padding: 0,
     textAlign: "left"
   },
-  contactProjectButton: {
-    width: 100,
-    height: 36
-  },
   followButton: {
-    float: "right",
-    marginRight: theme.spacing(4)
+    marginLeft: theme.spacing(1)
   },
   projectInfoEl: {
     textAlign: "left",
@@ -49,8 +44,8 @@ const useStyles = makeStyles(theme => ({
   },
   //large screen styling
   largeScreenHeader: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(2),
+    paddingTop: theme.spacing(8),
+    paddingBottom: theme.spacing(4),
     textAlign: "center"
   },
   flexContainer: {
@@ -75,6 +70,10 @@ const useStyles = makeStyles(theme => ({
   },
   infoTopBar: {
     paddingBottom: theme.spacing(2)
+  },
+  subHeader: {
+    fontWeight: 600,
+    marginBottom: theme.spacing(1)
   }
 }));
 
@@ -116,7 +115,7 @@ function SmallScreenOverview({ project }) {
           <Button className={classes.contactProjectButton} variant="contained" color="primary">
             Contact
           </Button>
-          <Button className={classes.followButton} variant="outlined" color="primary">
+          <Button className={classes.followButton} variant="contained" color="primary">
             Follow
           </Button>
         </div>
@@ -129,30 +128,33 @@ function LargeScreenOverview({ project }) {
   const classes = useStyles();
   return (
     <>
-      <Typography component="h1" variant="h1" className={classes.largeScreenHeader}>
+      <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
         {project.name}
       </Typography>
       <div className={classes.flexContainer}>
         <img className={classes.inlineImage} src={project.image} />
         <div className={classes.inlineProjectInfo}>
-          <div className={classes.infoTopBar}>
-            <Button className={classes.contactProjectButton} variant="contained" color="primary">
-              Contact
-            </Button>
-            <Button className={classes.followButton} variant="outlined" color="primary">
-              Follow
-            </Button>
-          </div>
+          <Typography component="h2" variant="h5" className={classes.subHeader}>
+            Summary
+          </Typography>
           <Typography>{project.shortdescription}</Typography>
           <div className={classes.projectInfoEl}>
             <Typography>
-              <PlaceIcon className={classes.icon} /> {project.location}
+              <PlaceIcon color="primary" className={classes.icon} /> {project.location}
             </Typography>
           </div>
           <div className={classes.projectInfoEl}>
             <Typography>
-              <ExploreIcon className={classes.icon} /> {project.labels.join(",")}
+              <ExploreIcon color="primary" className={classes.icon} /> {project.labels.join(",")}
             </Typography>
+          </div>
+          <div className={classes.infoBottomBar}>
+            <Button className={classes.contactProjectButton} variant="contained" color="primary">
+              Contact
+            </Button>
+            <Button className={classes.followButton} variant="contained" color="primary">
+              Follow
+            </Button>
           </div>
         </div>
       </div>

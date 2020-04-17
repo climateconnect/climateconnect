@@ -89,7 +89,7 @@ async function getLoggedInUser(cookies) {
       const resp = await axios.get(process.env.API_URL + "/api/my_profile/", tokenConfig(token));
       return resp.data;
     } catch (err) {
-      console.log(err);
+      if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
       return null;
     }
   } else {
