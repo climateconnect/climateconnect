@@ -32,3 +32,5 @@ __pycache__
 *.py[cod]
 .idea/
 
+# vscode
+/.vscode
