@@ -70,17 +70,16 @@ class Posts(models.Model):
         return "Post id: %d for project %s" % (self.pk, self.project.name)
 
 
-class Comments(models.Model):
-    post = models.ForeignKey(
-        Posts,
-        related_name="comments",
-        help_text="Points to post a comment was made to",
-        verbose_name="Post",
-        on_delete=models.CASCADE,
+class Comment(models.Model):
+    parent_comment = models.ForeignKey(
+        'self',
+        related_name="comment_parent",
+        help_text="Points to parent comment",
+        verbose_name="Parent Comment",
         null=True,
-        blank=True
+        blank=True,
+        on_delete=models.CASCADE
     )
-
     author_user = models.ForeignKey(
         User,
         related_name="comment_author",
@@ -133,7 +132,42 @@ class Comments(models.Model):
 
     class Meta:
         app_label = "organization"
-        verbose_name = "Post Comments"
+        verbose_name = "Comment"
+        verbose_name_plural = "Comments"
 
     def __str__(self):
-        return "Comment %d made to post %d" % (self.pk, self.pk)
+        return "Comment %d: %s" % (self.pk, self.content)
+
+
+class PostComment(Comment):
+    post = models.ForeignKey(
+        Posts,
+        related_name="comment_post",
+        help_text="Point to post table",
+        verbose_name="Post",
+        on_delete=models.CASCADE
+    )
+
+    class Meta:
+        app_label = "organization"
+        verbose_name = "Post Comment"
+
+    def __str__(self):
+        return "%d post for project %d" % (self.pk, self.post.pk)
+
+
+class ProjectComment(Comment):
+    project = models.ForeignKey(
+        Project,
+        related_name="project_comment",
+        verbose_name="Project",
+        on_delete=models.CASCADE
+    )
+
+    class Meta:
+        app_label = "organization"
+        verbose_name = "Project Comment"
+        verbose_name_plural = "Project Comments"
+
+    def __str__(self):
+        return "Comment made to project %s" % self.project.name
