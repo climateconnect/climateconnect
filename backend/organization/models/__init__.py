@@ -10,5 +10,5 @@ from organization.models.project import (
     Project, ProjectParents
 )
 from organization.models.content import (
-    Posts, PostComments
+    Posts, Comments
 )

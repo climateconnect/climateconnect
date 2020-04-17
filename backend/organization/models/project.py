@@ -1,6 +1,8 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 from organization.models import (Organization,)
+from climateconnect_api.models import (Skill,)
 
 
 def project_image_path(instance, filename):
@@ -14,9 +16,9 @@ class Project(models.Model):
         max_length=1024
     )
 
-    slug = models.CharField(
+    url_slug = models.CharField(
         help_text="URL slug for project",
-        verbose_name="Slug",
+        verbose_name="URL slug",
         unique=True,
         null=True,
         blank=True,
@@ -87,6 +89,42 @@ class Project(models.Model):
         verbose_name="Short Description",
         null=True,
         blank=True
+    )
+
+    country = models.CharField(
+        help_text="Points to a country of the project",
+        verbose_name="Country",
+        max_length=512,
+        null=True,
+        blank=True
+    )
+
+    city = models.CharField(
+        help_text="Points to a city of the project",
+        verbose_name="City",
+        max_length=512,
+        null=True,
+        blank=True
+    )
+
+    collaborators_welcome = models.BooleanField(
+        help_text="If collaborators are welcome or not for the project",
+        verbose_name="Collaborators welcome",
+        default=False
+    )
+
+    skills = models.ManyToManyField(
+        Skill,
+        related_name="project_skills",
+        help_text="Points to all skills project persist or required",
+        verbose_name="Skills"
+    )
+
+    helpful_connections = ArrayField(
+        models.CharField(max_length=264),
+        blank=True,
+        null=True,
+        size=5
     )
 
     class Meta:

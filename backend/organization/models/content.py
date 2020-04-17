@@ -8,7 +8,7 @@ class Posts(models.Model):
         Project,
         related_name="post_project",
         verbose_name="Project",
-        help_text="Points to post of the project",
+        help_text="Points to the project to which the post belongs",
         on_delete=models.PROTECT
     )
 
@@ -70,13 +70,15 @@ class Posts(models.Model):
         return "Post id: %d for project %s" % (self.pk, self.project.name)
 
 
-class PostComments(models.Model):
+class Comments(models.Model):
     post = models.ForeignKey(
         Posts,
         related_name="comments",
         help_text="Points to post a comment was made to",
         verbose_name="Post",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
     )
 
     author_user = models.ForeignKey(
