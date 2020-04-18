@@ -7,7 +7,8 @@ export default function SelectField({
   values,
   onChange,
   required,
-  className
+  className,
+  InputProps
 }) {
   if (!defaultValue) defaultValue = "";
   const [value, setValue] = React.useState(defaultValue);
@@ -30,6 +31,7 @@ export default function SelectField({
       SelectProps={{
         native: true
       }}
+      InputProps={InputProps}
     >
       {!defaultValue || defaultValue === "" ? <option value="" /> : <></>}
       {values.map(value => {

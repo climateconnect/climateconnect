@@ -13,12 +13,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Layout({ title, hideHeadline, children }) {
+export default function Layout({ title, hideHeadline, noSpacingBottom, children }) {
   const classes = useStyles();
 
   return (
     <LayoutWrapper theme={theme} title={title}>
-      <Header />
+      <Header noSpacingBottom={noSpacingBottom} />
       <Container maxWidth="lg" component="main">
         <Container maxWidth="sm">
           {!hideHeadline && (
