@@ -47,8 +47,8 @@ const LINKS = [
     iconForDrawer: InfoIcon
   },
   {
-    href: "/create",
-    text: "Create a project",
+    href: "/share",
+    text: "Share a project",
     iconForDrawer: AddCircleIcon
   },
   {
