@@ -5,7 +5,10 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.exceptions import NotFound
+from rest_framework.generics import ListAPIView
+from rest_framework.exceptions import NotFound, PermissionDenied
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.filters import SearchFilter
 
 from rest_framework.exceptions import ValidationError
 from knox.views import LoginView as KnowLoginView
@@ -15,7 +18,9 @@ from django.contrib.auth.models import User
 from climateconnect_api.models.user import UserProfile
 
 # Serializer imports
-from climateconnect_api.serializers.user import UserProfileSerializer
+from climateconnect_api.serializers.user import (
+    UserProfileSerializer, PersonalProfileSerializer
+)
 
 
 class LoginView(KnowLoginView):
@@ -60,7 +65,7 @@ class SignUpView(APIView):
         user.set_password(request.data['password'])
         user.save()
 
-        url_slug = (user.first_name + user.last_name).lower()
+        url_slug = (user.first_name + user.last_name).lower() + user.id
 
         UserProfile.objects.create(
             user=user, country=request.data['country'],
@@ -75,7 +80,7 @@ class SignUpView(APIView):
         return Response({'success': message}, status=status.HTTP_201_CREATED)
 
 
-class UserProfileView(APIView):
+class PersonalProfileView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -85,5 +90,20 @@ class UserProfileView(APIView):
             raise NotFound(detail="Profile not found.", code=status.HTTP_404_NOT_FOUND)
 
         user_profile = UserProfile.objects.get(user=self.request.user)
-        serializer = UserProfileSerializer(user_profile)
+        serializer = PersonalProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class MemberProfilesView(ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserProfileSerializer
+    pagination_class = PageNumberPagination
+    filter_backends = [SearchFilter]
+    search_fields = ['url_slug']
+
+    def get_queryset(self):
+        if not UserProfile.objects.filter(user=self.request.user).exists() or \
+                not self.request.user.user_profile.is_profile_verified:
+            raise PermissionDenied(detail="You do not have permission to access this page.")
+
+        return UserProfile.objects.filter(is_profile_verified=True)

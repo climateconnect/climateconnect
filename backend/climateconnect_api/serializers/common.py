@@ -9,7 +9,7 @@ class AvailabilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Availability
         # We can change this later
-        fields = '__all__'
+        fields = ('key', 'name')
 
 
 class UserSkillSerializer(serializers.ModelSerializer):
