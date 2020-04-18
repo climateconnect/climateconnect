@@ -27,5 +27,6 @@ urlpatterns = [
     path('login/', user_views.LoginView.as_view(), name='login-api'),
     path('logout/', knox_views.LogoutView.as_view(), name='logout-api'),
     path('signup/', user_views.SignUpView.as_view(), name="signup-api"),
-    path('api/my_profile/', user_views.UserProfileView.as_view(), name='user-profile-api'),
+    path('api/my_profile/', user_views.PersonalProfileView.as_view(), name='user-profile-api'),
+    path('api/members/', user_views.MemberProfilesView.as_view(), name="member-profiles-api")
 ]
