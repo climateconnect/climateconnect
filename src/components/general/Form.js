@@ -3,7 +3,6 @@ import Link from "next/link";
 import {
   TextField,
   Button,
-  Card,
   Container,
   LinearProgress,
   Typography,
@@ -17,12 +16,12 @@ import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(4),
-    maxWidth: 350,
+    maxWidth: 700,
     margin: "0 auto"
   },
   blockElement: {
     display: "block",
-    maxWidth: 250,
+    maxWidth: 700,
     height: 56,
     margin: "0 auto",
     marginTop: theme.spacing(2)
@@ -59,6 +58,17 @@ const useStyles = makeStyles(theme => ({
   },
   backButton: {
     float: "left"
+  },
+  inputField: {
+    borderRadius: 2,
+    borderWidth: 5
+  },
+  notchedOutline: {
+    borderWidth: 2
+  },
+  rightAlignedButton: {
+    float: "right",
+    marginTop: theme.spacing(4)
   }
 }));
 
@@ -78,7 +88,8 @@ export default function Form({
   percentage,
   onSubmit,
   errorMessage,
-  onGoBack
+  onGoBack,
+  alignButtonsRight
 }) {
   const classes = useStyles();
 
@@ -127,7 +138,7 @@ export default function Form({
   }
 
   return (
-    <Card className={classes.root}>
+    <div className={classes.root}>
       {messages.headerMessage ? (
         <Typography component="h2" variant="subtitle1" className={classes.centerText}>
           {onGoBack && (
@@ -174,6 +185,12 @@ export default function Form({
                 className={classes.blockElement}
                 key={field.label + fields.indexOf(field)}
                 onChange={() => handleValueChange(event, field.key, field.type, true)}
+                InputProps={{
+                  classes: {
+                    root: classes.inputField,
+                    notchedOutline: classes.notchedOutline
+                  }
+                }}
               />
             );
           } else if (field.type === "checkbox") {
@@ -206,16 +223,22 @@ export default function Form({
                 className={classes.blockElement}
                 onBlur={handleBlur}
                 onChange={() => handleValueChange(event, field.key, field.type)}
+                InputProps={{
+                  classes: {
+                    root: classes.inputField,
+                    notchedOutline: classes.notchedOutline
+                  }
+                }}
               />
             );
           }
         })}
         <Button
-          fullWidth
+          fullWidth={!alignButtonsRight}
           variant="contained"
           type="submit"
           color="primary"
-          className={classes.blockElement}
+          className={`${alignButtonsRight ? classes.rightAlignedButton : classes.blockElement}`}
         >
           {messages.submitMessage}
         </Button>
@@ -238,6 +261,6 @@ export default function Form({
       ) : (
         <></>
       )}
-    </Card>
+    </div>
   );
 }

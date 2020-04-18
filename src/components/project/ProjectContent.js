@@ -76,7 +76,7 @@ const useStyles = makeStyles(theme => ({
         position: "absolute",
         top: 0,
         left: 0,
-        color: theme.palette.primary.main /* or whatever color you prefer */
+        color: theme.palette.primary.main
       }
     }
   },
