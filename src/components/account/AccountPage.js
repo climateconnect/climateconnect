@@ -71,7 +71,6 @@ const useStyles = makeStyles(theme => ({
   editButton: {
     position: "absolute",
     right: theme.spacing(1),
-    width: theme.spacing(16),
     top: theme.spacing(12),
     [theme.breakpoints.up("sm")]: {
       top: theme.spacing(1)
@@ -92,7 +91,7 @@ export default function AccountPage({
   children
 }) {
   const classes = useStyles();
-
+  console.log(account);
   const displayInfoArrayData = (key, infoEl) => {
     return (
       <div key={key} className={classes.infoElement}>

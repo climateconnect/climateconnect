@@ -95,15 +95,11 @@ class PersonalProfileView(APIView):
 
 
 class MemberProfilesView(ListAPIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [AllowAny]
     serializer_class = UserProfileSerializer
     pagination_class = PageNumberPagination
     filter_backends = [SearchFilter]
     search_fields = ['url_slug']
 
     def get_queryset(self):
-        if not UserProfile.objects.filter(user=self.request.user).exists() or \
-                not self.request.user.user_profile.is_profile_verified:
-            raise PermissionDenied(detail="You do not have permission to access this page.")
-
         return UserProfile.objects.filter(is_profile_verified=True)

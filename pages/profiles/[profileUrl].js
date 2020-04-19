@@ -2,13 +2,13 @@ import React from "react";
 import Link from "next/link";
 import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import axios from "axios";
 
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
 import OrganizationPreviews from "./../../src/components/organization/OrganizationPreviews";
 import AccountPage from "./../../src/components/account/AccountPage";
 
-import TEMP_FEATURED_DATA from "../../public/data/profiles.json";
 import TEMP_PROJECT_DATA from "../../public/data/projects.json";
 import TEMP_ORGANIZATION_DATA from "../../public/data/organizations.json";
 import TEMP_PROFILE_TYPES from "./../../public/data/profile_types.json";
@@ -75,6 +75,7 @@ export default function ProfilePage({
   profileTypes,
   infoMetadata
 }) {
+  console.log(profile);
   return (
     <WideLayout title={profile ? profile.name + "'s profile" : "Not found"}>
       {profile ? (
@@ -149,7 +150,33 @@ function NoProfileFoundLayout() {
 
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getProfileByUrlIfExists(profileUrl) {
-  return TEMP_FEATURED_DATA.profiles.find(({ url }) => url === profileUrl);
+  try {
+    const resp = await axios.get(process.env.API_URL + "/api/members/?search=" + profileUrl);
+    if (resp.data.results.length === 0) return null;
+    else {
+      console.log(resp.data.results);
+      return parseProfile(resp.data.results[0]);
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+function parseProfile(profile) {
+  return {
+    url_slug: profile.url_slug,
+    name: profile.first_name + " " + profile.last_name,
+    image: profile.profile_image,
+    background_image: profile.background_image,
+    info: {
+      location: profile.city + ", " + profile.country,
+      bio: profile.biography,
+      skills: profile.skills,
+      availability: profile.availability
+    }
+  };
 }
 
 async function getProjects(profileUrl) {
