@@ -157,7 +157,6 @@ async function getProfileByUrlIfExists(profileUrl) {
     const resp = await axios.get(process.env.API_URL + "/api/members/?search=" + profileUrl);
     if (resp.data.results.length === 0) return null;
     else {
-      console.log(resp.data.results[0].profile_image);
       return parseProfile(resp.data.results[0]);
     }
   } catch (err) {
@@ -183,7 +182,6 @@ function parseProfile(profile) {
 }
 
 async function getProjects(profileUrl) {
-  console.log(profileUrl);
   return TEMP_PROJECT_DATA.projects.filter(
     project => !!project.team.find(m => m.url === profileUrl)
   );

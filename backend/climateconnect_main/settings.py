@@ -151,5 +151,5 @@ REST_FRAMEWORK = {
 }
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
-MEDIA_ROOT = SITE_ROOT
+MEDIA_ROOT = SITE_ROOT+'/../media/'
 MEDIA_URL = '/media/'

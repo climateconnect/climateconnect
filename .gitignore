@@ -25,6 +25,7 @@ yarn-debug.log*
 yarn-error.log*
 
 .backend_env*
+/backend/media
 */__pycache__/
 __pycache__
 *.swp
