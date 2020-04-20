@@ -2,6 +2,7 @@
   "availability": {
     "name": "Availability",
     "type": "select",
+    "missingMessage": "This user hasn't specified their availibility yet.",
     "options": [
       {
         "name": "1-2 hours per week",
@@ -49,15 +50,18 @@
     "name": "Skills",
     "type": "array",
     "addText": "Add skill",
+    "missingMessage": "This user hasn't added their skills yet",
     "maxEntries": 8
   },
   "bio": {
     "name": "Bio",
     "type": "text",
+    "missingMessage": "This user hasn't added a bio yet.",
     "maxLength": 240
   },
   "location": {
     "name": "Location",
+    "missingMessage": "This user hasn't specified their location yet.",
     "type": "location"
   }
 }

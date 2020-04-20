@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
+import { useContext } from "react";
+import UserContext from "./../../src/components/context/UserContext";
 
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
@@ -75,7 +77,6 @@ export default function ProfilePage({
   profileTypes,
   infoMetadata
 }) {
-  console.log(profile);
   return (
     <WideLayout title={profile ? profile.name + "'s profile" : "Not found"}>
       {profile ? (
@@ -105,11 +106,13 @@ ProfilePage.getInitialProps = async ctx => {
 
 function ProfileLayout({ profile, projects, organizations, profileTypes, infoMetadata }) {
   const classes = useStyles();
+  const { user } = useContext(UserContext);
   return (
     <AccountPage
       account={profile}
       default_background={DEFAULT_BACKGROUND_IMAGE}
       editHref={"/editProfile/" + profile.url}
+      isOwnAccount={user && user.url_slug === profile.url_slug}
       type="profile"
       possibleAccountTypes={profileTypes}
       infoMetadata={infoMetadata}
@@ -154,7 +157,7 @@ async function getProfileByUrlIfExists(profileUrl) {
     const resp = await axios.get(process.env.API_URL + "/api/members/?search=" + profileUrl);
     if (resp.data.results.length === 0) return null;
     else {
-      console.log(resp.data.results);
+      console.log(resp.data.results[0].profile_image);
       return parseProfile(resp.data.results[0]);
     }
   } catch (err) {
