@@ -19,7 +19,6 @@ export default class MyApp extends App {
 
     this.signOut = async () => {
       try {
-        console.log("signing out!");
         const token = this.cookies.get("token");
         await axios.post(process.env.API_URL + "/logout/", null, tokenConfig(token));
         this.cookies.remove("token");
