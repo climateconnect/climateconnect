@@ -10,7 +10,7 @@ import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import UploadImageDialog from "../src/components/dialogs/UploadImageDialog";
 import Switch from "@material-ui/core/Switch";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import theme from "../src/themes/themeThat ";
+import theme from "../src/themes/theme";
 
 const DEFAULT_STATUS = "inprogress";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
