@@ -150,16 +150,6 @@ export default function StepsTracker({ steps, activeStep, grayBackground }) {
               >
                 {step.text}
               </Typography>
-              {/*<div className={classes.progressTrack} />
-              {steps.map((step, index) => (
-                <div className={classes.step} key={index}>
-                  {step.key === activeStep && <span className={classes.topDivActive} />}
-                  <span className={classes.topDiv} />
-                  <Typography color="primary" className={classes.stepText}>
-                    {step.text}
-                  </Typography>
-                </div>
-              ))}*/}
             </StepLabel>
           </Step>
         ))}
