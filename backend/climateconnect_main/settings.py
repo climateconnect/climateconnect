@@ -151,5 +151,6 @@ REST_FRAMEWORK = {
 }
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
-MEDIA_ROOT = SITE_ROOT+'/../media/'
+# TODO: point to Google cloud storage if we aren't in testing environment
+MEDIA_ROOT = SITE_ROOT+'/../media/' if env('ENVIRONMENT') in ('development', 'test',) else null
 MEDIA_URL = '/media/'

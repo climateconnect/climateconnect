@@ -19,7 +19,7 @@ from climateconnect_api.models.user import UserProfile
 
 # Serializer imports
 from climateconnect_api.serializers.user import (
-    UserProfileSerializer, PersonalProfileSerializer
+    UserProfileSerializer, PersonalProfileSerializer, UserProfileStubSerializer
 )
 
 
@@ -96,10 +96,15 @@ class PersonalProfileView(APIView):
 
 class MemberProfilesView(ListAPIView):
     permission_classes = [AllowAny]
-    serializer_class = UserProfileSerializer
     pagination_class = PageNumberPagination
     filter_backends = [SearchFilter]
     search_fields = ['url_slug']
 
-    def get_queryset(self):
-        return UserProfile.objects.filter(is_profile_verified=True)
+    def get_queryset(self, request):
+        user_profiles = UserProfile.objects.filter(is_profile_verified=True)
+        if request.user.is_authenticated(): 
+            serializer = UserProfileSerializer(user_profiles)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            serializer = UserProfileStubSerializer(user_profiles)
+            return Response(serializer.data, status=status.HTTP_200_OK)
