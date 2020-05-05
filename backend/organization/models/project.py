@@ -84,11 +84,20 @@ class Project(models.Model):
         auto_now=True
     )
 
-    short_description = models.TextField(
+    short_description = models.CharField(
         help_text="Points to short description about the project",
         verbose_name="Short Description",
         null=True,
-        blank=True
+        blank=True,
+        max_length=240
+    )
+
+    description = models.CharField(
+        help_text="Points to detailed description about the project",
+        verbose_name="Description",
+        null=True,
+        blank=True,
+        max_length=4800
     )
 
     country = models.CharField(

@@ -111,7 +111,6 @@ const CustomConnector = withStyles(theme => {
 const CustomStepIcon = props => {
   const classes = useStyles();
   const { active, completed } = props;
-  console.log(props);
   if (completed)
     return <CheckIcon color="primary" className={`${classes.customIcon} ${classes.completed}`} />;
   else if (active)
@@ -124,10 +123,9 @@ const CustomStepIcon = props => {
   else return <div className={`${classes.customIcon} ${classes.customIconMarginBottom}`} />;
 };
 
-export default function StepsTracker({ steps, activeStep, grayBackground }) {
+export default function StepsTracker({ steps, activeStep, grayBackground, onlyDisplayActiveStep }) {
   const classes = useStyles();
   const activeStepIndex = steps.indexOf(steps.find(step => step.key === activeStep));
-  console.log(activeStepIndex);
   return (
     <div className={`${grayBackground && classes.grayBackgroundRoot}`}>
       <Stepper
@@ -148,7 +146,7 @@ export default function StepsTracker({ steps, activeStep, grayBackground }) {
                 className={`${classes.stepText} ${index < activeStepIndex &&
                   classes.completedText}`}
               >
-                {step.text}
+                {(!onlyDisplayActiveStep || index === activeStepIndex) && step.text}
               </Typography>
             </StepLabel>
           </Step>
@@ -161,5 +159,5 @@ export default function StepsTracker({ steps, activeStep, grayBackground }) {
 StepsTracker.propTypes = {
   steps: PropTypes.array.isRequired,
   activeStep: PropTypes.string.isRequired,
-  grayBackground: PropTypes.boolean
+  grayBackground: PropTypes.bool
 };

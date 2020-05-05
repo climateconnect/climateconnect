@@ -330,7 +330,7 @@ function NarrowScreenLinks({ loggedInUser, handleLogout }) {
                   );
                 else if (link.isLogoutButton)
                   return (
-                    <ListItem button component="a" onClick={handleLogout}>
+                    <ListItem button component="a" key={index} onClick={handleLogout}>
                       <ListItemIcon>
                         <Icon color="primary" />
                       </ListItemIcon>

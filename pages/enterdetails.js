@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Container, Button } from "@material-ui/core";
+import { Typography, Container, Button, TextField } from "@material-ui/core";
 import WideLayout from "../src/components/layouts/WideLayout";
 import RadioButtons from "../src/components/general/RadioButtons";
 import { makeStyles } from "@material-ui/core/styles";
@@ -8,6 +8,10 @@ import DatePicker from "../src/components/general/DatePicker";
 import project_status_metadata from "../public/data/project_status_metadata";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import UploadImageDialog from "../src/components/dialogs/UploadImageDialog";
+import Switch from "@material-ui/core/Switch";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import theme from "../src/themes/themeThat ";
+
 const DEFAULT_STATUS = "inprogress";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
@@ -39,14 +43,20 @@ const useStyles = makeStyles(theme => {
       marginTop: 0,
       marginLeft: theme.spacing(4)
     },
-    halfScreen: {
-      width: "50%",
-      minWidth: 300,
-      marginTop: theme.spacing(4),
-      verticalAlign: "top"
+    photoContainer: {
+      paddingRight: theme.spacing(2)
     },
-    halfScreenLeft: {
-      paddingRight: theme.spacing(4)
+    summaryContainer: {
+      paddingLeft: theme.spacing(2)
+    },
+    inlineOnBigScreens: {
+      width: "50%",
+      marginTop: theme.spacing(4),
+      verticalAlign: "top",
+      [theme.breakpoints.down("sm")]: {
+        width: "100%",
+        padding: 0
+      }
     },
     imageZoneWrapper: {
       display: "block",
@@ -58,7 +68,7 @@ const useStyles = makeStyles(theme => {
       border: "1px dashed #000",
       width: "100%",
       paddingBottom: "56.25%",
-      backgroundImage: `url(${props.background_image})`,
+      backgroundImage: `${props.image ? `url(${props.image})` : null}`,
       backgroundSize: "contain"
     }),
     photoIcon: {
@@ -78,6 +88,31 @@ const useStyles = makeStyles(theme => {
       left: "-50%",
       top: "-50%",
       width: 170
+    },
+    shortDescriptionWrapper: {
+      width: "100%",
+      paddingTop: "56.25%",
+      position: "relative"
+    },
+    shortDescription: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      width: "100%"
+    },
+    fullHeight: {
+      height: "100%"
+    },
+    backButton: {
+      color: theme.palette.primary.main
+    },
+    nextStepButton: {
+      float: "right"
+    },
+    navigationButtonWrapper: {
+      marginTop: theme.spacing(10)
     }
   };
 });
@@ -85,8 +120,9 @@ const useStyles = makeStyles(theme => {
 export default function EnterDetails({ projectData }) {
   const [project, setProject] = React.useState(projectData ? projectData : defaultProject);
   const [tempImage, setTempImage] = React.useState(project.image);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState({ avatarDialog: false });
   const classes = useStyles(project);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const steps = [
     {
@@ -100,6 +136,10 @@ export default function EnterDetails({ projectData }) {
     {
       key: "details",
       text: "project details"
+    },
+    {
+      key: "team",
+      text: "Team"
     }
   ];
 
@@ -124,6 +164,10 @@ export default function EnterDetails({ projectData }) {
     setProject({ ...project, end_date: newDate });
   };
 
+  const onDescriptionChange = (event, descriptionType) => {
+    setProject({ ...project, [descriptionType]: event.target.value });
+  };
+
   const handleFileInputClick = () => {};
 
   const handleFileSubmit = () => {};
@@ -132,8 +176,9 @@ export default function EnterDetails({ projectData }) {
     const file = event.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
+    console.log(URL.createObjectURL(file));
     setTempImage(URL.createObjectURL(file));
-    handleDialogClickOpen("backgroundDialog");
+    handleDialogClickOpen("avatarDialog");
   };
 
   const onUploadImageClick = event => {
@@ -141,11 +186,22 @@ export default function EnterDetails({ projectData }) {
     inputFile.current.click();
   };
 
-  const handleDialogClickOpen = () => {
-    setOpen(true);
+  const onAllowCollaboratorsChange = event => {
+    setProject({ ...project, collaborators_welcome: event.target.checked });
   };
 
-  const handleUploadImageClose = () => {};
+  const handleDialogClickOpen = dialogName => {
+    setOpen({ ...open, [dialogName]: true });
+  };
+
+  const handleAvatarDialogClose = image => {
+    setOpen({ ...open, avatarDialog: false });
+    console.log(image);
+    if (image) console.log(image.toDataURL());
+    if (image && image instanceof HTMLCanvasElement) {
+      setProject({ ...project, image: image.toDataURL() });
+    }
+  };
 
   //TODO: remove default values
   return (
@@ -155,6 +211,7 @@ export default function EnterDetails({ projectData }) {
         className={classes.stepsTracker}
         steps={steps}
         activeStep={steps[2].key}
+        onlyDisplayActiveStep={isSmallScreen}
       />
       <Typography variant="h4" color="primary" className={classes.headline}>
         {project.name}
@@ -191,7 +248,7 @@ export default function EnterDetails({ projectData }) {
               date={project.start_date}
               handleChange={onStartDateChange}
             />
-            {!statusesWithEndDate.includes(project.status) && (
+            {statusesWithEndDate.includes(project.status) && (
               <DatePicker
                 className={classes.datePicker}
                 label="End date"
@@ -201,8 +258,10 @@ export default function EnterDetails({ projectData }) {
             )}
           </div>
         </div>
-        <div className={`${classes.block} ${classes.flexContainer}`}>
-          <div className={`${classes.inlineBlock} ${classes.halfScreen} ${classes.halfScreenLeft}`}>
+        <div className={classes.block}>
+          <div
+            className={`${classes.inlineBlock} ${classes.inlineOnBigScreens} ${classes.photoContainer}`}
+          >
             <Typography
               component="h2"
               variant="subtitle2"
@@ -220,7 +279,6 @@ export default function EnterDetails({ projectData }) {
                 style={{ display: "none" }}
                 onChange={onImageChange}
                 accept=".png,.jpeg,.jpg"
-                value={project.image}
                 onClick={() => handleFileInputClick()}
                 onSubmit={() => handleFileSubmit(event)}
               />
@@ -229,32 +287,129 @@ export default function EnterDetails({ projectData }) {
                   <div className={classes.addPhotoContainer}>
                     <AddAPhotoIcon className={classes.photoIcon} />
                     <Button variant="contained" color="primary" onClick={onUploadImageClick}>
-                      Upload Image
+                      {!project.image ? "Upload Image" : "Change image"}
                     </Button>
                   </div>
                 </div>
               </div>
             </label>
           </div>
-          <div className={`${classes.inlineBlock} ${classes.halfScreen}`}>
+          <div
+            className={`${classes.inlineBlock} ${classes.inlineOnBigScreens} ${classes.summaryContainer}`}
+          >
             <Typography
               component="h2"
               variant="subtitle2"
               color="primary"
               className={classes.subHeader}
             >
-              Short description*
+              Short summary*
             </Typography>
+            <div className={classes.shortDescriptionWrapper}>
+              <TextField
+                variant="outlined"
+                fullWidth
+                multiline
+                onChange={event => onDescriptionChange(event, "short_description")}
+                className={classes.shortDescription}
+                InputProps={{
+                  classes: { root: classes.fullHeight, inputMultiline: classes.fullHeight }
+                }}
+                placeholder={
+                  "Briefly summarise what you are doing (up to 240 characters)\n\nPlease only use English!"
+                }
+                helperText={
+                  "Briefly summarise what you are doing (up to 240 characters)\n\nPlease only use English!"
+                }
+                rows={2}
+                value={project.short_description}
+              />
+            </div>
           </div>
+        </div>
+        <div className={classes.block}>
+          <Typography
+            component="h2"
+            variant="subtitle2"
+            color="primary"
+            className={classes.subHeader}
+          >
+            Project description
+          </Typography>
+          <TextField
+            variant="outlined"
+            fullWidth
+            multiline
+            rows={9}
+            onChange={event => onDescriptionChange(event, "description")}
+            helperText="Describe your project in detail. Please only use English!"
+            placeholder={`Describe your project in more detail.\n\n-What are you trying to achieve?\n-How are you trying to achieve it\n-What were the biggest challenges?\n-What insights have you gained during the implementation?`}
+            value={project.description}
+          />
+        </div>
+        <div className={classes.block}>
+          <Typography
+            component="h2"
+            variant="subtitle2"
+            color="primary"
+            className={classes.subHeader}
+          >
+            Allow collaboration on your project?
+          </Typography>
+          <Switch
+            checked={project.collaborators_welcome}
+            onChange={onAllowCollaboratorsChange}
+            name="checkedA"
+            inputProps={{ "aria-label": "secondary checkbox" }}
+            color="primary"
+          />
+        </div>
+        {project.collaborators_welcome && (
+          <>
+            <div className={classes.block}>
+              <Typography
+                component="h2"
+                variant="subtitle2"
+                color="primary"
+                className={classes.subHeader}
+              >
+                Add skills that would be beneficial for collaborators to have
+              </Typography>
+              <Button variant="contained" color="primary">
+                Add Skill
+              </Button>
+            </div>
+            <div className={classes.block}>
+              <Typography
+                component="h2"
+                variant="subtitle2"
+                color="primary"
+                className={classes.subHeader}
+              >
+                Add connections that would be beneficial for collaborators to have
+              </Typography>
+              <Button variant="contained" color="primary">
+                Add Connection
+              </Button>
+            </div>
+          </>
+        )}
+        <div className={`${classes.block} ${classes.navigationButtonWrapper}`}>
+          <Button variant="contained" className={classes.backButton}>
+            Back
+          </Button>
+          <Button variant="contained" className={classes.nextStepButton} color="primary">
+            Next Step
+          </Button>
         </div>
       </Container>
       <UploadImageDialog
-        onClose={handleUploadImageClose}
+        onClose={handleAvatarDialogClose}
         open={open.avatarDialog}
         imageUrl={tempImage}
-        borderRadius={10000}
+        borderRadius={0}
         height={300}
-        ratio={1}
+        ratio={16 / 9}
       />
     </WideLayout>
   );
@@ -262,5 +417,6 @@ export default function EnterDetails({ projectData }) {
 
 const defaultProject = {
   name: "CO2-Labels for University Canteen",
-  status: DEFAULT_STATUS
+  status: DEFAULT_STATUS,
+  collaborators_welcome: true
 };

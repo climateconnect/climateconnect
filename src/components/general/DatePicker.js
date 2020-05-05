@@ -16,7 +16,6 @@ export default function DatePicker({ label, date, handleChange, className }) {
         variant="inline"
         format="MM/dd/yyyy"
         margin="normal"
-        id="date-picker-inline"
         label={label}
         value={date}
         onChange={handleDateChange}

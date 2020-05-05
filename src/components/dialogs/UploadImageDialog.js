@@ -115,7 +115,7 @@ export default function UploadImageDialog({
 UploadImageDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  imageUrl: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired,
+  imageUrl: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
   ratio: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   mobileHeight: PropTypes.number,
