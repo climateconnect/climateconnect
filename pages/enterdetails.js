@@ -122,7 +122,7 @@ export default function EnterDetails({ projectData }) {
   const [tempImage, setTempImage] = React.useState(project.image);
   const [open, setOpen] = React.useState({ avatarDialog: false });
   const classes = useStyles(project);
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
 
   const steps = [
     {
