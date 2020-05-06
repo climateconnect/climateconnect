@@ -4,6 +4,7 @@ import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import { useContext } from "react";
+import Cookies from "universal-cookie";
 import UserContext from "./../../src/components/context/UserContext";
 
 import WideLayout from "../../src/components/layouts/WideLayout";
@@ -154,9 +155,16 @@ function NoProfileFoundLayout() {
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getProfileByUrlIfExists(profileUrl) {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/members/?search=" + profileUrl);
+    const cookies = new Cookies();
+    const token = cookies.get("token");
+    const resp = await axios.get(
+      process.env.API_URL + "/api/members/?search=" + profileUrl,
+      null,
+      tokenConfig(token)
+    );
     if (resp.data.results.length === 0) return null;
     else {
+      console.log(resp.data.results[0]);
       return parseProfile(resp.data.results[0]);
     }
   } catch (err) {
@@ -165,6 +173,22 @@ async function getProfileByUrlIfExists(profileUrl) {
     return null;
   }
 }
+
+const tokenConfig = token => {
+  // Headers
+  const config = {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  };
+
+  // If token, add to headers config
+  if (token) {
+    config.headers["Authorization"] = `Token ${token}`;
+  }
+
+  return config;
+};
 
 function parseProfile(profile) {
   return {
