@@ -100,9 +100,9 @@ class MemberProfilesView(ListAPIView):
     filter_backends = [SearchFilter]
     search_fields = ['url_slug']
 
-    def get_queryset(self, request):
+    def get_queryset(self):
         user_profiles = UserProfile.objects.filter(is_profile_verified=True)
-        if request.user.is_authenticated(): 
+        if self.request.user.is_authenticated: 
             serializer = UserProfileSerializer(user_profiles)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
