@@ -4,7 +4,7 @@ import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import { useContext } from "react";
-import Cookies from "universal-cookie";
+import Cookies from "next-cookies";
 import UserContext from "./../../src/components/context/UserContext";
 
 import WideLayout from "../../src/components/layouts/WideLayout";
@@ -96,8 +96,9 @@ export default function ProfilePage({
 }
 
 ProfilePage.getInitialProps = async ctx => {
+  const { token } = Cookies(ctx);
   return {
-    profile: await getProfileByUrlIfExists(ctx.query.profileUrl),
+    profile: await getProfileByUrlIfExists(ctx.query.profileUrl, token),
     organizations: await getOrganizationsByUser(ctx.query.profileUrl),
     projects: await getProjects(ctx.query.profileUrl),
     profileTypes: await getProfileTypes(),
@@ -153,22 +154,20 @@ function NoProfileFoundLayout() {
 }
 
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
-async function getProfileByUrlIfExists(profileUrl) {
+async function getProfileByUrlIfExists(profileUrl, token) {
   try {
-    const cookies = new Cookies();
-    const token = cookies.get("token");
+    console.log(tokenConfig(token));
     const resp = await axios.get(
       process.env.API_URL + "/api/members/?search=" + profileUrl,
-      null,
       tokenConfig(token)
     );
     if (resp.data.results.length === 0) return null;
     else {
-      console.log(resp.data.results[0]);
+      //console.log(resp.data.results[0]);
       return parseProfile(resp.data.results[0]);
     }
   } catch (err) {
-    console.log(err);
+    //console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
