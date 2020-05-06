@@ -17,17 +17,18 @@ export default class MyApp extends App {
     this.cookies = new Cookies();
     this.state = { user: null };
 
+    //TODO: reload current path or main page while being logged out
     this.signOut = async () => {
       try {
         const token = this.cookies.get("token");
         await axios.post(process.env.API_URL + "/logout/", null, tokenConfig(token));
-        this.cookies.remove("token");
+        this.cookies.remove("token", { path: "/" });
         this.setState({
           user: null
         });
       } catch (err) {
         console.log(err);
-        this.cookies.remove("token");
+        this.cookies.remove("token", { path: "/" });
         this.setState({
           user: null
         });

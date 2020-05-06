@@ -71,7 +71,6 @@ const useStyles = makeStyles(theme => ({
   editButton: {
     position: "absolute",
     right: theme.spacing(1),
-    width: theme.spacing(16),
     top: theme.spacing(12),
     [theme.breakpoints.up("sm")]: {
       top: theme.spacing(1)
@@ -89,18 +88,22 @@ export default function AccountPage({
   default_background,
   editHref,
   infoMetadata,
-  children
+  children,
+  isOwnAccount
 }) {
   const classes = useStyles();
-
   const displayInfoArrayData = (key, infoEl) => {
     return (
       <div key={key} className={classes.infoElement}>
         <div className={classes.subtitle}>{infoEl.name}:</div>
         <div className={classes.chipArray}>
-          {infoEl.value.map(entry => (
-            <Chip size="medium" label={entry} key={entry} className={classes.chip} />
-          ))}
+          {infoEl && infoEl.length > 0 ? (
+            infoEl.value.map(entry => (
+              <Chip size="medium" label={entry} key={entry} className={classes.chip} />
+            ))
+          ) : (
+            <div className={classes.content}>{infoEl.missingMessage}</div>
+          )}
         </div>
       </div>
     );
@@ -117,7 +120,9 @@ export default function AccountPage({
         return (
           <div key={key}>
             <div className={classes.subtitle}>{i.name}:</div>
-            <div className={classes.content}>{value + additionalText}</div>
+            <div className={classes.content}>
+              {value ? value + additionalText : i.missingMessage}
+            </div>
           </div>
         );
       }
@@ -137,9 +142,16 @@ export default function AccountPage({
         }}
       />
       <Container className={classes.infoContainer}>
-        <Button className={classes.editButton} color="primary" variant="contained" href={editHref}>
-          Edit Profile
-        </Button>
+        {isOwnAccount && (
+          <Button
+            className={classes.editButton}
+            color="primary"
+            variant="contained"
+            href={editHref}
+          >
+            Edit Profile
+          </Button>
+        )}
         <Container className={classes.avatarWithInfo}>
           <Avatar
             alt={account.name}
@@ -151,12 +163,13 @@ export default function AccountPage({
           <Typography variant="h5" className={classes.name}>
             {account.name}
           </Typography>
-          <Container className={classes.noPadding}>
-            {account.types &&
-              getTypesOfAccount(account, possibleAccountTypes, infoMetadata).map(type => (
+          {account.types && (
+            <Container className={classes.noPadding}>
+              {getTypesOfAccount(account, possibleAccountTypes, infoMetadata).map(type => (
                 <Chip label={type.name} key={type.key} className={classes.chip} />
               ))}
-          </Container>
+            </Container>
+          )}
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
       </Container>
