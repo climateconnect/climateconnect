@@ -55,7 +55,7 @@ export default function Create() {
 
   //dummy route while we don't have backend
   const formAction = {
-    href: "/",
+    href: "/selectCategory",
     method: "GET"
   };
 

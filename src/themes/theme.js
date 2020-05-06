@@ -5,7 +5,10 @@ const coreTheme = createMuiTheme({
   palette: {
     primary: { main: "#387077" },
     secondary: { main: "#484848" },
-    background: { default: "#fff" }
+    background: { default: "#fff" },
+    action: {
+      selected: "#387077"
+    }
   },
   typography: {
     fontFamily: "Open Sans",
