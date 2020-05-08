@@ -2,9 +2,14 @@ import React from "react";
 import { List, ListItem, ListItemText, ListItemIcon, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles(theme => {
   return {
+    wrapper: {
+      margin: "0 auto",
+      display: "table"
+    },
     list: {
       display: "inline-block",
       marginTop: theme.spacing(8),
@@ -41,13 +46,46 @@ const useStyles = makeStyles(theme => {
     },
     hidden: {
       display: "none"
+    },
+    selectedWrapper: {
+      display: "inline-block",
+      verticalAlign: "top",
+      marginTop: theme.spacing(10),
+      marginLeft: theme.spacing(16)
+    },
+    selectedItemsHeader: {
+      fontWeight: "bold"
+    },
+    selectedItem: {
+      background: theme.palette.primary.main,
+      color: "white",
+      marginBottom: theme.spacing(1),
+      "&:hover": {
+        backgroundColor: theme.palette.primary.main,
+        color: "white"
+      }
+    },
+    selectedItemIcon: {
+      paddingLeft: theme.spacing(2),
+      color: "red"
+    },
+    listWrapper: {
+      display: "inline-block",
+      width: 650
     }
   };
 });
 
-export default function MultiLevelSelector({ itemsToSelectFrom }) {
-  const [selected, setSelected] = React.useState([]);
+export default function MultiLevelSelector({
+  selected,
+  setSelected,
+  itemsToSelectFrom,
+  maxSelections,
+  itemNamePlural
+}) {
   const [expanded, setExpanded] = React.useState("agriculture");
+
+  const classes = useStyles();
 
   const onClickExpand = key => {
     if (expanded === key) setExpanded(null);
@@ -55,30 +93,62 @@ export default function MultiLevelSelector({ itemsToSelectFrom }) {
   };
 
   const onClickSelect = item => {
-    console.log(item);
+    if (selected.length >= maxSelections) alert("You can only choose up to 3 " + itemNamePlural);
     setSelected([...selected, item]);
+  };
+
+  const onClickUnselect = item => {
+    console.log("unselecting on click!");
+    console.log(item);
+    console.log(
+      selected
+        .slice(0, selected.indexOf(item))
+        .concat(selected.slice(selected.indexOf(item) + 1, selected.length))
+    );
+    setSelected(
+      selected
+        .slice(0, selected.indexOf(item))
+        .concat(selected.slice(selected.indexOf(item) + 1, selected.length))
+    );
   };
 
   return (
     <>
-      <div>
-        <ListToChooseFrom
-          itemsToSelectFrom={itemsToSelectFrom}
-          onClickExpand={onClickExpand}
-          expanded={expanded}
-          onClickSelect={onClickSelect}
-          selected={selected}
-        />
-      </div>
-      <div>
-        <Typography>Selected Items</Typography>
-        <List>
-          {selected.map(item => (
-            <ListItem key={item.key}>
-              <ListItemText>{item.name}</ListItemText>
-            </ListItem>
-          ))}
-        </List>
+      <div className={classes.wrapper}>
+        <div className={classes.listWrapper}>
+          <ListToChooseFrom
+            itemsToSelectFrom={itemsToSelectFrom}
+            onClickExpand={onClickExpand}
+            expanded={expanded}
+            onClickSelect={onClickSelect}
+            selected={selected}
+          />
+        </div>
+        <div className={classes.selectedWrapper}>
+          <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
+            {selected.length > 0
+              ? "Selected " + itemNamePlural
+              : "Select up to " + maxSelections + " " + itemNamePlural}
+          </Typography>
+          <List>
+            {selected.map((item, index) => (
+              <ListItem
+                key={item.key + "selected"}
+                button
+                className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
+                  classes.selectedItem
+                }`}
+                onClick={() => onClickUnselect(item)}
+                disableRipple
+              >
+                <ListItemText>{item.name}</ListItemText>
+                <ListItemIcon className={classes.selectedItemIcon}>
+                  <CloseIcon />
+                </ListItemIcon>
+              </ListItem>
+            ))}
+          </List>
+        </div>
       </div>
     </>
   );
@@ -111,7 +181,7 @@ function ListToChooseFrom({
         {itemsToSelectFrom.map((item, index) => (
           <ListItem
             button
-            disabled={selected.includes(item.key)}
+            disabled={selected.includes(item)}
             classes={{
               root: `${classes.listItem} 
                       ${index == 0 && classes.firstItem} 

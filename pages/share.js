@@ -1,78 +1,52 @@
 import React from "react";
 import { Typography } from "@material-ui/core";
-import WideLayout from "../src/components/layouts/WideLayout";
-import Form from "../src/components/general/Form";
-import organizationsList from "../public/data/organizations.json";
 import { makeStyles } from "@material-ui/core/styles";
+import WideLayout from "../src/components/layouts/WideLayout";
 import StepsTracker from "../src/components/general/StepsTracker";
+import ShareProject from "../src/components/shareProject/ShareProject";
 
-const useStyles = makeStyles({
-  headline: {
-    textAlign: "center"
-  },
-  stepsTracker: {
-    maxWidth: 600,
-    margin: "0 auto"
-  }
+const useStyles = makeStyles(theme => {
+  return {
+    stepsTracker: {
+      maxWidth: 600,
+      margin: "0 auto"
+    },
+    headline: {
+      textAlign: "center",
+      marginTop: theme.spacing(4)
+    }
+  };
 });
 
-export default function Create() {
+const steps = [
+  {
+    key: "share",
+    text: "share project",
+    headline: "Share a project"
+  },
+  {
+    key: "category",
+    text: "project category",
+    headline: "Select your project's category"
+  },
+  {
+    key: "details",
+    text: "project details"
+  }
+];
+
+export default function Share() {
   const classes = useStyles();
-  //TODO: This should include only organizations in which the user is an admin
-  const organizations = organizationsList.organizations.map(org => {
-    return {
-      key: org.url,
-      name: org.name
-    };
-  });
-  const organizationOptions = [{ key: "personal", name: "Personal project" }, ...organizations];
-  const fields = [
-    {
-      required: true,
-      label: "Organization",
-      select: {
-        values: organizationOptions
-      },
-      key: "organization"
-    },
-    {
-      required: true,
-      label: "Project name",
-      type: "text",
-      key: "projectname"
-    },
-    {
-      required: true,
-      label: "Location",
-      type: "text",
-      key: "location"
-    }
-  ];
+  const [project, setProject] = React.useState({});
+  const [curStep, setCurStep] = React.useState(steps[0]);
 
-  const messages = {
-    submitMessage: "Next Step"
+  const goToNextStep = () => {
+    setCurStep(steps[steps.indexOf(curStep) + 1]);
   };
 
-  //dummy route while we don't have backend
-  const formAction = {
-    href: "/selectCategory",
-    method: "GET"
+  const goToPreviousStep = () => {
+    setCurStep(steps[steps.indexOf(curStep) - 1]);
   };
-
-  const steps = [
-    {
-      key: "share",
-      text: "share project"
-    },
-    {
-      key: "category",
-      text: "project category"
-    },
-    {
-      key: "details",
-      text: "project details"
-    }
-  ];
 
   return (
     <WideLayout title="Share a project" hideHeadline={true}>
@@ -83,9 +57,14 @@ export default function Create() {
         activeStep={steps[0].key}
       />
       <Typography variant="h4" color="primary" className={classes.headline}>
-        Share a project
+        {curStep.headline}
       </Typography>
-      <Form fields={fields} messages={messages} formAction={formAction} alignButtonsRight />
+      <ShareProject
+        project={project}
+        goToNextStep={goToNextStep}
+        goToPreviousStep={goToPreviousStep}
+        setProject={setProject}
+      />
     </WideLayout>
   );
 }
