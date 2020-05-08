@@ -35,7 +35,8 @@ Once you clone the repository start backend server.
 
 ### Frontend
 
-1. From main directory Run `yarn install` to download all npm packages
+1. `cd frontend`
+1. Run `yarn install` to download all npm packages
 2. Add `.env` file for frontend environment variables.
 3. Run `yarn dev` to start developing
 

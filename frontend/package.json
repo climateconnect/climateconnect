@@ -3,15 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "gcp-build": "yarn build",
     "pretest": "yarn run lint",
     "format": "prettier --write '**/*.{js,jsx,json,md}'",
     "lint": "eslint .",
     "test": "jest",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "export": "next export",
-    "deploy": "yarn build && yarn export"
+    "start": "next start --port $PORT"
   },
   "jest": {
     "setupFiles": [
@@ -32,6 +31,7 @@
     "humanize-duration": "^3.22.0",
     "lodash": "^4.17.15",
     "next": "^9.3.2",
+    "next-cookies": "^2.0.3",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-avatar-editor": "11.0.7",
@@ -47,7 +47,6 @@
     "enzyme-adapter-react-16": "^1.15.1",
     "eslint": "^6.6.0",
     "eslint-plugin-react": "^7.16.0",
-    "husky": "^3.0.9",
     "jest": "^24.9.0",
     "prettier": "^1.18.2",
     "pretty-quick": "^2.0.0"
