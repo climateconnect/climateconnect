@@ -19,6 +19,10 @@ from climateconnect_api.views import (
     status_views, user_views
 )
 from knox import views as knox_views
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 
 
 urlpatterns = [
@@ -29,4 +33,4 @@ urlpatterns = [
     path('signup/', user_views.SignUpView.as_view(), name="signup-api"),
     path('api/my_profile/', user_views.PersonalProfileView.as_view(), name='user-profile-api'),
     path('api/members/', user_views.MemberProfilesView.as_view(), name="member-profiles-api")
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

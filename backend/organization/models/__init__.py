@@ -12,3 +12,4 @@ from organization.models.project import (
 from organization.models.content import (
     Posts, Comment, PostComment, ProjectComment
 )
+from organization.models.members import (ProjectMember, OrganizationMember)

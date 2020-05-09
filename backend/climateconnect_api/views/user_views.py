@@ -19,7 +19,7 @@ from climateconnect_api.models.user import UserProfile
 
 # Serializer imports
 from climateconnect_api.serializers.user import (
-    UserProfileSerializer, PersonalProfileSerializer
+    UserProfileSerializer, PersonalProfileSerializer, UserProfileStubSerializer
 )
 
 
@@ -95,15 +95,17 @@ class PersonalProfileView(APIView):
 
 
 class MemberProfilesView(ListAPIView):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = UserProfileSerializer
+    permission_classes = [AllowAny]
+    # serializer_class = UserProfileSerializer
     pagination_class = PageNumberPagination
     filter_backends = [SearchFilter]
     search_fields = ['url_slug']
 
-    def get_queryset(self):
-        if not UserProfile.objects.filter(user=self.request.user).exists() or \
-                not self.request.user.user_profile.is_profile_verified:
-            raise PermissionDenied(detail="You do not have permission to access this page.")
+    def get_serializer_class(self):
+        print(self.request.user.is_authenticated)
+        if self.request.user.is_authenticated:
+            return UserProfileSerializer
+        return UserProfileStubSerializer
 
+    def get_queryset(self):
         return UserProfile.objects.filter(is_profile_verified=True)

@@ -3,7 +3,7 @@ from django.contrib import admin
 from organization.models import (
     Organization, OrganizationTags, OrganizationTagging,
     Project, ProjectTags, ProjectTagging, Posts, Comment,
-    PostComment, ProjectComment
+    PostComment, ProjectComment, ProjectMember, OrganizationMember
 )
 
 pass_through_models = (
@@ -28,3 +28,19 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Project, ProjectAdmin)
+
+
+class ProjectMemberAdmin(admin.ModelAdmin):
+    search_fields = ('user__name', 'user__id', 'project__name',)
+    list_filter = ('role__name',)
+
+
+admin.site.register(ProjectMember, ProjectMemberAdmin)
+
+
+class OrganizationMemberAdmin(admin.ModelAdmin):
+    search_fields = ('user__name', 'user__id', 'organization__name',)
+    list_filter = ('role__name',)
+
+
+admin.site.register(OrganizationMember, OrganizationMemberAdmin)

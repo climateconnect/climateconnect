@@ -2,13 +2,16 @@ import React from "react";
 import Link from "next/link";
 import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import axios from "axios";
+import { useContext } from "react";
+import Cookies from "next-cookies";
+import UserContext from "./../../src/components/context/UserContext";
 
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
 import OrganizationPreviews from "./../../src/components/organization/OrganizationPreviews";
 import AccountPage from "./../../src/components/account/AccountPage";
 
-import TEMP_FEATURED_DATA from "../../public/data/profiles.json";
 import TEMP_PROJECT_DATA from "../../public/data/projects.json";
 import TEMP_ORGANIZATION_DATA from "../../public/data/organizations.json";
 import TEMP_PROFILE_TYPES from "./../../public/data/profile_types.json";
@@ -93,8 +96,9 @@ export default function ProfilePage({
 }
 
 ProfilePage.getInitialProps = async ctx => {
+  const { token } = Cookies(ctx);
   return {
-    profile: await getProfileByUrlIfExists(ctx.query.profileUrl),
+    profile: await getProfileByUrlIfExists(ctx.query.profileUrl, token),
     organizations: await getOrganizationsByUser(ctx.query.profileUrl),
     projects: await getProjects(ctx.query.profileUrl),
     profileTypes: await getProfileTypes(),
@@ -104,11 +108,13 @@ ProfilePage.getInitialProps = async ctx => {
 
 function ProfileLayout({ profile, projects, organizations, profileTypes, infoMetadata }) {
   const classes = useStyles();
+  const { user } = useContext(UserContext);
   return (
     <AccountPage
       account={profile}
       default_background={DEFAULT_BACKGROUND_IMAGE}
       editHref={"/editProfile/" + profile.url}
+      isOwnAccount={user && user.url_slug === profile.url_slug}
       type="profile"
       possibleAccountTypes={profileTypes}
       infoMetadata={infoMetadata}
@@ -148,12 +154,57 @@ function NoProfileFoundLayout() {
 }
 
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
-async function getProfileByUrlIfExists(profileUrl) {
-  return TEMP_FEATURED_DATA.profiles.find(({ url }) => url === profileUrl);
+async function getProfileByUrlIfExists(profileUrl, token) {
+  try {
+    console.log(tokenConfig(token));
+    const resp = await axios.get(
+      process.env.API_URL + "/api/members/?search=" + profileUrl,
+      tokenConfig(token)
+    );
+    if (resp.data.results.length === 0) return null;
+    else {
+      //console.log(resp.data.results[0]);
+      return parseProfile(resp.data.results[0]);
+    }
+  } catch (err) {
+    //console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+const tokenConfig = token => {
+  // Headers
+  const config = {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  };
+
+  // If token, add to headers config
+  if (token) {
+    config.headers["Authorization"] = `Token ${token}`;
+  }
+
+  return config;
+};
+
+function parseProfile(profile) {
+  return {
+    url_slug: profile.url_slug,
+    name: profile.first_name + " " + profile.last_name,
+    image: profile.profile_image,
+    background_image: profile.background_image,
+    info: {
+      location: profile.city + ", " + profile.country,
+      bio: profile.biography,
+      skills: profile.skills,
+      availability: profile.availability
+    }
+  };
 }
 
 async function getProjects(profileUrl) {
-  console.log(profileUrl);
   return TEMP_PROJECT_DATA.projects.filter(
     project => !!project.team.find(m => m.url === profileUrl)
   );
