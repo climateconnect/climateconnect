@@ -4,7 +4,7 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import MultiLevelSelector from "../src/components/shareProject/MultiLevelSelector";
 import { makeStyles } from "@material-ui/core/styles";
 import StepsTracker from "../src/components/general/StepsTracker";
-import project_categories from "../public/data/project_categories.json";
+import project_categories from "../../public/data/project_categories.json";
 
 const useStyles = makeStyles(theme => {
   return {
