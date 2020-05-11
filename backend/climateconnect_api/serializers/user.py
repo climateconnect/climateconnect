@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from climateconnect_api.models import UserProfile
 from climateconnect_api.serializers.common import (
-    AvailabilitySerializer, UserSkillSerializer
+    AvailabilitySerializer, SkillSerializer
 )
 
 
@@ -11,7 +11,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
     availability = AvailabilitySerializer()
-    skills = UserSkillSerializer(many=True)
+    skills = SkillSerializer(many=True)
 
     class Meta:
         model = UserProfile
@@ -36,7 +36,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
     availability = AvailabilitySerializer()
-    skills = UserSkillSerializer(many=True)
+    skills = SkillSerializer(many=True)
 
     class Meta:
         model = UserProfile
@@ -55,6 +55,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_last_name(self, obj):
         return obj.user.last_name
+
 
 class UserProfileStubSerializer(serializers.ModelSerializer):
     first_name = serializers.SerializerMethodField()

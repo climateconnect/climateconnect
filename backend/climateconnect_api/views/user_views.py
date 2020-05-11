@@ -96,13 +96,11 @@ class PersonalProfileView(APIView):
 
 class MemberProfilesView(ListAPIView):
     permission_classes = [AllowAny]
-    # serializer_class = UserProfileSerializer
     pagination_class = PageNumberPagination
     filter_backends = [SearchFilter]
     search_fields = ['url_slug']
 
     def get_serializer_class(self):
-        print(self.request.user.is_authenticated)
         if self.request.user.is_authenticated:
             return UserProfileSerializer
         return UserProfileStubSerializer
