@@ -20,7 +20,8 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.grey[500]
   },
   titleText: {
-    marginLeft: theme.spacing(5)
+    marginLeft: theme.spacing(5),
+    paddingRight: 150
   },
   applyButton: {
     position: "absolute",

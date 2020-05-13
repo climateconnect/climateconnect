@@ -1,26 +1,42 @@
 import React from "react";
-import { List, ListItem, ListItemText, ListItemIcon, Typography } from "@material-ui/core";
+import { List, ListItem, ListItemText, ListItemIcon, Typography, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import CloseIcon from "@material-ui/icons/Close";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+
+import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
 const useStyles = makeStyles(theme => {
   return {
     wrapper: {
       margin: "0 auto",
-      display: "table"
+      display: "table",
+      marginTop: theme.spacing(8),
+      [theme.breakpoints.down("sm")]: {
+        marginTop: theme.spacing(4)
+      }
     },
     list: {
       display: "inline-block",
-      marginTop: theme.spacing(8),
-      marginLeft: theme.spacing(8)
+      marginLeft: theme.spacing(8),
+      [theme.breakpoints.down("md")]: {
+        marginLeft: theme.spacing(0)
+      }
     },
     subList: props => {
       return {
         display: "inline-block",
-        marginTop: theme.spacing(8 + props.offset * 8),
+        marginTop: theme.spacing(props.offset * 8),
         verticalAlign: "top"
       };
+    },
+    narrowScreenSubList: {
+      display: "block",
+      padding: 0,
+      width: "90%",
+      marginLeft: "10%"
     },
     listItem: {
       border: "1px solid black",
@@ -28,12 +44,16 @@ const useStyles = makeStyles(theme => {
       height: theme.spacing(8),
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(1)
-    },
+    },    
     subListItem: {
       borderLeft: 0
-    },
+    },    
     firstItem: {
       borderTop: "1px solid black"
+    },
+    narrowScreenSubListItem: {
+      borderLeft: "1px solid black",
+      borderTop: 0
     },
     borderLeft: {
       borderLeft: "1px solid black"
@@ -50,8 +70,16 @@ const useStyles = makeStyles(theme => {
     selectedWrapper: {
       display: "inline-block",
       verticalAlign: "top",
-      marginTop: theme.spacing(10),
-      marginLeft: theme.spacing(16)
+      marginLeft: theme.spacing(16),
+      [theme.breakpoints.down("md")]: {
+        marginLeft: theme.spacing(2)
+      }
+    },
+    narrowScreenSelectedWrapper: {
+      marginLeft: theme.spacing(2),
+      display: "block",
+      margin: "0 auto",
+      textAlign: "center"
     },
     selectedItemsHeader: {
       fontWeight: "bold"
@@ -71,7 +99,24 @@ const useStyles = makeStyles(theme => {
     },
     listWrapper: {
       display: "inline-block",
-      width: 650
+      width: 650,
+      [theme.breakpoints.down("md")]: {
+        width: 650 - theme.spacing(8)
+      }
+    },
+    narrowScreenListWrapper: {
+      maxWidth: 650 - theme.spacing(8),
+      width: "auto",
+      display: "block",
+      margin: "0 auto"
+    },
+    selectedList: {
+      maxWidth: 350,
+      margin: "0 auto"
+    },
+    divider: {
+      backgroundColor: "black",
+      marginBottom: theme.spacing(1)
     }
   };
 });
@@ -81,7 +126,8 @@ export default function MultiLevelSelector({
   setSelected,
   itemsToSelectFrom,
   maxSelections,
-  itemNamePlural
+  itemNamePlural,
+  isInPopup
 }) {
   const [expanded, setExpanded] = React.useState("agriculture");
 
@@ -94,17 +140,10 @@ export default function MultiLevelSelector({
 
   const onClickSelect = item => {
     if (selected.length >= maxSelections) alert("You can only choose up to 3 " + itemNamePlural);
-    setSelected([...selected, item]);
+    else setSelected([...selected, item]);
   };
 
   const onClickUnselect = item => {
-    console.log("unselecting on click!");
-    console.log(item);
-    console.log(
-      selected
-        .slice(0, selected.indexOf(item))
-        .concat(selected.slice(selected.indexOf(item) + 1, selected.length))
-    );
     setSelected(
       selected
         .slice(0, selected.indexOf(item))
@@ -112,45 +151,105 @@ export default function MultiLevelSelector({
     );
   };
 
+  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
+  console.log(isInPopup);
   return (
     <>
       <div className={classes.wrapper}>
-        <div className={classes.listWrapper}>
-          <ListToChooseFrom
-            itemsToSelectFrom={itemsToSelectFrom}
-            onClickExpand={onClickExpand}
-            expanded={expanded}
-            onClickSelect={onClickSelect}
+        {(isNarrowScreen || isInPopup) && (
+          <>
+            <SelectedList
+              selected={selected}
+              itemNamePlural={itemNamePlural}
+              maxSelections={maxSelections}
+              onClickUnselect={onClickUnselect}
+              className={`${classes.selectedWrapper} ${(isNarrowScreen || isInPopup) && classes.narrowScreenSelectedWrapper}`}
+            />
+            {
+              selected.length>0 && <Divider className={classes.divider}/>
+            }
+          </>
+        )}
+        <ListToChooseWrapper
+          itemsToSelectFrom={itemsToSelectFrom}
+          onClickExpand={onClickExpand}
+          expanded={expanded}
+          onClickSelect={onClickSelect}
+          selected={selected}
+          isNarrowScreen={isNarrowScreen}
+          isInPopup={isInPopup}
+          className={`${classes.listWrapper} ${(isNarrowScreen || isInPopup) &&
+            classes.narrowScreenListWrapper}`}
+        />
+        {!(isNarrowScreen || isInPopup) && (
+          <SelectedList
             selected={selected}
+            itemNamePlural={itemNamePlural}
+            maxSelections={maxSelections}
+            onClickUnselect={onClickUnselect}
+            className={classes.selectedWrapper}
           />
-        </div>
-        <div className={classes.selectedWrapper}>
-          <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
-            {selected.length > 0
-              ? "Selected " + itemNamePlural
-              : "Select up to " + maxSelections + " " + itemNamePlural}
-          </Typography>
-          <List>
-            {selected.map((item, index) => (
-              <ListItem
-                key={item.key + "selected"}
-                button
-                className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
-                  classes.selectedItem
-                }`}
-                onClick={() => onClickUnselect(item)}
-                disableRipple
-              >
-                <ListItemText>{item.name}</ListItemText>
-                <ListItemIcon className={classes.selectedItemIcon}>
-                  <CloseIcon />
-                </ListItemIcon>
-              </ListItem>
-            ))}
-          </List>
-        </div>
+        )}
       </div>
     </>
+  );
+}
+
+function ListToChooseWrapper({
+  itemsToSelectFrom,
+  onClickExpand,
+  expanded,
+  onClickSelect,
+  selected,
+  className,
+  isInPopup,
+  isNarrowScreen
+}) {
+  return (
+    <div className={className}>
+      <ListToChooseFrom
+        itemsToSelectFrom={itemsToSelectFrom}
+        onClickExpand={onClickExpand}
+        expanded={expanded}
+        onClickSelect={onClickSelect}
+        selected={selected}
+        className={className}
+        isInPopup={isInPopup}
+        isNarrowScreen={isNarrowScreen}
+      />
+    </div>
+  );
+}
+
+function SelectedList({ selected, itemNamePlural, maxSelections, className, onClickUnselect }) {
+  const classes = useStyles({});
+
+  return (
+    <div className={className}>
+      <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
+        {selected.length > 0
+          ? "Selected " + itemNamePlural
+          : "Select up to " + maxSelections + " " + itemNamePlural + "!"}
+      </Typography>
+      <List className={classes.selectedList}>
+        {selected.map((item, index) => (
+          <ListItem
+            key={item.key + "selected"}
+            button
+            className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
+              classes.selectedItem
+            }`}
+            onClick={() => onClickUnselect(item)}
+            disableRipple
+          >
+            <ListItemText>{item.name}</ListItemText>
+            <ListItemIcon className={classes.selectedItemIcon}>
+              <CloseIcon />
+            </ListItemIcon>
+          </ListItem>
+        ))}
+      </List>
+    </div>
   );
 }
 
@@ -163,54 +262,90 @@ function ListToChooseFrom({
   onClickExpand,
   expanded,
   onClickSelect,
-  selected
+  selected,
+  isNarrowScreen,
+  isInPopup
 }) {
+  if(isSubList && (expanded === parentEl.key)){
+    console.log(isNarrowScreen);
+    console.log(isInPopup);
+  }
   const index = isSubList ? parentList.indexOf(parentEl) : 0;
   const subListHeightCorrection = isSubList
     ? Math.min(index, Math.max(0, itemsToSelectFrom.length - parentList.length + index))
     : 0;
-  const offset = index - subListHeightCorrection;
-
+  const offset = (isNarrowScreen || isInPopup) ? 0 : index - subListHeightCorrection;
   const classes = useStyles({ offset: offset });
   return (
     <>
       <List
-        className={`${!isSubList && classes.list} ${isSubList &&
-          (expanded === parentEl.key ? classes.subList : classes.hidden)} ${className}`}
+        className={`${!isSubList && classes.list} 
+                    ${isSubList && (expanded === parentEl.key ? 
+                      ((isNarrowScreen || isInPopup) ? classes.narrowScreenSubList : classes.subList) 
+                      : classes.hidden)} 
+                    ${className}`}
       >
         {itemsToSelectFrom.map((item, index) => (
-          <ListItem
-            button
-            disabled={selected.includes(item)}
-            classes={{
-              root: `${classes.listItem} 
-                      ${index == 0 && classes.firstItem} 
-                      ${isSubList && classes.subListItem} 
-                      ${isSubList && index >= parentList.length && classes.borderLeft}`,
-              selected: classes.expanded
-            }}
-            key={item.key}
-            selected={expanded === item.key}
-            onClick={() => {
-              if (item.subcategories && item.subcategories.length) return onClickExpand(item.key);
-              else return onClickSelect(item);
-            }}
-            disableRipple
-          >
-            <ListItemText primary={item.name} />
-            {item.subcategories && item.subcategories.length ? (
-              <ListItemIcon>
-                <ArrowForwardIosIcon
-                  className={`${classes.icon} ${expanded === item.key && classes.expanded}`}
+          <>
+            <ListItem
+              button
+              disabled={selected.includes(item)}
+              classes={{
+                root: `${classes.listItem} 
+                        ${index == 0 && classes.firstItem} 
+                        ${isSubList && classes.subListItem} 
+                        ${(isSubList && (isNarrowScreen || isInPopup)) && classes.narrowScreenSubListItem}
+                        ${isSubList && index >= parentList.length && classes.borderLeft}`,
+                selected: classes.expanded
+              }}
+              key={item.key}
+              selected={expanded === item.key}
+              onClick={() => {
+                if (item.subcategories && item.subcategories.length) return onClickExpand(item.key);
+                else return onClickSelect(item);
+              }}
+              disableRipple
+            >
+              <ListItemText primary={item.name} />
+              {item.subcategories && item.subcategories.length ? (
+                <ListItemIcon>
+                  { (isNarrowScreen || isInPopup) ?
+                    (
+                      expanded === item.key ? 
+                      <ExpandLessIcon className={`${classes.icon} ${expanded === item.key && classes.expanded}`}/>
+                      :
+                      <ExpandMoreIcon className={`${classes.icon} ${expanded === item.key && classes.expanded}`} />
+                    )
+                    :
+                    <ArrowForwardIosIcon
+                      className={`${classes.icon} ${expanded === item.key && classes.expanded}`}
+                    />
+                  }
+                </ListItemIcon>
+              ) : (
+                ""
+              )}
+            </ListItem>
+            {(isNarrowScreen || isInPopup) && item.subcategories && item.subcategories.length ? (
+                <ListToChooseFrom
+                  isSubList
+                  parentEl={item}
+                  parentList={itemsToSelectFrom}
+                  itemsToSelectFrom={item.subcategories}
+                  key={item.key+"sublist"}
+                  expanded={expanded}
+                  onClickExpand={onClickExpand}
+                  selected={selected}
+                  onClickSelect={onClickSelect}
+                  isNarrowScreen={isNarrowScreen}
+                  isInPopup={isInPopup}
                 />
-              </ListItemIcon>
-            ) : (
-              ""
-            )}
-          </ListItem>
+              ) : <></>
+            }
+          </>
         ))}
       </List>
-      {itemsToSelectFrom.map(item => {
+      {!(isNarrowScreen || isInPopup) && itemsToSelectFrom.map(item => {
         return item.subcategories && item.subcategories.length ? (
           <ListToChooseFrom
             isSubList

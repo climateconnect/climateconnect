@@ -3,11 +3,10 @@ import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 
-export default function DatePicker({ label, date, handleChange, className }) {
+export default function DatePicker({ label, date, handleChange, className, minDate, maxDate }) {
   const handleDateChange = selectedDate => {
     handleChange(selectedDate);
   };
-
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <KeyboardDatePicker
@@ -17,11 +16,14 @@ export default function DatePicker({ label, date, handleChange, className }) {
         format="MM/dd/yyyy"
         margin="normal"
         label={label}
-        value={date}
+        value={date ? date : null}
         onChange={handleDateChange}
         KeyboardButtonProps={{
           "aria-label": "change date"
         }}
+        maxDate={maxDate ? maxDate : null}
+        minDate={minDate ? minDate : null}
+        autoOk
       />
     </MuiPickersUtilsProvider>
   );

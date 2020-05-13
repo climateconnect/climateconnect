@@ -16,16 +16,16 @@ export default function Share({ project, setProject, goToNextStep }) {
       required: true,
       label: "Organization",
       select: {
-        values: organizationOptions
+        values: organizationOptions,
+        defaultValue: project.parent_organization
       },
-      key: "organization",
-      defaultValue: project.parent_organization
+      key: "parent_organization"
     },
     {
       required: true,
       label: "Project name",
       type: "text",
-      key: "projectname",
+      key: "name",
       value: project.name
     },
     {
@@ -50,6 +50,7 @@ export default function Share({ project, setProject, goToNextStep }) {
 
   const onSubmit = (event, values) => {
     event.preventDefault();
+    console.log(values);
     setProject({ ...project, ...values });
     goToNextStep();
   };

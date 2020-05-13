@@ -1,18 +1,16 @@
 import React from "react";
-import { Typography, Container, Button, TextField } from "@material-ui/core";
-import WideLayout from "../src/components/layouts/WideLayout";
-import RadioButtons from "../src/components/general/RadioButtons";
+import { Typography, Container, Button, TextField, List, Chip, Tooltip, IconButton } from "@material-ui/core";
+import RadioButtons from "../general/RadioButtons";
 import { makeStyles } from "@material-ui/core/styles";
-import StepsTracker from "../src/components/general/StepsTracker";
-import DatePicker from "../src/components/general/DatePicker";
-import project_status_metadata from "../public/data/project_status_metadata";
+import DatePicker from "../general/DatePicker";
+import project_status_metadata from "../../../public/data/project_status_metadata";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
-import UploadImageDialog from "../src/components/dialogs/UploadImageDialog";
+import UploadImageDialog from "../dialogs/UploadImageDialog";
+import AddSkillsDialog from "../dialogs/AddSkillsDialog";
 import Switch from "@material-ui/core/Switch";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import theme from "../src/themes/theme";
+import EnterTextDialog from '../dialogs/EnterTextDialog';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 
-const DEFAULT_STATUS = "inprogress";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
 const useStyles = makeStyles(theme => {
@@ -27,7 +25,8 @@ const useStyles = makeStyles(theme => {
       margin: "0 auto"
     },
     subHeader: {
-      marginBottom: theme.spacing(4)
+      marginBottom: theme.spacing(4),
+      fontSize: 20
     },
     inlineSubHeader: {
       display: "inline-block",
@@ -113,35 +112,60 @@ const useStyles = makeStyles(theme => {
     },
     navigationButtonWrapper: {
       marginTop: theme.spacing(10)
+    },
+    skill: {
+      display: "flex",
+      border: "1px solid black",
+      height: theme.spacing(5),
+      width: 220,
+      marginRight: theme.spacing(1),
+      background: "none",
+      borderRadius: 0,
+      fontSize: 16
+    },
+    flexContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      padding: 0,
+      marginBottom: theme.spacing(3)
+    },
+    tooltip: {
+      fontSize: 16
     }
   };
 });
 
-export default function EnterDetails({ projectData }) {
-  const [project, setProject] = React.useState(projectData ? projectData : defaultProject);
-  const [tempImage, setTempImage] = React.useState(project.image);
-  const [open, setOpen] = React.useState({ avatarDialog: false });
-  const classes = useStyles(project);
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
+const helpTexts = {
+  addPhoto: "Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+  shortSummary: "Lorem ipsum",
+  projectDescription: "Describe your project",
+  collaboration: "Here you can collaborate",
+  addSkills: "Add skills that collaborators should/could have",
+  addConnections: "Add connections that would be helpful for collaborators to have. Specifically this could be connections to organizations that could help accelerate your project."
+}
 
-  const steps = [
-    {
-      key: "share",
-      text: "share project"
-    },
-    {
-      key: "category",
-      text: "project category"
-    },
-    {
-      key: "details",
-      text: "project details"
-    },
-    {
-      key: "team",
-      text: "Team"
-    }
-  ];
+export default function EnterDetails({
+  projectData,
+  setProjectData,
+  goToNextStep,
+  goToPreviousStep
+}) {
+  const [project, setProject] = React.useState(projectData);
+  const [tempImage, setTempImage] = React.useState(project.image);
+  const [open, setOpen] = React.useState({
+    avatarDialog: false,
+    skillsDialog: false,
+    connectionsDialog: false
+  });
+  const classes = useStyles(project);
+  const refs = {
+    inputFile: React.useRef(null),
+    shortSummary: React.useRef(null),
+    projectDescription: React.useRef(null),
+    allowCollaboration: React.useRef(null),
+    skills: React.useRef(null),
+    connections: React.useRef(null)
+  };
 
   const values = project_status_metadata.map(status => ({
     ...status,
@@ -150,7 +174,20 @@ export default function EnterDetails({ projectData }) {
 
   const statusesWithEndDate = ["cancelled", "finished"];
 
-  const inputFile = React.useRef(null);
+  const onClickPreviousStep = () => {
+    setProject({ ...projectData, ...project });
+    goToPreviousStep();
+  };
+
+  const onClickNextStep = () => {
+    if (isProjectDataValid(project)) 
+      setProjectData({ ...projectData, ...project });
+    goToNextStep();
+  };
+
+  const isProjectDataValid = data => {
+    return true;
+  };
 
   const onStatusRadioChange = newStatus => {
     setProject({ ...project, status: newStatus });
@@ -176,14 +213,21 @@ export default function EnterDetails({ projectData }) {
     const file = event.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
-    console.log(URL.createObjectURL(file));
     setTempImage(URL.createObjectURL(file));
     handleDialogClickOpen("avatarDialog");
   };
 
+  const onClickSkillsDialogOpen = () => {
+    setOpen({ ...open, skillsDialog: true });
+  };
+
+  const onClickConnectionsDialogOpen = () => {
+    setOpen({ ...open, connectionsDialog: true });
+  };
+
   const onUploadImageClick = event => {
     event.preventDefault();
-    inputFile.current.click();
+    refs.inputFile.current.click();
   };
 
   const onAllowCollaboratorsChange = event => {
@@ -196,26 +240,44 @@ export default function EnterDetails({ projectData }) {
 
   const handleAvatarDialogClose = image => {
     setOpen({ ...open, avatarDialog: false });
-    console.log(image);
-    if (image) console.log(image.toDataURL());
     if (image && image instanceof HTMLCanvasElement) {
       setProject({ ...project, image: image.toDataURL() });
     }
   };
 
-  //TODO: remove default values
+  const handleSkillsDialogClose = (skills) => {
+    console.log(skills)
+    if(skills)
+      setProject({ ...project, skills: skills })
+    setOpen({ ...open, ["skillsDialog"]: false})
+  }
+
+  const handleSkillDelete = (skill) => {
+    setProject({...project, skills: project.skills.slice(0, project.skills.indexOf(skill))
+      .concat(project.skills.slice(project.skills.indexOf(skill) + 1, project.skills.length))})
+  }
+
+  const handleConnectionsDialogClose = (connection) => {
+    if(project.connections && project.connections.includes(connection))
+      alert("You can not add the same connection twice.")
+    else {
+      if(connection)
+        setProject({ ...project, connections: [...project.connections, connection] })
+      setOpen({...open, connectionsDialog: false})
+    }    
+  }
+
+  const handleConnectionDelete = (connection) => {
+    console.log(project.connections)
+    console.log(connection)
+    setProject({...project, connections: project.connections.slice(0, project.connections.indexOf(connection))
+      .concat(project.connections.slice(project.connections.indexOf(connection) + 1, project.connections.length))})
+  }
+
+  console.log(project)
+
   return (
-    <WideLayout title="Share a project" hideHeadline={true}>
-      <StepsTracker
-        grayBackground={true}
-        className={classes.stepsTracker}
-        steps={steps}
-        activeStep={steps[2].key}
-        onlyDisplayActiveStep={isSmallScreen}
-      />
-      <Typography variant="h4" color="primary" className={classes.headline}>
-        {project.name}
-      </Typography>
+    <>
       <Container maxWidth="lg">
         <Typography
           component="h2"
@@ -230,11 +292,7 @@ export default function EnterDetails({ projectData }) {
             Your project is
           </Typography>
           <div className={classes.inlineBlock}>
-            <RadioButtons
-              defaultValue={DEFAULT_STATUS}
-              onChange={onStatusRadioChange}
-              values={values}
-            />
+            <RadioButtons value={project.status} onChange={onStatusRadioChange} values={values} />
           </div>
         </div>
         <div>
@@ -254,6 +312,7 @@ export default function EnterDetails({ projectData }) {
                 label="End date"
                 date={project.end_date}
                 handleChange={onEndDateChange}
+                minDate={project.start_date && new Date(project.start_date)}
               />
             )}
           </div>
@@ -269,12 +328,17 @@ export default function EnterDetails({ projectData }) {
               className={classes.subHeader}
             >
               Add photo*
-            </Typography>
+              <Tooltip title={helpTexts.addPhoto} className={classes.tooltip}>
+                <IconButton>
+                  <HelpOutlineIcon />
+                </IconButton>
+              </Tooltip>
+            </Typography>            
             <label htmlFor="photo" className={classes.imageZoneWrapper}>
               <input
                 type="file"
                 name="photo"
-                ref={inputFile}
+                ref={refs.inputFile}
                 id="photo"
                 style={{ display: "none" }}
                 onChange={onImageChange}
@@ -304,12 +368,18 @@ export default function EnterDetails({ projectData }) {
               className={classes.subHeader}
             >
               Short summary*
+              <Tooltip title={helpTexts.shortSummary} className={classes.tooltip}>
+                <IconButton>
+                  <HelpOutlineIcon />
+                </IconButton>
+              </Tooltip>
             </Typography>
             <div className={classes.shortDescriptionWrapper}>
               <TextField
                 variant="outlined"
                 fullWidth
                 multiline
+                ref={refs.shortSummary}
                 onChange={event => onDescriptionChange(event, "short_description")}
                 className={classes.shortDescription}
                 InputProps={{
@@ -335,12 +405,18 @@ export default function EnterDetails({ projectData }) {
             className={classes.subHeader}
           >
             Project description
+            <Tooltip title={helpTexts.projectDescription} className={classes.tooltip}>
+              <IconButton>
+                <HelpOutlineIcon />
+              </IconButton>
+            </Tooltip>
           </Typography>
           <TextField
             variant="outlined"
             fullWidth
             multiline
             rows={9}
+            ref={refs.projectDescription}
             onChange={event => onDescriptionChange(event, "description")}
             helperText="Describe your project in detail. Please only use English!"
             placeholder={`Describe your project in more detail.\n\n-What are you trying to achieve?\n-How are you trying to achieve it\n-What were the biggest challenges?\n-What insights have you gained during the implementation?`}
@@ -355,6 +431,11 @@ export default function EnterDetails({ projectData }) {
             className={classes.subHeader}
           >
             Allow collaboration on your project?
+            <Tooltip title={helpTexts.collaboration} className={classes.tooltip}>
+                <IconButton>
+                  <HelpOutlineIcon />
+                </IconButton>
+              </Tooltip>
           </Typography>
           <Switch
             checked={project.collaborators_welcome}
@@ -362,6 +443,7 @@ export default function EnterDetails({ projectData }) {
             name="checkedA"
             inputProps={{ "aria-label": "secondary checkbox" }}
             color="primary"
+            ref={refs.allowCollaboration}
           />
         </div>
         {project.collaborators_welcome && (
@@ -374,10 +456,30 @@ export default function EnterDetails({ projectData }) {
                 className={classes.subHeader}
               >
                 Add skills that would be beneficial for collaborators to have
+                <Tooltip title={helpTexts.addSkills} className={classes.tooltip}>
+                <IconButton>
+                  <HelpOutlineIcon />
+                </IconButton>
+              </Tooltip>
               </Typography>
-              <Button variant="contained" color="primary">
-                Add Skill
-              </Button>
+              <div>
+                {project.skills && 
+                  (<List className={classes.flexContainer}>
+                    {project.skills.map(skill => (
+                      <Chip key={skill.key} label={skill.name} className={classes.skill} onDelete={() => handleSkillDelete(skill)}/>
+                    ))}
+                  </List>)
+                }
+                <Button variant="contained" color="primary" onClick={onClickSkillsDialogOpen}>
+                  {
+                    (project.skills && project.skills.length) ?
+                      "Edit skills"
+                    :
+                      "Add Skills"
+                  }
+                  
+                </Button>
+              </div>
             </div>
             <div className={classes.block}>
               <Typography
@@ -387,18 +489,35 @@ export default function EnterDetails({ projectData }) {
                 className={classes.subHeader}
               >
                 Add connections that would be beneficial for collaborators to have
+                <Tooltip title={helpTexts.addConnections} className={classes.tooltip}>
+                <IconButton>
+                  <HelpOutlineIcon />
+                </IconButton>
+              </Tooltip>
               </Typography>
-              <Button variant="contained" color="primary">
-                Add Connection
+              {project.connections && 
+                (<List className={classes.flexContainer}>
+                  {project.connections.map(connection => (
+                    <Chip key={connection} label={connection} className={classes.skill} onDelete={() => handleConnectionDelete(connection)} />
+                  ))}
+                </List>)
+              }
+              <Button variant="contained" color="primary" onClick={onClickConnectionsDialogOpen}>
+                Add Connections
               </Button>
             </div>
           </>
         )}
         <div className={`${classes.block} ${classes.navigationButtonWrapper}`}>
-          <Button variant="contained" className={classes.backButton}>
+          <Button variant="contained" className={classes.backButton} onClick={onClickPreviousStep}>
             Back
           </Button>
-          <Button variant="contained" className={classes.nextStepButton} color="primary">
+          <Button
+            variant="contained"
+            className={classes.nextStepButton}
+            onClick={onClickNextStep}
+            color="primary"
+          >
             Next Step
           </Button>
         </div>
@@ -411,12 +530,19 @@ export default function EnterDetails({ projectData }) {
         height={300}
         ratio={16 / 9}
       />
-    </WideLayout>
+      <AddSkillsDialog 
+        open={open.skillsDialog} 
+        onClose={handleSkillsDialogClose}
+        skills={project.skills}
+      />
+      <EnterTextDialog 
+        open={open.connectionsDialog} 
+        onClose={handleConnectionsDialogClose}
+        maxLength={25}
+        applyText="Add"
+        inputLabel="Connection"
+        title="Add a helpful connection"
+      />
+    </>
   );
 }
-
-const defaultProject = {
-  name: "CO2-Labels for University Canteen",
-  status: DEFAULT_STATUS,
-  collaborators_welcome: true
-};

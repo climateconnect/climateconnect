@@ -27,15 +27,25 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function Create({ project, setProject, goToNextStep, goToPreviousStep }) {
+export default function SelectCategory({ project, setProject, goToNextStep, goToPreviousStep }) {
   const classes = useStyles();
+  console.log(project.categories);
   const [selectedCategories, setSelectedCategories] = React.useState(
     project.categories ? project.categories : []
   );
 
   const onClickNextStep = () => {
-    setProject;
-    goToNextStep();
+    if (selectedCategories.length <= 0) alert("Please choose at least one category!");
+    else if (selectedCategories.length > 3) alert("You can only choose up to 3 categories.");
+    else {
+      setProject({ ...project, categories: selectedCategories });
+      goToNextStep();
+    }
+  };
+
+  const onClickPreviousStep = () => {
+    setProject({ ...project, categories: selectedCategories });
+    goToPreviousStep();
   };
 
   return (
@@ -50,7 +60,7 @@ export default function Create({ project, setProject, goToNextStep, goToPrevious
         />
       </div>
       <div className={`${classes.block} ${classes.navigationButtonWrapper}`}>
-        <Button variant="contained" className={classes.backButton} onClick={goToPreviousStep}>
+        <Button variant="contained" className={classes.backButton} onClick={onClickPreviousStep}>
           Back
         </Button>
         <Button
