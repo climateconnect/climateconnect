@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "gcp-build": "yarn build",
+    "gcp-build": "IS_BUILDING_ON_GOOGLE_CLOUD=1 yarn build",
     "pretest": "yarn run lint",
     "format": "prettier --write '**/*.{js,jsx,json,md}'",
     "lint": "eslint .",
@@ -48,6 +48,7 @@
     "eslint": "^6.6.0",
     "eslint-plugin-react": "^7.16.0",
     "jest": "^24.9.0",
+    "js-yaml": "^3.13.1",
     "prettier": "^1.18.2",
     "pretty-quick": "^2.0.0"
   }
