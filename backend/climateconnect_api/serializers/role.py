@@ -6,4 +6,4 @@ from climateconnect_api.models import Role
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
-        fields = '__all__'
+        exclude = ('created_at', 'updated_at')
