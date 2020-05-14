@@ -5,7 +5,7 @@ from rest_framework.filters import SearchFilter
 
 from organization.models import Project
 from organization.serializers.project import (
-    ProjectSerializer, ProjectMinimalSerializer
+    ProjectSerializer, ProjectMinimalSerializer, ProjectMemberSerializer
 )
 
 
@@ -31,3 +31,16 @@ class ProjectAPIView(ListAPIView):
 
     def get_queryset(self):
         return Project.objects.filter(id=int(self.kwargs['pk']))
+
+
+class ListProjectMembersView(ListAPIView):
+    lookup_field = 'pk'
+    serializer_class = ProjectMemberSerializer
+    pagination_class = PageNumberPagination
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        project = Project.objects.get(id=int(self.kwargs['pk']))
+
+        return project.project_member.all()
+
