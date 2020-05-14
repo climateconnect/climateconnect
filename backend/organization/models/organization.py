@@ -120,4 +120,4 @@ class Organization(models.Model):
         verbose_name_plural = "Organizations"
 
     def __str__(self):
-        return "%s (%d)" % (self.name, self.id)
+        return "%s (%d)" % (self.name, self.pk)

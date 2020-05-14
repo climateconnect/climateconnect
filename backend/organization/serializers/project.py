@@ -10,3 +10,11 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         exclude = ('created_at', 'updated_at')
+
+
+class ProjectMinimalSerializer(serializers.ModelSerializer):
+    skills = SkillSerializer(many=True)
+
+    class Meta:
+        model = Project
+        fields = ('name', 'url_slug', 'skills', 'image', 'status')
