@@ -21,8 +21,8 @@ export default function DatePicker({ label, date, handleChange, className, minDa
         KeyboardButtonProps={{
           "aria-label": "change date"
         }}
-        maxDate={maxDate ? maxDate : null}
-        minDate={minDate ? minDate : null}
+        maxDate={maxDate && maxDate}
+        minDate={minDate && minDate}
         autoOk
       />
     </MuiPickersUtilsProvider>

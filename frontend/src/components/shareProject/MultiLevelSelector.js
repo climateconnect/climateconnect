@@ -178,8 +178,7 @@ export default function MultiLevelSelector({
           selected={selected}
           isNarrowScreen={isNarrowScreen}
           isInPopup={isInPopup}
-          className={`${classes.listWrapper} ${(isNarrowScreen || isInPopup) &&
-            classes.narrowScreenListWrapper}`}
+          className={classes.listWrapper}
         />
         {!(isNarrowScreen || isInPopup) && (
           <SelectedList
@@ -205,6 +204,7 @@ function ListToChooseWrapper({
   isInPopup,
   isNarrowScreen
 }) {
+  const classes = useStyles();
   return (
     <div className={className}>
       <ListToChooseFrom
@@ -213,7 +213,8 @@ function ListToChooseWrapper({
         expanded={expanded}
         onClickSelect={onClickSelect}
         selected={selected}
-        className={className}
+        className={`${(isNarrowScreen || isInPopup) &&
+          classes.narrowScreenListWrapper}`}
         isInPopup={isInPopup}
         isNarrowScreen={isNarrowScreen}
       />

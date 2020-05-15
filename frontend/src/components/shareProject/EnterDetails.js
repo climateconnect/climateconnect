@@ -137,8 +137,8 @@ const useStyles = makeStyles(theme => {
 
 const helpTexts = {
   addPhoto: "Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  shortSummary: "Lorem ipsum",
-  projectDescription: "Describe your project",
+  short_description: "Lorem ipsum, my friend",
+  description: "Describe your project",
   collaboration: "Here you can collaborate",
   addSkills: "Add skills that collaborators should/could have",
   addConnections: "Add connections that would be helpful for collaborators to have. Specifically this could be connections to organizations that could help accelerate your project."
@@ -158,14 +158,34 @@ export default function EnterDetails({
     connectionsDialog: false
   });
   const classes = useStyles(project);
-  const refs = {
-    inputFile: React.useRef(null),
-    shortSummary: React.useRef(null),
-    projectDescription: React.useRef(null),
-    allowCollaboration: React.useRef(null),
-    skills: React.useRef(null),
-    connections: React.useRef(null)
-  };
+  const inputFileRef = React.useRef(null)
+  const shortDescriptionRef = React.useRef(null)
+  const [errors, setErrors] = React.useState({
+    inputFile: {
+      error: false,
+      errorMessage: null
+    },
+    short_description: {
+      error: false,
+      errorMessage: null
+    },
+    description: {
+      error: false,
+      errorMessage: null
+    },
+    image: {
+      error: false,
+      errorMessage: null
+    },
+    start_date: {
+      error: false,
+      errorMessage: null
+    },
+    end_date: {
+      error: false,
+      errorMessage: null
+    }
+  });
 
   const values = project_status_metadata.map(status => ({
     ...status,
@@ -180,13 +200,57 @@ export default function EnterDetails({
   };
 
   const onClickNextStep = () => {
-    if (isProjectDataValid(project)) 
+    if (isProjectDataValid(project)) {
       setProjectData({ ...projectData, ...project });
-    goToNextStep();
+      goToNextStep();
+    } else {
+      console.log('There might have been an error, not sure!')
+    }
   };
 
-  const isProjectDataValid = data => {
-    return true;
+  const validation = {
+    short_description: {
+      name: "Short summary",
+      maxLength: 240,
+      required: true
+    },
+    description: {
+      name: "Description",
+      maxLength: 4000,
+      required: true
+    },
+    image: {
+      name: "Photo",
+      required: true
+    },
+    start_date: {
+      name: "Start date",
+      required: true
+    },
+    end_date: {
+      name: "End date",
+      required: statusesWithEndDate.includes(project.status),
+      customRequiredError: "Please set an end date or change the project status"
+    }
+  }
+
+  const isProjectDataValid = () => {
+    let valid = true;
+    const fieldErrors = {}
+    Object.keys(validation).map(key => {   
+      const prop = validation[key];      
+      if(prop.required && !project.prop){
+        //Validation.validate(shortDescriptionRef.current)
+        valid = false;
+        if(prop.customRequiredError)
+          fieldErrors[key] = {error: true, errorMessage: prop.customRequiredError}
+        else
+          fieldErrors[key] = {error: true, errorMessage: "It is required to add a "+prop.name}
+      }      
+    })
+    setErrors({...errors, ...fieldErrors})
+    console.log(errors)
+    return valid
   };
 
   const onStatusRadioChange = newStatus => {
@@ -202,7 +266,8 @@ export default function EnterDetails({
   };
 
   const onDescriptionChange = (event, descriptionType) => {
-    setProject({ ...project, [descriptionType]: event.target.value });
+    if(event.target.value && (event.target.value.length <= validation[descriptionType].maxLength))
+      setProject({ ...project, [descriptionType]: event.target.value });
   };
 
   const handleFileInputClick = () => {};
@@ -227,7 +292,7 @@ export default function EnterDetails({
 
   const onUploadImageClick = event => {
     event.preventDefault();
-    refs.inputFile.current.click();
+    inputFileRef.current.click();
   };
 
   const onAllowCollaboratorsChange = event => {
@@ -274,7 +339,7 @@ export default function EnterDetails({
       .concat(project.connections.slice(project.connections.indexOf(connection) + 1, project.connections.length))})
   }
 
-  console.log(project)
+  console.log(errors.image.error)
 
   return (
     <>
@@ -300,6 +365,7 @@ export default function EnterDetails({
             Date
           </Typography>
           <div className={classes.inlineBlock}>
+            {errors.start_date.error && <Typography color="error" className={classes.error}>{errors.start_date.errorMessage}</Typography>}
             <DatePicker
               className={classes.datePicker}
               label="Start date"
@@ -307,13 +373,16 @@ export default function EnterDetails({
               handleChange={onStartDateChange}
             />
             {statusesWithEndDate.includes(project.status) && (
-              <DatePicker
-                className={classes.datePicker}
-                label="End date"
-                date={project.end_date}
-                handleChange={onEndDateChange}
-                minDate={project.start_date && new Date(project.start_date)}
-              />
+              <>
+                {errors.end_date.error && <Typography color="error" className={classes.error}>{errors.end_date.errorMessage}</Typography>}
+                <DatePicker
+                  className={classes.datePicker}
+                  label="End date"
+                  date={project.end_date}
+                  handleChange={onEndDateChange}
+                  minDate={project.start_date && new Date(project.start_date)}
+                />
+              </>
             )}
           </div>
         </div>
@@ -338,7 +407,7 @@ export default function EnterDetails({
               <input
                 type="file"
                 name="photo"
-                ref={refs.inputFile}
+                ref={inputFileRef}
                 id="photo"
                 style={{ display: "none" }}
                 onChange={onImageChange}
@@ -346,6 +415,7 @@ export default function EnterDetails({
                 onClick={() => handleFileInputClick()}
                 onSubmit={() => handleFileSubmit(event)}
               />
+              {errors.image.error && (<Typography className={classes.error} color="error">{errors.image.errorMessage}</Typography>)}              
               <div className={classes.imageZone}>
                 <div className={classes.addPhotoWrapper}>
                   <div className={classes.addPhotoContainer}>
@@ -368,27 +438,30 @@ export default function EnterDetails({
               className={classes.subHeader}
             >
               Short summary*
-              <Tooltip title={helpTexts.shortSummary} className={classes.tooltip}>
+              <Tooltip title={helpTexts.short_description} className={classes.tooltip}>
                 <IconButton>
                   <HelpOutlineIcon />
                 </IconButton>
               </Tooltip>
             </Typography>
+            {errors.short_description.error && <Typography color="error" className={classes.error}>{errors.short_description.errorMessage}</Typography>}
             <div className={classes.shortDescriptionWrapper}>
               <TextField
                 variant="outlined"
                 fullWidth
                 multiline
-                ref={refs.shortSummary}
+                helperText={"Briefly summarise what you are doing (up to 240 characters)\n\nPlease only use English!"}
+                error={errors.short_description.error}
+                ref={shortDescriptionRef}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 onChange={event => onDescriptionChange(event, "short_description")}
                 className={classes.shortDescription}
                 InputProps={{
                   classes: { root: classes.fullHeight, inputMultiline: classes.fullHeight }
                 }}
                 placeholder={
-                  "Briefly summarise what you are doing (up to 240 characters)\n\nPlease only use English!"
-                }
-                helperText={
                   "Briefly summarise what you are doing (up to 240 characters)\n\nPlease only use English!"
                 }
                 rows={2}
@@ -405,20 +478,21 @@ export default function EnterDetails({
             className={classes.subHeader}
           >
             Project description
-            <Tooltip title={helpTexts.projectDescription} className={classes.tooltip}>
+            <Tooltip title={helpTexts.description} className={classes.tooltip}>
               <IconButton>
                 <HelpOutlineIcon />
               </IconButton>
             </Tooltip>
           </Typography>
+          {errors.description.error && <Typography color="error" className={classes.error}>{errors.description.errorMessage}</Typography>}
           <TextField
             variant="outlined"
             fullWidth
             multiline
             rows={9}
-            ref={refs.projectDescription}
+            error={errors.description.error}
             onChange={event => onDescriptionChange(event, "description")}
-            helperText="Describe your project in detail. Please only use English!"
+            helperText= {"Describe your project in detail. Please only use English!"}
             placeholder={`Describe your project in more detail.\n\n-What are you trying to achieve?\n-How are you trying to achieve it\n-What were the biggest challenges?\n-What insights have you gained during the implementation?`}
             value={project.description}
           />
@@ -443,7 +517,6 @@ export default function EnterDetails({
             name="checkedA"
             inputProps={{ "aria-label": "secondary checkbox" }}
             color="primary"
-            ref={refs.allowCollaboration}
           />
         </div>
         {project.collaborators_welcome && (
