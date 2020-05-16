@@ -47,7 +47,7 @@ const steps = [
 export default function Share() {
   const classes = useStyles();
   const [project, setProject] = React.useState(defaultProjectValues);
-  const [curStep, setCurStep] = React.useState(steps[2]);
+  const [curStep, setCurStep] = React.useState(steps[0]);
 
   const goToNextStep = () => {
     setCurStep(steps[steps.indexOf(curStep) + 1]);
@@ -92,16 +92,8 @@ export default function Share() {
 }
 
 const defaultProjectValues = {
-  name: "Climate Connect",
-  parent_organization: "Climate Connect",
-  city: "Erlangen",
-  country: "Germany",
   collaborators_welcome: true,
   status: DEFAULT_STATUS,
-  skills: [
-    {key: "accounting", name: "Accounting"},
-    {key: "bookkeeping", name: "Bookkeeping"},
-    {key: "networking", name: "Networking"}
-  ],
+  skills: [],
   connections: []
 };
