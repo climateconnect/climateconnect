@@ -50,7 +50,6 @@ export default function Share({ project, setProject, goToNextStep }) {
 
   const onSubmit = (event, values) => {
     event.preventDefault();
-    console.log(values);
     setProject({ ...project, ...values });
     goToNextStep();
   };

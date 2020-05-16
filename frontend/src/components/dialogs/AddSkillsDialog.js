@@ -8,7 +8,7 @@ export default function AddSkillsDialog({ skills, onClose, open }) {
   const [selectedSkills, setSelectedSkills] = React.useState(skills ? skills : []);
 
   const handleClose = () => {
-    setSelectedSkills(skills?skills:[])
+    setSelectedSkills(skills ? skills : []);
     onClose();
   };
 

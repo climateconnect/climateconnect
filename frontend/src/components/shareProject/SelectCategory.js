@@ -29,7 +29,6 @@ const useStyles = makeStyles(theme => {
 
 export default function SelectCategory({ project, setProject, goToNextStep, goToPreviousStep }) {
   const classes = useStyles();
-  console.log(project.categories);
   const [selectedCategories, setSelectedCategories] = React.useState(
     project.categories ? project.categories : []
   );

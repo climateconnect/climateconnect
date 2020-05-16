@@ -5,8 +5,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -44,10 +44,10 @@ const useStyles = makeStyles(theme => {
       height: theme.spacing(8),
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(1)
-    },    
+    },
     subListItem: {
       borderLeft: 0
-    },    
+    },
     firstItem: {
       borderTop: "1px solid black"
     },
@@ -152,7 +152,6 @@ export default function MultiLevelSelector({
   };
 
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
-  console.log(isInPopup);
   return (
     <>
       <div className={classes.wrapper}>
@@ -163,11 +162,10 @@ export default function MultiLevelSelector({
               itemNamePlural={itemNamePlural}
               maxSelections={maxSelections}
               onClickUnselect={onClickUnselect}
-              className={`${classes.selectedWrapper} ${(isNarrowScreen || isInPopup) && classes.narrowScreenSelectedWrapper}`}
+              className={`${classes.selectedWrapper} ${(isNarrowScreen || isInPopup) &&
+                classes.narrowScreenSelectedWrapper}`}
             />
-            {
-              selected.length>0 && <Divider className={classes.divider}/>
-            }
+            {selected.length > 0 && <Divider className={classes.divider} />}
           </>
         )}
         <ListToChooseWrapper
@@ -213,8 +211,7 @@ function ListToChooseWrapper({
         expanded={expanded}
         onClickSelect={onClickSelect}
         selected={selected}
-        className={`${(isNarrowScreen || isInPopup) &&
-          classes.narrowScreenListWrapper}`}
+        className={`${(isNarrowScreen || isInPopup) && classes.narrowScreenListWrapper}`}
         isInPopup={isInPopup}
         isNarrowScreen={isNarrowScreen}
       />
@@ -267,27 +264,26 @@ function ListToChooseFrom({
   isNarrowScreen,
   isInPopup
 }) {
-  if(isSubList && (expanded === parentEl.key)){
-    console.log(isNarrowScreen);
-    console.log(isInPopup);
-  }
   const index = isSubList ? parentList.indexOf(parentEl) : 0;
   const subListHeightCorrection = isSubList
     ? Math.min(index, Math.max(0, itemsToSelectFrom.length - parentList.length + index))
     : 0;
-  const offset = (isNarrowScreen || isInPopup) ? 0 : index - subListHeightCorrection;
+  const offset = isNarrowScreen || isInPopup ? 0 : index - subListHeightCorrection;
   const classes = useStyles({ offset: offset });
   return (
     <>
       <List
         className={`${!isSubList && classes.list} 
-                    ${isSubList && (expanded === parentEl.key ? 
-                      ((isNarrowScreen || isInPopup) ? classes.narrowScreenSubList : classes.subList) 
-                      : classes.hidden)} 
+                    ${isSubList &&
+                      (expanded === parentEl.key
+                        ? isNarrowScreen || isInPopup
+                          ? classes.narrowScreenSubList
+                          : classes.subList
+                        : classes.hidden)} 
                     ${className}`}
       >
         {itemsToSelectFrom.map((item, index) => (
-          <>
+          <React.Fragment key={item.key}>
             <ListItem
               button
               disabled={selected.includes(item)}
@@ -295,11 +291,12 @@ function ListToChooseFrom({
                 root: `${classes.listItem} 
                         ${index == 0 && classes.firstItem} 
                         ${isSubList && classes.subListItem} 
-                        ${(isSubList && (isNarrowScreen || isInPopup)) && classes.narrowScreenSubListItem}
+                        ${isSubList &&
+                          (isNarrowScreen || isInPopup) &&
+                          classes.narrowScreenSubListItem}
                         ${isSubList && index >= parentList.length && classes.borderLeft}`,
                 selected: classes.expanded
               }}
-              key={item.key}
               selected={expanded === item.key}
               onClick={() => {
                 if (item.subcategories && item.subcategories.length) return onClickExpand(item.key);
@@ -310,57 +307,62 @@ function ListToChooseFrom({
               <ListItemText primary={item.name} />
               {item.subcategories && item.subcategories.length ? (
                 <ListItemIcon>
-                  { (isNarrowScreen || isInPopup) ?
-                    (
-                      expanded === item.key ? 
-                      <ExpandLessIcon className={`${classes.icon} ${expanded === item.key && classes.expanded}`}/>
-                      :
-                      <ExpandMoreIcon className={`${classes.icon} ${expanded === item.key && classes.expanded}`} />
+                  {isNarrowScreen || isInPopup ? (
+                    expanded === item.key ? (
+                      <ExpandLessIcon
+                        className={`${classes.icon} ${expanded === item.key && classes.expanded}`}
+                      />
+                    ) : (
+                      <ExpandMoreIcon
+                        className={`${classes.icon} ${expanded === item.key && classes.expanded}`}
+                      />
                     )
-                    :
+                  ) : (
                     <ArrowForwardIosIcon
                       className={`${classes.icon} ${expanded === item.key && classes.expanded}`}
                     />
-                  }
+                  )}
                 </ListItemIcon>
               ) : (
                 ""
               )}
             </ListItem>
             {(isNarrowScreen || isInPopup) && item.subcategories && item.subcategories.length ? (
-                <ListToChooseFrom
-                  isSubList
-                  parentEl={item}
-                  parentList={itemsToSelectFrom}
-                  itemsToSelectFrom={item.subcategories}
-                  key={item.key+"sublist"}
-                  expanded={expanded}
-                  onClickExpand={onClickExpand}
-                  selected={selected}
-                  onClickSelect={onClickSelect}
-                  isNarrowScreen={isNarrowScreen}
-                  isInPopup={isInPopup}
-                />
-              ) : <></>
-            }
-          </>
+              <ListToChooseFrom
+                isSubList
+                parentEl={item}
+                parentList={itemsToSelectFrom}
+                itemsToSelectFrom={item.subcategories}
+                key={item.key + "innersublist"}
+                expanded={expanded}
+                onClickExpand={onClickExpand}
+                selected={selected}
+                onClickSelect={onClickSelect}
+                isNarrowScreen={isNarrowScreen}
+                isInPopup={isInPopup}
+              />
+            ) : (
+              <></>
+            )}
+          </React.Fragment>
         ))}
       </List>
-      {!(isNarrowScreen || isInPopup) && itemsToSelectFrom.map(item => {
-        return item.subcategories && item.subcategories.length ? (
-          <ListToChooseFrom
-            isSubList
-            parentEl={item}
-            parentList={itemsToSelectFrom}
-            itemsToSelectFrom={item.subcategories}
-            key={item.key + item.subcategories.length}
-            expanded={expanded}
-            onClickExpand={onClickExpand}
-            selected={selected}
-            onClickSelect={onClickSelect}
-          />
-        ) : null;
-      })}
+      {!(isNarrowScreen || isInPopup) &&
+        itemsToSelectFrom.map(item => {
+          return item.subcategories && item.subcategories.length ? (
+            <ListToChooseFrom
+              isSubList
+              parentEl={item}
+              parentList={itemsToSelectFrom}
+              itemsToSelectFrom={item.subcategories}
+              key={item.key + "outersublist"}
+              expanded={expanded}
+              onClickExpand={onClickExpand}
+              selected={selected}
+              onClickSelect={onClickSelect}
+            />
+          ) : null;
+        })}
     </>
   );
 }

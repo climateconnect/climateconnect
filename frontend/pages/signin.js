@@ -35,6 +35,7 @@ export default function Signin() {
   const [errorMessage, setErrorMessage] = React.useState(null);
 
   const { user, signIn } = useContext(UserContext);
+  //TODO: remove router
   if (user) Router.push("/");
 
   const handleSubmit = (event, values) => {
