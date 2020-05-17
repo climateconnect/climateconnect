@@ -7,16 +7,21 @@ const useStyles = makeStyles(theme => {
   return {
     root: {
       textAlign: "center",
-      marginBottom: theme.spacing(8)
+      display: "flex",
+      flex: 1
+    },
+    link: {
+      color: "inherit",
+      display: "block",
+      margin: "0 auto"
     },
     linkText: {
       textDecoration: "underline",
-      color: "inherit"
+      color: theme.palette.secondary.main
     },
     icon: {
-      marginRight: theme.spacing(1),
-      fontSize: 35,
-      marginBottom: -5
+      width: 90,
+      height: 90
     }
   };
 });
@@ -24,25 +29,22 @@ const useStyles = makeStyles(theme => {
 export default function InfoLink({ data }) {
   const classes = useStyles();
 
-  //use <Link> component only if link href is also on the climateconnect.earth domain
-  if (data.internal)
-    return (
-      <Typography variant="h4" color="primary" className={classes.root}>
+  //use <Link> component only if link href is also on the climateconnect.earth domain  
+  return (
+    <Typography variant="h4" color="primary" className={classes.root}>
+      {data.internal ?
         <Link href={data.href}>
-          <a className={classes.linkText}>
+          <a className={classes.link}>
             <data.icon className={classes.icon} name={data.iconName} />
-            {data.text}
+            <div className={classes.linkText}>{data.text}</div>
           </a>
         </Link>
-      </Typography>
-    );
-  else
-    return (
-      <Typography variant="h4" color="primary" className={classes.root}>
-        <a href={data.href} className={classes.linkText} target="_blank" rel="noopener noreferrer">
+      :
+        <a href={data.href} className={classes.link} target="_blank" rel="noopener noreferrer">
           <data.icon className={classes.icon} name={data.iconName} />
-          {data.text}
+          <div className={classes.linkText}>{data.text}</div>
         </a>
-      </Typography>
+      }        
+    </Typography>
     );
 }
