@@ -1,0 +1,6 @@
+service: frontend
+
+runtime: nodejs12
+
+env_variables:
+  API_URL: "https://inbound-lexicon-271522.ey.r.appspot.com"

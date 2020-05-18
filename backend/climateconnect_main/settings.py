@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('ENVIRONMENT') in ('development', 'test',)
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
 
@@ -34,6 +34,7 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
 
 CUSTOM_APPS = [
     'climateconnect_api',
+    'organization'
 ]
 
 LIBRARY_APPS = [
@@ -43,7 +44,9 @@ LIBRARY_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework'
+    'rest_framework',
+    'knox',
+    'corsheaders'
 ]
 
 INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
@@ -51,12 +54,18 @@ INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
+]
+APPEND_SLASH = False
 
 ROOT_URLCONF = 'climateconnect_main.urls'
 
@@ -131,3 +140,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'knox.auth.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100
+}
+
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+# TODO: point to Google cloud storage if we aren't in testing environment
+MEDIA_ROOT = SITE_ROOT+'/../media/' if env('ENVIRONMENT') in ('development', 'test',) else env('CLOUD_STORAGE_ROOT')+'/../media/'
+MEDIA_URL = '/media/'

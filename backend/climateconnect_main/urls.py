@@ -14,10 +14,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from climateconnect_api.views.status_views import PingPongView
+from django.urls import path, include
+from climateconnect_api.views import (
+    status_views, user_views
+)
+from knox import views as knox_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('ping/', PingPongView.as_view(), name='ping-pong-api')
+    path('ping/', status_views.PingPongView.as_view(), name='ping-pong-api'),
+    path('login/', user_views.LoginView.as_view(), name='login-api'),
+    path('logout/', knox_views.LogoutView.as_view(), name='logout-api'),
+    path('signup/', user_views.SignUpView.as_view(), name="signup-api"),
+    path('api/my_profile/', user_views.PersonalProfileView.as_view(), name='user-profile-api'),
+    path('api/members/', user_views.MemberProfilesView.as_view(), name="member-profiles-api"),
+    path('api/', include('organization.urls')),
 ]
+
+urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,6 @@
+# For more information on this file, run:
+# $ gcloud topic gcloudignore
+.gcloudignore
+.git
+.gitignore
+__pycache__/
