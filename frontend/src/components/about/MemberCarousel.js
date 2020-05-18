@@ -1,7 +1,6 @@
 import React from "react";
 import Member from "./Member";
 import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
 
 export default function MemberCarousel({ members }) { 
 

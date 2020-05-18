@@ -25,8 +25,7 @@ if (process.env.IS_BUILDING_ON_GOOGLE_CLOUD) {
   environmentVariableSource = process.env;
 }
 
-module.exports = withPlugins([withCSS, withFonts],{
-  cssModules: true,
+module.exports = withPlugins([withFonts],{
   env: pick(environmentVariableSource, ["PRE_LAUNCH", "API_URL"]),
   exportPathMap: async function(defaultPathMap) {
     if (process.env.PRE_LAUNCH)
