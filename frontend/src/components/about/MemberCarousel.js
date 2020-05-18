@@ -1,26 +1,33 @@
 import React from "react";
 import Member from "./Member";
 import Carousel from "react-multi-carousel";
+import { useTheme } from "@material-ui/core/styles";
 
-export default function MemberCarousel({ members }) { 
-
+export default function MemberCarousel({ members }) {   
+  const theme = useTheme();
   const responsive = {
     desktop: {
-      breakpoint: { max: 3000, min: 1024 },
+      breakpoint: { max: 5000, min: theme.breakpoints.values.md },
       items: 3
     },
     tablet: {
-      breakpoint: { max: 1024, min: 464 },
+      breakpoint: { max: theme.breakpoints.values.md, min: theme.breakpoints.values.sm },
       items: 2
     },
     mobile: {
-      breakpoint: { max: 464, min: 0 },
+      breakpoint: { max: theme.breakpoints.values.sm, min: 0 },
       items: 1
     }
   };
 
   return(
-    <Carousel responsive={responsive}>
+    <Carousel 
+      responsive={responsive}
+      autoPlay={true}
+      autoPlaySpeed={3000}
+      keyBoardControl={true}
+      infinite={true}
+    >
       {
         members.map((member, index) =>(
           <div key={index}>

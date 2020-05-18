@@ -8,6 +8,7 @@ import about_page_info from "../public/data/about_page_info";
 import members from "../public/data/members.json";
 import links from "../public/data/links.js";
 import quotes_with_images from "../public/data/quotes_with_images.js";
+import open_positions from "../public/data/open_positions"
 //local components
 import AboutHeaderImage from "../src/components/about/AboutHeaderImage";
 import InfoBubble from "../src/components/about/InfoBubble";
@@ -45,7 +46,7 @@ const useStyles = makeStyles(theme => {
       maxWidth: 1390,
       margin: "0 auto",
       display: "flex",
-      justifyContent: "space-between",
+      justifyContent: "space-around",
       flexFlow: "wrap"
     },
     memberGrid: {
@@ -65,6 +66,16 @@ const useStyles = makeStyles(theme => {
       justifyContent: "space-around",
       flexFlow: "wrap",
       maxWidth: 1000
+    },
+    openPositionsHeadline: {
+      display: "block",
+      width: "100%",
+      marginBottom: theme.spacing(4),
+      fontWeight: "bold",
+      paddingLeft: theme.spacing(4)
+    },
+    bold: {
+      fontWeight: "bold"
     }
   };
 });
@@ -90,10 +101,6 @@ function shuffle(array) {
 
 export default function About() {
   const classes = useStyles();
-  const [showAllMembers, setShowAllMembers] = React.useState(false);
-  const handleToggleAllMembersClick = () => {
-    setShowAllMembers(!showAllMembers)
-  }
   return (
     <>
       <WideLayout title="About Climate Connect">
@@ -143,34 +150,45 @@ export default function About() {
           Our Team
         </Typography>
         <MemberCarousel members={shuffle(members)} className={classes.memberGrid} />
-        <Button className={classes.expandButton} onClick={handleToggleAllMembersClick}>
-          {showAllMembers ? (
-            <div>
-              <ExpandLessIcon className={classes.icon} /> Show less
-            </div>
-          ) : (
-            <div>
-              <ExpandMoreIcon className={classes.icon} /> Show more
-            </div>
-          )}
-        </Button>
         <QuoteSlideShow image={quotes_with_images[2].image_path} className={classes.quoteSlideShow}/>
-        <Typography color="primary" variant="h6" className={classes.mainFocuses}>
-          Current main focuses:
-          <ul>
-            <li>Developing the platform (frontend: React, backend: Node, Postgres)</li>
-            <li>Finishing up the design</li>
-            <li>Collecting user feedback: questionnaires, interviews</li>
-            <li>Developing our social media campaigns</li>
-            <li>
-              Developing a generic method to assess the impact of different types of climate
-              projects
-            </li>
-          </ul>
+        <Typography
+          component="h2"
+          variant="h3"
+          color="primary"
+          className={`${classes.centeredText}  ${classes.sectionHeadline}`}
+        >
+          Get involved by joining our Team of volunteers!
+        </Typography>        
+        <Container maxWidth="lg" className={classes.bubbleGrid}>
+          <Typography
+            component="h2"
+            variant="h4"
+            color="primary"
+            className={classes.openPositionsHeadline}
+          >
+            Open positions:
+          </Typography>
+          {open_positions.map((info, index) => (
+            <InfoBubble data={info} key={index} iconColor="secondary" textColor="primary" bold={true} maxWidth={330}/>
+          ))}
+        </Container>
+        <Typography
+          component="h2"
+          variant="h4"
+          color="primary"
+          className={`${classes.centeredText}  ${classes.sectionHeadline}`}
+        >
+          Support us financially
         </Typography>
-        <Typography color="primary" variant="h5" className={classes.centeredText}>
-          If you would like to join our volunteer team, please send your application to{" "}
-          <a href="mailto:contact@climateconnect.earth">contact@climateconnect.earth</a>
+        <Typography
+          component="h5"
+          variant="h4"
+          color="secondary"
+          className={`${classes.centeredText} ${classes.textBlock}`}
+        >
+          Climate Connect gUG (haftungsbeschränkt) i.G.<br/>
+          IBAN: <span className={classes.bold}>DE02430609671072519500</span><br/>
+          BIC: <span className={classes.bold}>GENODEM1GLS</span>
         </Typography>
       </WideLayout>
     </>
