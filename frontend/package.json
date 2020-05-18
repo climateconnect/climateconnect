@@ -32,7 +32,6 @@
     "lodash": "^4.17.15",
     "next": "^9.3.2",
     "next-cookies": "^2.0.3",
-    "next-fonts": "^1.1.0",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-avatar-editor": "11.0.7",

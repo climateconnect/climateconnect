@@ -1,5 +1,4 @@
 const pick = require("lodash/pick");
-const withFonts = require('next-fonts')
 
 // Google Cloud has us define environment variables in app.yaml. However, these
 // environment variables are not available at build time, only at runtime. To
@@ -23,7 +22,7 @@ if (process.env.IS_BUILDING_ON_GOOGLE_CLOUD) {
   environmentVariableSource = process.env;
 }
 
-module.exports = withFonts({
+module.exports = {
   env: pick(environmentVariableSource, ["PRE_LAUNCH", "API_URL"]),
   exportPathMap: async function(defaultPathMap) {
     if (process.env.PRE_LAUNCH)
@@ -32,4 +31,4 @@ module.exports = withFonts({
       };
     else return defaultPathMap;
   }
-});
+};
