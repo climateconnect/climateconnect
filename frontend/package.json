@@ -10,7 +10,8 @@
     "test": "jest",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start --port $PORT"
+    "start": "next start --port $PORT",
+    "deploy": "npm run build && npm run export"
   },
   "jest": {
     "setupFiles": [
