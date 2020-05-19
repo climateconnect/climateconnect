@@ -35,11 +35,11 @@ export default function Signin() {
   const [errorMessage, setErrorMessage] = React.useState(null);
 
   const { user, signIn } = useContext(UserContext);
+  //TODO: remove router
   if (user) Router.push("/");
 
   const handleSubmit = (event, values) => {
     //don't redirect to the post url
-    console.log(process.env.API_URL);
     event.preventDefault();
     axios
       .post(process.env.API_URL + "/login/", {

@@ -8,7 +8,7 @@ import about_page_info from "../public/data/about_page_info";
 import members from "../public/data/members.json";
 import links from "../public/data/links.js";
 import quotes_with_images from "../public/data/quotes_with_images.js";
-import open_positions from "../public/data/open_positions"
+import open_positions from "../public/data/open_positions";
 //local components
 import AboutHeaderImage from "../src/components/about/AboutHeaderImage";
 import InfoBubble from "../src/components/about/InfoBubble";
@@ -23,8 +23,8 @@ const useStyles = makeStyles(theme => {
     },
     textBlock: {
       margin: "0 auto",
-      display: "block", 
-      maxWidth: 1200,         
+      display: "block",
+      maxWidth: 1200,
       paddingTop: theme.spacing(2),
       paddingBottom: theme.spacing(1),
       paddingLeft: theme.spacing(1),
@@ -78,11 +78,12 @@ const useStyles = makeStyles(theme => {
 });
 
 function shuffle(array) {
-  var currentIndex = array.length, temporaryValue, randomIndex;
+  var currentIndex = array.length,
+    temporaryValue,
+    randomIndex;
 
   // While there remain elements to shuffle...
   while (0 !== currentIndex) {
-
     // Pick a remaining element...
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex -= 1;
@@ -108,7 +109,10 @@ export default function About() {
           color="secondary"
           className={`${classes.centeredText} ${classes.textBlock}`}
         >
-          Climate Connect is a non-profit climate action platform that is currently in development. Our goal is to connect climate protectors worldwide by giving them a platform to share their projects or ideas to receive feedback, find specific help on a project and get inspired for climate actions.
+          Climate Connect is a non-profit climate action platform that is currently in development.
+          Our goal is to connect climate protectors worldwide by giving them a platform to share
+          their projects or ideas to receive feedback, find specific help on a project and get
+          inspired for climate actions.
         </Typography>
         <Typography
           component="h2"
@@ -123,7 +127,10 @@ export default function About() {
             <InfoBubble data={info} key={index} />
           ))}
         </Container>
-        <QuoteSlideShow image={quotes_with_images[0].image_path} className={classes.quoteSlideShow}/>
+        <QuoteSlideShow
+          image={quotes_with_images[0].image_path}
+          className={classes.quoteSlideShow}
+        />
         <Typography
           component="h2"
           variant="h3"
@@ -137,7 +144,10 @@ export default function About() {
             <InfoLink data={link} key={index} />
           ))}
         </Container>
-        <QuoteSlideShow image={quotes_with_images[1].image_path} className={classes.quoteSlideShow}/>
+        <QuoteSlideShow
+          image={quotes_with_images[1].image_path}
+          className={classes.quoteSlideShow}
+        />
         <Container maxWidth="lg">
           <Typography
             component="h2"
@@ -149,7 +159,10 @@ export default function About() {
           </Typography>
           <MemberCarousel members={shuffle(members)} className={classes.memberGrid} />
         </Container>
-        <QuoteSlideShow image={quotes_with_images[2].image_path} className={classes.quoteSlideShow}/>
+        <QuoteSlideShow
+          image={quotes_with_images[2].image_path}
+          className={classes.quoteSlideShow}
+        />
         <Typography
           component="h2"
           variant="h3"
@@ -157,7 +170,7 @@ export default function About() {
           className={`${classes.centeredText}  ${classes.sectionHeadline}`}
         >
           Get involved by joining our Team of volunteers!
-        </Typography>        
+        </Typography>
         <Container maxWidth="lg" className={classes.bubbleGrid}>
           <Typography
             component="h2"
@@ -168,7 +181,14 @@ export default function About() {
             Open positions:
           </Typography>
           {open_positions.map((info, index) => (
-            <InfoBubble data={info} key={index} iconColor="secondary" textColor="primary" bold={true} maxWidth={330}/>
+            <InfoBubble
+              data={info}
+              key={index}
+              iconColor="secondary"
+              textColor="primary"
+              bold={true}
+              maxWidth={330}
+            />
           ))}
           <Typography
             component="h5"
@@ -193,8 +213,10 @@ export default function About() {
           color="secondary"
           className={`${classes.centeredText} ${classes.textBlock}`}
         >
-          Climate Connect gUG (haftungsbeschränkt) i.G.<br/>
-          IBAN: <span className={classes.bold}>DE02430609671072519500</span><br/>
+          Climate Connect gUG (haftungsbeschränkt) i.G.
+          <br />
+          IBAN: <span className={classes.bold}>DE02430609671072519500</span>
+          <br />
           BIC: <span className={classes.bold}>GENODEM1GLS</span>
         </Typography>
       </WideLayout>

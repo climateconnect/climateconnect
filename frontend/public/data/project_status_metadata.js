@@ -9,27 +9,32 @@ const project_status_metadata = [
   {
     key: "idea",
     icon: <EmojiObjectsIcon />,
-    name: "Idea"
+    name: "Idea",
+    createProjectLabel: "an idea"
   },
   {
     key: "inprogress",
     icon: <BuildIcon />,
-    name: "In progress"
+    name: "In progress",
+    createProjectLabel: "in progress"
   },
   {
     key: "finished",
     icon: <DoneAllIcon />,
-    name: "Successfully finished"
+    name: "Successfully finished",
+    createProjectLabel: "successfully finished"
   },
   {
     key: "cancelled",
     icon: <CancelIcon />,
-    name: "Cancelled"
+    name: "Cancelled",
+    createProjectLabel: "cancelled"
   },
   {
     key: "recurring",
     icon: <RotateRightIcon />,
-    name: "Recurring"
+    name: "Recurring",
+    createProjectLabel: "recurring"
   }
 ];
 

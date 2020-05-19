@@ -1,0 +1,114 @@
+[
+  {
+    "name": "Communication & marketing",
+    "key": "marketing",
+    "subcategories": [
+      {
+        "name": "Advertising",
+        "key": "advertising"
+      },
+      {
+        "name": "Storytelling",
+        "key": "storytelling"
+      },
+      {
+        "name": "Written communication",
+        "key": "writtencommunication"
+      },
+      {
+        "name": "Customer service",
+        "key": "customerservice"
+      },
+      {
+        "name": "Digital media",
+        "key": "digitalmedia"
+      },
+      {
+        "name": "Marketing campaigns",
+        "key": "marketingcampaigns"
+      },
+      {
+        "name": "Creating presentations",
+        "key": "creatingpresentations"
+      },
+      {
+        "name": "public speaking",
+        "key": "publicspeaking"
+      },
+      {
+        "name": "Social media",
+        "key": "socialmedia"
+      }
+    ]
+  },
+  {
+    "name": "Finance",
+    "key": "finance",
+    "subcategories": [
+      {
+        "name": "Accounting",
+        "key": "accounting"
+      },
+      {
+        "name": "Bookkeeping",
+        "key": "bookkeeping"
+      }
+    ]
+  },
+  {
+    "name": "Management",
+    "key": "management",
+    "subcategories": [
+      {
+        "name": "Human resources",
+        "key": "humanresources"
+      },
+      {
+        "name": "Business management",
+        "key": "businessmanagement"
+      }
+    ]
+  },
+  {
+    "name": "Business skills",
+    "key": "businessskills",
+    "subcategories": [
+      {
+        "name": "Networking",
+        "key": "networking"
+      },
+      {
+        "name": "Problem solving",
+        "key": "problemsolving"
+      }
+    ]
+  },
+  {
+    "name": "Productivity software",
+    "key": "productivitysoftware"
+  },
+  {
+    "name": "Developing software",
+    "key": "developingsoftware"
+  },
+  {
+    "name": "IT infrastructure & cybersecurity",
+    "key": "it"
+  },
+  {
+    "name": "Crafts",
+    "key": "crafts"
+  },
+  {
+    "name": "Education",
+    "key": "education"
+  },
+  {
+    "name": "Legal",
+    "key": "legal"
+  },
+  {
+    "name": "Science and Research",
+    "key": "research"
+  }
+]

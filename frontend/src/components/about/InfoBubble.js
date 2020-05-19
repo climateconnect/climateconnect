@@ -38,18 +38,22 @@ const useStyles = makeStyles(theme => {
 });
 
 export default function InfoBubble({ data, iconColor, textColor, bold, maxWidth }) {
-  const classes = useStyles({maxWidth: maxWidth});
+  const classes = useStyles({ maxWidth: maxWidth });
   return (
     <div className={classes.bubble}>
       <Box>
         <data.icon
           name={data.iconName}
           className={`${classes.icon}`}
-          color= {iconColor ? iconColor : "primary"}
+          color={iconColor ? iconColor : "primary"}
           style={{ fontSize: 60 }}
         />
       </Box>
-      <Typography variant="h4" color="secondary" className={`${classes.title} ${bold && classes.bold} ${maxWidth && classes.maxWidth}`} color={textColor&&textColor}>
+      <Typography
+        variant="h4"
+        className={`${classes.title} ${bold && classes.bold} ${maxWidth && classes.maxWidth}`}
+        color={textColor ? textColor : "secondary"}
+      >
         {data.title}
       </Typography>
     </div>

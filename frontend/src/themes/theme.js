@@ -4,7 +4,11 @@ import { createMuiTheme } from "@material-ui/core/styles";
 const coreTheme = createMuiTheme({
   palette: {
     primary: { main: "#387077" },
-    secondary: { main: "#484848" }
+    secondary: { main: "#484848" },
+    background: { default: "#fff" },
+    action: {
+      selected: "#387077"
+    }
   },
   typography: {
     fontFamily: "Open Sans",
@@ -15,13 +19,17 @@ const coreTheme = createMuiTheme({
     subtitle1: {
       fontSize: "0.9rem"
     },
+    subtitle2: {
+      fontSize: "0.9rem",
+      fontWeight: "bold"
+    },
     button: {
       fontWeight: 600
     }
   }
 });
 
-const themeWithOverrides = createMuiTheme(coreTheme, {
+const theme = createMuiTheme(coreTheme, {
   overrides: {
     MuiButton: {
       root: {
@@ -48,4 +56,4 @@ const themeWithOverrides = createMuiTheme(coreTheme, {
   }
 });
 
-export default themeWithOverrides;
+export default theme;

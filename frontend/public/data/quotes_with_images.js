@@ -8,7 +8,8 @@ export default [
     image_path: "quote2.jpg"
   },
   {
-    quote: "It is the long history of humankind that those who learned to collaborate and improvise most effectively have prevailed.",
+    quote:
+      "It is the long history of humankind that those who learned to collaborate and improvise most effectively have prevailed.",
     image_path: "quote3.jpg"
   }
-]
+];
