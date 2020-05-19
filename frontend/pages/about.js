@@ -7,11 +7,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import about_page_info from "../public/data/about_page_info";
 import members from "../public/data/members.json";
 import links from "../public/data/links.js";
+import quotes_with_images from "../public/data/quotes_with_images.js";
+import open_positions from "../public/data/open_positions"
 //local components
 import AboutHeaderImage from "../src/components/about/AboutHeaderImage";
 import InfoBubble from "../src/components/about/InfoBubble";
 import InfoLink from "../src/components/about/InfoLink";
-import Member from "../src/components/about/Member";
+import MemberCarousel from "../src/components/about/MemberCarousel";
+import QuoteSlideShow from "../src/components/about/QuoteSlideShow";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -19,31 +22,79 @@ const useStyles = makeStyles(theme => {
       textAlign: "center"
     },
     textBlock: {
+      margin: "0 auto",
+      display: "block", 
+      maxWidth: 1200,         
       paddingTop: theme.spacing(2),
-      paddingBottom: theme.spacing(1)
+      paddingBottom: theme.spacing(1),
+      paddingLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1)
     },
     sectionHeadline: {
-      marginBottom: theme.spacing(6)
+      margin: "0 auto",
+      display: "block",
+      marginBottom: theme.spacing(6),
+      marginTop: theme.spacing(8),
+      fontWeight: "bold"
     },
     bubbleGrid: {
       padding: 0,
+      width: "100%",
       maxWidth: 1390,
       margin: "0 auto",
-      textAlign: "center"
+      display: "flex",
+      justifyContent: "space-around",
+      flexFlow: "wrap"
     },
     memberGrid: {
+      width: "100%",
       maxWidth: 1390,
-      margin: "0 auto",
-      textAlign: "center",
-      verticalAlign: "top",
-      padding: 0
+      margin: "0 auto"
     },
     mainFocuses: {
       width: 800,
       margin: "0 auto"
+    },
+    quoteSlideShow: {
+      marginTop: theme.spacing(7)
+    },
+    linksContainer: {
+      display: "flex",
+      justifyContent: "space-around",
+      flexFlow: "wrap",
+      maxWidth: 1000
+    },
+    openPositionsHeadline: {
+      display: "block",
+      width: "100%",
+      marginBottom: theme.spacing(4),
+      fontWeight: "bold",
+      paddingLeft: theme.spacing(4)
+    },
+    bold: {
+      fontWeight: "bold"
     }
   };
 });
+
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
 
 export default function About() {
   const classes = useStyles();
@@ -54,10 +105,10 @@ export default function About() {
         <Typography
           component="h1"
           variant="h4"
-          color="primary"
+          color="secondary"
           className={`${classes.centeredText} ${classes.textBlock}`}
         >
-          We are an international team of volunteers building a non-profit climate action platform
+          Climate Connect is a non-profit climate action platform that is currently in development. Our goal is to connect climate protectors worldwide by giving them a platform to share their projects or ideas to receive feedback, find specific help on a project and get inspired for climate actions.
         </Typography>
         <Typography
           component="h2"
@@ -65,53 +116,86 @@ export default function About() {
           color="primary"
           className={`${classes.centeredText} ${classes.textBlock} ${classes.sectionHeadline}`}
         >
-          Our goal is to help you fight climate change most effectively
+          Our Vision
         </Typography>
         <Container maxWidth="lg" className={classes.bubbleGrid}>
           {about_page_info.map((info, index) => (
             <InfoBubble data={info} key={index} />
           ))}
         </Container>
+        <QuoteSlideShow image={quotes_with_images[0].image_path} className={classes.quoteSlideShow}/>
         <Typography
+          component="h2"
           variant="h3"
           color="primary"
           className={`${classes.centeredText}  ${classes.sectionHeadline}`}
         >
           Find out more
         </Typography>
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" className={classes.linksContainer}>
           {links.map((link, index) => (
             <InfoLink data={link} key={index} />
           ))}
         </Container>
+        <QuoteSlideShow image={quotes_with_images[1].image_path} className={classes.quoteSlideShow}/>
+        <Container maxWidth="lg">
+          <Typography
+            component="h2"
+            variant="h3"
+            color="primary"
+            className={`${classes.centeredText}  ${classes.sectionHeadline}`}
+          >
+            Our Team
+          </Typography>
+          <MemberCarousel members={shuffle(members)} className={classes.memberGrid} />
+        </Container>
+        <QuoteSlideShow image={quotes_with_images[2].image_path} className={classes.quoteSlideShow}/>
         <Typography
+          component="h2"
           variant="h3"
           color="primary"
           className={`${classes.centeredText}  ${classes.sectionHeadline}`}
         >
-          Join our team
-        </Typography>
-        <Container maxWidth="lg" className={classes.memberGrid}>
-          {members.map((member, index) => (
-            <Member member={member} key={index} />
+          Get involved by joining our Team of volunteers!
+        </Typography>        
+        <Container maxWidth="lg" className={classes.bubbleGrid}>
+          <Typography
+            component="h2"
+            variant="h4"
+            color="primary"
+            className={classes.openPositionsHeadline}
+          >
+            Open positions:
+          </Typography>
+          {open_positions.map((info, index) => (
+            <InfoBubble data={info} key={index} iconColor="secondary" textColor="primary" bold={true} maxWidth={330}/>
           ))}
+          <Typography
+            component="h5"
+            variant="h4"
+            color="secondary"
+            className={`${classes.centeredText} ${classes.textBlock}`}
+          >
+            Send your application to contact@climateconnect.earth
+          </Typography>
         </Container>
-        <Typography color="primary" variant="h6" className={classes.mainFocuses}>
-          Current main focuses:
-          <ul>
-            <li>Developing the platform (frontend: React, backend: Node, Postgres)</li>
-            <li>Finishing up the design</li>
-            <li>Collecting user feedback: questionnaires, interviews</li>
-            <li>Developing our social media campaigns</li>
-            <li>
-              Developing a generic method to assess the impact of different types of climate
-              projects
-            </li>
-          </ul>
+        <Typography
+          component="h2"
+          variant="h4"
+          color="primary"
+          className={`${classes.centeredText}  ${classes.sectionHeadline}`}
+        >
+          Support us financially
         </Typography>
-        <Typography color="primary" variant="h5" className={classes.centeredText}>
-          If you would like to join our volunteer team, please send your application to{" "}
-          <a href="mailto:contact@climateconnect.earth">contact@climateconnect.earth</a>
+        <Typography
+          component="h5"
+          variant="h4"
+          color="secondary"
+          className={`${classes.centeredText} ${classes.textBlock}`}
+        >
+          Climate Connect gUG (haftungsbeschränkt) i.G.<br/>
+          IBAN: <span className={classes.bold}>DE02430609671072519500</span><br/>
+          BIC: <span className={classes.bold}>GENODEM1GLS</span>
         </Typography>
       </WideLayout>
     </>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import PlaceIcon from "@material-ui/icons/Place";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -7,7 +7,6 @@ const useStyles = makeStyles(theme => {
   return {
     root: {
       textAlign: "center",
-      display: "inline-block",
       marginLeft: 75,
       marginRight: 75,
       marginBottom: 60
@@ -15,7 +14,8 @@ const useStyles = makeStyles(theme => {
     image: {
       width: 250,
       height: 250,
-      alignSelf: "center"
+      alignSelf: "center",
+      borderRadius: 200
     },
     name: {
       marginTop: theme.spacing(3),
@@ -37,8 +37,8 @@ export default function Member({ member }) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <Box component="img" className={classes.image} src={"images/" + member.image} />
-      <Typography variant="h5" color="primary" className={classes.name}>
+      <img className={classes.image} src={"images/" + member.image} />
+      <Typography variant="h4" color="primary" className={classes.name}>
         {member.name}
       </Typography>
       <div>
