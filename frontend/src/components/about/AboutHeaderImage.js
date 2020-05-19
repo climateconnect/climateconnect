@@ -15,7 +15,5 @@ const useStyles = makeStyles(theme => {
 
 export default function AboutHeaderImage() {
   const classes = useStyles();
-  return (
-    <img className={classes.imageContainer} src="images/about_background.jpg" />
-  );
+  return <img className={classes.imageContainer} src="images/about_background.jpg" />;
 }

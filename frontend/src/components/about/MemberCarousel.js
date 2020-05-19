@@ -3,7 +3,7 @@ import Member from "./Member";
 import Carousel from "react-multi-carousel";
 import { useTheme } from "@material-ui/core/styles";
 
-export default function MemberCarousel({ members }) {   
+export default function MemberCarousel({ members }) {
   const theme = useTheme();
   const responsive = {
     desktop: {
@@ -20,21 +20,19 @@ export default function MemberCarousel({ members }) {
     }
   };
 
-  return(
-    <Carousel 
+  return (
+    <Carousel
       responsive={responsive}
       autoPlay={true}
       autoPlaySpeed={3000}
       keyBoardControl={true}
       infinite={true}
     >
-      {
-        members.map((member, index) =>(
-          <div key={index}>
-            <Member member={member} />
-          </div>
-        )) 
-      }   
+      {members.map((member, index) => (
+        <div key={index}>
+          <Member member={member} />
+        </div>
+      ))}
     </Carousel>
-  )  
+  );
 }

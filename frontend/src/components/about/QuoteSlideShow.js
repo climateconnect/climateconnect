@@ -4,13 +4,11 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles({
   imageContainer: {
     width: "100%",
-    height: "auto",
+    height: "auto"
   }
-})
+});
 
-export default function QuoteSlideShow({ image, className }) { 
+export default function QuoteSlideShow({ image, className }) {
   const classes = useStyles();
-  return (
-    <img className={`${classes.imageContainer} ${className}`} src={"images/"+image}/>
-  )
+  return <img className={`${classes.imageContainer} ${className}`} src={"images/" + image} />;
 }

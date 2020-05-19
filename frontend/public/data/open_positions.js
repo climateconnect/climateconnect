@@ -1,7 +1,7 @@
-import CodeIcon from '@material-ui/icons/Code';
-import ImportantDevicesIcon from '@material-ui/icons/ImportantDevices';
-import LocalActivityOutlinedIcon from '@material-ui/icons/LocalActivityOutlined';
-import ShareIcon from '@material-ui/icons/Share';
+import CodeIcon from "@material-ui/icons/Code";
+import ImportantDevicesIcon from "@material-ui/icons/ImportantDevices";
+import LocalActivityOutlinedIcon from "@material-ui/icons/LocalActivityOutlined";
+import ShareIcon from "@material-ui/icons/Share";
 
 export default [
   {
@@ -18,7 +18,7 @@ export default [
     icon: ImportantDevicesIcon,
     iconName: "ImportantDevicesIcon",
     title: "Frontend developer (React, nextjs)"
-  },  
+  },
   {
     icon: CodeIcon,
     iconName: "CodeIcon",

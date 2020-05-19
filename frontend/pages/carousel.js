@@ -1,7 +1,7 @@
-import React from "react"
+import React from "react";
 import Carousel from "react-multi-carousel";
 
-export default function CarouselExample(){
+export default function CarouselExample() {
   const responsive = {
     superLargeDesktop: {
       // the naming can be any, depends on you.
@@ -21,12 +21,12 @@ export default function CarouselExample(){
       items: 1
     }
   };
-  return(
+  return (
     <Carousel responsive={responsive}>
       <div>Item 1</div>
       <div>Item 2</div>
       <div>Item 3</div>
       <div>Item 4</div>
     </Carousel>
-  )
+  );
 }

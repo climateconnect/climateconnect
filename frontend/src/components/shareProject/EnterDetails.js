@@ -171,32 +171,6 @@ export default function EnterDetails({
   const classes = useStyles(project);
   const inputFileRef = React.useRef(null);
   const shortDescriptionRef = React.useRef(null);
-  const [errors, setErrors] = React.useState({
-    inputFile: {
-      error: false,
-      errorMessage: null
-    },
-    short_description: {
-      error: false,
-      errorMessage: null
-    },
-    description: {
-      error: false,
-      errorMessage: null
-    },
-    image: {
-      error: false,
-      errorMessage: null
-    },
-    start_date: {
-      error: false,
-      errorMessage: null
-    },
-    end_date: {
-      error: false,
-      errorMessage: null
-    }
-  });
 
   const values = project_status_metadata.map(status => ({
     ...status,
@@ -210,9 +184,9 @@ export default function EnterDetails({
     goToPreviousStep();
   };
 
-  const onClickNextStep = (event) => {    
-    event.preventDefault()
-    isProjectDataValid(project)
+  const onClickNextStep = event => {
+    event.preventDefault();
+    isProjectDataValid(project);
     if (isProjectDataValid(project)) {
       setProjectData({ ...projectData, ...project });
       goToNextStep();
@@ -227,15 +201,14 @@ export default function EnterDetails({
     description: {
       name: "Description",
       maxLength: 4000
-    },
+    }
   };
 
   const isProjectDataValid = () => {
-    if(!project.image){
-      alert("Please add an image!")
-      return false
-    }else
-      return true
+    if (!project.image) {
+      alert("Please add an image!");
+      return false;
+    } else return true;
   };
 
   const onStatusRadioChange = newStatus => {
@@ -253,7 +226,6 @@ export default function EnterDetails({
   const onDescriptionChange = (event, descriptionType) => {
     if (event.target.value.length <= validation[descriptionType].maxLength)
       setProject({ ...project, [descriptionType]: event.target.value });
-    
   };
 
   const handleFileInputClick = () => {};
@@ -358,11 +330,6 @@ export default function EnterDetails({
               Date
             </Typography>
             <div className={classes.inlineBlock}>
-              {errors.start_date.error && (
-                <Typography color="error" className={classes.error}>
-                  {errors.start_date.errorMessage}
-                </Typography>
-              )}
               <DatePicker
                 className={classes.datePicker}
                 label="Start date"
@@ -372,11 +339,6 @@ export default function EnterDetails({
               />
               {statusesWithEndDate.includes(project.status) && (
                 <>
-                  {errors.end_date.error && (
-                    <Typography color="error" className={classes.error}>
-                      {errors.end_date.errorMessage}
-                    </Typography>
-                  )}
                   <DatePicker
                     className={classes.datePicker}
                     label="End date"
@@ -418,11 +380,6 @@ export default function EnterDetails({
                   onClick={() => handleFileInputClick()}
                   onSubmit={() => handleFileSubmit(event)}
                 />
-                {errors.image.error && (
-                  <Typography className={classes.error} color="error">
-                    {errors.image.errorMessage}
-                  </Typography>
-                )}
                 <div className={classes.imageZone}>
                   <div className={classes.addPhotoWrapper}>
                     <div className={classes.addPhotoContainer}>
@@ -451,11 +408,6 @@ export default function EnterDetails({
                   </IconButton>
                 </Tooltip>
               </Typography>
-              {errors.short_description.error && (
-                <Typography color="error" className={classes.error}>
-                  {errors.short_description.errorMessage}
-                </Typography>
-              )}
               <div className={classes.shortDescriptionWrapper}>
                 <TextField
                   variant="outlined"
@@ -465,7 +417,6 @@ export default function EnterDetails({
                   helperText={
                     "Briefly summarise what you are doing (up to 240 characters)\n\nPlease only use English!"
                   }
-                  error={errors.short_description.error}
                   ref={shortDescriptionRef}
                   InputLabelProps={{
                     shrink: true
@@ -498,17 +449,11 @@ export default function EnterDetails({
                 </IconButton>
               </Tooltip>
             </Typography>
-            {errors.description.error && (
-              <Typography color="error" className={classes.error}>
-                {errors.description.errorMessage}
-              </Typography>
-            )}
             <TextField
               variant="outlined"
               fullWidth
               multiline
               rows={9}
-              error={errors.description.error}
               onChange={event => onDescriptionChange(event, "description")}
               helperText={"Describe your project in detail. Please only use English!"}
               placeholder={`Describe your project in more detail.\n\n-What are you trying to achieve?\n-How are you trying to achieve it\n-What were the biggest challenges?\n-What insights have you gained during the implementation?`}

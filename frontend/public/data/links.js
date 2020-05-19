@@ -23,5 +23,5 @@ export default [
     iconName: "ImportantDevicesIcon",
     text: "Design prototype",
     internal: false
-  },  
+  }
 ];

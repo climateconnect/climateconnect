@@ -29,22 +29,22 @@ const useStyles = makeStyles(theme => {
 export default function InfoLink({ data }) {
   const classes = useStyles();
 
-  //use <Link> component only if link href is also on the climateconnect.earth domain  
+  //use <Link> component only if link href is also on the climateconnect.earth domain
   return (
     <Typography variant="h4" color="primary" className={classes.root}>
-      {data.internal ?
+      {data.internal ? (
         <Link href={data.href}>
           <a className={classes.link}>
             <data.icon className={classes.icon} name={data.iconName} />
             <div className={classes.linkText}>{data.text}</div>
           </a>
         </Link>
-      :
+      ) : (
         <a href={data.href} className={classes.link} target="_blank" rel="noopener noreferrer">
           <data.icon className={classes.icon} name={data.iconName} />
           <div className={classes.linkText}>{data.text}</div>
         </a>
-      }        
+      )}
     </Typography>
-    );
+  );
 }
