@@ -18,7 +18,7 @@ export default [
     internal: true
   },
   {
-    href: "https://xd.adobe.com/view/395518bf-7e51-4eb2-6ff2-3f1b57fdaa17-4f64/",
+    href: "https://xd.adobe.com/view/263c33d4-4ee4-441b-7c68-f4533c94f5ee-500d/",
     icon: ImportantDevicesIcon,
     iconName: "ImportantDevicesIcon",
     text: "Design prototype",

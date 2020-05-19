@@ -1,7 +1,7 @@
 //global imports
 import React from "react";
 import WideLayout from "../src/components/layouts/WideLayout";
-import { Typography, Container, Button } from "@material-ui/core";
+import { Typography, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 //data
 import about_page_info from "../public/data/about_page_info";
@@ -15,9 +15,6 @@ import InfoBubble from "../src/components/about/InfoBubble";
 import InfoLink from "../src/components/about/InfoLink";
 import MemberCarousel from "../src/components/about/MemberCarousel";
 import QuoteSlideShow from "../src/components/about/QuoteSlideShow";
-//icons
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -141,15 +138,17 @@ export default function About() {
           ))}
         </Container>
         <QuoteSlideShow image={quotes_with_images[1].image_path} className={classes.quoteSlideShow}/>
-        <Typography
-          component="h2"
-          variant="h3"
-          color="primary"
-          className={`${classes.centeredText}  ${classes.sectionHeadline}`}
-        >
-          Our Team
-        </Typography>
-        <MemberCarousel members={shuffle(members)} className={classes.memberGrid} />
+        <Container maxWidth="lg">
+          <Typography
+            component="h2"
+            variant="h3"
+            color="primary"
+            className={`${classes.centeredText}  ${classes.sectionHeadline}`}
+          >
+            Our Team
+          </Typography>
+          <MemberCarousel members={shuffle(members)} className={classes.memberGrid} />
+        </Container>
         <QuoteSlideShow image={quotes_with_images[2].image_path} className={classes.quoteSlideShow}/>
         <Typography
           component="h2"
@@ -171,6 +170,14 @@ export default function About() {
           {open_positions.map((info, index) => (
             <InfoBubble data={info} key={index} iconColor="secondary" textColor="primary" bold={true} maxWidth={330}/>
           ))}
+          <Typography
+            component="h5"
+            variant="h4"
+            color="secondary"
+            className={`${classes.centeredText} ${classes.textBlock}`}
+          >
+            Send your application to contact@climateconnect.earth
+          </Typography>
         </Container>
         <Typography
           component="h2"
