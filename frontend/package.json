@@ -11,7 +11,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start --port $PORT",
-    "deploy": "npm run build && npm run export"
+    "export": "next export",
+    "deploy": "yarn build && yarn export"
   },
   "jest": {
     "setupFiles": [
