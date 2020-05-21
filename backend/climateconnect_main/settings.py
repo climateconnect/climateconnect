@@ -153,4 +153,5 @@ REST_FRAMEWORK = {
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 # TODO: point to Google cloud storage if we aren't in testing environment
 MEDIA_ROOT = env('CLOUD_STORAGE_ROOT')+'/../media/'
+print("Dip Root {}".format(MEDIA_ROOT))
 MEDIA_URL = '/media/'
