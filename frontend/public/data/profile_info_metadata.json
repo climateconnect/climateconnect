@@ -1,6 +1,7 @@
 {
   "availability": {
     "name": "Availability",
+    "key": "availability",
     "type": "select",
     "missingMessage": "This user hasn't specified their availibility yet.",
     "options": [
@@ -48,6 +49,7 @@
   },
   "skills": {
     "name": "Skills",
+    "key": "skills",
     "type": "array",
     "addText": "Add skill",
     "missingMessage": "This user hasn't added their skills yet",
@@ -56,11 +58,13 @@
   "bio": {
     "name": "Bio",
     "type": "text",
+    "key": "bio",
     "missingMessage": "This user hasn't added a bio yet.",
     "maxLength": 240
   },
   "location": {
     "name": "Location",
+    "key": "location",
     "missingMessage": "This user hasn't specified their location yet.",
     "type": "location"
   }

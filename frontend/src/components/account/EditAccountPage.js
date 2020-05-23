@@ -312,6 +312,7 @@ export default function EditAccountPage({
         }
       };
       const i = getFullInfoElement(infoMetadata, key, info[key]);
+      console.log(i);
       if (i.type === "array") {
         return displayInfoArrayData(key, i);
       } else if (i.type === "select") {
@@ -319,9 +320,9 @@ export default function EditAccountPage({
           <div key={key} className={classes.infoElement}>
             <SelectField
               className={classes.selectOption}
-              values={i.options}
+              options={i.options}
               label={i.name}
-              defaultValue={i.value}
+              defaultValue={{ name: i.value, key: i.value }}
               onChange={handleChange}
             />
           </div>

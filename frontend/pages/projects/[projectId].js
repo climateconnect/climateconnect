@@ -66,7 +66,7 @@ function ProjectLayout({ project }) {
             onChange={handleTabChange}
             indicatorColor="primary"
           >
-            <Tab color="primary" label="Project" />
+            <Tab label="Project" />
             <Tab label="Team" />
             <Tab label="Discussion" />
           </Tabs>
