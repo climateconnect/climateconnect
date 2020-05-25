@@ -39,6 +39,11 @@ class Project(models.Model):
     PROJECT_CANCELLED = "cancelled"
     PROJECT_RECURRING = "recurring"
 
+    PROJECT_STATUS_LIST = [
+        PROJECT_IDEA, PROJECT_IN_PROGRESS, PROJECT_FINISHED,
+        PROJECT_CANCELLED, PROJECT_RECURRING
+    ]
+
     PROJECT_STATUSES = (
         (PROJECT_IDEA, "Idea"),
         (PROJECT_IN_PROGRESS, "In Progress"),
@@ -173,7 +178,7 @@ class ProjectParents(models.Model):
 
     order = models.IntegerField(
         help_text="Order in which project should be listed",
-        verbose_name="Order"
+        verbose_name="Order", unique=True
     )
 
     created_at = models.DateTimeField(
@@ -190,7 +195,7 @@ class ProjectParents(models.Model):
 
     class Meta:
         app_label = 'organization'
-        verbose_name = "Project Parents"
+        verbose_name_plural = "Project Parents"
         unique_together = [['project', 'order']]
 
     def __str__(self):
