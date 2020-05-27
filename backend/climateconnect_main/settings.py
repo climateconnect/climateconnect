@@ -14,7 +14,10 @@ import os
 from dotenv import find_dotenv, load_dotenv
 load_dotenv(find_dotenv('.backend_env'))
 env = os.environ.get
+import logging
+logger = logging.getLogger(__name__)
 
+logger.error(env)
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -139,7 +142,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+REPOSITORY_ROOT = os.path.dirname(BASE_DIR)
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(REPOSITORY_ROOT, 'static/')
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -150,7 +156,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100
 }
 
-SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
-# TODO: point to Google cloud storage if we aren't in testing environment
-MEDIA_ROOT = SITE_ROOT+'/../media/' if env('ENVIRONMENT') in ('development', 'test',) else env('CLOUD_STORAGE_ROOT')+'/../media/'
 MEDIA_URL = '/media/'
+# TODO: point to Google cloud storage if we aren't in testing environment
+# MEDIA_ROOT = SITE_ROOT+'/../media/' if env('ENVIRONMENT') in ('development', 'test',) else env('CLOUD_STORAGE_ROOT')
+if env('ENVIRONMENT') in ('development', 'test'):
+    MEDIA_ROOT = os.path.join(REPOSITORY_ROOT, 'media/')
+else:
+    MEDIA_ROOT = os.path.join(env('CLOUD_STORAGE_ROOT'), 'media/')
