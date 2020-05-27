@@ -67,6 +67,7 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
+    "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com"
 ]
 APPEND_SLASH = False
 
