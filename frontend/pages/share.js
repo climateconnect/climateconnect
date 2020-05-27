@@ -92,7 +92,6 @@ export default function Share() {
 }
 
 const defaultProjectValues = {
-  name: "test",
   collaborators_welcome: true,
   status: DEFAULT_STATUS,
   skills: [],

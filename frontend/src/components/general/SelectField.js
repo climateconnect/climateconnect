@@ -1,5 +1,13 @@
 import React from "react";
 import { TextField, MenuItem, Checkbox, ListItemText } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
+
+const useStyles = makeStyles({
+  white: {
+    color: "white"
+  }
+});
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -24,6 +32,8 @@ export default function SelectField({
   multiple,
   values
 }) {
+  const classes = useStyles();
+
   if (!defaultValue) defaultValue = "";
   const [value, setValue] = React.useState({
     name: defaultValue.name,
@@ -60,8 +70,14 @@ export default function SelectField({
         if (multiple)
           return (
             <MenuItem key={value.key} value={value.name}>
-              <Checkbox checked={values.indexOf(value.name) > -1} />
-              <ListItemText primary={value.name} />
+              <Checkbox
+                checked={values.indexOf(value.name) > -1}
+                checkedIcon={<CheckBoxIcon className={classes.white} />}
+              />
+              <ListItemText
+                className={values.indexOf(value.name) > -1 && classes.white}
+                primary={value.name}
+              />
             </MenuItem>
           );
         else

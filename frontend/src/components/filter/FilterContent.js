@@ -5,7 +5,9 @@ export default function SearchOrganizationsContent({
   className,
   type,
   possibleFilters,
-  applyFilters
+  applyFilters,
+  filtersExpanded,
+  unexpandFilters
 }) {
   return (
     <FilterFields
@@ -13,6 +15,8 @@ export default function SearchOrganizationsContent({
       className={className}
       possibleFilters={possibleFilters}
       applyFilters={applyFilters}
+      filtersExpanded={filtersExpanded}
+      unexpandFilters={unexpandFilters}
     />
   );
 }

@@ -6,7 +6,6 @@ import project_categories from "./project_categories.json";
 import GroupIcon from "@material-ui/icons/Group";
 import ExploreOutlinedIcon from "@material-ui/icons/ExploreOutlined";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
-
 export default {
   projects: [
     {
@@ -34,11 +33,11 @@ export default {
     },
     {
       icon: ExploreOutlinedIcon,
-      iconName: "ExploreOutlinedIcon",
-      title: "Category",
-      type: "multiselect",
-      options: project_categories,
-      key: "project_category"
+      iconName: "ExploreIcon",
+      title: "Select Category",
+      type: "openMultiSelectDialogButton",
+      key: "category",
+      itemsToChooseFromType: "project categories"
     },
     {
       icon: GroupAddIcon,
@@ -56,6 +55,15 @@ export default {
           name: "no"
         }
       ]
+    },
+    {
+      icon: GroupAddIcon,
+      iconName: "ExploreIcon",
+      showIf: { key: "collaboration", value: "yes" },
+      title: "Select Skills",
+      type: "openMultiSelectDialogButton",
+      key: "skills",
+      itemsToChooseFromType: "skills"
     }
   ],
   members: [

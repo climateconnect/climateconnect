@@ -79,6 +79,10 @@ export default function Index({ projectsObject }) {
     setFiltersExpanded(!filtersExpanded);
   };
 
+  const unexpandFilters = () => {
+    setFiltersExpanded(false)
+  }
+
   const loadMoreProjects = async page => {
     const newProjectsObject = await getProjects(page);
     const newProjects = newProjectsObject.projects;
@@ -151,6 +155,8 @@ export default function Index({ projectsObject }) {
                         type={typesByTabValue[0]}
                         className={classes.tabContent}
                         applyFilters={applyNewFilters}
+                        filtersExpanded={filtersExpanded}
+                        unexpandFilters={unexpandFilters}
                         possibleFilters={possibleFilters[typesByTabValue[0]]}
                       />
                     </TabContent>
@@ -159,6 +165,8 @@ export default function Index({ projectsObject }) {
                         className={classes.tabContent}
                         type={typesByTabValue[1]}
                         applyFilters={applyNewFilters}
+                        filtersExpanded={filtersExpanded}
+                        unexpandFilters={unexpandFilters}
                         possibleFilters={possibleFilters[typesByTabValue[1]]}
                       />
                     </TabContent>
@@ -167,6 +175,8 @@ export default function Index({ projectsObject }) {
                         className={classes.tabContent}
                         type={typesByTabValue[2]}
                         applyFilters={applyNewFilters}
+                        filtersExpanded={filtersExpanded}
+                        unexpandFilters={unexpandFilters}
                         possibleFilters={possibleFilters[typesByTabValue[2]]}
                       />
                     </TabContent>
