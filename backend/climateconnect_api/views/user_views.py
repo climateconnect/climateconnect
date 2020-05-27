@@ -65,11 +65,11 @@ class SignUpView(APIView):
         user.set_password(request.data['password'])
         user.save()
 
-        url_slug = (user.first_name + user.last_name).lower() + user.id
+        url_slug = (user.first_name + user.last_name).lower() + str(user.id)
 
         UserProfile.objects.create(
             user=user, country=request.data['country'],
-            state=request.data['state'], city=request.data['city'],
+            city=request.data['city'],
             url_slug=url_slug
         )
 
