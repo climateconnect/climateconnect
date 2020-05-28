@@ -55,10 +55,10 @@ export default function Signup() {
       country: values.country,
       city: values.city
     };
-    let config = {
+    const config = {
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
+        Accept: "application/json",
+        "Content-Type": "application/json"
       }
     };
     axios

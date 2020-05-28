@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => {
     }),
     verticalFlexContainer: {
       flexDirection: "column"
-    },    
+    },
     iconLabel: {
       display: "flex",
       alignItems: "center"
@@ -58,8 +58,8 @@ export default function Filters({
   justifyContent
 }) {
   const classes = useStyles({
-    justifyContent: justifyContent?justifyContent:"space-around",
-    filterElementMargin: (justifyContent && justifyContent != "space-around")?1:0
+    justifyContent: justifyContent ? justifyContent : "space-around",
+    filterElementMargin: justifyContent && justifyContent != "space-around" ? 1 : 0
   });
   return (
     <>
@@ -77,7 +77,8 @@ export default function Filters({
                 }
                 type={filter.type}
                 value={currentFilters[filter.key]}
-                className={`${classes.field} ${classes.filterElement} ${isInOverlay && classes.overlayField}`}
+                className={`${classes.field} ${classes.filterElement} ${isInOverlay &&
+                  classes.overlayField}`}
                 variant="outlined"
                 size="small"
                 onChange={event => handleValueChange(filter.key, event.target.value)}
@@ -93,7 +94,8 @@ export default function Filters({
             return (
               <SelectField
                 options={filter.options}
-                className={`${classes.field} ${classes.filterElement} ${isInOverlay && classes.overlayField}`}
+                className={`${classes.field} ${classes.filterElement} ${isInOverlay &&
+                  classes.overlayField}`}
                 multiple={filter.type === "multiselect"}
                 values={filter.type === "multiselect" && currentFilters[filter.key]}
                 label={
@@ -124,11 +126,15 @@ export default function Filters({
             if (!filter.showIf || currentFilters[filter.showIf.key] === filter.showIf.value) {
               return (
                 <div key={filter.key}>
-                  <Button variant="outlined" className={`${classes.filterElement} ${isInOverlay && classes.overlayField}`} onClick={() => handleClickDialogOpen(filter.key)}>
+                  <Button
+                    variant="outlined"
+                    className={`${classes.filterElement} ${isInOverlay && classes.overlayField}`}
+                    onClick={() => handleClickDialogOpen(filter.key)}
+                  >
                     {filter.title}
                   </Button>
                   <MultiLevelSelectDialog
-                    open={open[filter.key]?true:false}
+                    open={open[filter.key] ? true : false}
                     onClose={selectedSkills => handleClickDialogClose(filter.key, selectedSkills)}
                     type={filter.itemsToChooseFromType}
                     items={currentFilters[filter.key]}

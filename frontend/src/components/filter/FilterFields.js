@@ -83,10 +83,10 @@ export default function FilterFields({
             handleClickDialogClose={handleClickDialogClose}
             filtersExpanded={filtersExpanded}
             unexpandFilters={unexpandFilters}
-            handleUnselectFilter={handleUnselectFilter}            
+            handleUnselectFilter={handleUnselectFilter}
           />
         </>
-      ) : (isMediumScreen && possibleFilters.length>3) ? (
+      ) : isMediumScreen && possibleFilters.length > 3 ? (
         <>
           <Filters
             possibleFilters={possibleFiltersFirstHalf}
@@ -119,7 +119,7 @@ export default function FilterFields({
           handleClickDialogOpen={handleClickDialogOpen}
           open={open}
           handleClickDialogClose={handleClickDialogClose}
-          justifyContent = {type === "projects" ? "space-around" : "flex-start"}
+          justifyContent={type === "projects" ? "space-around" : "flex-start"}
         />
       )}
       {

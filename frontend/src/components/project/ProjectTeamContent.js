@@ -14,11 +14,16 @@ function getTeamWithAdditionalInfo(team) {
         text: m.timeperweek + (m.timeperweek > 1 ? " hours" : " hour") + " per week",
         importance: "low"
       });
-    return {...m, additionalInfo: additionalInfo}
+    return { ...m, additionalInfo: additionalInfo };
   });
 }
 
 export default function TeamContent({ team }) {
-
-  return <ProfilePreviews profiles={getTeamWithAdditionalInfo(team)} allowMessage showAdditionalInfo={true} />;
+  return (
+    <ProfilePreviews
+      profiles={getTeamWithAdditionalInfo(team)}
+      allowMessage
+      showAdditionalInfo={true}
+    />
+  );
 }

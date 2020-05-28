@@ -1,19 +1,7 @@
 import React from "react";
-import { Dialog, Button } from "@material-ui/core";
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { makeStyles } from '@material-ui/core/styles';
-import GenericDialog from '../dialogs/GenericDialog';
-import Filters from './Filters';
-import SelectedFilters from './SelectedFilters';
-
-const useStyles = makeStyles(theme => {
-  return {
-    filterButton: {
-      borderColor: "#707070",
-      height: 40
-    }
-  }
-})
+import GenericDialog from "../dialogs/GenericDialog";
+import Filters from "./Filters";
+import SelectedFilters from "./SelectedFilters";
 
 export default function FilterOverlay({
   filtersExpanded,
@@ -27,14 +15,13 @@ export default function FilterOverlay({
   handleClickDialogClose,
   handleUnselectFilter
 }) {
-  const classes = useStyles();
   const onClose = () => {
     unexpandFilters();
-  }
+  };
   return (
     <GenericDialog
-      fullScreen 
-      open={filtersExpanded?filtersExpanded:false} 
+      fullScreen
+      open={filtersExpanded ? filtersExpanded : false}
       useApplyButton
       applyText="Apply filters"
       onClose={onClose}
@@ -58,5 +45,5 @@ export default function FilterOverlay({
         handleUnselectFilter={handleUnselectFilter}
       />
     </GenericDialog>
-    );
+  );
 }

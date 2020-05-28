@@ -10,9 +10,9 @@ import FilterSearchBar from "../src/components/filter/FilterSearchBar";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import FilterContent from "../src/components/filter/FilterContent";
 import possibleFilters from "./../public/data/possibleFilters";
-import OrganizationPreviews from '../src/components/organization/OrganizationPreviews';
-import ProfilePreviews from '../src/components/profile/ProfilePreviews';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
+import OrganizationPreviews from "../src/components/organization/OrganizationPreviews";
+import ProfilePreviews from "../src/components/profile/ProfilePreviews";
+import LocationOnIcon from "@material-ui/icons/LocationOn";
 
 import fakeProjectData from "../public/data/projects.json";
 import fakeOrganizationData from "../public/data/organizations.json";
@@ -58,18 +58,18 @@ const useStyles = makeStyles(theme => {
 
 export default function Index({ projectsObject, organizationsObject, membersObject }) {
   const [hasMore, setHasMore] = React.useState({
-    projects: true, 
-    organizations: true, 
+    projects: true,
+    organizations: true,
     members: true
-  });  
+  });
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const [tabValue, setTabValue] = React.useState(0);
   const typesByTabValue = ["projects", "organizations", "members"];
   const [filtersExpanded, setFiltersExpanded] = React.useState(
-    typesByTabValue.reduce((obj, type)=> {
+    typesByTabValue.reduce((obj, type) => {
       obj[type] = false;
-      return obj
+      return obj;
     }, {})
   );
   const [filters, setFilters] = React.useState({
@@ -89,52 +89,54 @@ export default function Index({ projectsObject, organizationsObject, membersObje
 
   const onClickExpandFilters = () => {
     const key = typesByTabValue[tabValue];
-    setFiltersExpanded({...filtersExpanded, [key]: !filtersExpanded[key]});
+    setFiltersExpanded({ ...filtersExpanded, [key]: !filtersExpanded[key] });
   };
 
   const unexpandFilters = () => {
-    setFiltersExpanded({...filtersExpanded, [typesByTabValue[tabValue]]: false});
-  }
+    setFiltersExpanded({ ...filtersExpanded, [typesByTabValue[tabValue]]: false });
+  };
 
   const loadMoreProjects = async page => {
     const newProjectsObject = await getProjects(page);
     const newProjects = newProjectsObject.projects;
-    setHasMore({...hasMore, projects: newProjectsObject.hasMore});
+    setHasMore({ ...hasMore, projects: newProjectsObject.hasMore });
     return [...newProjects];
   };
 
   const loadMoreOrganizations = async page => {
     const newOrganizationsObject = await getOrganizations(page);
     const newOrganizations = newOrganizationsObject.organizations;
-    setHasMore({...hasMore, organizations: newOrganizationsObject.hasMore});
+    setHasMore({ ...hasMore, organizations: newOrganizationsObject.hasMore });
     return [...newOrganizations];
   };
 
   const loadMoreMembers = async page => {
     const newMembersObject = await getMembers(page);
     const newMembers = membersWithAdditionalInfo(newMembersObject.members);
-    setHasMore({...hasMore, members: newMembersObject.hasMore});
+    setHasMore({ ...hasMore, members: newMembersObject.hasMore });
     return [...newMembers];
   };
 
-  const membersWithAdditionalInfo = (members) => {
+  const membersWithAdditionalInfo = members => {
     return members.map(p => {
       return {
         ...p,
-        additionalInfo: [{
-          text: p.info.location,
-          icon: LocationOnIcon,
-          iconName: "LocationOnIcon",
-          importance: "high"
-        }]
-      }
+        additionalInfo: [
+          {
+            text: p.info.location,
+            icon: LocationOnIcon,
+            iconName: "LocationOnIcon",
+            importance: "high"
+          }
+        ]
+      };
     });
-  }
+  };
 
   const applyNewFilters = (type, newFilters) => {
     setFilters({ ...filters, [type]: newFilters });
   };
-  
+
   return (
     <>
       {process.env.PRE_LAUNCH === "true" ? (
@@ -175,23 +177,13 @@ export default function Index({ projectsObject, organizationsObject, membersObje
             indicatorColor="primary"
             textColor="primary"
           >
-            <Tab
-              label={capitalizeFirstLetter(typesByTabValue[0])}
-              className={classes.tab}
-            />
-            <Tab
-              label={capitalizeFirstLetter(typesByTabValue[1])}
-              className={classes.tab}
-            />
-            <Tab
-              label={capitalizeFirstLetter(typesByTabValue[2])}
-              className={classes.tab}
-            />
+            <Tab label={capitalizeFirstLetter(typesByTabValue[0])} className={classes.tab} />
+            <Tab label={capitalizeFirstLetter(typesByTabValue[1])} className={classes.tab} />
+            <Tab label={capitalizeFirstLetter(typesByTabValue[2])} className={classes.tab} />
           </Tabs>
           <Divider />
           <TabContent value={tabValue} index={0}>
-            {
-              filtersExpanded[typesByTabValue[0]] &&
+            {filtersExpanded[typesByTabValue[0]] && (
               <FilterContent
                 className={classes.tabContent}
                 type={typesByTabValue[0]}
@@ -200,7 +192,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
                 unexpandFilters={unexpandFilters}
                 possibleFilters={possibleFilters[typesByTabValue[0]]}
               />
-            }
+            )}
             <ProjectPreviews
               projects={projectsObject.projects}
               loadFunc={loadMoreProjects}
@@ -208,8 +200,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
             />
           </TabContent>
           <TabContent value={tabValue} index={1} className={classes.tabContent}>
-            {
-              filtersExpanded[typesByTabValue[1]] &&
+            {filtersExpanded[typesByTabValue[1]] && (
               <FilterContent
                 className={classes.tabContent}
                 type={typesByTabValue[1]}
@@ -218,7 +209,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
                 unexpandFilters={unexpandFilters}
                 possibleFilters={possibleFilters[typesByTabValue[1]]}
               />
-            }
+            )}
             <OrganizationPreviews
               organizations={organizationsObject.organizations}
               loadFunc={loadMoreOrganizations}
@@ -226,8 +217,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
             />
           </TabContent>
           <TabContent value={tabValue} index={2} className={classes.tabContent}>
-            {
-              filtersExpanded[typesByTabValue[2]] &&
+            {filtersExpanded[typesByTabValue[2]] && (
               <FilterContent
                 className={classes.tabContent}
                 type={typesByTabValue[2]}
@@ -236,7 +226,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
                 unexpandFilters={unexpandFilters}
                 possibleFilters={possibleFilters[typesByTabValue[2]]}
               />
-            }
+            )}
             <ProfilePreviews
               profiles={membersWithAdditionalInfo(membersObject.members)}
               loadFunc={loadMoreMembers}
@@ -268,21 +258,21 @@ Index.getInitialProps = async () => {
 
 //TODO replace by db call. console.log is just there to pass lint
 async function getProjects(page) {
-  console.log(page)
+  console.log(page);
   const projects = fakeProjectData.projects.slice(0, 8);
   return { projects: [...projects, ...projects], hasMore: true };
 }
 
 //TODO replace by db call. console.log is just there to pass lint
 async function getOrganizations(page) {
-  console.log(page)
+  console.log(page);
   const organizations = fakeOrganizationData.organizations;
   return { organizations: [...organizations, ...organizations], hasMore: true };
 }
 
 //TODO replace by db call. console.log is just there to pass lint
 async function getMembers(page) {
-  console.log(page)
-  const profiles = fakeProfileData.profiles
+  console.log(page);
+  const profiles = fakeProfileData.profiles;
   return { members: [...profiles, ...profiles], hasMore: true };
 }

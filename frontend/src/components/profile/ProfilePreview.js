@@ -59,7 +59,7 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
           <div className={classes.additionalInfo}>
             {Object.keys(profile.additionalInfo).map((key, index) => {
               const item = profile.additionalInfo[key];
-              return(
+              return (
                 <Typography
                   key={index}
                   className={`${
@@ -68,10 +68,10 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
                       : classes.highImportanceInfo
                   }`}
                 >
-                  {item.icon && <item.icon name={item.iconName}/>}
+                  {item.icon && <item.icon name={item.iconName} />}
                   {item.text}
                 </Typography>
-              )
+              );
             })}
           </div>
         )}

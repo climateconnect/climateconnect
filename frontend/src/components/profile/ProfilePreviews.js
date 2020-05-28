@@ -16,13 +16,15 @@ const useStyles = makeStyles({
 export default function ProfilePreviews({ profiles, loadFunc, hasMore, showAdditionalInfo }) {
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(
-    profiles.map((o, index) => <GridItem key={index} profile={o} showAdditionalInfo={showAdditionalInfo}/>)
+    profiles.map((o, index) => (
+      <GridItem key={index} profile={o} showAdditionalInfo={showAdditionalInfo} />
+    ))
   );
   if (!loadFunc) hasMore = false;
   const loadMore = async page => {
     const newProfiles = await loadFunc(page);
     const newGridItems = newProfiles.map((o, index) => (
-      <GridItem key={(index + 1) * page} profile={o} showAdditionalInfo={showAdditionalInfo}/>
+      <GridItem key={(index + 1) * page} profile={o} showAdditionalInfo={showAdditionalInfo} />
     ));
     setGridItems([...gridItems, ...newGridItems]);
   };
@@ -52,7 +54,7 @@ export default function ProfilePreviews({ profiles, loadFunc, hasMore, showAddit
 function GridItem({ profile, showAdditionalInfo }) {
   return (
     <Grid item xs={12} sm={6} md={4} lg={3} component="li">
-      <ProfilePreview profile={profile} showAdditionalInfo={showAdditionalInfo}/>
+      <ProfilePreview profile={profile} showAdditionalInfo={showAdditionalInfo} />
     </Grid>
   );
 }
