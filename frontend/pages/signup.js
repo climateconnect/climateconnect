@@ -55,8 +55,14 @@ export default function Signup() {
       country: values.country,
       city: values.city
     };
+    const config = {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      }
+    };
     axios
-      .post(process.env.API_URL + "/signup/", payload)
+      .post(process.env.API_URL + "/signup/", payload, config)
       .then(function(/*response*/) {
         setCurStep(steps[2]);
       })

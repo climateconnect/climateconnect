@@ -102,6 +102,9 @@ const useStyles = makeStyles(theme => {
       width: 650,
       [theme.breakpoints.down("md")]: {
         width: 650 - theme.spacing(8)
+      },
+      [theme.breakpoints.down("xs")]: {
+        width: "auto"
       }
     },
     narrowScreenListWrapper: {
@@ -129,7 +132,7 @@ export default function MultiLevelSelector({
   itemNamePlural,
   isInPopup
 }) {
-  const [expanded, setExpanded] = React.useState("agriculture");
+  const [expanded, setExpanded] = React.useState(null);
 
   const classes = useStyles();
 

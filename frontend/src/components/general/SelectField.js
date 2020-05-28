@@ -1,20 +1,49 @@
 import React from "react";
-import { TextField } from "@material-ui/core";
+import { TextField, MenuItem, Checkbox, ListItemText } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
+
+const useStyles = makeStyles({
+  white: {
+    color: "white"
+  }
+});
 
 export default function SelectField({
   defaultValue,
   label,
-  values,
+  options,
   onChange,
   required,
   className,
-  InputProps
+  InputProps,
+  size,
+  multiple,
+  values,
+  isInOverlay
 }) {
+  const classes = useStyles();
+
   if (!defaultValue) defaultValue = "";
-  const [value, setValue] = React.useState(defaultValue);
+  const [value, setValue] = React.useState({
+    name: defaultValue.name,
+    key: defaultValue.key
+  });
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: isInOverlay ? "50%" : ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250
+      }
+    },
+    variant: "menu"
+  };
 
   const handleChange = event => {
-    setValue(event.target.value);
+    if (!multiple) setValue({ name: event.target.value });
     if (onChange) onChange(event);
   };
   //TODO: possibly address warnings, that are produced by this component
@@ -24,22 +53,40 @@ export default function SelectField({
       required={required}
       fullWidth
       label={label}
-      defaultValue={value}
+      value={multiple ? values : value.name}
       variant="outlined"
       onChange={handleChange}
       className={className}
       SelectProps={{
-        native: true
+        native: !multiple,
+        multiple: multiple,
+        renderValue: !multiple ? null : () => "Select more",
+        MenuProps: MenuProps
       }}
       InputProps={InputProps}
+      size={size}
     >
       {!defaultValue || defaultValue === "" ? <option value="" /> : <></>}
-      {values.map(value => {
-        return (
-          <option value={value.name} key={value.key} data-key={value.key}>
-            {value.name}
-          </option>
-        );
+      {options.map(value => {
+        if (multiple)
+          return (
+            <MenuItem key={value.key} value={value.name}>
+              <Checkbox
+                checked={values.indexOf(value.name) > -1}
+                checkedIcon={<CheckBoxIcon className={classes.white} />}
+              />
+              <ListItemText
+                className={values.indexOf(value.name) > -1 ? classes.white : classes.none}
+                primary={value.name}
+              />
+            </MenuItem>
+          );
+        else
+          return (
+            <option value={value.name} key={value.key} data-key={value.key}>
+              {value.name}
+            </option>
+          );
       })}
     </TextField>
   );

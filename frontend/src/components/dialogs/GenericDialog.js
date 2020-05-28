@@ -10,8 +10,15 @@ const useStyles = makeStyles(theme => ({
       padding: theme.spacing(8)
     }
   },
+  noScrollDialog: {
+    overflow: "hidden"
+  },
   dialogContent: {
     padding: theme.spacing(2)
+  },
+  scrollDialogContent: {
+    height: "auto",
+    overflow: "auto"
   },
   closeButton: {
     position: "absolute",
@@ -38,7 +45,9 @@ export default function GenericDialog({
   useApplyButton,
   onApply,
   applyText,
-  children
+  children,
+  topBarFixed,
+  fullScreen
 }) {
   const classes = useStyles();
 
@@ -46,7 +55,13 @@ export default function GenericDialog({
     onClose(false);
   };
   return (
-    <Dialog className={classes.dialog} onClose={handleCancel} open={open} maxWidth="md">
+    <Dialog
+      className={`${classes.dialog} ${topBarFixed && classes.noScrollDialog}`}
+      onClose={handleCancel}
+      open={open}
+      maxWidth="md"
+      fullScreen={fullScreen}
+    >
       <DialogTitle>
         {onClose ? (
           <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
@@ -65,7 +80,9 @@ export default function GenericDialog({
           </Button>
         )}
       </DialogTitle>
-      <div className={classes.dialogContent}>{children}</div>
+      <div className={`${classes.dialogContent} ${topBarFixed && classes.scrollDialogContent}`}>
+        {children}
+      </div>
     </Dialog>
   );
 }

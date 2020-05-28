@@ -46,9 +46,8 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function ProfilePreview({ profile, allowMessage, additionalInfo }) {
+export default function ProfilePreview({ profile, allowMessage, showAdditionalInfo }) {
   const classes = useStyles();
-
   return (
     <div className={classes.avatarWithInfo}>
       <Link href={"/profiles/" + profile.url} className={classes.disableHover}>
@@ -56,20 +55,24 @@ export default function ProfilePreview({ profile, allowMessage, additionalInfo }
         <Typography variant="h6" className={classes.name}>
           {profile.name}
         </Typography>
-        {additionalInfo && (
+        {showAdditionalInfo && (
           <div className={classes.additionalInfo}>
-            {Object.keys(additionalInfo).map((key, index) => (
-              <Typography
-                key={index}
-                className={`${
-                  additionalInfo[key].importance === "low"
-                    ? classes.lowImportanceInfo
-                    : classes.highImportanceInfo
-                }`}
-              >
-                {additionalInfo[key].text}
-              </Typography>
-            ))}
+            {Object.keys(profile.additionalInfo).map((key, index) => {
+              const item = profile.additionalInfo[key];
+              return (
+                <Typography
+                  key={index}
+                  className={`${
+                    item.importance === "low"
+                      ? classes.lowImportanceInfo
+                      : classes.highImportanceInfo
+                  }`}
+                >
+                  {item.icon && <item.icon name={item.iconName} />}
+                  {item.text}
+                </Typography>
+              );
+            })}
           </div>
         )}
       </Link>

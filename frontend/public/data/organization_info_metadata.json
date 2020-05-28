@@ -1,23 +1,31 @@
 {
   "location": {
-    "name": "Location"
+    "name": "Location",
+    "type": "location",
+    "key": "location"
   },
   "shortdescription": {
-    "name": "Description"
+    "name": "Description",
+    "key": "shortdescription"
   },
   "school": {
-    "name": "School/University"
+    "name": "School/University",
+    "key": "school"
   },
   "city": {
-    "name": "City"
+    "name": "City",
+    "key": "city"
   },
   "state": {
-    "name": "State"
+    "name": "State",
+    "key": "state"
   },
   "country": {
-    "name": "Country"
+    "name": "Country",
+    "key": "country"
   },
   "organ": {
-    "name": "Organ"
+    "name": "Organ",
+    "key": "organ"
   }
 }
