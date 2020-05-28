@@ -22,9 +22,16 @@ const useStyles = makeStyles(theme => {
 
 export default function SelectedFilters({ currentFilters, possibleFilters, handleUnselectFilter }) {
   const classes = useStyles();
+  const hasFilters = Object.keys(currentFilters).reduce((hasFilters, filter) => {
+    if(currentFilters[filter] && currentFilters[filter].length)
+      hasFilters = true
+    return hasFilters
+  }, false)
   return (
     <div>
-      <Typography>Selected Filters</Typography>
+      {hasFilters &&
+        <Typography>Selected Filters</Typography>
+      }
       {Object.keys(currentFilters).map(key => {
         if (
           currentFilters[key] &&
