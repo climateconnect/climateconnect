@@ -69,7 +69,7 @@ class SignUpView(APIView):
 
         UserProfile.objects.create(
             user=user, country=request.data['country'],
-            state=request.data['state'], city=request.data['city'],
+            city=request.data['city'],
             url_slug=url_slug
         )
 

@@ -29,7 +29,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('ENVIRONMENT') in ('development', 'test',)
+# DEBUG = env('ENVIRONMENT') in ('development', 'test',)
+DEBUG = True
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
 
@@ -67,6 +68,7 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
+    "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com"
 ]
 APPEND_SLASH = False
 
