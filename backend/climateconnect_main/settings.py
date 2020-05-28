@@ -144,8 +144,10 @@ USE_TZ = True
 
 REPOSITORY_ROOT = os.path.dirname(BASE_DIR)
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(REPOSITORY_ROOT, 'static/')
-
+if env('ENVIRONMENT') in ('development', 'test'):
+    STATIC_ROOT = os.path.join(REPOSITORY_ROOT, 'static/')
+else:
+    STATIC_ROOT = os.path.join(env('CLOUD_STORAGE_ROOT', 'static/'))
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
