@@ -9,17 +9,6 @@ const useStyles = makeStyles({
   }
 });
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
-};
-
 export default function SelectField({
   defaultValue,
   label,
@@ -30,7 +19,8 @@ export default function SelectField({
   InputProps,
   size,
   multiple,
-  values
+  values,
+  isInOverlay
 }) {
   const classes = useStyles();
 
@@ -39,6 +29,18 @@ export default function SelectField({
     name: defaultValue.name,
     key: defaultValue.key
   });
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: isInOverlay ? "50%" : ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250
+      }
+    },
+    variant: "menu"
+  };
 
   const handleChange = event => {
     if (!multiple) setValue({ name: event.target.value });
@@ -55,12 +57,11 @@ export default function SelectField({
       variant="outlined"
       onChange={handleChange}
       className={className}
-      MenuProps={MenuProps}
       SelectProps={{
         native: !multiple,
         multiple: multiple,
         renderValue: !multiple ? null : () => "Select more",
-        MenuProps: { variant: "menu" }
+        MenuProps: MenuProps
       }}
       InputProps={InputProps}
       size={size}
@@ -75,7 +76,7 @@ export default function SelectField({
                 checkedIcon={<CheckBoxIcon className={classes.white} />}
               />
               <ListItemText
-                className={values.indexOf(value.name) > -1 && classes.white}
+                className={values.indexOf(value.name) > -1 ? classes.white : classes.none}
                 primary={value.name}
               />
             </MenuItem>

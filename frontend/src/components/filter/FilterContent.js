@@ -1,7 +1,7 @@
 import React from "react";
 import FilterFields from "./FilterFields";
 
-export default function SearchOrganizationsContent({
+export default function FilterContent({
   className,
   type,
   possibleFilters,

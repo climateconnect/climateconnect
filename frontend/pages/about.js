@@ -180,16 +180,19 @@ export default function About() {
           >
             Open positions:
           </Typography>
-          {open_positions.map((info, index) => (
-            <InfoBubble
-              data={info}
-              key={index}
-              iconColor="secondary"
-              textColor="primary"
-              bold={true}
-              maxWidth={330}
-            />
-          ))}
+          {open_positions.map((info, index) => {
+            open_positions.map(o=>console.log(o))
+            return(
+              <InfoBubble
+                data={info}
+                key={index}
+                iconColor="secondary"
+                textColor="primary"
+                bold={true}
+                maxWidth={330}
+              />
+            )
+          })}
           <Typography
             component="h5"
             variant="h4"

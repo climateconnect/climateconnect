@@ -35,14 +35,12 @@ export default function FilterFields({
   const [open, setOpen] = React.useState({});
 
   const handleClickDialogOpen = prop => {
-    console.log(open);
     if (!open.prop) {
       setOpen({ ...open, [prop]: true });
     } else setOpen({ ...open, [prop]: !open[prop] });
   };
 
   const handleClickDialogClose = (prop, results) => {
-    console.log(results);
     if (results) {
       setCurrentFilters({ ...currentFilters, [prop]: results.map(x => x.name) });
     }
@@ -70,7 +68,6 @@ export default function FilterFields({
         )
     });
   };
-
   return (
     <div className={className}>
       {isSmallScreen ? (
@@ -79,7 +76,6 @@ export default function FilterFields({
             possibleFilters={possibleFilters}
             handleApplyFilters={handleApplyFilters}
             handleValueChange={handleValueChange}
-            isMediumScreen={isMediumScreen}
             currentFilters={currentFilters}
             withApplyButton={true}
             handleClickDialogOpen={handleClickDialogOpen}
@@ -87,15 +83,15 @@ export default function FilterFields({
             handleClickDialogClose={handleClickDialogClose}
             filtersExpanded={filtersExpanded}
             unexpandFilters={unexpandFilters}
+            handleUnselectFilter={handleUnselectFilter}            
           />
         </>
-      ) : isMediumScreen ? (
+      ) : (isMediumScreen && possibleFilters.length>3) ? (
         <>
           <Filters
             possibleFilters={possibleFiltersFirstHalf}
             handleApplyFilters={handleApplyFilters}
             handleValueChange={handleValueChange}
-            isMediumScreen={isMediumScreen}
             currentFilters={currentFilters}
             handleClickDialogOpen={handleClickDialogOpen}
             open={open}
@@ -105,7 +101,6 @@ export default function FilterFields({
             possibleFilters={possibleFiltersSecondHalf}
             handleApplyFilters={handleApplyFilters}
             handleValueChange={handleValueChange}
-            isMediumScreen={isMediumScreen}
             currentFilters={currentFilters}
             withApplyButton={true}
             applyButtonFixedWidth={true}
@@ -119,12 +114,12 @@ export default function FilterFields({
           possibleFilters={possibleFilters}
           handleApplyFilters={handleApplyFilters}
           handleValueChange={handleValueChange}
-          isMediumScreen={isMediumScreen}
           currentFilters={currentFilters}
           withApplyButton={true}
           handleClickDialogOpen={handleClickDialogOpen}
           open={open}
           handleClickDialogClose={handleClickDialogClose}
+          justifyContent = {type === "projects" ? "space-around" : "flex-start"}
         />
       )}
       {

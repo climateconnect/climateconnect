@@ -312,7 +312,6 @@ export default function EditAccountPage({
         }
       };
       const i = getFullInfoElement(infoMetadata, key, info[key]);
-      console.log(i);
       if (i.type === "array") {
         return displayInfoArrayData(key, i);
       } else if (i.type === "select") {

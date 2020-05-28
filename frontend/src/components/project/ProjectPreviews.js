@@ -8,7 +8,8 @@ const useStyles = makeStyles({
   reset: {
     margin: 0,
     padding: 0,
-    listStyleType: "none"
+    listStyleType: "none",
+    width: "100%"
   }
 });
 

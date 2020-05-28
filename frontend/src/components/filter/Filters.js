@@ -6,11 +6,14 @@ import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 
 const useStyles = makeStyles(theme => {
   return {
-    flexContainer: {
+    flexContainer: props => ({
       display: "flex",
-      justifyContent: "space-around",
+      justifyContent: props.justifyContent,
       marginBottom: theme.spacing(1)
-    },
+    }),
+    verticalFlexContainer: {
+      flexDirection: "column"
+    },    
     iconLabel: {
       display: "flex",
       alignItems: "center"
@@ -18,6 +21,13 @@ const useStyles = makeStyles(theme => {
     field: {
       display: "flex",
       width: 200
+    },
+    filterElement: props => ({
+      marginRight: theme.spacing(props.filterElementMargin)
+    }),
+    overlayField: {
+      marginBottom: theme.spacing(2),
+      width: "100%"
     },
     applyButton: {
       height: 40,
@@ -43,12 +53,17 @@ export default function Filters({
   currentFilters,
   handleClickDialogOpen,
   open,
-  handleClickDialogClose
+  handleClickDialogClose,
+  isInOverlay,
+  justifyContent
 }) {
-  const classes = useStyles();
+  const classes = useStyles({
+    justifyContent: justifyContent?justifyContent:"space-around",
+    filterElementMargin: (justifyContent && justifyContent != "space-around")?1:0
+  });
   return (
     <>
-      <div className={classes.flexContainer}>
+      <div className={`${classes.flexContainer} ${isInOverlay && classes.verticalFlexContainer}`}>
         {possibleFilters.map(filter => {
           if (filter.type === "text") {
             return (
@@ -62,7 +77,7 @@ export default function Filters({
                 }
                 type={filter.type}
                 value={currentFilters[filter.key]}
-                className={classes.field}
+                className={`${classes.field} ${classes.filterElement} ${isInOverlay && classes.overlayField}`}
                 variant="outlined"
                 size="small"
                 onChange={event => handleValueChange(filter.key, event.target.value)}
@@ -78,7 +93,7 @@ export default function Filters({
             return (
               <SelectField
                 options={filter.options}
-                className={classes.field}
+                className={`${classes.field} ${classes.filterElement} ${isInOverlay && classes.overlayField}`}
                 multiple={filter.type === "multiselect"}
                 values={filter.type === "multiselect" && currentFilters[filter.key]}
                 label={
@@ -97,6 +112,7 @@ export default function Filters({
                 }}
                 key={filter.key}
                 size="small"
+                isInOverlay={isInOverlay}
                 defaultValues={currentFilters[filter.key]}
                 onChange={event => {
                   handleValueChange(filter.key, event.target.value);
@@ -107,17 +123,17 @@ export default function Filters({
           if (filter.type === "openMultiSelectDialogButton") {
             if (!filter.showIf || currentFilters[filter.showIf.key] === filter.showIf.value) {
               return (
-                <>
-                  <Button variant="outlined" onClick={() => handleClickDialogOpen(filter.key)}>
+                <div key={filter.key}>
+                  <Button variant="outlined" className={`${classes.filterElement} ${isInOverlay && classes.overlayField}`} onClick={() => handleClickDialogOpen(filter.key)}>
                     {filter.title}
                   </Button>
                   <MultiLevelSelectDialog
-                    open={open[filter.key]}
+                    open={open[filter.key]?true:false}
                     onClose={selectedSkills => handleClickDialogClose(filter.key, selectedSkills)}
                     type={filter.itemsToChooseFromType}
                     items={currentFilters[filter.key]}
                   />
-                </>
+                </div>
               );
             }
           }
