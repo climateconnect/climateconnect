@@ -12,7 +12,7 @@ import TEMP_FEATURED_DATA from "../../public/data/organizations.json";
 import TEMP_PROJECT_DATA from "../../public/data/projects.json";
 import TEMP_MEMBER_DATA from "../../public/data/profiles.json";
 import TEMP_ORGANIZATION_TYPES from "./../../public/data/organization_types.json";
-import TEMP_INFOMETADATA from "./../../public/data/organization_info_metadata.json";
+import TEMP_INFOMETADATA from "./../../public/data/organization_info_metadata.js";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 

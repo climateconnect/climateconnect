@@ -10,10 +10,10 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 
 const useStyles = makeStyles(theme => {
   return {
-    wrapper: props =>({
+    wrapper: props => ({
       margin: "0 auto",
       display: "table",
-      marginTop: props.marginTop?theme.spacing(8):0,
+      marginTop: props.marginTop ? theme.spacing(8) : 0,
       [theme.breakpoints.down("sm")]: {
         marginTop: theme.spacing(4)
       }
@@ -140,7 +140,7 @@ export default function MultiLevelSelector({
 }) {
   const [expanded, setExpanded] = React.useState(null);
 
-  const useStylesProps = {marginTop: !isInPopup}
+  const useStylesProps = { marginTop: !isInPopup };
 
   const classes = useStyles(useStylesProps);
 
@@ -148,8 +148,6 @@ export default function MultiLevelSelector({
     if (expanded === key) setExpanded(null);
     else setExpanded(key);
   };
-  console.log('expanded:', expanded)
-  console.log(itemsToSelectFrom)
 
   const onClickSelect = item => {
     if (selected.length >= maxSelections) alert("You can only choose up to 3 " + itemNamePlural);
@@ -307,9 +305,14 @@ function ListToChooseFrom({
                         ${isSubList &&
                           (isNarrowScreen || isInPopup) &&
                           classes.narrowScreenSubListItem}
-                        ${(isSubList && index === itemsToSelectFrom.length-1 && (isNarrowScreen || isInPopup)) &&
+                        ${isSubList &&
+                          index === itemsToSelectFrom.length - 1 &&
+                          (isNarrowScreen || isInPopup) &&
                           classes.subListLastItem}
-                        ${(!isSubList && itemsToSelectFrom[index-1] && expanded === itemsToSelectFrom[index-1].key && (isNarrowScreen || isInPopup)) &&
+                        ${!isSubList &&
+                          itemsToSelectFrom[index - 1] &&
+                          expanded === itemsToSelectFrom[index - 1].key &&
+                          (isNarrowScreen || isInPopup) &&
                           classes.itemUnderExpandedSubList}
                         ${isSubList && index >= parentList.length && classes.borderLeft}`,
                 selected: classes.expanded

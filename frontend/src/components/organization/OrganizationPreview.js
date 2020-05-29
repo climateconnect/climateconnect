@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function OrganizationPreview({ organization }) {
+export default function OrganizationPreview({ organization, showMembers, showOrganizationType }) {
   const classes = useStyles();
   return (
     <Card
@@ -58,7 +58,11 @@ export default function OrganizationPreview({ organization }) {
         <Typography variant="subtitle1" component="h2" className={classes.bold}>
           {organization.name}
         </Typography>
-        <OrganizationMetaData organization={organization} />
+        <OrganizationMetaData
+          organization={organization}
+          showMembers={showMembers}
+          showOrganizationType={showOrganizationType}
+        />
       </CardContent>
     </Card>
   );

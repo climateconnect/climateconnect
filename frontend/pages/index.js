@@ -66,12 +66,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const [tabValue, setTabValue] = React.useState(0);
   const typesByTabValue = ["projects", "organizations", "members"];
-  const [filtersExpanded, setFiltersExpanded] = React.useState(
-    typesByTabValue.reduce((obj, type) => {
-      obj[type] = false;
-      return obj;
-    }, {})
-  );
+  const [filtersExpanded, setFiltersExpanded] = React.useState(false)
   const [filters, setFilters] = React.useState({
     projects: {},
     members: {},
@@ -88,12 +83,11 @@ export default function Index({ projectsObject, organizationsObject, membersObje
   };
 
   const onClickExpandFilters = () => {
-    const key = typesByTabValue[tabValue];
-    setFiltersExpanded({ ...filtersExpanded, [key]: !filtersExpanded[key] });
+    setFiltersExpanded(!filtersExpanded);
   };
 
   const unexpandFilters = () => {
-    setFiltersExpanded({ ...filtersExpanded, [typesByTabValue[tabValue]]: false });
+    setFiltersExpanded(false);
   };
 
   const loadMoreProjects = async page => {
@@ -133,8 +127,10 @@ export default function Index({ projectsObject, organizationsObject, membersObje
     });
   };
 
-  const applyNewFilters = (type, newFilters) => {
+  const applyNewFilters = (type, newFilters, closeFilters) => {
     setFilters({ ...filters, [type]: newFilters });
+    if(closeFilters)
+      setFiltersExpanded(false)
   };
 
   return (
@@ -150,7 +146,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
                 className={classes.filterButton}
                 onClick={onClickExpandFilters}
                 startIcon={
-                  filtersExpanded[typesByTabValue[tabValue]] ? (
+                  filtersExpanded ? (
                     <HighlightOffIcon color="primary" />
                   ) : (
                     <TuneIcon color="primary" />
@@ -159,7 +155,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
               >
                 Filter
               </Button>
-              {filtersExpanded[typesByTabValue[tabValue]] && (
+              {filtersExpanded && (
                 <div className={classes.searchBarContainer}>
                   <FilterSearchBar
                     label={searchBarLabels[typesByTabValue[tabValue]]}
@@ -183,12 +179,12 @@ export default function Index({ projectsObject, organizationsObject, membersObje
           </Tabs>
           <Divider />
           <TabContent value={tabValue} index={0}>
-            {filtersExpanded[typesByTabValue[0]] && (
+            {(filtersExpanded && tabValue ===0 ) && (
               <FilterContent
                 className={classes.tabContent}
                 type={typesByTabValue[0]}
                 applyFilters={applyNewFilters}
-                filtersExpanded={filtersExpanded[typesByTabValue[0]]}
+                filtersExpanded={filtersExpanded}
                 unexpandFilters={unexpandFilters}
                 possibleFilters={possibleFilters[typesByTabValue[0]]}
               />
@@ -200,12 +196,12 @@ export default function Index({ projectsObject, organizationsObject, membersObje
             />
           </TabContent>
           <TabContent value={tabValue} index={1} className={classes.tabContent}>
-            {filtersExpanded[typesByTabValue[1]] && (
+            {(filtersExpanded && tabValue === 1) && (
               <FilterContent
                 className={classes.tabContent}
                 type={typesByTabValue[1]}
                 applyFilters={applyNewFilters}
-                filtersExpanded={filtersExpanded[typesByTabValue[1]]}
+                filtersExpanded={filtersExpanded}
                 unexpandFilters={unexpandFilters}
                 possibleFilters={possibleFilters[typesByTabValue[1]]}
               />
@@ -214,15 +210,16 @@ export default function Index({ projectsObject, organizationsObject, membersObje
               organizations={organizationsObject.organizations}
               loadFunc={loadMoreOrganizations}
               hasMore={hasMore.organizations}
+              showOrganizationType
             />
           </TabContent>
           <TabContent value={tabValue} index={2} className={classes.tabContent}>
-            {filtersExpanded[typesByTabValue[2]] && (
+            {(filtersExpanded && tabValue === 2) && (
               <FilterContent
                 className={classes.tabContent}
                 type={typesByTabValue[2]}
                 applyFilters={applyNewFilters}
-                filtersExpanded={filtersExpanded[typesByTabValue[2]]}
+                filtersExpanded={filtersExpanded}
                 unexpandFilters={unexpandFilters}
                 possibleFilters={possibleFilters[typesByTabValue[2]]}
               />

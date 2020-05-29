@@ -23,7 +23,8 @@ const useStyles = makeStyles(theme => {
       width: 200
     },
     filterElement: props => ({
-      marginRight: theme.spacing(props.filterElementMargin)
+      marginRight: theme.spacing(props.filterElementMargin),
+      minHeight: 40
     }),
     overlayField: {
       marginBottom: theme.spacing(2),

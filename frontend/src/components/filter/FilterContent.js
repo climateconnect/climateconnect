@@ -23,10 +23,8 @@ export default function FilterContent({
 
   const [currentFilters, setCurrentFilters] = React.useState(
     possibleFilters.reduce((map, obj) => {
-      if (obj.type === "multiselect")
-        map[obj.key] = [];
-      else 
-        map[obj.key] = "";
+      if (obj.type === "multiselect") map[obj.key] = [];
+      else map[obj.key] = "";
       return map;
     }, {})
   );
@@ -51,7 +49,7 @@ export default function FilterContent({
   };
 
   const handleApplyFilters = () => {
-    applyFilters(type, currentFilters);
+    applyFilters(type, currentFilters, isSmallScreen);
   };
 
   const handleUnselectFilter = (filterName, filterKey) => {

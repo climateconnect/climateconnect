@@ -13,16 +13,34 @@ const useStyles = makeStyles({
   }
 });
 
-export default function OrganizationPreviews({ organizations, loadFunc, hasMore }) {
+export default function OrganizationPreviews({
+  organizations,
+  loadFunc,
+  hasMore,
+  showMembers,
+  showOrganizationType
+}) {
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(
-    organizations.map((o, index) => <GridItem key={index} organization={o} />)
+    organizations.map((o, index) => (
+      <GridItem
+        key={index}
+        organization={o}
+        showMembers={showMembers}
+        showOrganizationType={showOrganizationType}
+      />
+    ))
   );
   if (!loadFunc) hasMore = false;
   const loadMore = async page => {
     const newOrganizations = await loadFunc(page);
     const newGridItems = newOrganizations.map((o, index) => (
-      <GridItem key={(index + 1) * page} organization={o} />
+      <GridItem
+        key={(index + 1) * page}
+        organization={o}
+        showMembers={showMembers}
+        showOrganizationType={showOrganizationType}
+      />
     ));
     setGridItems([...gridItems, ...newGridItems]);
   };
@@ -49,10 +67,14 @@ export default function OrganizationPreviews({ organizations, loadFunc, hasMore 
   );
 }
 
-function GridItem({ organization }) {
+function GridItem({ organization, showMembers, showOrganizationType }) {
   return (
     <Grid item xs={12} sm={6} md={4} lg={3} component="li">
-      <OrganizationPreview organization={organization} />
+      <OrganizationPreview
+        organization={organization}
+        showMembers={showMembers}
+        showOrganizationType={showOrganizationType}
+      />
     </Grid>
   );
 }
