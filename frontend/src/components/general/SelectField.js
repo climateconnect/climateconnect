@@ -36,10 +36,12 @@ export default function SelectField({
     PaperProps: {
       style: {
         maxHeight: isInOverlay ? "50%" : ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250
+        width: 250,
+        marginTop: 40
       }
     },
-    variant: "menu"
+    variant: "menu",
+    getContentAnchorEl: null
   };
 
   const handleChange = event => {
