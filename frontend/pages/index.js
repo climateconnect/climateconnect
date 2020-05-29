@@ -155,14 +155,12 @@ export default function Index({ projectsObject, organizationsObject, membersObje
               >
                 Filter
               </Button>
-              {filtersExpanded && (
-                <div className={classes.searchBarContainer}>
-                  <FilterSearchBar
-                    label={searchBarLabels[typesByTabValue[tabValue]]}
-                    className={classes.filterSearchbar}
-                  />
-                </div>
-              )}
+              <div className={classes.searchBarContainer}>
+                <FilterSearchBar
+                  label={searchBarLabels[typesByTabValue[tabValue]]}
+                  className={classes.filterSearchbar}
+                />
+              </div>
             </div>
           </div>
           <Divider className={classes.mainDivider} />
