@@ -14,7 +14,11 @@ const useStyles = makeStyles(theme => ({
     overflow: "hidden"
   },
   dialogContent: {
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
+    [theme.breakpoints.down("md")]: {
+      padding: theme.spacing(1),
+      paddingTop: 0
+    }
   },
   scrollDialogContent: {
     height: "auto",
