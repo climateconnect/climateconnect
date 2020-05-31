@@ -17,7 +17,6 @@ env = os.environ.get
 import logging
 logger = logging.getLogger(__name__)
 
-logger.error(env)
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -96,6 +95,7 @@ WSGI_APPLICATION = 'climateconnect_main.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -143,13 +143,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-
-REPOSITORY_ROOT = os.path.dirname(BASE_DIR)
-STATIC_URL = '/static/'
-if env('ENVIRONMENT') in ('development', 'test'):
-    STATIC_ROOT = os.path.join(REPOSITORY_ROOT, 'static/')
-else:
-    STATIC_ROOT = os.path.join(env('CLOUD_STORAGE_ROOT', 'static/'))
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = env('GS_BUCKET_NAME')
+STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+STATIC_URL = 'https://storage.googleapis.com/{}/'.format(GS_BUCKET_NAME)
+STATIC_ROOT = "static/"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -159,11 +157,3 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100
 }
-
-MEDIA_URL = '/media/'
-# TODO: point to Google cloud storage if we aren't in testing environment
-# MEDIA_ROOT = SITE_ROOT+'/../media/' if env('ENVIRONMENT') in ('development', 'test',) else env('CLOUD_STORAGE_ROOT')
-if env('ENVIRONMENT') in ('development', 'test'):
-    MEDIA_ROOT = os.path.join(REPOSITORY_ROOT, 'media/')
-else:
-    MEDIA_ROOT = os.path.join(env('CLOUD_STORAGE_ROOT'), 'media/')

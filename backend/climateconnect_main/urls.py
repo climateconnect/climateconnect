@@ -19,12 +19,6 @@ from climateconnect_api.views import (
     status_views, user_views
 )
 from knox import views as knox_views
-from django.conf import settings
-from django.conf.urls.static import static
-import logging
-logger = logging.getLogger(__name__)
-
-logger.info(static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,4 +29,4 @@ urlpatterns = [
     path('api/my_profile/', user_views.PersonalProfileView.as_view(), name='user-profile-api'),
     path('api/members/', user_views.MemberProfilesView.as_view(), name="member-profiles-api"),
     path('api/', include('organization.urls')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
