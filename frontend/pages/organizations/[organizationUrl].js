@@ -2,6 +2,8 @@ import React from "react";
 import Link from "next/link";
 import { Typography, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import Cookies from "next-cookies";
+import axios from "axios";
 
 import WideLayout from "../../src/components/layouts/WideLayout";
 import AccountPage from "../../src/components/account/AccountPage";
@@ -13,6 +15,7 @@ import TEMP_PROJECT_DATA from "../../public/data/projects.json";
 import TEMP_MEMBER_DATA from "../../public/data/profiles.json";
 import TEMP_ORGANIZATION_TYPES from "./../../public/data/organization_types.json";
 import TEMP_INFOMETADATA from "./../../public/data/organization_info_metadata.js";
+import tokenConfig from '../../public/config/tokenConfig';
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -33,6 +36,7 @@ export default function OrganizationPage({
   organizationTypes,
   infoMetadata
 }) {
+  console.log(organization)
   return (
     <WideLayout title={organization ? organization.name + "'s profile" : "Not found"}>
       {organization ? (
@@ -51,8 +55,9 @@ export default function OrganizationPage({
 }
 
 OrganizationPage.getInitialProps = async ctx => {
+  const { token } = Cookies(ctx);
   return {
-    organization: await getOrganizationByUrlIfExists(ctx.query.organizationUrl),
+    organization: await getOrganizationByUrlIfExists(ctx.query.organizationUrl, token),
     projects: await getProjectsByOrganization(ctx.query.organizationUrl),
     members: await getMembersByOrganization(ctx.query.organizationUrl),
     organizationTypes: await getOrganizationTypes(),
@@ -106,8 +111,45 @@ function NoOrganizationFoundLayout() {
 }
 
 // These will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
-async function getOrganizationByUrlIfExists(organizationUrl) {
-  return TEMP_FEATURED_DATA.organizations.find(({ url }) => url === organizationUrl);
+async function getOrganizationByUrlIfExists(organizationUrl, token) {
+  console.log('getting organization by url')
+  try {
+    console.log('here is the token config')
+    console.log('token: ', token)
+    console.log(tokenConfig(token));
+    const resp = await axios.get(
+      process.env.API_URL + "/organizations/?search=" + organizationUrl,
+      tokenConfig(token)
+    );
+    console.log(resp.data.results[0])
+    if (resp.data.results.length === 0) return null;
+    else {
+      //console.log(resp.data.results[0]);
+      return parseOrganization(resp.data.results[0]);
+    }
+  } catch (err) {
+    //console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+function parseOrganization(organization) {
+  console.log(organization)
+  return {
+    url_slug: organization.url_slug,
+    background_image: organization.background_image,
+    name: organization.name,
+    image: organization.organization_image,
+    types: organization.types /* TODO get actual types, this is always empty.*/,
+    info: {
+      location: organization.city+", "+organization.country,
+      shortdescription: organization.short_description,
+      school: organization.school,
+      organ: organization.organ,
+      parent_organization: organization.parent_organization
+    }
+  }
 }
 
 async function getProjectsByOrganization(organizationUrl) {

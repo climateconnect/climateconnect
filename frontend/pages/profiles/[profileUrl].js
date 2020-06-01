@@ -16,6 +16,7 @@ import TEMP_PROJECT_DATA from "../../public/data/projects.json";
 import TEMP_ORGANIZATION_DATA from "../../public/data/organizations.json";
 import TEMP_PROFILE_TYPES from "./../../public/data/profile_types.json";
 import TEMP_INFOMETADATA from "./../../public/data/profile_info_metadata.json";
+import tokenConfig from '../../public/config/tokenConfig';
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -172,22 +173,6 @@ async function getProfileByUrlIfExists(profileUrl, token) {
     return null;
   }
 }
-
-const tokenConfig = token => {
-  // Headers
-  const config = {
-    headers: {
-      "Content-Type": "application/json"
-    }
-  };
-
-  // If token, add to headers config
-  if (token) {
-    config.headers["Authorization"] = `Token ${token}`;
-  }
-
-  return config;
-};
 
 function parseProfile(profile) {
   return {
