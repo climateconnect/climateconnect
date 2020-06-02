@@ -157,7 +157,7 @@ const helpTexts = {
 
 export default function EnterDetails({
   projectData,
-  setProjectData,
+  handleSetProjectData,
   goToNextStep,
   goToPreviousStep
 }) {
@@ -188,7 +188,7 @@ export default function EnterDetails({
     event.preventDefault();
     isProjectDataValid(project);
     if (isProjectDataValid(project)) {
-      setProjectData({ ...projectData, ...project });
+      handleSetProjectData({ ...project });
       goToNextStep();
     }
   };

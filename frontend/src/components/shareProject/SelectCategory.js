@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function SelectCategory({ project, setProject, goToNextStep, goToPreviousStep }) {
+export default function SelectCategory({ project, handleSetProjectData, goToNextStep, goToPreviousStep }) {
   const classes = useStyles();
   const [selectedCategories, setSelectedCategories] = React.useState(
     project.categories ? project.categories : []
@@ -37,13 +37,13 @@ export default function SelectCategory({ project, setProject, goToNextStep, goTo
     if (selectedCategories.length <= 0) alert("Please choose at least one category!");
     else if (selectedCategories.length > 3) alert("You can only choose up to 3 categories.");
     else {
-      setProject({ ...project, categories: selectedCategories });
+      handleSetProjectData({ categories: selectedCategories });
       goToNextStep();
     }
   };
 
   const onClickPreviousStep = () => {
-    setProject({ ...project, categories: selectedCategories });
+    handleSetProjectData({ categories: selectedCategories });
     goToPreviousStep();
   };
 

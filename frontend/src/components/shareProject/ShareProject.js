@@ -2,7 +2,7 @@ import React from "react";
 import Form from "../general/Form";
 import organizationsList from "../../../public/data/organizations.json";
 
-export default function Share({ project, setProject, goToNextStep }) {
+export default function Share({ project, handleSetProjectData, goToNextStep }) {
   //TODO: This should include only organizations in which the user is an admin
   const organizations = organizationsList.organizations.map(org => {
     return {
@@ -50,7 +50,7 @@ export default function Share({ project, setProject, goToNextStep }) {
 
   const onSubmit = (event, values) => {
     event.preventDefault();
-    setProject({ ...project, ...values });
+    handleSetProjectData({ ...values });
     goToNextStep();
   };
 
