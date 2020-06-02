@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Container, Tabs, Tab } from "@material-ui/core";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
+import Cookies from "next-cookies";
 
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectOverview from "../../src/components/project/ProjectOverview";
@@ -13,6 +14,8 @@ import ProjectCommentsContent from "../../src/components/project/ProjectComments
 import TEMP_FEATURED_DATA from "../../public/data/projects.json";
 import TEMP_FEATURED_PROFILE_DATA from "../../public/data/profiles.json";
 import TEMP_FEATURED_ORGANIZATION_DATA from "../../public/data/organizations.json";
+import tokenConfig from '../../public/config/tokenConfig';
+import axios from "axios";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -40,8 +43,9 @@ export default function ProjectPage({ project }) {
 }
 
 ProjectPage.getInitialProps = async ctx => {
+  const { token } = Cookies(ctx);
   return {
-    project: await getProjectByIdIfExists(ctx.query.projectId)
+    project: await getProjectByIdIfExists(ctx.query.projectId, token)
   };
 };
 
@@ -111,7 +115,25 @@ const sortByDate = (a, b) => {
 
 //these are really ugly functions but it doesn't matter since they will be replaced by db calls
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
-async function getProjectByIdIfExists(projectId) {
+async function getProjectByIdIfExists(projectUrl, token) {
+  try {
+    console.log(process.env.API_URL + "/projects/?search=" + projectUrl);
+    const resp = await axios.get(
+      process.env.API_URL + "/projects/?search=" + projectUrl,
+      tokenConfig(token)
+    );
+    console.log('made a request!')
+    console.log(resp.data.results)
+    if (resp.data.results.length === 0) return null;
+    else {
+      //console.log(resp.data.results[0]);
+      return parseProject(resp.data.results[0]);
+    }
+  } catch (err) {
+    //console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
   const project = { ...TEMP_FEATURED_DATA.projects.find(({ id }) => id === projectId) };
   project.team = await getFullProfiles(project.team);
   project.timeline_posts = await Promise.all(
@@ -145,6 +167,11 @@ async function getProjectByIdIfExists(projectId) {
     })
   );
   return { ...project };
+}
+
+function parseProject(project) {
+  console.log(project)
+  return null
 }
 
 async function getFullProfiles(shortProfiles) {
