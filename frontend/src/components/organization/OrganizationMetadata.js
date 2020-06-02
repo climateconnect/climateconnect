@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Tooltip } from "@material-ui/core";
 import PlaceIcon from "@material-ui/icons/Place";
 import GroupIcon from "@material-ui/icons/Group";
-import ExploreIcon from '@material-ui/icons/Explore';
+import ExploreIcon from "@material-ui/icons/Explore";
 import { makeStyles } from "@material-ui/core/styles";
 import organization_types from "./../../../public/data/organization_types.json";
 import organization_info_metadata from "../../../public/data/organization_info_metadata";
@@ -38,8 +38,8 @@ const useStyles = makeStyles(theme => {
 export default function OrganizationMetaData({ organization, showMembers, showOrganizationType }) {
   const classes = useStyles();
   const additionalInfo = organization.types.reduce((arr, type) => {
-    const fullType = organization_types.organization_types.find(ot => ot.key===type)
-    if(fullType.additionalInfo){
+    const fullType = organization_types.organization_types.find(ot => ot.key === type);
+    if (fullType.additionalInfo) {
       fullType.additionalInfo.map(i => {
         arr.push({
           key: i,
@@ -47,11 +47,11 @@ export default function OrganizationMetaData({ organization, showMembers, showOr
           value: organization.info[i],
           icon: organization_info_metadata[i].icon,
           iconName: organization_info_metadata[i].iconName
-        })
-      })
-      return arr
+        });
+      });
+      return arr;
     }
-  }, [])
+  }, []);
   return (
     <Box className={classes.root}>
       <Box className={classes.textContent}>
@@ -65,9 +65,9 @@ export default function OrganizationMetaData({ organization, showMembers, showOr
       {showMembers && (
         <Box>
           <span className={classes.cardIconBox}>
-          <Tooltip title="number of members">
-            <GroupIcon className={classes.cardIcon} />
-          </Tooltip>
+            <Tooltip title="number of members">
+              <GroupIcon className={classes.cardIcon} />
+            </Tooltip>
           </span>
           <span className={classes.textContent}>{organization.members.length} members</span>
         </Box>
@@ -82,26 +82,28 @@ export default function OrganizationMetaData({ organization, showMembers, showOr
             </span>
             <span className={classes.textContent}>
               {organization.types.map((type, index) => {
-                const fullType = organization_types.organization_types.find(ot => ot.key===type)
+                const fullType = organization_types.organization_types.find(ot => ot.key === type);
                 return (
-                  <React.Fragment key={index}>{fullType.name}{(index!==organization.types.length-1) && ", "}</React.Fragment>
-                )
+                  <React.Fragment key={index}>
+                    {fullType.name}
+                    {index !== organization.types.length - 1 && ", "}
+                  </React.Fragment>
+                );
               })}
             </span>
           </Box>
           {additionalInfo.map((i, index) => {
-            if(i.value)
-              return(
+            if (i.value)
+              return (
                 <Box key={index}>
                   <span className={classes.cardIconBox}>
                     <Tooltip title={i.name}>
                       <i.icon className={classes.cardIcon} />
                     </Tooltip>
-                  </span>                
+                  </span>
                   <span className={classes.textContent}>{i.value}</span>
-                  
                 </Box>
-              )
+              );
           })}
         </>
       )}

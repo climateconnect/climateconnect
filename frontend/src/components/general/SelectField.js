@@ -68,7 +68,7 @@ export default function SelectField({
       InputProps={InputProps}
       size={size}
     >
-      {((!defaultValue || defaultValue === "") && !multiple) && <option value="" />}
+      {(!defaultValue || defaultValue === "") && !multiple && <option value="" />}
       {options.map(value => {
         if (multiple)
           return (

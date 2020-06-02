@@ -3,6 +3,7 @@ import { Button, Container } from "@material-ui/core";
 import MultiLevelSelector from "./MultiLevelSelector";
 import { makeStyles } from "@material-ui/core/styles";
 import project_categories from "../../../public/data/project_categories.json";
+import BottomNavigation from './BottomNavigation';
 
 const useStyles = makeStyles(theme => {
   return {
@@ -27,7 +28,12 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function SelectCategory({ project, handleSetProjectData, goToNextStep, goToPreviousStep }) {
+export default function SelectCategory({
+  project,
+  handleSetProjectData,
+  goToNextStep,
+  goToPreviousStep
+}) {
   const classes = useStyles();
   const [selectedCategories, setSelectedCategories] = React.useState(
     project.categories ? project.categories : []
@@ -58,19 +64,11 @@ export default function SelectCategory({ project, handleSetProjectData, goToNext
           setSelected={setSelectedCategories}
         />
       </div>
-      <div className={`${classes.block} ${classes.navigationButtonWrapper}`}>
-        <Button variant="contained" className={classes.backButton} onClick={onClickPreviousStep}>
-          Back
-        </Button>
-        <Button
-          variant="contained"
-          className={classes.nextStepButton}
-          color="primary"
-          onClick={onClickNextStep}
-        >
-          Next Step
-        </Button>
-      </div>
+      <BottomNavigation
+        className={classes.block}
+        onClickPreviousStep={onClickPreviousStep}
+        onClickNextStep={onClickNextStep}
+      />
     </Container>
   );
 }
