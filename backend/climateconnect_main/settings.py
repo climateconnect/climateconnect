@@ -14,6 +14,8 @@ import os
 from dotenv import find_dotenv, load_dotenv
 load_dotenv(find_dotenv('.backend_env'))
 env = os.environ.get
+import logging
+logger = logging.getLogger(__name__)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,7 +28,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('ENVIRONMENT') in ('development', 'test',)
+# DEBUG = env('ENVIRONMENT') in ('development', 'test',)
+DEBUG = True
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
 
@@ -64,6 +67,7 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
+    "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com"
 ]
 APPEND_SLASH = False
 
@@ -90,6 +94,7 @@ WSGI_APPLICATION = 'climateconnect_main.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+
 
 DATABASES = {
     'default': {
@@ -138,8 +143,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-
-STATIC_URL = '/static/'
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = env('GS_BUCKET_NAME')
+STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+STATIC_URL = 'https://storage.googleapis.com/{}/'.format(GS_BUCKET_NAME)
+STATIC_ROOT = "static/"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -149,8 +157,3 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100
 }
-
-SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
-# TODO: point to Google cloud storage if we aren't in testing environment
-MEDIA_ROOT = SITE_ROOT+'/../media/' if env('ENVIRONMENT') in ('development', 'test',) else env('CLOUD_STORAGE_ROOT')+'/../media/'
-MEDIA_URL = '/media/'
