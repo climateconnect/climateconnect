@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Typography,
-  Container,
-  TextField,
-  Tooltip,
-  IconButton
-} from "@material-ui/core";
+import { Typography, Container, TextField, Tooltip, IconButton } from "@material-ui/core";
 import RadioButtons from "../general/RadioButtons";
 import { makeStyles } from "@material-ui/core/styles";
 import DatePicker from "../general/DatePicker";
@@ -13,9 +7,9 @@ import project_status_metadata from "../../../public/data/project_status_metadat
 import Switch from "@material-ui/core/Switch";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import CollaborateSection from "./CollaborateSection";
-import AddSummarySection from './AddSummarySection';
-import AddPhotoSection from './AddPhotoSection';
-import BottomNavigation from './BottomNavigation';
+import AddSummarySection from "./AddSummarySection";
+import AddPhotoSection from "./AddPhotoSection";
+import BottomNavigation from "./BottomNavigation";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -60,7 +54,7 @@ const useStyles = makeStyles(theme => {
         width: "100%",
         padding: 0
       }
-    },    
+    },
     tooltip: {
       fontSize: 16
     }
@@ -112,7 +106,7 @@ export default function EnterDetails({
 
   const handleSetOpen = newOpenObject => {
     setOpen({ ...open, ...newOpenObject });
-  };  
+  };
 
   const validation = {
     short_description: {
@@ -123,7 +117,7 @@ export default function EnterDetails({
       name: "Description",
       maxLength: 4000
     }
-  };  
+  };
 
   const onDescriptionChange = (event, descriptionType) => {
     if (event.target.value.length <= validation[descriptionType].maxLength)
@@ -147,7 +141,7 @@ export default function EnterDetails({
 
   const onEndDateChange = newDate => {
     handleSetProjectData({ end_date: newDate });
-  };  
+  };
 
   const onAllowCollaboratorsChange = event => {
     handleSetProjectData({ collaborators_welcome: event.target.checked });
@@ -285,13 +279,13 @@ export default function EnterDetails({
               handleSetOpen={handleSetOpen}
             />
           )}
-          <BottomNavigation 
+          <BottomNavigation
             className={classes.block}
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="submit"
           />
         </form>
-      </Container>      
+      </Container>
     </>
   );
 }

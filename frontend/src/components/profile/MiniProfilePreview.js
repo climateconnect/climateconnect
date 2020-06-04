@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => {
 export default function MiniProfilePreview({ profile, avatarClassName }) {
   const classes = useStyles();
   return (
-    <Link href={"/profiles/" + profile.url} className={classes.avatarWithInfo}>
+    <Link href={"/profiles/" + profile.url_slug} className={classes.avatarWithInfo}>
       <div className={classes.avatarWrapper}>
         <Avatar src={profile.image} className={avatarClassName} />
       </div>

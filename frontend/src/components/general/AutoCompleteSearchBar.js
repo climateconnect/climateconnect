@@ -1,21 +1,11 @@
-import React from "react";
-import { TextField, InputAdornment } from "@material-ui/core";
-import SearchIcon from "@material-ui/icons/Search";
+import React from "react"
+import Autocomplete from "@material-ui/lab/Autocomplete"
 
-export default function FilterSearchBar({ label, className }) {
+export default function AutoCompleteSearchBar({profiles}){
   return (
-    <TextField
-      placeholder={label}
-      variant="outlined"
-      size="small"
-      className={className}
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <SearchIcon />
-          </InputAdornment>
-        )
-      }}
+    <Autocomplete 
+      freeSolo
+      options={profiles.map(p=>p.key=p.url_slug)}
     />
-  );
+  )
 }

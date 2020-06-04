@@ -1,8 +1,8 @@
 import React from "react";
 import { Button } from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles(theme => {  
+const useStyles = makeStyles(theme => {
   return {
     navigationButtonWrapper: {
       marginTop: theme.spacing(10)
@@ -10,47 +10,70 @@ const useStyles = makeStyles(theme => {
     backButton: {
       color: theme.palette.primary.main
     },
-    nextStepButton: {
-      float: "right"
+    nextStepButtonsContainer: {
+      float: "right",
+      [theme.breakpoints.down("xs")]: {
+        float: "none",
+        marginTop: theme.spacing(2)
+      }
+    },
+    draftButton: {
+      marginRight: theme.spacing(2)
     }
-  }
-})
+  };
+});
 
 export default function BottomNavigation({
   className,
   onClickPreviousStep,
   nextStepButtonType,
-  onClickNextStep
-}){
+  onClickNextStep,
+  onClickPublish,
+  saveAsDraft
+}) {
   const classes = useStyles();
   return (
     <div className={`${className} ${classes.navigationButtonWrapper}`}>
-      <Button
-        variant="contained"
-        className={classes.backButton}
-        onClick={onClickPreviousStep}
-      >
+      <Button variant="contained" className={classes.backButton} onClick={onClickPreviousStep}>
         Back
       </Button>
-      { nextStepButtonType === "submit" ?
+      <div className={classes.nextStepButtonsContainer}>
+        {saveAsDraft && (
           <Button
             variant="contained"
-            className={classes.nextStepButton}
-            color="primary"
-            type="submit"
+            onClick={saveAsDraft}
+            className={`${classes.backButton} ${classes.draftButton}`}
           >
-            Next Step
+            Save as Draft
           </Button>
-          :
-          <Button
-            variant="contained"
-            className={classes.nextStepButton}
-            color="primary"
-            onClick={onClickNextStep}
-          >
-            Next Step
-          </Button>
-      }
+        )}
+        <NextButtons
+          nextStepButtonType={nextStepButtonType}
+          onClickNextStep={onClickNextStep}
+          onClickPublish={onClickPublish}
+        />
+      </div>
     </div>
-  )
+  );
+}
+
+function NextButtons({ nextStepButtonType, onClickNextStep, onClickPublish }) {
+  if (nextStepButtonType === "submit")
+    return (
+      <Button variant="contained" color="primary" type="submit">
+        Next Step
+      </Button>
+    );
+  else if (nextStepButtonType === "publish")
+    return (
+      <Button variant="contained" color="primary" onClick={onClickPublish}>
+        Publish
+      </Button>
+    );
+  else
+    return (
+      <Button variant="contained" color="primary" type="submit" onClick={onClickNextStep}>
+        Next Step
+      </Button>
+    );
 }

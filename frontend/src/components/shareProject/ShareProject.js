@@ -1,16 +1,18 @@
 import React from "react";
 import Form from "../general/Form";
-import organizationsList from "../../../public/data/organizations.json";
 
-export default function Share({ project, handleSetProjectData, goToNextStep }) {
+export default function Share({ project, handleSetProjectData, goToNextStep, userOrganizations }) {
   //TODO: This should include only organizations in which the user is an admin
-  const organizations = organizationsList.organizations.map(org => {
+  const organizations = userOrganizations.map(org => {
     return {
-      key: org.url,
+      key: org.url_slug,
       name: org.name
     };
   });
-  const organizationOptions = [{ key: "personal", name: "Personal project" }, ...organizations];
+  const organizationOptions = [
+    { key: "personalproject", name: "Personal project" },
+    ...organizations
+  ];
   const fields = [
     {
       required: true,

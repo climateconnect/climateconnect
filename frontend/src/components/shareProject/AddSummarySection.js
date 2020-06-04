@@ -1,8 +1,8 @@
-import React from "react"
-import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Tooltip, IconButton, TextField } from '@material-ui/core';
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import { Typography, Tooltip, IconButton, TextField } from "@material-ui/core";
 
-const useStyles = makeStyles({  
+const useStyles = makeStyles({
   shortDescriptionWrapper: {
     width: "100%",
     paddingTop: "56.25%",
@@ -19,9 +19,9 @@ const useStyles = makeStyles({
   fullHeight: {
     height: "100%"
   }
-})
+});
 
-export default function AddSummarySection({  
+export default function AddSummarySection({
   projectData,
   onDescriptionChange,
   className,
@@ -29,20 +29,13 @@ export default function AddSummarySection({
   toolTipClassName,
   helpTexts,
   ToolTipIcon
-}){
+}) {
   const classes = useStyles(projectData);
-  const shortDescriptionRef = React.useRef(null);  
-  
-  return(
-    <div
-      className={className}
-    >
-      <Typography
-        component="h2"
-        variant="subtitle2"
-        color="primary"
-        className={subHeaderClassname}
-      >
+  const shortDescriptionRef = React.useRef(null);
+
+  return (
+    <div className={className}>
+      <Typography component="h2" variant="subtitle2" color="primary" className={subHeaderClassname}>
         Short summary*
         <Tooltip title={helpTexts.short_description} className={toolTipClassName}>
           <IconButton>
@@ -76,5 +69,5 @@ export default function AddSummarySection({
         />
       </div>
     </div>
-  )
+  );
 }

@@ -7,6 +7,8 @@ import ShareProject from "../src/components/shareProject/ShareProject";
 import SelectCategory from "../src/components/shareProject/SelectCategory";
 import EnterDetails from "../src/components/shareProject/EnterDetails";
 import AddTeam from "../src/components/shareProject/AddTeam";
+//TODO: this should be retrieved asynchronously, e.g. via getInitialProps
+import organizationsList from "../public/data/organizations.json";
 
 const DEFAULT_STATUS = "inprogress";
 
@@ -48,7 +50,7 @@ const steps = [
 export default function Share() {
   const classes = useStyles();
   const [project, setProject] = React.useState(defaultProjectValues);
-  const [curStep, setCurStep] = React.useState(steps[2]);
+  const [curStep, setCurStep] = React.useState(steps[3]);
 
   const goToNextStep = () => {
     setCurStep(steps[steps.indexOf(curStep) + 1]);
@@ -82,6 +84,7 @@ export default function Share() {
           project={project}
           handleSetProjectData={handleSetProject}
           goToNextStep={goToNextStep}
+          userOrganizations={organizationsList.organizations}
         />
       )}
       {curStep.key === "selectCategory" && (
@@ -106,6 +109,7 @@ export default function Share() {
           handleSetProjectData={handleSetProject}
           submit={submitProject}
           goToPreviousStep={goToPreviousStep}
+          userOrganizations={organizationsList.organizations}
         />
       )}
     </WideLayout>
@@ -116,5 +120,21 @@ const defaultProjectValues = {
   collaborators_welcome: true,
   status: DEFAULT_STATUS,
   skills: [],
-  connections: []
+  connections: [],
+  parentOrganization: {
+    name: "sneep Erlangen",
+    key: "sneeperlangen"
+  },
+  //Should contain the logged in user as the creator by default
+  members: [
+    {
+      name: "Christoph Stoll",
+      url_slug: "christophstoll",
+      image: "images/christophstoll.jpg",
+      permissions: {
+        key: "creator",
+        name: "Creator"
+      }
+    }
+  ]
 };

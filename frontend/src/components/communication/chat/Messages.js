@@ -65,7 +65,7 @@ class Messages extends React.Component {
       <div ref={this.myRef} className={this.props.className}>
         {this.props.messages && this.props.messages.length ? (
           this.props.messages.map((message, index) => {
-            const received = message.sender === this.props.chatting_partner.url;
+            const received = message.sender === this.props.chatting_partner.url_slug;
             return (
               <div
                 key={index}

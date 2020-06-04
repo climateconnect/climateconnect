@@ -20,7 +20,8 @@ export default function SelectField({
   size,
   multiple,
   values,
-  isInOverlay
+  isInOverlay,
+  disabled
 }) {
   const classes = useStyles();
 
@@ -67,6 +68,7 @@ export default function SelectField({
       }}
       InputProps={InputProps}
       size={size}
+      disabled={disabled}
     >
       {(!defaultValue || defaultValue === "") && !multiple && <option value="" />}
       {options.map(value => {

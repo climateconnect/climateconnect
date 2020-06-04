@@ -3,7 +3,7 @@ import { Button, Container } from "@material-ui/core";
 import MultiLevelSelector from "./MultiLevelSelector";
 import { makeStyles } from "@material-ui/core/styles";
 import project_categories from "../../../public/data/project_categories.json";
-import BottomNavigation from './BottomNavigation';
+import BottomNavigation from "./BottomNavigation";
 
 const useStyles = makeStyles(theme => {
   return {

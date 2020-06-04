@@ -1,8 +1,8 @@
-import React from "react"
-import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Tooltip, IconButton, Button } from '@material-ui/core';
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import { Typography, Tooltip, IconButton, Button } from "@material-ui/core";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
-import UploadImageDialog from '../dialogs/UploadImageDialog';
+import UploadImageDialog from "../dialogs/UploadImageDialog";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
 const useStyles = makeStyles(theme => {
@@ -37,9 +37,9 @@ const useStyles = makeStyles(theme => {
       left: "-50%",
       top: "-50%",
       width: 170
-    },
-  }
-})
+    }
+  };
+});
 
 export default function AddPhotoSection({
   projectData,
@@ -49,9 +49,9 @@ export default function AddPhotoSection({
   toolTipClassName,
   helpTexts,
   ToolTipIcon,
-  open, 
+  open,
   handleSetOpen
-}){
+}) {
   const classes = useStyles(projectData);
   const [tempImage, setTempImage] = React.useState(projectData.image);
   const inputFileRef = React.useRef(null);
@@ -80,11 +80,9 @@ export default function AddPhotoSection({
     }
   };
 
-  return(
+  return (
     <>
-      <div
-        className={className}
-      >
+      <div className={className}>
         <Typography
           component="h2"
           variant="subtitle2"
@@ -129,5 +127,5 @@ export default function AddPhotoSection({
         ratio={16 / 9}
       />
     </>
-  )
+  );
 }
