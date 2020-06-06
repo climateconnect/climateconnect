@@ -10,14 +10,14 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 
 const useStyles = makeStyles(theme => {
   return {
-    wrapper: {
+    wrapper: props => ({
       margin: "0 auto",
       display: "table",
-      marginTop: theme.spacing(8),
+      marginTop: props.marginTop ? theme.spacing(8) : 0,
       [theme.breakpoints.down("sm")]: {
         marginTop: theme.spacing(4)
       }
-    },
+    }),
     list: {
       display: "inline-block",
       marginLeft: theme.spacing(8),
@@ -102,6 +102,9 @@ const useStyles = makeStyles(theme => {
       width: 650,
       [theme.breakpoints.down("md")]: {
         width: 650 - theme.spacing(8)
+      },
+      [theme.breakpoints.down("xs")]: {
+        width: "auto"
       }
     },
     narrowScreenListWrapper: {
@@ -117,6 +120,12 @@ const useStyles = makeStyles(theme => {
     divider: {
       backgroundColor: "black",
       marginBottom: theme.spacing(1)
+    },
+    subListLastItem: {
+      borderBottom: 0
+    },
+    itemUnderExpandedSubList: {
+      borderTop: "1px solid black"
     }
   };
 });
@@ -129,9 +138,11 @@ export default function MultiLevelSelector({
   itemNamePlural,
   isInPopup
 }) {
-  const [expanded, setExpanded] = React.useState("agriculture");
+  const [expanded, setExpanded] = React.useState(null);
 
-  const classes = useStyles();
+  const useStylesProps = { marginTop: !isInPopup };
+
+  const classes = useStyles(useStylesProps);
 
   const onClickExpand = key => {
     if (expanded === key) setExpanded(null);
@@ -294,6 +305,15 @@ function ListToChooseFrom({
                         ${isSubList &&
                           (isNarrowScreen || isInPopup) &&
                           classes.narrowScreenSubListItem}
+                        ${isSubList &&
+                          index === itemsToSelectFrom.length - 1 &&
+                          (isNarrowScreen || isInPopup) &&
+                          classes.subListLastItem}
+                        ${!isSubList &&
+                          itemsToSelectFrom[index - 1] &&
+                          expanded === itemsToSelectFrom[index - 1].key &&
+                          (isNarrowScreen || isInPopup) &&
+                          classes.itemUnderExpandedSubList}
                         ${isSubList && index >= parentList.length && classes.borderLeft}`,
                 selected: classes.expanded
               }}

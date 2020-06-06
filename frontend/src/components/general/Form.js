@@ -180,7 +180,7 @@ export default function Form({
               <SelectField
                 defaultValue={field.select.defaultValue}
                 required={field.required}
-                values={field.select.values}
+                options={field.select.values}
                 label={field.label}
                 className={classes.blockElement}
                 key={field.label + fields.indexOf(field)}

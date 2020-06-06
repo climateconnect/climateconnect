@@ -319,9 +319,9 @@ export default function EditAccountPage({
           <div key={key} className={classes.infoElement}>
             <SelectField
               className={classes.selectOption}
-              values={i.options}
+              options={i.options}
               label={i.name}
-              defaultValue={i.value}
+              defaultValue={{ name: i.value, key: i.value }}
               onChange={handleChange}
             />
           </div>

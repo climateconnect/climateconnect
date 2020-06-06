@@ -15,7 +15,7 @@ import DatePicker from "../general/DatePicker";
 import project_status_metadata from "../../../public/data/project_status_metadata";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
-import AddSkillsDialog from "../dialogs/AddSkillsDialog";
+import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import Switch from "@material-ui/core/Switch";
 import EnterTextDialog from "../dialogs/EnterTextDialog";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
@@ -575,10 +575,11 @@ export default function EnterDetails({
         height={300}
         ratio={16 / 9}
       />
-      <AddSkillsDialog
+      <MultiLevelSelectDialog
         open={open.skillsDialog}
         onClose={handleSkillsDialogClose}
-        skills={project.skills}
+        type="skills"
+        items={project.skills}
       />
       <EnterTextDialog
         open={open.connectionsDialog}

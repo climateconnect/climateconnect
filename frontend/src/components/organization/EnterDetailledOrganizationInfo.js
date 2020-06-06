@@ -1,7 +1,7 @@
 import React from "react";
 import Router from "next/router";
 import EditAccountPage from "./../account/EditAccountPage";
-import organization_info_metadata from "./../../../public/data/organization_info_metadata.json";
+import organization_info_metadata from "./../../../public/data/organization_info_metadata.js";
 import organization_types from "./../../../public/data/organization_types.json";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";

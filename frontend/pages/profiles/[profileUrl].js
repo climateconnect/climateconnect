@@ -130,7 +130,7 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Organizations:</div>
         {organizations && organizations.length > 0 ? (
-          <OrganizationPreviews organizations={organizations} />
+          <OrganizationPreviews organizations={organizations} showMembers />
         ) : (
           <Typography>This user is not involved in any organizations yet!</Typography>
         )}

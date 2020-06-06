@@ -92,6 +92,7 @@
     {
       "url": "emptytestorganisation",
       "name": "We empty",
+      "members": ["christophstoll"],
       "info": [
         {
           "key": "shortdescription",

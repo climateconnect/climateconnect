@@ -27,7 +27,8 @@ module.exports = {
   exportPathMap: async function(defaultPathMap) {
     if (process.env.PRE_LAUNCH)
       return {
-        "/": { page: "/" }
+        "/": { page: "/" },
+        "/zoom": { page: "/zoom" }
       };
     else return defaultPathMap;
   }

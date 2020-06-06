@@ -1,7 +1,7 @@
 import React from "react";
 import ProfilePreviews from "./../profile/ProfilePreviews";
 
-function getAdditionalInfo(team) {
+function getTeamWithAdditionalInfo(team) {
   return team.map(m => {
     const additionalInfo = [];
     if (m.role)
@@ -14,10 +14,16 @@ function getAdditionalInfo(team) {
         text: m.timeperweek + (m.timeperweek > 1 ? " hours" : " hour") + " per week",
         importance: "low"
       });
-    return additionalInfo;
+    return { ...m, additionalInfo: additionalInfo };
   });
 }
 
 export default function TeamContent({ team }) {
-  return <ProfilePreviews profiles={team} allowMessage additionalInfo={getAdditionalInfo(team)} />;
+  return (
+    <ProfilePreviews
+      profiles={getTeamWithAdditionalInfo(team)}
+      allowMessage
+      showAdditionalInfo={true}
+    />
+  );
 }
