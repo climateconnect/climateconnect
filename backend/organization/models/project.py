@@ -155,7 +155,7 @@ class ProjectParents(models.Model):
         Project,
         help_text="Points to organizations's project",
         verbose_name="Project",
-        related_name="org_project",
+        related_name="project_parent",
         on_delete=models.CASCADE
     )
 
@@ -164,7 +164,8 @@ class ProjectParents(models.Model):
         help_text="Points to organization",
         verbose_name="Organization",
         related_name="project_parent_org",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True, blank=True
     )
 
     parent_user = models.ForeignKey(
@@ -178,7 +179,7 @@ class ProjectParents(models.Model):
 
     order = models.IntegerField(
         help_text="Order in which project should be listed",
-        verbose_name="Order", unique=True
+        verbose_name="Order"
     )
 
     created_at = models.DateTimeField(
@@ -196,7 +197,6 @@ class ProjectParents(models.Model):
     class Meta:
         app_label = 'organization'
         verbose_name_plural = "Project Parents"
-        unique_together = [['project', 'order']]
 
     def __str__(self):
         return "Project %s of organization %s" % (self.project.name, self.parent_organization.name)
