@@ -7,11 +7,16 @@ from climateconnect_api.serializers.role import RoleSerializer
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    skills = SkillSerializer(many=True)
+    skills = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
-        exclude = ('created_at', 'updated_at')
+        exclude = ['created_at', 'updated_at']
+        read_only_fields = ['url_slug']
+
+    def get_skills(self, obj):
+        serializer = SkillSerializer(obj.skills, many=True)
+        return serializer.data
 
 
 class ProjectMinimalSerializer(serializers.ModelSerializer):

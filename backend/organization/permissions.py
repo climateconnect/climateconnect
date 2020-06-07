@@ -1,5 +1,5 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-from organization.models import (OrganizationMember, ProjectMember)
+from organization.models import (OrganizationMember, ProjectMember, ProjectParents)
 from climateconnect_api.models import Role
 
 
