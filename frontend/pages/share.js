@@ -74,8 +74,6 @@ export default function Share() {
   };
 
   const handleSetProject = newProjectData => {
-    console.log("setting project data to");
-    console.log(newProjectData);
     setProject({ ...project, ...newProjectData });
   };
 
