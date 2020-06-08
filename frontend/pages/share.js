@@ -9,7 +9,7 @@ import EnterDetails from "../src/components/shareProject/EnterDetails";
 import AddTeam from "../src/components/shareProject/AddTeam";
 //TODO: this should be retrieved asynchronously, e.g. via getInitialProps
 import organizationsList from "../public/data/organizations.json";
-import ProjectSubmittedPage from '../src/components/shareProject/ProjectSubmittedPage';
+import ProjectSubmittedPage from "../src/components/shareProject/ProjectSubmittedPage";
 const DEFAULT_STATUS = "inprogress";
 
 const useStyles = makeStyles(theme => {
@@ -61,25 +61,27 @@ export default function Share() {
     setCurStep(steps[steps.indexOf(curStep) - 1]);
   };
 
-  const submitProject = (event) => {
+  const submitProject = event => {
     //TODO: make a request to publish the project
     event.preventDefault();
-    setFinished(true)
+    setFinished(true);
   };
 
-  const saveAsDraft = (event) => {
+  const saveAsDraft = event => {
     event.preventDefault();
-    setProject({...project, isDraft: true})
-    setFinished(true)
-  }
+    setProject({ ...project, isDraft: true });
+    setFinished(true);
+  };
 
   const handleSetProject = newProjectData => {
+    console.log("setting project data to");
+    console.log(newProjectData);
     setProject({ ...project, ...newProjectData });
   };
 
   return (
     <WideLayout title="Share a project" hideHeadline={true}>
-      {!finished ?
+      {!finished ? (
         <>
           <StepsTracker
             grayBackground={true}
@@ -95,7 +97,9 @@ export default function Share() {
               project={project}
               handleSetProjectData={handleSetProject}
               goToNextStep={goToNextStep}
-              userOrganizations={organizationsList.organizations.filter(o=>o.url_slug==="sneeperlangen")}
+              userOrganizations={organizationsList.organizations.filter(
+                o => o.url_slug === "sneeperlangen"
+              )}
             />
           )}
           {curStep.key === "selectCategory" && (
@@ -124,14 +128,11 @@ export default function Share() {
             />
           )}
         </>
-      :
+      ) : (
         <>
-          <ProjectSubmittedPage
-            isDraft={project.isDraft}
-            url_slug={project.url_slug}
-          />
+          <ProjectSubmittedPage isDraft={project.isDraft} url_slug={project.url_slug} />
         </>
-      }
+      )}
     </WideLayout>
   );
 }

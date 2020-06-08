@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography } from '@material-ui/core';
+import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
@@ -13,17 +13,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function ProjectSubmittedPage({isDraft, url_slug}) {
+export default function ProjectSubmittedPage({ isDraft, url_slug }) {
   const classes = useStyles();
-  console.log(isDraft)
-  console.log(url_slug)
+  console.log(isDraft);
+  console.log(url_slug);
   return (
     <div className={classes.root}>
       <Typography variant="h5" className={classes.headline}>
         Congratulations! Your project has been published!
-      </Typography>      
-      <Typography variant="h5" className={classes.headline}>We are really happy that you inspire the global climate action community!</Typography>
-      <Typography variant="h5">You can view your project <a href={"/projects/"+url_slug}>here</a></Typography>
+      </Typography>
+      <Typography variant="h5" className={classes.headline}>
+        We are really happy that you inspire the global climate action community!
+      </Typography>
+      <Typography variant="h5">
+        You can view your project <a href={"/projects/" + url_slug}>here</a>
+      </Typography>
     </div>
-  )
+  );
 }

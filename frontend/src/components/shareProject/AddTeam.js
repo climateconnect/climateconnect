@@ -29,7 +29,13 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function AddTeam({ projectData, handleSetProjectData, submit, saveAsDraft, goToPreviousStep }) {
+export default function AddTeam({
+  projectData,
+  handleSetProjectData,
+  submit,
+  saveAsDraft,
+  goToPreviousStep
+}) {
   const classes = useStyles();
 
   const onClickPreviousStep = () => {
@@ -51,10 +57,7 @@ export default function AddTeam({ projectData, handleSetProjectData, submit, sav
   //prevent double entries
   const handleAddOrganization = organization => {
     handleSetProjectData({
-      collaboratingOrganizations: [
-        ...projectData.collaboratingOrganizations,
-        organization
-      ]
+      collaboratingOrganizations: [...projectData.collaboratingOrganizations, organization]
     });
   };
 

@@ -59,7 +59,7 @@ export default function AutoCompleteSearchBar({
   );
 
   const handleChange = (event, value, reason) => {
-    if (reason !== "create-option") {
+    if (reason === "select-option") {
       if (onSelect) onSelect(value);
       if (clearOnSelect) {
         setInputValue("");
