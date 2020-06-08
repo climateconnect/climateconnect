@@ -29,7 +29,7 @@ class Organization(models.Model):
         unique=True
     )
 
-    organization_image = models.ImageField(
+    image = models.ImageField(
         help_text="Organization image",
         verbose_name="Organization Image",
         upload_to=organization_image_path,
