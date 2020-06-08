@@ -43,11 +43,11 @@ Inbox.getInitialProps = async ctx => {
 
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getProfileByUrlIfExists(profileUrl) {
-  return TEMP_FEATURED_PROFILE_DATA.profiles.find(({ url }) => url === profileUrl);
+  return TEMP_FEATURED_PROFILE_DATA.profiles.find(({ url_slug }) => url_slug === profileUrl);
 }
 
 async function getLoggedInUser() {
-  return TEMP_FEATURED_PROFILE_DATA.profiles.find(p => p.url === "christophstoll");
+  return TEMP_FEATURED_PROFILE_DATA.profiles.find(p => p.url_slug === "christophstoll");
 }
 
 //This function is really ugly but it doesn't matter, because it will be replaced with a single DB call.
@@ -55,14 +55,14 @@ async function getChatsOfLoggedInUser() {
   //This is imitating the logged in user. Will be replaced by a jwt check later.
   const user = await getLoggedInUser();
   const messagesWithUser = TEMP_MESSAGE_DATA.messages.filter(
-    m => m.sender === user.url || m.receiver === user.url
+    m => m.sender === user.url_slug || m.receiver === user.url_slug
   );
   const messagesByChattingPartner = messagesWithUser.map(msg => {
     return {
-      chatting_partner: msg.receiver === user.url ? msg.sender : msg.receiver,
+      chatting_partner: msg.receiver === user.url_slug ? msg.sender : msg.receiver,
       date: msg.date,
       read: msg.read,
-      sent: msg.sender === user.url,
+      sent: msg.sender === user.url_slug,
       content: msg.content
     };
   });

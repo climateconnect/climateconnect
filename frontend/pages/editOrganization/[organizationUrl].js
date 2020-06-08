@@ -27,7 +27,7 @@ export default function EditOrganizationPage({
     //TODO: replace this with an API call that saves the updated account to our database
   };
   const handleCancel = () => {
-    Router.push("/organizations/" + organization.url);
+    Router.push("/organizations/" + organization.url_slug);
   };
 
   return (

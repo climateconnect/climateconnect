@@ -47,7 +47,7 @@ export default function ChatPreviews({ chats }) {
             <ListItem
               button
               component="a"
-              href={"/messageUser/" + chat.chatting_partner.url}
+              href={"/messageUser/" + chat.chatting_partner.url_slug}
               alignItems="flex-start"
               key={index}
             >

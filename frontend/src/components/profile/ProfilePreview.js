@@ -50,7 +50,7 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
   const classes = useStyles();
   return (
     <div className={classes.avatarWithInfo}>
-      <Link href={"/profiles/" + profile.url} className={classes.disableHover}>
+      <Link href={"/profiles/" + profile.url_slug} className={classes.disableHover}>
         <Avatar alt={profile.name} size="large" src={profile.image} className={classes.avatar} />
         <Typography variant="h6" className={classes.name}>
           {profile.name}
@@ -80,7 +80,7 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
         <div>
           <Button
             variant="contained"
-            href={"/messageUser/" + profile.url}
+            href={"/messageUser/" + profile.url_slug}
             color="primary"
             className={classes.messageButton}
           >
