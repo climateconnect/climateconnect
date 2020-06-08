@@ -6,7 +6,7 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
   const organizations = userOrganizations.map(org => {
     return {
       key: org.url_slug,
-      name: org.name
+      ...org
     };
   });
   const organizationOptions = [
@@ -50,9 +50,15 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
     submitMessage: "Next Step"
   };
 
+  const getOrgObject = org => {
+    return userOrganizations.find(o => o.name === org);
+  };
+
   const onSubmit = (event, values) => {
     event.preventDefault();
-    handleSetProjectData({ ...values });
+    console.log(values.parent_organization);
+    console.log(getOrgObject(values.parent_organization))
+    handleSetProjectData({ ...values, parent_organization: getOrgObject(values.parent_organization)});
     goToNextStep();
   };
 

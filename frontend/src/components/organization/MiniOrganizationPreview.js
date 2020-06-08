@@ -1,5 +1,4 @@
 import React from "react";
-import PersonIcon from "@material-ui/icons/Person";
 import { Box, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -19,7 +18,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function MiniOrganizationPreview({ organization, className, size }) {
-  console.log(organization);
   const classes = useStyles();
   return (
     <Box className={className}>

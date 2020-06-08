@@ -150,7 +150,9 @@ async function getProjectByIdIfExists(projectId) {
 async function getFullProfiles(shortProfiles) {
   const profiles = [
     ...TEMP_FEATURED_PROFILE_DATA.profiles.filter(
-      profile => shortProfiles.filter(shortprofile => shortprofile.url_slug === profile.url_slug).length === 1
+      profile =>
+        shortProfiles.filter(shortprofile => shortprofile.url_slug === profile.url_slug).length ===
+        1
     )
   ];
   return profiles.map(profile => {

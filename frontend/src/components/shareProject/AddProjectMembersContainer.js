@@ -1,13 +1,13 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Avatar, Typography, Button } from "@material-ui/core";
+import { Avatar, Typography } from "@material-ui/core";
 import SelectField from "../general/SelectField";
 import roles from "./../../../public/data/roles.json";
 import profile_info_metadata from "./../../../public/data/profile_info_metadata.json";
 import { TextField, Tooltip } from "@material-ui/core";
 import { IconButton } from "@material-ui/core";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -16,15 +16,8 @@ const useStyles = makeStyles(theme => {
     },
     member: {
       width: theme.spacing(40),
-      textAlign: "center"
-    },
-    addMemberButtonContainer: {
-      width: theme.spacing(40)
-    },
-    addMemberButton: {
-      margin: "0 auto",
-      marginLeft: theme.spacing(10),
-      marginTop: theme.spacing(5)
+      textAlign: "center",
+      marginRight: theme.spacing(4)
     },
     name: {
       padding: theme.spacing(1),
@@ -51,24 +44,34 @@ const useStyles = makeStyles(theme => {
     },
     tooltip: {
       fontSize: 16
+    },
+    info: {
+      textAlign: "center",
+      fontWeight: "bold",
+      marginBottom: theme.spacing(2)
+    },
+    infoIcon: {
+      marginBottom: -6
     }
   };
 });
 
 export default function AddProjectMembersContainer({ projectMembers, blockClassName }) {
   const classes = useStyles();
-  console.log(projectMembers);
 
   return (
-    <form className={blockClassName}>
+    <div className={blockClassName}>
+      <Typography className={classes.info}>
+        <InfoOutlinedIcon className={classes.infoIcon} /> Use the search bar to add members to your
+        project.
+      </Typography>
       <div className={classes.memberContainer}>
         {projectMembers.map((m, index) => {
-          console.log(m);
           return (
             <div className={classes.member} key={index}>
               <Avatar alt={m.name} size="large" src={m.image} className={classes.avatar} />
               <Typography variant="h6" className={classes.name} color="secondary">
-                {m.name}
+                {m.first_name + " " + m.last_name}
               </Typography>
               <Typography className={classes.fieldLabel} color="primary">
                 Permissions
@@ -100,7 +103,6 @@ export default function AddProjectMembersContainer({ projectMembers, blockClassN
                 variant="outlined"
                 className={classes.field}
                 label="Pick or type user's role"
-                required
               />
               <Typography className={classes.fieldLabel} color="primary">
                 Hour contributed per week
@@ -124,17 +126,7 @@ export default function AddProjectMembersContainer({ projectMembers, blockClassN
             </div>
           );
         })}
-        <div className={classes.addMemberButtonContainer}>
-          <Button
-            color="primary"
-            variant="contained"
-            className={classes.addMemberButton}
-            startIcon={<AddCircleOutlineIcon />}
-          >
-            Add Member
-          </Button>
-        </div>
       </div>
-    </form>
+    </div>
   );
 }
