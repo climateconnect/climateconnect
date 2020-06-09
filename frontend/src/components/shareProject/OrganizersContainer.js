@@ -52,7 +52,7 @@ export default function OrganizersContainer({
           <AutoCompleteSearchBar
             label="Search for collaborating organizations"
             className={`${searchBarClassName} ${blockClassName}`}
-            baseUrl="http://localhost:8000/api/organizations/?"
+            baseUrl={process.env.API_URL+"/api/organizations/?"}
             clearOnSelect
             onSelect={handleAddOrganization}
             renderOption={renderSearchOption}

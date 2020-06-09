@@ -79,7 +79,7 @@ export default function AddTeam({
           <AutoCompleteSearchBar
             label="Search for your team members"
             className={`${classes.searchBar} ${classes.block}`}
-            baseUrl="http://localhost:8000/api/members/?"
+            baseUrl={process.env.API_URL+"/api/members/?"}
             clearOnSelect
             onSelect={handleAddMember}
             renderOption={renderSearchOption}
