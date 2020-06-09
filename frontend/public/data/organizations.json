@@ -1,7 +1,7 @@
 {
   "organizations": [
     {
-      "url": "climateconnect",
+      "url_slug": "climateconnect",
       "name": "Climate Connect",
       "image": "/images/logonotext.png",
       "members": [
@@ -26,7 +26,7 @@
       "types": ["volunteergroup", "nonprofitcompany"]
     },
     {
-      "url": "sneep",
+      "url_slug": "sneep",
       "name": "sneep",
       "image": "/images/sneep.png",
       "members": ["christophstoll", "tobiasrehm", "nadineschneider", "reginareck", "tobiasbaume"],
@@ -43,7 +43,7 @@
       "types": ["volunteergroup", "studentorganization"]
     },
     {
-      "url": "sneeperlangen",
+      "url_slug": "sneeperlangen",
       "name": "sneep Erlangen",
       "image": "/images/sneep.png",
       "members": ["tobiasrehm", "christophstoll", "reginareck", "nadineschneider"],
@@ -59,7 +59,7 @@
       "types": ["volunteergroup", "studentorganization"]
     },
     {
-      "url": "sneepnuernberg",
+      "url_slug": "sneepnuernberg",
       "name": "sneep Nürnberg",
       "image": "/images/sneep.png",
       "members": ["tobiasbaume"],
@@ -75,7 +75,7 @@
       "types": ["volunteergroup", "studentorganization"]
     },
     {
-      "url": "energiewendeerhlangen",
+      "url_slug": "energiewendeerhlangen",
       "name": "Energiewende ER(H)langen",
       "image": "/images/energiewendelogo.jpg",
       "members": ["stefanjessenberger"],
@@ -90,7 +90,7 @@
       "types": ["volunteergroup"]
     },
     {
-      "url": "emptytestorganisation",
+      "url_slug": "emptytestorganisation",
       "name": "We empty",
       "members": ["christophstoll"],
       "info": [

@@ -114,7 +114,7 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
     <AccountPage
       account={profile}
       default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={"/editProfile/" + profile.url}
+      editHref={"/editProfile/" + profile.url_slug}
       isOwnAccount={user && user.url_slug === profile.url_slug}
       type="profile"
       possibleAccountTypes={profileTypes}
@@ -191,7 +191,7 @@ function parseProfile(profile) {
 
 async function getProjects(profileUrl) {
   return TEMP_PROJECT_DATA.projects.filter(
-    project => !!project.team.find(m => m.url === profileUrl)
+    project => !!project.team.find(m => m.url_slug === profileUrl)
   );
 }
 

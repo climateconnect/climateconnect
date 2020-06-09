@@ -71,7 +71,7 @@ function OrganizationLayout({ organization, projects, members, organizationTypes
     <AccountPage
       account={organization}
       default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={"/editOrganization/" + organization.url}
+      editHref={"/editOrganization/" + organization.url_slug}
       type="organization"
       possibleAccountTypes={organizationTypes}
       infoMetadata={infoMetadata}

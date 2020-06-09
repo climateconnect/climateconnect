@@ -1,8 +1,9 @@
 import React from "react";
-import { Button, Container } from "@material-ui/core";
+import { Container } from "@material-ui/core";
 import MultiLevelSelector from "./MultiLevelSelector";
 import { makeStyles } from "@material-ui/core/styles";
 import project_categories from "../../../public/data/project_categories.json";
+import BottomNavigation from "./BottomNavigation";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -27,7 +28,12 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function SelectCategory({ project, setProject, goToNextStep, goToPreviousStep }) {
+export default function SelectCategory({
+  project,
+  handleSetProjectData,
+  goToNextStep,
+  goToPreviousStep
+}) {
   const classes = useStyles();
   const [selectedCategories, setSelectedCategories] = React.useState(
     project.categories ? project.categories : []
@@ -37,13 +43,13 @@ export default function SelectCategory({ project, setProject, goToNextStep, goTo
     if (selectedCategories.length <= 0) alert("Please choose at least one category!");
     else if (selectedCategories.length > 3) alert("You can only choose up to 3 categories.");
     else {
-      setProject({ ...project, categories: selectedCategories });
+      handleSetProjectData({ categories: selectedCategories });
       goToNextStep();
     }
   };
 
   const onClickPreviousStep = () => {
-    setProject({ ...project, categories: selectedCategories });
+    handleSetProjectData({ categories: selectedCategories });
     goToPreviousStep();
   };
 
@@ -58,19 +64,11 @@ export default function SelectCategory({ project, setProject, goToNextStep, goTo
           setSelected={setSelectedCategories}
         />
       </div>
-      <div className={`${classes.block} ${classes.navigationButtonWrapper}`}>
-        <Button variant="contained" className={classes.backButton} onClick={onClickPreviousStep}>
-          Back
-        </Button>
-        <Button
-          variant="contained"
-          className={classes.nextStepButton}
-          color="primary"
-          onClick={onClickNextStep}
-        >
-          Next Step
-        </Button>
-      </div>
+      <BottomNavigation
+        className={classes.block}
+        onClickPreviousStep={onClickPreviousStep}
+        onClickNextStep={onClickNextStep}
+      />
     </Container>
   );
 }

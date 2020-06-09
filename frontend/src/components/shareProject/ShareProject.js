@@ -1,16 +1,18 @@
 import React from "react";
 import Form from "../general/Form";
-import organizationsList from "../../../public/data/organizations.json";
 
-export default function Share({ project, setProject, goToNextStep }) {
+export default function Share({ project, handleSetProjectData, goToNextStep, userOrganizations }) {
   //TODO: This should include only organizations in which the user is an admin
-  const organizations = organizationsList.organizations.map(org => {
+  const organizations = userOrganizations.map(org => {
     return {
-      key: org.url,
-      name: org.name
+      key: org.url_slug,
+      ...org
     };
   });
-  const organizationOptions = [{ key: "personal", name: "Personal project" }, ...organizations];
+  const organizationOptions = [
+    { key: "personalproject", name: "Personal project" },
+    ...organizations
+  ];
   const fields = [
     {
       required: true,
@@ -48,9 +50,22 @@ export default function Share({ project, setProject, goToNextStep }) {
     submitMessage: "Next Step"
   };
 
+  const getOrgObject = org => {
+    return userOrganizations.find(o => o.name === org);
+  };
+
   const onSubmit = (event, values) => {
     event.preventDefault();
-    setProject({ ...project, ...values });
+    if (values.parent_organization === "Personal project")
+      handleSetProjectData({
+        ...values.map(v=>v.trim()),
+        isPersonalProject: true
+      });
+    else
+      handleSetProjectData({
+        ...values.map(v=>v.trim()),
+        parent_organization: getOrgObject(values.parent_organization)
+      });
     goToNextStep();
   };
 
