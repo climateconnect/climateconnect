@@ -58,12 +58,12 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
     event.preventDefault();
     if (values.parent_organization === "Personal project")
       handleSetProjectData({
-        ...values,
+        ...values.map(v=>v.trim()),
         isPersonalProject: true
       });
     else
       handleSetProjectData({
-        ...values,
+        ...values.map(v=>v.trim()),
         parent_organization: getOrgObject(values.parent_organization)
       });
     goToNextStep();

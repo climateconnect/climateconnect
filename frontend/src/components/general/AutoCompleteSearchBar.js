@@ -64,7 +64,6 @@ export default function AutoCompleteSearchBar({
   );
 
   const handleChange = (event, value, reason) => {
-    console.log("there is a change");
     if (reason === "select-option") {
       if (onSelect) onSelect(value);
       if (clearOnSelect) {
