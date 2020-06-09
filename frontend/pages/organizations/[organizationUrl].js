@@ -140,7 +140,7 @@ function parseOrganization(organization) {
     url_slug: organization.url_slug,
     background_image: organization.background_image,
     name: organization.name,
-    image: organization.organization_image,
+    image: organization.image,
     types: organization.types /* TODO get actual types, this is always empty.*/,
     info: {
       location: organization.city+", "+organization.country,
