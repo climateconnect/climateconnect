@@ -56,10 +56,16 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
 
   const onSubmit = (event, values) => {
     event.preventDefault();
-    handleSetProjectData({
-      ...values,
-      parent_organization: getOrgObject(values.parent_organization)
-    });
+    if (values.parent_organization === "Personal project")
+      handleSetProjectData({
+        ...values,
+        isPersonalProject: true
+      });
+    else
+      handleSetProjectData({
+        ...values,
+        parent_organization: getOrgObject(values.parent_organization)
+      });
     goToNextStep();
   };
 

@@ -28,7 +28,8 @@ export default function OrganizersContainer({
   blockClassName,
   searchBarClassName,
   searchBarContainerClassName,
-  handleAddOrganization
+  handleAddOrganization,
+  handleRemoveOrganization
 }) {
   const classes = useStyles();
 
@@ -43,7 +44,9 @@ export default function OrganizersContainer({
     );
   };
 
-  console.log(projectData);
+  const allInvolvedOrgs = projectData.parent_organization
+    ? [...projectData.collaboratingOrganizations, projectData.parent_organization]
+    : [...projectData.collaboratingOrganizations];
 
   return (
     <div>
@@ -52,11 +55,12 @@ export default function OrganizersContainer({
           <AutoCompleteSearchBar
             label="Search for collaborating organizations"
             className={`${searchBarClassName} ${blockClassName}`}
-            baseUrl={process.env.API_URL+"/api/organizations/?"}
+            baseUrl={process.env.API_URL + "/api/organizations/?"}
             clearOnSelect
             onSelect={handleAddOrganization}
             renderOption={renderSearchOption}
             getOptionLabel={option => option.name}
+            filterOut={allInvolvedOrgs}
             helperText="Type the name of the collaborating organization yoz want to add next."
           />
         </div>
@@ -65,13 +69,21 @@ export default function OrganizersContainer({
             <InfoOutlinedIcon className={classes.infoIcon} /> Use the search bar to add
             collaborating organizations.
           </Typography>
-          <Typography component="h2" variant="subtitle2" className={classes.header}>
-            Responsible Organization
-          </Typography>
-          <MiniOrganizationPreview
-            organization={projectData.parent_organization}
-            type="parentOrganization"
-          />
+          {projectData.isPersonalProject ? (
+            <Typography component="h2" variant="subtitle2" className={classes.header}>
+              Personal project
+            </Typography>
+          ) : (
+            <>
+              <Typography component="h2" variant="subtitle2" className={classes.header}>
+                Responsible Organization
+              </Typography>
+              <MiniOrganizationPreview
+                organization={projectData.parent_organization}
+                type="parentOrganization"
+              />
+            </>
+          )}
         </div>
         {projectData.collaboratingOrganizations.length > 0 && (
           <div>
@@ -79,7 +91,12 @@ export default function OrganizersContainer({
               Collaborating Organizations
             </Typography>
             {projectData.collaboratingOrganizations.map((o, index) => (
-              <MiniOrganizationPreview key={index} organization={o} type="parentOrganization" />
+              <MiniOrganizationPreview
+                key={index}
+                organization={o}
+                type="parentOrganization"
+                onDelete={handleRemoveOrganization}
+              />
             ))}
           </div>
         )}

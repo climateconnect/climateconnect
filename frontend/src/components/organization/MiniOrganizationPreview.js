@@ -1,6 +1,7 @@
 import React from "react";
-import { Box, Typography } from "@material-ui/core";
+import { Box, Typography, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles(theme => ({
   orgImage: {
@@ -17,7 +18,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function MiniOrganizationPreview({ organization, className, size }) {
+export default function MiniOrganizationPreview({ organization, className, size, onDelete }) {
   const classes = useStyles();
   return (
     <Box className={className}>
@@ -31,6 +32,11 @@ export default function MiniOrganizationPreview({ organization, className, size 
         <Typography variant="h5" className={classes.orgName}>
           {organization.name}
         </Typography>
+      )}
+      {onDelete && (
+        <IconButton onClick={() => onDelete(organization)}>
+          <CloseIcon />
+        </IconButton>
       )}
     </Box>
   );

@@ -50,7 +50,7 @@ const steps = [
 export default function Share() {
   const classes = useStyles();
   const [project, setProject] = React.useState(defaultProjectValues);
-  const [curStep, setCurStep] = React.useState(steps[0]);
+  const [curStep, setCurStep] = React.useState(steps[3]);
   const [finished, setFinished] = React.useState(false);
 
   const goToNextStep = () => {
@@ -142,7 +142,8 @@ const defaultProjectValues = {
   skills: [],
   connections: [],
   collaboratingOrganizations: [],
-  //TODO: Should contain the logged in user as the creator by default
+  isPersonalProject: true,
+  //TODO: Should contain the logged in user as the creator and parent_user by default
   members: [
     {
       first_name: "Christoph",

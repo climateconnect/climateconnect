@@ -7,6 +7,7 @@ import axios from "axios";
 export default function AutoCompleteSearchBar({
   label,
   baseUrl,
+  filterOut,
   className,
   clearOnSelect,
   onSelect,
@@ -27,7 +28,11 @@ export default function AutoCompleteSearchBar({
         const response = await axios.get(baseUrl + searchValue);
 
         if (active) {
-          setOptions(response.data.results.map(o => ({ ...o, key: o.url_slug })));
+          setOptions(
+            response.data.results
+              .map(o => ({ ...o, key: o.url_slug }))
+              .filter(o => !filterOut.find(fo => fo.url_slug === o.url_slug))
+          );
         }
       } else {
         setOptions([]);
@@ -59,6 +64,7 @@ export default function AutoCompleteSearchBar({
   );
 
   const handleChange = (event, value, reason) => {
+    console.log("there is a change");
     if (reason === "select-option") {
       if (onSelect) onSelect(value);
       if (clearOnSelect) {
@@ -68,6 +74,10 @@ export default function AutoCompleteSearchBar({
     }
   };
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <Autocomplete
       open={open}
@@ -75,9 +85,9 @@ export default function AutoCompleteSearchBar({
       onOpen={() => {
         setOpen(true);
       }}
-      onClose={() => {
-        setOpen(false);
-      }}
+      handleHomeEndKeys
+      disableClearable
+      onClose={handleClose}
       onChange={handleChange}
       getOptionLabel={getOptionLabel}
       options={options}

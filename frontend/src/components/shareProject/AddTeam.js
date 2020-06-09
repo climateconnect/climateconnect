@@ -54,10 +54,36 @@ export default function AddTeam({
     });
   };
 
+  const handleRemoveMember = member => {
+    handleSetProjectData({
+      members: projectData.members
+        .slice(0, projectData.members.indexOf(member))
+        .concat(
+          projectData.members.slice(
+            projectData.members.indexOf(member) + 1,
+            projectData.members.length
+          )
+        )
+    });
+  };
+
   //prevent double entries
   const handleAddOrganization = organization => {
     handleSetProjectData({
       collaboratingOrganizations: [...projectData.collaboratingOrganizations, organization]
+    });
+  };
+
+  const handleRemoveOrganization = organization => {
+    handleSetProjectData({
+      collaboratingOrganizations: projectData.collaboratingOrganizations
+        .slice(0, projectData.collaboratingOrganizations.indexOf(organization))
+        .concat(
+          projectData.collaboratingOrganizations.slice(
+            projectData.collaboratingOrganizations.indexOf(organization) + 1,
+            projectData.collaboratingOrganizations.length
+          )
+        )
     });
   };
 
@@ -79,8 +105,9 @@ export default function AddTeam({
           <AutoCompleteSearchBar
             label="Search for your team members"
             className={`${classes.searchBar} ${classes.block}`}
-            baseUrl={process.env.API_URL+"/api/members/?"}
+            baseUrl={process.env.API_URL + "/api/members/?"}
             clearOnSelect
+            filterOut={[...projectData.members]}
             onSelect={handleAddMember}
             renderOption={renderSearchOption}
             getOptionLabel={option => option.first_name + " " + option.last_name}
@@ -90,6 +117,7 @@ export default function AddTeam({
         <AddProjectMembersContainer
           projectMembers={projectData.members}
           blockClassName={classes.block}
+          handleRemoveMember={handleRemoveMember}
         />
         <OrganizersContainer
           projectData={projectData}
@@ -97,6 +125,7 @@ export default function AddTeam({
           searchBarClassName={classes.searchBar}
           searchBarContainerClassName={classes.searchBarContainer}
           handleAddOrganization={handleAddOrganization}
+          handleRemoveOrganization={handleRemoveOrganization}
         />
         <BottomNavigation
           className={classes.block}
