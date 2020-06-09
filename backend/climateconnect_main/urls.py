@@ -21,8 +21,6 @@ from climateconnect_api.views import (
 from organization.views.organization_views import OrganizationAPIView
 from organization.views.project_views import (ListProjectsView, ProjectAPIView, ListProjectMembersView)
 from knox import views as knox_views
-from django.conf import settings
-from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -38,5 +36,3 @@ urlpatterns = [
     path('projects/<pk>/', ProjectAPIView.as_view(), name='project-api-view'),
     path('projects/<pk>/members/', ListProjectMembersView.as_view(), name='project-members-api')
 ]
-
-urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -91,8 +91,8 @@ function MessagingLayout({ user, chatting_partner, message_history }) {
       setMessages([
         ...messages,
         {
-          receiver: chatting_partner.url,
-          sender: user.url,
+          receiver: chatting_partner.url_slug,
+          sender: user.url_slug,
           content: curMessage,
           date: new Date()
         }
@@ -180,7 +180,7 @@ async function getMessagesWithUser(profileUrl) {
   const user = await getLoggedInUser();
   return TEMP_MESSAGE_DATA.messages.filter(
     m =>
-      (m.sender === profileUrl && m.receiver === user.url) ||
-      (m.sender === user.url && m.receiver === profileUrl)
+      (m.sender === profileUrl && m.receiver === user.url_slug) ||
+      (m.sender === user.url_slug && m.receiver === profileUrl)
   );
 }

@@ -122,7 +122,7 @@ export default function Settings({ loggedInUser }) {
 
   const changeProfileUrl = event => {
     event.preventDefault();
-    if (newProfileUrl === loggedInUser.url)
+    if (newProfileUrl === loggedInUser.url_slug)
       setErrors({
         ...errors,
         profileurlerror: "Your new profile url can not be the same as your old profile url."
@@ -254,8 +254,8 @@ export default function Settings({ loggedInUser }) {
         <Divider />
         <Typography className={classes.blockElement} variant="body2">
           Your profile url is{" "}
-          <Link href={"/profiles/" + loggedInUser.url}>
-            <a className={classes.primaryColor}>climateconnect.earth/{loggedInUser.url}</a>
+          <Link href={"/profiles/" + loggedInUser.url_slug}>
+            <a className={classes.primaryColor}>climateconnect.earth/{loggedInUser.url_slug}</a>
           </Link>
         </Typography>
         {errors.profileurlerror && (
@@ -287,7 +287,7 @@ export default function Settings({ loggedInUser }) {
         </Typography>
         <Divider />
         <Button
-          href={"/editProfile/" + loggedInUser.url}
+          href={"/editProfile/" + loggedInUser.url_slug}
           className={`${classes.editProfilePageButton}`}
           variant="contained"
           color="primary"
@@ -306,5 +306,5 @@ Settings.getInitialProps = async () => {
 };
 
 async function getLoggedInUser() {
-  return TEMP_FEATURED_PROFILE_DATA.profiles.find(p => p.url === "christophstoll");
+  return TEMP_FEATURED_PROFILE_DATA.profiles.find(p => p.url_slug === "christophstoll");
 }

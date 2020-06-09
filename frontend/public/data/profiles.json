@@ -1,7 +1,7 @@
 {
   "profiles": [
     {
-      "url": "christophstoll",
+      "url_slug": "christophstoll",
       "email": "christoph.stoll@email.com",
       "emailPreferences": {
         "notifications": true,
@@ -21,7 +21,7 @@
     },
     {
       "name": "Tobias Rehm",
-      "url": "tobiasrehm",
+      "url_slug": "tobiasrehm",
       "image": "/images/tobiasrehm.jpg",
       "types": ["climateprotector"],
       "organizations": ["sneeperlangen", "sneep", "climateconnect"],
@@ -34,7 +34,7 @@
     },
     {
       "name": "Lasse Rehm",
-      "url": "lasserehm",
+      "url_slug": "lasserehm",
       "image": "/images/tobiasrehm.jpg",
       "types": ["climateprotector"],
       "organizations": [],
@@ -46,7 +46,7 @@
       }
     },
     {
-      "url": "thomasbove",
+      "url_slug": "thomasbove",
       "name": "Thomas Bove",
       "image": "/images/thomasbove.jpg",
       "info": {
@@ -59,7 +59,7 @@
       "organizations": ["climateconnect"]
     },
     {
-      "url": "michaelfischer",
+      "url_slug": "michaelfischer",
       "name": "Michael Fischer",
       "image": "/images/michaelfischer.jpg",
       "info": {
@@ -72,7 +72,7 @@
       "organizations": ["climateconnect"]
     },
     {
-      "url": "evanhahn",
+      "url_slug": "evanhahn",
       "name": "Evan Hahn",
       "image": "/images/evanhahn.jpg",
       "info": {
@@ -85,7 +85,7 @@
       "organizations": ["climateconnect"]
     },
     {
-      "url": "nadineschneider",
+      "url_slug": "nadineschneider",
       "name": "Nadine Schneider",
       "image": "/images/nadineschneider.jpg",
       "info": {
@@ -98,7 +98,7 @@
       "organizations": ["climateconnect", "sneep", "sneeperlangen"]
     },
     {
-      "url": "dipdhanesha",
+      "url_slug": "dipdhanesha",
       "name": "Dip Dhanesha",
       "image": "/images/dipdhanesha.jpg",
       "info": {
@@ -111,7 +111,7 @@
       "organizations": ["climateconnect"]
     },
     {
-      "url": "annkathrinbernauer",
+      "url_slug": "annkathrinbernauer",
       "name": "Ann-Kathrin Bernauer",
       "image": "/images/annkathrinbernauer.jpg",
       "info": {
@@ -124,7 +124,7 @@
       "organizations": ["climateconnect"]
     },
     {
-      "url": "reginareck",
+      "url_slug": "reginareck",
       "name": "Regina Reck",
       "image": null,
       "info": {
@@ -137,7 +137,7 @@
       "organizations": ["sneeperlangen", "sneep"]
     },
     {
-      "url": "tobiasbaume",
+      "url_slug": "tobiasbaume",
       "name": "Tobias Baume",
       "image": null,
       "info": {
@@ -150,7 +150,7 @@
       "organizations": ["sneeperlangen", "sneep"]
     },
     {
-      "url": "emptytestuser",
+      "url_slug": "emptytestuser",
       "name": "Empty Testuser",
       "image": null,
       "info": {
@@ -163,7 +163,7 @@
       "organizations": []
     },
     {
-      "url": "stefanjessenberger",
+      "url_slug": "stefanjessenberger",
       "name": "Stefan Jessenberger",
       "image": null,
       "info": {

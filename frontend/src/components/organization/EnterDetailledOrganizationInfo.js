@@ -50,7 +50,7 @@ export default function EnterDetailledOrganizationInfo({
         possibleAccountTypes={organization_types.organization_types}
         infoMetadata={organization_info_metadata}
         maxAccountTypes={organization_types.max_types}
-        accountHref={"/organizations/" + organization.url}
+        accountHref={"/organizations/" + organization.url_slug}
         handleSubmit={handleSubmit}
         submitMessage="Create"
         handleCancel={handleCancel}
