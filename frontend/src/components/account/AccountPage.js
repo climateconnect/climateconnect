@@ -13,8 +13,7 @@ const useStyles = makeStyles(theme => ({
     "& img": {
       objectFit: "contain",
       backgroundColor: "white"
-    },
-    border: `1px solid ${theme.palette.grey[300]}`
+    }
   },
   avatarWithInfo: {
     textAlign: "center",
@@ -116,7 +115,7 @@ export default function AccountPage({
       const additionalText = i.additionalText ? i.additionalText : "";
       if (i.type === "array") {
         return displayInfoArrayData(key, i);
-      } else {
+      } else if(value){
         return (
           <div key={key}>
             <div className={classes.subtitle}>{i.name}:</div>
