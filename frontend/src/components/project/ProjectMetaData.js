@@ -3,6 +3,7 @@ import { Box } from "@material-ui/core";
 import PlaceIcon from "@material-ui/icons/Place";
 import ProjectStatus from "./ProjectStatus";
 import { makeStyles } from "@material-ui/core/styles";
+import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 
 const useStyles = makeStyles(theme => ({
   creatorImage: {
@@ -27,10 +28,11 @@ export default function ProjectMetaData({ project }) {
   const classes = useStyles();
   return (
     <Box>
-      <Box className={classes.creator}>
-        <img src={project.creator_image} className={classes.creatorImage} />
-        {project.creator_name}
-      </Box>
+      <MiniOrganizationPreview
+        className={classes.creator}
+        organization={{ image: project.creator_image, name: project.creator_name }}
+        size="small"
+      />
       <Box>
         <PlaceIcon className={classes.cardIcon} />
         {project.location}

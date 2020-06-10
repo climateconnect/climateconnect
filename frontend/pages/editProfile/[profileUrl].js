@@ -25,7 +25,7 @@ export default function EditProfilePage({ profile, profileTypes, infoMetadata, m
     //TODO: replace this with an API call that saves the updated account to our database
   };
   const handleCancel = () => {
-    Router.push("/profiles/" + profile.url);
+    Router.push("/profiles/" + profile.url_slug);
   };
 
   return (

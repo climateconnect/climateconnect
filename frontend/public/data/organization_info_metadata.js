@@ -1,52 +1,52 @@
 import PlaceIcon from "@material-ui/icons/Place";
-import DescriptionIcon from '@material-ui/icons/Description';
-import SchoolIcon from '@material-ui/icons/School';
-import LocationCityIcon from '@material-ui/icons/LocationCity';
-import PublicIcon from '@material-ui/icons/Public';
-import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
+import DescriptionIcon from "@material-ui/icons/Description";
+import SchoolIcon from "@material-ui/icons/School";
+import LocationCityIcon from "@material-ui/icons/LocationCity";
+import PublicIcon from "@material-ui/icons/Public";
+import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 
 export default {
-  "location": {
-    "icon": PlaceIcon,
-    "iconName": "PlaceIcon",
-    "name": "Location",
-    "type": "location",
-    "key": "location"
+  location: {
+    icon: PlaceIcon,
+    iconName: "PlaceIcon",
+    name: "Location",
+    type: "location",
+    key: "location"
   },
-  "shortdescription": {
-    "icon": DescriptionIcon,
-    "iconName": "DescriptionIcon",
-    "name": "Description",
-    "key": "shortdescription"
+  shortdescription: {
+    icon: DescriptionIcon,
+    iconName: "DescriptionIcon",
+    name: "Description",
+    key: "shortdescription"
   },
-  "school": {
+  school: {
     icon: SchoolIcon,
-    "iconName": "SchoolIcon",
-    "name": "School/University",
-    "key": "school"
+    iconName: "SchoolIcon",
+    name: "School/University",
+    key: "school"
   },
-  "city": {
+  city: {
     icon: LocationCityIcon,
-    "iconName": "LocationCityIcon",
-    "name": "City",
-    "key": "city"
+    iconName: "LocationCityIcon",
+    name: "City",
+    key: "city"
   },
-  "state": {
+  state: {
     PublicIcon,
-    "iconName": "PublicIcon",
-    "name": "State",
-    "key": "state"
+    iconName: "PublicIcon",
+    name: "State",
+    key: "state"
   },
-  "country": {
+  country: {
     icon: PublicIcon,
-    "iconName": "PublicIcon",
-    "name": "Country",
-    "key": "country"
+    iconName: "PublicIcon",
+    name: "Country",
+    key: "country"
   },
-  "organ": {
+  organ: {
     icon: SupervisorAccountIcon,
-    "iconName": "SupervisorAccountIcon",
-    "name": "Organ",
-    "key": "organ"
+    iconName: "SupervisorAccountIcon",
+    name: "Organ",
+    key: "organ"
   }
-}
+};

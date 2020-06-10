@@ -16,6 +16,7 @@ import TEMP_PROJECT_DATA from "../../public/data/projects.json";
 import TEMP_ORGANIZATION_DATA from "../../public/data/organizations.json";
 import TEMP_PROFILE_TYPES from "./../../public/data/profile_types.json";
 import TEMP_INFOMETADATA from "./../../public/data/profile_info_metadata.json";
+import tokenConfig from '../../public/config/tokenConfig';
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -113,7 +114,7 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
     <AccountPage
       account={profile}
       default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={"/editProfile/" + profile.url}
+      editHref={"/editProfile/" + profile.url_slug}
       isOwnAccount={user && user.url_slug === profile.url_slug}
       type="profile"
       possibleAccountTypes={profileTypes}
@@ -173,22 +174,6 @@ async function getProfileByUrlIfExists(profileUrl, token) {
   }
 }
 
-const tokenConfig = token => {
-  // Headers
-  const config = {
-    headers: {
-      "Content-Type": "application/json"
-    }
-  };
-
-  // If token, add to headers config
-  if (token) {
-    config.headers["Authorization"] = `Token ${token}`;
-  }
-
-  return config;
-};
-
 function parseProfile(profile) {
   return {
     url_slug: profile.url_slug,
@@ -206,7 +191,7 @@ function parseProfile(profile) {
 
 async function getProjects(profileUrl) {
   return TEMP_PROJECT_DATA.projects.filter(
-    project => !!project.team.find(m => m.url === profileUrl)
+    project => !!project.team.find(m => m.url_slug === profileUrl)
   );
 }
 

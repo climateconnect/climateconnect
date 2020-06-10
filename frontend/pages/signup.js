@@ -48,12 +48,12 @@ export default function Signup() {
       city: values.city
     });
     const payload = {
-      email: userInfo.email,
+      email: userInfo.email.trim(),
       password: userInfo.password,
-      first_name: values.first_name,
-      last_name: values.last_name,
-      country: values.country,
-      city: values.city
+      first_name: values.first_name.trim(),
+      last_name: values.last_name.trim(),
+      country: values.country.trim(),
+      city: values.city.trim()
     };
     const config = {
       headers: {

@@ -45,7 +45,7 @@ export default function OrganizationPreview({ organization, showMembers, showOrg
       className={classes.root}
       variant="outlined"
       onClick={() => {
-        Router.push(`/organizations/${organization.url}`);
+        Router.push(`/organizations/${organization.url_slug}`);
       }}
     >
       <CardMedia

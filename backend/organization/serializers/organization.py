@@ -12,4 +12,4 @@ class OrganizationSerializer(serializers.ModelSerializer):
 class OrganizationMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
-        fields = ('name', 'url_slug', 'organization_image', 'background_image')
+        fields = ('name', 'url_slug', 'image', 'short_description', 'background_image', 'country', 'state', 'city')

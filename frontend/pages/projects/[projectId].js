@@ -150,13 +150,15 @@ async function getProjectByIdIfExists(projectId) {
 async function getFullProfiles(shortProfiles) {
   const profiles = [
     ...TEMP_FEATURED_PROFILE_DATA.profiles.filter(
-      profile => shortProfiles.filter(shortprofile => shortprofile.url === profile.url).length === 1
+      profile =>
+        shortProfiles.filter(shortprofile => shortprofile.url_slug === profile.url_slug).length ===
+        1
     )
   ];
   return profiles.map(profile => {
     return {
       ...profile,
-      ...shortProfiles.filter(shortprofile => shortprofile.url === profile.url)[0]
+      ...shortProfiles.filter(shortprofile => shortprofile.url_slug === profile.url_slug)[0]
     };
   });
 }
@@ -165,17 +167,17 @@ async function getProfileOfPostCreator(post) {
   if (post.creator.type === "organization") {
     const profile = {
       ...TEMP_FEATURED_ORGANIZATION_DATA.organizations.find(
-        o => o.url === post.creator.url.replace("/organizations/", "")
+        o => o.url_slug === post.creator.url_slug.replace("/organizations/", "")
       )
     };
-    return { ...profile, url: "/organizations/" + profile.url, type: "organization" };
+    return { ...profile, url: "/organizations/" + profile.url_slug, type: "organization" };
   } else if (post.creator.type === "profile") {
     const profile = {
       ...TEMP_FEATURED_PROFILE_DATA.profiles.find(
-        p => p.url === post.creator.url.replace("/profiles/", "")
+        p => p.url_slug === post.creator.url_slug.replace("/profiles/", "")
       )
     };
-    return { ...profile, url: "/profiles/" + profile.url, type: "profile" };
+    return { ...profile, url: "/profiles/" + profile.url_slug, type: "profile" };
   } else {
     throw new Error(
       "Unaccepted input for 'creator.type':'" +
