@@ -10,25 +10,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def project_creation_pre_checks(data: Dict) -> Optional[Response]:
-    required_params = [
-        'name', 'status', 'start_date', 'short_description',
-        'collaborators_welcome'
-    ]
-    for param in required_params:
-        if param not in data:
-            return Response({
-                'message': 'Missing required information to create project.'
-                           'Please contact administrator'
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-    project_status = data['status']
-    if project_status not in Project.PROJECT_STATUS_LIST:
-        return Response({
-            'message': 'Invalid project status'
-        }, status=status.HTTP_404_NOT_FOUND)
-
-
 def create_new_project(data: Dict) -> Project:
     project = Project.objects.create(
         name=data['name'], status=data['status'],
@@ -46,7 +27,7 @@ def create_new_project(data: Dict) -> Project:
     if 'description' in data:
         project.description = data['description']
 
-    project.url_slug = project.name + str(project.id)
+    project.url_slug = project.name.replace(" ", "") + str(project.id)
 
     if 'skills' in data:
         for skill_id in data['skills']:

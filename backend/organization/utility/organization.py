@@ -6,5 +6,4 @@ def check_organization(organization_id: str) -> Organization:
         organization = Organization.objects.get(id=int(organization_id))
     except Organization.DoesNotExist:
         organization = None
-
     return organization

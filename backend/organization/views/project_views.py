@@ -7,13 +7,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from django.contrib.auth.models import User
+
 from organization.models import Project, Organization, ProjectParents, ProjectMember
 from organization.serializers.project import (
     ProjectSerializer, ProjectMinimalSerializer, ProjectMemberSerializer
 )
-from organization.utility.project import (
-    create_new_project, project_creation_pre_checks
-)
+from organization.utility.project import create_new_project
 from organization.permissions import OrganizationProjectCreationPermission
 from organization.utility.organization import (
     check_organization,
@@ -37,55 +37,58 @@ class ListProjectsView(ListAPIView):
         return ProjectMinimalSerializer
 
 
-"""
-Note: I am splitting organization project creation and personal project creation into
-two separate APIs. It makes more sense do two APIs so that we can manage user accessibility
-by project or organization member roles.
-"""
-
-
-class OrganizationProjectsView(APIView):
-    permission_classes = [OrganizationProjectCreationPermission]
-
-    def post(self, request, organization_id):
-        organization = check_organization(organization_id)
-        if not organization:
-            return Response({
-                'message': 'Organization not found'
-            }, status=status.HTTP_404_NOT_FOUND)
-        project_creation_pre_checks(request.data)
-        project = create_new_project(request.data)
-
-        if 'order' in request.data:
-            order = request.data['order']
-            ProjectParents.objects.create(
-                project=project, parent_organization=organization,
-                parent_user=request.user, order=order
-            )
-
-        serializer = ProjectSerializer(project)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
 class CreateProjectView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        project_creation_pre_checks(request.data)
-        project = create_new_project(request.data)
-        if 'order' in request.data:
-            order = request.data['order']
-            ProjectParents.objects.create(
-                project=project, parent_user=request.user, order=order
-            )
+        organization = check_organization(int(request.data['organization_id']))
+        required_params = [
+            'name', 'status', 'start_date', 'short_description',
+            'collaborators_welcome', 'project_order'
+        ]
+        for param in required_params:
+            if param not in request.data:
+                return Response({
+                    'message': 'Missing required information to create project.'
+                               'Please contact administrator'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
-        # Here a user is creating an individual project so we will be adding them as a project member
-        role = Role.objects.get(name="Project Administrator")
-        ProjectMember.objects.create(
-            project=project, user=request.user, role=role
+        project_status = request.data['status']
+        if project_status not in Project.PROJECT_STATUS_LIST:
+            return Response({
+                'message': 'Invalid project status'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        project = create_new_project(request.data)
+
+        order = request.data['project_order']
+        project_parents = ProjectParents.objects.create(
+            project=project, parent_user=request.user, order=order
         )
-        serializer = ProjectSerializer(project)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if organization:
+            project_parents.organization = organization
+            project_parents.save()
+
+        # There are only certain roles user can have. So get all the roles first.
+        roles = Role.objects.all()
+
+        team_members = request.data['team_members']
+        for member in team_members:
+            user_role = roles.filter(role_type=int(member['permission_type'])).first()
+            try:
+                user = User.objects.get(id=int(member['user_id']))
+            except User.DoesNotExist:
+                logger.error("Passed user id {} does not exists".format(member['user_id']))
+                continue
+            if user:
+                ProjectMember.objects.create(
+                    project=project, user=user, role=user_role
+                )
+                logger.info("Project member created for user {}".format(user.id))
+
+        return Response({
+            'message': 'Project {} successfully created'.format(project.name)
+        }, status=status.HTTP_201_CREATED)
 
 
 class ProjectAPIView(APIView):
@@ -133,6 +136,38 @@ class ProjectAPIView(APIView):
         return Response({
             'message': 'Project {} successfully updated'.format(project.name)
         }, status=status.HTTP_200_OK)
+
+
+class AddProjectMembersView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, project_id):
+        try:
+            project = Project.objects.get(id=int(project_id))
+        except Project.DoesNotExist:
+            return Response({'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        roles = Role.objects.all()
+        if 'team_members' not in request.data:
+            return Response({
+                'message': 'Missing required parameters'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        for member in request.data['team_members']:
+            try:
+                user = User.objects.get(id=int(member['user_id']))
+            except User.DoesNotExist:
+                logger.error("Passed user id {} does not exists".format(member['user_id']))
+                continue
+
+            user_role = roles.filter(role_type=int(member['permission_type'])).first()
+            if user:
+                ProjectMember.objects.create(
+                    project=project, user=user, role=user_role
+                )
+                logger.info("Project member created for user {}".format(user.id))
+
+        return Response({'message': 'Member added to the project'}, status=status.HTTP_201_CREATED)
 
 
 class ListProjectMembersView(ListAPIView):
