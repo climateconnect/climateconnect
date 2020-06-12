@@ -24,12 +24,11 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
 
 class ProjectMemberSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
-    project = ProjectSerializer()
     role = RoleSerializer()
 
     class Meta:
         model = ProjectMember
-        exclude = ('created_at', 'updated_at')
+        exclude = ('created_at', 'updated_at', 'project')
 
     def get_user(self, obj):
         return UserProfileStubSerializer(obj.user.user_profile).data

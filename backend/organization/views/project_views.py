@@ -24,23 +24,23 @@ class ListProjectsView(ListAPIView):
 
 
 class ProjectAPIView(ListAPIView):
-    lookup_field = 'pk'
+    lookup_field = 'url_slug'
     serializer_class = ProjectSerializer
     pagination_class = None
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Project.objects.filter(id=int(self.kwargs['pk']))
+        return Project.objects.filter(url_slug=self.kwargs['pk'])
 
 
 class ListProjectMembersView(ListAPIView):
-    lookup_field = 'pk'
+    lookup_field = 'url_slug'
     serializer_class = ProjectMemberSerializer
     pagination_class = PageNumberPagination
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        project = Project.objects.get(id=int(self.kwargs['pk']))
+        project = Project.objects.get(url_slug=self.kwargs['pk'])
 
         return project.project_member.all()
 
