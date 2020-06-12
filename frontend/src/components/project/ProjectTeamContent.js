@@ -9,9 +9,9 @@ function getTeamWithAdditionalInfo(team) {
         text: m.role,
         importance: "high"
       });
-    if (m.timeperweek)
+    if (m.timeperweek && m.timeperweek !== "not_specified")
       additionalInfo.push({
-        text: m.timeperweek + (m.timeperweek > 1 ? " hours" : " hour") + " per week",
+        text: m.timeperweek + " hours per week",
         importance: "low"
       });
     return { ...m, additionalInfo: additionalInfo };

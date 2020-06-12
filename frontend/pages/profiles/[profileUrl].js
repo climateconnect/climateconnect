@@ -164,7 +164,6 @@ async function getProfileByUrlIfExists(profileUrl, token) {
     );
     if (resp.data.results.length === 0) return null;
     else {
-      //console.log(resp.data.results[0]);
       return parseProfile(resp.data.results[0]);
     }
   } catch (err) {
