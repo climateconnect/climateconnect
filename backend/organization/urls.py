@@ -3,8 +3,7 @@ from django.urls import path
 from organization.views.organization_views import OrganizationAPIView
 from organization.views.project_views import (
     ListProjectsView, ProjectAPIView, ListProjectMembersView,
-    CreateProjectView, OrganizationProjectsView,
-    AddProjectMembersView
+    CreateProjectView, AddProjectMembersView
 )
 
 
