@@ -3,7 +3,7 @@ from django.urls import path
 from organization.views.organization_views import OrganizationAPIView
 from organization.views.project_views import (
     ListProjectsView, ProjectAPIView, ListProjectMembersView,
-    CreateProjectView, AddProjectMembersView
+    CreateProjectView, AddProjectMembersView, UpdateProjectMemberView
 )
 
 
@@ -17,5 +17,9 @@ urlpatterns = [
     path(
         'projects/<int:project_id>/add_members/',
         AddProjectMembersView.as_view(), name='add-project-members-api'
+    ),
+    path(
+        'projects/<int:project_id>/members/<int:member_id>/',
+        UpdateProjectMemberView.as_view(), name='update-project-member-api'
     )
 ]

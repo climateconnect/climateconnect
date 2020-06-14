@@ -41,10 +41,14 @@ class CreateProjectView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        organization = check_organization(int(request.data['organization_id']))
+        if 'organization_id' in request.data:
+            organization = check_organization(int(request.data['organization_id']))
+        else:
+            organization = None
+
         required_params = [
             'name', 'status', 'start_date', 'short_description',
-            'collaborators_welcome', 'project_order'
+            'collaborators_welcome', 'project_order', 'team_members'
         ]
         for param in required_params:
             if param not in request.data:
@@ -71,10 +75,9 @@ class CreateProjectView(APIView):
 
         # There are only certain roles user can have. So get all the roles first.
         roles = Role.objects.all()
-
         team_members = request.data['team_members']
         for member in team_members:
-            user_role = roles.filter(role_type=int(member['permission_type'])).first()
+            user_role = roles.filter(id=int(member['permission_type_id'])).first()
             try:
                 user = User.objects.get(id=int(member['user_id']))
             except User.DoesNotExist:
@@ -160,7 +163,7 @@ class AddProjectMembersView(APIView):
                 logger.error("Passed user id {} does not exists".format(member['user_id']))
                 continue
 
-            user_role = roles.filter(role_type=int(member['permission_type'])).first()
+            user_role = roles.filter(id=int(member['permission_type_id'])).first()
             if user:
                 ProjectMember.objects.create(
                     project=project, user=user, role=user_role
@@ -168,6 +171,42 @@ class AddProjectMembersView(APIView):
                 logger.info("Project member created for user {}".format(user.id))
 
         return Response({'message': 'Member added to the project'}, status=status.HTTP_201_CREATED)
+
+
+class UpdateProjectMemberView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def confirm_project_and_members(self, project_id, member_id):
+        if not Project.objects.filter(id=int(project_id)).exists():
+            return Response({'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            project_member = ProjectMember.objects.get(id=int(member_id))
+        except ProjectMember.DoesNotExist:
+            return Response({
+                'message': 'Member not found.'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        return project_member
+
+    def get(self, request, project_id, member_id):
+        project_member = self.confirm_project_and_members(project_id, member_id)
+        serializer = ProjectMemberSerializer(project_member, many=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request, project_id, member_id):
+        project_member = self.confirm_project_and_members(project_id, member_id)
+        roles = Role.objects.all()
+        # Update user role.
+        user_role = roles.filter(id=int(request.data['permission_type_id'])).first()
+        project_member.role = user_role
+        project_member.save()
+        return Response({'message': 'Member updated'}, status=status.HTTP_200_OK)
+
+    def delete(self, request, project_id, member_id):
+        project_member = self.confirm_project_and_members(project_id, member_id)
+        project_member.delete()
+        return Response({'message': 'Member deleted'}, status=status.HTTP_200_OK)
 
 
 class ListProjectMembersView(ListAPIView):
