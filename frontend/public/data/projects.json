@@ -3,6 +3,7 @@
     {
       "id": "78b6z77c-g8d2-4b2b-9825-4479706d2402",
       "name": "Global climate strike 29.11.2019",
+      "url_slug": "climatestrike",
       "image": "/images/climatestrike.jpg",
       "creator_url": "fridaysforfuture",
       "creator_name": "Fridays for Future",
@@ -27,6 +28,7 @@
     {
       "id": "78b6z77c-g8d2-4b2b-9825-4479706d2402",
       "name": "Climate Science in newspapers",
+      "url_slug": "climatesciencenewspapers",
       "image": "/images/newspapers.jpg",
       "creator_url": "pikpotsdam",
       "creator_name": "PIK Potsdam",
@@ -51,6 +53,7 @@
     {
       "id": "78b6z77c-g8d2-4b2b-9825-4479706d2402",
       "name": "Energy from ocean waves",
+      "url_slug": "waveenergy",
       "image": "/images/waveenergy.jpg",
       "creator_url": "calwave",
       "creator_name": "Calwave",
@@ -288,6 +291,7 @@
     {
       "id": "78b6z77c-g8d2-4b2b-9825-4479706d2402",
       "name": "Climate Camp",
+      "url_slug": "climatecamp",
       "image": "/images/climatecamp.jpg",
       "creator_url": "extinctionrebellion",
       "creator_name": "Extinction Rebellion",
@@ -312,6 +316,7 @@
     {
       "id": "78b6677c-g8d2-4b2b-9825-4479706d2402",
       "name": "Climate Cubes",
+      "url_slug": "climatecubes",
       "image": "/images/climatecube.jpg",
       "creator_url": "energiewendeerhlangen",
       "creator_name": "Energiewende ER(H)langen",

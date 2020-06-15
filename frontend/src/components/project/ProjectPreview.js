@@ -36,7 +36,7 @@ export default function ProjectPreview({ project }) {
   const classes = useStyles();
 
   return (
-    <Link href={`/projects/${project.id}`}>
+    <Link href={`/projects/${project.url_slug}`}>
       <a className={classes.noUnderline}>
         <Card className={classes.root} variant="outlined">
           <CardMedia
