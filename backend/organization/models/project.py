@@ -39,6 +39,11 @@ class Project(models.Model):
     PROJECT_CANCELLED = "cancelled"
     PROJECT_RECURRING = "recurring"
 
+    PROJECT_STATUS_LIST = [
+        PROJECT_IDEA, PROJECT_IN_PROGRESS, PROJECT_FINISHED,
+        PROJECT_CANCELLED, PROJECT_RECURRING
+    ]
+
     PROJECT_STATUSES = (
         (PROJECT_IDEA, "Idea"),
         (PROJECT_IN_PROGRESS, "In Progress"),
@@ -150,7 +155,7 @@ class ProjectParents(models.Model):
         Project,
         help_text="Points to organizations's project",
         verbose_name="Project",
-        related_name="org_project",
+        related_name="project_parent",
         on_delete=models.CASCADE
     )
 
@@ -159,7 +164,8 @@ class ProjectParents(models.Model):
         help_text="Points to organization",
         verbose_name="Organization",
         related_name="project_parent_org",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True, blank=True
     )
 
     parent_user = models.ForeignKey(
@@ -190,8 +196,7 @@ class ProjectParents(models.Model):
 
     class Meta:
         app_label = 'organization'
-        verbose_name = "Project Parents"
-        unique_together = [['project', 'order']]
+        verbose_name_plural = "Project Parents"
 
     def __str__(self):
         return "Project %s of organization %s" % (self.project.name, self.parent_organization.name)
