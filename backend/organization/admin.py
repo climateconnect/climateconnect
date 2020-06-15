@@ -3,7 +3,8 @@ from django.contrib import admin
 from organization.models import (
     Organization, OrganizationTags, OrganizationTagging,
     Project, ProjectTags, ProjectTagging, Posts, Comment,
-    PostComment, ProjectComment, ProjectMember, OrganizationMember
+    PostComment, ProjectComment, ProjectMember, OrganizationMember,
+    ProjectParents
 )
 
 pass_through_models = (
@@ -44,3 +45,10 @@ class OrganizationMemberAdmin(admin.ModelAdmin):
 
 
 admin.site.register(OrganizationMember, OrganizationMemberAdmin)
+
+
+class ProjectParentsAdmin(admin.ModelAdmin):
+    search_fields = ('project__name', 'organization__name')
+
+
+admin.site.register(ProjectParents, ProjectParentsAdmin)
