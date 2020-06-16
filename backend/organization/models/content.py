@@ -148,16 +148,6 @@ class PostComment(Comment):
         on_delete=models.CASCADE
     )
 
-    comment = models.ForeignKey(
-        Comment,
-        related_name="comment_post_comment",
-        help_text="Point to comments table",
-        verbose_name="Comment",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True
-    )
-
     class Meta:
         app_label = "organization"
         verbose_name = "Post Comment"
@@ -172,16 +162,6 @@ class ProjectComment(Comment):
         related_name="project_comment",
         verbose_name="Project",
         on_delete=models.CASCADE
-    )
-
-    comment = models.ForeignKey(
-        Comment,
-        related_name="comment_project_comment",
-        help_text="Point to comments table",
-        verbose_name="Comment",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True
     )
 
     class Meta:
