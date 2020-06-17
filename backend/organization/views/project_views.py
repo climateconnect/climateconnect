@@ -100,9 +100,11 @@ class ProjectAPIView(APIView):
 
     def get(self, request, pk, format=None):
         try:
-            project = Project.objects.get(url_slug=pk)
+            project = Project.objects.get(url_slug=pk)            
         except Project.DoesNotExist:
             return Response({'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+        #TODO: get number of followers
+
         serializer = ProjectSerializer(project, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
