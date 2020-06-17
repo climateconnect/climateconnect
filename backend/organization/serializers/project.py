@@ -5,24 +5,29 @@ from climateconnect_api.serializers.common import SkillSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.serializers.role import RoleSerializer
 from organization.serializers.organization import OrganizationStubSerializer
-from organization.serializers.content import PostSerializer
+from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
+from organization.serializers.tags import ProjectTaggingSerializer
 
 class ProjectSerializer(serializers.ModelSerializer):
     skills = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
     project_posts = serializers.SerializerMethodField()
+    comments = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
         fields = (
-            'name', 'url_slug',
+            'id', 'name', 'url_slug',
             'image', 'status',
             'start_date', 'end_date',
             'short_description', 'description',
             'country', 'city',
             'collaborators_welcome', 
             'skills', 'helpful_connections',
-            'project_parents', 'project_posts'
+            'project_parents', 'project_posts',
+            'comments', 'tags',
+            'created_at'
         )
         read_only_fields = ['url_slug']
 
@@ -36,6 +41,15 @@ class ProjectSerializer(serializers.ModelSerializer):
     
     def get_project_posts(self, obj):
         serializer = PostSerializer(obj.post_project, many=True)
+        return serializer.data
+    
+    def get_comments(self, obj):
+        top_level_comments = obj.project_comment.exclude(parent_comment_id__isnull=False)
+        serializer = ProjectCommentSerializer(top_level_comments, many=True)
+        return serializer.data
+
+    def get_tags(self, obj):
+        serializer = ProjectTaggingSerializer(obj.tag_project, many=True)
         return serializer.data
 
 class ProjectParentsSerializer(serializers.ModelSerializer):
