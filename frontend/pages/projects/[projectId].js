@@ -11,7 +11,7 @@ import ProjectContent from "../../src/components/project/ProjectContent";
 import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
 import ProjectCommentsContent from "../../src/components/project/ProjectCommentsContent";
 
-import tokenConfig from '../../public/config/tokenConfig';
+import tokenConfig from "../../public/config/tokenConfig";
 import axios from "axios";
 
 const useStyles = makeStyles(theme => ({
@@ -34,7 +34,11 @@ const useStyles = makeStyles(theme => ({
 export default function ProjectPage({ project, members }) {
   return (
     <WideLayout title={project ? project.name : "Project not found"}>
-      {project ? <ProjectLayout project={{...project, team: members}} /> : <NoProjectFoundLayout />}
+      {project ? (
+        <ProjectLayout project={{ ...project, team: members }} />
+      ) : (
+        <NoProjectFoundLayout />
+      )}
     </WideLayout>
   );
 }
@@ -118,7 +122,7 @@ async function getProjectByIdIfExists(projectUrl, token) {
     if (resp.data.length === 0) return null;
     else {
       //TODO: get comments and timeline posts and project taggings
-      return parseProject(resp.data[0]);
+      return parseProject(resp.data);
     }
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
@@ -135,7 +139,6 @@ async function getProjectMembersByIdIfExists(projectUrl, token) {
     if (resp.data.results.length === 0) return null;
     else {
       //TODO: get comments and timeline posts and project taggings
-      console.log(resp.data.results)
       return parseProjectMembers(resp.data.results);
     }
   } catch (err) {
@@ -145,11 +148,14 @@ async function getProjectMembersByIdIfExists(projectUrl, token) {
 }
 
 function parseProject(project) {
+  console.log(project.project_posts[0].replies[0])
   return {
+    name: project.name,
+    id: project.id,
     url_slug: project.url_slug,
     image: project.image,
     status: project.status,
-    location: project.city+" "+project.country,
+    location: project.city + " " + project.country,
     description: project.description,
     shortdescription: project.short_description,
     collaborators_welcome: project.collaborators_welcome,
@@ -158,26 +164,23 @@ function parseProject(project) {
     creation_date: project.created_at,
     helpful_skills: project.skills,
     helpful_connections: project.helpful_connections,
-    //TODO: remove after labels are added
-    labels: [],
-    //TODO: remove after timeline_posts are added
-    timeline_posts: [],
+    creator: project.project_parents[0].parent_organization ? project.project_parents[0].parent_organization : project.project_parents[0].parent_user,
+    tags: project.tags.map(t=>t.project_tag.name),
+    timeline_posts: project.project_posts,
     //TODO: remove after comments are added
-    comments: []
-  }
+    comments: project.comments
+  };
 }
 
 function parseProjectMembers(projectMembers) {
-  console.log(projectMembers)
   return projectMembers.map(m => {
     return {
       url_slug: m.url_slug,
       role: m.role_in_project,
       permissions: m.role.name,
       timeperweek: m.time_per_week,
-      name: m.user.first_name+" "+m.user.last_name,
-      image: m.user.image,
-
-    }
-  })
+      name: m.user.first_name + " " + m.user.last_name,
+      image: m.user.image
+    };
+  });
 }

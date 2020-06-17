@@ -11,7 +11,7 @@ import UserContext from "../src/components/context/UserContext";
 
 //add global styles
 import "react-multi-carousel/lib/styles.css";
-import tokenConfig from '../public/config/tokenConfig';
+import tokenConfig from "../public/config/tokenConfig";
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 

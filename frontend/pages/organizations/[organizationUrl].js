@@ -15,7 +15,7 @@ import TEMP_PROJECT_DATA from "../../public/data/projects.json";
 import TEMP_MEMBER_DATA from "../../public/data/profiles.json";
 import TEMP_ORGANIZATION_TYPES from "./../../public/data/organization_types.json";
 import TEMP_INFOMETADATA from "./../../public/data/organization_info_metadata.js";
-import tokenConfig from '../../public/config/tokenConfig';
+import tokenConfig from "../../public/config/tokenConfig";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -36,7 +36,7 @@ export default function OrganizationPage({
   organizationTypes,
   infoMetadata
 }) {
-  console.log(organization)
+  console.log(organization);
   return (
     <WideLayout title={organization ? organization.name + "'s profile" : "Not found"}>
       {organization ? (
@@ -112,16 +112,16 @@ function NoOrganizationFoundLayout() {
 
 // These will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getOrganizationByUrlIfExists(organizationUrl, token) {
-  console.log('getting organization by url')
+  console.log("getting organization by url");
   try {
-    console.log('here is the token config')
-    console.log('token: ', token)
+    console.log("here is the token config");
+    console.log("token: ", token);
     console.log(tokenConfig(token));
     const resp = await axios.get(
       process.env.API_URL + "/organizations/?search=" + organizationUrl,
       tokenConfig(token)
     );
-    console.log(resp.data.results[0])
+    console.log(resp.data.results[0]);
     if (resp.data.results.length === 0) return null;
     else {
       //console.log(resp.data.results[0]);
@@ -135,7 +135,7 @@ async function getOrganizationByUrlIfExists(organizationUrl, token) {
 }
 
 function parseOrganization(organization) {
-  console.log(organization)
+  console.log(organization);
   return {
     url_slug: organization.url_slug,
     background_image: organization.background_image,
@@ -143,13 +143,13 @@ function parseOrganization(organization) {
     image: organization.image,
     types: organization.types /* TODO get actual types, this is always empty.*/,
     info: {
-      location: organization.city+", "+organization.country,
+      location: organization.city + ", " + organization.country,
       shortdescription: organization.short_description,
       school: organization.school,
       organ: organization.organ,
       parent_organization: organization.parent_organization
     }
-  }
+  };
 }
 
 async function getProjectsByOrganization(organizationUrl) {

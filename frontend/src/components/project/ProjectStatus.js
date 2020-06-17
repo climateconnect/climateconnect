@@ -11,6 +11,10 @@ const useStyles = makeStyles({
 export default function ProjectStatus({ status, className }) {
   const classes = useStyles();
   return (
-    <Chip variant="outlined" className={`${className} ${classes.root}`} label={status.replace("_", " ")} />
+    <Chip
+      variant="outlined"
+      className={`${className} ${classes.root}`}
+      label={status.replace("_", " ")}
+    />
   );
 }
