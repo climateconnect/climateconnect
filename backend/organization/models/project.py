@@ -20,8 +20,6 @@ class Project(models.Model):
         help_text="URL slug for project",
         verbose_name="URL slug",
         unique=True,
-        null=True,
-        blank=True,
         max_length=1024
     )
 

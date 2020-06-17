@@ -25,8 +25,6 @@ class UserProfile(models.Model):
         help_text="slug for user URL",
         verbose_name="URL Slug",
         max_length=512,
-        null=True,
-        blank=True,
         unique=True
     )
 
