@@ -128,7 +128,10 @@ class ProjectTagging(models.Model):
         auto_now=True
     )
 
-    additional_info = JSONField()
+    additional_info = JSONField(
+        null=True,
+        blank=True
+    )
 
     class Meta:
         app_label = "organization"
