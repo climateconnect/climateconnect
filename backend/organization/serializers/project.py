@@ -71,10 +71,36 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
 
 class ProjectMinimalSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True)
+    project_parents = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
-        fields = ('name', 'url_slug', 'skills', 'image', 'status')
+        fields = (
+            'name', 'url_slug', 
+            'skills', 'image', 
+            'status', 'country', 
+            'city', 'project_parents'
+        )
+    
+    def get_project_parents(self, obj):
+        serializer = ProjectParentsSerializer(obj.project_parent, many=True)
+        return serializer.data
+
+class ProjectStubSerializer(serializers.ModelSerializer):
+    project_parents = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Project
+        fields = (
+            'name', 'url_slug', 
+            'image', 'country', 
+            'city', 'status',
+            'project_parents'
+        )
+    
+    def get_project_parents(self, obj):
+        serializer = ProjectParentsSerializer(obj.project_parent, many=True)
+        return serializer.data
 
 
 class ProjectMemberSerializer(serializers.ModelSerializer):

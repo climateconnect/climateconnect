@@ -1,7 +1,6 @@
 from dateutil.parser import parse
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -11,10 +10,11 @@ from django.contrib.auth.models import User
 
 from organization.models import Project, Organization, ProjectParents, ProjectMember
 from organization.serializers.project import (
-    ProjectSerializer, ProjectMinimalSerializer, ProjectMemberSerializer
+    ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer
 )
 from organization.utility.project import create_new_project
 from organization.permissions import OrganizationProjectCreationPermission
+from organization.pagination import (ProjectsPagination, MembersPagination)
 from organization.utility.organization import (
     check_organization,
 )
@@ -27,14 +27,12 @@ class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
     search_fields = ['url_slug']
-    pagination_class = PageNumberPagination
+    pagination_class = ProjectsPagination
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
 
     def get_serializer_class(self):
-        if self.request.user.is_authenticated:
-            return ProjectSerializer
-        return ProjectMinimalSerializer
+        return ProjectStubSerializer
 
 
 
@@ -214,7 +212,7 @@ class UpdateProjectMemberView(APIView):
 class ListProjectMembersView(ListAPIView):
     lookup_field = 'url_slug'
     serializer_class = ProjectMemberSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = MembersPagination
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
