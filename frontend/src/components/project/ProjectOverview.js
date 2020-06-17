@@ -108,7 +108,7 @@ function SmallScreenOverview({ project }) {
         </div>
         <div className={classes.projectInfoEl}>
           <Typography>
-            <ExploreIcon className={classes.icon} /> {project.labels.join(", ")}
+            <ExploreIcon className={classes.icon} /> {project.tags.join(", ")}
           </Typography>
         </div>
         <div className={classes.infoBottomBar}>
@@ -145,7 +145,7 @@ function LargeScreenOverview({ project }) {
           </div>
           <div className={classes.projectInfoEl}>
             <Typography>
-              <ExploreIcon color="primary" className={classes.icon} /> {project.labels.join(",")}
+              <ExploreIcon color="primary" className={classes.icon} /> {project.tags.join(", ")}
             </Typography>
           </div>
           <div className={classes.infoBottomBar}>

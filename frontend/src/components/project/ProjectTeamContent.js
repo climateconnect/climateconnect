@@ -1,5 +1,6 @@
 import React from "react";
 import ProfilePreviews from "./../profile/ProfilePreviews";
+import { Typography } from "@material-ui/core";
 
 function getTeamWithAdditionalInfo(team) {
   return team.map(m => {
@@ -19,11 +20,13 @@ function getTeamWithAdditionalInfo(team) {
 }
 
 export default function TeamContent({ team }) {
-  return (
-    <ProfilePreviews
-      profiles={getTeamWithAdditionalInfo(team)}
-      allowMessage
-      showAdditionalInfo={true}
-    />
-  );
+  if (team)
+    return (
+      <ProfilePreviews
+        profiles={getTeamWithAdditionalInfo(team)}
+        allowMessage
+        showAdditionalInfo={true}
+      />
+    );
+  else return <Typography>We could not find any members of this project.</Typography>;
 }

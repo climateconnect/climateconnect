@@ -113,10 +113,10 @@ export default function ProjectContent({ project }) {
             <Typography component="span">
               Started <TimeAgo date={new Date(project.start_date)} /> by
             </Typography>
-            <Link href={"/organizations/" + project.creator_url}>
+            <Link href={"/organizations/" + project.creator.url_slug}>
               <a className={classes.creator}>
-                <img src={project.creator_image} className={classes.creatorImage} />
-                <Typography component="span">{project.creator_name}</Typography>
+                <img src={project.creator.image} className={classes.creatorImage} />
+                <Typography component="span">{project.creator.name}</Typography>
               </a>
             </Link>
           </div>

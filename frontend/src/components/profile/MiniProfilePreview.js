@@ -24,7 +24,7 @@ export default function MiniProfilePreview({ profile, avatarClassName }) {
         <Avatar src={profile.image} className={avatarClassName} />
       </div>
       <Typography className={classes.profileName} variant="h6">
-        {profile.name}
+        {profile.first_name+" "+profile.last_name}
       </Typography>
     </Link>
   );
