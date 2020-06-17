@@ -131,7 +131,8 @@ class Project(models.Model):
         Skill,
         related_name="project_skills",
         help_text="Points to all skills project persist or required",
-        verbose_name="Skills"
+        verbose_name="Skills",
+        blank=True
     )
 
     helpful_connections = ArrayField(
