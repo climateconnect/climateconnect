@@ -144,6 +144,7 @@ class Project(models.Model):
         app_label = "organization"
         verbose_name = "Project"
         verbose_name_plural = "Projects"
+        ordering = ['-id']
 
     def __str__(self):
         return "(%d) %s" % (self.pk, self.name)
@@ -164,7 +165,8 @@ class ProjectParents(models.Model):
         verbose_name="Organization",
         related_name="project_parent_org",
         on_delete=models.CASCADE,
-        null=True, blank=True
+        null=True, 
+        blank=True
     )
 
     parent_user = models.ForeignKey(
@@ -174,11 +176,6 @@ class ProjectParents(models.Model):
         null=True,
         blank=True,
         on_delete=models.PROTECT
-    )
-
-    order = models.IntegerField(
-        help_text="Order in which project should be listed",
-        verbose_name="Order"
     )
 
     created_at = models.DateTimeField(
