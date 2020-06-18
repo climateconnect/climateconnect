@@ -277,7 +277,6 @@ async function getProjects(page, token) {
     );
     if (resp.data.length === 0) return null;
     else {
-      console.log(resp.data);
       return { projects: parseProjects(resp.data.results), hasMore: !!resp.data.next };
     }
   } catch (err) {
