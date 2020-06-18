@@ -28,6 +28,9 @@ const useStyles = makeStyles(theme => {
     },
     noUnderline: {
       textDecoration: "none"
+    },
+    media: {
+      minHeight: 160
     }
   };
 });

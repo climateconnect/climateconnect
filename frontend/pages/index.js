@@ -18,6 +18,10 @@ import fakeProjectData from "../public/data/projects.json";
 import fakeOrganizationData from "../public/data/organizations.json";
 import fakeProfileData from "../public/data/profiles.json";
 
+import Cookies from "next-cookies";
+import tokenConfig from "../public/config/tokenConfig";
+import axios from "axios";
+
 const useStyles = makeStyles(theme => {
   return {
     filterButton: {
@@ -56,13 +60,19 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function Index({ projectsObject, organizationsObject, membersObject }) {
+export default function Index({ projectsObject, organizationsObject, membersObject, token }) {
   const [hasMore, setHasMore] = React.useState({
     projects: true,
     organizations: true,
     members: true
   });
   const classes = useStyles();
+  //Django starts counting at page 1 and we always catch the first page on load.
+  const [nextPages, setNextPages] = React.useState({
+    projects: 2,
+    members: 2,
+    organizations: 2
+  });
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const [tabValue, setTabValue] = React.useState(0);
   const typesByTabValue = ["projects", "organizations", "members"];
@@ -91,7 +101,8 @@ export default function Index({ projectsObject, organizationsObject, membersObje
   };
 
   const loadMoreProjects = async page => {
-    const newProjectsObject = await getProjects(page);
+    const newProjectsObject = await getProjects(nextPages.projects, token);
+    setNextPages({ ...nextPages, projects: nextPages.projects + 1 });
     const newProjects = newProjectsObject.projects;
     setHasMore({ ...hasMore, projects: newProjectsObject.hasMore });
     return [...newProjects];
@@ -242,19 +253,32 @@ function TabContent({ value, index, children }) {
   return <div hidden={value !== index}>{children}</div>;
 }
 
-Index.getInitialProps = async () => {
+Index.getInitialProps = async ctx => {
+  const { token } = Cookies(ctx);
   return {
-    projectsObject: await getProjects(0),
-    organizationsObject: await getOrganizations(0),
-    membersObject: await getMembers(0)
+    projectsObject: await getProjects(1, token),
+    organizationsObject: await getOrganizations(1, token),
+    membersObject: await getMembers(1, token),
+    token: token
   };
 };
 
-//TODO replace by db call. console.log is just there to pass lint
-async function getProjects(page) {
-  console.log(page);
-  const projects = fakeProjectData.projects.slice(0, 8);
-  return { projects: [...projects, ...projects], hasMore: true };
+async function getProjects(page, token) {
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/projects/?page=" + page,
+      tokenConfig(token)
+    );
+    if (resp.data.length === 0) return null;
+    else {
+      console.log(resp.data);
+      return { projects: parseProjects(resp.data.results), hasMore: !!resp.data.next };
+    }
+  } catch (err) {
+    if (err.response && err.response.data) console.log("Error: " + err.response.data);
+    else console.log(err);
+    return null;
+  }
 }
 
 //TODO replace by db call. console.log is just there to pass lint
@@ -270,3 +294,10 @@ async function getMembers(page) {
   const profiles = fakeProfileData.profiles;
   return { members: [...profiles, ...profiles], hasMore: true };
 }
+
+const parseProjects = projects => {
+  return projects.map(project => ({
+    ...project,
+    location: project.city + ", " + project.country
+  }));
+};

@@ -12,19 +12,26 @@ const useStyles = makeStyles(theme => {
       display: "inline-block",
       verticalAlign: "middle",
       marginLeft: theme.spacing(1)
+    },
+    smallProfileName: {
+      fontSize: 14
     }
   };
 });
 
-export default function MiniProfilePreview({ profile, avatarClassName }) {
+export default function MiniProfilePreview({ profile, avatarClassName, onProjectCard }) {
   const classes = useStyles();
   return (
-    <Link href={"/profiles/" + profile.url_slug} className={classes.avatarWithInfo}>
+    <Link color="inherit" href={"/profiles/" + profile.url_slug} className={classes.avatarWithInfo}>
       <div className={classes.avatarWrapper}>
         <Avatar src={profile.image} className={avatarClassName} />
       </div>
-      <Typography className={classes.profileName} variant="h6">
-        {profile.first_name+" "+profile.last_name}
+      <Typography
+        color="inherit"
+        className={`${classes.profileName} ${onProjectCard && classes.smallProfileName}`}
+        variant="h6"
+      >
+        {profile.first_name + " " + profile.last_name}
       </Typography>
     </Link>
   );
