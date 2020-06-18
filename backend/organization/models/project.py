@@ -164,14 +164,15 @@ class ProjectParents(models.Model):
         help_text="Points to organization",
         verbose_name="Organization",
         related_name="project_parent_org",
-        on_delete=models.CASCADE,
-        null=True, 
-        blank=True
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
     )
 
     parent_user = models.ForeignKey(
         'auth.User',
-        verbose_name="Points to user who created a project",
+        help_text="Points to user who created a project",
+        verbose_name="User",
         related_name="project_parent_user",
         null=True,
         blank=True,
@@ -195,4 +196,4 @@ class ProjectParents(models.Model):
         verbose_name_plural = "Project Parents"
 
     def __str__(self):
-        return "Project %s of organization %s" % (self.project.name, self.parent_organization.name)
+        return "Project parent for project %s" % (self.project.id)

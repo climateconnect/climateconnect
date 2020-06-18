@@ -64,10 +64,12 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
         )
 
     def get_parent_organization(self, obj):
-        return OrganizationStubSerializer(obj.parent_organization).data
+        if(obj.parent_organization):
+            return OrganizationStubSerializer(obj.parent_organization).data
 
     def get_parent_user(self, obj):
-        return UserProfileStubSerializer(obj.parent_user.user_profile).data
+        if(obj.parent_user):
+            return UserProfileStubSerializer(obj.parent_user.user_profile).data
 
 class ProjectMinimalSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True)
