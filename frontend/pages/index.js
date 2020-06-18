@@ -106,12 +106,10 @@ export default function Index({ projectsObject, organizationsObject, membersObje
   };
 
   const loadMoreProjects = async page => {
-    setIsLoading({ ...isLoading, projects: true });
     const newProjectsObject = await getProjects(nextPages.projects, token);
     setNextPages({ ...nextPages, projects: nextPages.projects + 1 });
     const newProjects = newProjectsObject.projects;
     setHasMore({ ...hasMore, projects: newProjectsObject.hasMore });
-    setIsLoading({ ...isLoading, projects: false });
     return [...newProjects];
   };
 
@@ -209,6 +207,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
               loadFunc={loadMoreProjects}
               hasMore={hasMore.projects}
               isLoading={isLoading.projects}
+              setIsLoading={setIsLoading}
             />
           </TabContent>
           <TabContent value={tabValue} index={1} className={classes.tabContent}>
