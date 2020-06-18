@@ -35,14 +35,6 @@ class Organization(models.Model):
         blank=True
     )
 
-    organization_image = models.ImageField(
-        help_text="Organization image",
-        verbose_name="Organization Image",
-        upload_to=organization_image_path,
-        null=True,
-        blank=True
-    )
-
     background_image = models.ImageField(
         help_text="Points to background image of an organization",
         verbose_name="Background image",
