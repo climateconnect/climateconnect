@@ -35,7 +35,6 @@ export default function OrganizationPage({
   organizationTypes,
   infoMetadata
 }) {
-  console.log(organization);
   return (
     <WideLayout title={organization ? organization.name + "'s profile" : "Not found"}>
       {organization ? (
@@ -111,30 +110,22 @@ function NoOrganizationFoundLayout() {
 
 // These will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getOrganizationByUrlIfExists(organizationUrl, token) {
-  console.log("getting organization by url");
   try {
-    console.log("here is the token config");
-    console.log("token: ", token);
-    console.log(tokenConfig(token));
     const resp = await axios.get(
       process.env.API_URL + "/organizations/?search=" + organizationUrl,
       tokenConfig(token)
     );
-    console.log(resp.data.results[0]);
     if (resp.data.results.length === 0) return null;
     else {
-      //console.log(resp.data.results[0]);
       return parseOrganization(resp.data.results[0]);
     }
   } catch (err) {
-    //console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
 }
 
 function parseOrganization(organization) {
-  console.log(organization);
   return {
     url_slug: organization.url_slug,
     background_image: organization.background_image,
