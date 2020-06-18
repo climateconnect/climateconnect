@@ -14,7 +14,6 @@ import OrganizationPreviews from "../src/components/organization/OrganizationPre
 import ProfilePreviews from "../src/components/profile/ProfilePreviews";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 
-import fakeProjectData from "../public/data/projects.json";
 import fakeOrganizationData from "../public/data/organizations.json";
 import fakeProfileData from "../public/data/profiles.json";
 
