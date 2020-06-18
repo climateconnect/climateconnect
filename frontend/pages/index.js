@@ -73,6 +73,11 @@ export default function Index({ projectsObject, organizationsObject, membersObje
     members: 2,
     organizations: 2
   });
+  const [isLoading, setIsLoading] = React.useState({
+    projects: false,
+    members: false,
+    organizations: false
+  });
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const [tabValue, setTabValue] = React.useState(0);
   const typesByTabValue = ["projects", "organizations", "members"];
@@ -101,10 +106,12 @@ export default function Index({ projectsObject, organizationsObject, membersObje
   };
 
   const loadMoreProjects = async page => {
+    setIsLoading({ ...isLoading, projects: true });
     const newProjectsObject = await getProjects(nextPages.projects, token);
     setNextPages({ ...nextPages, projects: nextPages.projects + 1 });
     const newProjects = newProjectsObject.projects;
     setHasMore({ ...hasMore, projects: newProjectsObject.hasMore });
+    setIsLoading({ ...isLoading, projects: false });
     return [...newProjects];
   };
 
@@ -201,6 +208,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
               projects={projectsObject.projects}
               loadFunc={loadMoreProjects}
               hasMore={hasMore.projects}
+              isLoading={isLoading.projects}
             />
           </TabContent>
           <TabContent value={tabValue} index={1} className={classes.tabContent}>
@@ -275,8 +283,10 @@ async function getProjects(page, token) {
       return { projects: parseProjects(resp.data.results), hasMore: !!resp.data.next };
     }
   } catch (err) {
-    if (err.response && err.response.data) console.log("Error: " + err.response.data);
-    else console.log(err);
+    if (err.response && err.response.data) {
+      console.log("Error: ");
+      console.log(err.response.data);
+    } else console.log(err);
     return null;
   }
 }
