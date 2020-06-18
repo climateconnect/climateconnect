@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import ProfilePreviews from "./../profile/ProfilePreviews";
 import { Typography } from "@material-ui/core";
+import UserContext from "../context/UserContext";
+import LoginNudge from "../general/LoginNudge";
 
 function getTeamWithAdditionalInfo(team) {
   return team.map(m => {
@@ -20,7 +22,9 @@ function getTeamWithAdditionalInfo(team) {
 }
 
 export default function TeamContent({ team }) {
-  if (team)
+  const { user } = useContext(UserContext);
+  if (!user) return <LoginNudge whatToSee="this project's team  members" />;
+  else if (team)
     return (
       <ProfilePreviews
         profiles={getTeamWithAdditionalInfo(team)}

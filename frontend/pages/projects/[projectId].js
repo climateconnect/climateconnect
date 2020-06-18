@@ -47,7 +47,7 @@ ProjectPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   return {
     project: await getProjectByIdIfExists(ctx.query.projectId, token),
-    members: await getProjectMembersByIdIfExists(ctx.query.projectId, token)
+    members: token ? await getProjectMembersByIdIfExists(ctx.query.projectId, token) : []
   };
 };
 
