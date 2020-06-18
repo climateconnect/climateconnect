@@ -19,22 +19,20 @@ const useStyles = makeStyles({
 export default function ProjectPreviews({ projects, loadFunc, hasMore, isLoading, setIsLoading }) {
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(
-    projects.map((p) => <GridItem key={p.url_slug} project={p} />)
+    projects.map(p => <GridItem key={p.url_slug} project={p} />)
   );
   if (!loadFunc) hasMore = false;
 
-  const loadMore = async page => {   
-    //sometimes InfiniteScroll calls loadMore twice really fast. Therefore we're using isLoading to make sure it doesn't catch 2 pages at once 
-    if(!isLoading.projects){
-      setIsLoading({...isLoading, projects: true})
-      const newProjects = await loadFunc(page);
-      const newGridItems = newProjects.map((p, index) => (
-        <GridItem key={p.url_slug} project={p} />
-      ));
+  const loadMore = async () => {
+    //sometimes InfiniteScroll calls loadMore twice really fast. Therefore we're using isLoading to make sure it doesn't catch 2 pages at once
+    if (!isLoading.projects) {
+      setIsLoading({ ...isLoading, projects: true });
+      const newProjects = await loadFunc();
+      const newGridItems = newProjects.map((p) => <GridItem key={p.url_slug} project={p} />);
       setGridItems([...gridItems, ...newGridItems]);
-      setIsLoading({...isLoading, projects: false})
+      setIsLoading({ ...isLoading, projects: false });
     }
-  }
+  };
   // TODO: use `project.id` instead of index when using real projects
   return (
     <InfiniteScroll

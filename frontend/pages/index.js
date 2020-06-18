@@ -104,7 +104,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
     setFiltersExpanded(false);
   };
 
-  const loadMoreProjects = async page => {
+  const loadMoreProjects = async () => {
     const newProjectsObject = await getProjects(nextPages.projects, token);
     setNextPages({ ...nextPages, projects: nextPages.projects + 1 });
     const newProjects = newProjectsObject.projects;
