@@ -10,7 +10,6 @@ import AccountPage from "../../src/components/account/AccountPage";
 import ProfilePreviews from "../../src/components/profile/ProfilePreviews";
 import ProjectPreviews from "../../src/components/project/ProjectPreviews";
 
-import TEMP_FEATURED_DATA from "../../public/data/organizations.json";
 import TEMP_PROJECT_DATA from "../../public/data/projects.json";
 import TEMP_MEMBER_DATA from "../../public/data/profiles.json";
 import TEMP_ORGANIZATION_TYPES from "./../../public/data/organization_types.json";
