@@ -54,7 +54,7 @@ export default function Post({ post, type, className }) {
       </Typography>
       {type === "progresspost" ? (
         <Typography component="h3" variant="h6" color="primary" className={classes.nameOfPoster}>
-          {post.author_user.first_name+" "+post.author_user.last_name}
+          {post.author_user.first_name + " " + post.author_user.last_name}
         </Typography>
       ) : (
         <MiniProfilePreview

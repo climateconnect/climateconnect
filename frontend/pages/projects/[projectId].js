@@ -148,7 +148,6 @@ async function getProjectMembersByIdIfExists(projectUrl, token) {
 }
 
 function parseProject(project) {
-  console.log(project.project_posts[0].replies[0])
   return {
     name: project.name,
     id: project.id,
@@ -164,8 +163,10 @@ function parseProject(project) {
     creation_date: project.created_at,
     helpful_skills: project.skills,
     helpful_connections: project.helpful_connections,
-    creator: project.project_parents[0].parent_organization ? project.project_parents[0].parent_organization : project.project_parents[0].parent_user,
-    tags: project.tags.map(t=>t.project_tag.name),
+    creator: project.project_parents[0].parent_organization
+      ? project.project_parents[0].parent_organization
+      : project.project_parents[0].parent_user,
+    tags: project.tags.map(t => t.project_tag.name),
     timeline_posts: project.project_posts,
     //TODO: remove after comments are added
     comments: project.comments
