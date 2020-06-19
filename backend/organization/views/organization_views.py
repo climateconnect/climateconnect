@@ -1,14 +1,15 @@
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import NotFound
 
 from django.contrib.auth.models import User
 from organization.serializers.organization import (
-    OrganizationSerializer, OrganizationMinimalSerializer
+    OrganizationSerializer, OrganizationMinimalSerializer, OrganizationMemberSerializer
 )
 from organization.models import Organization, OrganizationMember
 from organization.permissions import OrganizationReadWritePermission
@@ -111,3 +112,44 @@ class OrganizationAPIView(RetrieveUpdateDestroyAPIView):
     def perform_destroy(self, instance):
         instance.delete()
         return "Organization successfully deleted."
+
+
+class ListCreateOrganizationMemberView(ListCreateAPIView):
+    permission_classes = [OrganizationReadWritePermission]
+    serializer_class = OrganizationMemberSerializer
+    pagination_class = PageNumberPagination
+    filter_backends = [SearchFilter]
+    search_fields = ['user__username', 'user__first_name', 'user__last_name']
+
+    def get_queryset(self):
+        try:
+            organization = Organization.objects.get(url_slug=str(self.kwargs['url_slug']))
+        except Organization.DoesNotExist:
+            raise NotFound('Organization not found')
+
+        return OrganizationMember.objects.filter(organization=organization)
+
+    def perform_create(self, serializer):
+        serializer.save()
+        return serializer.data
+
+
+class UpdateOrganizationMemberView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [OrganizationReadWritePermission]
+    serializer_class = OrganizationMemberSerializer
+
+    def get_queryset(self):
+        try:
+            organization = Organization.objects.get(url_slug=str(self.kwargs['url_slug']))
+        except Organization.DoesNotExist:
+            raise NotFound('Organization not found')
+
+        return OrganizationMember.objects.filter(id=int(self.kwargs['pk']), organization=organization)
+
+    def perform_destroy(self, instance):
+        instance.delete()
+        return "Organization Member successfully deleted."
+
+    def perform_update(self, serializer):
+        serializer.save()
+        return serializer.data
