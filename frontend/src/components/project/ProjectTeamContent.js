@@ -5,6 +5,7 @@ import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
 
 function getTeamWithAdditionalInfo(team) {
+  console.log(team)
   return team.map(m => {
     const additionalInfo = [];
     if (m.role)
@@ -12,9 +13,9 @@ function getTeamWithAdditionalInfo(team) {
         text: m.role,
         importance: "high"
       });
-    if (m.timeperweek && m.timeperweek !== "not_specified")
+    if (m.timeperweek)
       additionalInfo.push({
-        text: m.timeperweek + " hours per week",
+        text: m.availability.name,
         importance: "low"
       });
     return { ...m, additionalInfo: additionalInfo };

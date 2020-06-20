@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from organization.models import (Project, Organization)
-from climateconnect_api.models import (Role,)
+from climateconnect_api.models import (Role, Availability)
 
 
 class ProjectMember(models.Model):
@@ -31,39 +31,11 @@ class ProjectMember(models.Model):
         blank=True
     )
 
-    # TODO: use availability table
-    NOT_SPECIFIED = "not_specified"
-    ONE_TO_TWO = "1-2"
-    THREE_TO_FIVE = "3-5"
-    SIX_TO_TEN = "6-10"
-    ELEVEN_TO_FIFTEEN = "11-15"
-    SIXTEEN_TO_TWENTY = "16-20"
-    TWENTYONE_TO_TWENTYFIVE = "21-25"
-    TWENTYSIX_TO_THIRTY = "26-30"
-    THIRTYONE_TOT_THIRTYFIVE = "31-35"
-    THIRTYSIX_TO_FOURTY = "36-40"
-    OVER_FOURTY = "over_40"
-
-    TIME_PER_WEEK_OPTIONS = (
-        (NOT_SPECIFIED, "Not specified"),
-        (ONE_TO_TWO, "1-2"),
-        (THREE_TO_FIVE, "3-5"),
-        (SIX_TO_TEN, "6-10"),
-        (ELEVEN_TO_FIFTEEN, "11-15"),
-        (SIXTEEN_TO_TWENTY, "16-20"),
-        (TWENTYONE_TO_TWENTYFIVE, "21-25"),
-        (TWENTYSIX_TO_THIRTY, "26-30"),
-        (THIRTYONE_TOT_THIRTYFIVE, "31-35"),
-        (THIRTYSIX_TO_FOURTY, "36-40"),
-        (OVER_FOURTY, "More than 40")
-    )
-
-    time_per_week = models.CharField(
+    availability = models.ForeignKey(
+        Availability, related_name="member_availability",
         help_text="Shows how many hours per week the user is putting into this specific project.",
         verbose_name="Time per week",
-        max_length=64,
-        choices=TIME_PER_WEEK_OPTIONS,
-        default=NOT_SPECIFIED
+        on_delete=models.PROTECT
     )
 
     created_at = models.DateTimeField(

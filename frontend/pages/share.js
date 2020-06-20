@@ -10,6 +10,8 @@ import AddTeam from "../src/components/shareProject/AddTeam";
 //TODO: this should be retrieved asynchronously, e.g. via getInitialProps
 import organizationsList from "../public/data/organizations.json";
 import ProjectSubmittedPage from "../src/components/shareProject/ProjectSubmittedPage";
+import axios from "axios";
+import tokenConfig from "../public/config/tokenConfig";
 const DEFAULT_STATUS = "inprogress";
 
 const useStyles = makeStyles(theme => {
@@ -133,6 +135,30 @@ export default function Share() {
       )}
     </WideLayout>
   );
+}
+
+Share.getInitialProps = async ctx => {
+  const { token } = Cookies(ctx);
+  return {
+    availabilityOptions = await getAvailabilityOptions(token)
+  }
+}
+
+const getAvailabilityOptions = async (token) => {
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/availability/",
+      tokenConfig(token)
+    );
+    if (resp.data.results.length === 0) return null;
+    else {
+      console.log(resp.data.results)      
+      return resp.data.results
+    }
+  } catch (err) {
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
 }
 
 //TODO: remove some of these default values as they are just for testing
