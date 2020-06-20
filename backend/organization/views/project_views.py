@@ -47,7 +47,11 @@ class CreateProjectView(APIView):
 
         required_params = [
             'name', 'status', 'start_date', 'short_description',
-            'collaborators_welcome', 'project_order', 'team_members'
+            'collaborators_welcome', 'team_members', 
+            'project_tags',#add function to retrieve these
+            'city', 'country', #add function to retrieve these
+            'collaborating_organizations', 'helpful_connections',#doesn't really need to be required, just put this here to remember
+            'description', 'image', 'skills'
         ]
         for param in required_params:
             if param not in request.data:

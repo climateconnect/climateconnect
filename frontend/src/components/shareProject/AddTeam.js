@@ -47,7 +47,7 @@ export default function AddTeam({
   //Prevent double entries
   const handleAddMember = member => {
     handleSetProjectData({
-      members: [
+      team_members: [
         ...projectData.members,
         { ...member, permissions: { key: "member", name: "Member" }, role: "" }
       ]
@@ -70,18 +70,18 @@ export default function AddTeam({
   //prevent double entries
   const handleAddOrganization = organization => {
     handleSetProjectData({
-      collaboratingOrganizations: [...projectData.collaboratingOrganizations, organization]
+      collaborating_organizations: [...projectData.collaborating_organizations, organization]
     });
   };
 
   const handleRemoveOrganization = organization => {
     handleSetProjectData({
-      collaboratingOrganizations: projectData.collaboratingOrganizations
-        .slice(0, projectData.collaboratingOrganizations.indexOf(organization))
+      collaborating_organizations: projectData.collaborating_organizations
+        .slice(0, projectData.collaborating_organizations.indexOf(organization))
         .concat(
-          projectData.collaboratingOrganizations.slice(
-            projectData.collaboratingOrganizations.indexOf(organization) + 1,
-            projectData.collaboratingOrganizations.length
+          projectData.collaborating_organizations.slice(
+            projectData.collaborating_organizations.indexOf(organization) + 1,
+            projectData.collaborating_organizations.length
           )
         )
     });

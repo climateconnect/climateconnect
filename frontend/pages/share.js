@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import WideLayout from "../src/components/layouts/WideLayout";
@@ -11,6 +11,10 @@ import AddTeam from "../src/components/shareProject/AddTeam";
 import organizationsList from "../public/data/organizations.json";
 import ProjectSubmittedPage from "../src/components/shareProject/ProjectSubmittedPage";
 const DEFAULT_STATUS = "inprogress";
+import LoginNudge from "./../src/components/general/LoginNudge";
+import UserContext from "../src/components/context/UserContext";
+import axios from "axios";
+import tokenConfig from "../public/config/tokenConfig";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -52,8 +56,10 @@ export default function Share() {
   const [project, setProject] = React.useState(defaultProjectValues);
   const [curStep, setCurStep] = React.useState(steps[0]);
   const [finished, setFinished] = React.useState(false);
+  const { user } = useContext(UserContext);
 
   const goToNextStep = () => {
+    console.log(project)
     setCurStep(steps[steps.indexOf(curStep) + 1]);
   };
 
@@ -61,10 +67,29 @@ export default function Share() {
     setCurStep(steps[steps.indexOf(curStep) - 1]);
   };
 
-  const submitProject = event => {
-    //TODO: make a request to publish the project
+  const submitProject = async(event) => {
+    console.log(project)
+    //TODO: If organization==="personal project", dont send any organization
+  
     event.preventDefault();
-    setFinished(true);
+    const payload = {
+      ...project
+    };
+    try {
+      const resp = await axios.post(
+        process.env.API_URL + "/create_project/",
+        payload,
+        tokenConfig(token)
+      );
+      if (resp.data.results.length === 0) return null;
+      else {
+        //TODO: get comments and timeline posts and project taggings
+        setFinished(true);
+      }
+    } catch (err) {
+      if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+      return null;
+    }
   };
 
   const saveAsDraft = event => {
@@ -79,58 +104,64 @@ export default function Share() {
 
   return (
     <WideLayout title="Share a project" hideHeadline={true}>
-      {!finished ? (
-        <>
-          <StepsTracker
-            grayBackground={true}
-            className={classes.stepsTracker}
-            steps={steps}
-            activeStep={curStep.key}
-          />
-          <Typography variant="h4" color="primary" className={classes.headline}>
-            {curStep.headline ? curStep.headline : project.name}
-          </Typography>
-          {curStep.key === "share" && (
-            <ShareProject
-              project={project}
-              handleSetProjectData={handleSetProject}
-              goToNextStep={goToNextStep}
-              userOrganizations={organizationsList.organizations.filter(
-                o => o.url_slug === "sneeperlangen"
-              )}
-            />
-          )}
-          {curStep.key === "selectCategory" && (
-            <SelectCategory
-              project={project}
-              handleSetProjectData={handleSetProject}
-              goToNextStep={goToNextStep}
-              goToPreviousStep={goToPreviousStep}
-            />
-          )}
-          {curStep.key === "enterDetails" && (
-            <EnterDetails
-              projectData={project}
-              handleSetProjectData={handleSetProject}
-              goToNextStep={goToNextStep}
-              goToPreviousStep={goToPreviousStep}
-            />
-          )}
-          {curStep.key === "addTeam" && (
-            <AddTeam
-              projectData={project}
-              handleSetProjectData={handleSetProject}
-              submit={submitProject}
-              saveAsDraft={saveAsDraft}
-              goToPreviousStep={goToPreviousStep}
-            />
-          )}
-        </>
-      ) : (
-        <>
-          <ProjectSubmittedPage isDraft={project.isDraft} url_slug={project.url_slug} />
-        </>
-      )}
+      {
+        !user 
+          ?<LoginNudge whatToSee="share a project"/>
+          :<>
+            {!finished ? (
+              <>
+                <StepsTracker
+                  grayBackground={true}
+                  className={classes.stepsTracker}
+                  steps={steps}
+                  activeStep={curStep.key}
+                />
+                <Typography variant="h4" color="primary" className={classes.headline}>
+                  {curStep.headline ? curStep.headline : project.name}
+                </Typography>
+                {curStep.key === "share" && (
+                  <ShareProject
+                    project={project}
+                    handleSetProjectData={handleSetProject}
+                    goToNextStep={goToNextStep}
+                    userOrganizations={organizationsList.organizations.filter(
+                      o => o.url_slug === "sneeperlangen"
+                    )}
+                  />
+                )}
+                {curStep.key === "selectCategory" && (
+                  <SelectCategory
+                    project={project}
+                    handleSetProjectData={handleSetProject}
+                    goToNextStep={goToNextStep}
+                    goToPreviousStep={goToPreviousStep}
+                  />
+                )}
+                {curStep.key === "enterDetails" && (
+                  <EnterDetails
+                    projectData={project}
+                    handleSetProjectData={handleSetProject}
+                    goToNextStep={goToNextStep}
+                    goToPreviousStep={goToPreviousStep}
+                  />
+                )}
+                {curStep.key === "addTeam" && (
+                  <AddTeam
+                    projectData={project}
+                    handleSetProjectData={handleSetProject}
+                    submit={submitProject}
+                    saveAsDraft={saveAsDraft}
+                    goToPreviousStep={goToPreviousStep}
+                  />
+                )}
+              </>
+            ) : (
+              <>
+                <ProjectSubmittedPage isDraft={project.isDraft} url_slug={project.url_slug} />
+              </>
+            )}
+          </>
+      }
     </WideLayout>
   );
 }
@@ -141,7 +172,7 @@ const defaultProjectValues = {
   status: DEFAULT_STATUS,
   skills: [],
   connections: [],
-  collaboratingOrganizations: [],
+  collaborating_organizations: [],
   //TODO: Should contain the logged in user as the creator and parent_user by default
   members: [
     {

@@ -148,7 +148,9 @@ export default function ProjectContent({ project }) {
               project.description.substr(0, MAX_DISPLAYED_DESCRIPTION_LENGTH) + "..."
             )
           ) : (
-            <Typography variant="body2">{"This project hasn't added a description yet."}</Typography>
+            <Typography variant="body2">
+              {"This project hasn't added a description yet."}
+            </Typography>
           )}
         </Typography>
         {project.description && project.description.length > MAX_DISPLAYED_DESCRIPTION_LENGTH && (

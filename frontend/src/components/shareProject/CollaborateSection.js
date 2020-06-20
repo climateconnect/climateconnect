@@ -50,12 +50,12 @@ export default function CollaborateSection({
 
   const handleConnectionDelete = connection => {
     handleSetProjectData({
-      connections: projectData.connections
-        .slice(0, projectData.connections.indexOf(connection))
+      helpful_connections: projectData.helpful_connections
+        .slice(0, projectData.helpful_connections.indexOf(connection))
         .concat(
-          projectData.connections.slice(
-            projectData.connections.indexOf(connection) + 1,
-            projectData.connections.length
+          projectData.helpful_connections.slice(
+            projectData.helpful_connections.indexOf(connection) + 1,
+            projectData.helpful_connections.length
           )
         )
     });
@@ -75,11 +75,13 @@ export default function CollaborateSection({
   };
 
   const handleConnectionsDialogClose = connection => {
-    if (projectData.connections && projectData.connections.includes(connection))
+    if (projectData.helpful_connections && projectData.helpful_connections.includes(connection))
       alert("You can not add the same connection twice.");
     else {
       if (connection)
-        handleSetProjectData({ connections: [...projectData.connections, connection] });
+        handleSetProjectData({
+          helpful_connections: [...projectData.helpful_connections, connection]
+        });
       handleSetOpen({ connectionsDialog: false });
     }
   };
@@ -132,9 +134,9 @@ export default function CollaborateSection({
             </IconButton>
           </Tooltip>
         </Typography>
-        {projectData.connections && (
+        {projectData.helpful_connections && (
           <List className={classes.flexContainer}>
-            {projectData.connections.map(connection => (
+            {projectData.helpful_connections.map(connection => (
               <Chip
                 key={connection}
                 label={connection}
