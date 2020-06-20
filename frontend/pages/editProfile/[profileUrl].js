@@ -92,7 +92,7 @@ function NoProfileFoundLayout() {
 
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getProfileByUrlIfExists(profileUrl) {
-  return TEMP_FEATURED_DATA.profiles.find(({ url }) => url === profileUrl);
+  return TEMP_FEATURED_DATA.profiles.find(({ url_slug }) => url_slug === profileUrl);
 }
 
 async function getProfileTypes() {
