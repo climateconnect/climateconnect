@@ -59,7 +59,7 @@ export default function Share() {
   const { user } = useContext(UserContext);
 
   const goToNextStep = () => {
-    console.log(project)
+    console.log(project);
     setCurStep(steps[steps.indexOf(curStep) + 1]);
   };
 
@@ -67,10 +67,10 @@ export default function Share() {
     setCurStep(steps[steps.indexOf(curStep) - 1]);
   };
 
-  const submitProject = async(event) => {
-    console.log(project)
+  const submitProject = async event => {
+    console.log(project);
     //TODO: If organization==="personal project", dont send any organization
-  
+
     event.preventDefault();
     const payload = {
       ...project
@@ -104,64 +104,64 @@ export default function Share() {
 
   return (
     <WideLayout title="Share a project" hideHeadline={true}>
-      {
-        !user 
-          ?<LoginNudge whatToSee="share a project"/>
-          :<>
-            {!finished ? (
-              <>
-                <StepsTracker
-                  grayBackground={true}
-                  className={classes.stepsTracker}
-                  steps={steps}
-                  activeStep={curStep.key}
+      {!user ? (
+        <LoginNudge whatToSee="share a project" />
+      ) : (
+        <>
+          {!finished ? (
+            <>
+              <StepsTracker
+                grayBackground={true}
+                className={classes.stepsTracker}
+                steps={steps}
+                activeStep={curStep.key}
+              />
+              <Typography variant="h4" color="primary" className={classes.headline}>
+                {curStep.headline ? curStep.headline : project.name}
+              </Typography>
+              {curStep.key === "share" && (
+                <ShareProject
+                  project={project}
+                  handleSetProjectData={handleSetProject}
+                  goToNextStep={goToNextStep}
+                  userOrganizations={organizationsList.organizations.filter(
+                    o => o.url_slug === "sneeperlangen"
+                  )}
                 />
-                <Typography variant="h4" color="primary" className={classes.headline}>
-                  {curStep.headline ? curStep.headline : project.name}
-                </Typography>
-                {curStep.key === "share" && (
-                  <ShareProject
-                    project={project}
-                    handleSetProjectData={handleSetProject}
-                    goToNextStep={goToNextStep}
-                    userOrganizations={organizationsList.organizations.filter(
-                      o => o.url_slug === "sneeperlangen"
-                    )}
-                  />
-                )}
-                {curStep.key === "selectCategory" && (
-                  <SelectCategory
-                    project={project}
-                    handleSetProjectData={handleSetProject}
-                    goToNextStep={goToNextStep}
-                    goToPreviousStep={goToPreviousStep}
-                  />
-                )}
-                {curStep.key === "enterDetails" && (
-                  <EnterDetails
-                    projectData={project}
-                    handleSetProjectData={handleSetProject}
-                    goToNextStep={goToNextStep}
-                    goToPreviousStep={goToPreviousStep}
-                  />
-                )}
-                {curStep.key === "addTeam" && (
-                  <AddTeam
-                    projectData={project}
-                    handleSetProjectData={handleSetProject}
-                    submit={submitProject}
-                    saveAsDraft={saveAsDraft}
-                    goToPreviousStep={goToPreviousStep}
-                  />
-                )}
-              </>
-            ) : (
-              <>
-                <ProjectSubmittedPage isDraft={project.isDraft} url_slug={project.url_slug} />
-              </>
-            )}
-          </>
-      }
+              )}
+              {curStep.key === "selectCategory" && (
+                <SelectCategory
+                  project={project}
+                  handleSetProjectData={handleSetProject}
+                  goToNextStep={goToNextStep}
+                  goToPreviousStep={goToPreviousStep}
+                />
+              )}
+              {curStep.key === "enterDetails" && (
+                <EnterDetails
+                  projectData={project}
+                  handleSetProjectData={handleSetProject}
+                  goToNextStep={goToNextStep}
+                  goToPreviousStep={goToPreviousStep}
+                />
+              )}
+              {curStep.key === "addTeam" && (
+                <AddTeam
+                  projectData={project}
+                  handleSetProjectData={handleSetProject}
+                  submit={submitProject}
+                  saveAsDraft={saveAsDraft}
+                  goToPreviousStep={goToPreviousStep}
+                />
+              )}
+            </>
+          ) : (
+            <>
+              <ProjectSubmittedPage isDraft={project.isDraft} url_slug={project.url_slug} />
+            </>
+          )}
+        </>
+      )}
     </WideLayout>
   );
 }
