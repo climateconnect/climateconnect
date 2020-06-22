@@ -2,7 +2,7 @@ import React from "react";
 import Layout from "../src/components/layouts/layout";
 import ProjectPreviews from "./../src/components/project/ProjectPreviews";
 import About from "./about";
-import { Divider, Button, Tab, Tabs } from "@material-ui/core";
+import { Divider, Button, Tab, Tabs, Typography } from "@material-ui/core";
 import TuneIcon from "@material-ui/icons/Tune";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { makeStyles } from "@material-ui/core/styles";
@@ -20,6 +20,7 @@ import fakeProfileData from "../public/data/profiles.json";
 import Cookies from "next-cookies";
 import tokenConfig from "../public/config/tokenConfig";
 import axios from "axios";
+import Link from "next/link";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -55,6 +56,15 @@ const useStyles = makeStyles(theme => {
     tabContent: {
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2)
+    },
+    infoMessage: {
+      textAlign: "center",
+      marginTop: theme.spacing(4)
+    },
+    link: {
+      display: "inline-block",
+      textDecoration: "underline",
+      cursor: "pointer"
     }
   };
 });
@@ -201,13 +211,24 @@ export default function Index({ projectsObject, organizationsObject, membersObje
                 possibleFilters={possibleFilters[typesByTabValue[0]]}
               />
             )}
-            <ProjectPreviews
-              projects={projectsObject.projects}
-              loadFunc={loadMoreProjects}
-              hasMore={hasMore.projects}
-              isLoading={isLoading.projects}
-              setIsLoading={setIsLoading}
-            />
+            {projectsObject && projectsObject.projects ? (
+              <ProjectPreviews
+                projects={projectsObject.projects}
+                loadFunc={loadMoreProjects}
+                hasMore={hasMore.projects}
+                isLoading={isLoading.projects}
+                setIsLoading={setIsLoading}
+              />
+            ) : (
+              <Typography variant="h5" className={classes.infoMessage}>
+                There is no projects on this site yet.{" "}
+                <Link href="/share">
+                  <Typography color="primary" className={classes.link} variant="h5">
+                    Share a project to create the first one!
+                  </Typography>
+                </Link>
+              </Typography>
+            )}
           </TabContent>
           <TabContent value={tabValue} index={1} className={classes.tabContent}>
             {filtersExpanded && tabValue === 1 && (
