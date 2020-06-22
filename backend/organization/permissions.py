@@ -23,7 +23,12 @@ class OrganizationReadWritePermission(BasePermission):
         if request.method in SAFE_METHODS:
             return True
 
-        if OrganizationMember.objects.filter(
+        if request.method == 'DELETE' and OrganizationMember.objects.filter(
+            user=request.user, role__role_type=Role.ALL_TYPE
+        ):
+            return True
+
+        if request.method in ['PUT', 'PATCH', 'POST'] and OrganizationMember.objects.filter(
             user=request.user, role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE]
         ).exists():
             return True
