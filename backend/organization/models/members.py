@@ -73,7 +73,7 @@ class OrganizationMember(models.Model):
 
     role = models.ForeignKey(
         Role, related_name="organization_role",
-        help_text="Points ot Role table", verbose_name="Role",
+        help_text="Points ot Role table", verbose_name="Role(Permissions)",
         on_delete=models.PROTECT
     )
 
@@ -85,6 +85,18 @@ class OrganizationMember(models.Model):
     updated_at = models.DateTimeField(
         help_text="Time when organization member was updated", verbose_name="Updated At",
         auto_now=True
+    )
+
+    role_in_organization = models.CharField(
+        help_text="Points to the role of the person in the organization, e.g.:`Organization Manager`",
+        verbose_name="Role in organization", max_length=1024, null=True, blank=True
+    )
+
+    time_per_week = models.ForeignKey(
+        Availability, related_name="org_member_availability",
+        help_text='Points to availability of a member for the organization',
+        verbose_name="Availability", null=True, blank=True,
+        on_delete=models.SET_NULL
     )
 
     class Meta:
