@@ -30,7 +30,8 @@ const useStyles = makeStyles(theme => {
 export default function AddProjectMembersContainer({
   projectMembers,
   blockClassName,
-  handleRemoveMember
+  handleRemoveMember,
+  availabilityOptions
 }) {
   const classes = useStyles();
 
@@ -48,6 +49,7 @@ export default function AddProjectMembersContainer({
               className={classes.member}
               profile={m}
               onDelete={() => handleRemoveMember(m)}
+              availabilityOptions={availabilityOptions}
             />
           );
         })}

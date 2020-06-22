@@ -5,7 +5,6 @@ import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
 
 function getTeamWithAdditionalInfo(team) {
-  console.log(team)
   return team.map(m => {
     const additionalInfo = [];
     if (m.role)

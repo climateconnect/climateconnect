@@ -111,7 +111,6 @@ function NoProjectFoundLayout() {
   );
 }
 
-//these are really ugly functions but it doesn't matter since they will be replaced by db calls
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getProjectByIdIfExists(projectUrl, token) {
   try {

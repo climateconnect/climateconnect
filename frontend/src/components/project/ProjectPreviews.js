@@ -28,7 +28,7 @@ export default function ProjectPreviews({ projects, loadFunc, hasMore, isLoading
     if (!isLoading.projects) {
       setIsLoading({ ...isLoading, projects: true });
       const newProjects = await loadFunc();
-      const newGridItems = newProjects.map((p) => <GridItem key={p.url_slug} project={p} />);
+      const newGridItems = newProjects.map(p => <GridItem key={p.url_slug} project={p} />);
       setGridItems([...gridItems, ...newGridItems]);
       setIsLoading({ ...isLoading, projects: false });
     }

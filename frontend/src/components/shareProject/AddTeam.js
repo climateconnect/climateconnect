@@ -34,7 +34,8 @@ export default function AddTeam({
   handleSetProjectData,
   submit,
   saveAsDraft,
-  goToPreviousStep
+  goToPreviousStep,
+  availabilityOptions
 }) {
   const classes = useStyles();
 
@@ -118,6 +119,7 @@ export default function AddTeam({
           projectMembers={projectData.members}
           blockClassName={classes.block}
           handleRemoveMember={handleRemoveMember}
+          availabilityOptions={availabilityOptions}
         />
         <OrganizersContainer
           projectData={projectData}

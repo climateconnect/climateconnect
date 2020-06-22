@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from climateconnect_api.views import (
-    status_views, user_views
+    status_views, user_views, common_views
 )
 from organization.views.organization_views import OrganizationAPIView
 from organization.views.project_views import (ListProjectsView, ProjectAPIView, ListProjectMembersView)
@@ -34,5 +34,6 @@ urlpatterns = [
     path('organizations/', OrganizationAPIView.as_view(), name='organization-api-views'),
     path('projects/', ListProjectsView.as_view(), name='list-projects'),
     path('projects/<pk>/', ProjectAPIView.as_view(), name='project-api-view'),
-    path('projects/<pk>/members/', ListProjectMembersView.as_view(), name='project-members-api')
+    path('projects/<pk>/members/', ListProjectMembersView.as_view(), name='project-members-api'),
+    path('availability/', common_views.ListAvailabilitiesView.as_view(), name='list-availabilities')
 ]

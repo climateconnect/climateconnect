@@ -12,6 +12,7 @@ import organizationsList from "../public/data/organizations.json";
 import ProjectSubmittedPage from "../src/components/shareProject/ProjectSubmittedPage";
 import axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
+import Cookies from "next-cookies";
 const DEFAULT_STATUS = "inprogress";
 
 const useStyles = makeStyles(theme => {
@@ -49,7 +50,7 @@ const steps = [
   }
 ];
 
-export default function Share() {
+export default function Share({availabilityOptions}) {
   const classes = useStyles();
   const [project, setProject] = React.useState(defaultProjectValues);
   const [curStep, setCurStep] = React.useState(steps[0]);
@@ -125,6 +126,7 @@ export default function Share() {
               submit={submitProject}
               saveAsDraft={saveAsDraft}
               goToPreviousStep={goToPreviousStep}
+              availabilityOptions={availabilityOptions}
             />
           )}
         </>
@@ -140,19 +142,18 @@ export default function Share() {
 Share.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   return {
-    availabilityOptions = await getAvailabilityOptions(token)
+    availabilityOptions: await getAvailabilityOptions(token)
   }
 }
 
-const getAvailabilityOptions = async (token) => {
+const getAvailabilityOptions = async (token) => {  
   try {
     const resp = await axios.get(
       process.env.API_URL + "/availability/",
       tokenConfig(token)
     );
     if (resp.data.results.length === 0) return null;
-    else {
-      console.log(resp.data.results)      
+    else {    
       return resp.data.results
     }
   } catch (err) {
