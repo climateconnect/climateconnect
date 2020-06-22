@@ -11,8 +11,8 @@ app_name = 'organization'
 urlpatterns = [
     path('organizations/', OrganizationAPIView.as_view(), name='organization-api-views'),
     path('projects/', ListProjectsView.as_view(), name='list-projects'),
-    path('projects/<int:pk>/', ProjectAPIView.as_view(), name='project-api-view'),
-    path('projects/<int:pk>/members/', ListProjectMembersView.as_view(), name='project-members-api'),
+    path('projects/<int:url_slug>/', ProjectAPIView.as_view(), name='project-api-view'),
+    path('projects/<int:url_slug>/members/', ListProjectMembersView.as_view(), name='project-members-api'),
     path('create_project/', CreateProjectView.as_view(), name='create-project-api'),
     path(
         'projects/<int:project_id>/add_members/',

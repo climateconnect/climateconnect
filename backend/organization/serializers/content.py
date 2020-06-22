@@ -6,10 +6,10 @@ from climateconnect_api.serializers.user import UserProfileStubSerializer
 #TODO: potentially make serializer from which the other serializers inherit reused code
 
 class PostSerializer(serializers.ModelSerializer):
-  #TODO: add pagination
+  #TODO: add pagination at API level
   #TODO: add additional functionality such as 'is_abusive', 'deleted_at', 'updated_at'
   #TODO: get likes
-  author_user = serializers.SerializerMethodField()
+  author_user = UserProfileStubSerializer()
   replies = serializers.SerializerMethodField()
 
   class Meta:
@@ -20,20 +20,16 @@ class PostSerializer(serializers.ModelSerializer):
       'is_hidden', 'replies'
     )
 
-  def get_author_user(self, obj):
-    serializer = UserProfileStubSerializer(obj.author_user.user_profile)
-    return serializer.data
-
   def get_replies(self, obj):
     top_level_comments = obj.post_comment.exclude(parent_comment_id__isnull=False)
     serializer = PostCommentSerializer(top_level_comments, many=True)
     return serializer.data
 
 class PostCommentSerializer(serializers.ModelSerializer):
-  #TODO: add pagination
+  #TODO: add pagination at API level
   #TODO: add additional functionality such as 'is_abusive', 'deleted_at', 'updated_at'
   #TODO: get likes
-  author_user = serializers.SerializerMethodField()
+  author_user = UserProfileStubSerializer()
 
   class Meta: 
     model = PostComment
@@ -43,16 +39,12 @@ class PostCommentSerializer(serializers.ModelSerializer):
       'is_abusive', 'created_at', 
       'updated_at'
     )
-  
-  def get_author_user(self, obj):
-    serializer = UserProfileStubSerializer(obj.author_user.user_profile)
-    return serializer.data
 
 class ProjectCommentSerializer(serializers.ModelSerializer):
-  #TODO: add pagination
+  #TODO: add pagination at API level
   #TODO: add additional functionality such as 'is_abusive', 'deleted_at', 'updated_at'
   #TODO: get likes
-  author_user = serializers.SerializerMethodField()
+  author_user = UserProfileStubSerializer()
   replies = serializers.SerializerMethodField()
 
   class Meta: 
@@ -63,10 +55,6 @@ class ProjectCommentSerializer(serializers.ModelSerializer):
       'is_abusive', 'created_at', 
       'updated_at', 'replies'
     )
-
-  def get_author_user(self, obj):
-    serializer = UserProfileStubSerializer(obj.author_user.user_profile)
-    return serializer.data
 
   def get_replies(self, obj):
     serializer = ProjectCommentSerializer(obj.comment_parent, many=True)

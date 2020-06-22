@@ -20,7 +20,9 @@ class Project(models.Model):
         help_text="URL slug for project",
         verbose_name="URL slug",
         unique=True,
-        max_length=1024
+        max_length=1024,
+        null=True,
+        blank=True
     )
 
     image = models.ImageField(

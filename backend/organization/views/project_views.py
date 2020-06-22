@@ -96,9 +96,9 @@ class CreateProjectView(APIView):
 class ProjectAPIView(APIView):
     permission_classes = [OrganizationProjectCreationPermission]
 
-    def get(self, request, pk, format=None):
+    def get(self, request, url_slug, format=None):
         try:
-            project = Project.objects.get(url_slug=pk)            
+            project = Project.objects.get(url_slug=str(url_slug))            
         except Project.DoesNotExist:
             return Response({'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
         #TODO: get number of followers
@@ -216,7 +216,7 @@ class ListProjectMembersView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        project = Project.objects.get(url_slug=self.kwargs['pk'])
+        project = Project.objects.get(url_slug=self.kwargs['url_slug'])
 
         return project.project_member.all()
 
