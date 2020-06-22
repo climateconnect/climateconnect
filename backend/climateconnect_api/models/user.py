@@ -25,7 +25,9 @@ class UserProfile(models.Model):
         help_text="slug for user URL",
         verbose_name="URL Slug",
         max_length=512,
-        unique=True
+        unique=True,
+        null=True,
+        blank=True
     )
 
     # Keeping this column blank. User may not want to upload their profile picture.
