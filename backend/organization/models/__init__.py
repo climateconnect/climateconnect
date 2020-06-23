@@ -10,6 +10,6 @@ from organization.models.project import (
     Project, ProjectParents
 )
 from organization.models.content import (
-    Posts, Comment, PostComment, ProjectComment
+    Post, Comment, PostComment, ProjectComment
 )
 from organization.models.members import (ProjectMember, OrganizationMember)

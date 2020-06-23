@@ -2,7 +2,7 @@ import React from "react";
 import Layout from "../src/components/layouts/layout";
 import ProjectPreviews from "./../src/components/project/ProjectPreviews";
 import About from "./about";
-import { Divider, Button, Tab, Tabs } from "@material-ui/core";
+import { Divider, Button, Tab, Tabs, Typography } from "@material-ui/core";
 import TuneIcon from "@material-ui/icons/Tune";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { makeStyles } from "@material-ui/core/styles";
@@ -14,9 +14,13 @@ import OrganizationPreviews from "../src/components/organization/OrganizationPre
 import ProfilePreviews from "../src/components/profile/ProfilePreviews";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 
-import fakeProjectData from "../public/data/projects.json";
 import fakeOrganizationData from "../public/data/organizations.json";
 import fakeProfileData from "../public/data/profiles.json";
+
+import Cookies from "next-cookies";
+import tokenConfig from "../public/config/tokenConfig";
+import axios from "axios";
+import Link from "next/link";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -52,17 +56,37 @@ const useStyles = makeStyles(theme => {
     tabContent: {
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2)
+    },
+    infoMessage: {
+      textAlign: "center",
+      marginTop: theme.spacing(4)
+    },
+    link: {
+      display: "inline-block",
+      textDecoration: "underline",
+      cursor: "pointer"
     }
   };
 });
 
-export default function Index({ projectsObject, organizationsObject, membersObject }) {
+export default function Index({ projectsObject, organizationsObject, membersObject, token }) {
   const [hasMore, setHasMore] = React.useState({
-    projects: true,
+    projects: !!projectsObject && projectsObject.hasMore,
     organizations: true,
     members: true
   });
   const classes = useStyles();
+  //Django starts counting at page 1 and we always catch the first page on load.
+  const [nextPages, setNextPages] = React.useState({
+    projects: 2,
+    members: 2,
+    organizations: 2
+  });
+  const [isLoading, setIsLoading] = React.useState({
+    projects: false,
+    members: false,
+    organizations: false
+  });
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const [tabValue, setTabValue] = React.useState(0);
   const typesByTabValue = ["projects", "organizations", "members"];
@@ -90,8 +114,9 @@ export default function Index({ projectsObject, organizationsObject, membersObje
     setFiltersExpanded(false);
   };
 
-  const loadMoreProjects = async page => {
-    const newProjectsObject = await getProjects(page);
+  const loadMoreProjects = async () => {
+    const newProjectsObject = await getProjects(nextPages.projects, token);
+    setNextPages({ ...nextPages, projects: nextPages.projects + 1 });
     const newProjects = newProjectsObject.projects;
     setHasMore({ ...hasMore, projects: newProjectsObject.hasMore });
     return [...newProjects];
@@ -186,11 +211,24 @@ export default function Index({ projectsObject, organizationsObject, membersObje
                 possibleFilters={possibleFilters[typesByTabValue[0]]}
               />
             )}
-            <ProjectPreviews
-              projects={projectsObject.projects}
-              loadFunc={loadMoreProjects}
-              hasMore={hasMore.projects}
-            />
+            {(projectsObject && projectsObject.projects && projectsObject.projects.length) ? (
+              <ProjectPreviews
+                projects={projectsObject.projects}
+                loadFunc={loadMoreProjects}
+                hasMore={hasMore.projects}
+                isLoading={isLoading.projects}
+                setIsLoading={setIsLoading}
+              />
+            ) : (
+              <Typography component="h4" variant="h5" className={classes.infoMessage}>
+                There is no projects on this site yet.{" "}
+                <Link href="/share">
+                  <Typography color="primary" className={classes.link} component="h5" variant="h5">
+                    Share a project to create the first one!
+                  </Typography>
+                </Link>
+              </Typography>
+            )}
           </TabContent>
           <TabContent value={tabValue} index={1} className={classes.tabContent}>
             {filtersExpanded && tabValue === 1 && (
@@ -242,19 +280,33 @@ function TabContent({ value, index, children }) {
   return <div hidden={value !== index}>{children}</div>;
 }
 
-Index.getInitialProps = async () => {
+Index.getInitialProps = async ctx => {
+  const { token } = Cookies(ctx);
   return {
-    projectsObject: await getProjects(0),
-    organizationsObject: await getOrganizations(0),
-    membersObject: await getMembers(0)
+    projectsObject: await getProjects(1, token),
+    organizationsObject: await getOrganizations(1, token),
+    membersObject: await getMembers(1, token),
+    token: token
   };
 };
 
-//TODO replace by db call. console.log is just there to pass lint
-async function getProjects(page) {
-  console.log(page);
-  const projects = fakeProjectData.projects.slice(0, 8);
-  return { projects: [...projects, ...projects], hasMore: true };
+async function getProjects(page, token) {
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/api/projects/?page=" + page,
+      tokenConfig(token)
+    );
+    if (resp.data.length === 0) return null;
+    else {
+      return { projects: parseProjects(resp.data.results), hasMore: !!resp.data.next };
+    }
+  } catch (err) {
+    if (err.response && err.response.data) {
+      console.log("Error: ");
+      console.log(err.response.data);
+    } else console.log(err);
+    return null;
+  }
 }
 
 //TODO replace by db call. console.log is just there to pass lint
@@ -270,3 +322,10 @@ async function getMembers(page) {
   const profiles = fakeProfileData.profiles;
   return { members: [...profiles, ...profiles], hasMore: true };
 }
+
+const parseProjects = projects => {
+  return projects.map(project => ({
+    ...project,
+    location: project.city + ", " + project.country
+  }));
+};

@@ -1,7 +1,6 @@
 from dateutil.parser import parse
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,12 +8,14 @@ from rest_framework import status
 
 from django.contrib.auth.models import User
 
-from organization.models import Project, Organization, ProjectParents, ProjectMember
+from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment
 from organization.serializers.project import (
-    ProjectSerializer, ProjectMinimalSerializer, ProjectMemberSerializer
+    ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer
 )
+from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
 from organization.utility.project import create_new_project
 from organization.permissions import OrganizationProjectCreationPermission
+from organization.pagination import (ProjectsPagination, MembersPagination, ProjectPostPagination, ProjectCommentPagination)
 from organization.utility.organization import (
     check_organization,
 )
@@ -27,14 +28,13 @@ class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
     search_fields = ['url_slug']
-    pagination_class = PageNumberPagination
+    pagination_class = ProjectsPagination
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
 
     def get_serializer_class(self):
-        if self.request.user.is_authenticated:
-            return ProjectSerializer
-        return ProjectMinimalSerializer
+        return ProjectStubSerializer
+
 
 
 class CreateProjectView(APIView):
@@ -97,17 +97,19 @@ class CreateProjectView(APIView):
 class ProjectAPIView(APIView):
     permission_classes = [OrganizationProjectCreationPermission]
 
-    def get(self, request, pk, format=None):
+    def get(self, request, url_slug, format=None):
         try:
-            project = Project.objects.get(id=int(pk))
+            project = Project.objects.get(url_slug=str(url_slug))            
         except Project.DoesNotExist:
             return Response({'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+        #TODO: get number of followers
+
         serializer = ProjectSerializer(project, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def patch(self, request, pk, format=None):
+    def patch(self, request, url_slug, format=None):
         try:
-            project = Project.objects.get(id=int(pk))
+            project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
             return Response({'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -140,7 +142,32 @@ class ProjectAPIView(APIView):
             'message': 'Project {} successfully updated'.format(project.name)
         }, status=status.HTTP_200_OK)
 
+class ListProjectPostsView(ListAPIView):
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ['project__url_slug']
+    pagination_class = ProjectPostPagination
+    serializer_class = PostSerializer
+    
+    def get_queryset(self):
+        logger.error(self)
+        return Post.objects.filter(
+            project__url_slug=self.kwargs['url_slug'],
+        ).order_by('id')
 
+class ListProjectCommentsView(ListAPIView):
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ['project__url_slug']
+    pagination_class = ProjectPostPagination
+    serializer_class = ProjectCommentSerializer
+    
+    def get_queryset(self):
+        logger.error(self)
+        return ProjectComment.objects.filter(
+            project__url_slug=self.kwargs['url_slug'],
+        ).order_by('id')
+    
 class AddProjectMembersView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -208,15 +235,14 @@ class UpdateProjectMemberView(APIView):
         project_member.delete()
         return Response({'message': 'Member deleted'}, status=status.HTTP_200_OK)
 
-
 class ListProjectMembersView(ListAPIView):
-    lookup_field = 'pk'
+    lookup_field = 'url_slug'
     serializer_class = ProjectMemberSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = MembersPagination
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        project = Project.objects.get(id=int(self.kwargs['pk']))
+        project = Project.objects.get(url_slug=self.kwargs['url_slug'])
 
         return project.project_member.all()
 

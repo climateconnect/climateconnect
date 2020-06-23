@@ -32,8 +32,10 @@ urlpatterns = [
 
     # Project URLs
     path('projects/', project_views.ListProjectsView.as_view(), name='list-projects'),
-    path('projects/<int:pk>/', project_views.ProjectAPIView.as_view(), name='project-api-view'),
-    path('projects/<int:pk>/members/', project_views.ListProjectMembersView.as_view(), name='project-members-api'),
+    path('projects/<slug:url_slug>/', project_views.ProjectAPIView.as_view(), name='project-api-view'),
+    path('projects/<slug:url_slug>/members/', project_views.ListProjectMembersView.as_view(), name='project-members-api'),
+    path('projects/<slug:url_slug>/posts/', project_views.ListProjectPostsView.as_view(), name="project-posts-api"),
+    path('projects/<slug:url_slug>/comments/', project_views.ListProjectCommentsView.as_view(), name="project-comments-api"),
     path('create_project/', project_views.CreateProjectView.as_view(), name='create-project-api'),
     path(
         'projects/<int:project_id>/add_members/',

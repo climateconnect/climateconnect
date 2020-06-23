@@ -16,7 +16,7 @@ import TEMP_PROJECT_DATA from "../../public/data/projects.json";
 import TEMP_ORGANIZATION_DATA from "../../public/data/organizations.json";
 import TEMP_PROFILE_TYPES from "./../../public/data/profile_types.json";
 import TEMP_INFOMETADATA from "./../../public/data/profile_info_metadata.json";
-import tokenConfig from '../../public/config/tokenConfig';
+import tokenConfig from "../../public/config/tokenConfig";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -164,7 +164,6 @@ async function getProfileByUrlIfExists(profileUrl, token) {
     );
     if (resp.data.results.length === 0) return null;
     else {
-      //console.log(resp.data.results[0]);
       return parseProfile(resp.data.results[0]);
     }
   } catch (err) {

@@ -115,7 +115,7 @@ export default function AccountPage({
       const additionalText = i.additionalText ? i.additionalText : "";
       if (i.type === "array") {
         return displayInfoArrayData(key, i);
-      } else if(value){
+      } else if (value) {
         return (
           <div key={key}>
             <div className={classes.subtitle}>{i.name}:</div>

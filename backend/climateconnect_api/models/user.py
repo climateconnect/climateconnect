@@ -25,13 +25,13 @@ class UserProfile(models.Model):
         help_text="slug for user URL",
         verbose_name="URL Slug",
         max_length=512,
+        unique=True,
         null=True,
-        blank=True,
-        unique=True
+        blank=True
     )
 
     # Keeping this column blank. User may not want to upload their profile picture.
-    profile_image = models.ImageField(
+    image = models.ImageField(
         help_text="Points to user's profile picture",
         verbose_name="Profile Image",
         upload_to=profile_image_path,

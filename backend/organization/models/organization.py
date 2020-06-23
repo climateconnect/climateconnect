@@ -24,8 +24,6 @@ class Organization(models.Model):
         help_text="Points to organization url slug",
         verbose_name="URL Slug",
         max_length=1024,
-        null=True,
-        blank=True,
         unique=True
     )
 

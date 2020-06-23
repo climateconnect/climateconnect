@@ -11,6 +11,7 @@ import ProjectStatus from "./ProjectStatus";
 
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
 const useStyles = makeStyles(theme => ({
@@ -97,11 +98,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function ProjectContent({ project }) {
   const classes = useStyles();
-
   const [showFullDescription, setShowFullDescription] = React.useState(false);
-
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
-
   return (
     <div>
       <div className={classes.contentBlock}>
@@ -113,10 +111,10 @@ export default function ProjectContent({ project }) {
             <Typography component="span">
               Started <TimeAgo date={new Date(project.start_date)} /> by
             </Typography>
-            <Link href={"/organizations/" + project.creator_url}>
+            <Link href={"/organizations/" + project.creator.url_slug}>
               <a className={classes.creator}>
-                <img src={project.creator_image} className={classes.creatorImage} />
-                <Typography component="span">{project.creator_name}</Typography>
+                <img src={project.creator.image} className={classes.creatorImage} />
+                <Typography component="span">{project.creator.name}</Typography>
               </a>
             </Link>
           </div>
@@ -141,11 +139,20 @@ export default function ProjectContent({ project }) {
           Project description
         </Typography>
         <Typography>
-          {showFullDescription || project.description.length <= MAX_DISPLAYED_DESCRIPTION_LENGTH
-            ? project.description
-            : project.description.substr(0, MAX_DISPLAYED_DESCRIPTION_LENGTH) + "..."}
+          {project.description ? (
+            showFullDescription ||
+            project.description.length <= MAX_DISPLAYED_DESCRIPTION_LENGTH ? (
+              project.description
+            ) : (
+              project.description.substr(0, MAX_DISPLAYED_DESCRIPTION_LENGTH) + "..."
+            )
+          ) : (
+            <Typography variant="body2">
+              {"This project hasn't added a description yet."}
+            </Typography>
+          )}
         </Typography>
-        {project.description.length > MAX_DISPLAYED_DESCRIPTION_LENGTH && (
+        {project.description && project.description.length > MAX_DISPLAYED_DESCRIPTION_LENGTH && (
           <Button className={classes.expandButton} onClick={handleToggleFullDescriptionClick}>
             {showFullDescription ? (
               <div>
@@ -178,12 +185,14 @@ export default function ProjectContent({ project }) {
         <Typography variant="body2" fontStyle="italic" fontWeight="bold">
           Follow the project to be notified when they make an update post
         </Typography>
-        <div className={classes.progressContent}>
-          <Posts
-            posts={project.timeline_posts.sort((a, b) => new Date(b.date) - new Date(a.date))}
-            type="progresspost"
-          />
-        </div>
+        {project.timeline_posts && project.timeline_posts.length > 0 && (
+          <div className={classes.progressContent}>
+            <Posts
+              posts={project.timeline_posts.sort((a, b) => new Date(b.date) - new Date(a.date))}
+              type="progresspost"
+            />
+          </div>
+        )}
       </div>
     </div>
   );

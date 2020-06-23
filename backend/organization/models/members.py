@@ -19,7 +19,22 @@ class ProjectMember(models.Model):
 
     role = models.ForeignKey(
         Role, related_name="project_role",
-        verbose_name="Role", help_text="Points to user role",
+        verbose_name="Role(permissions)", help_text="Points to user role",
+        on_delete=models.PROTECT
+    )
+
+    role_in_project = models.CharField(
+        help_text="Points to the role of the person in the project, e.g. 'project manager'",
+        verbose_name="Role in project",
+        max_length=1024,
+        null=True,
+        blank=True
+    )
+
+    availability = models.ForeignKey(
+        Availability, related_name="member_availability",
+        help_text="Shows how many hours per week the user is putting into this specific project.",
+        verbose_name="Time per week",
         on_delete=models.PROTECT
     )
 
@@ -37,6 +52,7 @@ class ProjectMember(models.Model):
         app_label = "organization"
         verbose_name = "Project Member"
         verbose_name_plural = "Project Members"
+        ordering = ['-id']
 
     def __str__(self):
         return "User %d member for Project %s" % (self.user.id, self.project.name)

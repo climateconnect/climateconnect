@@ -2,14 +2,14 @@ from django.contrib import admin
 
 from organization.models import (
     Organization, OrganizationTags, OrganizationTagging,
-    Project, ProjectTags, ProjectTagging, Posts, Comment,
+    Project, ProjectTags, ProjectTagging, Post, Comment,
     PostComment, ProjectComment, ProjectMember, OrganizationMember,
     ProjectParents
 )
 
 pass_through_models = (
     OrganizationTags, OrganizationTagging, ProjectTags,
-    ProjectTagging, Posts, Comment, PostComment, ProjectComment
+    ProjectTagging, Post, Comment, PostComment, ProjectComment
 )
 
 for model in pass_through_models:

@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Typography, Button } from "@material-ui/core";
+import { Container, Typography, Button, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
 import ExploreIcon from "@material-ui/icons/Explore";
@@ -103,12 +103,18 @@ function SmallScreenOverview({ project }) {
         <Typography>{project.shortdescription}</Typography>
         <div className={classes.projectInfoEl}>
           <Typography>
-            <PlaceIcon className={classes.icon} /> {project.location}
+            <Tooltip title="Location">
+              <PlaceIcon color="primary" className={classes.icon} />
+            </Tooltip>{" "}
+            {project.location}
           </Typography>
         </div>
         <div className={classes.projectInfoEl}>
           <Typography>
-            <ExploreIcon className={classes.icon} /> {project.labels.join(", ")}
+            <Tooltip title="Categories">
+              <ExploreIcon color="primary" className={classes.icon} />
+            </Tooltip>{" "}
+            {project.tags.join(", ")}
           </Typography>
         </div>
         <div className={classes.infoBottomBar}>
@@ -140,12 +146,18 @@ function LargeScreenOverview({ project }) {
           <Typography>{project.shortdescription}</Typography>
           <div className={classes.projectInfoEl}>
             <Typography>
-              <PlaceIcon color="primary" className={classes.icon} /> {project.location}
+              <Tooltip title="Location">
+                <PlaceIcon color="primary" className={classes.icon} />
+              </Tooltip>{" "}
+              {project.location}
             </Typography>
           </div>
           <div className={classes.projectInfoEl}>
             <Typography>
-              <ExploreIcon color="primary" className={classes.icon} /> {project.labels.join(",")}
+              <Tooltip title="Categories">
+                <ExploreIcon color="primary" className={classes.icon} />
+              </Tooltip>{" "}
+              {project.tags.join(", ")}
             </Typography>
           </div>
           <div className={classes.infoBottomBar}>

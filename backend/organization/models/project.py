@@ -20,9 +20,9 @@ class Project(models.Model):
         help_text="URL slug for project",
         verbose_name="URL slug",
         unique=True,
+        max_length=1024,
         null=True,
-        blank=True,
-        max_length=1024
+        blank=True
     )
 
     image = models.ImageField(
@@ -131,7 +131,8 @@ class Project(models.Model):
         Skill,
         related_name="project_skills",
         help_text="Points to all skills project persist or required",
-        verbose_name="Skills"
+        verbose_name="Skills",
+        blank=True
     )
 
     helpful_connections = ArrayField(
@@ -145,6 +146,7 @@ class Project(models.Model):
         app_label = "organization"
         verbose_name = "Project"
         verbose_name_plural = "Projects"
+        ordering = ['-id']
 
     def __str__(self):
         return "(%d) %s" % (self.pk, self.name)
@@ -164,22 +166,19 @@ class ProjectParents(models.Model):
         help_text="Points to organization",
         verbose_name="Organization",
         related_name="project_parent_org",
-        on_delete=models.CASCADE,
-        null=True, blank=True
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
     )
 
     parent_user = models.ForeignKey(
         'auth.User',
-        verbose_name="Points to user who created a project",
+        help_text="Points to user who created a project",
+        verbose_name="User",
         related_name="project_parent_user",
         null=True,
         blank=True,
         on_delete=models.PROTECT
-    )
-
-    order = models.IntegerField(
-        help_text="Order in which project should be listed",
-        verbose_name="Order"
     )
 
     created_at = models.DateTimeField(
@@ -199,4 +198,4 @@ class ProjectParents(models.Model):
         verbose_name_plural = "Project Parents"
 
     def __str__(self):
-        return "Project %s of organization %s" % (self.project.name, self.parent_organization.name)
+        return "Project parent for project %s" % (self.project.id)

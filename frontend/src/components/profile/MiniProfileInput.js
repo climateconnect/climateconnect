@@ -3,7 +3,6 @@ import { Avatar, Typography, Tooltip, IconButton, TextField, Button } from "@mat
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import SelectField from "../general/SelectField";
 import roles from "./../../../public/data/roles.json";
-import profile_info_metadata from "./../../../public/data/profile_info_metadata.json";
 import { makeStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 
@@ -41,7 +40,7 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function MiniProfileInput({ className, profile, onDelete }) {
+export default function MiniProfileInput({ className, profile, onDelete, availabilityOptions }) {
   const classes = useStyles();
   return (
     <div className={className}>
@@ -94,7 +93,7 @@ export default function MiniProfileInput({ className, profile, onDelete }) {
         label="Hours"
         size="small"
         className={classes.field}
-        options={profile_info_metadata.availability.options}
+        options={availabilityOptions}
         required
       />
       {onDelete && (

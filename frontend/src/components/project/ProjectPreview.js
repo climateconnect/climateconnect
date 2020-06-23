@@ -26,8 +26,8 @@ const useStyles = makeStyles(theme => {
       margin: "0 auto",
       display: "block"
     },
-    noUnderline: {
-      textDecoration: "none"
+    media: {
+      minHeight: 160
     }
   };
 });
@@ -36,25 +36,23 @@ export default function ProjectPreview({ project }) {
   const classes = useStyles();
 
   return (
-    <Link href={`/projects/${project.id}`}>
-      <a className={classes.noUnderline}>
-        <Card className={classes.root} variant="outlined">
-          <CardMedia
-            className={classes.media}
-            component={"img"}
-            title={project.name}
-            image={project.image}
-          />
-          <CardContent>
-            <Typography variant="subtitle1" component="h2" className={classes.bold}>
-              <Truncate lines={1} ellipsis="...">
-                {project.name}
-              </Truncate>
-            </Typography>
-            <ProjectMetaData project={project} />
-          </CardContent>
-        </Card>
-      </a>
+    <Link href={`/projects/${project.url_slug}`}>
+      <Card className={classes.root} variant="outlined">
+        <CardMedia
+          className={classes.media}
+          component={"img"}
+          title={project.name}
+          image={project.image}
+        />
+        <CardContent>
+          <Typography variant="subtitle1" component="h2" className={classes.bold}>
+            <Truncate lines={1} ellipsis="...">
+              {project.name}
+            </Truncate>
+          </Typography>
+          <ProjectMetaData project={project} />
+        </CardContent>
+      </Card>
     </Link>
   );
 }

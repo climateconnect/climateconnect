@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import ProfilePreviews from "./../profile/ProfilePreviews";
+import { Typography } from "@material-ui/core";
+import UserContext from "../context/UserContext";
+import LoginNudge from "../general/LoginNudge";
 
 function getTeamWithAdditionalInfo(team) {
   return team.map(m => {
@@ -11,7 +14,7 @@ function getTeamWithAdditionalInfo(team) {
       });
     if (m.timeperweek)
       additionalInfo.push({
-        text: m.timeperweek + (m.timeperweek > 1 ? " hours" : " hour") + " per week",
+        text: m.availability.name,
         importance: "low"
       });
     return { ...m, additionalInfo: additionalInfo };
@@ -19,11 +22,15 @@ function getTeamWithAdditionalInfo(team) {
 }
 
 export default function TeamContent({ team }) {
-  return (
-    <ProfilePreviews
-      profiles={getTeamWithAdditionalInfo(team)}
-      allowMessage
-      showAdditionalInfo={true}
-    />
-  );
+  const { user } = useContext(UserContext);
+  if (!user) return <LoginNudge whatToSee="this project's team  members" />;
+  else if (team)
+    return (
+      <ProfilePreviews
+        profiles={getTeamWithAdditionalInfo(team)}
+        allowMessage
+        showAdditionalInfo={true}
+      />
+    );
+  else return <Typography>We could not find any members of this project.</Typography>;
 }

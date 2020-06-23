@@ -17,7 +17,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = (
             'email', 'first_name', 'last_name',
-            'url_slug', 'profile_image', 'background_image',
+            'url_slug', 'image', 'background_image',
             'country', 'state', 'city', 'biography', 'is_profile_verified',
             'availability', 'skills'
         )
@@ -42,13 +42,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = (
             'first_name', 'last_name',
-            'url_slug', 'profile_image', 'background_image',
+            'url_slug', 'image', 'background_image',
             'country', 'state', 'city', 'biography', 'is_profile_verified',
             'availability', 'skills'
         )
-
-    def get_email(self, obj):
-        return obj.user.email
 
     def get_first_name(self, obj):
         return obj.user.first_name
@@ -65,12 +62,9 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = (
             'first_name', 'last_name',
-            'url_slug', 'profile_image', 'background_image',
+            'url_slug', 'image', 'background_image',
             'country', 'state', 'city', 'is_profile_verified'
         )
-
-    def get_email(self, obj):
-        return obj.user.email
 
     def get_first_name(self, obj):
         return obj.user.first_name

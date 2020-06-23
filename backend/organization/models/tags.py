@@ -18,6 +18,11 @@ class OrganizationTags(models.Model):
         auto_now_add=True
     )
 
+    additional_info = JSONField(
+        null=True,
+        blank=True
+    )
+
     updated_at = models.DateTimeField(
         help_text="Time when tag was updated",
         verbose_name="Updated At",
@@ -49,6 +54,11 @@ class OrganizationTagging(models.Model):
         on_delete=models.CASCADE
     )
 
+    additional_info = JSONField(
+        null=True,
+        blank=True
+    )
+
     created_at = models.DateTimeField(
         help_text="Time when organization tag was created",
         verbose_name="Created At",
@@ -67,6 +77,7 @@ class OrganizationTagging(models.Model):
         app_label = "organization"
         verbose_name = "Organization Tagging"
         verbose_name_plural = "Organization Taggings"
+        unique_together = ('organization', 'organization_tag')
 
     def __str__(self):
         return "%s => %s" % (self.organization_tag.name, self.organization.name)
@@ -83,6 +94,11 @@ class ProjectTags(models.Model):
         help_text="Time when tag was created",
         verbose_name="Created at",
         auto_now_add=True
+    )
+
+    additional_info = JSONField(
+        null=True,
+        blank=True
     )
 
     updated_at = models.DateTimeField(
@@ -128,12 +144,16 @@ class ProjectTagging(models.Model):
         auto_now=True
     )
 
-    additional_info = JSONField()
+    additional_info = JSONField(
+        null=True,
+        blank=True
+    )
 
     class Meta:
         app_label = "organization"
         verbose_name = "Project Tagging"
         verbose_name_plural = "Project Taggings"
+        unique_together = ('project', 'project_tag')
 
     def __str__(self):
         return "Tag %s => Project %s" % (self.project.name, self.project_tag.name)

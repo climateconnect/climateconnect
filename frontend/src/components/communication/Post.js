@@ -46,19 +46,19 @@ export default function Post({ post, type, className }) {
   const handleViewRepliesClick = () => {
     setDisplayReplies(!displayReplies);
   };
-
+  
   return (
     <div className={className}>
       <Typography variant="body2" className={classes.postDate}>
-        <DateDisplay date={new Date(post.date)} />
+        <DateDisplay date={new Date(post.created_at)} />
       </Typography>
       {type === "progresspost" ? (
         <Typography component="h3" variant="h6" color="primary" className={classes.nameOfPoster}>
-          {post.creator.name}
+          {post.author_user.first_name + " " + post.author_user.last_name}
         </Typography>
       ) : (
         <MiniProfilePreview
-          profile={post.creator}
+          profile={post.author_user}
           avatarClassName={type === "reply" ? classes.smallAvatar : classes.autoAvatar}
         />
       )}
@@ -87,7 +87,7 @@ export default function Post({ post, type, className }) {
         )}
       </div>
       <div>
-        {displayReplies && (type === "openingpost" || type === "progresspost") && (
+        {(post.replies && post.replies.length>0 && displayReplies && (type === "openingpost" || type === "progresspost")) && (
           <Posts posts={post.replies} type="reply" />
         )}
       </div>
