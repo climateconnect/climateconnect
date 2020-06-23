@@ -6,7 +6,6 @@ from climateconnect_api.serializers.user import UserProfileStubSerializer
 #TODO: potentially make serializer from which the other serializers inherit reused code
 
 class PostSerializer(serializers.ModelSerializer):
-  #TODO: add pagination
   #TODO: add additional functionality such as 'is_abusive', 'deleted_at', 'updated_at'
   #TODO: get likes
   author_user = serializers.SerializerMethodField()
@@ -30,7 +29,6 @@ class PostSerializer(serializers.ModelSerializer):
     return serializer.data
 
 class PostCommentSerializer(serializers.ModelSerializer):
-  #TODO: add pagination
   #TODO: add additional functionality such as 'is_abusive', 'deleted_at', 'updated_at'
   #TODO: get likes
   author_user = serializers.SerializerMethodField()
@@ -49,7 +47,6 @@ class PostCommentSerializer(serializers.ModelSerializer):
     return serializer.data
 
 class ProjectCommentSerializer(serializers.ModelSerializer):
-  #TODO: add pagination
   #TODO: add additional functionality such as 'is_abusive', 'deleted_at', 'updated_at'
   #TODO: get likes
   author_user = serializers.SerializerMethodField()

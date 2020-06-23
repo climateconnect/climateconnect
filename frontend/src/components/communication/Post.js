@@ -46,7 +46,7 @@ export default function Post({ post, type, className }) {
   const handleViewRepliesClick = () => {
     setDisplayReplies(!displayReplies);
   };
-
+  
   return (
     <div className={className}>
       <Typography variant="body2" className={classes.postDate}>
@@ -87,7 +87,7 @@ export default function Post({ post, type, className }) {
         )}
       </div>
       <div>
-        {displayReplies && (type === "openingpost" || type === "progresspost") && (
+        {(post.replies && post.replies.length>0 && displayReplies && (type === "openingpost" || type === "progresspost")) && (
           <Posts posts={post.replies} type="reply" />
         )}
       </div>

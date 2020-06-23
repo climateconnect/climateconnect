@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from organization.models import (Project, Organization)
-from climateconnect_api.models import (Role,)
+from climateconnect_api.models import (Role, Availability)
 
 
 class ProjectMember(models.Model):
@@ -20,6 +20,21 @@ class ProjectMember(models.Model):
     role = models.ForeignKey(
         Role, related_name="project_role",
         verbose_name="Role(permissions)", help_text="Points to user role",
+        on_delete=models.PROTECT
+    )
+
+    role_in_project = models.CharField(
+        help_text="Points to the role of the person in the project, e.g. 'project manager'",
+        verbose_name="Role in project",
+        max_length=1024,
+        null=True,
+        blank=True
+    )
+
+    availability = models.ForeignKey(
+        Availability, related_name="member_availability",
+        help_text="Shows how many hours per week the user is putting into this specific project.",
+        verbose_name="Time per week",
         on_delete=models.PROTECT
     )
 
@@ -101,7 +116,7 @@ class OrganizationMember(models.Model):
 
     role = models.ForeignKey(
         Role, related_name="organization_role",
-        help_text="Points ot Role table", verbose_name="Role",
+        help_text="Points ot Role table", verbose_name="Role(Permissions)",
         on_delete=models.PROTECT
     )
 
@@ -113,6 +128,18 @@ class OrganizationMember(models.Model):
     updated_at = models.DateTimeField(
         help_text="Time when organization member was updated", verbose_name="Updated At",
         auto_now=True
+    )
+
+    role_in_organization = models.CharField(
+        help_text="Points to the role of the person in the organization, e.g.:`Organization Manager`",
+        verbose_name="Role in organization", max_length=1024, null=True, blank=True
+    )
+
+    time_per_week = models.ForeignKey(
+        Availability, related_name="org_member_availability",
+        help_text='Points to availability of a member for the organization',
+        verbose_name="Availability", null=True, blank=True,
+        on_delete=models.SET_NULL
     )
 
     class Meta:

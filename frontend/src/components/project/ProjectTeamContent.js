@@ -14,7 +14,7 @@ function getTeamWithAdditionalInfo(team) {
       });
     if (m.timeperweek && m.timeperweek !== "not_specified")
       additionalInfo.push({
-        text: m.timeperweek + " hours per week",
+        text: m.availability.name,
         importance: "low"
       });
     return { ...m, additionalInfo: additionalInfo };

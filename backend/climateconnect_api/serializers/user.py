@@ -47,9 +47,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'availability', 'skills'
         )
 
-    def get_email(self, obj):
-        return obj.user.email
-
     def get_first_name(self, obj):
         return obj.user.first_name
 
@@ -68,9 +65,6 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
             'url_slug', 'image', 'background_image',
             'country', 'state', 'city', 'is_profile_verified'
         )
-
-    def get_email(self, obj):
-        return obj.user.email
 
     def get_first_name(self, obj):
         return obj.user.first_name

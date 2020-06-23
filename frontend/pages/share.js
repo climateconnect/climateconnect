@@ -10,6 +10,9 @@ import AddTeam from "../src/components/shareProject/AddTeam";
 //TODO: this should be retrieved asynchronously, e.g. via getInitialProps
 import organizationsList from "../public/data/organizations.json";
 import ProjectSubmittedPage from "../src/components/shareProject/ProjectSubmittedPage";
+import axios from "axios";
+import tokenConfig from "../public/config/tokenConfig";
+import Cookies from "next-cookies";
 const DEFAULT_STATUS = "inprogress";
 import LoginNudge from "./../src/components/general/LoginNudge";
 import UserContext from "../src/components/context/UserContext";
@@ -51,7 +54,7 @@ const steps = [
   }
 ];
 
-export default function Share() {
+export default function Share({availabilityOptions}) {
   const classes = useStyles();
   const [project, setProject] = React.useState(defaultProjectValues);
   const [curStep, setCurStep] = React.useState(steps[0]);
@@ -129,41 +132,61 @@ export default function Share() {
                   )}
                 />
               )}
-              {curStep.key === "selectCategory" && (
-                <SelectCategory
-                  project={project}
-                  handleSetProjectData={handleSetProject}
-                  goToNextStep={goToNextStep}
-                  goToPreviousStep={goToPreviousStep}
-                />
-              )}
-              {curStep.key === "enterDetails" && (
-                <EnterDetails
-                  projectData={project}
-                  handleSetProjectData={handleSetProject}
-                  goToNextStep={goToNextStep}
-                  goToPreviousStep={goToPreviousStep}
-                />
-              )}
-              {curStep.key === "addTeam" && (
-                <AddTeam
-                  projectData={project}
-                  handleSetProjectData={handleSetProject}
-                  submit={submitProject}
-                  saveAsDraft={saveAsDraft}
-                  goToPreviousStep={goToPreviousStep}
-                />
-              )}
-            </>
-          ) : (
-            <>
-              <ProjectSubmittedPage isDraft={project.isDraft} url_slug={project.url_slug} />
-            </>
+            />
+          )}
+          {curStep.key === "selectCategory" && (
+            <SelectCategory
+              project={project}
+              handleSetProjectData={handleSetProject}
+              goToNextStep={goToNextStep}
+              goToPreviousStep={goToPreviousStep}
+            />
+          )}
+          {curStep.key === "enterDetails" && (
+            <EnterDetails
+              projectData={project}
+              handleSetProjectData={handleSetProject}
+              goToNextStep={goToNextStep}
+              goToPreviousStep={goToPreviousStep}
+            />
+          )}
+          {curStep.key === "addTeam" && (
+            <AddTeam
+              projectData={project}
+              handleSetProjectData={handleSetProject}
+              submit={submitProject}
+              saveAsDraft={saveAsDraft}
+              goToPreviousStep={goToPreviousStep}
+              availabilityOptions={availabilityOptions}
+            />
           )}
         </>
       )}
     </WideLayout>
   );
+}
+
+Share.getInitialProps = async ctx => {
+  const { token } = Cookies(ctx);
+  return {
+    availabilityOptions: await getAvailabilityOptions(token)
+  }
+}
+
+const getAvailabilityOptions = async (token) => {  
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/availability/",
+      tokenConfig(token)
+    );
+    if (resp.data.results.length === 0) return null;
+    else {    
+      return resp.data.results
+    }
+  } catch (err) {
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
 }
 
 //TODO: remove some of these default values as they are just for testing
@@ -172,7 +195,7 @@ const defaultProjectValues = {
   status: DEFAULT_STATUS,
   skills: [],
   connections: [],
-  collaborating_organizations: [],
+  collaboratingOrganizations: [],
   //TODO: Should contain the logged in user as the creator and parent_user by default
   members: [
     {

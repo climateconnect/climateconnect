@@ -31,11 +31,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function ProjectPage({ project, members }) {
+export default function ProjectPage({ project, members, posts, comments }) {
   return (
     <WideLayout title={project ? project.name : "Project not found"}>
       {project ? (
-        <ProjectLayout project={{ ...project, team: members }} />
+        <ProjectLayout project={{ ...project, team: members, timeline_posts:posts, comments: comments }} />
       ) : (
         <NoProjectFoundLayout />
       )}
@@ -47,7 +47,9 @@ ProjectPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   return {
     project: await getProjectByIdIfExists(ctx.query.projectId, token),
-    members: token ? await getProjectMembersByIdIfExists(ctx.query.projectId, token) : []
+    members: token ? await getProjectMembersByIdIfExists(ctx.query.projectId, token) : [],
+    posts: await getPostsByProject(ctx.query.projectId, token),
+    comments: await getCommentsByProject(ctx.query.projectId, token)
   };
 };
 
@@ -81,10 +83,10 @@ function ProjectLayout({ project }) {
 
       <Container className={classes.tabContent}>
         <TabContent value={tabValue} index={0}>
-          <ProjectContent project={project} />
+          <ProjectContent project={project}/>
         </TabContent>
         <TabContent value={tabValue} index={1}>
-          <ProjectTeamContent team={project.team} />
+          <ProjectTeamContent team={project.team}/>
         </TabContent>
         <TabContent value={tabValue} index={2}>
           <ProjectCommentsContent comments={project.comments} />
@@ -111,12 +113,11 @@ function NoProjectFoundLayout() {
   );
 }
 
-//these are really ugly functions but it doesn't matter since they will be replaced by db calls
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getProjectByIdIfExists(projectUrl, token) {
   try {
     const resp = await axios.get(
-      process.env.API_URL + "/projects/" + projectUrl + "/",
+      process.env.API_URL + "/api/projects/" + projectUrl + "/",
       tokenConfig(token)
     );
     if (resp.data.length === 0) return null;
@@ -130,15 +131,46 @@ async function getProjectByIdIfExists(projectUrl, token) {
   }
 }
 
+async function getPostsByProject(projectUrl, token) {
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/api/projects/" + projectUrl + "/posts/",
+      tokenConfig(token)
+    );
+    if (resp.data.length === 0) return null;
+    else {
+      return resp.data.results;
+    }
+  } catch (err) {
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+async function getCommentsByProject(projectUrl, token) {
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/api/projects/" + projectUrl + "/comments/",
+      tokenConfig(token)
+    );
+    if (resp.data.length === 0) return null;
+    else {
+      return resp.data.results;
+    }
+  } catch (err) {
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
 async function getProjectMembersByIdIfExists(projectUrl, token) {
   try {
     const resp = await axios.get(
-      process.env.API_URL + "/projects/" + projectUrl + "/members/",
+      process.env.API_URL + "/api/projects/" + projectUrl + "/members/",
       tokenConfig(token)
     );
     if (resp.data.results.length === 0) return null;
     else {
-      //TODO: get comments and timeline posts and project taggings
       return parseProjectMembers(resp.data.results);
     }
   } catch (err) {
@@ -166,10 +198,7 @@ function parseProject(project) {
     creator: project.project_parents[0].parent_organization
       ? project.project_parents[0].parent_organization
       : project.project_parents[0].parent_user,
-    tags: project.tags.map(t => t.project_tag.name),
-    timeline_posts: project.project_posts,
-    //TODO: remove after comments are added
-    comments: project.comments
+    tags: project.tags.map(t => t.project_tag.name)
   };
 }
 
