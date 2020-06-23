@@ -65,6 +65,7 @@ class Post(models.Model):
     class Meta:
         app_label = "organization"
         verbose_name = "Post"
+        ordering = ["-id"]
 
     def __str__(self):
         return "Post id: %d for project %s" % (self.pk, self.project.name)
@@ -151,6 +152,7 @@ class PostComment(Comment):
     class Meta:
         app_label = "organization"
         verbose_name = "Post Comment"
+        ordering = ["-id"]
 
     def __str__(self):
         return "%d post for project %d" % (self.pk, self.post.pk)
@@ -168,6 +170,7 @@ class ProjectComment(Comment):
         app_label = "organization"
         verbose_name = "Project Comment"
         verbose_name_plural = "Project Comments"
+        ordering = ["-id"]
 
     def __str__(self):
         return "Comment made to project %s" % self.project.name

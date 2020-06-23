@@ -58,7 +58,7 @@ export default function Posts({ posts, type }) {
   };
   return (
     <div className={classNames[type]}>
-      {posts.map((post, index) => (
+      {posts && posts.map((post, index) => (
         <Post
           key={index}
           post={post}

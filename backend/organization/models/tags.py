@@ -18,6 +18,11 @@ class OrganizationTags(models.Model):
         auto_now_add=True
     )
 
+    additional_info = JSONField(
+        null=True,
+        blank=True
+    )
+
     updated_at = models.DateTimeField(
         help_text="Time when tag was updated",
         verbose_name="Updated At",
@@ -47,6 +52,11 @@ class OrganizationTagging(models.Model):
         verbose_name="Organization Tag",
         help_text="Points to the tag",
         on_delete=models.CASCADE
+    )
+
+    additional_info = JSONField(
+        null=True,
+        blank=True
     )
 
     created_at = models.DateTimeField(
@@ -84,6 +94,11 @@ class ProjectTags(models.Model):
         help_text="Time when tag was created",
         verbose_name="Created at",
         auto_now_add=True
+    )
+
+    additional_info = JSONField(
+        null=True,
+        blank=True
     )
 
     updated_at = models.DateTimeField(

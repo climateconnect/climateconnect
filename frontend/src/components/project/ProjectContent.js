@@ -100,7 +100,6 @@ export default function ProjectContent({ project }) {
   const classes = useStyles();
   const [showFullDescription, setShowFullDescription] = React.useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
-
   return (
     <div>
       <div className={classes.contentBlock}>

@@ -71,7 +71,7 @@ const useStyles = makeStyles(theme => {
 
 export default function Index({ projectsObject, organizationsObject, membersObject, token }) {
   const [hasMore, setHasMore] = React.useState({
-    projects: true,
+    projects: !!projectsObject && projectsObject.hasMore,
     organizations: true,
     members: true
   });
@@ -211,7 +211,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
                 possibleFilters={possibleFilters[typesByTabValue[0]]}
               />
             )}
-            {projectsObject && projectsObject.projects ? (
+            {(projectsObject && projectsObject.projects && projectsObject.projects.length) ? (
               <ProjectPreviews
                 projects={projectsObject.projects}
                 loadFunc={loadMoreProjects}
@@ -220,10 +220,10 @@ export default function Index({ projectsObject, organizationsObject, membersObje
                 setIsLoading={setIsLoading}
               />
             ) : (
-              <Typography variant="h5" className={classes.infoMessage}>
+              <Typography component="h4" variant="h5" className={classes.infoMessage}>
                 There is no projects on this site yet.{" "}
                 <Link href="/share">
-                  <Typography color="primary" className={classes.link} variant="h5">
+                  <Typography color="primary" className={classes.link} component="h5" variant="h5">
                     Share a project to create the first one!
                   </Typography>
                 </Link>
@@ -293,7 +293,7 @@ Index.getInitialProps = async ctx => {
 async function getProjects(page, token) {
   try {
     const resp = await axios.get(
-      process.env.API_URL + "/projects/?page=" + page,
+      process.env.API_URL + "/api/projects/?page=" + page,
       tokenConfig(token)
     );
     if (resp.data.length === 0) return null;

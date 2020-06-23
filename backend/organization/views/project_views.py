@@ -8,13 +8,14 @@ from rest_framework import status
 
 from django.contrib.auth.models import User
 
-from organization.models import Project, Organization, ProjectParents, ProjectMember
+from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment
 from organization.serializers.project import (
     ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer
 )
+from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
 from organization.utility.project import create_new_project
 from organization.permissions import OrganizationProjectCreationPermission
-from organization.pagination import (ProjectsPagination, MembersPagination)
+from organization.pagination import (ProjectsPagination, MembersPagination, ProjectPostPagination, ProjectCommentPagination)
 from organization.utility.organization import (
     check_organization,
 )
@@ -106,9 +107,9 @@ class ProjectAPIView(APIView):
         serializer = ProjectSerializer(project, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def patch(self, request, pk, format=None):
+    def patch(self, request, url_slug, format=None):
         try:
-            project = Project.objects.get(url_slug=pk)
+            project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
             return Response({'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -141,7 +142,32 @@ class ProjectAPIView(APIView):
             'message': 'Project {} successfully updated'.format(project.name)
         }, status=status.HTTP_200_OK)
 
+class ListProjectPostsView(ListAPIView):
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ['project__url_slug']
+    pagination_class = ProjectPostPagination
+    serializer_class = PostSerializer
+    
+    def get_queryset(self):
+        logger.error(self)
+        return Post.objects.filter(
+            project__url_slug=self.kwargs['url_slug'],
+        ).order_by('id')
 
+class ListProjectCommentsView(ListAPIView):
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ['project__url_slug']
+    pagination_class = ProjectPostPagination
+    serializer_class = ProjectCommentSerializer
+    
+    def get_queryset(self):
+        logger.error(self)
+        return ProjectComment.objects.filter(
+            project__url_slug=self.kwargs['url_slug'],
+        ).order_by('id')
+    
 class AddProjectMembersView(APIView):
     permission_classes = [IsAuthenticated]
 
