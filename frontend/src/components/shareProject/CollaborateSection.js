@@ -34,7 +34,8 @@ export default function CollaborateSection({
   helpTexts,
   ToolTipIcon,
   open,
-  handleSetOpen
+  handleSetOpen,
+  skillsOptions
 }) {
   const classes = useStyles();
 
@@ -154,6 +155,7 @@ export default function CollaborateSection({
         open={open.skillsDialog}
         onClose={handleSkillsDialogClose}
         type="skills"
+        itemsToChooseFrom={skillsOptions}
         items={projectData.skills}
       />
       <EnterTextDialog

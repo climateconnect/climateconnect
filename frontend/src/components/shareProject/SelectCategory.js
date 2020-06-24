@@ -2,7 +2,6 @@ import React from "react";
 import { Container } from "@material-ui/core";
 import MultiLevelSelector from "./MultiLevelSelector";
 import { makeStyles } from "@material-ui/core/styles";
-import project_categories from "../../../public/data/project_categories.json";
 import BottomNavigation from "./BottomNavigation";
 
 const useStyles = makeStyles(theme => {
@@ -32,7 +31,8 @@ export default function SelectCategory({
   project,
   handleSetProjectData,
   goToNextStep,
-  goToPreviousStep
+  goToPreviousStep,
+  categoryOptions
 }) {
   const classes = useStyles();
   const [selectedCategories, setSelectedCategories] = React.useState(
@@ -57,7 +57,7 @@ export default function SelectCategory({
     <Container maxWidth="lg">
       <div className={classes.block}>
         <MultiLevelSelector
-          itemsToSelectFrom={project_categories}
+          itemsToSelectFrom={categoryOptions}
           maxSelections={3}
           itemNamePlural="categories"
           selected={selectedCategories}

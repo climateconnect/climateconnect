@@ -36,3 +36,12 @@ class OrganizationMemberSerializer(serializers.ModelSerializer):
             'time_per_week': None if not instance.time_per_week else instance.time_per_week.name,
             'role_in_organization': instance.role_in_organization
         }
+
+class UserOrganizationSerializer(serializers.ModelSerializer):
+    organization = serializers.SerializerMethodField()
+    class Meta: 
+        model = OrganizationMember
+        fields = ('organization',)
+    
+    def get_organization(self, obj):
+        return OrganizationStubSerializer(obj.organization).data

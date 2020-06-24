@@ -29,4 +29,6 @@ urlpatterns = [
     path('api/my_profile/', user_views.PersonalProfileView.as_view(), name='user-profile-api'),
     path('api/members/', user_views.MemberProfilesView.as_view(), name="member-profiles-api"),
     path('api/', include('organization.urls')),
+    path('availability/', common_views.ListAvailabilitiesView.as_view(), name='availability-api'),
+    path('skills/', common_views.ListSkillsView.as_view(), name='skills-api')
 ]

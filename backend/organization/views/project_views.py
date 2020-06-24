@@ -8,11 +8,12 @@ from rest_framework import status
 
 from django.contrib.auth.models import User
 
-from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment
+from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags
 from organization.serializers.project import (
     ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer
 )
 from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
+from organization.serializers.tags import (ProjectTagsSerializer)
 from organization.utility.project import create_new_project
 from organization.permissions import OrganizationProjectCreationPermission
 from organization.pagination import (ProjectsPagination, MembersPagination, ProjectPostPagination, ProjectCommentPagination)
@@ -250,3 +251,8 @@ class ListProjectMembersView(ListAPIView):
 
         return project.project_member.all()
 
+class ListProjectTags(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = ProjectTagsSerializer
+    def get_queryset(self):
+        return ProjectTags.objects.all()

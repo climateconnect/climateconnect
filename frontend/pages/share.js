@@ -8,16 +8,13 @@ import SelectCategory from "../src/components/shareProject/SelectCategory";
 import EnterDetails from "../src/components/shareProject/EnterDetails";
 import AddTeam from "../src/components/shareProject/AddTeam";
 //TODO: this should be retrieved asynchronously, e.g. via getInitialProps
-import organizationsList from "../public/data/organizations.json";
 import ProjectSubmittedPage from "../src/components/shareProject/ProjectSubmittedPage";
 import axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
-import Cookies from "next-cookies";
 const DEFAULT_STATUS = "inprogress";
-import LoginNudge from "./../src/components/general/LoginNudge";
+import Cookies from "next-cookies";
+import LoginNudge from "../src/components/general/LoginNudge";
 import UserContext from "../src/components/context/UserContext";
-import axios from "axios";
-import tokenConfig from "../public/config/tokenConfig";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -54,7 +51,12 @@ const steps = [
   }
 ];
 
-export default function Share({availabilityOptions}) {
+export default function Share({
+  availabilityOptions,
+  userOrganizations,
+  categoryOptions,
+  skillsOptions
+}) {
   const classes = useStyles();
   const [project, setProject] = React.useState(defaultProjectValues);
   const [curStep, setCurStep] = React.useState(steps[0]);
@@ -70,29 +72,11 @@ export default function Share({availabilityOptions}) {
     setCurStep(steps[steps.indexOf(curStep) - 1]);
   };
 
-  const submitProject = async event => {
+  const submitProject = event => {
     console.log(project);
-    //TODO: If organization==="personal project", dont send any organization
-
+    //TODO: make a request to publish the project
     event.preventDefault();
-    const payload = {
-      ...project
-    };
-    try {
-      const resp = await axios.post(
-        process.env.API_URL + "/create_project/",
-        payload,
-        tokenConfig(token)
-      );
-      if (resp.data.results.length === 0) return null;
-      else {
-        //TODO: get comments and timeline posts and project taggings
-        setFinished(true);
-      }
-    } catch (err) {
-      if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-      return null;
-    }
+    setFinished(true);
   };
 
   const saveAsDraft = event => {
@@ -107,9 +91,7 @@ export default function Share({availabilityOptions}) {
 
   return (
     <WideLayout title="Share a project" hideHeadline={true}>
-      {!user ? (
-        <LoginNudge whatToSee="share a project" />
-      ) : (
+      {user ? (
         <>
           {!finished ? (
             <>
@@ -127,40 +109,46 @@ export default function Share({availabilityOptions}) {
                   project={project}
                   handleSetProjectData={handleSetProject}
                   goToNextStep={goToNextStep}
-                  userOrganizations={organizationsList.organizations.filter(
-                    o => o.url_slug === "sneeperlangen"
-                  )}
+                  userOrganizations={userOrganizations}
                 />
               )}
-            />
-          )}
-          {curStep.key === "selectCategory" && (
-            <SelectCategory
-              project={project}
-              handleSetProjectData={handleSetProject}
-              goToNextStep={goToNextStep}
-              goToPreviousStep={goToPreviousStep}
-            />
-          )}
-          {curStep.key === "enterDetails" && (
-            <EnterDetails
-              projectData={project}
-              handleSetProjectData={handleSetProject}
-              goToNextStep={goToNextStep}
-              goToPreviousStep={goToPreviousStep}
-            />
-          )}
-          {curStep.key === "addTeam" && (
-            <AddTeam
-              projectData={project}
-              handleSetProjectData={handleSetProject}
-              submit={submitProject}
-              saveAsDraft={saveAsDraft}
-              goToPreviousStep={goToPreviousStep}
-              availabilityOptions={availabilityOptions}
-            />
+              {curStep.key === "selectCategory" && (
+                <SelectCategory
+                  project={project}
+                  handleSetProjectData={handleSetProject}
+                  goToNextStep={goToNextStep}
+                  goToPreviousStep={goToPreviousStep}
+                  categoryOptions={categoryOptions}
+                />
+              )}
+              {curStep.key === "enterDetails" && (
+                <EnterDetails
+                  projectData={project}
+                  handleSetProjectData={handleSetProject}
+                  goToNextStep={goToNextStep}
+                  goToPreviousStep={goToPreviousStep}
+                  skillsOptions={skillsOptions}
+                />
+              )}
+              {curStep.key === "addTeam" && (
+                <AddTeam
+                  projectData={project}
+                  handleSetProjectData={handleSetProject}
+                  submit={submitProject}
+                  saveAsDraft={saveAsDraft}
+                  goToPreviousStep={goToPreviousStep}
+                  availabilityOptions={availabilityOptions}
+                />
+              )}
+            </>
+          ) : (
+            <>
+              <ProjectSubmittedPage isDraft={project.isDraft} url_slug={project.url_slug} />
+            </>
           )}
         </>
+      ) : (
+        <LoginNudge fullPage whatToDo="share a project" />
       )}
     </WideLayout>
   );
@@ -169,32 +157,98 @@ export default function Share({availabilityOptions}) {
 Share.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   return {
-    availabilityOptions: await getAvailabilityOptions(token)
-  }
-}
+    availabilityOptions: await getAvailabilityOptions(token),
+    userOrganizations: await getUserOrganizations(token),
+    categoryOptions: await getCategoryOptions(token),
+    skillsOptions: await getSkillsOptions(token)
+  };
+};
 
-const getAvailabilityOptions = async (token) => {  
+const getAvailabilityOptions = async token => {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/availability/",
-      tokenConfig(token)
-    );
+    const resp = await axios.get(process.env.API_URL + "/availability/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
-    else {    
-      return resp.data.results
+    else {
+      return resp.data.results;
     }
   } catch (err) {
+    console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-}
+};
+
+const getCategoryOptions = async token => {
+  try {
+    const resp = await axios.get(process.env.API_URL + "/api/projecttags/", tokenConfig(token));
+    if (resp.data.results.length === 0) return null;
+    else {
+      return parseOptions(resp.data.results, "parent_tag");
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+};
+
+const getSkillsOptions = async token => {
+  try {
+    const resp = await axios.get(process.env.API_URL + "/skills/", tokenConfig(token));
+    if (resp.data.results.length === 0) return null;
+    else {
+      console.log(parseOptions(resp.data.results, "parent_skill"));
+      return parseOptions(resp.data.results, "parent_skill");
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+};
+
+const parseOptions = (options, parentPropertyName) => {
+  return options
+    .filter(o => o[parentPropertyName] === null)
+    .map(o => {
+      return {
+        name: o.name,
+        key: o.id,
+        subcategories: options
+          .filter(so => so[parentPropertyName] === o.id)
+          .map(so => {
+            return {
+              name: so.name,
+              key: so.id
+            };
+          })
+      };
+    });
+};
+
+const getUserOrganizations = async token => {
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/api/my_organizations/",
+      tokenConfig(token)
+    );
+    if (resp.data.length === 0) return null;
+    else {
+      return resp.data.map(o => o.organization);
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+};
 
 //TODO: remove some of these default values as they are just for testing
 const defaultProjectValues = {
   collaborators_welcome: true,
   status: DEFAULT_STATUS,
   skills: [],
-  connections: [],
+  helpful_connections: [],
   collaboratingOrganizations: [],
   //TODO: Should contain the logged in user as the creator and parent_user by default
   members: [

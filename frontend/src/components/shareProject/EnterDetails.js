@@ -76,7 +76,8 @@ export default function EnterDetails({
   projectData,
   handleSetProjectData,
   goToNextStep,
-  goToPreviousStep
+  goToPreviousStep,
+  skillsOptions
 }) {
   const [open, setOpen] = React.useState({
     avatarDialog: false,
@@ -277,6 +278,7 @@ export default function EnterDetails({
               ToolTipIcon={HelpOutlineIcon}
               open={open}
               handleSetOpen={handleSetOpen}
+              skillsOptions={skillsOptions}
             />
           )}
           <BottomNavigation

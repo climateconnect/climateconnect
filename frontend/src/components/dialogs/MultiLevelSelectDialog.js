@@ -5,7 +5,14 @@ import MultiLevelSelector from "../shareProject/MultiLevelSelector";
 import skillsToChooseFrom from "../../../public/data/skills.json";
 import categoriesToChooseFrom from "../../../public/data/project_categories.json";
 
-export default function MultiLevelSelectDialog({ items, onClose, open, type, maxSelections }) {
+export default function MultiLevelSelectDialog({
+  items,
+  onClose,
+  open,
+  type,
+  maxSelections,
+  itemsToChooseFrom
+}) {
   const [selectedItems, setSelectedItems] = React.useState(items ? items : []);
 
   const handleClose = () => {
@@ -19,10 +26,11 @@ export default function MultiLevelSelectDialog({ items, onClose, open, type, max
 
   const itemNamePlural = type;
 
-  const itemsToChooseFrom =
-    type === "skills"
-      ? skillsToChooseFrom
-      : type === "project categories" && categoriesToChooseFrom;
+  const possibleItems = itemsToChooseFrom
+    ? itemsToChooseFrom
+    : type === "skills"
+    ? skillsToChooseFrom
+    : type === "project categories" && categoriesToChooseFrom;
 
   return (
     <GenericDialog
@@ -35,7 +43,7 @@ export default function MultiLevelSelectDialog({ items, onClose, open, type, max
       topBarFixed
     >
       <MultiLevelSelector
-        itemsToSelectFrom={itemsToChooseFrom}
+        itemsToSelectFrom={possibleItems}
         maxSelections={maxSelections ? maxSelections : 10}
         itemNamePlural={itemNamePlural}
         selected={selectedItems}
