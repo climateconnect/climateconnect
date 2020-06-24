@@ -211,7 +211,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
                 possibleFilters={possibleFilters[typesByTabValue[0]]}
               />
             )}
-            {(projectsObject && projectsObject.projects && projectsObject.projects.length) ? (
+            {projectsObject && projectsObject.projects && projectsObject.projects.length ? (
               <ProjectPreviews
                 projects={projectsObject.projects}
                 loadFunc={loadMoreProjects}

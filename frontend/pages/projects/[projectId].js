@@ -35,7 +35,9 @@ export default function ProjectPage({ project, members, posts, comments }) {
   return (
     <WideLayout title={project ? project.name : "Project not found"}>
       {project ? (
-        <ProjectLayout project={{ ...project, team: members, timeline_posts:posts, comments: comments }} />
+        <ProjectLayout
+          project={{ ...project, team: members, timeline_posts: posts, comments: comments }}
+        />
       ) : (
         <NoProjectFoundLayout />
       )}
@@ -83,10 +85,10 @@ function ProjectLayout({ project }) {
 
       <Container className={classes.tabContent}>
         <TabContent value={tabValue} index={0}>
-          <ProjectContent project={project}/>
+          <ProjectContent project={project} />
         </TabContent>
         <TabContent value={tabValue} index={1}>
-          <ProjectTeamContent team={project.team}/>
+          <ProjectTeamContent team={project.team} />
         </TabContent>
         <TabContent value={tabValue} index={2}>
           <ProjectCommentsContent comments={project.comments} />
