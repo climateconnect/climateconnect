@@ -249,9 +249,9 @@ const defaultProjectValues = {
   status: DEFAULT_STATUS,
   skills: [],
   helpful_connections: [],
-  collaboratingOrganizations: [],
+  collaborating_organizations: [],
   //TODO: Should contain the logged in user as the creator and parent_user by default
-  members: [
+  team_members: [
     {
       first_name: "Christoph",
       last_name: "Stoll",
