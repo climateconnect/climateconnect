@@ -43,13 +43,11 @@ export default function AddTeam({
     goToPreviousStep();
   };
 
-  const onClickPublish = () => {};
-
   //Prevent double entries
   const handleAddMember = member => {
     handleSetProjectData({
       team_members: [
-        ...projectData.members,
+        ...projectData.team_members,
         { ...member, permissions: { key: "member", name: "Member" }, role: "" }
       ]
     });
@@ -57,12 +55,12 @@ export default function AddTeam({
 
   const handleRemoveMember = member => {
     handleSetProjectData({
-      members: projectData.members
-        .slice(0, projectData.members.indexOf(member))
+      team_members: projectData.team_members
+        .slice(0, projectData.team_members.indexOf(member))
         .concat(
-          projectData.members.slice(
-            projectData.members.indexOf(member) + 1,
-            projectData.members.length
+          projectData.team_members.slice(
+            projectData.team_members.indexOf(member) + 1,
+            projectData.team_members.length
           )
         )
     });
@@ -106,9 +104,9 @@ export default function AddTeam({
           <AutoCompleteSearchBar
             label="Search for your team members"
             className={`${classes.searchBar} ${classes.block}`}
-            baseUrl={process.env.API_URL + "/api/members/?"}
+            baseUrl={process.env.API_URL + "/api/members/?search="}
             clearOnSelect
-            filterOut={[...projectData.members]}
+            filterOut={[...projectData.team_members]}
             onSelect={handleAddMember}
             renderOption={renderSearchOption}
             getOptionLabel={option => option.first_name + " " + option.last_name}
@@ -116,7 +114,7 @@ export default function AddTeam({
           />
         </div>
         <AddProjectMembersContainer
-          projectMembers={projectData.members}
+          projectMembers={projectData.team_members}
           blockClassName={classes.block}
           handleRemoveMember={handleRemoveMember}
           availabilityOptions={availabilityOptions}
@@ -132,8 +130,7 @@ export default function AddTeam({
         <BottomNavigation
           className={classes.block}
           onClickPreviousStep={onClickPreviousStep}
-          onClickPublish={onClickPublish}
-          nextStepButtonType="submit"
+          nextStepButtonType="publish"
           saveAsDraft={saveAsDraft}
         />
       </form>

@@ -23,7 +23,7 @@ class ListOrganizationsAPIView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
     pagination_class = PageNumberPagination
-    search_fields = ['url_slug']
+    search_fields = ['name']
     queryset = Organization.objects.all()
 
     def get_serializer_class(self):
