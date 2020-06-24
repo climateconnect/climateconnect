@@ -26,9 +26,9 @@ export default function LoginNudge({ whatToDo, fullPage }) {
         </Link>{" "}
         or{" "}
         <Link underline="always" color="primary" href="/signup">
-          sign
+          sign up
         </Link>{" "}
-        up to {whatToDo}.
+        to {whatToDo}.
       </Typography>
     </div>
   );
