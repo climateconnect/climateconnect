@@ -70,7 +70,7 @@ class SignUpView(APIView):
         UserProfile.objects.create(
             user=user, country=request.data['country'],
             city=request.data['city'],
-            url_slug=url_slug
+            url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name']
         )
 
         # TODO: Call a function that sends an email to user.
@@ -98,7 +98,7 @@ class MemberProfilesView(ListAPIView):
     permission_classes = [AllowAny]
     pagination_class = PageNumberPagination
     filter_backends = [SearchFilter]
-    search_fields = ['url_slug']
+    search_fields = ['name']
 
     def get_serializer_class(self):
         if self.request.user.is_authenticated:
