@@ -28,7 +28,6 @@ export default function BottomNavigation({
   onClickPreviousStep,
   nextStepButtonType,
   onClickNextStep,
-  onClickPublish,
   saveAsDraft
 }) {
   const classes = useStyles();
@@ -47,26 +46,22 @@ export default function BottomNavigation({
             Save as Draft
           </Button>
         )}
-        <NextButtons
-          nextStepButtonType={nextStepButtonType}
-          onClickNextStep={onClickNextStep}
-          onClickPublish={onClickPublish}
-        />
+        <NextButtons nextStepButtonType={nextStepButtonType} onClickNextStep={onClickNextStep} />
       </div>
     </div>
   );
 }
 
-function NextButtons({ nextStepButtonType, onClickNextStep, onClickPublish }) {
+function NextButtons({ nextStepButtonType, onClickNextStep }) {
   if (nextStepButtonType === "submit")
     return (
-      <Button variant="contained" color="primary" type="submit">
+      <Button variant="contained" color="primary">
         Next Step
       </Button>
     );
   else if (nextStepButtonType === "publish")
     return (
-      <Button variant="contained" color="primary" onClick={onClickPublish}>
+      <Button variant="contained" color="primary" type="submit">
         Publish
       </Button>
     );
