@@ -56,7 +56,7 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
 
   const onSubmit = (event, values) => {
     event.preventDefault();
-    Object.keys(values).map(k=>values[k]=values[k].trim())
+    Object.keys(values).map(k => (values[k] = values[k].trim()));
     if (values.parent_organization === "Personal project")
       handleSetProjectData({
         ...values,

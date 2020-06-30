@@ -1,4 +1,3 @@
-import React from "react";
 const project_status_metadata = [
   {
     key: "idea",
