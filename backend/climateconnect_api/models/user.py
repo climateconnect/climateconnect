@@ -114,6 +114,17 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    email_updates_on_projects = models.BooleanField(
+        help_text="Check if user wants to receive emails for projects they follow",
+        verbose_name="Email updates on Project", null=True, blank=True,
+        default=True
+    )
+
+    email_project_suggestions = models.BooleanField(
+        help_text="Check if user wants to receive emails for projects they might like",
+        verbose_name="Email project suggestions", null=True, blank=True, default=True
+    )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "User Profile"
