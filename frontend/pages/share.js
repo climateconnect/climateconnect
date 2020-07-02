@@ -1,157 +1,42 @@
 import React, { useContext } from "react";
-import { Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import WideLayout from "../src/components/layouts/WideLayout";
-import StepsTracker from "../src/components/general/StepsTracker";
-import ShareProject from "../src/components/shareProject/ShareProject";
-import SelectCategory from "../src/components/shareProject/SelectCategory";
-import EnterDetails from "../src/components/shareProject/EnterDetails";
-import AddTeam from "../src/components/shareProject/AddTeam";
-//TODO: this should be retrieved asynchronously, e.g. via getInitialProps
-import ProjectSubmittedPage from "../src/components/shareProject/ProjectSubmittedPage";
 import axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
-const DEFAULT_STATUS = "inprogress";
 import Cookies from "next-cookies";
 import LoginNudge from "../src/components/general/LoginNudge";
 import UserContext from "../src/components/context/UserContext";
-
-const useStyles = makeStyles(theme => {
-  return {
-    stepsTracker: {
-      maxWidth: 600,
-      margin: "0 auto"
-    },
-    headline: {
-      textAlign: "center",
-      marginTop: theme.spacing(4)
-    }
-  };
-});
-
-const steps = [
-  {
-    key: "share",
-    text: "share project",
-    headline: "Share a project"
-  },
-  {
-    key: "selectCategory",
-    text: "project category",
-    headline: "Select your project's category"
-  },
-  {
-    key: "enterDetails",
-    text: "project details"
-  },
-  {
-    key: "addTeam",
-    text: "add team",
-    headline: "Add your team"
-  }
-];
+import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
 
 export default function Share({
   availabilityOptions,
   userOrganizations,
   categoryOptions,
-  skillsOptions
+  skillsOptions,
+  rolesOptions,
+  statusOptions
 }) {
-  const classes = useStyles();
-  const [project, setProject] = React.useState(defaultProjectValues);
-  const [curStep, setCurStep] = React.useState(steps[0]);
-  const [finished, setFinished] = React.useState(false);
   const { user } = useContext(UserContext);
-
-  const goToNextStep = () => {
-    console.log(project);
-    setCurStep(steps[steps.indexOf(curStep) + 1]);
-  };
-
-  const goToPreviousStep = () => {
-    setCurStep(steps[steps.indexOf(curStep) - 1]);
-  };
-
-  const submitProject = event => {
-    console.log(project);
-    //TODO: make a request to publish the project
-    event.preventDefault();
-    setFinished(true);
-  };
-
-  const saveAsDraft = event => {
-    event.preventDefault();
-    setProject({ ...project, isDraft: true });
-    setFinished(true);
-  };
-
-  const handleSetProject = newProjectData => {
-    setProject({ ...project, ...newProjectData });
-  };
-
-  return (
-    <WideLayout title="Share a project" hideHeadline={true}>
-      {user ? (
-        <>
-          {!finished ? (
-            <>
-              <StepsTracker
-                grayBackground={true}
-                className={classes.stepsTracker}
-                steps={steps}
-                activeStep={curStep.key}
-              />
-              <Typography variant="h4" color="primary" className={classes.headline}>
-                {curStep.headline ? curStep.headline : project.name}
-              </Typography>
-              {curStep.key === "share" && (
-                <ShareProject
-                  project={project}
-                  handleSetProjectData={handleSetProject}
-                  goToNextStep={goToNextStep}
-                  userOrganizations={userOrganizations}
-                />
-              )}
-              {curStep.key === "selectCategory" && (
-                <SelectCategory
-                  project={project}
-                  handleSetProjectData={handleSetProject}
-                  goToNextStep={goToNextStep}
-                  goToPreviousStep={goToPreviousStep}
-                  categoryOptions={categoryOptions}
-                />
-              )}
-              {curStep.key === "enterDetails" && (
-                <EnterDetails
-                  projectData={project}
-                  handleSetProjectData={handleSetProject}
-                  goToNextStep={goToNextStep}
-                  goToPreviousStep={goToPreviousStep}
-                  skillsOptions={skillsOptions}
-                />
-              )}
-              {curStep.key === "addTeam" && (
-                <AddTeam
-                  projectData={project}
-                  handleSetProjectData={handleSetProject}
-                  submit={submitProject}
-                  saveAsDraft={saveAsDraft}
-                  goToPreviousStep={goToPreviousStep}
-                  availabilityOptions={availabilityOptions}
-                />
-              )}
-            </>
-          ) : (
-            <>
-              <ProjectSubmittedPage isDraft={project.isDraft} url_slug={project.url_slug} />
-            </>
-          )}
-        </>
-      ) : (
+  if (!user)
+    return (
+      <WideLayout title="Please log in to share a project" hideHeadline={true}>
         <LoginNudge fullPage whatToDo="share a project" />
-      )}
-    </WideLayout>
-  );
+      </WideLayout>
+    );
+  else {
+    return (
+      <WideLayout title="Share a project" hideHeadline={true}>
+        <ShareProjectRoot
+          availabilityOptions={availabilityOptions}
+          userOrganizations={userOrganizations}
+          categoryOptions={categoryOptions}
+          skillsOptions={skillsOptions}
+          rolesOptions={rolesOptions}
+          user={user}
+          statusOptions={statusOptions}
+        />
+      </WideLayout>
+    )
+  }
 }
 
 Share.getInitialProps = async ctx => {
@@ -160,7 +45,9 @@ Share.getInitialProps = async ctx => {
     availabilityOptions: await getAvailabilityOptions(token),
     userOrganizations: await getUserOrganizations(token),
     categoryOptions: await getCategoryOptions(token),
-    skillsOptions: await getSkillsOptions(token)
+    skillsOptions: await getSkillsOptions(token),
+    rolesOptions: await getRolesOptions(token),
+    statusOptions: await getStatusOptions(token)
   };
 };
 
@@ -197,8 +84,36 @@ const getSkillsOptions = async token => {
     const resp = await axios.get(process.env.API_URL + "/skills/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
     else {
-      console.log(parseOptions(resp.data.results, "parent_skill"));
       return parseOptions(resp.data.results, "parent_skill");
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+};
+
+const getRolesOptions = async token => {
+  try {
+    const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
+    if (resp.data.results.length === 0) return null;
+    else {
+      return resp.data.results;
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+};
+
+const getStatusOptions = async token => {
+  try {
+    const resp = await axios.get(process.env.API_URL + "/api/projectstatus/", tokenConfig(token));
+    if (resp.data.results.length === 0) return null;
+    else {
+      console.log(resp.data.results)
+      return resp.data.results;
     }
   } catch (err) {
     console.log(err);
@@ -241,26 +156,4 @@ const getUserOrganizations = async token => {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-};
-
-//TODO: remove some of these default values as they are just for testing
-const defaultProjectValues = {
-  collaborators_welcome: true,
-  status: DEFAULT_STATUS,
-  skills: [],
-  helpful_connections: [],
-  collaborating_organizations: [],
-  //TODO: Should contain the logged in user as the creator and parent_user by default
-  team_members: [
-    {
-      first_name: "Christoph",
-      last_name: "Stoll",
-      url_slug: "christophstoll",
-      image: "images/christophstoll.jpg",
-      permissions: {
-        key: "creator",
-        name: "Creator"
-      }
-    }
-  ]
 };
