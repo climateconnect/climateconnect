@@ -28,13 +28,14 @@ const useStyles = makeStyles(theme => {
 });
 
 export default function AddProjectMembersContainer({
-  projectMembers,
+  projectData,
   blockClassName,
   handleRemoveMember,
-  availabilityOptions
+  availabilityOptions,
+  rolesOptions
 }) {
   const classes = useStyles();
-
+  console.log(projectData.team_members);
   return (
     <div className={blockClassName}>
       <Typography className={classes.info}>
@@ -42,16 +43,18 @@ export default function AddProjectMembersContainer({
         project.
       </Typography>
       <div className={classes.memberContainer}>
-        {projectMembers.map((m, index) => {
-          return (
-            <MiniProfileInput
-              key={index}
-              className={classes.member}
-              profile={m}
-              onDelete={() => handleRemoveMember(m)}
-              availabilityOptions={availabilityOptions}
-            />
-          );
+        {projectData.team_members.map((m, index) => {
+          if (m)
+            return (
+              <MiniProfileInput
+                key={index}
+                className={classes.member}
+                profile={m}
+                onDelete={() => handleRemoveMember(m)}
+                availabilityOptions={availabilityOptions}
+                rolesOptions={rolesOptions}
+              />
+            );
         })}
       </div>
     </div>

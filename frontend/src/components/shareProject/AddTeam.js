@@ -32,13 +32,14 @@ const useStyles = makeStyles(theme => {
 export default function AddTeam({
   projectData,
   handleSetProjectData,
-  submit,
+  onSubmit,
   saveAsDraft,
   goToPreviousStep,
-  availabilityOptions
+  availabilityOptions,
+  rolesOptions
 }) {
   const classes = useStyles();
-
+  console.log(projectData);
   const onClickPreviousStep = () => {
     goToPreviousStep();
   };
@@ -99,7 +100,7 @@ export default function AddTeam({
 
   return (
     <Container maxWidth="lg" className={classes.marginTop}>
-      <form onSubmit={submit}>
+      <form onSubmit={onSubmit}>
         <div className={classes.searchBarContainer}>
           <AutoCompleteSearchBar
             label="Search for your team members"
@@ -114,10 +115,11 @@ export default function AddTeam({
           />
         </div>
         <AddProjectMembersContainer
-          projectMembers={projectData.team_members}
+          projectData={projectData}
           blockClassName={classes.block}
           handleRemoveMember={handleRemoveMember}
           availabilityOptions={availabilityOptions}
+          rolesOptions={rolesOptions}
         />
         <OrganizersContainer
           projectData={projectData}

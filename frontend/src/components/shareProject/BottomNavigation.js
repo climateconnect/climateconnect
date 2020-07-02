@@ -55,7 +55,7 @@ export default function BottomNavigation({
 function NextButtons({ nextStepButtonType, onClickNextStep }) {
   if (nextStepButtonType === "submit")
     return (
-      <Button variant="contained" color="primary">
+      <Button variant="contained" color="primary" type="submit">
         Next Step
       </Button>
     );
