@@ -8,10 +8,11 @@ from rest_framework import status
 
 from django.contrib.auth.models import User
 
-from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags
+from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectStatus
 from organization.serializers.project import (
     ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer
 )
+from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
 from organization.serializers.tags import (ProjectTagsSerializer)
 from organization.utility.project import create_new_project
@@ -84,7 +85,7 @@ class CreateProjectView(APIView):
         for member in team_members:
             user_role = roles.filter(id=int(member['permission_type_id'])).first()
             try:
-                user = User.objects.get(id=int(member['user_id']))
+                user = User.objects.get(url_slug=member['url_slug'])
             except User.DoesNotExist:
                 logger.error("Passed user id {} does not exists".format(member['user_id']))
                 continue
@@ -256,3 +257,9 @@ class ListProjectTags(ListAPIView):
     serializer_class = ProjectTagsSerializer
     def get_queryset(self):
         return ProjectTags.objects.all()
+
+class ListProjectStatus(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = ProjectStatusSerializer
+    def get_queryset(self):
+        return ProjectStatus.objects.all()

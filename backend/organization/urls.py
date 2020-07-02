@@ -49,5 +49,6 @@ urlpatterns = [
         'projects/<int:project_id>/members/<int:member_id>/',
         project_views.UpdateProjectMemberView.as_view(), name='update-project-member-api'
     ),
-    path('projecttags/', project_views.ListProjectTags.as_view(), name='list-project-tags')
+    path('projecttags/', project_views.ListProjectTags.as_view(), name='list-project-tags'),
+    path('projectstatus/', project_views.ListProjectStatus.as_view(), name='list-project-status')
 ]

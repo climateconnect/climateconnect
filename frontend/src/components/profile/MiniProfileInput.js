@@ -2,7 +2,6 @@ import React from "react";
 import { Avatar, Typography, Tooltip, IconButton, TextField, Button } from "@material-ui/core";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import SelectField from "../general/SelectField";
-import roles from "./../../../public/data/roles.json";
 import { makeStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 
@@ -40,7 +39,13 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function MiniProfileInput({ className, profile, onDelete, availabilityOptions }) {
+export default function MiniProfileInput({
+  className,
+  profile,
+  onDelete,
+  availabilityOptions,
+  rolesOptions
+}) {
   const classes = useStyles();
   return (
     <div className={className}>
@@ -60,9 +65,9 @@ export default function MiniProfileInput({ className, profile, onDelete, availab
         label="Pick user's permissions"
         size="small"
         className={classes.field}
-        options={roles}
-        defaultValue={profile.permissions}
-        disabled={profile.permissions.key === "creator"}
+        defaultValue={profile.role}
+        disabled={profile.role.name === "Creator"}
+        options={rolesOptions.map(r => ({...r, key: r.id}))}
         required
       />
       <Typography color="primary" className={classes.fieldLabel}>

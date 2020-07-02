@@ -11,6 +11,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     skills = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
+    status = serializers.CharField(read_only=True)
 
     class Meta:
         model = Project
@@ -61,6 +62,7 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
 class ProjectMinimalSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True)
     project_parents = serializers.SerializerMethodField()
+    status = serializers.CharField(read_only=True)
 
     class Meta:
         model = Project
@@ -77,6 +79,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
 
 class ProjectStubSerializer(serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
+    status = serializers.CharField(read_only=True)
     
     class Meta:
         model = Project
