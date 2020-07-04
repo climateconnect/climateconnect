@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
   creatorImage: {
     height: 20,
     marginRight: theme.spacing(1),
-    marginBottom: -5
+    marginBottom: -5    
   },
   cardIcon: {
     verticalAlign: "bottom",
@@ -22,10 +22,6 @@ const useStyles = makeStyles(theme => ({
   },
   status: {
     marginTop: theme.spacing(1)
-  },
-  avatar: {
-    height: 20,
-    width: 20
   }
 }));
 
@@ -45,8 +41,7 @@ export default function ProjectMetaData({ project }) {
         <MiniProfilePreview
           className={classes.creator}
           profile={project_parent.parent_user}
-          avatarClassName={classes.avatar}
-          onProjectCard
+          size="small"
         />
       )}
       <Box>

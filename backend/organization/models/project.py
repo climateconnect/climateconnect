@@ -186,7 +186,7 @@ class ProjectCollaborators(models.Model):
         Project,
         help_text="Points to organizations's project",
         verbose_name="Project",
-        related_name="collaboration_project",
+        related_name="project_collaborator",
         on_delete=models.CASCADE
     )
 

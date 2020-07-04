@@ -200,7 +200,9 @@ function parseProject(project) {
     creator: project.project_parents[0].parent_organization
       ? project.project_parents[0].parent_organization
       : project.project_parents[0].parent_user,
-    tags: project.tags.map(t => t.project_tag.name)
+    isPersonalProject: !project.project_parents[0].parent_organization,
+    tags: project.tags.map(t => t.project_tag.name),
+    collaborating_organizations: project.collaborating_organizations.map(o=>o.collaborating_organization)
   };
 }
 

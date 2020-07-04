@@ -200,6 +200,7 @@ const formatProjectForRequest = project => {
       role_in_project: m.role_in_project
     })),
     project_tags: project.project_tags.map(s=>s.id),
-    parent_organization: project.parent_organization.id
+    parent_organization: project.parent_organization.id,
+    collaborating_organizations: project.collaborating_organizations.map(o=>o.id)
   };
 };
