@@ -17,6 +17,7 @@ import TEMP_ORGANIZATION_DATA from "../../public/data/organizations.json";
 import TEMP_PROFILE_TYPES from "./../../public/data/profile_types.json";
 import TEMP_INFOMETADATA from "./../../public/data/profile_info_metadata.json";
 import tokenConfig from "../../public/config/tokenConfig";
+import { getImageUrl } from "../../public/lib/imageOperations"
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -110,6 +111,7 @@ ProfilePage.getInitialProps = async ctx => {
 function ProfileLayout({ profile, projects, organizations, profileTypes, infoMetadata }) {
   const classes = useStyles();
   const { user } = useContext(UserContext);
+  console.log(profile)
   return (
     <AccountPage
       account={profile}
@@ -159,26 +161,23 @@ async function getProfileByUrlIfExists(profileUrl, token) {
   try {
     console.log(tokenConfig(token));
     const resp = await axios.get(
-      process.env.API_URL + "/api/members/?search=" + profileUrl,
+      process.env.API_URL + "/api/member/" + profileUrl+"/",
       tokenConfig(token)
     );
-    if (resp.data.results.length === 0) return null;
-    else {
-      return parseProfile(resp.data.results[0]);
-    }
+    return parseProfile(resp.data)
   } catch (err) {
-    //console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
+      if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+      return null;
   }
 }
 
 function parseProfile(profile) {
+  console.log(profile)
   return {
     url_slug: profile.url_slug,
     name: profile.first_name + " " + profile.last_name,
-    image: profile.profile_image,
-    background_image: profile.background_image,
+    image: getImageUrl(profile.image),
+    background_image: getImageUrl(profile.background_image),
     info: {
       location: profile.city + ", " + profile.country,
       bio: profile.biography,
