@@ -2,7 +2,6 @@ from django.urls import path
 
 from organization.views import organization_views, project_views
 
-
 app_name = 'organization'
 urlpatterns = [
     # Organization URLs
