@@ -36,6 +36,9 @@ class ListProjectsView(ListAPIView):
 
     def get_serializer_class(self):
         return ProjectStubSerializer
+    
+    def get_queryset(self):
+        return Project.objects.filter(is_draft=False)
 
 
 
@@ -118,7 +121,8 @@ class CreateProjectView(APIView):
                     logger.info("Project tagging created for project {}".format(project.id))
 
         return Response({
-            'message': 'Project {} successfully created'.format(project.name)
+            'message': 'Project {} successfully created'.format(project.name),
+            'url_slug': project.url_slug
         }, status=status.HTTP_201_CREATED)
 
 

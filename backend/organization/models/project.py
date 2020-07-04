@@ -123,6 +123,12 @@ class Project(models.Model):
         size=5
     )
 
+    is_draft = models.BooleanField(
+        help_text="Whether project is public or just a private draft",
+        verbose_name="Is Draft?",
+        default=False
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Project"

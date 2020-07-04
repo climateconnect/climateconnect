@@ -93,19 +93,20 @@ export default function ShareProjectRoot({
       )
       .then(function(response) {
         console.log(response);
+        setProject({...project, url_slug:response.data.url_slug})
       })
       .catch(function(error) {
         console.log(error);
         if (error) console.log(error.response);
       });
-    //setFinished(true);
+    setFinished(true);
   };
 
   const saveAsDraft = event => {
     event.preventDefault();
     console.log(project);
-    setProject({ ...project, isDraft: true });
-    //setFinished(true);
+    setProject({ ...project, is_draft: true });
+    setFinished(true);
   };
 
   const handleSetProject = newProjectData => {
@@ -166,7 +167,7 @@ export default function ShareProjectRoot({
         </>
       ) : (
         <>
-          <ProjectSubmittedPage isDraft={project.isDraft} url_slug={project.url_slug} />
+          <ProjectSubmittedPage isDraft={project.is_draft} url_slug={project.url_slug} />
         </>
       )}
     </>
