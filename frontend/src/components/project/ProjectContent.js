@@ -215,21 +215,23 @@ function CollaborateContent({ project }) {
             Helpful skills for collaborating
           </Typography>
           <ul className={classes.collabList}>
-            {project.helpful_skills.map((skill, index) => {
-              return <li key={index}>{skill}</li>;
+            {(project.helpful_skills && project.helpful_connections.length>0) &&project.helpful_skills.map((skill, index) => {
+              return <li key={skill.id}>{skill.name}</li>;
             })}
           </ul>
         </div>
-        <div className={classes.collabSection}>
-          <Typography component="h3" color="primary" className={classes.subSubHeader}>
-            Connections to these organizations could help the project:
-          </Typography>
-          <ul className={classes.collabList}>
-            {project.helpful_connections.map((connection, index) => {
-              return <li key={index}>{connection}</li>;
-            })}
-          </ul>
-        </div>
+        {(project.helpful_connections && project.helpful_connections.length>0) &&
+          <div className={classes.collabSection}>
+            <Typography component="h3" color="primary" className={classes.subSubHeader}>
+              Connections to these organizations could help the project:
+            </Typography>
+            <ul className={classes.collabList}>
+              {project.helpful_connections.map((connection, index) => {
+                return <li key={index}>{connection}</li>;
+              })}
+            </ul>
+          </div>
+        }
       </div>
     </>
   );

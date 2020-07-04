@@ -34,14 +34,14 @@ export default function ProjectMetaData({ project }) {
   const project_parent = project.project_parents[0];
   return (
     <Box>
-      {project_parent.parent_organization && (
+      {project_parent && project_parent.parent_organization && (
         <MiniOrganizationPreview
           className={classes.creator}
           organization={project_parent.parent_organization}
           size="small"
         />
       )}
-      {!project_parent.parent_organization && project_parent.parent_user && (
+      {project_parent && !project_parent.parent_organization && project_parent.parent_user && (
         <MiniProfilePreview
           className={classes.creator}
           profile={project_parent.parent_user}
