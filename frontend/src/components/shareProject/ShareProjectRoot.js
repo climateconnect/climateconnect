@@ -1,23 +1,25 @@
-import React from "react"
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
-const DEFAULT_STATUS = "In Progress";
-import ShareProject from "./ShareProject"
-import StepsTracker from "./../general/StepsTracker"
-import SelectCategory from "./SelectCategory"
-import EnterDetails from "./EnterDetails"
-import AddTeam from "./AddTeam"
-import ProjectSubmittedPage from "./ProjectSubmittedPage"
+const DEFAULT_STATUS = 2;
+import ShareProject from "./ShareProject";
+import StepsTracker from "./../general/StepsTracker";
+import SelectCategory from "./SelectCategory";
+import EnterDetails from "./EnterDetails";
+import AddTeam from "./AddTeam";
+import ProjectSubmittedPage from "./ProjectSubmittedPage";
+import axios from "axios";
+import tokenConfig from "../../../public/config/tokenConfig";
 
 const useStyles = makeStyles(theme => {
   return {
     stepsTracker: {
-    maxWidth: 600,
-    margin: "0 auto"
+      maxWidth: 600,
+      margin: "0 auto"
     },
     headline: {
-    textAlign: "center",
-    marginTop: theme.spacing(4)
+      textAlign: "center",
+      marginTop: theme.spacing(4)
     }
   };
 });
@@ -51,112 +53,153 @@ export default function ShareProjectRoot({
   skillsOptions,
   rolesOptions,
   user,
-  statusOptions
+  statusOptions,
+  token
 }) {
-    const classes = useStyles();
-    const [project, setProject] = React.useState(
-      getDefaultProjectValues({ ...user, role: rolesOptions.find(r => r.name === "Creator") })
-    );
-    const [curStep, setCurStep] = React.useState(steps[0]);
-    const [finished, setFinished] = React.useState(false);
+  const classes = useStyles();
+  const [project, setProject] = React.useState(
+    getDefaultProjectValues(
+      {
+        ...user,
+        role: rolesOptions.find(r => r.name === "Creator"),
+        role_in_project: ""
+      },
+      statusOptions
+    )
+  );
+  const [curStep, setCurStep] = React.useState(steps[0]);
+  const [finished, setFinished] = React.useState(false);
 
-    const goToNextStep = () => {
-      console.log(project);
-      setCurStep(steps[steps.indexOf(curStep) + 1]);
-    };
+  const goToNextStep = () => {
+    console.log(project);
+    setCurStep(steps[steps.indexOf(curStep) + 1]);
+  };
 
-    const goToPreviousStep = () => {
-      setCurStep(steps[steps.indexOf(curStep) - 1]);
-    };
+  const goToPreviousStep = () => {
+    setCurStep(steps[steps.indexOf(curStep) - 1]);
+  };
 
-    const submitProject = event => {
-      console.log("submitting project");
-      console.log(project);
-      //TODO: make a request to publish the project
-      event.preventDefault();
-      //setFinished(true);
-    };
+  const submitProject = event => {
+    event.preventDefault();
+    console.log("submitting project");
+    console.log(formatProjectForRequest(project));
+    console.log(token);
+    //TODO: make a request to publish the project
+    axios
+      .post(
+        process.env.API_URL + "/api/create_project/",
+        formatProjectForRequest(project),
+        tokenConfig(token)
+      )
+      .then(function(response) {
+        console.log(response);
+      })
+      .catch(function(error) {
+        console.log(error);
+        if (error) console.log(error.response);
+      });
+    //setFinished(true);
+  };
 
-    const saveAsDraft = event => {
-      event.preventDefault();
-      setProject({ ...project, isDraft: true });
-      setFinished(true);
-    };
+  const saveAsDraft = event => {
+    event.preventDefault();
+    console.log(project);
+    setProject({ ...project, isDraft: true });
+    //setFinished(true);
+  };
 
-    const handleSetProject = newProjectData => {
-      setProject({ ...project, ...newProjectData });
-    };
+  const handleSetProject = newProjectData => {
+    setProject({ ...project, ...newProjectData });
+  };
 
-    return (
-      <>
-        {!finished ? (
-          <>
-            <StepsTracker
-              grayBackground={true}
-              className={classes.stepsTracker}
-              steps={steps}
-              activeStep={curStep.key}
+  return (
+    <>
+      {!finished ? (
+        <>
+          <StepsTracker
+            grayBackground={true}
+            className={classes.stepsTracker}
+            steps={steps}
+            activeStep={curStep.key}
+          />
+          <Typography variant="h4" color="primary" className={classes.headline}>
+            {curStep.headline ? curStep.headline : project.name}
+          </Typography>
+          {curStep.key === "share" && (
+            <ShareProject
+              project={project}
+              handleSetProjectData={handleSetProject}
+              goToNextStep={goToNextStep}
+              userOrganizations={userOrganizations}
             />
-            <Typography variant="h4" color="primary" className={classes.headline}>
-              {curStep.headline ? curStep.headline : project.name}
-            </Typography>
-            {curStep.key === "share" && (
-              <ShareProject
-                project={project}
-                handleSetProjectData={handleSetProject}
-                goToNextStep={goToNextStep}
-                userOrganizations={userOrganizations}
-              />
-            )}
-            {curStep.key === "selectCategory" && (
-              <SelectCategory
-                project={project}
-                handleSetProjectData={handleSetProject}
-                goToNextStep={goToNextStep}
-                goToPreviousStep={goToPreviousStep}
-                categoryOptions={categoryOptions}
-              />
-            )}
-            {curStep.key === "enterDetails" && (
-              <EnterDetails
-                projectData={project}
-                handleSetProjectData={handleSetProject}
-                goToNextStep={goToNextStep}
-                goToPreviousStep={goToPreviousStep}
-                skillsOptions={skillsOptions}
-                statusOptions={statusOptions}
-              />
-            )}
-            {curStep.key === "addTeam" && (
-              <AddTeam
-                projectData={project}
-                handleSetProjectData={handleSetProject}
-                onSubmit={submitProject}
-                saveAsDraft={saveAsDraft}
-                goToPreviousStep={goToPreviousStep}
-                availabilityOptions={availabilityOptions}
-                rolesOptions={rolesOptions}
-              />
-            )}
-          </>
-        ) : (
-          <>
-            <ProjectSubmittedPage isDraft={project.isDraft} url_slug={project.url_slug} />
-          </>
-        )}
-      </>
-    );  
+          )}
+          {curStep.key === "selectCategory" && (
+            <SelectCategory
+              project={project}
+              handleSetProjectData={handleSetProject}
+              goToNextStep={goToNextStep}
+              goToPreviousStep={goToPreviousStep}
+              categoryOptions={categoryOptions}
+            />
+          )}
+          {curStep.key === "enterDetails" && (
+            <EnterDetails
+              projectData={project}
+              handleSetProjectData={handleSetProject}
+              goToNextStep={goToNextStep}
+              goToPreviousStep={goToPreviousStep}
+              skillsOptions={skillsOptions}
+              statusOptions={statusOptions}
+            />
+          )}
+          {curStep.key === "addTeam" && (
+            <AddTeam
+              projectData={project}
+              handleSetProjectData={handleSetProject}
+              onSubmit={submitProject}
+              saveAsDraft={saveAsDraft}
+              goToPreviousStep={goToPreviousStep}
+              availabilityOptions={availabilityOptions}
+              rolesOptions={rolesOptions}
+            />
+          )}
+        </>
+      ) : (
+        <>
+          <ProjectSubmittedPage isDraft={project.isDraft} url_slug={project.url_slug} />
+        </>
+      )}
+    </>
+  );
 }
 
 //TODO: remove some of these default values as they are just for testing
-const getDefaultProjectValues = loggedInUser => ({
+const getDefaultProjectValues = (loggedInUser, statusOptions) => {
+  return {
     collaborators_welcome: true,
-    status: DEFAULT_STATUS,
+    status: statusOptions.find(s => s.id === DEFAULT_STATUS),
     skills: [],
     helpful_connections: [],
     collaborating_organizations: [],
     isPersonalProject: true,
     //TODO: Should contain the logged in user as the creator and parent_user by default
-    team_members: [loggedInUser]
-  });
-  
+    team_members: [{ ...loggedInUser, isCreator: true }]
+  };
+};
+
+const formatProjectForRequest = project => {
+  return {
+    ...project,
+    status: project.status.id,
+    skills: project.skills.map(s => s.key),
+    team_members: project.team_members.map(m => ({
+      url_slug: m.url_slug,
+      role: m.role.id,
+      availability: m.availability.id,
+      id: m.id,
+      role_in_project: m.role_in_project
+    })),
+    project_tags: project.project_tags.map(s=>s.id),
+    parent_organization: project.parent_organization.id
+  };
+};

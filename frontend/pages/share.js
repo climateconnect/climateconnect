@@ -13,7 +13,8 @@ export default function Share({
   categoryOptions,
   skillsOptions,
   rolesOptions,
-  statusOptions
+  statusOptions,
+  token
 }) {
   const { user } = useContext(UserContext);
   if (!user)
@@ -33,9 +34,10 @@ export default function Share({
           rolesOptions={rolesOptions}
           user={user}
           statusOptions={statusOptions}
+          token={token}
         />
       </WideLayout>
-    )
+    );
   }
 }
 
@@ -47,7 +49,8 @@ Share.getInitialProps = async ctx => {
     categoryOptions: await getCategoryOptions(token),
     skillsOptions: await getSkillsOptions(token),
     rolesOptions: await getRolesOptions(token),
-    statusOptions: await getStatusOptions(token)
+    statusOptions: await getStatusOptions(token),
+    token: token
   };
 };
 
@@ -112,7 +115,6 @@ const getStatusOptions = async token => {
     const resp = await axios.get(process.env.API_URL + "/api/projectstatus/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
     else {
-      console.log(resp.data.results)
       return resp.data.results;
     }
   } catch (err) {
@@ -133,6 +135,7 @@ const parseOptions = (options, parentPropertyName) => {
           .filter(so => so[parentPropertyName] === o.id)
           .map(so => {
             return {
+              ...so,
               name: so.name,
               key: so.id
             };
