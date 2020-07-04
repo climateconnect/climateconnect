@@ -27,9 +27,16 @@ const useStyles = makeStyles(theme => {
 export default function MiniProfilePreview({ className, profile, avatarClassName, size }) {
   const classes = useStyles();
   return (
-    <Link color="inherit" href={"/profiles/" + profile.url_slug} className={`${classes.avatarWithInfo} ${className}`}>
+    <Link
+      color="inherit"
+      href={"/profiles/" + profile.url_slug}
+      className={`${classes.avatarWithInfo} ${className}`}
+    >
       <div className={classes.avatarWrapper}>
-        <Avatar src={getImageUrl(profile.image)} className={`${size === "small" && classes.smallAvatar} ${avatarClassName}`} />
+        <Avatar
+          src={getImageUrl(profile.image)}
+          className={`${size === "small" && classes.smallAvatar} ${avatarClassName}`}
+        />
       </div>
       <Typography
         color="inherit"

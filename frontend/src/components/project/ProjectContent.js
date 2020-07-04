@@ -121,24 +121,34 @@ export default function ProjectContent({ project }) {
             <Typography component="span">
               Started <TimeAgo date={new Date(project.start_date)} /> by
             </Typography>
-            {
-              project.isPersonalProject ?
-                <MiniProfilePreview className={classes.creator} profile={project.creator} size="small"/>                
-              :
-                <Link href={"/organizations/" + project.creator.url_slug}>
-                  <MiniOrganizationPreview size="small" className={classes.creator} organization={project.creator}/>
-                </Link>
-                
-            }
-            {
-              project.collaborating_organizations &&
+            {project.isPersonalProject ? (
+              <MiniProfilePreview
+                className={classes.creator}
+                profile={project.creator}
+                size="small"
+              />
+            ) : (
+              <Link href={"/organizations/" + project.creator.url_slug}>
+                <MiniOrganizationPreview
+                  size="small"
+                  className={classes.creator}
+                  organization={project.creator}
+                />
+              </Link>
+            )}
+            {project.collaborating_organizations && (
               <div>
                 <span> In collaboration with</span>
-                {project.collaborating_organizations.map(o=>(
-                  <MiniOrganizationPreview key={o.id} size="small" className={classes.collaboratingOrganization} organization={o}/>
+                {project.collaborating_organizations.map(o => (
+                  <MiniOrganizationPreview
+                    key={o.id}
+                    size="small"
+                    className={classes.collaboratingOrganization}
+                    organization={o}
+                  />
                 ))}
               </div>
-            }
+            )}
           </div>
           {project.end_date && project.status.key === "finished" && (
             <Typography>
@@ -237,12 +247,14 @@ function CollaborateContent({ project }) {
             Helpful skills for collaborating
           </Typography>
           <ul className={classes.collabList}>
-            {(project.helpful_skills && project.helpful_skills.length>0) &&project.helpful_skills.map((skill) => {
-              return <li key={skill.id}>{skill.name}</li>;
-            })}
+            {project.helpful_skills &&
+              project.helpful_skills.length > 0 &&
+              project.helpful_skills.map(skill => {
+                return <li key={skill.id}>{skill.name}</li>;
+              })}
           </ul>
         </div>
-        {(project.helpful_connections && project.helpful_connections.length>0) &&
+        {project.helpful_connections && project.helpful_connections.length > 0 && (
           <div className={classes.collabSection}>
             <Typography component="h3" color="primary" className={classes.subSubHeader}>
               Connections to these organizations could help the project:
@@ -253,7 +265,7 @@ function CollaborateContent({ project }) {
               })}
             </ul>
           </div>
-        }
+        )}
       </div>
     </>
   );

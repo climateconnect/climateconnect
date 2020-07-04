@@ -93,7 +93,7 @@ export default function ShareProjectRoot({
       )
       .then(function(response) {
         console.log(response);
-        setProject({...project, url_slug:response.data.url_slug})
+        setProject({ ...project, url_slug: response.data.url_slug });
       })
       .catch(function(error) {
         console.log(error);
@@ -200,8 +200,8 @@ const formatProjectForRequest = project => {
       id: m.id,
       role_in_project: m.role_in_project
     })),
-    project_tags: project.project_tags.map(s=>s.id),
+    project_tags: project.project_tags.map(s => s.id),
     parent_organization: project.parent_organization.id,
-    collaborating_organizations: project.collaborating_organizations.map(o=>o.id)
+    collaborating_organizations: project.collaborating_organizations.map(o => o.id)
   };
 };

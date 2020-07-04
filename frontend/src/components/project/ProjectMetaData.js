@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
   creatorImage: {
     height: 20,
     marginRight: theme.spacing(1),
-    marginBottom: -5    
+    marginBottom: -5
   },
   cardIcon: {
     verticalAlign: "bottom",
