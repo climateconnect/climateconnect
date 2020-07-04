@@ -23,6 +23,7 @@ from climateconnect_api.serializers.user import (
 )
 
 
+
 class LoginView(KnowLoginView):
     permission_classes = [AllowAny]
 
@@ -107,3 +108,19 @@ class MemberProfilesView(ListAPIView):
 
     def get_queryset(self):
         return UserProfile.objects.filter(is_profile_verified=True)
+
+class MemberProfileView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, url_slug, format=None):
+        try:
+            profile = UserProfile.objects.get(url_slug=str(url_slug))
+        except UserProfile.DoesNotExist:
+            return Response({'message': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        if self.request.user.is_authenticated:
+            serializer = UserProfileSerializer(profile)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            serializer = UserProfileStubSerializer(profile)
+            return Response(serializer.data, status=status.HTTP_200_OK)
