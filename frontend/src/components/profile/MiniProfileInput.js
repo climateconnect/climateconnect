@@ -44,9 +44,25 @@ export default function MiniProfileInput({
   profile,
   onDelete,
   availabilityOptions,
-  rolesOptions
+  rolesOptions,
+  onChange
 }) {
   const classes = useStyles();
+
+  const handleChangeRolePermissions = event => {
+    onChange({ ...profile, role: rolesOptions.find(r => r.name === event.target.value) });
+  };
+
+  const handleChangeRoleInProject = event => {
+    onChange({ ...profile, role_in_project: event.target.value });
+  };
+  const handleChangeAvailability = event => {
+    onChange({
+      ...profile,
+      availability: availabilityOptions.find(a => a.name === event.target.value)
+    });
+  };
+
   return (
     <div className={className}>
       <Avatar alt={profile.name} size="large" src={profile.image} className={classes.avatar} />
@@ -65,10 +81,16 @@ export default function MiniProfileInput({
         label="Pick user's permissions"
         size="small"
         className={classes.field}
+        disabled={profile.isCreator}
         defaultValue={profile.role}
-        disabled={profile.role.name === "Creator"}
-        options={rolesOptions.map(r => ({...r, key: r.id}))}
+        value={profile.role}
+        options={
+          profile.isCreator
+            ? rolesOptions.map(r => ({ ...r, key: r.id }))
+            : rolesOptions.map(r => ({ ...r, key: r.id })).filter(r => r.name !== "Creator")
+        }
         required
+        onChange={handleChangeRolePermissions}
       />
       <Typography color="primary" className={classes.fieldLabel}>
         Role in project
@@ -83,6 +105,8 @@ export default function MiniProfileInput({
         variant="outlined"
         className={classes.field}
         label="Pick or type user's role"
+        onChange={handleChangeRoleInProject}
+        value={profile.role_in_project}
       />
       <Typography className={classes.fieldLabel} color="primary">
         Hour contributed per week
@@ -99,6 +123,8 @@ export default function MiniProfileInput({
         size="small"
         className={classes.field}
         options={availabilityOptions}
+        onChange={handleChangeAvailability}
+        value={profile.availability}
         required
       />
       {onDelete && (

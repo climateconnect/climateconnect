@@ -32,10 +32,23 @@ export default function AddProjectMembersContainer({
   blockClassName,
   handleRemoveMember,
   availabilityOptions,
-  rolesOptions
+  rolesOptions,
+  handleSetProjectData
 }) {
   const classes = useStyles();
-  console.log(projectData.team_members);
+
+  const handleChangeMember = m => {
+    handleSetProjectData({
+      ...projectData,
+      team_members: [
+        ...projectData.team_members.map(t => {
+          if (t.url_slug === m.url_slug) return m;
+          else return t;
+        })
+      ]
+    });
+  };
+
   return (
     <div className={blockClassName}>
       <Typography className={classes.info}>
@@ -53,6 +66,7 @@ export default function AddProjectMembersContainer({
                 onDelete={() => handleRemoveMember(m)}
                 availabilityOptions={availabilityOptions}
                 rolesOptions={rolesOptions}
+                onChange={handleChangeMember}
               />
             );
         })}
