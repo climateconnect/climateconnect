@@ -8,7 +8,7 @@ from climateconnect_api.models import (
 class AvailabilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Availability
-        fields = ('key', 'name')
+        fields = ('id', 'key', 'name')
 
 
 class SkillSerializer(serializers.ModelSerializer):
