@@ -76,7 +76,7 @@ export default function AddPhotoSection({
   const handleAvatarDialogClose = image => {
     handleSetOpen({ avatarDialog: false });
     if (image && image instanceof HTMLCanvasElement) {
-      handleSetProjectData({ image: image.toDataURL() });
+      handleSetProjectData({ image: image.toDataURL('image/jpeg') });
     }
   };
 

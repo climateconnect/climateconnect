@@ -6,6 +6,7 @@ from organization.models import (
 )
 from climateconnect_api.models import (Skill,)
 from organization.models import (ProjectStatus, ProjectTags)
+from organization.utility.general import get_image_from_data_url
 
 
 
@@ -21,8 +22,8 @@ def create_new_project(data: Dict) -> Project:
         project.country = data['country']
     if 'city' in data:
         project.city = data['city']
-    #if 'image' in data:
-    #    project.image = data['image']
+    if 'image' in data:
+        project.image = get_image_from_data_url(data['image'])[0]
     if 'description' in data:
         project.description = data['description']
     if 'end_date' in data:
