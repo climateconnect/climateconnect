@@ -7,7 +7,7 @@ from organization.models.tags import (
     ProjectTags, ProjectTagging
 )
 from organization.models.project import (
-    Project, ProjectParents
+    Project, ProjectParents, ProjectCollaborators
 )
 from organization.models.content import (
     Post, Comment, PostComment, ProjectComment

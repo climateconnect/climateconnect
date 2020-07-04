@@ -8,7 +8,7 @@ from rest_framework import status
 
 from django.contrib.auth.models import User
 
-from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging, ProjectStatus
+from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging, ProjectStatus, ProjectCollaborators
 from organization.serializers.project import (
     ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer
 )
@@ -75,6 +75,15 @@ class CreateProjectView(APIView):
         if organization:
             project_parents.parent_organization = organization
             project_parents.save()
+        
+        if 'collaborating_organizations' in request.data:
+            for organization_id in request.data['collaborating_organizations']:
+                try:
+                    collaborating_organization = Organization.objects.get(id=int(organization_id))
+                    ProjectCollaborators.objects.create(project=project, collaborating_organization=collaborating_organization)
+                except Organization.DoesNotExist:
+                    logger.error("Passed collaborating organization id {} does not exist.".format(organization_id))
+
 
         # There are only certain roles user can have. So get all the roles first.
         roles = Role.objects.all()

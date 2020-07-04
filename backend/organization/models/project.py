@@ -180,3 +180,41 @@ class ProjectParents(models.Model):
 
     def __str__(self):
         return "Project parent for project %s" % (self.project.id)
+
+class ProjectCollaborators(models.Model):
+    project = models.ForeignKey(
+        Project,
+        help_text="Points to organizations's project",
+        verbose_name="Project",
+        related_name="collaboration_project",
+        on_delete=models.CASCADE
+    )
+
+    collaborating_organization = models.ForeignKey(
+        Organization,
+        help_text="Points to organization",
+        verbose_name="Organization",
+        related_name="collaborating_organization",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
+    )
+
+    created_at = models.DateTimeField(
+        help_text="Time when project was linked to an organization",
+        verbose_name="Created At",
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        help_text="Time when project was updated. i.e.: Order change etc.",
+        verbose_name="Updated At",
+        auto_now=True
+    )
+
+    class Meta:
+        app_label = 'organization'
+        verbose_name_plural = "Project Collaborators"
+
+    def __str__(self):
+        return "Project collaborator for project %s" % (self.project.id)
