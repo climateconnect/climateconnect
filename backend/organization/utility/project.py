@@ -28,6 +28,8 @@ def create_new_project(data: Dict) -> Project:
         project.description = data['description']
     if 'end_date' in data:
         project.end_date = data['end_date']
+    if 'helpful_connections' in data:
+        project.helpful_connections = data['helpful_connections']
 
     project.url_slug = project.name.replace(" ", "") + str(project.id)
 
