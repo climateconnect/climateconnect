@@ -39,7 +39,6 @@ export default function AddTeam({
   rolesOptions
 }) {
   const classes = useStyles();
-  console.log(projectData);
   const onClickPreviousStep = () => {
     goToPreviousStep();
   };
@@ -49,7 +48,7 @@ export default function AddTeam({
     handleSetProjectData({
       team_members: [
         ...projectData.team_members,
-        { ...member, permissions: { key: "member", name: "Member" }, role: "" }
+        { ...member, role: rolesOptions.find(r => r.name === "Member"), role_in_project: "" }
       ]
     });
   };
@@ -120,6 +119,7 @@ export default function AddTeam({
           handleRemoveMember={handleRemoveMember}
           availabilityOptions={availabilityOptions}
           rolesOptions={rolesOptions}
+          handleSetProjectData={handleSetProjectData}
         />
         <OrganizersContainer
           projectData={projectData}

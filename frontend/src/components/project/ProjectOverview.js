@@ -111,7 +111,7 @@ function SmallScreenOverview({ project }) {
         </div>
         <div className={classes.projectInfoEl}>
           <Typography>
-            <Tooltip title="Categories">
+            <Tooltip title="Project categories">
               <ExploreIcon color="primary" className={classes.icon} />
             </Tooltip>{" "}
             {project.tags.join(", ")}

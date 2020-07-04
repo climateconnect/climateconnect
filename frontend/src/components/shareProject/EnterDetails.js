@@ -86,16 +86,16 @@ export default function EnterDetails({
   });
   const classes = useStyles(projectData);
 
-  const statusValues = statusOptions.map(s=>{
+  const statusValues = statusOptions.map(s => {
     return {
       ...s,
       label: s.name,
       key: s.name
-    }
-  })
+    };
+  });
 
-  const statusesWithStartDate = statusOptions.filter(s=>s.has_start_date).map(s=>s.name);
-  const statusesWithEndDate = statusOptions.filter(s=>s.has_end_date).map(s=>s.name);
+  const statusesWithStartDate = statusOptions.filter(s => s.has_start_date).map(s => s.id);
+  const statusesWithEndDate = statusOptions.filter(s => s.has_end_date).map(s => s.id);
 
   const onClickPreviousStep = () => {
     goToPreviousStep();
@@ -137,7 +137,7 @@ export default function EnterDetails({
   };
 
   const onStatusRadioChange = newStatus => {
-    handleSetProjectData({ status: newStatus });
+    handleSetProjectData({ status: statusOptions.find(s => s.name === newStatus) });
   };
 
   const onStartDateChange = newDate => {
@@ -170,7 +170,7 @@ export default function EnterDetails({
             </Typography>
             <div className={classes.inlineBlock}>
               <RadioButtons
-                value={projectData.status}
+                value={projectData.status.name}
                 onChange={onStatusRadioChange}
                 values={statusValues}
               />
@@ -181,18 +181,16 @@ export default function EnterDetails({
               Date
             </Typography>
             <div className={classes.inlineBlock}>
-              {
-                statusesWithStartDate.includes(projectData.status) && (
-                  <DatePicker
-                    className={classes.datePicker}
-                    label="Start date"
-                    date={projectData.start_date}
-                    handleChange={onStartDateChange}
-                    required
-                  />
-                )
-              }
-              {statusesWithEndDate.includes(projectData.status) && (
+              {statusesWithStartDate.includes(projectData.status.id) && (
+                <DatePicker
+                  className={classes.datePicker}
+                  label="Start date"
+                  date={projectData.start_date}
+                  handleChange={onStartDateChange}
+                  required
+                />
+              )}
+              {statusesWithEndDate.includes(projectData.status.id) && (
                 <DatePicker
                   className={classes.datePicker}
                   label="End date"

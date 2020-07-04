@@ -43,13 +43,13 @@ export default function SelectCategory({
     if (selectedCategories.length <= 0) alert("Please choose at least one category!");
     else if (selectedCategories.length > 3) alert("You can only choose up to 3 categories.");
     else {
-      handleSetProjectData({ categories: selectedCategories });
+      handleSetProjectData({ project_tags: selectedCategories });
       goToNextStep();
     }
   };
 
   const onClickPreviousStep = () => {
-    handleSetProjectData({ categories: selectedCategories });
+    handleSetProjectData({ project_tags: selectedCategories });
     goToPreviousStep();
   };
 
