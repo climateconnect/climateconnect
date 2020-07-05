@@ -32,37 +32,35 @@ const useStyles = makeStyles(theme => {
 export default function AddTeam({
   projectData,
   handleSetProjectData,
-  submit,
+  onSubmit,
   saveAsDraft,
   goToPreviousStep,
-  availabilityOptions
+  availabilityOptions,
+  rolesOptions
 }) {
   const classes = useStyles();
-
   const onClickPreviousStep = () => {
     goToPreviousStep();
   };
 
-  const onClickPublish = () => {};
-
   //Prevent double entries
   const handleAddMember = member => {
     handleSetProjectData({
-      members: [
-        ...projectData.members,
-        { ...member, permissions: { key: "member", name: "Member" }, role: "" }
+      team_members: [
+        ...projectData.team_members,
+        { ...member, role: rolesOptions.find(r => r.name === "Member"), role_in_project: "" }
       ]
     });
   };
 
   const handleRemoveMember = member => {
     handleSetProjectData({
-      members: projectData.members
-        .slice(0, projectData.members.indexOf(member))
+      team_members: projectData.team_members
+        .slice(0, projectData.team_members.indexOf(member))
         .concat(
-          projectData.members.slice(
-            projectData.members.indexOf(member) + 1,
-            projectData.members.length
+          projectData.team_members.slice(
+            projectData.team_members.indexOf(member) + 1,
+            projectData.team_members.length
           )
         )
     });
@@ -71,18 +69,18 @@ export default function AddTeam({
   //prevent double entries
   const handleAddOrganization = organization => {
     handleSetProjectData({
-      collaboratingOrganizations: [...projectData.collaboratingOrganizations, organization]
+      collaborating_organizations: [...projectData.collaborating_organizations, organization]
     });
   };
 
   const handleRemoveOrganization = organization => {
     handleSetProjectData({
-      collaboratingOrganizations: projectData.collaboratingOrganizations
-        .slice(0, projectData.collaboratingOrganizations.indexOf(organization))
+      collaborating_organizations: projectData.collaborating_organizations
+        .slice(0, projectData.collaborating_organizations.indexOf(organization))
         .concat(
-          projectData.collaboratingOrganizations.slice(
-            projectData.collaboratingOrganizations.indexOf(organization) + 1,
-            projectData.collaboratingOrganizations.length
+          projectData.collaborating_organizations.slice(
+            projectData.collaborating_organizations.indexOf(organization) + 1,
+            projectData.collaborating_organizations.length
           )
         )
     });
@@ -101,14 +99,14 @@ export default function AddTeam({
 
   return (
     <Container maxWidth="lg" className={classes.marginTop}>
-      <form onSubmit={submit}>
+      <form onSubmit={onSubmit}>
         <div className={classes.searchBarContainer}>
           <AutoCompleteSearchBar
             label="Search for your team members"
             className={`${classes.searchBar} ${classes.block}`}
-            baseUrl={process.env.API_URL + "/api/members/?"}
+            baseUrl={process.env.API_URL + "/api/members/?search="}
             clearOnSelect
-            filterOut={[...projectData.members]}
+            filterOut={[...projectData.team_members]}
             onSelect={handleAddMember}
             renderOption={renderSearchOption}
             getOptionLabel={option => option.first_name + " " + option.last_name}
@@ -116,10 +114,12 @@ export default function AddTeam({
           />
         </div>
         <AddProjectMembersContainer
-          projectMembers={projectData.members}
+          projectData={projectData}
           blockClassName={classes.block}
           handleRemoveMember={handleRemoveMember}
           availabilityOptions={availabilityOptions}
+          rolesOptions={rolesOptions}
+          handleSetProjectData={handleSetProjectData}
         />
         <OrganizersContainer
           projectData={projectData}
@@ -132,8 +132,7 @@ export default function AddTeam({
         <BottomNavigation
           className={classes.block}
           onClickPreviousStep={onClickPreviousStep}
-          onClickPublish={onClickPublish}
-          nextStepButtonType="submit"
+          nextStepButtonType="publish"
           saveAsDraft={saveAsDraft}
         />
       </form>

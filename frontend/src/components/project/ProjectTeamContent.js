@@ -12,7 +12,7 @@ function getTeamWithAdditionalInfo(team) {
         text: m.role,
         importance: "high"
       });
-    if (m.timeperweek)
+    if (m.timeperweek && m.timeperweek !== "not_specified")
       additionalInfo.push({
         text: m.availability.name,
         importance: "low"
@@ -23,7 +23,7 @@ function getTeamWithAdditionalInfo(team) {
 
 export default function TeamContent({ team }) {
   const { user } = useContext(UserContext);
-  if (!user) return <LoginNudge whatToSee="this project's team  members" />;
+  if (!user) return <LoginNudge whatToDo="see this project's team  members" />;
   else if (team)
     return (
       <ProfilePreviews

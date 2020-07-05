@@ -3,7 +3,6 @@ import { Typography, Container, TextField, Tooltip, IconButton } from "@material
 import RadioButtons from "../general/RadioButtons";
 import { makeStyles } from "@material-ui/core/styles";
 import DatePicker from "../general/DatePicker";
-import project_status_metadata from "../../../public/data/project_status_metadata";
 import Switch from "@material-ui/core/Switch";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import CollaborateSection from "./CollaborateSection";
@@ -76,7 +75,9 @@ export default function EnterDetails({
   projectData,
   handleSetProjectData,
   goToNextStep,
-  goToPreviousStep
+  goToPreviousStep,
+  skillsOptions,
+  statusOptions
 }) {
   const [open, setOpen] = React.useState({
     avatarDialog: false,
@@ -85,12 +86,16 @@ export default function EnterDetails({
   });
   const classes = useStyles(projectData);
 
-  const values = project_status_metadata.map(status => ({
-    ...status,
-    label: status.createProjectLabel
-  }));
+  const statusValues = statusOptions.map(s => {
+    return {
+      ...s,
+      label: s.name,
+      key: s.name
+    };
+  });
 
-  const statusesWithEndDate = ["cancelled", "finished"];
+  const statusesWithStartDate = statusOptions.filter(s => s.has_start_date).map(s => s.id);
+  const statusesWithEndDate = statusOptions.filter(s => s.has_end_date).map(s => s.id);
 
   const onClickPreviousStep = () => {
     goToPreviousStep();
@@ -132,7 +137,7 @@ export default function EnterDetails({
   };
 
   const onStatusRadioChange = newStatus => {
-    handleSetProjectData({ status: newStatus });
+    handleSetProjectData({ status: statusOptions.find(s => s.name === newStatus) });
   };
 
   const onStartDateChange = newDate => {
@@ -165,9 +170,9 @@ export default function EnterDetails({
             </Typography>
             <div className={classes.inlineBlock}>
               <RadioButtons
-                value={projectData.status}
+                value={projectData.status.name}
                 onChange={onStatusRadioChange}
-                values={values}
+                values={statusValues}
               />
             </div>
           </div>
@@ -176,24 +181,24 @@ export default function EnterDetails({
               Date
             </Typography>
             <div className={classes.inlineBlock}>
-              <DatePicker
-                className={classes.datePicker}
-                label="Start date"
-                date={projectData.start_date}
-                handleChange={onStartDateChange}
-                required
-              />
-              {statusesWithEndDate.includes(projectData.status) && (
-                <>
-                  <DatePicker
-                    className={classes.datePicker}
-                    label="End date"
-                    date={projectData.end_date}
-                    handleChange={onEndDateChange}
-                    required
-                    minDate={projectData.start_date && new Date(projectData.start_date)}
-                  />
-                </>
+              {statusesWithStartDate.includes(projectData.status.id) && (
+                <DatePicker
+                  className={classes.datePicker}
+                  label="Start date"
+                  date={projectData.start_date}
+                  handleChange={onStartDateChange}
+                  required
+                />
+              )}
+              {statusesWithEndDate.includes(projectData.status.id) && (
+                <DatePicker
+                  className={classes.datePicker}
+                  label="End date"
+                  date={projectData.end_date}
+                  handleChange={onEndDateChange}
+                  required
+                  minDate={projectData.start_date && new Date(projectData.start_date)}
+                />
               )}
             </div>
           </div>
@@ -277,6 +282,7 @@ export default function EnterDetails({
               ToolTipIcon={HelpOutlineIcon}
               open={open}
               handleSetOpen={handleSetOpen}
+              skillsOptions={skillsOptions}
             />
           )}
           <BottomNavigation

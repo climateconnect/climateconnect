@@ -8,14 +8,10 @@ from climateconnect_api.models import (
 class AvailabilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Availability
-        # We can change this later
-        fields = ('key', 'name')
+        fields = ('id', 'key', 'name')
 
 
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skill
-        fields = '__all__'
-
-    def to_representation(self, instance):
-        return instance.name
+        fields = ('id', 'name', 'parent_skill')

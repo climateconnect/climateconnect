@@ -116,6 +116,7 @@ class Organization(models.Model):
         app_label = "organization"
         verbose_name = "Organization"
         verbose_name_plural = "Organizations"
+        ordering = ["-id"]
 
     def __str__(self):
         return "%s (%d)" % (self.name, self.pk)

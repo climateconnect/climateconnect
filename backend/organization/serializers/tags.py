@@ -16,6 +16,4 @@ class ProjectTaggingSerializer(serializers.ModelSerializer):
 class ProjectTagsSerializer(serializers.ModelSerializer):
   class Meta:
     model = ProjectTags
-    fields = ('name',)
-  
-
+    fields = ('id', 'name', 'parent_tag')

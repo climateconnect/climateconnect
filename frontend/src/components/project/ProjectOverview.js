@@ -3,6 +3,7 @@ import { Container, Typography, Button, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
 import ExploreIcon from "@material-ui/icons/Explore";
+import { getImageUrl } from "./../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => ({
   //general styling
@@ -94,7 +95,7 @@ function SmallScreenOverview({ project }) {
   const classes = useStyles();
   return (
     <>
-      <img className={classes.fullWidthImage} src={project.image} />
+      <img className={classes.fullWidthImage} src={getImageUrl(project.image)} />
       <div className={classes.blockProjectInfo}>
         <Typography component="h1" variant="h3" className={classes.smallScreenHeader}>
           {project.name}
@@ -111,7 +112,7 @@ function SmallScreenOverview({ project }) {
         </div>
         <div className={classes.projectInfoEl}>
           <Typography>
-            <Tooltip title="Categories">
+            <Tooltip title="Project categories">
               <ExploreIcon color="primary" className={classes.icon} />
             </Tooltip>{" "}
             {project.tags.join(", ")}
@@ -138,7 +139,7 @@ function LargeScreenOverview({ project }) {
         {project.name}
       </Typography>
       <div className={classes.flexContainer}>
-        <img className={classes.inlineImage} src={project.image} />
+        <img className={classes.inlineImage} src={getImageUrl(project.image)} />
         <div className={classes.inlineProjectInfo}>
           <Typography component="h2" variant="h5" className={classes.subHeader}>
             Summary

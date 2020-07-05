@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, Avatar, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { getImageUrl } from "./../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -15,20 +16,31 @@ const useStyles = makeStyles(theme => {
     },
     smallProfileName: {
       fontSize: 14
+    },
+    smallAvatar: {
+      height: 20,
+      width: 20
     }
   };
 });
 
-export default function MiniProfilePreview({ profile, avatarClassName, onProjectCard }) {
+export default function MiniProfilePreview({ className, profile, avatarClassName, size }) {
   const classes = useStyles();
   return (
-    <Link color="inherit" href={"/profiles/" + profile.url_slug} className={classes.avatarWithInfo}>
+    <Link
+      color="inherit"
+      href={"/profiles/" + profile.url_slug}
+      className={`${classes.avatarWithInfo} ${className}`}
+    >
       <div className={classes.avatarWrapper}>
-        <Avatar src={profile.image} className={avatarClassName} />
+        <Avatar
+          src={getImageUrl(profile.image)}
+          className={`${size === "small" && classes.smallAvatar} ${avatarClassName}`}
+        />
       </div>
       <Typography
         color="inherit"
-        className={`${classes.profileName} ${onProjectCard && classes.smallProfileName}`}
+        className={`${classes.profileName} ${size === "small" && classes.smallProfileName}`}
         variant="h6"
       >
         {profile.first_name + " " + profile.last_name}

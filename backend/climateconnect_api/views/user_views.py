@@ -23,6 +23,7 @@ from climateconnect_api.serializers.user import (
 )
 
 
+
 class LoginView(KnowLoginView):
     permission_classes = [AllowAny]
 
@@ -70,7 +71,7 @@ class SignUpView(APIView):
         UserProfile.objects.create(
             user=user, country=request.data['country'],
             city=request.data['city'],
-            url_slug=url_slug
+            url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name']
         )
 
         # TODO: Call a function that sends an email to user.
@@ -98,7 +99,7 @@ class MemberProfilesView(ListAPIView):
     permission_classes = [AllowAny]
     pagination_class = PageNumberPagination
     filter_backends = [SearchFilter]
-    search_fields = ['url_slug']
+    search_fields = ['name']
 
     def get_serializer_class(self):
         if self.request.user.is_authenticated:
@@ -107,3 +108,19 @@ class MemberProfilesView(ListAPIView):
 
     def get_queryset(self):
         return UserProfile.objects.filter(is_profile_verified=True)
+
+class MemberProfileView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, url_slug, format=None):
+        try:
+            profile = UserProfile.objects.get(url_slug=str(url_slug))
+        except UserProfile.DoesNotExist:
+            return Response({'message': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        if self.request.user.is_authenticated:
+            serializer = UserProfileSerializer(profile)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            serializer = UserProfileStubSerializer(profile)
+            return Response(serializer.data, status=status.HTTP_200_OK)

@@ -67,8 +67,10 @@ export default function Signup() {
         setCurStep(steps[2]);
       })
       .catch(function(error) {
-        console.log(error);
-        setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data.message });
+        if (error.response.data.message)
+          setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data.message });
+        else if (error.response.data.length > 0)
+          setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data[0] });
       });
   };
 

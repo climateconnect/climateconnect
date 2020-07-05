@@ -11,6 +11,16 @@ class OrganizationTags(models.Model):
         verbose_name="Name",
         max_length=256
     )
+    
+    parent_tag = models.ForeignKey(
+        'self',
+        related_name="organization_tag_parent",
+        verbose_name="Parent Tag",
+        help_text="Points to the parent tag",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT
+    )
 
     created_at = models.DateTimeField(
         help_text="Time when tag was created",
@@ -90,6 +100,16 @@ class ProjectTags(models.Model):
         max_length=256
     )
 
+    parent_tag = models.ForeignKey(
+        'self',
+        related_name="project_tag_parent",
+        verbose_name="Parent Tag",
+        help_text="Points to the parent tag",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT
+    )
+
     created_at = models.DateTimeField(
         help_text="Time when tag was created",
         verbose_name="Created at",
@@ -110,6 +130,7 @@ class ProjectTags(models.Model):
     class Meta:
         app_label = "organization"
         verbose_name = "Project Tags"
+        ordering = ["id"]
 
     def __str__(self):
         return "%s" % self.name

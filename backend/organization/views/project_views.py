@@ -8,18 +8,20 @@ from rest_framework import status
 
 from django.contrib.auth.models import User
 
-from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment
+from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging, ProjectStatus, ProjectCollaborators
 from organization.serializers.project import (
     ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer
 )
+from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
+from organization.serializers.tags import (ProjectTagsSerializer)
 from organization.utility.project import create_new_project
 from organization.permissions import OrganizationProjectCreationPermission
 from organization.pagination import (ProjectsPagination, MembersPagination, ProjectPostPagination, ProjectCommentPagination)
 from organization.utility.organization import (
     check_organization,
 )
-from climateconnect_api.models import Role, Skill
+from climateconnect_api.models import Role, Skill, Availability
 import logging
 logger = logging.getLogger(__name__)
 
@@ -34,6 +36,9 @@ class ListProjectsView(ListAPIView):
 
     def get_serializer_class(self):
         return ProjectStubSerializer
+    
+    def get_queryset(self):
+        return Project.objects.filter(is_draft=False)
 
 
 
@@ -41,56 +46,83 @@ class CreateProjectView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        if 'organization_id' in request.data:
-            organization = check_organization(int(request.data['organization_id']))
+        if 'parent_organization' in request.data:
+            organization = check_organization(int(request.data['parent_organization']))
         else:
             organization = None
 
         required_params = [
-            'name', 'status', 'start_date', 'short_description',
-            'collaborators_welcome', 'project_order', 'team_members'
+            'name', 'status', 'short_description',
+            'collaborators_welcome', 'team_members', 
+            'project_tags', 'city', 'country', 'image'
         ]
         for param in required_params:
             if param not in request.data:
                 return Response({
-                    'message': 'Missing required information to create project.'
-                               'Please contact administrator'
+                    'message': 'Missing required information to create project:'+param+' Please contact administrator'
                 }, status=status.HTTP_400_BAD_REQUEST)
-
-        project_status = request.data['status']
-        if project_status not in Project.PROJECT_STATUS_LIST:
+        #add error on wrong status
+        try:
+            project_status = ProjectStatus.objects.get(id=int(request.data["status"]))
+        except ProjectStatus.DoesNotExist:
             return Response({
-                'message': 'Invalid project status'
-            }, status=status.HTTP_404_NOT_FOUND)
+                'message': "Passed status {} does not exist".format(request.data["status"])
+            })
 
         project = create_new_project(request.data)
 
-        order = request.data['project_order']
         project_parents = ProjectParents.objects.create(
-            project=project, parent_user=request.user, order=order
+            project=project, parent_user=request.user
         )
+
         if organization:
-            project_parents.organization = organization
+            project_parents.parent_organization = organization
             project_parents.save()
+        
+        if 'collaborating_organizations' in request.data:
+            for organization_id in request.data['collaborating_organizations']:
+                try:
+                    collaborating_organization = Organization.objects.get(id=int(organization_id))
+                    ProjectCollaborators.objects.create(project=project, collaborating_organization=collaborating_organization)
+                except Organization.DoesNotExist:
+                    logger.error("Passed collaborating organization id {} does not exist.".format(organization_id))
+
 
         # There are only certain roles user can have. So get all the roles first.
         roles = Role.objects.all()
+        availabilities = Availability.objects.all()
         team_members = request.data['team_members']
         for member in team_members:
-            user_role = roles.filter(id=int(member['permission_type_id'])).first()
+            user_role = roles.filter(id=int(member['role'])).first()
+            user_availability = availabilities.filter(id=int(member['availability'])).first()
             try:
-                user = User.objects.get(id=int(member['user_id']))
+                user = User.objects.get(id=int(member['id']))
             except User.DoesNotExist:
-                logger.error("Passed user id {} does not exists".format(member['user_id']))
+                logger.error("Passed user id {} does not exists".format(member['id']))
                 continue
             if user:
                 ProjectMember.objects.create(
-                    project=project, user=user, role=user_role
+                    project=project, user=user, role=user_role, 
+                    availability=user_availability, role_in_project=member['role_in_project']
                 )
                 logger.info("Project member created for user {}".format(user.id))
+            
+        if 'project_tags' in request.data:
+            for project_tag_id in request.data['project_tags']:
+                try:
+                    project_tag = ProjectTags.objects.get(id=int(project_tag_id))
+                except ProjectTags.DoesNotExist:
+                    logger.error("Passed project tag ID {} does not exists".format(project_tag_id))
+                    continue
+                if project_tag:
+                    ProjectTagging.objects.create(
+                        project=project, project_tag=project_tag
+                    )
+                    logger.info("Project tagging created for project {}".format(project.id))
 
         return Response({
-            'message': 'Project {} successfully created'.format(project.name)
+            'message': 'Project {} successfully created'.format(project.name),
+            'url_slug': project.url_slug
         }, status=status.HTTP_201_CREATED)
 
 
@@ -101,7 +133,7 @@ class ProjectAPIView(APIView):
         try:
             project = Project.objects.get(url_slug=str(url_slug))            
         except Project.DoesNotExist:
-            return Response({'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'Project not found,'}, status=status.HTTP_404_NOT_FOUND)
         #TODO: get number of followers
 
         serializer = ProjectSerializer(project, many=False)
@@ -150,7 +182,6 @@ class ListProjectPostsView(ListAPIView):
     serializer_class = PostSerializer
     
     def get_queryset(self):
-        logger.error(self)
         return Post.objects.filter(
             project__url_slug=self.kwargs['url_slug'],
         ).order_by('id')
@@ -163,7 +194,6 @@ class ListProjectCommentsView(ListAPIView):
     serializer_class = ProjectCommentSerializer
     
     def get_queryset(self):
-        logger.error(self)
         return ProjectComment.objects.filter(
             project__url_slug=self.kwargs['url_slug'],
         ).order_by('id')
@@ -246,3 +276,14 @@ class ListProjectMembersView(ListAPIView):
 
         return project.project_member.all()
 
+class ListProjectTags(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = ProjectTagsSerializer
+    def get_queryset(self):
+        return ProjectTags.objects.all()
+
+class ListProjectStatus(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = ProjectStatusSerializer
+    def get_queryset(self):
+        return ProjectStatus.objects.all()

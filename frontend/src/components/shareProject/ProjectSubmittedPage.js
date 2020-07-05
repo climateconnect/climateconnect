@@ -19,15 +19,25 @@ export default function ProjectSubmittedPage({ isDraft, url_slug }) {
   console.log(url_slug);
   return (
     <div className={classes.root}>
-      <Typography variant="h5" className={classes.headline}>
-        Congratulations! Your project has been published!
-      </Typography>
-      <Typography variant="h5" className={classes.headline}>
-        We are really happy that you inspire the global climate action community!
-      </Typography>
-      <Typography variant="h5">
-        You can view your project <a href={"/projects/" + url_slug}>here</a>
-      </Typography>
+      {isDraft ? (
+        <>
+          <Typography variant="h5" className={classes.headline}>
+            Congratulations! Your project has been published!
+          </Typography>
+          <Typography variant="h5" className={classes.headline}>
+            We are really happy that you inspire the global climate action community!
+          </Typography>
+          <Typography variant="h5">
+            You can view your project <a href={"/projects/" + url_slug}>here</a>
+          </Typography>
+        </>
+      ) : (
+        <>
+          <Typography variant="h5" className={classes.headline}>
+            Your project has saved as a draft!
+          </Typography>
+        </>
+      )}
     </div>
   );
 }

@@ -6,7 +6,6 @@ from climateconnect_api.serializers.user import UserProfileStubSerializer
 #TODO: potentially make serializer from which the other serializers inherit reused code
 
 class PostSerializer(serializers.ModelSerializer):
-  #TODO: add pagination at API level
   #TODO: add additional functionality such as 'is_abusive', 'deleted_at', 'updated_at'
   #TODO: get likes
   author_user = serializers.SerializerMethodField()
@@ -20,17 +19,16 @@ class PostSerializer(serializers.ModelSerializer):
       'is_hidden', 'replies'
     )
 
-  def get_replies(self, obj):
-    top_level_comments = obj.post_comment.exclude(parent_comment_id__isnull=False)
-    serializer = PostCommentSerializer(top_level_comments, many=True)
-    return serializer.data
-  
   def get_author_user(self, obj):
     serializer = UserProfileStubSerializer(obj.author_user.user_profile)
     return serializer.data
 
+  def get_replies(self, obj):
+    top_level_comments = obj.post_comment.exclude(parent_comment_id__isnull=False)
+    serializer = PostCommentSerializer(top_level_comments, many=True)
+    return serializer.data
+
 class PostCommentSerializer(serializers.ModelSerializer):
-  #TODO: add pagination at API level
   #TODO: add additional functionality such as 'is_abusive', 'deleted_at', 'updated_at'
   #TODO: get likes
   author_user = serializers.SerializerMethodField()
@@ -49,7 +47,6 @@ class PostCommentSerializer(serializers.ModelSerializer):
     return serializer.data
 
 class ProjectCommentSerializer(serializers.ModelSerializer):
-  #TODO: add pagination at API level
   #TODO: add additional functionality such as 'is_abusive', 'deleted_at', 'updated_at'
   #TODO: get likes
   author_user = serializers.SerializerMethodField()
@@ -64,10 +61,10 @@ class ProjectCommentSerializer(serializers.ModelSerializer):
       'updated_at', 'replies'
     )
 
-  def get_replies(self, obj):
-    serializer = ProjectCommentSerializer(obj.comment_parent, many=True)
-    return serializer.data
-  
   def get_author_user(self, obj):
     serializer = UserProfileStubSerializer(obj.author_user.user_profile)
+    return serializer.data
+
+  def get_replies(self, obj):
+    serializer = ProjectCommentSerializer(obj.comment_parent, many=True)
     return serializer.data

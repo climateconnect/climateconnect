@@ -9,9 +9,10 @@ from rest_framework.exceptions import NotFound
 
 from django.contrib.auth.models import User
 from organization.serializers.organization import (
-    OrganizationSerializer, OrganizationMinimalSerializer, OrganizationMemberSerializer
+    OrganizationSerializer, OrganizationMinimalSerializer, OrganizationMemberSerializer, UserOrganizationSerializer
 )
 from organization.models import Organization, OrganizationMember
+from climateconnect_api.models.user import UserProfile
 from organization.permissions import OrganizationReadWritePermission
 from climateconnect_api.models import Role
 import logging
@@ -22,7 +23,7 @@ class ListOrganizationsAPIView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
     pagination_class = PageNumberPagination
-    search_fields = ['url_slug']
+    search_fields = ['name']
     queryset = Organization.objects.all()
 
     def get_serializer_class(self):
@@ -153,3 +154,13 @@ class UpdateOrganizationMemberView(RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer):
         serializer.save()
         return serializer.data
+
+class PersonalOrganizationsView(ListAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        if not UserProfile.objects.filter(user=request.user).exists():
+            raise NotFound(detail="Profile not found.", code=status.HTTP_404_NOT_FOUND)
+        user_organization_members= OrganizationMember.objects.filter(user=request.user)
+        serializer = UserOrganizationSerializer(user_organization_members, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

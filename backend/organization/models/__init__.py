@@ -7,9 +7,11 @@ from organization.models.tags import (
     ProjectTags, ProjectTagging
 )
 from organization.models.project import (
-    Project, ProjectParents
+    Project, ProjectParents, ProjectCollaborators
 )
 from organization.models.content import (
     Post, Comment, PostComment, ProjectComment
 )
 from organization.models.members import (ProjectMember, OrganizationMember)
+
+from organization.models.status import ProjectStatus

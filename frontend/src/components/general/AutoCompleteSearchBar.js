@@ -26,7 +26,6 @@ export default function AutoCompleteSearchBar({
     (async () => {
       if (searchValue) {
         const response = await axios.get(baseUrl + searchValue);
-
         if (active) {
           setOptions(
             response.data.results

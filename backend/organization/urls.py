@@ -2,7 +2,6 @@ from django.urls import path
 
 from organization.views import organization_views, project_views
 
-
 app_name = 'organization'
 urlpatterns = [
     # Organization URLs
@@ -29,7 +28,11 @@ urlpatterns = [
         'organizations/<slug:url_slug>/members/<int:pk>/',
         organization_views.UpdateOrganizationMemberView.as_view(), name='update-orgnaization-member-view'
     ),
-
+    path(
+        'my_organizations/',
+        organization_views.PersonalOrganizationsView.as_view(),
+        name='get-personal-organizations-view'
+    ),
     # Project URLs
     path('projects/', project_views.ListProjectsView.as_view(), name='list-projects'),
     path('projects/<slug:url_slug>/', project_views.ProjectAPIView.as_view(), name='project-api-view'),
@@ -44,5 +47,7 @@ urlpatterns = [
     path(
         'projects/<int:project_id>/members/<int:member_id>/',
         project_views.UpdateProjectMemberView.as_view(), name='update-project-member-api'
-    )
+    ),
+    path('projecttags/', project_views.ListProjectTags.as_view(), name='list-project-tags'),
+    path('projectstatus/', project_views.ListProjectStatus.as_view(), name='list-project-status')
 ]
