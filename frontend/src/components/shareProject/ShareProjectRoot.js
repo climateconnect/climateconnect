@@ -81,9 +81,6 @@ export default function ShareProjectRoot({
 
   const submitProject = event => {
     event.preventDefault();
-    console.log("submitting project");
-    console.log(formatProjectForRequest(project));
-    console.log(token);
     //TODO: make a request to publish the project
     axios
       .post(
