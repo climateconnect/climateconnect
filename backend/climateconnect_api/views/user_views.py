@@ -5,8 +5,8 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
-from rest_framework.exceptions import NotFound, PermissionDenied
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
+from rest_framework.exceptions import NotFound
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter
 
@@ -16,8 +16,8 @@ from climateconnect_api.pagination import MembersPagination
 
 # Database imports
 from django.contrib.auth.models import User
-from climateconnect_api.models.user import UserProfile
 from organization.models.members import (ProjectMember, OrganizationMember)
+from climateconnect_api.models import UserProfile, Availability, Skill
 
 # Serializer imports
 from climateconnect_api.serializers.user import (
@@ -26,6 +26,9 @@ from climateconnect_api.serializers.user import (
 from organization.serializers.project import ProjectFromProjectMemberSerializer
 from organization.serializers.organization import OrganizationsFromProjectMember
 
+from climateconnect_api.permissions import UserPermission
+import logging
+logger = logging.getLogger(__name__)
 
 
 class LoginView(KnowLoginView):
@@ -111,6 +114,7 @@ class ListMemberProfilesView(ListAPIView):
     def get_queryset(self):
         return UserProfile.objects.filter(is_profile_verified=True)
 
+
 class MemberProfileView(APIView):
     permission_classes = [AllowAny]
 
@@ -150,3 +154,64 @@ class ListMemberOrganizationsView(ListAPIView):
         return OrganizationMember.objects.filter(
             user=UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user,
         ).order_by('id')
+
+class EditUserProfile(APIView):
+    permission_classes = [UserPermission]
+
+    def get(self, request, url_slug):
+        try:
+            user_profile = UserProfile.objects.get(url_slug=str(url_slug))
+        except User.DoesNotExist:
+            raise NotFound('User profile not found.')
+
+        serializer = UserProfileSerializer(user_profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, url_slug):
+        try:
+            user_profile = UserProfile.objects.get(url_slug=str(url_slug))
+        except User.DoesNotExist:
+            raise NotFound('User not found.')
+
+        user = user_profile.user
+        if 'first_name' in request.data:
+            user.first_name = request.data['first_name']
+
+        if 'last_name' in request.data:
+            user.last_name = request.data['last_name']
+
+        user_profile.name = user.first_name + ' ' + user.last_name
+        user_profile.url_slug = (user.first_name + user.last_name).lower() + str(user.id)
+        user.save()
+
+        if 'image' in request.data:
+            user_profile.image = request.data['image']
+        if 'background_image' in request.data:
+            user_profile.background_image = request.data['background_image']
+
+        if 'country' in request.data:
+            user_profile.country = request.data['country']
+
+        if 'state' in request.data:
+            user_profile.state = request.data['state']
+        if 'city' in request.data:
+            user_profile.city = request.data['city']
+        if 'biography' in request.data:
+            user_profile.biography = request.data['biography']
+
+        if 'availability' in request.data:
+            try:
+                availability = Availability.objects.get(id=int(request.data['availability']))
+            except Availability.DoesNotExist:
+                raise NotFound('Availability not found.')
+
+            user_profile.availability = availability
+
+        if 'skills' in request.data:
+            for skill_id in request.data['skills']:
+                skill = Skill.objects.get(id=int(skill_id))
+                user_profile.skills.add(skill)
+
+        user_profile.save()
+        serializer = UserProfileSerializer(user_profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)

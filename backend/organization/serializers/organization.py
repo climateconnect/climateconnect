@@ -41,6 +41,7 @@ class OrganizationStubSerializer(serializers.ModelSerializer):
         model = Organization
         fields = ('id', 'name', 'url_slug', 'image')
 
+
 class OrganizationMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrganizationMember

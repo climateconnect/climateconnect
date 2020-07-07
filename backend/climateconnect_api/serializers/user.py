@@ -88,3 +88,13 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
 
     def get_last_name(self, obj):
         return obj.user.last_name
+
+class UserAccountSettingsSerializer(serializers.ModelSerializer):
+    email = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserProfile
+        fields = ('email', 'email_updates_on_projects', 'email_project_suggestions', 'url_slug')
+
+    def get_email(self, obj):
+        return obj.user.email

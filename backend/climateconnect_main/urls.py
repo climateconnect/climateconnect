@@ -16,7 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from climateconnect_api.views import (
-    status_views, user_views, common_views, role_views
+    status_views, user_views, common_views,
+    settings_views, common_views, role_views
 )
 from knox import views as knox_views
 from django.conf import settings
@@ -33,6 +34,12 @@ urlpatterns = [
     path('api/member/<slug:url_slug>/projects/', user_views.ListMemberProjectsView.as_view(), name='get-member-profile-api'),
     path('api/member/<slug:url_slug>/organizations/', user_views.ListMemberOrganizationsView.as_view(), name='get-member-profile-api'),
     path('api/members/', user_views.ListMemberProfilesView.as_view(), name="member-profiles-api"),
+    path(
+        'api/account_settings/',
+        settings_views.UserAccountSettingsView.as_view(),
+        name='user-account-settings-api'
+    ),
+    path('api/users/<slug:url_slug>/', user_views.EditUserProfile.as_view(), name='edit-user-profile-api'),
     path('api/', include('organization.urls')),
     path('availability/', common_views.ListAvailabilitiesView.as_view(), name='list-availabilities-api'),
     path('skills/', common_views.ListSkillsView.as_view(), name='list-skills-api'),
