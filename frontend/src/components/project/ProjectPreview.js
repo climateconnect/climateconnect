@@ -4,6 +4,7 @@ import Truncate from "react-truncate";
 import { Typography, Card, CardMedia, CardContent } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ProjectMetaData from "./ProjectMetaData";
+import { getImageUrl } from "../../../public/lib/imageOperations"
 
 const useStyles = makeStyles(theme => {
   return {
@@ -42,7 +43,7 @@ export default function ProjectPreview({ project }) {
           className={classes.media}
           component={"img"}
           title={project.name}
-          image={project.image}
+          image={getImageUrl(project.image)}
         />
         <CardContent>
           <Typography variant="subtitle1" component="h2" className={classes.bold}>

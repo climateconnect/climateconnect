@@ -12,12 +12,11 @@ import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
 import OrganizationPreviews from "./../../src/components/organization/OrganizationPreviews";
 import AccountPage from "./../../src/components/account/AccountPage";
 
-import TEMP_PROJECT_DATA from "../../public/data/projects.json";
-import TEMP_ORGANIZATION_DATA from "../../public/data/organizations.json";
 import TEMP_PROFILE_TYPES from "./../../public/data/profile_types.json";
 import TEMP_INFOMETADATA from "./../../public/data/profile_info_metadata.json";
 import tokenConfig from "../../public/config/tokenConfig";
 import { getImageUrl } from "../../public/lib/imageOperations";
+import LoginNudge from "../../src/components/general/LoginNudge";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -69,6 +68,10 @@ const useStyles = makeStyles(theme => {
     },
     marginTop: {
       marginTop: theme.spacing(1)
+    },
+    loginNudge: {
+      textAlign: "center",
+      margin: "0 auto"
     }
   };
 });
@@ -80,6 +83,7 @@ export default function ProfilePage({
   profileTypes,
   infoMetadata
 }) {
+  const { user } = useContext(UserContext);
   return (
     <WideLayout title={profile ? profile.name + "'s profile" : "Not found"}>
       {profile ? (
@@ -89,6 +93,7 @@ export default function ProfilePage({
           organizations={organizations}
           profileTypes={profileTypes}
           infoMetadata={infoMetadata}
+          user={user}
         />
       ) : (
         <NoProfileFoundLayout />
@@ -101,17 +106,15 @@ ProfilePage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   return {
     profile: await getProfileByUrlIfExists(ctx.query.profileUrl, token),
-    organizations: await getOrganizationsByUser(ctx.query.profileUrl),
-    projects: await getProjects(ctx.query.profileUrl),
+    organizations: await getOrganizationsByUser(ctx.query.profileUrl, token),
+    projects: await getProjectsByUser(ctx.query.profileUrl, token),
     profileTypes: await getProfileTypes(),
     infoMetadata: await getProfileInfoMetadata()
   };
 };
 
-function ProfileLayout({ profile, projects, organizations, profileTypes, infoMetadata }) {
+function ProfileLayout({ profile, projects, organizations, profileTypes, infoMetadata, user }) {
   const classes = useStyles();
-  const { user } = useContext(UserContext);
-  console.log(profile);
   return (
     <AccountPage
       account={profile}
@@ -122,6 +125,9 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
       possibleAccountTypes={profileTypes}
       infoMetadata={infoMetadata}
     >
+      {!user &&
+        <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information"/>
+      }
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
         {projects && projects.length ? (
@@ -133,7 +139,7 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Organizations:</div>
         {organizations && organizations.length > 0 ? (
-          <OrganizationPreviews organizations={organizations} showMembers />
+          <OrganizationPreviews organizations={organizations} showOrganizationType/>
         ) : (
           <Typography>This user is not involved in any organizations yet!</Typography>
         )}
@@ -159,7 +165,6 @@ function NoProfileFoundLayout() {
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getProfileByUrlIfExists(profileUrl, token) {
   try {
-    console.log(tokenConfig(token));
     const resp = await axios.get(
       process.env.API_URL + "/api/member/" + profileUrl + "/",
       tokenConfig(token)
@@ -167,12 +172,13 @@ async function getProfileByUrlIfExists(profileUrl, token) {
     return parseProfile(resp.data);
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    console.log('error!')
+    console.log(err)
     return null;
   }
 }
 
 function parseProfile(profile) {
-  console.log(profile);
   return {
     url_slug: profile.url_slug,
     name: profile.first_name + " " + profile.last_name,
@@ -181,22 +187,44 @@ function parseProfile(profile) {
     info: {
       location: profile.city + ", " + profile.country,
       bio: profile.biography,
-      skills: profile.skills,
-      availability: profile.availability
+      skills: profile.skills && profile.skills.map(s=>s.name),
+      availability: profile.availability && profile.availability.name
     }
   };
 }
 
-async function getProjects(profileUrl) {
-  return TEMP_PROJECT_DATA.projects.filter(
-    project => !!project.team.find(m => m.url_slug === profileUrl)
-  );
+async function getProjectsByUser(profileUrl, token) {
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/api/member/" + profileUrl + "/projects/",
+      tokenConfig(token)
+    );
+    if (!resp.data) return null;
+    else {
+      return parseProjectStubs(resp.data.results)
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
 }
 
-async function getOrganizationsByUser(profileUrl) {
-  return TEMP_ORGANIZATION_DATA.organizations.filter(
-    org => org.members && org.members.includes(profileUrl)
-  );
+async function getOrganizationsByUser(profileUrl, token) {
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/api/member/" + profileUrl + "/organizations/",
+      tokenConfig(token)
+    );
+    if (!resp.data) return null;
+    else {
+      return parseOrganizationStubs(resp.data.results)
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
 }
 
 async function getProfileTypes() {
@@ -205,4 +233,25 @@ async function getProfileTypes() {
 
 async function getProfileInfoMetadata() {
   return TEMP_INFOMETADATA;
+}
+
+function parseProjectStubs(projects) {
+  return projects.map(p =>  {
+    const project = p.project
+    return {
+      ...project,
+      location: project.city ? project.city + ", " + project.country : project.country
+    }
+  }
+  );
+}
+
+function parseOrganizationStubs(organizations) {
+  return organizations.map(o=>({
+    ...o.organization,
+    types: o.organization.types.map(type => type.organization_tag),
+    info: {
+      location: o.organization.city ? o.organization.city + ", " + o.organization.country : o.organization.country
+    }
+  }))
 }

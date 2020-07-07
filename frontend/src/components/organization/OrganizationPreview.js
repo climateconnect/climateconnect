@@ -3,6 +3,7 @@ import Router from "next/router";
 import OrganizationMetaData from "./OrganizationMetadata";
 import { Typography, Card, CardMedia, CardContent } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -52,7 +53,7 @@ export default function OrganizationPreview({ organization, showMembers, showOrg
         className={classes.media}
         component={"div"}
         title={organization.name}
-        image={organization.image}
+        image={getImageUrl(organization.image)}
       />
       <CardContent>
         <Typography variant="subtitle1" component="h2" className={classes.bold}>
