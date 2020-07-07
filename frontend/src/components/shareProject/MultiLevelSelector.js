@@ -20,7 +20,8 @@ const useStyles = makeStyles(theme => {
     }),
     list: {
       display: "inline-block",
-      marginLeft: theme.spacing(8),
+      marginLeft: theme.spacing(4),
+      maxWidth:350,
       [theme.breakpoints.down("md")]: {
         marginLeft: theme.spacing(0)
       }
@@ -29,7 +30,8 @@ const useStyles = makeStyles(theme => {
       return {
         display: "inline-block",
         marginTop: theme.spacing(props.offset * 8),
-        verticalAlign: "top"
+        verticalAlign: "top",
+        maxWidth:300
       };
     },
     narrowScreenSubList: {
@@ -99,7 +101,7 @@ const useStyles = makeStyles(theme => {
     },
     listWrapper: {
       display: "inline-block",
-      width: 650,
+      width: 700,
       [theme.breakpoints.down("md")]: {
         width: 650 - theme.spacing(8)
       },
