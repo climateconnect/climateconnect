@@ -31,6 +31,7 @@ class UserAccountSettingsView(APIView):
                 raise ValidationError('Please enter correct password or click I forgot my password.')
 
         if 'email' in request.data:
+            # TODO: Add email confirmation method.
             user.email = request.data['email']
 
         if 'email_updates_on_projects' in request.data and 'email_project_suggestions' in request.data:
