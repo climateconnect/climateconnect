@@ -125,9 +125,9 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
       possibleAccountTypes={profileTypes}
       infoMetadata={infoMetadata}
     >
-      {!user &&
-        <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information"/>
-      }
+      {!user && (
+        <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
+      )}
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
         {projects && projects.length ? (
@@ -139,7 +139,7 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Organizations:</div>
         {organizations && organizations.length > 0 ? (
-          <OrganizationPreviews organizations={organizations} showOrganizationType/>
+          <OrganizationPreviews organizations={organizations} showOrganizationType />
         ) : (
           <Typography>This user is not involved in any organizations yet!</Typography>
         )}
@@ -172,8 +172,8 @@ async function getProfileByUrlIfExists(profileUrl, token) {
     return parseProfile(resp.data);
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    console.log('error!')
-    console.log(err)
+    console.log("error!");
+    console.log(err);
     return null;
   }
 }
@@ -187,7 +187,7 @@ function parseProfile(profile) {
     info: {
       location: profile.city + ", " + profile.country,
       bio: profile.biography,
-      skills: profile.skills && profile.skills.map(s=>s.name),
+      skills: profile.skills && profile.skills.map(s => s.name),
       availability: profile.availability && profile.availability.name
     }
   };
@@ -201,7 +201,7 @@ async function getProjectsByUser(profileUrl, token) {
     );
     if (!resp.data) return null;
     else {
-      return parseProjectStubs(resp.data.results)
+      return parseProjectStubs(resp.data.results);
     }
   } catch (err) {
     console.log(err);
@@ -218,7 +218,7 @@ async function getOrganizationsByUser(profileUrl, token) {
     );
     if (!resp.data) return null;
     else {
-      return parseOrganizationStubs(resp.data.results)
+      return parseOrganizationStubs(resp.data.results);
     }
   } catch (err) {
     console.log(err);
@@ -236,22 +236,23 @@ async function getProfileInfoMetadata() {
 }
 
 function parseProjectStubs(projects) {
-  return projects.map(p =>  {
-    const project = p.project
+  return projects.map(p => {
+    const project = p.project;
     return {
       ...project,
       location: project.city ? project.city + ", " + project.country : project.country
-    }
-  }
-  );
+    };
+  });
 }
 
 function parseOrganizationStubs(organizations) {
-  return organizations.map(o=>({
+  return organizations.map(o => ({
     ...o.organization,
     types: o.organization.types.map(type => type.organization_tag),
     info: {
-      location: o.organization.city ? o.organization.city + ", " + o.organization.country : o.organization.country
+      location: o.organization.city
+        ? o.organization.city + ", " + o.organization.country
+        : o.organization.country
     }
-  }))
+  }));
 }

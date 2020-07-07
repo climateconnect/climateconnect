@@ -16,7 +16,7 @@ import TEMP_INFOMETADATA from "./../../public/data/organization_info_metadata.js
 import tokenConfig from "../../public/config/tokenConfig";
 
 import LocationOnIcon from "@material-ui/icons/LocationOn";
-import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LoginNudge from "../../src/components/general/LoginNudge";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
@@ -75,7 +75,7 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
   const classes = useStyles();
   const getMembersWithAdditionalInfo = members => {
     return members.map(m => ({
-      ...m, 
+      ...m,
       additionalInfo: [
         {
           text: m.location,
@@ -93,11 +93,11 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
         {
           text: m.permission,
           importance: "low"
-        },
+        }
       ]
-    }))
-  }
-  const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members)
+    }));
+  };
+  const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
 
   return (
     <AccountPage
@@ -107,9 +107,9 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
       type="organization"
       infoMetadata={infoMetadata}
     >
-      {!user &&
-        <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information"/>
-      }
+      {!user && (
+        <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
+      )}
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
         {projects && projects.length ? (
@@ -121,7 +121,7 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Members:</div>
         {members && members.length ? (
-          <ProfilePreviews profiles={membersWithAdditionalInfo} showAdditionalInfo/>
+          <ProfilePreviews profiles={membersWithAdditionalInfo} showAdditionalInfo />
         ) : (
           <Typography>None of the members of this organization has signed up yet!</Typography>
         )}
@@ -170,7 +170,7 @@ async function getProjectsByOrganization(organizationUrl, token) {
     );
     if (!resp.data) return null;
     else {
-      return parseProjectStubs(resp.data.results)
+      return parseProjectStubs(resp.data.results);
     }
   } catch (err) {
     console.log(err);
@@ -187,7 +187,7 @@ async function getMembersByOrganization(organizationUrl, token) {
     );
     if (!resp.data) return null;
     else {
-      return parseProjectMembers(resp.data.results)
+      return parseProjectMembers(resp.data.results);
     }
   } catch (err) {
     console.log(err);
@@ -206,7 +206,7 @@ function parseOrganization(organization) {
     background_image: organization.background_image,
     name: organization.name,
     image: organization.image,
-    types: organization.types.map(t=>({...t.organization_tag, key: t.organization_tag.id})),
+    types: organization.types.map(t => ({ ...t.organization_tag, key: t.organization_tag.id })),
     info: {
       location: organization.city
         ? organization.city + ", " + organization.country
@@ -220,26 +220,25 @@ function parseOrganization(organization) {
 }
 
 function parseProjectStubs(projects) {
-  return projects.map(p =>  {
-    const project = p.project
+  return projects.map(p => {
+    const project = p.project;
     return {
       ...project,
       location: project.city + ", " + project.country
-    }
-  }
-  );
+    };
+  });
 }
 
 function parseProjectMembers(members) {
-  return members.map(m=>{    
-    const member = m.user
-    return{
+  return members.map(m => {
+    const member = m.user;
+    return {
       ...member,
       name: member.first_name + " " + member.last_name,
       permission: m.permission === "Creator" ? "Administrator" : m.permission,
       time_per_week: m.time_per_week,
       role_in_organization: m.role_in_organization,
       location: member.city ? member.city + ", " + member.country : member.country
-    }
-  })
+    };
+  });
 }

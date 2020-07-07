@@ -94,21 +94,21 @@ export default function AccountPage({
 
   const displayAccountInfo = info =>
     Object.keys(info).map((key, index) => {
-      if(info[key]){
+      if (info[key]) {
         const i = getFullInfoElement(infoMetadata, key, info[key]);
         const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
         const additionalText = i.additionalText ? i.additionalText : "";
-        if(key === "parent_organization"){
-          if(value.name)
+        if (key === "parent_organization") {
+          if (value.name)
             return (
               <div key={index} className={classes.subtitle}>
                 {account.name} is a suborganization of{" "}
-                <Link color="inherit" href={"/organizations/"+value.url_slug} target="_blank">
-                  <MiniOrganizationPreview organization={value} size="small"/>
+                <Link color="inherit" href={"/organizations/" + value.url_slug} target="_blank">
+                  <MiniOrganizationPreview organization={value} size="small" />
                 </Link>
               </div>
-            )
-        }else if (i.type === "array") {
+            );
+        } else if (i.type === "array") {
           return (
             <div key={index} className={classes.infoElement}>
               <div className={classes.subtitle}>{i.name}:</div>

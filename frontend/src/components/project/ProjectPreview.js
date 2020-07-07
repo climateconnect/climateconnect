@@ -4,7 +4,7 @@ import Truncate from "react-truncate";
 import { Typography, Card, CardMedia, CardContent } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ProjectMetaData from "./ProjectMetaData";
-import { getImageUrl } from "../../../public/lib/imageOperations"
+import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => {
   return {

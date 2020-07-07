@@ -1,7 +1,7 @@
 import React from "react";
 import { Typography, Link, Avatar, Button, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { getImageUrl } from "../../../public/lib/imageOperations"
+import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => {
       margin: "0 auto",
       textAlign: "center",
       justifyContent: "center",
-      marginTop:theme.spacing(0.5)
+      marginTop: theme.spacing(0.5)
     },
     lowImportanceInfo: {
       color: theme.palette.grey[700],
@@ -63,7 +63,12 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
   return (
     <div className={classes.avatarWithInfo}>
       <Link href={"/profiles/" + profile.url_slug} className={classes.disableHover}>
-        <Avatar alt={profile.name} size="large" src={getImageUrl(profile.image)} className={classes.avatar} />
+        <Avatar
+          alt={profile.name}
+          size="large"
+          src={getImageUrl(profile.image)}
+          className={classes.avatar}
+        />
         <Typography variant="h6" className={classes.name}>
           {profile.first_name + " " + profile.last_name}
         </Typography>
@@ -81,14 +86,14 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
                         : classes.highImportanceInfo
                     }`}
                 >
-                  {item.icon && 
-                    (
-                      item.toolTipText ? 
-                        <Tooltip className={classes.icon} title={item.toolTipText}><item.icon name={item.iconName} /></Tooltip>
-                      :
-                        <item.icon className={classes.icon} name={item.iconName} />
-                    )
-                  }
+                  {item.icon &&
+                    (item.toolTipText ? (
+                      <Tooltip className={classes.icon} title={item.toolTipText}>
+                        <item.icon name={item.iconName} />
+                      </Tooltip>
+                    ) : (
+                      <item.icon className={classes.icon} name={item.iconName} />
+                    ))}
                   {item.text}
                 </Typography>
               );
