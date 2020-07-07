@@ -248,12 +248,27 @@ export default function Index({ projectsObject, organizationsObject, membersObje
                 possibleFilters={possibleFilters[typesByTabValue[1]]}
               />
             )}
-            <OrganizationPreviews
-              organizations={organizationsObject.organizations}
-              loadFunc={loadMoreOrganizations}
-              hasMore={hasMore.organizations}
-              showOrganizationType
-            />
+            {organizationsObject && organizationsObject.organizations && organizationsObject.organizations.length ? 
+              (
+                <OrganizationPreviews
+                  organizations={organizationsObject.organizations}
+                  loadFunc={loadMoreOrganizations}
+                  hasMore={hasMore.organizations}
+                  showOrganizationType
+                />
+              ) 
+            : 
+              (
+                <Typography component="h4" variant="h5" className={classes.infoMessage}>
+                  There are no organizations on this site yet.{" "}
+                  <Link href="/share">
+                    <Typography color="primary" className={classes.link} component="h5" variant="h5">
+                      Create an organization to be the first one!
+                    </Typography>
+                  </Link>
+                </Typography>
+              )
+            }
           </TabContent>
           <TabContent value={tabValue} index={2} className={classes.tabContent}>
             {filtersExpanded && tabValue === 2 && (
@@ -266,12 +281,27 @@ export default function Index({ projectsObject, organizationsObject, membersObje
                 possibleFilters={possibleFilters[typesByTabValue[2]]}
               />
             )}
-            <ProfilePreviews
-              profiles={membersWithAdditionalInfo(membersObject.members)}
-              loadFunc={loadMoreMembers}
-              hasMore={hasMore.members}
-              showAdditionalInfo
-            />
+            {membersObject && membersObject.members && membersObject.members.length ? 
+              (
+                <ProfilePreviews
+                  profiles={membersWithAdditionalInfo(membersObject.members)}
+                  loadFunc={loadMoreMembers}
+                  hasMore={hasMore.members}
+                  showAdditionalInfo
+                />
+              )
+            :
+              (
+                <Typography component="h4" variant="h5" className={classes.infoMessage}>
+                  There are no members on this site yet.{" "}
+                  <Link href="/share">
+                    <Typography color="primary" className={classes.link} component="h5" variant="h5">
+                      Create a profile to be the first one!
+                    </Typography>
+                  </Link>
+                </Typography>
+              )            
+            }
           </TabContent>
         </Layout>
       )}
