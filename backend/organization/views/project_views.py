@@ -265,6 +265,7 @@ class UpdateProjectMemberView(APIView):
         project_member.delete()
         return Response({'message': 'Member deleted'}, status=status.HTTP_200_OK)
 
+
 class ListProjectMembersView(ListAPIView):
     lookup_field = 'url_slug'
     serializer_class = ProjectMemberSerializer
@@ -276,14 +277,18 @@ class ListProjectMembersView(ListAPIView):
 
         return project.project_member.all()
 
+
 class ListProjectTags(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectTagsSerializer
+
     def get_queryset(self):
         return ProjectTags.objects.all()
+
 
 class ListProjectStatus(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectStatusSerializer
+
     def get_queryset(self):
         return ProjectStatus.objects.all()
