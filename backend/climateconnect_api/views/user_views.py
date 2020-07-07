@@ -67,7 +67,7 @@ class SignUpView(APIView):
         user = User.objects.create(
             username=request.data['email'],
             email=request.data['email'], first_name=request.data['first_name'],
-            last_name=request.data['last_name'], is_profile_verified=True #TODO: change this after automatic E-Mails are implemented
+            last_name=request.data['last_name'], is_active=True
         )
 
         user.set_password(request.data['password'])
@@ -78,7 +78,8 @@ class SignUpView(APIView):
         UserProfile.objects.create(
             user=user, country=request.data['country'],
             city=request.data['city'],
-            url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name']
+            url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
+            is_profile_verified=True #TODO: change this after automatic E-Mails are implemented
         )
 
         # TODO: Call a function that sends an email to user.
