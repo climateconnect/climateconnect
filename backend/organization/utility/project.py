@@ -12,12 +12,14 @@ from organization.utility.general import get_image_from_data_url
 
 def create_new_project(data: Dict) -> Project:
     project = Project.objects.create(
-        name=data['name'], start_date=data['start_date'],
+        name=data['name'],
         short_description=data['short_description'],
         collaborators_welcome=data['collaborators_welcome'],
         status_id = data['status']
     )
     # Add all non required parameters if they exists in the request.
+    if 'start_date' in data:
+        project.start_date = data['start_date']
     if 'country' in data:
         project.country = data['country']
     if 'city' in data:

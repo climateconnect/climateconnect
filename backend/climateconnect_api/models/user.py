@@ -127,6 +127,7 @@ class UserProfile(models.Model):
         verbose_name = "User Profile"
         verbose_name_plural = "User Profiles"
         db_table = "climateconnect_user_profile"
+        ordering = ["-id"]
 
     def __str__(self):
         return "%s %s [profile id: %d]" % (

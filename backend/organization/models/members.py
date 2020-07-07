@@ -103,6 +103,7 @@ class OrganizationMember(models.Model):
         app_label = "organization"
         verbose_name = 'Organization Member'
         verbose_name_plural = 'Organization Members'
+        ordering = ['-id']
 
     def __str__(self):
         return "User %d member for organization %s" % (self.user.id, self.organization.name)

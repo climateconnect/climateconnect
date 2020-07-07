@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.postgres.fields import JSONField
+from django.contrib.postgres.fields import ArrayField
 
 from organization.models import Organization
 from organization.models.project import Project
@@ -28,9 +28,11 @@ class OrganizationTags(models.Model):
         auto_now_add=True
     )
 
-    additional_info = JSONField(
+    additional_info  = ArrayField(
+        models.CharField(max_length=264),
         null=True,
-        blank=True
+        blank=True,
+        size=5
     )
 
     updated_at = models.DateTimeField(
@@ -62,11 +64,6 @@ class OrganizationTagging(models.Model):
         verbose_name="Organization Tag",
         help_text="Points to the tag",
         on_delete=models.CASCADE
-    )
-
-    additional_info = JSONField(
-        null=True,
-        blank=True
     )
 
     created_at = models.DateTimeField(
@@ -116,11 +113,6 @@ class ProjectTags(models.Model):
         auto_now_add=True
     )
 
-    additional_info = JSONField(
-        null=True,
-        blank=True
-    )
-
     updated_at = models.DateTimeField(
         help_text="Time when tag was updated",
         verbose_name="Updated at",
@@ -163,11 +155,6 @@ class ProjectTagging(models.Model):
         help_text="Time when project tag was updated",
         verbose_name="Updated At",
         auto_now=True
-    )
-
-    additional_info = JSONField(
-        null=True,
-        blank=True
     )
 
     class Meta:

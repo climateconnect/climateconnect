@@ -54,7 +54,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return obj.user.last_name
 
 
-class UserProfileStubSerializer(serializers.ModelSerializer):
+class UserProfileMinimalSerializer(serializers.ModelSerializer):
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
 
@@ -63,7 +63,24 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'first_name', 'last_name',
             'url_slug', 'image', 'background_image',
-            'country', 'state', 'city', 'is_profile_verified'
+            'country', 'state', 'city'
+        )
+
+    def get_first_name(self, obj):
+        return obj.user.first_name
+
+    def get_last_name(self, obj):
+        return obj.user.last_name
+
+class UserProfileStubSerializer(serializers.ModelSerializer):
+    first_name = serializers.SerializerMethodField()
+    last_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserProfile
+        fields = (
+            'id', 'first_name', 'last_name',
+            'url_slug', 'image', 'country', 'city'
         )
 
     def get_first_name(self, obj):

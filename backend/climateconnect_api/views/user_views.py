@@ -12,15 +12,19 @@ from rest_framework.filters import SearchFilter
 
 from rest_framework.exceptions import ValidationError
 from knox.views import LoginView as KnowLoginView
+from climateconnect_api.pagination import MembersPagination
 
 # Database imports
 from django.contrib.auth.models import User
 from climateconnect_api.models.user import UserProfile
+from organization.models.members import (ProjectMember, OrganizationMember)
 
 # Serializer imports
 from climateconnect_api.serializers.user import (
     UserProfileSerializer, PersonalProfileSerializer, UserProfileStubSerializer
 )
+from organization.serializers.project import ProjectFromProjectMemberSerializer
+from organization.serializers.organization import OrganizationsFromProjectMember
 
 
 
@@ -60,7 +64,7 @@ class SignUpView(APIView):
         user = User.objects.create(
             username=request.data['email'],
             email=request.data['email'], first_name=request.data['first_name'],
-            last_name=request.data['last_name'], is_active=True
+            last_name=request.data['last_name'], is_profile_verified=True #TODO: change this after automatic E-Mails are implemented
         )
 
         user.set_password(request.data['password'])
@@ -95,15 +99,13 @@ class PersonalProfileView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class MemberProfilesView(ListAPIView):
+class ListMemberProfilesView(ListAPIView):
     permission_classes = [AllowAny]
-    pagination_class = PageNumberPagination
+    pagination_class = MembersPagination
     filter_backends = [SearchFilter]
     search_fields = ['name']
 
     def get_serializer_class(self):
-        if self.request.user.is_authenticated:
-            return UserProfileSerializer
         return UserProfileStubSerializer
 
     def get_queryset(self):
@@ -124,3 +126,27 @@ class MemberProfileView(APIView):
         else:
             serializer = UserProfileStubSerializer(profile)
             return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ListMemberProjectsView(ListAPIView):
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ['parent_organization__url_slug']
+    pagination_class = MembersPagination
+    serializer_class = ProjectFromProjectMemberSerializer
+
+    def get_queryset(self):
+        return ProjectMember.objects.filter(
+            user=UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user,
+        ).order_by('id')
+
+class ListMemberOrganizationsView(ListAPIView):
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ['parent_organization__url_slug']
+    pagination_class = MembersPagination
+    serializer_class = OrganizationsFromProjectMember
+
+    def get_queryset(self):
+        return OrganizationMember.objects.filter(
+            user=UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user,
+        ).order_by('id')

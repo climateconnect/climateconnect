@@ -90,7 +90,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = (
-            'name', 'url_slug', 
+            'id', 'name', 'url_slug', 
             'image', 'country', 
             'city', 'status',
             'project_parents'
@@ -121,4 +121,26 @@ class ProjectCollaboratorsSerializer(serializers.ModelSerializer):
     
     def get_collaborating_organization(self, obj):
         serializer = OrganizationStubSerializer(obj.collaborating_organization)
+        return serializer.data
+
+class ProjectFromProjectParentsSerializer(serializers.ModelSerializer):
+    project = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProjectParents
+        fields = ('project',)
+
+    def get_project(self, obj):
+        serializer = ProjectStubSerializer(obj.project)
+        return serializer.data
+
+class ProjectFromProjectMemberSerializer(serializers.ModelSerializer):
+    project = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProjectMember
+        fields = ('project',)
+
+    def get_project(self, obj):
+        serializer = ProjectStubSerializer(obj.project)
         return serializer.data

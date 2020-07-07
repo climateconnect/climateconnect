@@ -16,6 +16,16 @@ urlpatterns = [
         name='organization-api-view'
     ),
     path(
+        'organizations/<slug:url_slug>/projects/',
+        organization_views.ListOrganizationProjectsAPIView.as_view(),
+        name='organization-projects-api-view'
+    ),
+    path(
+        'organizations/<slug:url_slug>/members/',
+        organization_views.ListOrganizationMembersAPIView.as_view(),
+        name='organization-members-api-view'
+    ),
+    path(
         'create_organization/',
         organization_views.CreateOrganizationView.as_view(),
         name='create-organization-api-view'
