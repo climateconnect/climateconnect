@@ -130,48 +130,48 @@ class MemberProfileView(APIView):
 
 
 class EditUserProfile(APIView):
-    lookup_field = 'user_id'
     permission_classes = [UserPermission]
 
-    def get(self, request, user_id):
+    def get(self, request, url_slug):
         try:
-            user = User.objects.get(id=int(user_id))
+            user_profile = UserProfile.objects.get(url_slug=str(url_slug))
         except User.DoesNotExist:
-            raise NotFound('User not found.')
+            raise NotFound('User profile not found.')
 
-        serializer = UserProfileSerializer(user.user_profile)
+        serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request, user_id):
+    def post(self, request, url_slug):
         try:
-            user = User.objects.get(id=int(user_id))
+            user_profile = UserProfile.objects.get(url_slug=str(url_slug))
         except User.DoesNotExist:
             raise NotFound('User not found.')
 
+        user = user_profile.user
         if 'first_name' in request.data:
             user.first_name = request.data['first_name']
 
         if 'last_name' in request.data:
             user.last_name = request.data['last_name']
 
-        user.user_profile.name = user.first_name + ' ' + user.last_name
-        user.user_profile.url_slug = (user.first_name + user.last_name).lower() + str(user.id)
+        user_profile.name = user.first_name + ' ' + user.last_name
+        user_profile.url_slug = (user.first_name + user.last_name).lower() + str(user.id)
         user.save()
 
         if 'image' in request.data:
-            user.user_profile.image = request.data['image']
+            user_profile.image = request.data['image']
         if 'background_image' in request.data:
-            user.user_profile.background_image = request.data['background_image']
+            user_profile.background_image = request.data['background_image']
 
         if 'country' in request.data:
-            user.user_profile.country = request.data['country']
+            user_profile.country = request.data['country']
 
         if 'state' in request.data:
-            user.user_profile.state = request.data['state']
+            user_profile.state = request.data['state']
         if 'city' in request.data:
-            user.user_profile.city = request.data['city']
+            user_profile.city = request.data['city']
         if 'biography' in request.data:
-            user.user_profile.biography = request.data['biography']
+            user_profile.biography = request.data['biography']
 
         if 'availability' in request.data:
             try:
@@ -179,13 +179,13 @@ class EditUserProfile(APIView):
             except Availability.DoesNotExist:
                 raise NotFound('Availability not found.')
 
-            user.user_profile.availability = availability
+            user_profile.availability = availability
 
         if 'skills' in request.data:
             for skill_id in request.data['skills']:
                 skill = Skill.objects.get(id=int(skill_id))
-                user.user_profile.skills.add(skill)
+                user_profile.skills.add(skill)
 
-        user.user_profile.save()
-        serializer = UserProfileSerializer(user.user_profile)
+        user_profile.save()
+        serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
