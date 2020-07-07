@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { Container, Tabs, Tab } from "@material-ui/core";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -58,9 +58,20 @@ ProjectPage.getInitialProps = async ctx => {
 function ProjectLayout({ project }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
-  const [tabValue, setTabValue] = React.useState(0);
+  const [hash, setHash] = React.useState(null);
+  const typesByTabValue = ["project", "team", "comments"]
+  useEffect(() => {
+    if (window.location.hash) {
+      setHash(window.location.hash.replace("#", ""));
+      setTabValue(typesByTabValue.indexOf(window.location.hash.replace("#", "")));
+    }
+  });
+
+  const [tabValue, setTabValue] = React.useState(hash ? typesByTabValue.indexOf(hash) : 0);
 
   const handleTabChange = (event, newValue) => {
+    if (newValue === 0) window.location.hash = "";
+    else window.location.hash = typesByTabValue[newValue];
     setTabValue(newValue);
   };
 
@@ -211,12 +222,15 @@ function parseProject(project) {
 function parseProjectMembers(projectMembers) {
   return projectMembers.map(m => {
     return {
-      url_slug: m.url_slug,
+      ...m.user, 
+      url_slug: m.user.url_slug,
       role: m.role_in_project,
       permissions: m.role.name,
-      timeperweek: m.time_per_week,
+      availability: m.availability,
       name: m.user.first_name + " " + m.user.last_name,
-      image: m.user.image
+      location: m.user.city
+      ? m.user.city + ", " + m.user.country
+      : m.user.country
     };
   });
 }
