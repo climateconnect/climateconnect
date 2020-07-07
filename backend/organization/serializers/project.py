@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
+from climateconnect_api.models import UserProfile
 from organization.models import (Project, ProjectMember, ProjectParents, ProjectCollaborators)
-from climateconnect_api.serializers.common import SkillSerializer
+from climateconnect_api.serializers.common import (SkillSerializer, AvailabilitySerializer)
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.serializers.role import RoleSerializer
 from organization.serializers.organization import OrganizationStubSerializer
@@ -104,13 +105,14 @@ class ProjectStubSerializer(serializers.ModelSerializer):
 class ProjectMemberSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     role = RoleSerializer()
+    availability = AvailabilitySerializer()
 
     class Meta:
         model = ProjectMember
-        exclude = ('created_at', 'updated_at', 'project')
+        fields = ('user', 'role', 'role_in_project', 'availability')
 
     def get_user(self, obj):
-        return UserProfileStubSerializer(obj.user.user_profile).data
+        return UserProfileStubSerializer(UserProfile.objects.filter(user=obj.user)[0]).data
 
 class ProjectCollaboratorsSerializer(serializers.ModelSerializer):
     collaborating_organization = serializers.SerializerMethodField()
