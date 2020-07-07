@@ -15,10 +15,10 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function LoginNudge({ whatToDo, fullPage }) {
+export default function LoginNudge({ whatToDo, fullPage, className }) {
   const classes = useStyles();
   return (
-    <div className={fullPage && classes.loginNudge}>
+    <div className={`${fullPage && classes.loginNudge} ${className}`}>
       <Typography className={fullPage && classes.loginNudgeText}>
         Please{" "}
         <Link underline="always" color="primary" href="/signin">

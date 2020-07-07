@@ -2,8 +2,9 @@ const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVI
 
 export function getImageUrl(url) {
   if (!url) return;
-  if (DEVELOPMENT) {
-    console.log(process.env.API_URL + url);
+  if (DEVELOPMENT && !url.includes("http:") && !url.includes("https:")) {
     return process.env.API_URL + url;
-  } else return url;
+  } else {
+    return url;
+  }
 }

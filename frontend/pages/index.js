@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Layout from "../src/components/layouts/layout";
 import ProjectPreviews from "./../src/components/project/ProjectPreviews";
 import About from "./about";
@@ -13,9 +13,6 @@ import possibleFilters from "./../public/data/possibleFilters";
 import OrganizationPreviews from "../src/components/organization/OrganizationPreviews";
 import ProfilePreviews from "../src/components/profile/ProfilePreviews";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
-
-import fakeOrganizationData from "../public/data/organizations.json";
-import fakeProfileData from "../public/data/profiles.json";
 
 import Cookies from "next-cookies";
 import tokenConfig from "../public/config/tokenConfig";
@@ -72,8 +69,8 @@ const useStyles = makeStyles(theme => {
 export default function Index({ projectsObject, organizationsObject, membersObject, token }) {
   const [hasMore, setHasMore] = React.useState({
     projects: !!projectsObject && projectsObject.hasMore,
-    organizations: true,
-    members: true
+    organizations: !!organizationsObject && organizationsObject.hasMore,
+    members: !!membersObject && membersObject.hasMore
   });
   const classes = useStyles();
   //Django starts counting at page 1 and we always catch the first page on load.
@@ -87,9 +84,16 @@ export default function Index({ projectsObject, organizationsObject, membersObje
     members: false,
     organizations: false
   });
-  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
-  const [tabValue, setTabValue] = React.useState(0);
+  const [hash, setHash] = React.useState(null);
   const typesByTabValue = ["projects", "organizations", "members"];
+  useEffect(() => {
+    if (window.location.hash) {
+      setHash(window.location.hash.replace("#", ""));
+      setTabValue(typesByTabValue.indexOf(window.location.hash.replace("#", "")));
+    }
+  });
+  const [tabValue, setTabValue] = React.useState(hash ? typesByTabValue.indexOf(hash) : 0);
+  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const [filtersExpanded, setFiltersExpanded] = React.useState(false);
   const [filters, setFilters] = React.useState({
     projects: {},
@@ -103,6 +107,8 @@ export default function Index({ projectsObject, organizationsObject, membersObje
   };
 
   const handleTabChange = (event, newValue) => {
+    if (newValue === 0) window.location.hash = "";
+    else window.location.hash = typesByTabValue[newValue];
     setTabValue(newValue);
   };
 
@@ -123,14 +129,16 @@ export default function Index({ projectsObject, organizationsObject, membersObje
   };
 
   const loadMoreOrganizations = async page => {
-    const newOrganizationsObject = await getOrganizations(page);
+    const newOrganizationsObject = await getOrganizations(page, token);
+    setNextPages({ ...nextPages, organizations: nextPages.organizations + 1 });
     const newOrganizations = newOrganizationsObject.organizations;
     setHasMore({ ...hasMore, organizations: newOrganizationsObject.hasMore });
     return [...newOrganizations];
   };
 
   const loadMoreMembers = async page => {
-    const newMembersObject = await getMembers(page);
+    const newMembersObject = await getMembers(page, token);
+    setNextPages({ ...nextPages, members: nextPages.members + 1 });
     const newMembers = membersWithAdditionalInfo(newMembersObject.members);
     setHasMore({ ...hasMore, members: newMembersObject.hasMore });
     return [...newMembers];
@@ -142,7 +150,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
         ...p,
         additionalInfo: [
           {
-            text: p.info.location,
+            text: p.location,
             icon: LocationOnIcon,
             iconName: "LocationOnIcon",
             importance: "high"
@@ -156,7 +164,6 @@ export default function Index({ projectsObject, organizationsObject, membersObje
     setFilters({ ...filters, [type]: newFilters });
     if (closeFilters) setFiltersExpanded(false);
   };
-
   return (
     <>
       {process.env.PRE_LAUNCH === "true" ? (
@@ -310,22 +317,67 @@ async function getProjects(page, token) {
 }
 
 //TODO replace by db call. console.log is just there to pass lint
-async function getOrganizations(page) {
-  console.log(page);
-  const organizations = fakeOrganizationData.organizations;
-  return { organizations: [...organizations, ...organizations], hasMore: true };
+async function getOrganizations(page, token) {
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/api/organizations/?page=" + page,
+      tokenConfig(token)
+    );
+    if (resp.data.length === 0) return null;
+    else {
+      return { organizations: parseOrganizations(resp.data.results), hasMore: !!resp.data.next };
+    }
+  } catch (err) {
+    if (err.response && err.response.data) {
+      console.log("Error: ");
+      console.log(err.response.data);
+    } else console.log(err);
+    return null;
+  }
 }
 
 //TODO replace by db call. console.log is just there to pass lint
-async function getMembers(page) {
-  console.log(page);
-  const profiles = fakeProfileData.profiles;
-  return { members: [...profiles, ...profiles], hasMore: true };
+async function getMembers(page, token) {
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/api/members/?page=" + page,
+      tokenConfig(token)
+    );
+    if (resp.data.length === 0) return null;
+    else {
+      return { members: parseMembers(resp.data.results), hasMore: !!resp.data.next };
+    }
+  } catch (err) {
+    if (err.response && err.response.data) {
+      console.log("Error: ");
+      console.log(err.response.data);
+    } else console.log(err);
+    return null;
+  }
 }
 
 const parseProjects = projects => {
   return projects.map(project => ({
     ...project,
     location: project.city + ", " + project.country
+  }));
+};
+
+const parseMembers = members => {
+  return members.map(member => ({
+    ...member,
+    location: members.city ? member.city + ", " + member.country : member.country
+  }));
+};
+
+const parseOrganizations = organizations => {
+  return organizations.map(organization => ({
+    ...organization,
+    types: organization.types.map(type => type.organization_tag),
+    info: {
+      location: organization.city
+        ? organization.city + ", " + organization.country
+        : organization.country
+    }
   }));
 };

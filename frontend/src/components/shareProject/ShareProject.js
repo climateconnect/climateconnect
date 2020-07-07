@@ -3,12 +3,14 @@ import Form from "../general/Form";
 
 export default function Share({ project, handleSetProjectData, goToNextStep, userOrganizations }) {
   //TODO: This should include only organizations in which the user is an admin
-  const organizations = !userOrganizations ? [] : userOrganizations.map(org => {
-    return {
-      key: org.url_slug,
-      ...org
-    };
-  });
+  const organizations = !userOrganizations
+    ? []
+    : userOrganizations.map(org => {
+        return {
+          key: org.url_slug,
+          ...org
+        };
+      });
   const organizationOptions = [
     { key: "personalproject", name: "Personal project" },
     ...organizations

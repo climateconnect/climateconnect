@@ -34,6 +34,7 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import SentimentSatisfiedIcon from "@material-ui/icons/SentimentSatisfied";
 import GroupWorkIcon from "@material-ui/icons/GroupWork";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const LINKS = [
   {
@@ -323,7 +324,7 @@ function NarrowScreenLinks({ loggedInUser, handleLogout }) {
                     <Link href={link.href} key={index}>
                       <Avatar
                         className={classes.loggedInAvatarMobile}
-                        src={loggedInUser.image}
+                        src={getImageUrl(loggedInUser.image)}
                         alt={loggedInUser.name}
                       />
                     </Link>
@@ -381,7 +382,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout }) => {
       >
         <Avatar
           className={classes.loggedInAvatar}
-          src={loggedInUser.image}
+          src={getImageUrl(loggedInUser.image)}
           alt={loggedInUser.name}
         />
         <ArrowDropDownIcon />

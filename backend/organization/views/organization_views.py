@@ -9,12 +9,16 @@ from rest_framework.exceptions import NotFound
 
 from django.contrib.auth.models import User
 from organization.serializers.organization import (
-    OrganizationSerializer, OrganizationMinimalSerializer, OrganizationMemberSerializer, UserOrganizationSerializer
+    OrganizationSerializer, OrganizationMinimalSerializer, OrganizationMemberSerializer, UserOrganizationSerializer, OrganizationCardSerializer
 )
-from organization.models import Organization, OrganizationMember
+from organization.serializers.project import (ProjectFromProjectParentsSerializer,)
+from climateconnect_api.serializers.user import UserProfileStubSerializer
+from organization.models import Organization, OrganizationMember, ProjectParents
 from climateconnect_api.models.user import UserProfile
 from organization.permissions import OrganizationReadWritePermission
 from climateconnect_api.models import Role
+from organization.pagination import (OrganizationsPagination, ProjectsPagination)
+from climateconnect_api.pagination import MembersPagination
 import logging
 logger = logging.getLogger(__name__)
 
@@ -22,15 +26,12 @@ logger = logging.getLogger(__name__)
 class ListOrganizationsAPIView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
-    pagination_class = PageNumberPagination
+    pagination_class = OrganizationsPagination
     search_fields = ['name']
     queryset = Organization.objects.all()
 
     def get_serializer_class(self):
-        if self.request.user.is_authenticated:
-            return OrganizationSerializer
-
-        return OrganizationMinimalSerializer
+        return OrganizationCardSerializer
 
 
 class CreateOrganizationView(APIView):
@@ -164,3 +165,27 @@ class PersonalOrganizationsView(ListAPIView):
         user_organization_members= OrganizationMember.objects.filter(user=request.user)
         serializer = UserOrganizationSerializer(user_organization_members, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ListOrganizationProjectsAPIView(ListAPIView):
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ['parent_organization__url_slug']
+    pagination_class = ProjectsPagination
+    serializer_class = ProjectFromProjectParentsSerializer
+
+    def get_queryset(self):
+        return ProjectParents.objects.filter(
+            parent_organization__url_slug=self.kwargs['url_slug'],
+        ).order_by('id')
+
+class ListOrganizationMembersAPIView(ListAPIView):
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ['organization__url_slug']
+    pagination_class = MembersPagination
+    serializer_class = OrganizationMemberSerializer
+
+    def get_queryset(self):
+        return OrganizationMember.objects.filter(
+            organization__url_slug=self.kwargs['url_slug'],
+        ).order_by('id')

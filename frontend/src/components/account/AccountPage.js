@@ -1,6 +1,7 @@
 import React from "react";
-import { Container, Avatar, Typography, Chip, Button } from "@material-ui/core";
+import { Container, Avatar, Typography, Chip, Button, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -82,7 +83,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function AccountPage({
-  possibleAccountTypes,
   account,
   default_background,
   editHref,
@@ -91,39 +91,48 @@ export default function AccountPage({
   isOwnAccount
 }) {
   const classes = useStyles();
-  const displayInfoArrayData = (key, infoEl) => {
-    return (
-      <div key={key} className={classes.infoElement}>
-        <div className={classes.subtitle}>{infoEl.name}:</div>
-        <div className={classes.chipArray}>
-          {infoEl && infoEl.length > 0 ? (
-            infoEl.value.map(entry => (
-              <Chip size="medium" label={entry} key={entry} className={classes.chip} />
-            ))
-          ) : (
-            <div className={classes.content}>{infoEl.missingMessage}</div>
-          )}
-        </div>
-      </div>
-    );
-  };
 
   const displayAccountInfo = info =>
-    Object.keys(info).map(key => {
-      const i = getFullInfoElement(infoMetadata, key, info[key]);
-      const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
-      const additionalText = i.additionalText ? i.additionalText : "";
-      if (i.type === "array") {
-        return displayInfoArrayData(key, i);
-      } else if (value) {
-        return (
-          <div key={key}>
-            <div className={classes.subtitle}>{i.name}:</div>
-            <div className={classes.content}>
-              {value ? value + additionalText : i.missingMessage}
+    Object.keys(info).map((key, index) => {
+      if (info[key]) {
+        const i = getFullInfoElement(infoMetadata, key, info[key]);
+        const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
+        const additionalText = i.additionalText ? i.additionalText : "";
+        if (key === "parent_organization") {
+          if (value.name)
+            return (
+              <div key={index} className={classes.subtitle}>
+                {account.name} is a suborganization of{" "}
+                <Link color="inherit" href={"/organizations/" + value.url_slug} target="_blank">
+                  <MiniOrganizationPreview organization={value} size="small" />
+                </Link>
+              </div>
+            );
+        } else if (i.type === "array") {
+          return (
+            <div key={index} className={classes.infoElement}>
+              <div className={classes.subtitle}>{i.name}:</div>
+              <div className={classes.chipArray}>
+                {i && i.value && i.value.length > 0 ? (
+                  i.value.map(entry => (
+                    <Chip size="medium" label={entry} key={entry} className={classes.chip} />
+                  ))
+                ) : (
+                  <div className={classes.content}>{i.missingMessage}</div>
+                )}
+              </div>
             </div>
-          </div>
-        );
+          );
+        } else if (value) {
+          return (
+            <div key={index}>
+              <div className={classes.subtitle}>{i.name}:</div>
+              <div className={classes.content}>
+                {value ? value + additionalText : i.missingMessage}
+              </div>
+            </div>
+          );
+        }
       }
     });
 
@@ -164,7 +173,7 @@ export default function AccountPage({
           </Typography>
           {account.types && (
             <Container className={classes.noPadding}>
-              {getTypesOfAccount(account, possibleAccountTypes, infoMetadata).map(type => (
+              {account.types.map(type => (
                 <Chip label={type.name} key={type.key} className={classes.chip} />
               ))}
             </Container>
@@ -181,21 +190,4 @@ export default function AccountPage({
 
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };
-};
-
-const getTypes = (possibleAccountTypes, infoMetadata) => {
-  return possibleAccountTypes.map(type => {
-    return {
-      ...type,
-      additionalInfo: type.additionalInfo.map(info => {
-        return { ...infoMetadata[info], key: info };
-      })
-    };
-  });
-};
-
-const getTypesOfAccount = (account, possibleAccountTypes, infoMetadata) => {
-  return getTypes(possibleAccountTypes, infoMetadata).filter(type =>
-    account.types.includes(type.key)
-  );
 };

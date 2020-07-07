@@ -71,7 +71,6 @@ export default function ShareProjectRoot({
   const [finished, setFinished] = React.useState(false);
 
   const goToNextStep = () => {
-    console.log(project);
     setCurStep(steps[steps.indexOf(curStep) + 1]);
   };
 
@@ -89,7 +88,6 @@ export default function ShareProjectRoot({
         tokenConfig(token)
       )
       .then(function(response) {
-        console.log(response);
         setProject({ ...project, url_slug: response.data.url_slug });
       })
       .catch(function(error) {

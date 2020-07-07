@@ -181,7 +181,6 @@ export default function About() {
             Open positions:
           </Typography>
           {open_positions.map((info, index) => {
-            open_positions.map(o => console.log(o));
             return (
               <InfoBubble
                 data={info}

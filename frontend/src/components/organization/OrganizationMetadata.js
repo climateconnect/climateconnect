@@ -1,10 +1,8 @@
 import React from "react";
 import { Box, Tooltip } from "@material-ui/core";
 import PlaceIcon from "@material-ui/icons/Place";
-import GroupIcon from "@material-ui/icons/Group";
 import ExploreIcon from "@material-ui/icons/Explore";
 import { makeStyles } from "@material-ui/core/styles";
-import organization_types from "./../../../public/data/organization_types.json";
 import organization_info_metadata from "../../../public/data/organization_info_metadata";
 
 const useStyles = makeStyles(theme => {
@@ -35,12 +33,11 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function OrganizationMetaData({ organization, showMembers, showOrganizationType }) {
+export default function OrganizationMetaData({ organization, showOrganizationType }) {
   const classes = useStyles();
   const additionalInfo = organization.types.reduce((arr, type) => {
-    const fullType = organization_types.organization_types.find(ot => ot.key === type);
-    if (fullType.additionalInfo) {
-      fullType.additionalInfo.map(i => {
+    if (type.additional_info) {
+      type.additional_info.map(i => {
         arr.push({
           key: i,
           name: organization_info_metadata[i].name,
@@ -49,8 +46,8 @@ export default function OrganizationMetaData({ organization, showMembers, showOr
           iconName: organization_info_metadata[i].iconName
         });
       });
-      return arr;
     }
+    return arr;
   }, []);
   return (
     <Box className={classes.root}>
@@ -62,16 +59,6 @@ export default function OrganizationMetaData({ organization, showMembers, showOr
         </span>
         {organization.info.location}
       </Box>
-      {showMembers && (
-        <Box>
-          <span className={classes.cardIconBox}>
-            <Tooltip title="number of members">
-              <GroupIcon className={classes.cardIcon} />
-            </Tooltip>
-          </span>
-          <span className={classes.textContent}>{organization.members.length} members</span>
-        </Box>
-      )}
       {showOrganizationType && (
         <>
           <Box>
@@ -82,10 +69,9 @@ export default function OrganizationMetaData({ organization, showMembers, showOr
             </span>
             <span className={classes.textContent}>
               {organization.types.map((type, index) => {
-                const fullType = organization_types.organization_types.find(ot => ot.key === type);
                 return (
-                  <React.Fragment key={index}>
-                    {fullType.name}
+                  <React.Fragment key={type.id}>
+                    {type.name}
                     {index !== organization.types.length - 1 && ", "}
                   </React.Fragment>
                 );
