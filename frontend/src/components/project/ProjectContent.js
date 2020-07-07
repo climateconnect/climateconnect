@@ -97,7 +97,9 @@ const useStyles = makeStyles(theme => ({
   collabSection: {
     display: "inline-block",
     width: "50%",
-    minWidth: 450
+    "@media (max-width:900px)": {
+      width: "100%"
+    }
   },
   openToCollabBool: {
     marginTop: theme.spacing(2),
@@ -136,7 +138,7 @@ export default function ProjectContent({ project }) {
                 />
               </Link>
             )}
-            {project.collaborating_organizations && (
+            {project.collaborating_organizations && project.collaborating_organizations.length>0 && (
               <div>
                 <span> In collaboration with</span>
                 {project.collaborating_organizations.map(o => (
