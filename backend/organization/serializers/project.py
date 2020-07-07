@@ -1,16 +1,19 @@
 from rest_framework import serializers
 
-from organization.models import (Project, ProjectMember, ProjectParents)
+from organization.models import (Project, ProjectMember, ProjectParents, ProjectCollaborators)
 from climateconnect_api.serializers.common import SkillSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.serializers.role import RoleSerializer
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.tags import ProjectTaggingSerializer
 
+
 class ProjectSerializer(serializers.ModelSerializer):
     skills = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
+    status = serializers.CharField(source='status.name', read_only=True)
+    collaborating_organizations = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -23,9 +26,13 @@ class ProjectSerializer(serializers.ModelSerializer):
             'collaborators_welcome', 
             'skills', 'helpful_connections',
             'project_parents', 'tags', 
-            'created_at'
+            'created_at', 'collaborating_organizations'
         )
         read_only_fields = ['url_slug']
+
+    def get_collaborating_organizations(self, obj):
+        serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
+        return serializer.data
 
     def get_skills(self, obj):
         serializer = SkillSerializer(obj.skills, many=True)
@@ -61,6 +68,7 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
 class ProjectMinimalSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True)
     project_parents = serializers.SerializerMethodField()
+    status = serializers.CharField(source='status.name', read_only=True)
 
     class Meta:
         model = Project
@@ -77,6 +85,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
 
 class ProjectStubSerializer(serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
+    status = serializers.CharField(source='status.name', read_only=True)
     
     class Meta:
         model = Project
@@ -102,3 +111,14 @@ class ProjectMemberSerializer(serializers.ModelSerializer):
 
     def get_user(self, obj):
         return UserProfileStubSerializer(obj.user.user_profile).data
+
+class ProjectCollaboratorsSerializer(serializers.ModelSerializer):
+    collaborating_organization = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProjectCollaborators
+        fields = ['collaborating_organization']
+    
+    def get_collaborating_organization(self, obj):
+        serializer = OrganizationStubSerializer(obj.collaborating_organization)
+        return serializer.data

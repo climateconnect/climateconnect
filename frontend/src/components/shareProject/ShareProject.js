@@ -3,7 +3,7 @@ import Form from "../general/Form";
 
 export default function Share({ project, handleSetProjectData, goToNextStep, userOrganizations }) {
   //TODO: This should include only organizations in which the user is an admin
-  const organizations = userOrganizations.map(org => {
+  const organizations = !userOrganizations ? [] : userOrganizations.map(org => {
     return {
       key: org.url_slug,
       ...org
@@ -55,6 +55,7 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
   };
 
   const onSubmit = (event, values) => {
+    console.log(values);
     event.preventDefault();
     Object.keys(values).map(k => (values[k] = values[k].trim()));
     if (values.parent_organization === "Personal project")

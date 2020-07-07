@@ -13,13 +13,13 @@ class OrganizationSerializer(serializers.ModelSerializer):
 class OrganizationMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
-        fields = ('name', 'url_slug', 'image', 'short_description', 'background_image', 'country', 'state', 'city')
+        fields = ('id', 'name', 'url_slug', 'image', 'short_description', 'background_image', 'country', 'state', 'city')
 
 
 class OrganizationStubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
-        fields = ('name', 'url_slug', 'image')
+        fields = ('id', 'name', 'url_slug', 'image')
 
 
 class OrganizationMemberSerializer(serializers.ModelSerializer):
@@ -38,3 +38,12 @@ class OrganizationMemberSerializer(serializers.ModelSerializer):
             'time_per_week': None if not instance.time_per_week else instance.time_per_week.name,
             'role_in_organization': instance.role_in_organization
         }
+
+class UserOrganizationSerializer(serializers.ModelSerializer):
+    organization = serializers.SerializerMethodField()
+    class Meta: 
+        model = OrganizationMember
+        fields = ('organization',)
+    
+    def get_organization(self, obj):
+        return OrganizationStubSerializer(obj.organization).data

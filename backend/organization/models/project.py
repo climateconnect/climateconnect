@@ -7,7 +7,7 @@ from climateconnect_api.models import (Skill,)
 
 def project_image_path(instance, filename):
     return "projects/{}/{}".format(instance.id, filename)
-
+    
 
 class Project(models.Model):
     name = models.CharField(
@@ -33,31 +33,12 @@ class Project(models.Model):
         upload_to=project_image_path
     )
 
-    PROJECT_IDEA = "idea"
-    PROJECT_IN_PROGRESS = "in_progress"
-    PROJECT_FINISHED = "finished"
-    PROJECT_CANCELLED = "cancelled"
-    PROJECT_RECURRING = "recurring"
-
-    PROJECT_STATUS_LIST = [
-        PROJECT_IDEA, PROJECT_IN_PROGRESS, PROJECT_FINISHED,
-        PROJECT_CANCELLED, PROJECT_RECURRING
-    ]
-
-    PROJECT_STATUSES = (
-        (PROJECT_IDEA, "Idea"),
-        (PROJECT_IN_PROGRESS, "In Progress"),
-        (PROJECT_FINISHED, "Finished"),
-        (PROJECT_CANCELLED, "Cancelled"),
-        (PROJECT_RECURRING, "Recurring")
-    )
-
-    status = models.CharField(
-        help_text="Points to status of the project",
-        verbose_name="Status",
-        max_length=64,
-        choices=PROJECT_STATUSES,
-        default=PROJECT_IDEA
+    status = models.ForeignKey(
+        'ProjectStatus',
+        help_text="Points to project's status",
+        verbose_name="Project Status",
+        related_name="project_status",
+        on_delete=models.PROTECT
     )
 
     start_date = models.DateTimeField(
@@ -142,6 +123,12 @@ class Project(models.Model):
         size=5
     )
 
+    is_draft = models.BooleanField(
+        help_text="Whether project is public or just a private draft",
+        verbose_name="Is Draft?",
+        default=False
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Project"
@@ -199,3 +186,41 @@ class ProjectParents(models.Model):
 
     def __str__(self):
         return "Project parent for project %s" % (self.project.id)
+
+class ProjectCollaborators(models.Model):
+    project = models.ForeignKey(
+        Project,
+        help_text="Points to organizations's project",
+        verbose_name="Project",
+        related_name="project_collaborator",
+        on_delete=models.CASCADE
+    )
+
+    collaborating_organization = models.ForeignKey(
+        Organization,
+        help_text="Points to organization",
+        verbose_name="Organization",
+        related_name="collaborating_organization",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
+    )
+
+    created_at = models.DateTimeField(
+        help_text="Time when project was linked to an organization",
+        verbose_name="Created At",
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        help_text="Time when project was updated. i.e.: Order change etc.",
+        verbose_name="Updated At",
+        auto_now=True
+    )
+
+    class Meta:
+        app_label = 'organization'
+        verbose_name_plural = "Project Collaborators"
+
+    def __str__(self):
+        return "Project collaborator for project %s" % (self.project.id)

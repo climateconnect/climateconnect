@@ -7,6 +7,13 @@ class Role(models.Model):
         verbose_name="Name", max_length=128
     )
 
+    explanation = models.CharField(
+        help_text="Explanation of the role's permissions for the user",
+        verbose_name="Explanation", max_length=256,
+        null=True,
+        blank=True
+    )
+
     created_at = models.DateTimeField(
         help_text="Time when role was created",
         verbose_name="Created At", auto_now_add=True
@@ -34,6 +41,7 @@ class Role(models.Model):
         app_label = "climateconnect_api"
         verbose_name = "Role"
         verbose_name_plural = "Roles"
+        ordering=["id"]
 
     def __str__(self):
         return "Role: %s" % self.name

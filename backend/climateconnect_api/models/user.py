@@ -21,6 +21,14 @@ class UserProfile(models.Model):
         related_name="user_profile"
     )
 
+    name = models.CharField(
+        help_text="user.first_name+' '+user.last_name",
+        verbose_name="Full name",
+        max_length=256,
+        null=True,
+        blank=True
+    )
+
     url_slug = models.CharField(
         help_text="slug for user URL",
         verbose_name="URL Slug",
