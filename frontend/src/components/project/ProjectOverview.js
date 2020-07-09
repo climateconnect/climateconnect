@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
 import ExploreIcon from "@material-ui/icons/Explore";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
+import MessageContent from "../communication/MessageContent";
 
 const useStyles = makeStyles(theme => ({
   //general styling
@@ -144,7 +145,7 @@ function LargeScreenOverview({ project }) {
           <Typography component="h2" variant="h5" className={classes.subHeader}>
             Summary
           </Typography>
-          <Typography>{project.shortdescription}</Typography>
+          <Typography><MessageContent content={project.shortdescription} /></Typography>
           <div className={classes.projectInfoEl}>
             <Typography>
               <Tooltip title="Location">

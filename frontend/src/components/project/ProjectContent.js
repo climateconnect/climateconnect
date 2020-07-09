@@ -14,6 +14,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
+import MessageContent from "../communication/MessageContent";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -176,9 +177,9 @@ export default function ProjectContent({ project }) {
           {project.description ? (
             showFullDescription ||
             project.description.length <= MAX_DISPLAYED_DESCRIPTION_LENGTH ? (
-              project.description
+              <MessageContent content={project.description} />
             ) : (
-              project.description.substr(0, MAX_DISPLAYED_DESCRIPTION_LENGTH) + "..."
+              <MessageContent content={project.description.substr(0, MAX_DISPLAYED_DESCRIPTION_LENGTH) + "..."} />
             )
           ) : (
             <Typography variant="body2">
