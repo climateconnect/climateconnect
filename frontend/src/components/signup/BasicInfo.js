@@ -34,7 +34,7 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
   };
 
   const bottomLink = {
-    text: "Sign in",
+    text: "Log in",
     href: "/signin"
   };
 

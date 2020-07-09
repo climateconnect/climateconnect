@@ -101,7 +101,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
     organizations: {}
   });
   const searchBarLabels = {
-    projects: "Search for the most effective climate projects",
+    projects: "Search for climate action projects",
     organizations: "Search for organizations fighting climate change",
     members: "Search for people active against climate change"
   };

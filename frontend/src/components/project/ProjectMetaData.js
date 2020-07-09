@@ -1,5 +1,5 @@
 import React from "react";
-import { Box } from "@material-ui/core";
+import { Box, Tooltip } from "@material-ui/core";
 import PlaceIcon from "@material-ui/icons/Place";
 import ProjectStatus from "./ProjectStatus";
 import { makeStyles } from "@material-ui/core/styles";
@@ -45,8 +45,10 @@ export default function ProjectMetaData({ project }) {
         />
       )}
       <Box>
-        <PlaceIcon className={classes.cardIcon} />
-        {project.location}
+        <Tooltip title="Location">
+          <PlaceIcon className={classes.cardIcon} />
+        </Tooltip>
+        {project.location}        
         <div>
           <ProjectStatus status={project.status} className={classes.status} />
         </div>

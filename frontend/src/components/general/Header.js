@@ -58,7 +58,7 @@ const LINKS = [
     iconForDrawer: NotificationsIcon,
     hasBadge: true,
     //TODO: replace by user's unread notifications
-    badgeNumber: 3,
+    badgeNumber: 0,
     onlyShowIconOnNormalScreen: true,
     onlyShowIconOnMobile: true,
     icon: NotificationsIcon,
@@ -67,7 +67,7 @@ const LINKS = [
   },
   {
     href: "/signin",
-    text: "Sign in",
+    text: "Log in",
     iconForDrawer: AccountCircleIcon,
     isOutlinedInHeader: true,
     onlyShowLoggedOut: true,
@@ -78,8 +78,7 @@ const LINKS = [
     text: "Sign up",
     iconForDrawer: AccountCircleIcon,
     isOutlinedInHeader: true,
-    onlyShowLoggedOut: true,
-    showOnMobileOnly: true
+    onlyShowLoggedOut: true
   }
 ];
 

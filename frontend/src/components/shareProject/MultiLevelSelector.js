@@ -20,8 +20,7 @@ const useStyles = makeStyles(theme => {
     }),
     list: {
       display: "inline-block",
-      marginLeft: theme.spacing(4),
-      maxWidth:350,
+      maxWidth:"50%",
       [theme.breakpoints.down("md")]: {
         marginLeft: theme.spacing(0)
       }
@@ -31,7 +30,7 @@ const useStyles = makeStyles(theme => {
         display: "inline-block",
         marginTop: theme.spacing(props.offset * 8),
         verticalAlign: "top",
-        maxWidth:300
+        maxWidth:"50%"
       };
     },
     narrowScreenSubList: {
@@ -240,7 +239,7 @@ function SelectedList({ selected, itemNamePlural, maxSelections, className, onCl
       <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
         {selected.length > 0
           ? "Selected " + itemNamePlural
-          : "Select up to " + maxSelections + " " + itemNamePlural + "!"}
+          : "Select between 1 and " + maxSelections + " " + itemNamePlural + "!"}
       </Typography>
       <List className={classes.selectedList}>
         {selected.map((item, index) => (

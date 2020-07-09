@@ -23,7 +23,7 @@ export default function Signin() {
   ];
 
   const messages = {
-    submitMessage: "Sign in",
+    submitMessage: "Log in",
     bottomMessage: "New to Climate Connect?"
   };
 
@@ -56,7 +56,7 @@ export default function Signin() {
   };
 
   return (
-    <Layout title="Sign In">
+    <Layout title="Log In">
       <Form
         fields={fields}
         messages={messages}

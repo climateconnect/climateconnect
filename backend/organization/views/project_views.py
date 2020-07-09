@@ -58,10 +58,10 @@ class CreateProjectView(APIView):
         ]
         for param in required_params:
             if param not in request.data:
+                logger.error("Missing required information to create project:{}".format(param))
                 return Response({
                     'message': 'Missing required information to create project:'+param+' Please contact administrator'
                 }, status=status.HTTP_400_BAD_REQUEST)
-        #add error on wrong status
         try:
             project_status = ProjectStatus.objects.get(id=int(request.data["status"]))
         except ProjectStatus.DoesNotExist:
@@ -92,20 +92,6 @@ class CreateProjectView(APIView):
         roles = Role.objects.all()
         availabilities = Availability.objects.all()
         team_members = request.data['team_members']
-        for member in team_members:
-            user_role = roles.filter(id=int(member['role'])).first()
-            user_availability = availabilities.filter(id=int(member['availability'])).first()
-            try:
-                user = User.objects.get(id=int(member['id']))
-            except User.DoesNotExist:
-                logger.error("Passed user id {} does not exists".format(member['id']))
-                continue
-            if user:
-                ProjectMember.objects.create(
-                    project=project, user=user, role=user_role, 
-                    availability=user_availability, role_in_project=member['role_in_project']
-                )
-                logger.info("Project member created for user {}".format(user.id))
             
         if 'project_tags' in request.data:
             for project_tag_id in request.data['project_tags']:
@@ -120,6 +106,23 @@ class CreateProjectView(APIView):
                     )
                     logger.info("Project tagging created for project {}".format(project.id))
 
+        for member in team_members:
+            user_role = roles.filter(id=int(member['role'])).first()
+            user_availability = availabilities.filter(id=int(member['availability'])).first()
+            try:
+                user = User.objects.get(id=int(member['id']))
+            except User.DoesNotExist:
+                for user in User.objects.all():
+                    logger.error(user.id)
+                logger.error("[CreateProjectView]Passed user id {} does not exists".format(int(member['id'])))
+                continue
+            if user:
+                ProjectMember.objects.create(
+                    project=project, user=user, role=user_role, 
+                    availability=user_availability, role_in_project=member['role_in_project']
+                )
+                logger.info("Project member created for user {}".format(user.id))
+
         return Response({
             'message': 'Project {} successfully created'.format(project.name),
             'url_slug': project.url_slug
@@ -133,7 +136,7 @@ class ProjectAPIView(APIView):
         try:
             project = Project.objects.get(url_slug=str(url_slug))            
         except Project.DoesNotExist:
-            return Response({'message': 'Project not found,'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
         #TODO: get number of followers
 
         serializer = ProjectSerializer(project, many=False)
@@ -143,7 +146,7 @@ class ProjectAPIView(APIView):
         try:
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
-            return Response({'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
 
         if request.data['name'] != project.name:
             project.name = request.data['name']
@@ -217,7 +220,7 @@ class AddProjectMembersView(APIView):
             try:
                 user = User.objects.get(id=int(member['user_id']))
             except User.DoesNotExist:
-                logger.error("Passed user id {} does not exists".format(member['user_id']))
+                logger.error("[AddProjectMembersView] Passed user id {} does not exists".format(int(member['user_id'])))
                 continue
 
             user_role = roles.filter(id=int(member['permission_type_id'])).first()

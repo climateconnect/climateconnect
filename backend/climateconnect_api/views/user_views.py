@@ -44,8 +44,12 @@ class LoginView(KnowLoginView):
             login(request, user)
             return super(LoginView, self).post(request, format=None)
         else:
+            if not User.objects.filter(username=request.data['username']).exists():
+                return Response({
+                    'message': 'Username does not exist. Have you signed up yet?'
+                }, status=status.HTTP_401_UNAUTHORIZED)
             return Response({
-                'message': 'Invalid password or username.'
+                'message': 'Invalid password.'
             }, status=status.HTTP_401_UNAUTHORIZED)
 
 

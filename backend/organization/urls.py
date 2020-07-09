@@ -11,17 +11,17 @@ urlpatterns = [
         name='list-organizations-api-view'
     ),
     path(
-        'organizations/<slug:url_slug>/',
+        'organizations/<str:url_slug>/',
         organization_views.OrganizationAPIView.as_view(),
         name='organization-api-view'
     ),
     path(
-        'organizations/<slug:url_slug>/projects/',
+        'organizations/<str:url_slug>/projects/',
         organization_views.ListOrganizationProjectsAPIView.as_view(),
         name='organization-projects-api-view'
     ),
     path(
-        'organizations/<slug:url_slug>/members/',
+        'organizations/<str:url_slug>/members/',
         organization_views.ListOrganizationMembersAPIView.as_view(),
         name='organization-members-api-view'
     ),
@@ -31,11 +31,11 @@ urlpatterns = [
         name='create-organization-api-view'
     ),
     path(
-        'organizations/<slug:url_slug>/members/',
+        'organizations/<str:url_slug>/members/',
         organization_views.ListCreateOrganizationMemberView.as_view(), name='list-create-organization-member-view'
     ),
     path(
-        'organizations/<slug:url_slug>/members/<int:pk>/',
+        'organizations/<str:url_slug>/members/<int:pk>/',
         organization_views.UpdateOrganizationMemberView.as_view(), name='update-orgnaization-member-view'
     ),
     path(
@@ -45,10 +45,10 @@ urlpatterns = [
     ),
     # Project URLs
     path('projects/', project_views.ListProjectsView.as_view(), name='list-projects'),
-    path('projects/<slug:url_slug>/', project_views.ProjectAPIView.as_view(), name='project-api-view'),
-    path('projects/<slug:url_slug>/members/', project_views.ListProjectMembersView.as_view(), name='project-members-api'),
-    path('projects/<slug:url_slug>/posts/', project_views.ListProjectPostsView.as_view(), name="project-posts-api"),
-    path('projects/<slug:url_slug>/comments/', project_views.ListProjectCommentsView.as_view(), name="project-comments-api"),
+    path('projects/<str:url_slug>/', project_views.ProjectAPIView.as_view(), name='project-api-view'),
+    path('projects/<str:url_slug>/members/', project_views.ListProjectMembersView.as_view(), name='project-members-api'),
+    path('projects/<str:url_slug>/posts/', project_views.ListProjectPostsView.as_view(), name="project-posts-api"),
+    path('projects/<str:url_slug>/comments/', project_views.ListProjectCommentsView.as_view(), name="project-comments-api"),
     path('create_project/', project_views.CreateProjectView.as_view(), name='create-project-api'),
     path(
         'projects/<int:project_id>/add_members/',

@@ -36,7 +36,7 @@ export default function SelectCategory({
 }) {
   const classes = useStyles();
   const [selectedCategories, setSelectedCategories] = React.useState(
-    project.categories ? project.categories : []
+    project.project_tags ? project.project_tags : []
   );
 
   const onClickNextStep = () => {

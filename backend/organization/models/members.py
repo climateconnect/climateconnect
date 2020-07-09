@@ -52,7 +52,7 @@ class ProjectMember(models.Model):
         app_label = "organization"
         verbose_name = "Project Member"
         verbose_name_plural = "Project Members"
-        ordering = ['-id']
+        ordering = ['id']
 
     def __str__(self):
         return "User %d member for Project %s" % (self.user.id, self.project.name)
