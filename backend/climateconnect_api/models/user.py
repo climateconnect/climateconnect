@@ -133,6 +133,12 @@ class UserProfile(models.Model):
         verbose_name="Email project suggestions", null=True, blank=True, default=True
     )
 
+    has_logged_in = models.PositiveSmallIntegerField(
+        help_text="Check if the user should be redirected to the edit profile page. Shows the number of logins up to 2",
+        verbose_name="Number of logins up to 2",
+        default=0
+    )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "User Profile"

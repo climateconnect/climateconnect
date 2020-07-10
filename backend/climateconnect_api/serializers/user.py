@@ -20,7 +20,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name',
             'url_slug', 'image', 'background_image',
             'country', 'state', 'city', 'biography', 'is_profile_verified',
-            'availability', 'skills'
+            'availability', 'skills', 'has_logged_in'
         )
 
     def get_id(self, obj):
