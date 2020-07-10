@@ -287,7 +287,7 @@ export default function Settings({ loggedInUser }) {
         </Typography>
         <Divider />
         <Button
-          href={"/editProfile/" + loggedInUser.url_slug}
+          href={"/editprofile" + loggedInUser.url_slug}
           className={`${classes.editProfilePageButton}`}
           variant="contained"
           color="primary"

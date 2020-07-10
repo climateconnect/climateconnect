@@ -2,9 +2,9 @@ import React from "react";
 import Layout from "../src/components/layouts/layout";
 import Form from "./../src/components/general/Form";
 import axios from "axios";
-import Router from "next/router";
 import { useContext } from "react";
 import UserContext from "./../src/components/context/UserContext";
+import { redirectOnLogin } from "../public/lib/profileOperations"
 
 export default function Signin() {
   const fields = [
@@ -36,7 +36,9 @@ export default function Signin() {
 
   const { user, signIn } = useContext(UserContext);
   //TODO: remove router
-  if (user) Router.push("/");
+  if (user) {
+    redirectOnLogin(user)
+  }
 
   const handleSubmit = (event, values) => {
     //don't redirect to the post url
