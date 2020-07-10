@@ -39,7 +39,7 @@ urlpatterns = [
         settings_views.UserAccountSettingsView.as_view(),
         name='user-account-settings-api'
     ),
-    path('api/users/<str:url_slug>/', user_views.EditUserProfile.as_view(), name='edit-user-profile-api'),
+    path('api/edit_profile/', user_views.EditUserProfile.as_view(), name='edit-user-profile-api'),
     path('api/', include('organization.urls')),
     path('availability/', common_views.ListAvailabilitiesView.as_view(), name='list-availabilities-api'),
     path('skills/', common_views.ListSkillsView.as_view(), name='list-skills-api'),
