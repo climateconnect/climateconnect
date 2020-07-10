@@ -24,14 +24,30 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function MiniProfilePreview({ className, profile, avatarClassName, size }) {
+export default function MiniProfilePreview({ className, profile, avatarClassName, size, nolink }) {
+  const classes = useStyles();
+  if (!nolink)
+    return (
+      <Link
+        color="inherit"
+        href={"/profiles/" + profile.url_slug}
+        className={`${classes.avatarWithInfo} ${className}`}
+      >
+        <Content profile={profile} avatarClassName={avatarClassName} size={size} />
+      </Link>
+    );
+  else
+    return (
+      <div className={`${classes.avatarWithInfo} ${className}`}>
+        <Content profile={profile} avatarClassName={avatarClassName} size={size} />
+      </div>
+    );
+}
+
+function Content({ profile, avatarClassName, size }) {
   const classes = useStyles();
   return (
-    <Link
-      color="inherit"
-      href={"/profiles/" + profile.url_slug}
-      className={`${classes.avatarWithInfo} ${className}`}
-    >
+    <>
       <div className={classes.avatarWrapper}>
         <Avatar
           src={getImageUrl(profile.image)}
@@ -45,6 +61,6 @@ export default function MiniProfilePreview({ className, profile, avatarClassName
       >
         {profile.first_name + " " + profile.last_name}
       </Typography>
-    </Link>
+    </>
   );
 }

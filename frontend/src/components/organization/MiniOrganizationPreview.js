@@ -19,10 +19,31 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function MiniOrganizationPreview({ organization, className, size, onDelete }) {
+export default function MiniOrganizationPreview({
+  organization,
+  className,
+  size,
+  onDelete,
+  nolink
+}) {
+  if (!nolink)
+    return (
+      <a className={className}>
+        <Content organization={organization} size={size} onDelete={onDelete} />
+      </a>
+    );
+  else
+    return (
+      <div className={className}>
+        <Content organization={organization} size={size} onDelete={onDelete} />
+      </div>
+    );
+}
+
+function Content({ organization, size, onDelete }) {
   const classes = useStyles();
   return (
-    <a className={className}>
+    <>
       <img
         src={getImageUrl(organization.image)}
         className={`${classes.orgImage} ${size === "small" && classes.smallOrgImage}`}
@@ -39,6 +60,6 @@ export default function MiniOrganizationPreview({ organization, className, size,
           <CloseIcon />
         </IconButton>
       )}
-    </a>
+    </>
   );
 }

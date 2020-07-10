@@ -35,6 +35,7 @@ export default function ProjectMetaData({ project }) {
           className={classes.creator}
           organization={project_parent.parent_organization}
           size="small"
+          nolink
         />
       )}
       {project_parent && !project_parent.parent_organization && project_parent.parent_user && (
@@ -42,13 +43,14 @@ export default function ProjectMetaData({ project }) {
           className={classes.creator}
           profile={project_parent.parent_user}
           size="small"
+          nolink
         />
       )}
       <Box>
         <Tooltip title="Location">
           <PlaceIcon className={classes.cardIcon} />
         </Tooltip>
-        {project.location}        
+        {project.location}
         <div>
           <ProjectStatus status={project.status} className={classes.status} />
         </div>
