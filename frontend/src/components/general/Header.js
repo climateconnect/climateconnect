@@ -215,21 +215,23 @@ function NormalScreenLinks({ loggedInUser, handleLogout }) {
         const Icon = link.icon;
         return (
           <Link href={link.href} key={link.href}>
-            {link.onlyShowIconOnNormalScreen ? (
-              <IconButton color="primary" {...buttonProps} className={classes.link}>
-                {link.hasBadge && link.badgeNumber > 0 ? (
-                  <Badge badgeContent={link.badgeNumber} color="error">
+            <a className={classes.menuLink}>
+              {link.onlyShowIconOnNormalScreen ? (
+                <IconButton color="primary" {...buttonProps} className={classes.link}>
+                  {link.hasBadge && link.badgeNumber > 0 ? (
+                    <Badge badgeContent={link.badgeNumber} color="error">
+                      <Icon />
+                    </Badge>
+                  ) : (
                     <Icon />
-                  </Badge>
-                ) : (
-                  <Icon />
-                )}
-              </IconButton>
-            ) : (
-              <Button color="primary" {...buttonProps}>
-                {link.text}
-              </Button>
-            )}
+                  )}
+                </IconButton>
+              ) : (
+                <Button color="primary" {...buttonProps}>
+                  {link.text}
+                </Button>
+              )}
+            </a>
           </Link>
         );
       })}

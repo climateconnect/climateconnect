@@ -38,7 +38,9 @@ export default function CollaborateSection({
   skillsOptions
 }) {
   const classes = useStyles();
-
+  const [selectedItems, setSelectedItems] = React.useState(
+    projectData.skills ? [...projectData.skills] : []
+  );
   const handleSkillDelete = skill => {
     handleSetProjectData({
       skills: projectData.skills
@@ -47,6 +49,13 @@ export default function CollaborateSection({
           projectData.skills.slice(projectData.skills.indexOf(skill) + 1, projectData.skills.length)
         )
     });
+    setSelectedItems(
+      projectData.skills
+        .slice(0, projectData.skills.indexOf(skill))
+        .concat(
+          projectData.skills.slice(projectData.skills.indexOf(skill) + 1, projectData.skills.length)
+        )
+    );
   };
 
   const handleConnectionDelete = connection => {
@@ -157,6 +166,8 @@ export default function CollaborateSection({
         type="skills"
         itemsToChooseFrom={skillsOptions}
         items={projectData.skills}
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
       />
       <EnterTextDialog
         open={open.connectionsDialog}
