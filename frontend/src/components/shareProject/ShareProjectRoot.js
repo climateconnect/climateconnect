@@ -73,18 +73,18 @@ export default function ShareProjectRoot({
   const goToNextStep = () => {
     setCurStep(steps[steps.indexOf(curStep) + 1]);
     //scroll to top when navigating to another step
-    window.scrollTo(0, 0)
+    window.scrollTo(0, 0);
   };
 
   const goToPreviousStep = () => {
     setCurStep(steps[steps.indexOf(curStep) - 1]);
     //scroll to top when navigating to another step
-    window.scrollTo(0, 0)
+    window.scrollTo(0, 0);
   };
 
   const submitProject = event => {
     event.preventDefault();
-    console.log(formatProjectForRequest(project))
+    console.log(formatProjectForRequest(project));
     axios
       .post(
         process.env.API_URL + "/api/create_project/",

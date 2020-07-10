@@ -1,6 +1,6 @@
 import React from "react";
 import { Container } from "@material-ui/core";
-import MultiLevelSelector from "./MultiLevelSelector";
+import MultiLevelSelector from "../general/MultiLevelSelector";
 import { makeStyles } from "@material-ui/core/styles";
 import BottomNavigation from "./BottomNavigation";
 

@@ -6,6 +6,7 @@ import Cookies from "next-cookies";
 import LoginNudge from "../src/components/general/LoginNudge";
 import UserContext from "../src/components/context/UserContext";
 import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
+import { parseOptions } from "../public/lib/selectOptionsOperations";
 
 export default function Share({
   availabilityOptions,
@@ -122,26 +123,6 @@ const getStatusOptions = async token => {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-};
-
-const parseOptions = (options, parentPropertyName) => {
-  return options
-    .filter(o => o[parentPropertyName] === null)
-    .map(o => {
-      return {
-        name: o.name,
-        key: o.id,
-        subcategories: options
-          .filter(so => so[parentPropertyName] === o.id)
-          .map(so => {
-            return {
-              ...so,
-              name: so.name,
-              key: so.id
-            };
-          })
-      };
-    });
 };
 
 const getUserOrganizations = async token => {

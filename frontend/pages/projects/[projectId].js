@@ -59,7 +59,7 @@ function ProjectLayout({ project }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const [hash, setHash] = React.useState(null);
-  const typesByTabValue = ["project", "team", "comments"]
+  const typesByTabValue = ["project", "team", "comments"];
   useEffect(() => {
     if (window.location.hash) {
       setHash(window.location.hash.replace("#", ""));
@@ -222,15 +222,13 @@ function parseProject(project) {
 function parseProjectMembers(projectMembers) {
   return projectMembers.map(m => {
     return {
-      ...m.user, 
+      ...m.user,
       url_slug: m.user.url_slug,
       role: m.role_in_project,
       permissions: m.role.name,
       availability: m.availability,
       name: m.user.first_name + " " + m.user.last_name,
-      location: m.user.city
-      ? m.user.city + ", " + m.user.country
-      : m.user.country
+      location: m.user.city ? m.user.city + ", " + m.user.country : m.user.country
     };
   });
 }

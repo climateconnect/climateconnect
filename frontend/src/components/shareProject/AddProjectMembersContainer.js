@@ -63,7 +63,7 @@ export default function AddProjectMembersContainer({
                 key={index}
                 className={classes.member}
                 profile={m}
-                onDelete={m.role.name!=="Creator" && (() => handleRemoveMember(m))}
+                onDelete={m.role.name !== "Creator" && (() => handleRemoveMember(m))}
                 availabilityOptions={availabilityOptions}
                 rolesOptions={rolesOptions}
                 onChange={handleChangeMember}

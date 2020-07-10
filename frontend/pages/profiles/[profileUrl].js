@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -15,8 +15,9 @@ import AccountPage from "./../../src/components/account/AccountPage";
 import TEMP_PROFILE_TYPES from "./../../public/data/profile_types.json";
 import TEMP_INFOMETADATA from "./../../public/data/profile_info_metadata.json";
 import tokenConfig from "../../public/config/tokenConfig";
-import { getImageUrl } from "../../public/lib/imageOperations";
 import LoginNudge from "../../src/components/general/LoginNudge";
+import { parseProfile } from "./../../public/lib/profileOperations";
+import { getParams } from "./../../public/lib/generalOperations";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -84,8 +85,14 @@ export default function ProfilePage({
   infoMetadata
 }) {
   const { user } = useContext(UserContext);
+  const [message, setMessage] = React.useState("");
+
+  useEffect(() => {
+    const params = getParams(window.location.href);
+    if (params.message) setMessage(decodeURI(params.message));
+  });
   return (
-    <WideLayout title={profile ? profile.name + "'s profile" : "Not found"}>
+    <WideLayout message={message} title={profile ? profile.name + "'s profile" : "Not found"}>
       {profile ? (
         <ProfileLayout
           profile={profile}
@@ -119,7 +126,7 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
     <AccountPage
       account={profile}
       default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={"/editProfile/" + profile.url_slug}
+      editHref={"/editprofile"}
       isOwnAccount={user && user.url_slug === profile.url_slug}
       type="profile"
       possibleAccountTypes={profileTypes}
@@ -176,21 +183,6 @@ async function getProfileByUrlIfExists(profileUrl, token) {
     console.log(err);
     return null;
   }
-}
-
-function parseProfile(profile) {
-  return {
-    url_slug: profile.url_slug,
-    name: profile.first_name + " " + profile.last_name,
-    image: getImageUrl(profile.image),
-    background_image: getImageUrl(profile.background_image),
-    info: {
-      location: profile.city + ", " + profile.country,
-      bio: profile.biography,
-      skills: profile.skills && profile.skills.map(s => s.name),
-      availability: profile.availability && profile.availability.name
-    }
-  };
 }
 
 async function getProjectsByUser(profileUrl, token) {

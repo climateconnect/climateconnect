@@ -1,7 +1,6 @@
 import React from "react";
-import Router from "next/router";
 import OrganizationMetaData from "./OrganizationMetadata";
-import { Typography, Card, CardMedia, CardContent } from "@material-ui/core";
+import { Typography, Card, CardMedia, CardContent, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
@@ -35,6 +34,12 @@ const useStyles = makeStyles(theme => {
       marginLeft: theme.spacing(2),
       marginRight: theme.spacing(2),
       verticalAlign: "center"
+    },
+    noUnderline: {
+      textDecoration: "inherit",
+      "&:hover": {
+        textDecoration: "inherit"
+      }
     }
   };
 });
@@ -42,29 +47,25 @@ const useStyles = makeStyles(theme => {
 export default function OrganizationPreview({ organization, showMembers, showOrganizationType }) {
   const classes = useStyles();
   return (
-    <Card
-      className={classes.root}
-      variant="outlined"
-      onClick={() => {
-        Router.push(`/organizations/${organization.url_slug}`);
-      }}
-    >
-      <CardMedia
-        className={classes.media}
-        component={"div"}
-        title={organization.name}
-        image={getImageUrl(organization.image)}
-      />
-      <CardContent>
-        <Typography variant="subtitle1" component="h2" className={classes.bold}>
-          {organization.name}
-        </Typography>
-        <OrganizationMetaData
-          organization={organization}
-          showMembers={showMembers}
-          showOrganizationType={showOrganizationType}
+    <Link href={`/organizations/${organization.url_slug}`} className={classes.noUnderline}>
+      <Card className={classes.root} variant="outlined">
+        <CardMedia
+          className={classes.media}
+          component={"div"}
+          title={organization.name}
+          image={getImageUrl(organization.image)}
         />
-      </CardContent>
-    </Card>
+        <CardContent>
+          <Typography variant="subtitle1" component="h2" className={classes.bold}>
+            {organization.name}
+          </Typography>
+          <OrganizationMetaData
+            organization={organization}
+            showMembers={showMembers}
+            showOrganizationType={showOrganizationType}
+          />
+        </CardContent>
+      </Card>
+    </Link>
   );
 }

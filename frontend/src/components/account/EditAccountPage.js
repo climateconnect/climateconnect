@@ -4,10 +4,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import UploadImageDialog from "./../dialogs/UploadImageDialog";
-import EnterTextDialog from "./../dialogs/EnterTextDialog";
 import ConfirmDialog from "./../dialogs/ConfirmDialog";
 import SelectField from "./../general/SelectField";
 import SelectDialog from "./../dialogs/SelectDialog";
+import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -179,7 +179,9 @@ export default function EditAccountPage({
   handleSubmit,
   submitMessage,
   handleCancel,
-  errorMessage
+  errorMessage,
+  skillsOptions,
+  splitName
 }) {
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState(account);
@@ -216,6 +218,12 @@ export default function EditAccountPage({
     }
   };
 
+  const handleTextFieldChange = (key, newValue, isInfoElement) => {
+    if (isInfoElement)
+      setEditedAccount({ ...editedAccount, info: { ...editedAccount.info, [key]: newValue } });
+    setEditedAccount({ ...editedAccount, [key]: newValue });
+  };
+
   const handleAddTypeClose = (type, additionalInfo) => {
     setOpen({ ...open, addTypeDialog: false });
     const tempAccount = editedAccount;
@@ -244,19 +252,26 @@ export default function EditAccountPage({
   };
 
   const displayInfoArrayData = (key, infoEl) => {
-    const [arrayDialogOpen, setArrayDialogOpen] = React.useState(false);
+    const [skillsDialogOpen, setSkillsDialogOpen] = React.useState(false);
+    const [selectedItems, setSelectedItems] = React.useState(
+      editedAccount.info.skills ? [...editedAccount.info.skills] : []
+    );
 
-    const handleTextDialogClose = element => {
-      setArrayDialogOpen(false);
-      if (element && element.length > 0) {
+    const handleSkillsDialogClose = skills => {
+      setSkillsDialogOpen(false);
+      if (skills)
         setEditedAccount({
           ...editedAccount,
-          info: { ...editedAccount.info, [key]: [...editedAccount.info[key], element] }
+          info: { ...editedAccount.info, skills: skills }
         });
-      }
     };
 
-    const handleArrayDialogClickOpen = () => setArrayDialogOpen(true);
+    const handleDeleteFromInfoArray = (key, entry) => {
+      deleteFromInfoArray(key, entry);
+      setSelectedItems([...selectedItems.filter(item => item !== entry)]);
+    };
+
+    const handleSkillsDialogClickOpen = () => setSkillsDialogOpen(true);
     return (
       <div key={key} className={classes.infoElement}>
         <div className={classes.subtitle}>{infoEl.name}:</div>
@@ -264,10 +279,10 @@ export default function EditAccountPage({
           {infoEl.value.map(entry => (
             <Chip
               size="medium"
-              label={entry}
-              key={entry}
+              label={entry.name}
+              key={entry.key}
               className={classes.chip}
-              onDelete={() => deleteFromInfoArray(key, entry)}
+              onDelete={() => handleDeleteFromInfoArray(key, entry)}
             />
           ))}
           {editedAccount.info[key].length < infoEl.maxEntries && (
@@ -275,18 +290,17 @@ export default function EditAccountPage({
               label="Add"
               icon={<ControlPointIcon />}
               className={classes.chip}
-              onClick={handleArrayDialogClickOpen}
+              onClick={handleSkillsDialogClickOpen}
             />
           )}
-          <EnterTextDialog
-            onClose={handleTextDialogClose}
-            open={arrayDialogOpen}
-            arrayName={infoEl.name}
-            title={"Add skill"}
-            inputLabel={"Skill"}
-            applyText={"Add"}
-            maxLength={30}
-            className={classes.dialogWidth}
+          <MultiLevelSelectDialog
+            open={skillsDialogOpen}
+            onClose={handleSkillsDialogClose}
+            type="skills"
+            itemsToChooseFrom={skillsOptions}
+            items={editedAccount.info.skills}
+            selectedItems={selectedItems}
+            setSelectedItems={setSelectedItems}
           />
         </div>
       </div>
@@ -294,47 +308,39 @@ export default function EditAccountPage({
   };
 
   const displayAccountInfo = info =>
-    Object.keys(info).map(key => {
-      const handleChange = event => {
-        if (event.target.type === "select-one") {
-          const value = event.target.options[event.target.options.selectedIndex].getAttribute(
-            "data-key"
-          );
-          setEditedAccount({
-            ...editedAccount,
-            info: { ...editedAccount.info, [key]: value }
-          });
-        } else {
+    Object.keys(info)
+      .sort((a, b) => info[b].order - info[a].order)
+      .map(key => {
+        const handleChange = event => {
           setEditedAccount({
             ...editedAccount,
             info: { ...editedAccount.info, [key]: event.target.value }
           });
+        };
+        const i = getFullInfoElement(infoMetadata, key, info[key]);
+        if (i.type === "array") {
+          return displayInfoArrayData(key, i);
+        } else if (i.type === "select") {
+          return (
+            <div key={key} className={classes.infoElement}>
+              <SelectField
+                className={classes.selectOption}
+                options={i.options}
+                label={i.name}
+                defaultValue={{ name: i.value, key: i.value }}
+                onChange={handleChange}
+              />
+            </div>
+          );
+        } else {
+          return (
+            <div key={key} className={classes.infoElement}>
+              <div className={classes.subtitle}>{i.name}:</div>
+              <TextField fullWidth value={i.value} multiline onChange={handleChange} />
+            </div>
+          );
         }
-      };
-      const i = getFullInfoElement(infoMetadata, key, info[key]);
-      if (i.type === "array") {
-        return displayInfoArrayData(key, i);
-      } else if (i.type === "select") {
-        return (
-          <div key={key} className={classes.infoElement}>
-            <SelectField
-              className={classes.selectOption}
-              options={i.options}
-              label={i.name}
-              defaultValue={{ name: i.value, key: i.value }}
-              onChange={handleChange}
-            />
-          </div>
-        );
-      } else {
-        return (
-          <div key={key} className={classes.infoElement}>
-            <div className={classes.subtitle}>{i.name}:</div>
-            <TextField fullWidth defaultValue={i.value} multiline onChange={handleChange} />
-          </div>
-        );
-      }
-    });
+      });
 
   const onBackgroundChange = backgroundEvent => {
     const file = backgroundEvent.target.files[0];
@@ -425,7 +431,7 @@ export default function EditAccountPage({
           variant="contained"
           onClick={() => handleSubmit(event, editedAccount)}
         >
-          {submitMessage ? submitMessage : "Save Changes"}
+          {submitMessage ? submitMessage : "Save"}
         </Button>
         <Button
           className={`${classes.cancelButton} ${classes.actionButton}`}
@@ -474,33 +480,62 @@ export default function EditAccountPage({
             </label>
           </div>
 
-          <TextField
-            className={classes.name}
-            fullWidth
-            defaultValue={editedAccount.name}
-            multiline
-          />
+          {splitName ? (
+            <>
+              <TextField
+                className={classes.name}
+                fullWidth
+                value={editedAccount.first_name}
+                onChange={event => handleTextFieldChange("first_name", event.target.value)}
+                multiline
+                label={"First name"}
+              />
+              <TextField
+                className={classes.name}
+                fullWidth
+                value={editedAccount.last_name}
+                onChange={event => handleTextFieldChange("last_name", event.target.value)}
+                multiline
+                label={"Last name"}
+              />
+            </>
+          ) : (
+            <TextField
+              className={classes.name}
+              fullWidth
+              value={editedAccount.name}
+              onChange={event => handleTextFieldChange("name", event.target.value)}
+              multiline
+            />
+          )}
+
           {editedAccount.types && (
             <Container className={classes.noPadding}>
-              {getTypesOfAccount(editedAccount, possibleAccountTypes, infoMetadata).map(
-                typeObject => (
+              {possibleAccountTypes &&
+                getTypesOfAccount(
+                  editedAccount,
+                  possibleAccountTypes,
+                  infoMetadata
+                ).map(typeObject => (
                   <Chip
                     label={typeObject.name}
                     key={typeObject.key}
                     className={classes.chip}
                     onDelete={() => handleTypeDelete(typeObject.key)}
                   />
-                )
-              )}
-              {getTypesOfAccount(editedAccount, possibleAccountTypes, infoMetadata).length <
-                maxAccountTypes && (
-                <Chip
-                  label="Add Type"
-                  color={editedAccount.types && editedAccount.types.length ? "default" : "primary"}
-                  icon={<ControlPointIcon />}
-                  onClick={() => handleDialogClickOpen("addTypeDialog")}
-                />
-              )}
+                ))}
+              {possibleAccountTypes &&
+                getTypesOfAccount(editedAccount, possibleAccountTypes, infoMetadata).length <
+                  maxAccountTypes && (
+                  <Chip
+                    label="Add Type"
+                    color={
+                      editedAccount.types && editedAccount.types.length ? "default" : "primary"
+                    }
+                    icon={<ControlPointIcon />}
+                    onClick={() => handleDialogClickOpen("addTypeDialog")}
+                  />
+                )}
             </Container>
           )}
         </Container>
@@ -526,17 +561,19 @@ export default function EditAccountPage({
         height={300}
         ratio={1}
       />
-      <SelectDialog
-        onClose={handleAddTypeClose}
-        open={open.addTypeDialog}
-        title="Add Type"
-        values={getTypes(possibleAccountTypes, infoMetadata).filter(
-          type => editedAccount.types && !editedAccount.types.includes(type.key)
-        )}
-        label={"Choose type"}
-        supportAdditionalInfo={true}
-        className={classes.dialogWidth}
-      />
+      {possibleAccountTypes && (
+        <SelectDialog
+          onClose={handleAddTypeClose}
+          open={open.addTypeDialog}
+          title="Add Type"
+          values={getTypes(possibleAccountTypes, infoMetadata).filter(
+            type => editedAccount.types && !editedAccount.types.includes(type.key)
+          )}
+          label={"Choose type"}
+          supportAdditionalInfo={true}
+          className={classes.dialogWidth}
+        />
+      )}
       <ConfirmDialog
         open={open.confirmExitDialog}
         onClose={handleConfirmExitClose}

@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => {
     }),
     list: {
       display: "inline-block",
-      maxWidth:"50%",
+      maxWidth: "50%",
       [theme.breakpoints.down("md")]: {
         marginLeft: theme.spacing(0)
       }
@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => {
         display: "inline-block",
         marginTop: theme.spacing(props.offset * 8),
         verticalAlign: "top",
-        maxWidth:"50%"
+        maxWidth: "50%"
       };
     },
     narrowScreenSubList: {
@@ -298,7 +298,7 @@ function ListToChooseFrom({
           <React.Fragment key={item.key}>
             <ListItem
               button
-              disabled={selected.includes(item)}
+              disabled={selected.filter(s => s.key === item.key).length === 1}
               classes={{
                 root: `${classes.listItem} 
                         ${index == 0 && classes.firstItem} 

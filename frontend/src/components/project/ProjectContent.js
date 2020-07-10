@@ -139,7 +139,7 @@ export default function ProjectContent({ project }) {
                 />
               </Link>
             )}
-            {project.collaborating_organizations && project.collaborating_organizations.length>0 && (
+            {project.collaborating_organizations && project.collaborating_organizations.length > 0 && (
               <div>
                 <span> In collaboration with</span>
                 {project.collaborating_organizations.map(o => (
@@ -179,7 +179,9 @@ export default function ProjectContent({ project }) {
             project.description.length <= MAX_DISPLAYED_DESCRIPTION_LENGTH ? (
               <MessageContent content={project.description} />
             ) : (
-              <MessageContent content={project.description.substr(0, MAX_DISPLAYED_DESCRIPTION_LENGTH) + "..."} />
+              <MessageContent
+                content={project.description.substr(0, MAX_DISPLAYED_DESCRIPTION_LENGTH) + "..."}
+              />
             )
           ) : (
             <Typography variant="body2">

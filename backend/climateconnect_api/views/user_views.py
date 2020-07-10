@@ -26,6 +26,7 @@ from climateconnect_api.serializers.user import (
 from organization.serializers.project import ProjectFromProjectMemberSerializer
 from organization.serializers.organization import OrganizationsFromProjectMember
 
+from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.permissions import UserPermission
 import logging
 logger = logging.getLogger(__name__)
@@ -42,6 +43,10 @@ class LoginView(KnowLoginView):
         user = authenticate(username=request.data['username'], password=request.data['password'])
         if user:
             login(request, user)
+            user_profile = UserProfile.objects.filter(user = user)[0]
+            if user_profile.has_logged_in<2:
+                user_profile.has_logged_in = user_profile.has_logged_in +1 
+                user_profile.save()
             return super(LoginView, self).post(request, format=None)
         else:
             if not User.objects.filter(username=request.data['username']).exists():
@@ -163,19 +168,19 @@ class ListMemberOrganizationsView(ListAPIView):
 class EditUserProfile(APIView):
     permission_classes = [UserPermission]
 
-    def get(self, request, url_slug):
+    def get(self, request):
         try:
-            user_profile = UserProfile.objects.get(url_slug=str(url_slug))
-        except User.DoesNotExist:
-            raise NotFound('User profile not found.')
+            user_profile = UserProfile.objects.get(user=self.request.user)
+        except UserProfile.DoesNotExist:
+            raise NotFound('User not found.')
 
         serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request, url_slug):
+    def post(self, request):
         try:
-            user_profile = UserProfile.objects.get(url_slug=str(url_slug))
-        except User.DoesNotExist:
+            user_profile = UserProfile.objects.get(user=self.request.user)
+        except UserProfile.DoesNotExist:
             raise NotFound('User not found.')
 
         user = user_profile.user
@@ -190,9 +195,9 @@ class EditUserProfile(APIView):
         user.save()
 
         if 'image' in request.data:
-            user_profile.image = request.data['image']
+            user_profile.image = get_image_from_data_url(request.data['image'])[0]
         if 'background_image' in request.data:
-            user_profile.background_image = request.data['background_image']
+            user_profile.background_image = get_image_from_data_url(request.data['background_image'])[0]
 
         if 'country' in request.data:
             user_profile.country = request.data['country']

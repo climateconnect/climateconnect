@@ -1,7 +1,6 @@
 import React from "react";
-import Link from "next/link";
 import Truncate from "react-truncate";
-import { Typography, Card, CardMedia, CardContent } from "@material-ui/core";
+import { Typography, Card, CardMedia, CardContent, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ProjectMetaData from "./ProjectMetaData";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -29,6 +28,12 @@ const useStyles = makeStyles(theme => {
     },
     media: {
       minHeight: 160
+    },
+    noUnderline: {
+      textDecoration: "inherit",
+      "&:hover": {
+        textDecoration: "inherit"
+      }
     }
   };
 });
@@ -37,7 +42,7 @@ export default function ProjectPreview({ project }) {
   const classes = useStyles();
 
   return (
-    <Link href={`/projects/${project.url_slug}`}>
+    <Link href={`/projects/${project.url_slug}`} className={classes.noUnderline}>
       <Card className={classes.root} variant="outlined">
         <CardMedia
           className={classes.media}

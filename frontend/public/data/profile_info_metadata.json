@@ -3,49 +3,7 @@
     "name": "Availability",
     "key": "availability",
     "type": "select",
-    "missingMessage": "This user hasn't specified their availibility yet.",
-    "options": [
-      {
-        "name": "1-2 hours per week",
-        "key": "1-2"
-      },
-      {
-        "name": "3-5 hours per week",
-        "key": "3-5"
-      },
-      {
-        "name": "6-10 hours per week",
-        "key": "6-10"
-      },
-      {
-        "name": "11-15 hours per week",
-        "key": "11-15"
-      },
-      {
-        "name": "16-20 hours per week",
-        "key": "16-20"
-      },
-      {
-        "name": "21-25 hours per week",
-        "key": "21-25"
-      },
-      {
-        "name": "26-30 hours per week",
-        "key": "26-30"
-      },
-      {
-        "name": "31-35 hours per week",
-        "key": "31-35"
-      },
-      {
-        "name": "36-40 hours per week",
-        "key": "36-40"
-      },
-      {
-        "name": "more than 40 hours per week",
-        "key": "more than 40"
-      }
-    ]
+    "missingMessage": "This user hasn't specified their availibility yet."
   },
   "skills": {
     "name": "Skills",
@@ -61,6 +19,20 @@
     "key": "bio",
     "missingMessage": "This user hasn't added a bio yet.",
     "maxLength": 240
+  },
+  "city": {
+    "name": "City",
+    "key": "city",
+    "missingMessage": "This user hasn't specified their city yet.",
+    "type": "location",
+    "order": 1
+  },
+  "country": {
+    "name": "Country",
+    "key": "country",
+    "missingMessage": "This user hasn't specified their country yet.",
+    "type": "location",
+    "order": 0
   },
   "location": {
     "name": "Location",

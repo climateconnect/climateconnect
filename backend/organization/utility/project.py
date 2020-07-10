@@ -6,7 +6,7 @@ from organization.models import (
 )
 from climateconnect_api.models import (Skill,)
 from organization.models import (ProjectStatus, ProjectTags)
-from organization.utility.general import get_image_from_data_url
+from climateconnect_main.utility.general import get_image_from_data_url
 
 
 
