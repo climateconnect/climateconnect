@@ -145,7 +145,9 @@ function LargeScreenOverview({ project }) {
           <Typography component="h2" variant="h5" className={classes.subHeader}>
             Summary
           </Typography>
-          <Typography><MessageContent content={project.shortdescription} /></Typography>
+          <Typography>
+            <MessageContent content={project.shortdescription} />
+          </Typography>
           <div className={classes.projectInfoEl}>
             <Typography>
               <Tooltip title="Location">

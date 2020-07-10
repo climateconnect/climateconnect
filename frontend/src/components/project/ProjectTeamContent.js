@@ -9,7 +9,7 @@ import AccountBoxIcon from "@material-ui/icons/AccountBox";
 function getTeamWithAdditionalInfo(team) {
   return team.map(m => {
     const additionalInfo = [];
-    if(m.location)
+    if (m.location)
       additionalInfo.push({
         text: m.location,
         importance: "high",

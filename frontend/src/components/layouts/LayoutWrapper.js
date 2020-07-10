@@ -13,6 +13,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function LayoutWrapper({ title, children, theme }) {
   const classes = useStyles();
+
   return (
     <>
       <Head>

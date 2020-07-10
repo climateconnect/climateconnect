@@ -49,7 +49,7 @@ const theme = createMuiTheme(coreTheme, {
       }
     },
     MuiTooltip: {
-      tooltip:{
+      tooltip: {
         fontSize: 14
       }
     }

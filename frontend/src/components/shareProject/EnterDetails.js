@@ -63,10 +63,14 @@ const useStyles = makeStyles(theme => {
 const helpTexts = {
   addPhoto:
     "Upload a photo that represents your project. This way other climate protectors can see at a glance what your project is about. It is recommended to use a non-transparent image in 16:9 format",
-  short_description: "Summarize your project in less than 240 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
-  description: "Describe your project in more detail. What are you exactly doing? What are you doing? What is the climate impact of your project?",
-  collaboration: "Select if you are would be open to accept help and work with other climate protectors on your project.",
-  addSkills: "If you are looking for someone with specific skills to help you with your project, select these here.",
+  short_description:
+    "Summarize your project in less than 240 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
+  description:
+    "Describe your project in more detail. What are you exactly doing? What are you doing? What is the climate impact of your project?",
+  collaboration:
+    "Select if you are would be open to accept help and work with other climate protectors on your project.",
+  addSkills:
+    "If you are looking for someone with specific skills to help you with your project, select these here.",
   addConnections:
     "Add connections that would be helpful for collaborators to have. Specifically this could be connections to organizations that could help accelerate your project."
 };
