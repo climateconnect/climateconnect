@@ -31,6 +31,13 @@ export default function FilterContent({
 
   const [open, setOpen] = React.useState({});
 
+  const [selectedItems, setSelectedItems] = React.useState(
+    possibleFilters.reduce((map, obj) => {
+      if (obj.type === "openMultiSelectDialogButton") map[obj.key] = [];
+      return map;
+    }, {})
+  );
+
   const handleClickDialogOpen = prop => {
     if (!open.prop) {
       setOpen({ ...open, [prop]: true });
@@ -64,6 +71,18 @@ export default function FilterContent({
           )
         )
     });
+    console.log(selectedItems);
+    console.log(filterName);
+    console.log(filterKey);
+    const indexOfItem = selectedItems[filterKey].indexOf(
+      selectedItems[filterKey].find(i => i.name === filterName)
+    );
+    setSelectedItems({
+      ...selectedItems,
+      [filterKey]: [...selectedItems[filterKey]]
+        .slice(0, indexOfItem)
+        .concat(selectedItems[filterKey].slice(indexOfItem + 1, selectedItems[filterKey].length))
+    });
   };
   return (
     <div className={className}>
@@ -81,6 +100,8 @@ export default function FilterContent({
             filtersExpanded={filtersExpanded}
             unexpandFilters={unexpandFilters}
             handleUnselectFilter={handleUnselectFilter}
+            selectedItems={selectedItems}
+            setSelectedItems={setSelectedItems}
           />
         </>
       ) : isMediumScreen && possibleFilters.length > 3 ? (
@@ -93,6 +114,8 @@ export default function FilterContent({
             handleClickDialogOpen={handleClickDialogOpen}
             open={open}
             handleClickDialogClose={handleClickDialogClose}
+            selectedItems={selectedItems}
+            setSelectedItems={setSelectedItems}
           />
           <Filters
             possibleFilters={possibleFiltersSecondHalf}
@@ -104,6 +127,8 @@ export default function FilterContent({
             handleClickDialogOpen={handleClickDialogOpen}
             open={open}
             handleClickDialogClose={handleClickDialogClose}
+            selectedItems={selectedItems}
+            setSelectedItems={setSelectedItems}
           />
         </>
       ) : (
@@ -117,6 +142,8 @@ export default function FilterContent({
           open={open}
           handleClickDialogClose={handleClickDialogClose}
           justifyContent={type === "projects" ? "space-around" : "flex-start"}
+          selectedItems={selectedItems}
+          setSelectedItems={setSelectedItems}
         />
       )}
       {

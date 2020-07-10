@@ -56,7 +56,9 @@ export default function Filters({
   open,
   handleClickDialogClose,
   isInOverlay,
-  justifyContent
+  justifyContent,
+  setSelectedItems,
+  selectedItems
 }) {
   const classes = useStyles({
     justifyContent: justifyContent ? justifyContent : "space-around",
@@ -123,7 +125,12 @@ export default function Filters({
               />
             );
           }
+
           if (filter.type === "openMultiSelectDialogButton") {
+            const curSelectedItems = selectedItems[filter.key];
+            const handleSetSelectedItems = newSelectedItems => {
+              setSelectedItems({ ...selectedItems, [filter.key]: newSelectedItems });
+            };
             if (!filter.showIf || currentFilters[filter.showIf.key] === filter.showIf.value) {
               return (
                 <div key={filter.key}>
@@ -139,6 +146,8 @@ export default function Filters({
                     onClose={selectedSkills => handleClickDialogClose(filter.key, selectedSkills)}
                     type={filter.itemsToChooseFromType}
                     items={currentFilters[filter.key]}
+                    selectedItems={curSelectedItems}
+                    setSelectedItems={handleSetSelectedItems}
                   />
                 </div>
               );

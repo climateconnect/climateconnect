@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import GenericDialog from "./GenericDialog";
-import MultiLevelSelector from "../shareProject/MultiLevelSelector";
+import MultiLevelSelector from "../general/MultiLevelSelector";
 import skillsToChooseFrom from "../../../public/data/skills.json";
 import categoriesToChooseFrom from "../../../public/data/project_categories.json";
 
@@ -11,10 +11,10 @@ export default function MultiLevelSelectDialog({
   open,
   type,
   maxSelections,
-  itemsToChooseFrom
+  itemsToChooseFrom,
+  selectedItems,
+  setSelectedItems
 }) {
-  const [selectedItems, setSelectedItems] = React.useState(items ? items : []);
-
   const handleClose = () => {
     setSelectedItems(items ? items : []);
     onClose();
@@ -39,7 +39,7 @@ export default function MultiLevelSelectDialog({
       title={"Add " + itemNamePlural}
       useApplyButton={true}
       onApply={applySkills}
-      applyText={"Add"}
+      applyText={"Save"}
       topBarFixed
     >
       <MultiLevelSelector
