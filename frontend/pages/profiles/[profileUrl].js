@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -12,11 +12,12 @@ import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
 import OrganizationPreviews from "./../../src/components/organization/OrganizationPreviews";
 import AccountPage from "./../../src/components/account/AccountPage";
 
-import TEMP_PROJECT_DATA from "../../public/data/projects.json";
-import TEMP_ORGANIZATION_DATA from "../../public/data/organizations.json";
 import TEMP_PROFILE_TYPES from "./../../public/data/profile_types.json";
 import TEMP_INFOMETADATA from "./../../public/data/profile_info_metadata.json";
-import tokenConfig from '../../public/config/tokenConfig';
+import tokenConfig from "../../public/config/tokenConfig";
+import LoginNudge from "../../src/components/general/LoginNudge";
+import { parseProfile } from "./../../public/lib/profileOperations";
+import { getParams } from "./../../public/lib/generalOperations";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -68,6 +69,10 @@ const useStyles = makeStyles(theme => {
     },
     marginTop: {
       marginTop: theme.spacing(1)
+    },
+    loginNudge: {
+      textAlign: "center",
+      margin: "0 auto"
     }
   };
 });
@@ -79,8 +84,15 @@ export default function ProfilePage({
   profileTypes,
   infoMetadata
 }) {
+  const { user } = useContext(UserContext);
+  const [message, setMessage] = React.useState("");
+
+  useEffect(() => {
+    const params = getParams(window.location.href);
+    if (params.message) setMessage(decodeURI(params.message));
+  });
   return (
-    <WideLayout title={profile ? profile.name + "'s profile" : "Not found"}>
+    <WideLayout message={message} title={profile ? profile.name + "'s profile" : "Not found"}>
       {profile ? (
         <ProfileLayout
           profile={profile}
@@ -88,6 +100,7 @@ export default function ProfilePage({
           organizations={organizations}
           profileTypes={profileTypes}
           infoMetadata={infoMetadata}
+          user={user}
         />
       ) : (
         <NoProfileFoundLayout />
@@ -98,28 +111,31 @@ export default function ProfilePage({
 
 ProfilePage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  const profileUrl = encodeURI(ctx.query.profileUrl)
   return {
-    profile: await getProfileByUrlIfExists(ctx.query.profileUrl, token),
-    organizations: await getOrganizationsByUser(ctx.query.profileUrl),
-    projects: await getProjects(ctx.query.profileUrl),
+    profile: await getProfileByUrlIfExists(profileUrl, token),
+    organizations: await getOrganizationsByUser(profileUrl, token),
+    projects: await getProjectsByUser(profileUrl, token),
     profileTypes: await getProfileTypes(),
     infoMetadata: await getProfileInfoMetadata()
   };
 };
 
-function ProfileLayout({ profile, projects, organizations, profileTypes, infoMetadata }) {
+function ProfileLayout({ profile, projects, organizations, profileTypes, infoMetadata, user }) {
   const classes = useStyles();
-  const { user } = useContext(UserContext);
   return (
     <AccountPage
       account={profile}
       default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={"/editProfile/" + profile.url_slug}
+      editHref={"/editprofile"}
       isOwnAccount={user && user.url_slug === profile.url_slug}
       type="profile"
       possibleAccountTypes={profileTypes}
       infoMetadata={infoMetadata}
     >
+      {!user && (
+        <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
+      )}
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
         {projects && projects.length ? (
@@ -131,7 +147,7 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Organizations:</div>
         {organizations && organizations.length > 0 ? (
-          <OrganizationPreviews organizations={organizations} showMembers />
+          <OrganizationPreviews organizations={organizations} showOrganizationType />
         ) : (
           <Typography>This user is not involved in any organizations yet!</Typography>
         )}
@@ -157,48 +173,51 @@ function NoProfileFoundLayout() {
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getProfileByUrlIfExists(profileUrl, token) {
   try {
-    console.log(tokenConfig(token));
     const resp = await axios.get(
-      process.env.API_URL + "/api/members/?search=" + profileUrl,
+      process.env.API_URL + "/api/member/" + profileUrl + "/",
       tokenConfig(token)
     );
-    if (resp.data.results.length === 0) return null;
+    return parseProfile(resp.data);
+  } catch (err) {
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    console.log("error!");
+    console.log(err);
+    return null;
+  }
+}
+
+async function getProjectsByUser(profileUrl, token) {
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/api/member/" + profileUrl + "/projects/",
+      tokenConfig(token)
+    );
+    if (!resp.data) return null;
     else {
-      //console.log(resp.data.results[0]);
-      return parseProfile(resp.data.results[0]);
+      return parseProjectStubs(resp.data.results);
     }
   } catch (err) {
-    //console.log(err);
+    console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
 }
 
-function parseProfile(profile) {
-  return {
-    url_slug: profile.url_slug,
-    name: profile.first_name + " " + profile.last_name,
-    image: profile.profile_image,
-    background_image: profile.background_image,
-    info: {
-      location: profile.city + ", " + profile.country,
-      bio: profile.biography,
-      skills: profile.skills,
-      availability: profile.availability
+async function getOrganizationsByUser(profileUrl, token) {
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/api/member/" + profileUrl + "/organizations/",
+      tokenConfig(token)
+    );
+    if (!resp.data) return null;
+    else {
+      return parseOrganizationStubs(resp.data.results);
     }
-  };
-}
-
-async function getProjects(profileUrl) {
-  return TEMP_PROJECT_DATA.projects.filter(
-    project => !!project.team.find(m => m.url_slug === profileUrl)
-  );
-}
-
-async function getOrganizationsByUser(profileUrl) {
-  return TEMP_ORGANIZATION_DATA.organizations.filter(
-    org => org.members && org.members.includes(profileUrl)
-  );
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
 }
 
 async function getProfileTypes() {
@@ -207,4 +226,26 @@ async function getProfileTypes() {
 
 async function getProfileInfoMetadata() {
   return TEMP_INFOMETADATA;
+}
+
+function parseProjectStubs(projects) {
+  return projects.map(p => {
+    const project = p.project;
+    return {
+      ...project,
+      location: project.city ? project.city + ", " + project.country : project.country
+    };
+  });
+}
+
+function parseOrganizationStubs(organizations) {
+  return organizations.map(o => ({
+    ...o.organization,
+    types: o.organization.types.map(type => type.organization_tag),
+    info: {
+      location: o.organization.city
+        ? o.organization.city + ", " + o.organization.country
+        : o.organization.country
+    }
+  }));
 }

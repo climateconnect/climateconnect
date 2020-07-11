@@ -16,11 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from climateconnect_api.views import (
-    status_views, user_views
+    status_views, user_views, common_views,
+    settings_views, common_views, role_views
 )
-from organization.views.organization_views import OrganizationAPIView
-from organization.views.project_views import (ListProjectsView, ProjectAPIView, ListProjectMembersView)
 from knox import views as knox_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,10 +30,19 @@ urlpatterns = [
     path('logout/', knox_views.LogoutView.as_view(), name='logout-api'),
     path('signup/', user_views.SignUpView.as_view(), name="signup-api"),
     path('api/my_profile/', user_views.PersonalProfileView.as_view(), name='user-profile-api'),
-    path('api/members/', user_views.MemberProfilesView.as_view(), name="member-profiles-api"),
+    path('api/member/<str:url_slug>/', user_views.MemberProfileView.as_view(), name='get-member-profile-api'),
+    path('api/member/<str:url_slug>/projects/', user_views.ListMemberProjectsView.as_view(), name='get-member-profile-api'),
+    path('api/member/<str:url_slug>/organizations/', user_views.ListMemberOrganizationsView.as_view(), name='get-member-profile-api'),
+    path('api/members/', user_views.ListMemberProfilesView.as_view(), name="member-profiles-api"),
+    path(
+        'api/account_settings/',
+        settings_views.UserAccountSettingsView.as_view(),
+        name='user-account-settings-api'
+    ),
+    path('api/edit_profile/', user_views.EditUserProfile.as_view(), name='edit-user-profile-api'),
     path('api/', include('organization.urls')),
-    path('organizations/', OrganizationAPIView.as_view(), name='organization-api-views'),
-    path('projects/', ListProjectsView.as_view(), name='list-projects'),
-    path('projects/<pk>/', ProjectAPIView.as_view(), name='project-api-view'),
-    path('projects/<pk>/members/', ListProjectMembersView.as_view(), name='project-members-api')
-]
+    path('availability/', common_views.ListAvailabilitiesView.as_view(), name='list-availabilities-api'),
+    path('skills/', common_views.ListSkillsView.as_view(), name='list-skills-api'),
+    path('roles/', role_views.ListRolesView.as_view(), name='list-roles-api')
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

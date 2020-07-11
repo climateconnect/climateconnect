@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => {
     }),
     list: {
       display: "inline-block",
-      marginLeft: theme.spacing(8),
+      maxWidth: "50%",
       [theme.breakpoints.down("md")]: {
         marginLeft: theme.spacing(0)
       }
@@ -29,7 +29,8 @@ const useStyles = makeStyles(theme => {
       return {
         display: "inline-block",
         marginTop: theme.spacing(props.offset * 8),
-        verticalAlign: "top"
+        verticalAlign: "top",
+        maxWidth: "50%"
       };
     },
     narrowScreenSubList: {
@@ -99,7 +100,7 @@ const useStyles = makeStyles(theme => {
     },
     listWrapper: {
       display: "inline-block",
-      width: 650,
+      width: 700,
       [theme.breakpoints.down("md")]: {
         width: 650 - theme.spacing(8)
       },
@@ -238,7 +239,7 @@ function SelectedList({ selected, itemNamePlural, maxSelections, className, onCl
       <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
         {selected.length > 0
           ? "Selected " + itemNamePlural
-          : "Select up to " + maxSelections + " " + itemNamePlural + "!"}
+          : "Select between 1 and " + maxSelections + " " + itemNamePlural + "!"}
       </Typography>
       <List className={classes.selectedList}>
         {selected.map((item, index) => (
@@ -297,7 +298,7 @@ function ListToChooseFrom({
           <React.Fragment key={item.key}>
             <ListItem
               button
-              disabled={selected.includes(item)}
+              disabled={selected.filter(s => s.key === item.key).length === 1}
               classes={{
                 root: `${classes.listItem} 
                         ${index == 0 && classes.firstItem} 

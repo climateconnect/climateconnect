@@ -21,17 +21,25 @@ class UserProfile(models.Model):
         related_name="user_profile"
     )
 
+    name = models.CharField(
+        help_text="user.first_name+' '+user.last_name",
+        verbose_name="Full name",
+        max_length=256,
+        null=True,
+        blank=True
+    )
+
     url_slug = models.CharField(
         help_text="slug for user URL",
         verbose_name="URL Slug",
         max_length=512,
+        unique=True,
         null=True,
-        blank=True,
-        unique=True
+        blank=True
     )
 
     # Keeping this column blank. User may not want to upload their profile picture.
-    profile_image = models.ImageField(
+    image = models.ImageField(
         help_text="Points to user's profile picture",
         verbose_name="Profile Image",
         upload_to=profile_image_path,
@@ -114,11 +122,29 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    email_updates_on_projects = models.BooleanField(
+        help_text="Check if user wants to receive emails for projects they follow",
+        verbose_name="Email updates on Project", null=True, blank=True,
+        default=True
+    )
+
+    email_project_suggestions = models.BooleanField(
+        help_text="Check if user wants to receive emails for projects they might like",
+        verbose_name="Email project suggestions", null=True, blank=True, default=True
+    )
+
+    has_logged_in = models.PositiveSmallIntegerField(
+        help_text="Check if the user should be redirected to the edit profile page. Shows the number of logins up to 2",
+        verbose_name="Number of logins up to 2",
+        default=0
+    )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "User Profile"
         verbose_name_plural = "User Profiles"
         db_table = "climateconnect_user_profile"
+        ordering = ["-id"]
 
     def __str__(self):
         return "%s %s [profile id: %d]" % (

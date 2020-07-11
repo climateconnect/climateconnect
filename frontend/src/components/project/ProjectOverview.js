@@ -1,8 +1,10 @@
 import React from "react";
-import { Container, Typography, Button } from "@material-ui/core";
+import { Container, Typography, Button, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
 import ExploreIcon from "@material-ui/icons/Explore";
+import { getImageUrl } from "./../../../public/lib/imageOperations";
+import MessageContent from "../communication/MessageContent";
 
 const useStyles = makeStyles(theme => ({
   //general styling
@@ -94,7 +96,7 @@ function SmallScreenOverview({ project }) {
   const classes = useStyles();
   return (
     <>
-      <img className={classes.fullWidthImage} src={project.image} />
+      <img className={classes.fullWidthImage} src={getImageUrl(project.image)} />
       <div className={classes.blockProjectInfo}>
         <Typography component="h1" variant="h3" className={classes.smallScreenHeader}>
           {project.name}
@@ -103,12 +105,18 @@ function SmallScreenOverview({ project }) {
         <Typography>{project.shortdescription}</Typography>
         <div className={classes.projectInfoEl}>
           <Typography>
-            <PlaceIcon className={classes.icon} /> {project.location}
+            <Tooltip title="Location">
+              <PlaceIcon color="primary" className={classes.icon} />
+            </Tooltip>{" "}
+            {project.location}
           </Typography>
         </div>
         <div className={classes.projectInfoEl}>
           <Typography>
-            <ExploreIcon className={classes.icon} /> {project.labels.join(", ")}
+            <Tooltip title="Project categories">
+              <ExploreIcon color="primary" className={classes.icon} />
+            </Tooltip>{" "}
+            {project.tags.join(", ")}
           </Typography>
         </div>
         <div className={classes.infoBottomBar}>
@@ -132,20 +140,28 @@ function LargeScreenOverview({ project }) {
         {project.name}
       </Typography>
       <div className={classes.flexContainer}>
-        <img className={classes.inlineImage} src={project.image} />
+        <img className={classes.inlineImage} src={getImageUrl(project.image)} />
         <div className={classes.inlineProjectInfo}>
           <Typography component="h2" variant="h5" className={classes.subHeader}>
             Summary
           </Typography>
-          <Typography>{project.shortdescription}</Typography>
+          <Typography>
+            <MessageContent content={project.shortdescription} />
+          </Typography>
           <div className={classes.projectInfoEl}>
             <Typography>
-              <PlaceIcon color="primary" className={classes.icon} /> {project.location}
+              <Tooltip title="Location">
+                <PlaceIcon color="primary" className={classes.icon} />
+              </Tooltip>{" "}
+              {project.location}
             </Typography>
           </div>
           <div className={classes.projectInfoEl}>
             <Typography>
-              <ExploreIcon color="primary" className={classes.icon} /> {project.labels.join(",")}
+              <Tooltip title="Categories">
+                <ExploreIcon color="primary" className={classes.icon} />
+              </Tooltip>{" "}
+              {project.tags.join(", ")}
             </Typography>
           </div>
           <div className={classes.infoBottomBar}>

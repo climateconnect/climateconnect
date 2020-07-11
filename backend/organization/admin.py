@@ -2,13 +2,14 @@ from django.contrib import admin
 
 from organization.models import (
     Organization, OrganizationTags, OrganizationTagging,
-    Project, ProjectTags, ProjectTagging, Posts, Comment,
-    PostComment, ProjectComment, ProjectMember, OrganizationMember
+    Project, ProjectTags, ProjectTagging, Post, Comment,
+    PostComment, ProjectComment, ProjectMember, OrganizationMember,
+    ProjectParents, ProjectStatus, ProjectCollaborators
 )
 
 pass_through_models = (
     OrganizationTags, OrganizationTagging, ProjectTags,
-    ProjectTagging, Posts, Comment, PostComment, ProjectComment
+    ProjectTagging, Post, Comment, PostComment, ProjectComment, ProjectStatus, ProjectCollaborators
 )
 
 for model in pass_through_models:
@@ -44,3 +45,10 @@ class OrganizationMemberAdmin(admin.ModelAdmin):
 
 
 admin.site.register(OrganizationMember, OrganizationMemberAdmin)
+
+
+class ProjectParentsAdmin(admin.ModelAdmin):
+    search_fields = ('project__name', 'organization__name')
+
+
+admin.site.register(ProjectParents, ProjectParentsAdmin)

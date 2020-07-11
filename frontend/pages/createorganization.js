@@ -4,6 +4,7 @@ import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBa
 import Layout from "./../src/components/layouts/layout";
 import WideLayout from "./../src/components/layouts/WideLayout";
 import Router from "next/router";
+import axios from "axios"
 
 export default function CreateOrganization() {
   const [errorMessages, setErrorMessages] = React.useState({
@@ -12,7 +13,7 @@ export default function CreateOrganization() {
   });
 
   const [organizationInfo, setOrganizationInfo] = React.useState({
-    name: "",
+    organizationname: "",
     hasparentorganization: false,
     parentorganization: "",
     location: "",
@@ -24,22 +25,36 @@ export default function CreateOrganization() {
   const steps = ["basicorganizationinfo", "detailledorganizationinfo"];
   const [curStep, setCurStep] = React.useState(steps[0]);
 
-  const handleBasicInfoSubmit = (event, values) => {
+  const handleBasicInfoSubmit = async(event, values) => {
     event.preventDefault();
     //TODO: actually check if organization name is available
-    if (values.organizationname === "Climate Connect")
-      setErrorMessages({
-        errorMessages,
-        basicOrgainzationInfo: "Your organization name is already taken."
-      });
-    else {
-      setOrganizationInfo({
-        ...organizationInfo,
-        name: values.organizationname,
-        parentorganization: values.parentorganizationname,
-        location: values.city + ", " + values.country
-      });
-      setCurStep(steps[1]);
+    try {
+      if(!values.parentOrganization)
+        setErrorMessages({
+          errorMessages,
+          basicOrganizationInfo: "You have not selected a parent organization. Either untick the sub-organization field or choose/create your parent organization."
+        });
+      else{
+        const resp = await axios.get(process.env.API_URL + "/api/organizations/?search="+values.organizationname);
+        if(resp.data.results && resp.data.results.find(r=>r.name === values.organizationname)){
+          setErrorMessages({
+            errorMessages,
+            basicOrganizationInfo: <div>An organization with this name already exists. Click <a href={"/organizations/"+resp.data.results.find(r=>r.name === values.name).url_slug}>here</a> to see it.</div>
+          });
+        }else {
+          setOrganizationInfo({
+            ...organizationInfo,
+            name: values.organizationname,
+            parentorganization: values.parentorganizationname,
+            location: values.city + ", " + values.country
+          });
+          setCurStep(steps[1]);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+      return null;
     }
   };
 

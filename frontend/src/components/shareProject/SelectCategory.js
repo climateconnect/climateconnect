@@ -1,8 +1,7 @@
 import React from "react";
 import { Container } from "@material-ui/core";
-import MultiLevelSelector from "./MultiLevelSelector";
+import MultiLevelSelector from "../general/MultiLevelSelector";
 import { makeStyles } from "@material-ui/core/styles";
-import project_categories from "../../../public/data/project_categories.json";
 import BottomNavigation from "./BottomNavigation";
 
 const useStyles = makeStyles(theme => {
@@ -32,24 +31,25 @@ export default function SelectCategory({
   project,
   handleSetProjectData,
   goToNextStep,
-  goToPreviousStep
+  goToPreviousStep,
+  categoryOptions
 }) {
   const classes = useStyles();
   const [selectedCategories, setSelectedCategories] = React.useState(
-    project.categories ? project.categories : []
+    project.project_tags ? project.project_tags : []
   );
 
   const onClickNextStep = () => {
     if (selectedCategories.length <= 0) alert("Please choose at least one category!");
     else if (selectedCategories.length > 3) alert("You can only choose up to 3 categories.");
     else {
-      handleSetProjectData({ categories: selectedCategories });
+      handleSetProjectData({ project_tags: selectedCategories });
       goToNextStep();
     }
   };
 
   const onClickPreviousStep = () => {
-    handleSetProjectData({ categories: selectedCategories });
+    handleSetProjectData({ project_tags: selectedCategories });
     goToPreviousStep();
   };
 
@@ -57,7 +57,7 @@ export default function SelectCategory({
     <Container maxWidth="lg">
       <div className={classes.block}>
         <MultiLevelSelector
-          itemsToSelectFrom={project_categories}
+          itemsToSelectFrom={categoryOptions}
           maxSelections={3}
           itemNamePlural="categories"
           selected={selectedCategories}

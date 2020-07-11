@@ -28,11 +28,26 @@ const useStyles = makeStyles(theme => {
 });
 
 export default function AddProjectMembersContainer({
-  projectMembers,
+  projectData,
   blockClassName,
-  handleRemoveMember
+  handleRemoveMember,
+  availabilityOptions,
+  rolesOptions,
+  handleSetProjectData
 }) {
   const classes = useStyles();
+
+  const handleChangeMember = m => {
+    handleSetProjectData({
+      ...projectData,
+      team_members: [
+        ...projectData.team_members.map(t => {
+          if (t.url_slug === m.url_slug) return m;
+          else return t;
+        })
+      ]
+    });
+  };
 
   return (
     <div className={blockClassName}>
@@ -41,15 +56,19 @@ export default function AddProjectMembersContainer({
         project.
       </Typography>
       <div className={classes.memberContainer}>
-        {projectMembers.map((m, index) => {
-          return (
-            <MiniProfileInput
-              key={index}
-              className={classes.member}
-              profile={m}
-              onDelete={() => handleRemoveMember(m)}
-            />
-          );
+        {projectData.team_members.map((m, index) => {
+          if (m)
+            return (
+              <MiniProfileInput
+                key={index}
+                className={classes.member}
+                profile={m}
+                onDelete={m.role.name !== "Creator" && (() => handleRemoveMember(m))}
+                availabilityOptions={availabilityOptions}
+                rolesOptions={rolesOptions}
+                onChange={handleChangeMember}
+              />
+            );
         })}
       </div>
     </div>

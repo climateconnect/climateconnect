@@ -2,8 +2,6 @@ import React from "react";
 import { Avatar, Typography, Tooltip, IconButton, TextField, Button } from "@material-ui/core";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import SelectField from "../general/SelectField";
-import roles from "./../../../public/data/roles.json";
-import profile_info_metadata from "./../../../public/data/profile_info_metadata.json";
 import { makeStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 
@@ -41,8 +39,30 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function MiniProfileInput({ className, profile, onDelete }) {
+export default function MiniProfileInput({
+  className,
+  profile,
+  onDelete,
+  availabilityOptions,
+  rolesOptions,
+  onChange
+}) {
   const classes = useStyles();
+
+  const handleChangeRolePermissions = event => {
+    onChange({ ...profile, role: rolesOptions.find(r => r.name === event.target.value) });
+  };
+
+  const handleChangeRoleInProject = event => {
+    onChange({ ...profile, role_in_project: event.target.value });
+  };
+  const handleChangeAvailability = event => {
+    onChange({
+      ...profile,
+      availability: availabilityOptions.find(a => a.name === event.target.value)
+    });
+  };
+
   return (
     <div className={className}>
       <Avatar alt={profile.name} size="large" src={profile.image} className={classes.avatar} />
@@ -61,10 +81,16 @@ export default function MiniProfileInput({ className, profile, onDelete }) {
         label="Pick user's permissions"
         size="small"
         className={classes.field}
-        options={roles}
-        defaultValue={profile.permissions}
-        disabled={profile.permissions.key === "creator"}
+        disabled={profile.isCreator}
+        defaultValue={profile.role}
+        value={profile.role}
+        options={
+          profile.isCreator
+            ? rolesOptions.map(r => ({ ...r, key: r.id }))
+            : rolesOptions.map(r => ({ ...r, key: r.id })).filter(r => r.name !== "Creator")
+        }
         required
+        onChange={handleChangeRolePermissions}
       />
       <Typography color="primary" className={classes.fieldLabel}>
         Role in project
@@ -79,6 +105,8 @@ export default function MiniProfileInput({ className, profile, onDelete }) {
         variant="outlined"
         className={classes.field}
         label="Pick or type user's role"
+        onChange={handleChangeRoleInProject}
+        value={profile.role_in_project}
       />
       <Typography className={classes.fieldLabel} color="primary">
         Hour contributed per week
@@ -94,7 +122,9 @@ export default function MiniProfileInput({ className, profile, onDelete }) {
         label="Hours"
         size="small"
         className={classes.field}
-        options={profile_info_metadata.availability.options}
+        options={availabilityOptions}
+        onChange={handleChangeAvailability}
+        value={profile.availability}
         required
       />
       {onDelete && (

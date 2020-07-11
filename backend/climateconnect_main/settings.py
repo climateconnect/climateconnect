@@ -14,9 +14,6 @@ import os
 from dotenv import find_dotenv, load_dotenv
 load_dotenv(find_dotenv('.backend_env'))
 env = os.environ.get
-import logging
-logger = logging.getLogger(__name__)
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -147,8 +144,11 @@ if(env('ENVIRONMENT') not in('development', 'test')):
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
     GS_BUCKET_NAME = env('GS_BUCKET_NAME')
     STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-STATIC_URL = '/files/' if env('ENVIRONMENT') in ('development', 'test') else 'https://storage.googleapis.com/{}/'.format(GS_BUCKET_NAME)
-STATIC_ROOT = "static/"
+STATIC_URL = '/static/' if env('ENVIRONMENT') in ('development', 'test') else 'https://storage.googleapis.com/{}/'.format(GS_BUCKET_NAME)
+STATIC_ROOT = env('STATIC_ROOT') if env('ENVIRONMENT') in ('development', 'test') else "static/"
+MEDIA_ROOT = env('MEDIA_ROOT')
+MEDIA_URL = '/media/'
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -156,5 +156,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication'
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 100
+    'PAGE_SIZE': 200
 }

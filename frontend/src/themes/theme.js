@@ -47,6 +47,11 @@ const theme = createMuiTheme(coreTheme, {
           minWidth: 0
         }
       }
+    },
+    MuiTooltip: {
+      tooltip: {
+        fontSize: 14
+      }
     }
   },
   props: {

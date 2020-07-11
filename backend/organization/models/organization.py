@@ -24,8 +24,6 @@ class Organization(models.Model):
         help_text="Points to organization url slug",
         verbose_name="URL Slug",
         max_length=1024,
-        null=True,
-        blank=True,
         unique=True
     )
 
@@ -118,6 +116,7 @@ class Organization(models.Model):
         app_label = "organization"
         verbose_name = "Organization"
         verbose_name_plural = "Organizations"
+        ordering = ["-id"]
 
     def __str__(self):
         return "%s (%d)" % (self.name, self.pk)

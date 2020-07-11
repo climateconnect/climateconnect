@@ -34,6 +34,7 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import SentimentSatisfiedIcon from "@material-ui/icons/SentimentSatisfied";
 import GroupWorkIcon from "@material-ui/icons/GroupWork";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const LINKS = [
   {
@@ -57,7 +58,7 @@ const LINKS = [
     iconForDrawer: NotificationsIcon,
     hasBadge: true,
     //TODO: replace by user's unread notifications
-    badgeNumber: 3,
+    badgeNumber: 0,
     onlyShowIconOnNormalScreen: true,
     onlyShowIconOnMobile: true,
     icon: NotificationsIcon,
@@ -66,7 +67,7 @@ const LINKS = [
   },
   {
     href: "/signin",
-    text: "Sign in",
+    text: "Log in",
     iconForDrawer: AccountCircleIcon,
     isOutlinedInHeader: true,
     onlyShowLoggedOut: true,
@@ -77,8 +78,7 @@ const LINKS = [
     text: "Sign up",
     iconForDrawer: AccountCircleIcon,
     isOutlinedInHeader: true,
-    onlyShowLoggedOut: true,
-    showOnMobileOnly: true
+    onlyShowLoggedOut: true
   }
 ];
 
@@ -215,21 +215,23 @@ function NormalScreenLinks({ loggedInUser, handleLogout }) {
         const Icon = link.icon;
         return (
           <Link href={link.href} key={link.href}>
-            {link.onlyShowIconOnNormalScreen ? (
-              <IconButton color="primary" {...buttonProps} className={classes.link}>
-                {link.hasBadge && link.badgeNumber > 0 ? (
-                  <Badge badgeContent={link.badgeNumber} color="error">
+            <a className={classes.menuLink}>
+              {link.onlyShowIconOnNormalScreen ? (
+                <IconButton color="primary" {...buttonProps} className={classes.link}>
+                  {link.hasBadge && link.badgeNumber > 0 ? (
+                    <Badge badgeContent={link.badgeNumber} color="error">
+                      <Icon />
+                    </Badge>
+                  ) : (
                     <Icon />
-                  </Badge>
-                ) : (
-                  <Icon />
-                )}
-              </IconButton>
-            ) : (
-              <Button color="primary" {...buttonProps}>
-                {link.text}
-              </Button>
-            )}
+                  )}
+                </IconButton>
+              ) : (
+                <Button color="primary" {...buttonProps}>
+                  {link.text}
+                </Button>
+              )}
+            </a>
           </Link>
         );
       })}
@@ -323,7 +325,7 @@ function NarrowScreenLinks({ loggedInUser, handleLogout }) {
                     <Link href={link.href} key={index}>
                       <Avatar
                         className={classes.loggedInAvatarMobile}
-                        src={loggedInUser.image}
+                        src={getImageUrl(loggedInUser.image)}
                         alt={loggedInUser.name}
                       />
                     </Link>
@@ -381,7 +383,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout }) => {
       >
         <Avatar
           className={classes.loggedInAvatar}
-          src={loggedInUser.image}
+          src={getImageUrl(loggedInUser.image)}
           alt={loggedInUser.name}
         />
         <ArrowDropDownIcon />

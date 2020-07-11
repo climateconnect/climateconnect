@@ -1,6 +1,7 @@
 import React from "react";
-import { Typography, Link, Avatar, Button } from "@material-ui/core";
+import { Typography, Link, Avatar, Button, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -29,10 +30,18 @@ const useStyles = makeStyles(theme => {
     additionalInfo: {
       paddingBottom: theme.spacing(1)
     },
+    info: {
+      display: "flex",
+      alignItems: "center",
+      margin: "0 auto",
+      textAlign: "center",
+      justifyContent: "center",
+      marginTop: theme.spacing(0.5)
+    },
     lowImportanceInfo: {
       color: theme.palette.grey[700],
       fontSize: "12px",
-      marginTop: theme.spacing(1.5),
+      marginTop: theme.spacing(1),
       marginBottom: theme.spacing(1)
     },
     highImportanceInfo: {
@@ -42,6 +51,9 @@ const useStyles = makeStyles(theme => {
       "&:hover": {
         textDecoration: "none"
       }
+    },
+    icon: {
+      marginRight: theme.spacing(0.5)
     }
   };
 });
@@ -51,9 +63,14 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
   return (
     <div className={classes.avatarWithInfo}>
       <Link href={"/profiles/" + profile.url_slug} className={classes.disableHover}>
-        <Avatar alt={profile.name} size="large" src={profile.image} className={classes.avatar} />
+        <Avatar
+          alt={profile.name}
+          size="large"
+          src={getImageUrl(profile.image)}
+          className={classes.avatar}
+        />
         <Typography variant="h6" className={classes.name}>
-          {profile.name}
+          {profile.first_name + " " + profile.last_name}
         </Typography>
         {showAdditionalInfo && (
           <div className={classes.additionalInfo}>
@@ -62,13 +79,21 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
               return (
                 <Typography
                   key={index}
-                  className={`${
-                    item.importance === "low"
-                      ? classes.lowImportanceInfo
-                      : classes.highImportanceInfo
-                  }`}
+                  className={`${classes.info}
+                    ${
+                      item.importance === "low"
+                        ? classes.lowImportanceInfo
+                        : classes.highImportanceInfo
+                    }`}
                 >
-                  {item.icon && <item.icon name={item.iconName} />}
+                  {item.icon &&
+                    (item.toolTipText ? (
+                      <Tooltip className={classes.icon} title={item.toolTipText}>
+                        <item.icon name={item.iconName} />
+                      </Tooltip>
+                    ) : (
+                      <item.icon className={classes.icon} name={item.iconName} />
+                    ))}
                   {item.text}
                 </Typography>
               );

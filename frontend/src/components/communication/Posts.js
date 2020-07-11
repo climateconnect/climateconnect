@@ -58,17 +58,16 @@ export default function Posts({ posts, type }) {
   };
   return (
     <div className={classNames[type]}>
-      {posts.map((post, index) => (
-        <Post
-          key={index}
-          post={post}
-          className={`${classes.post} ${type === "progresspost" && classes.progressPost} ${index ===
-            0 &&
-            type === "progresspost" &&
-            classes.firstPost}`}
-          type={type}
-        />
-      ))}
+      {posts &&
+        posts.map((post, index) => (
+          <Post
+            key={index}
+            post={post}
+            className={`${classes.post} ${type === "progresspost" &&
+              classes.progressPost} ${index === 0 && type === "progresspost" && classes.firstPost}`}
+            type={type}
+          />
+        ))}
     </div>
   );
 }

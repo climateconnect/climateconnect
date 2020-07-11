@@ -3,6 +3,7 @@
     {
       "id": "78b6z77c-g8d2-4b2b-9825-4479706d2402",
       "name": "Global climate strike 29.11.2019",
+      "url_slug": "climatestrike",
       "image": "/images/climatestrike.jpg",
       "creator_url": "fridaysforfuture",
       "creator_name": "Fridays for Future",
@@ -27,6 +28,7 @@
     {
       "id": "78b6z77c-g8d2-4b2b-9825-4479706d2402",
       "name": "Climate Science in newspapers",
+      "url_slug": "climatesciencenewspapers",
       "image": "/images/newspapers.jpg",
       "creator_url": "pikpotsdam",
       "creator_name": "PIK Potsdam",
@@ -51,6 +53,7 @@
     {
       "id": "78b6z77c-g8d2-4b2b-9825-4479706d2402",
       "name": "Energy from ocean waves",
+      "url_slug": "waveenergy",
       "image": "/images/waveenergy.jpg",
       "creator_url": "calwave",
       "creator_name": "Calwave",
@@ -75,6 +78,7 @@
     {
       "id": "78b6z77c-g8d2-4b2b-9825-4479706d2402",
       "name": "Compensate climate impact of flights",
+      "url_slug": "compensateflights",
       "image": "/images/flightoffset.jpg",
       "creator_url": "aircare",
       "creator_name": "AirCare",
@@ -136,7 +140,7 @@
           "timeperweek": 1
         }
       ],
-      "shortdescription": "We are convincing the organization responsible for the university canteens in our region to add a label with the CO2-footprint to each meal in the canteens. This way we are going to enable students to make more informed and climate-friendly food choices",
+      "shortdescription": "We are convincing our university's canteens to show a label with the CO2-footprint next to each meal in the canteens. This way we will enable students to make more informed and climate-friendly food choices.",
       "status": "inprogress",
       "description": "We approached the Studentenwerk, which is responsible for 2 Canteens in Erlangen, 8 Canteens in Nürnberg as well as the Canteens in Eichstätt, Ingolstadt, Ansbach and Triersdorf. A combined number of 14,000 students eats in these canteens each day We are going to propose the idea of adding CO2-labels to their dishes to encourage students to eat more climate-friendly.",
       "milestones": [
@@ -287,6 +291,7 @@
     {
       "id": "78b6z77c-g8d2-4b2b-9825-4479706d2402",
       "name": "Climate Camp",
+      "url_slug": "climatecamp",
       "image": "/images/climatecamp.jpg",
       "creator_url": "extinctionrebellion",
       "creator_name": "Extinction Rebellion",
@@ -311,6 +316,7 @@
     {
       "id": "78b6677c-g8d2-4b2b-9825-4479706d2402",
       "name": "Climate Cubes",
+      "url_slug": "climatecubes",
       "image": "/images/climatecube.jpg",
       "creator_url": "energiewendeerhlangen",
       "creator_name": "Energiewende ER(H)langen",

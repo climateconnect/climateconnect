@@ -17,7 +17,7 @@ class UserProfileFactory(factory.DjangoModelFactory):
 
     user = factory.SubFactory(UserFactory)
     url_slug = "testing"
-    profile_image = "profile.png"
+    image = "profile.png"
     background_image = "background.png"
     country = "Planet"
     state = "Earth"

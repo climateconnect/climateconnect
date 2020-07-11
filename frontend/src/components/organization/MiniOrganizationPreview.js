@@ -1,7 +1,8 @@
 import React from "react";
-import { Box, Typography, IconButton } from "@material-ui/core";
+import { Typography, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
+import { getImageUrl } from "./../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => ({
   orgImage: {
@@ -18,12 +19,33 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function MiniOrganizationPreview({ organization, className, size, onDelete }) {
+export default function MiniOrganizationPreview({
+  organization,
+  className,
+  size,
+  onDelete,
+  nolink
+}) {
+  if (!nolink)
+    return (
+      <a className={className}>
+        <Content organization={organization} size={size} onDelete={onDelete} />
+      </a>
+    );
+  else
+    return (
+      <div className={className}>
+        <Content organization={organization} size={size} onDelete={onDelete} />
+      </div>
+    );
+}
+
+function Content({ organization, size, onDelete }) {
   const classes = useStyles();
   return (
-    <Box className={className}>
+    <>
       <img
-        src={organization.image}
+        src={getImageUrl(organization.image)}
         className={`${classes.orgImage} ${size === "small" && classes.smallOrgImage}`}
       />
       {size === "small" ? (
@@ -38,6 +60,6 @@ export default function MiniOrganizationPreview({ organization, className, size,
           <CloseIcon />
         </IconButton>
       )}
-    </Box>
+    </>
   );
 }

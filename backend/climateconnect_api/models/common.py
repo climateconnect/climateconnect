@@ -31,6 +31,7 @@ class Availability(models.Model):
         verbose_name = "Availability"
         verbose_name_plural = "Availabilities"
         db_table = "climateconnect_availability"
+        ordering = ["id"]
 
     def __str__(self):
         return "%s" % self.name
@@ -42,6 +43,17 @@ class Skill(models.Model):
         verbose_name="Name",
         max_length=512
     )
+
+    parent_skill = models.ForeignKey(
+        'self',
+        related_name="skill_parent",
+        verbose_name="Parent Skill",
+        help_text="Points to the parent skill",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT
+    )
+
 
     created_at = models.DateTimeField(
         help_text="Time when skill was created",
@@ -60,6 +72,7 @@ class Skill(models.Model):
         verbose_name = "Skill"
         verbose_name_plural = "Skills"
         db_table = "climateconnect_skill"
+        ordering = ["id"]
 
     def __str__(self):
         return "%s" % self.name

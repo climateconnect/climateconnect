@@ -3,6 +3,7 @@ import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
 import ConfirmEmail from "./../src/components/signup/ConfirmEmail";
 import axios from "axios";
+import Router from "next/router";
 
 export default function Signup() {
   const [userInfo, setUserInfo] = React.useState({
@@ -63,12 +64,18 @@ export default function Signup() {
     };
     axios
       .post(process.env.API_URL + "/signup/", payload, config)
-      .then(function(/*response*/) {
-        setCurStep(steps[2]);
+      .then(function() {
+        Router.push({
+          pathname: "/accountcreated/"
+        });
+        //TODO: readd this after automatic E-Mail sending is finished
+        //setCurStep(steps[2]);
       })
       .catch(function(error) {
-        console.log(error);
-        setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data.message });
+        if (error.response.data.message)
+          setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data.message });
+        else if (error.response.data.length > 0)
+          setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data[0] });
       });
   };
 
