@@ -309,7 +309,6 @@ export default function EditAccountPage({
 
   const displayAccountInfo = info =>
     Object.keys(info)
-      .sort((a, b) => info[b].order - info[a].order)
       .map(key => {
         const handleChange = event => {
           setEditedAccount({

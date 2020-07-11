@@ -42,7 +42,7 @@ export default function EditProfilePage({
   console.log(infoMetadata.availability.options);
   const profile = user ? parseProfile(user, true, true) : null;
   const saveChanges = (event, editedAccount) => {
-    const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions);
+    const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
     console.log(getProfileWithoutRedundantOptions(user, parsedProfile));
     axios
       .post(
@@ -171,8 +171,9 @@ async function getProfileInfoMetadata() {
   return TEMP_INFOMETADATA;
 }
 
-const parseProfileForRequest = (profile, availabilityOptions) => {
+const parseProfileForRequest = (profile, availabilityOptions, user) => {
   console.log(availabilityOptions);
+  const availability = availabilityOptions.find(o => o.name == profile.info.availability)
   return {
     first_name: profile.first_name,
     last_name: profile.last_name,
@@ -181,7 +182,7 @@ const parseProfileForRequest = (profile, availabilityOptions) => {
     country: profile.info.country,
     city: profile.info.city,
     biography: profile.info.bio,
-    availability: availabilityOptions.find(o => o.name === profile.info.availability).id,
+    availability: availability ? availability.id : (user.availability ? user.availability.id : null),
     skills: profile.info.skills.map(s => s.id)
   };
 };
@@ -192,7 +193,7 @@ const getProfileWithoutRedundantOptions = (user, newProfile) => {
     skills: user.skills.map(s => s.id),
     image: process.env.API_URL + user.image,
     background_image: process.env.API_URL + user.background_image,
-    availability: user.availability.id
+    availability: user.availability && user.availability.id
   };
   const finalProfile = {};
   Object.keys(newProfile).map(k => {
