@@ -113,7 +113,7 @@ function SmallScreenOverview({ project }) {
         </div>
         <div className={classes.projectInfoEl}>
           <Typography>
-            <Tooltip title="Project categories">
+            <Tooltip title="Categories">
               <ExploreIcon color="primary" className={classes.icon} />
             </Tooltip>{" "}
             {project.tags.join(", ")}
@@ -145,7 +145,7 @@ function LargeScreenOverview({ project }) {
           <Typography component="h2" variant="h5" className={classes.subHeader}>
             Summary
           </Typography>
-          <Typography>
+          <Typography component="div">
             <MessageContent content={project.shortdescription} />
           </Typography>
           <div className={classes.projectInfoEl}>
