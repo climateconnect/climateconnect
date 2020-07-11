@@ -111,10 +111,11 @@ export default function ProfilePage({
 
 ProfilePage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  const profileUrl = encodeURI(ctx.query.profileUrl)
   return {
-    profile: await getProfileByUrlIfExists(ctx.query.profileUrl, token),
-    organizations: await getOrganizationsByUser(ctx.query.profileUrl, token),
-    projects: await getProjectsByUser(ctx.query.profileUrl, token),
+    profile: await getProfileByUrlIfExists(profileUrl, token),
+    organizations: await getOrganizationsByUser(profileUrl, token),
+    projects: await getProjectsByUser(profileUrl, token),
     profileTypes: await getProfileTypes(),
     infoMetadata: await getProfileInfoMetadata()
   };
