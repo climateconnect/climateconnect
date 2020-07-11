@@ -1,18 +1,37 @@
 import React from "react";
 import Form from "./../general/Form";
+import { IconButton } from "@material-ui/core";
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+
+const renderSearchOption = option => {
+  return (
+    <React.Fragment>
+      <IconButton>
+        <AddCircleOutlineIcon />
+      </IconButton>
+      {option.name}
+    </React.Fragment>
+  );
+};
 
 export default function EnterBasicOrganizationInfo({
   errorMessage,
   handleSubmit,
   organizationInfo
 }) {
+  const [parentOrganization, setParentOrganization] = React.useState(null)
+  const onUnselect = () => {
+    if(parentOrganization)
+      setParentOrganization(null)
+  }
+  const getOptionLabel = (option) => option.name
   const fields = [
     {
       required: true,
       label: "Organization name",
       key: "organizationname",
       type: "text",
-      value: organizationInfo["organizationname"]
+      value: organizationInfo["name"]
     },
     {
       label: "We are a sub-organization of a larger organization (e.g. local group)",
@@ -25,7 +44,17 @@ export default function EnterBasicOrganizationInfo({
       required: true,
       label: "Parent organization name",
       key: "parentorganizationname",
-      type: "text",
+      type: "autocomplete",
+      autoCompleteProps: {
+        label:"Search for your parent organization",
+        baseUrl:process.env.API_URL+"/api/organizations/?search=",
+        onSelect: setParentOrganization,
+        renderOption: renderSearchOption,
+        getOptionLabel: getOptionLabel,
+        helperText: "Type the name of your parent organization.",
+        onUnselect: onUnselect,
+        filterOut: []
+      },
       onlyShowIfChecked: "hasparentorganization",
       value: organizationInfo["parentorganizationname"]
     },
@@ -61,7 +90,7 @@ export default function EnterBasicOrganizationInfo({
       fields={fields}
       messages={messages}
       usePercentage={false}
-      onSubmit={handleSubmit}
+      onSubmit={(event, account) => handleSubmit(event, {...account, parentOrganization: parentOrganization})}
       errorMessage={errorMessage}
     />
   );

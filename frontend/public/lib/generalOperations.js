@@ -2,7 +2,6 @@ export function getParams(url) {
   if(!url)
     return []
   const paramContent = url.split("?")[1];
-  console.log(paramContent)
   if(!paramContent) 
     return []
   const rawParams = paramContent.split("&");

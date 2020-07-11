@@ -57,6 +57,7 @@ export default function OrganizersContainer({
             className={`${searchBarClassName} ${blockClassName}`}
             baseUrl={process.env.API_URL + "/api/organizations/?search="}
             clearOnSelect
+            freeSolo
             onSelect={handleAddOrganization}
             renderOption={renderSearchOption}
             getOptionLabel={option => option.name}

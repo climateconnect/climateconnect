@@ -106,6 +106,7 @@ export default function AddTeam({
             className={`${classes.searchBar} ${classes.block}`}
             baseUrl={process.env.API_URL + "/api/members/?search="}
             clearOnSelect
+            freeSolo
             filterOut={[...projectData.team_members]}
             onSelect={handleAddMember}
             renderOption={renderSearchOption}

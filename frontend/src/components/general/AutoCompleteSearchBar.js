@@ -13,7 +13,9 @@ export default function AutoCompleteSearchBar({
   onSelect,
   getOptionLabel,
   renderOption,
-  helperText
+  helperText,
+  freeSolo,
+  onUnselect
 }) {
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
@@ -30,7 +32,7 @@ export default function AutoCompleteSearchBar({
           setOptions(
             response.data.results
               .map(o => ({ ...o, key: o.url_slug }))
-              .filter(o => !filterOut.find(fo => fo.url_slug === o.url_slug))
+              .filter(o => filterOut ? !filterOut.find(fo => fo.url_slug === o.url_slug) : true)
           );
         }
       } else {
@@ -52,6 +54,8 @@ export default function AutoCompleteSearchBar({
   const handleInputChange = event => {
     setInputValue(event.target.value);
     setSearchValueThrottled(event.target.value);
+    if(onUnselect)
+      onUnselect()
   };
 
   const setSearchValueThrottled = React.useMemo(
@@ -68,6 +72,9 @@ export default function AutoCompleteSearchBar({
       if (clearOnSelect) {
         setInputValue("");
         setSearchValue("");
+      } else {
+        setInputValue(value.name)
+        setSearchValue("")
       }
     }
   };
@@ -89,7 +96,7 @@ export default function AutoCompleteSearchBar({
       onChange={handleChange}
       getOptionLabel={getOptionLabel}
       options={options}
-      freeSolo
+      freeSolo={freeSolo}
       inputValue={inputValue}
       renderOption={renderOption}
       renderInput={params => (
