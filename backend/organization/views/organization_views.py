@@ -12,13 +12,15 @@ from organization.serializers.organization import (
     OrganizationSerializer, OrganizationMinimalSerializer, OrganizationMemberSerializer, UserOrganizationSerializer, OrganizationCardSerializer
 )
 from organization.serializers.project import (ProjectFromProjectParentsSerializer,)
+from organization.serializers.tags import (OrganizationTagsSerializer)
 from climateconnect_api.serializers.user import UserProfileStubSerializer
-from organization.models import Organization, OrganizationMember, ProjectParents
+from organization.models import Organization, OrganizationMember, ProjectParents, OrganizationTags, OrganizationTagging
 from climateconnect_api.models.user import UserProfile
 from organization.permissions import OrganizationReadWritePermission
 from climateconnect_api.models import Role
 from organization.pagination import (OrganizationsPagination, ProjectsPagination)
 from climateconnect_api.pagination import MembersPagination
+from climateconnect_main.utility.general import get_image_from_data_url
 import logging
 logger = logging.getLogger(__name__)
 
@@ -38,9 +40,10 @@ class CreateOrganizationView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        required_params = ['name', 'team_members']
+        required_params = ['name', 'team_members', 'city', 'country', 'image', 'organization_tags']
         for param in required_params:
             if param not in request.data:
+                logger.error('Required parameter missing: {}'.format(param))
                 return Response({
                     'message': 'Required parameter missing: {}'.format(param)
                 }, status=status.HTTP_400_BAD_REQUEST)
@@ -51,9 +54,9 @@ class CreateOrganizationView(APIView):
             organization.url_slug = organization.name.replace(" ", "") + str(organization.id)
 
             if 'image' in request.data:
-                organization.image = request.data['image']
+                organization.image = get_image_from_data_url(request.data['image'])[0]
             if 'background_image' in request.data:
-                organization.background_image = request.data['background_image']
+                organization.background_image = get_image_from_data_url(request.data['background_image'])[0]
 
             if 'parent_organization' in request.data:
                 try:
@@ -74,7 +77,6 @@ class CreateOrganizationView(APIView):
             if 'short_description' in request.data:
                 organization.short_description = request.data['short_description']
             organization.save()
-
             roles = Role.objects.all()
             for member in request.data['team_members']:
                 user_role = roles.filter(id=int(member['permission_type_id'])).first()
@@ -90,8 +92,22 @@ class CreateOrganizationView(APIView):
                     )
                     logger.info("Organization member created {}".format(user.id))
 
+            if 'organization_tags' in request.data:
+                for organization_tag_id in request.data['organization_tags']:
+                    try:
+                        organization_tag = OrganizationTags.objects.get(id=int(organization_tag_id))
+                    except OrganizationTags.DoesNotExist:
+                        logger.error("Passed organization tag ID {} does not exists".format(organization_tag_id))
+                        continue
+                    if organization_tag:
+                        OrganizationTagging.objects.create(
+                            organization=organization, organization_tag=organization_tag
+                        )
+                        logger.info("Organization tagging created for organization {}".format(organization.id))
+            
             return Response({
-                'message': 'Organization {} successfully created'.format(organization.name)
+                'message': 'Organization {} successfully created'.format(organization.name),
+                'url_slug': organization.url_slug
             }, status=status.HTTP_201_CREATED)
         else:
             return Response({
@@ -189,3 +205,10 @@ class ListOrganizationMembersAPIView(ListAPIView):
         return OrganizationMember.objects.filter(
             organization__url_slug=self.kwargs['url_slug'],
         ).order_by('id')
+
+class ListOrganizationTags(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = OrganizationTagsSerializer
+
+    def get_queryset(self):
+        return OrganizationTags.objects.all()

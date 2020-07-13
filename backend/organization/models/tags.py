@@ -44,6 +44,7 @@ class OrganizationTags(models.Model):
     class Meta:
         app_label = "organization"
         verbose_name = "Organization Tags"
+        ordering = ["id"]
 
     def __str__(self):
         return "%s (%d)" % (self.name, self.id)

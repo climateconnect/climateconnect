@@ -39,6 +39,10 @@ urlpatterns = [
         organization_views.UpdateOrganizationMemberView.as_view(), name='update-orgnaization-member-view'
     ),
     path(
+        'organizationtags/',
+        organization_views.ListOrganizationTags.as_view(), name='list-organization-tags'
+    ),
+    path(
         'my_organizations/',
         organization_views.PersonalOrganizationsView.as_view(),
         name='get-personal-organizations-view'
