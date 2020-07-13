@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { Typography, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -14,6 +14,7 @@ import ProjectPreviews from "../../src/components/project/ProjectPreviews";
 
 import TEMP_INFOMETADATA from "./../../public/data/organization_info_metadata.js";
 import tokenConfig from "../../public/config/tokenConfig";
+import { getParams } from "./../../public/lib/generalOperations";
 
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
@@ -42,10 +43,19 @@ export default function OrganizationPage({
   organizationTypes,
   infoMetadata
 }) {
-  console.log(organization)
+  console.log(organization);
+  const [message, setMessage] = React.useState("");
+
+  useEffect(() => {
+    const params = getParams(window.location.href);
+    if (params.message) setMessage(decodeURI(params.message));
+  });
   const { user } = useContext(UserContext);
   return (
-    <WideLayout title={organization ? organization.name + "'s profile" : "Not found"}>
+    <WideLayout
+      message={message}
+      title={organization ? organization.name + "'s profile" : "Not found"}
+    >
       {organization ? (
         <OrganizationLayout
           organization={organization}
@@ -64,7 +74,8 @@ export default function OrganizationPage({
 
 OrganizationPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
-  const organizationUrl = encodeURI(ctx.query.organizationUrl)
+  const organizationUrl = encodeURI(ctx.query.organizationUrl);
+  console.log(organizationUrl);
   return {
     organization: await getOrganizationByUrlIfExists(organizationUrl, token),
     projects: await getProjectsByOrganization(organizationUrl, token),
@@ -149,50 +160,17 @@ function NoOrganizationFoundLayout() {
 
 // These will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getOrganizationByUrlIfExists(organizationUrl, token) {
-  console.log('getting organization by url')
   try {
-    console.log('here is the token config')
-    console.log('token: ', token)
-    console.log(tokenConfig(token));
     const resp = await axios.get(
-      process.env.API_URL + "/organizations/?search=" + organizationUrl,
+      process.env.API_URL + "/api/organizations/" + organizationUrl + "/",
       tokenConfig(token)
     );
-    console.log(resp.data.results[0])
-    if (resp.data.results.length === 0) return null;
-    else {
-      //console.log(resp.data.results[0]);
-      return parseOrganization(resp.data.results[0]);
-    }
+    return parseOrganization(resp.data);
   } catch (err) {
     //console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-}
-
-function parseOrganization(organization) {
-  console.log(organization)
-  return {
-    url_slug: organization.url_slug,
-    background_image: organization.background_image,
-    name: organization.name,
-    image: organization.image,
-    types: organization.types /* TODO get actual types, this is always empty.*/,
-    info: {
-      location: organization.city+", "+organization.country,
-      shortdescription: organization.short_description,
-      school: organization.school,
-      organ: organization.organ,
-      parent_organization: organization.parent_organization
-    }
-  }
-}
-
-async function getProjectsByOrganization(organizationUrl) {
-  return TEMP_PROJECT_DATA.projects.filter(project =>
-    project.creator_url.includes(organizationUrl)
-  );
 }
 
 async function getProjectsByOrganization(organizationUrl, token) {
@@ -227,6 +205,10 @@ async function getMembersByOrganization(organizationUrl, token) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
+}
+
+async function getOrganizationTypes() {
+  return [];
 }
 
 async function getOrganizationInfoMetadata() {
