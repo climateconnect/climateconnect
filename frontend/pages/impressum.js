@@ -20,10 +20,10 @@ const Impressum = () => (
       91054 Erlangen
       <br />
       <h2>Contact Information</h2>
-      Telephone: (+49)15757962830
+      Telephone: +4915730101056
       <br />
       E-Mail:{" "}
-      <a href="mailto:christoph.stoll@climateconnect.earth">christoph.stoll@climateconnect.earth</a>
+      <a href="mailto:contact@climateconnect.earth">contact@climateconnect.earth</a>
       <br />
       Internet address:{" "}
       <a href="https://climateconnect.earth" target="_blank" rel="noopener noreferrer">
@@ -76,9 +76,9 @@ const Impressum = () => (
       </p>
       <h2>Kontakt</h2>
       <p>
-        Telefon: (+49)15757962830
+        Telefon: +4915730101056
         <br />
-        E-Mail: christoph.stoll@climateconnect.earth
+        E-Mail: contact@climateconnect.earth
       </p>
       <h3>Haftung f&uuml;r Inhalte</h3>{" "}
       <p>
