@@ -70,7 +70,7 @@ export default function Post({ post, type, className }) {
           startIcon={<ThumbUpOutlinedIcon />}
           className={`${classes.thumbUpIcon} ${classes.interactionBarButton}`}
         >
-          {post.likes?post.likes:0}
+          {post.likes ? post.likes : 0}
         </Button>
         {(type === "openingpost" || type === "progresspost") && (
           <>

@@ -47,7 +47,7 @@ export default function ProjectPage({ project, members, posts, comments }) {
 
 ProjectPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
-  const projectUrl = encodeURI(ctx.query.projectId)
+  const projectUrl = encodeURI(ctx.query.projectId);
   return {
     project: await getProjectByIdIfExists(projectUrl, token),
     members: token ? await getProjectMembersByIdIfExists(projectUrl, token) : [],

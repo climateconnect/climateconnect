@@ -111,7 +111,7 @@ export default function ProfilePage({
 
 ProfilePage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
-  const profileUrl = encodeURI(ctx.query.profileUrl)
+  const profileUrl = encodeURI(ctx.query.profileUrl);
   return {
     profile: await getProfileByUrlIfExists(profileUrl, token),
     organizations: await getOrganizationsByUser(profileUrl, token),

@@ -14,15 +14,17 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function AccountCreated() {
-  const classes = useStyles()
+  const classes = useStyles();
   return (
     <Layout title="Account created">
       <Paper className={classes.root}>
         <Typography variant="h5" className={classes.headline}>
           Congratulations! You have created your account!
         </Typography>
-        <Typography variant="h4"><Link href="/signin">Click here to log in.</Link></Typography>
+        <Typography variant="h4">
+          <Link href="/signin">Click here to log in.</Link>
+        </Typography>
       </Paper>
     </Layout>
-  )
+  );
 }
