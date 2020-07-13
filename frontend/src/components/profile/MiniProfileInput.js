@@ -45,10 +45,11 @@ export default function MiniProfileInput({
   onDelete,
   availabilityOptions,
   rolesOptions,
-  onChange
+  onChange,
+  hideHoursPerWeek,
+  editDisabled
 }) {
   const classes = useStyles();
-
   const handleChangeRolePermissions = event => {
     onChange({ ...profile, role: rolesOptions.find(r => r.name === event.target.value) });
   };
@@ -68,7 +69,7 @@ export default function MiniProfileInput({
       <Avatar alt={profile.name} size="large" src={profile.image} className={classes.avatar} />
       <Typography variant="h6" className={classes.name} color="secondary">
         {profile.first_name + " " + profile.last_name}
-      </Typography>
+      </Typography>      
       <Typography className={classes.fieldLabel} color="primary">
         Permissions
         <Tooltip title={"Choose what permissions the user has on the project."}>
@@ -81,7 +82,7 @@ export default function MiniProfileInput({
         label="Pick user's permissions"
         size="small"
         className={classes.field}
-        disabled={profile.isCreator}
+        disabled={editDisabled || profile.isCreator}
         defaultValue={profile.role}
         value={profile.role}
         options={
@@ -107,26 +108,34 @@ export default function MiniProfileInput({
         label="Pick or type user's role"
         onChange={handleChangeRoleInProject}
         value={profile.role_in_project}
+        disabled={editDisabled}
       />
-      <Typography className={classes.fieldLabel} color="primary">
-        Hour contributed per week
-        <Tooltip
-          title={"Pick how many hours per week the user contributes to this project on average."}
-        >
-          <IconButton>
-            <HelpOutlineIcon className={classes.tooltip} />
-          </IconButton>
-        </Tooltip>
-      </Typography>
-      <SelectField
-        label="Hours"
-        size="small"
-        className={classes.field}
-        options={availabilityOptions}
-        onChange={handleChangeAvailability}
-        value={profile.availability}
-        required
-      />
+      {!hideHoursPerWeek &&
+        <>
+          <Typography className={classes.fieldLabel} color="primary">
+            Hour contributed per week
+            <Tooltip
+              title={"Pick how many hours per week the user contributes to this project on average."}
+            >
+              <IconButton>
+                <HelpOutlineIcon className={classes.tooltip} />
+              </IconButton>
+            </Tooltip>
+          </Typography>
+          <SelectField
+            label="Hours"
+            size="small"
+            className={classes.field}
+            options={availabilityOptions}
+            onChange={handleChangeAvailability}
+            value={profile.availability}
+            required
+          />
+        </>
+      }
+      {editDisabled &&
+        <Typography color="secondary">You can not edit or remove this member</Typography>
+      }
       {onDelete && (
         <Button
           variant="contained"

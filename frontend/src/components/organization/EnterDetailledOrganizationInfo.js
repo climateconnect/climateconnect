@@ -29,6 +29,7 @@ export default function EnterDetailledOrganizationInfo({
   handleSubmit,
   tagOptions
 }) {
+  console.log(tagOptions);
   const organization = parseOrganizationInfo(organizationInfo);
   const classes = useStyles();
 

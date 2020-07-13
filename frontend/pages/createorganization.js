@@ -15,7 +15,7 @@ export default function CreateOrganization({ tagOptions, token }) {
     basicOrganizationInfo: "",
     detailledOrganizationInfo: ""
   });
-
+  console.log(tagOptions);
   const [organizationInfo, setOrganizationInfo] = React.useState({
     organizationname: "",
     hasparentorganization: false,
@@ -82,7 +82,7 @@ export default function CreateOrganization({ tagOptions, token }) {
   };
 
   const handleDetailledInfoSubmit = (event, account) => {
-    const organizationToSubmit = parseOrganizationForRequest(account);
+    const organizationToSubmit = parseOrganizationForRequest(account, user);
     console.log(organizationToSubmit);
     for (const prop of Object.keys(requiredPropErrors)) {
       if (!organizationToSubmit[prop]) {
@@ -103,7 +103,8 @@ export default function CreateOrganization({ tagOptions, token }) {
         Router.push({
           pathname: "/organizations/" + response.data.url_slug,
           query: {
-            message: "You have successfully created an organization! You can now add some members."
+            message:
+              "You have successfully created an organization! You can add members by scrolling down to the members section."
           }
         });
       })
@@ -158,6 +159,7 @@ async function getTags(token) {
     );
     if (resp.data.results.length === 0) return null;
     else {
+      console.log(resp.data.results);
       return resp.data.results.map(t => {
         return { ...t, key: t.id, additionalInfo: t.additional_info ? t.additional_info : [] };
       });
@@ -169,9 +171,9 @@ async function getTags(token) {
   }
 }
 
-const parseOrganizationForRequest = o => {
+const parseOrganizationForRequest = (o, user) => {
   const organization = {
-    team_members: [],
+    team_members: [{ user_id: user.id, permission_type_id: 3 }],
     name: o.name,
     background_image: o.background_image,
     image: o.image,

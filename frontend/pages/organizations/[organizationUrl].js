@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
-import { Typography, Container } from "@material-ui/core";
+import { Typography, Container, Button, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Cookies from "next-cookies";
 import axios from "axios";
@@ -33,6 +33,12 @@ const useStyles = makeStyles(theme => ({
   loginNudge: {
     textAlign: "center",
     margin: "0 auto"
+  },
+  editButton: {
+    marginBottom: theme.spacing(1)
+  },
+  divider: {
+    marginTop: theme.spacing(1)
   }
 }));
 
@@ -51,11 +57,10 @@ export default function OrganizationPage({
     if (params.message) setMessage(decodeURI(params.message));
   });
   const { user } = useContext(UserContext);
+  if(user)
+    console.log(members.find(m => m.id === user.id))
   return (
-    <WideLayout
-      message={message}
-      title={organization ? organization.name + "'s profile" : "Not found"}
-    >
+    <WideLayout message={message} title={organization ? organization.name : "Not found"}>
       {organization ? (
         <OrganizationLayout
           organization={organization}
@@ -112,7 +117,7 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
     }));
   };
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
-
+  console.log(members)
   return (
     <AccountPage
       account={organization}
@@ -132,8 +137,27 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
           <Typography>This organization has not listed any projects yet!</Typography>
         )}
       </Container>
+      <Divider className={classes.divider} />
       <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Members:</div>
+        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
+          {user &&
+            !!members.find(m => m.id === user.id) &&
+            ["Creator", "Administrator"].includes(
+              members.find(m => m.id === user.id).permission
+            ) && (
+              <div>
+                <Button
+                  className={classes.editButton}
+                  variant="contained"
+                  color="primary"
+                  href={"/manageOrganizationMembers/" + organization.url_slug}
+                >
+                  Manage members
+                </Button>
+              </div>
+            )}
+          Members:
+        </div>
         {members && members.length ? (
           <ProfilePreviews profiles={membersWithAdditionalInfo} showAdditionalInfo />
         ) : (
@@ -250,7 +274,7 @@ function parseProjectMembers(members) {
     return {
       ...member,
       name: member.first_name + " " + member.last_name,
-      permission: m.permission === "Creator" ? "Administrator" : m.permission,
+      permission: m.permission.name === "Creator" ? "Administrator" : m.permission.name,
       time_per_week: m.time_per_week,
       role_in_organization: m.role_in_organization,
       location: member.city ? member.city + ", " + member.country : member.country

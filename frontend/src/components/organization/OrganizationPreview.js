@@ -33,7 +33,8 @@ const useStyles = makeStyles(theme => {
       marginTop: theme.spacing(3),
       marginLeft: theme.spacing(2),
       marginRight: theme.spacing(2),
-      verticalAlign: "center"
+      verticalAlign: "center",
+      borderRadius: "100%"
     },
     noUnderline: {
       textDecoration: "inherit",
