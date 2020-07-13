@@ -28,6 +28,7 @@ from organization.serializers.organization import OrganizationsFromProjectMember
 
 from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.permissions import UserPermission
+from climateconnect_api.utility.email_setup import send_user_verification_email
 import logging
 logger = logging.getLogger(__name__)
 
@@ -91,7 +92,7 @@ class SignUpView(APIView):
             is_profile_verified=True #TODO: change this after automatic E-Mails are implemented
         )
 
-        # TODO: Call a function that sends an email to user.
+        send_user_verification_email(user)
 
         message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(user.email)  # NOQA
 
