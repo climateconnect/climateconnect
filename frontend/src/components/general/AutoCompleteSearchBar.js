@@ -32,7 +32,7 @@ export default function AutoCompleteSearchBar({
           setOptions(
             response.data.results
               .map(o => ({ ...o, key: o.url_slug }))
-              .filter(o => filterOut ? !filterOut.find(fo => fo.url_slug === o.url_slug) : true)
+              .filter(o => (filterOut ? !filterOut.find(fo => fo.url_slug === o.url_slug) : true))
           );
         }
       } else {
@@ -54,8 +54,7 @@ export default function AutoCompleteSearchBar({
   const handleInputChange = event => {
     setInputValue(event.target.value);
     setSearchValueThrottled(event.target.value);
-    if(onUnselect)
-      onUnselect()
+    if (onUnselect) onUnselect();
   };
 
   const setSearchValueThrottled = React.useMemo(
@@ -73,8 +72,8 @@ export default function AutoCompleteSearchBar({
         setInputValue("");
         setSearchValue("");
       } else {
-        setInputValue(value.name)
-        setSearchValue("")
+        setInputValue(value.name);
+        setSearchValue("");
       }
     }
   };
@@ -82,7 +81,6 @@ export default function AutoCompleteSearchBar({
   const handleClose = () => {
     setOpen(false);
   };
-
   return (
     <Autocomplete
       open={open}
@@ -99,6 +97,7 @@ export default function AutoCompleteSearchBar({
       freeSolo={freeSolo}
       inputValue={inputValue}
       renderOption={renderOption}
+      noOptionsText={!searchValue && !inputValue ? "Start typing" : "No options"}
       renderInput={params => (
         <TextField
           {...params}
