@@ -129,8 +129,7 @@ export default function EnterDetails({
   };
 
   const onDescriptionChange = (event, descriptionType) => {
-    if (event.target.value.length <= validation[descriptionType].maxLength)
-      handleSetProjectData({ [descriptionType]: event.target.value });
+      handleSetProjectData({ [descriptionType]: event.target.value.substring(0, validation[descriptionType].maxLength) });
   };
 
   const isProjectDataValid = project => {
