@@ -1,5 +1,14 @@
 import React from "react";
-import { Container, Avatar, Chip, Button, TextField, Typography } from "@material-ui/core";
+import {
+  Container,
+  Avatar,
+  Chip,
+  Button,
+  TextField,
+  Typography,
+  Tooltip,
+  IconButton
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
@@ -8,6 +17,8 @@ import ConfirmDialog from "./../dialogs/ConfirmDialog";
 import SelectField from "./../general/SelectField";
 import SelectDialog from "./../dialogs/SelectDialog";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
+import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
+import imageCompression from "browser-image-compression";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -110,7 +121,8 @@ const useStyles = makeStyles(theme => ({
     paddingRight: 0
   },
   subtitle: {
-    color: `${theme.palette.secondary.main}`
+    color: `${theme.palette.secondary.main}`,
+    fontWeight: "bold"
   },
   noPadding: {
     padding: 0
@@ -167,6 +179,10 @@ const useStyles = makeStyles(theme => ({
   },
   cursorPointer: {
     cursor: "pointer"
+  },
+  helpIcon: {
+    fontSize: 20,
+    marginTop: -2
   }
 }));
 
@@ -308,62 +324,95 @@ export default function EditAccountPage({
   };
 
   const displayAccountInfo = info =>
-    Object.keys(info)
-      .map(key => {
-        const handleChange = event => {
-          setEditedAccount({
-            ...editedAccount,
-            info: { ...editedAccount.info, [key]: event.target.value }
-          });
-        };
-        const i = getFullInfoElement(infoMetadata, key, info[key]);
-        if (i.type === "array") {
-          return displayInfoArrayData(key, i);
-        } else if (i.type === "select") {
-          return (
-            <div key={key} className={classes.infoElement}>
-              <SelectField
-                className={classes.selectOption}
-                options={i.options}
-                label={i.name}
-                defaultValue={{ name: i.value, key: i.value }}
-                onChange={handleChange}
-              />
-            </div>
-          );
-        } else {
-          return (
-            <div key={key} className={classes.infoElement}>
-              <div className={classes.subtitle}>{i.name}:</div>
-              <TextField fullWidth value={i.value} multiline onChange={handleChange} />
-            </div>
-          );
-        }
-      });
+    Object.keys(info).map(key => {
+      const handleChange = event => {
+        setEditedAccount({
+          ...editedAccount,
+          info: { ...editedAccount.info, [key]: event.target.value }
+        });
+      };
+      const i = getFullInfoElement(infoMetadata, key, info[key]);
+      if (i.type === "array") {
+        return displayInfoArrayData(key, i);
+      } else if (i.type === "select") {
+        return (
+          <div key={key} className={classes.infoElement}>
+            <SelectField
+              className={classes.selectOption}
+              options={i.options}
+              label={i.name}
+              defaultValue={{ name: i.value, key: i.value }}
+              onChange={handleChange}
+            />
+          </div>
+        );
+      } else {
+        return (
+          <div key={key} className={classes.infoElement}>
+            <Typography className={classes.subtitle}>
+              {i.name}
+              {i.helptext && (
+                <Tooltip title={i.helptext}>
+                  <IconButton>
+                    <HelpOutlineIcon className={classes.helpIcon} />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Typography>
+            <TextField fullWidth value={i.value} multiline onChange={handleChange} />
+          </div>
+        );
+      }
+    });
 
-  const onBackgroundChange = backgroundEvent => {
+  const onBackgroundChange = async backgroundEvent => {
     const file = backgroundEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1280,
+      useWebWorker: true
+    };
 
-    setTempImages(() => {
-      return {
-        ...tempImages,
-        background_image: URL.createObjectURL(file)
-      };
-    });
-    handleDialogClickOpen("backgroundDialog");
+    try {
+      const compressedFile = await imageCompression(file, options);
+
+      setTempImages(() => {
+        return {
+          ...tempImages,
+          background_image: URL.createObjectURL(compressedFile)
+        };
+      });
+      handleDialogClickOpen("backgroundDialog");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const onAvatarChange = avatarEvent => {
+  const onAvatarChange = async avatarEvent => {
     const file = avatarEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 160,
+      useWebWorker: true
+    };
 
-    setTempImages(() => {
-      return { ...tempImages, image: file };
-    });
-    handleDialogClickOpen("avatarDialog");
+    try {
+      const compressedFile = await imageCompression(file, options);
+
+      setTempImages(() => {
+        return {
+          ...tempImages,
+          image: URL.createObjectURL(compressedFile)
+        };
+      });
+      handleDialogClickOpen("avatarDialog");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleTypeDelete = typeToDelete => {
