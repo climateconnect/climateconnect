@@ -18,8 +18,7 @@ import SelectField from "./../general/SelectField";
 import SelectDialog from "./../dialogs/SelectDialog";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
-import imageCompression from 'browser-image-compression';
-
+import imageCompression from "browser-image-compression";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -374,11 +373,11 @@ export default function EditAccountPage({
       maxSizeMB: 1,
       maxWidthOrHeight: 1280,
       useWebWorker: true
-    }
+    };
 
     try {
       const compressedFile = await imageCompression(file, options);
-      
+
       setTempImages(() => {
         return {
           ...tempImages,
@@ -397,13 +396,13 @@ export default function EditAccountPage({
       alert("Please upload either a png or a jpg file.");
     const options = {
       maxSizeMB: 0.5,
-      maxWidthOrHeight: 160,
+      maxWidthOrHeight: 300,
       useWebWorker: true
-    }
+    };
 
     try {
       const compressedFile = await imageCompression(file, options);
-      
+
       setTempImages(() => {
         return {
           ...tempImages,

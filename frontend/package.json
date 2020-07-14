@@ -47,7 +47,8 @@
     "react-multi-carousel": "^2.5.5",
     "react-timeago": "^4.4.0",
     "react-truncate": "^2.4.0",
-    "universal-cookie": "^4.0.3"
+    "universal-cookie": "^4.0.3",
+    "browser-image-compression": "^1.0.12"
   },
   "devDependencies": {
     "enzyme": "^3.10.0",

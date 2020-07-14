@@ -4,6 +4,7 @@ import { Typography, Tooltip, IconButton, Button } from "@material-ui/core";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
+import imageCompression from "browser-image-compression";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -60,12 +61,22 @@ export default function AddPhotoSection({
     handleSetOpen({ [dialogName]: true });
   };
 
-  const onImageChange = event => {
+  const onImageChange = async event => {
     const file = event.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
-    setTempImage(URL.createObjectURL(file));
-    handleDialogClickOpen("avatarDialog");
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 550,
+      useWebWorker: true
+    };
+    try {
+      const compressedFile = await imageCompression(file, options);
+      setTempImage(URL.createObjectURL(compressedFile));
+      handleDialogClickOpen("avatarDialog");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const onUploadImageClick = event => {
