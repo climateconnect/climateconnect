@@ -395,7 +395,7 @@ export default function EditAccountPage({
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
     const options = {
-      maxSizeMB: 0.5,
+      maxSizeMB: 0.25,
       maxWidthOrHeight: 160,
       useWebWorker: true
     };
