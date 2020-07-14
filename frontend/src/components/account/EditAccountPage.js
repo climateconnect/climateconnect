@@ -18,6 +18,8 @@ import SelectField from "./../general/SelectField";
 import SelectDialog from "./../dialogs/SelectDialog";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
+import imageCompression from 'browser-image-compression';
+
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -364,29 +366,54 @@ export default function EditAccountPage({
       }
     });
 
-  const onBackgroundChange = backgroundEvent => {
+  const onBackgroundChange = async backgroundEvent => {
     const file = backgroundEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1280,
+      useWebWorker: true
+    }
 
-    setTempImages(() => {
-      return {
-        ...tempImages,
-        background_image: URL.createObjectURL(file)
-      };
-    });
-    handleDialogClickOpen("backgroundDialog");
+    try {
+      const compressedFile = await imageCompression(file, options);
+      
+      setTempImages(() => {
+        return {
+          ...tempImages,
+          background_image: URL.createObjectURL(compressedFile)
+        };
+      });
+      handleDialogClickOpen("backgroundDialog");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const onAvatarChange = avatarEvent => {
+  const onAvatarChange = async avatarEvent => {
     const file = avatarEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 160,
+      useWebWorker: true
+    }
 
-    setTempImages(() => {
-      return { ...tempImages, image: file };
-    });
-    handleDialogClickOpen("avatarDialog");
+    try {
+      const compressedFile = await imageCompression(file, options);
+      
+      setTempImages(() => {
+        return {
+          ...tempImages,
+          image: URL.createObjectURL(compressedFile)
+        };
+      });
+      handleDialogClickOpen("avatarDialog");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleTypeDelete = typeToDelete => {
