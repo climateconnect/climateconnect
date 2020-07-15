@@ -2,7 +2,6 @@ import React from "react";
 import Router from "next/router";
 import EditAccountPage from "./../account/EditAccountPage";
 import organization_info_metadata from "./../../../public/data/organization_info_metadata.js";
-import organization_types from "./../../../public/data/organization_types.json";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -27,15 +26,16 @@ const parseOrganizationInfo = info => {
 export default function EnterDetailledOrganizationInfo({
   errorMessage,
   organizationInfo,
-  handleSubmit
+  handleSubmit,
+  tagOptions
 }) {
+  console.log(tagOptions);
   const organization = parseOrganizationInfo(organizationInfo);
   const classes = useStyles();
 
   const handleCancel = () => {
     Router.push("/");
   };
-
   return (
     <div>
       <div className={classes.topMessageContainer}>
@@ -47,9 +47,9 @@ export default function EnterDetailledOrganizationInfo({
       <EditAccountPage
         type="organization"
         account={organization}
-        possibleAccountTypes={organization_types.organization_types}
+        possibleAccountTypes={[...tagOptions]}
         infoMetadata={organization_info_metadata}
-        maxAccountTypes={organization_types.max_types}
+        maxAccountTypes={2}
         accountHref={"/organizations/" + organization.url_slug}
         handleSubmit={handleSubmit}
         submitMessage="Create"

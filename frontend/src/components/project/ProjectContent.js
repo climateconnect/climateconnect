@@ -1,8 +1,7 @@
 import React from "react";
-import Link from "next/link";
 import TimeAgo from "react-timeago";
 import humanizeDuration from "humanize-duration";
-import { Typography, Button } from "@material-ui/core";
+import { Typography, Button, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 import DateDisplay from "./../general/DateDisplay";
@@ -136,6 +135,7 @@ export default function ProjectContent({ project }) {
                   size="small"
                   className={classes.creator}
                   organization={project.creator}
+                  nolink
                 />
               </Link>
             )}
@@ -173,7 +173,7 @@ export default function ProjectContent({ project }) {
         <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
           Project description
         </Typography>
-        <Typography>
+        <Typography component="div">
           {project.description ? (
             showFullDescription ||
             project.description.length <= MAX_DISPLAYED_DESCRIPTION_LENGTH ? (

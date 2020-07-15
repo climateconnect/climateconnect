@@ -1,8 +1,17 @@
 import React from "react";
 import Form from "../general/Form";
+import { Typography, Link } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles(theme => ({
+  orgBottomLink: {
+    textAlign: "center",
+    marginTop: theme.spacing(1)
+  }
+}))
 
 export default function Share({ project, handleSetProjectData, goToNextStep, userOrganizations }) {
-  //TODO: This should include only organizations in which the user is an admin
+  const classes = useStyles()
   const organizations = !userOrganizations
     ? []
     : userOrganizations.map(org => {
@@ -23,7 +32,8 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
         values: organizationOptions,
         defaultValue: project.parent_organization
       },
-      key: "parent_organization"
+      key: "parent_organization",
+      bottomLink: <Typography className={classes.orgBottomLink}>If your organization does not exit yet <Link href="/createorganization" underline="always">click here</Link> to create it.</Typography>
     },
     {
       required: true,

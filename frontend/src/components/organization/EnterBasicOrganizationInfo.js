@@ -19,12 +19,11 @@ export default function EnterBasicOrganizationInfo({
   handleSubmit,
   organizationInfo
 }) {
-  const [parentOrganization, setParentOrganization] = React.useState(null)
+  const [parentOrganization, setParentOrganization] = React.useState(null);
   const onUnselect = () => {
-    if(parentOrganization)
-      setParentOrganization(null)
-  }
-  const getOptionLabel = (option) => option.name
+    if (parentOrganization) setParentOrganization(null);
+  };
+  const getOptionLabel = option => option.name;
   const fields = [
     {
       required: true,
@@ -46,8 +45,8 @@ export default function EnterBasicOrganizationInfo({
       key: "parentorganizationname",
       type: "autocomplete",
       autoCompleteProps: {
-        label:"Search for your parent organization",
-        baseUrl:process.env.API_URL+"/api/organizations/?search=",
+        label: "Search for your parent organization",
+        baseUrl: process.env.API_URL + "/api/organizations/?search=",
         onSelect: setParentOrganization,
         renderOption: renderSearchOption,
         getOptionLabel: getOptionLabel,
@@ -60,17 +59,17 @@ export default function EnterBasicOrganizationInfo({
     },
     {
       required: true,
-      label: "Country",
-      key: "country",
-      type: "text",
-      value: organizationInfo["country"]
-    },
-    {
-      required: true,
       label: "City",
       key: "city",
       type: "text",
       value: organizationInfo["city"]
+    },
+    {
+      required: true,
+      label: "Country",
+      key: "country",
+      type: "text",
+      value: organizationInfo["country"]
     },
     {
       required: true,
@@ -90,7 +89,9 @@ export default function EnterBasicOrganizationInfo({
       fields={fields}
       messages={messages}
       usePercentage={false}
-      onSubmit={(event, account) => handleSubmit(event, {...account, parentOrganization: parentOrganization})}
+      onSubmit={(event, account) =>
+        handleSubmit(event, { ...account, parentOrganization: parentOrganization })
+      }
       errorMessage={errorMessage}
     />
   );

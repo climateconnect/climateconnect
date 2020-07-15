@@ -170,28 +170,33 @@ export default function Form({
         onSubmit={() => onSubmit(event, values)}
       >
         {errorMessage && (
-          <Typography color="error" className={classes.centerText}>
+          <Typography component="div" color="error" className={classes.centerText}>
             {errorMessage}
           </Typography>
         )}
         {fields.map(field => {
           if (field.select) {
             return (
-              <SelectField
-                defaultValue={field.select.defaultValue}
-                required={field.required}
-                options={field.select.values}
-                label={field.label}
-                className={classes.blockElement}
-                key={field.label + fields.indexOf(field)}
-                onChange={() => handleValueChange(event, field.key, field.type, true)}
-                InputProps={{
-                  classes: {
-                    root: classes.inputField,
-                    notchedOutline: classes.notchedOutline
-                  }
-                }}
-              />
+              <>
+                <SelectField
+                  defaultValue={field.select.defaultValue}
+                  required={field.required}
+                  options={field.select.values}
+                  label={field.label}
+                  className={classes.blockElement}
+                  key={field.label + fields.indexOf(field)}
+                  onChange={() => handleValueChange(event, field.key, field.type, true)}
+                  InputProps={{
+                    classes: {
+                      root: classes.inputField,
+                      notchedOutline: classes.notchedOutline
+                    }
+                  }}
+                />
+                {field.bottomLink &&
+                  field.bottomLink
+                }
+              </>
             );
           } else if (field.type === "checkbox") {
             return (
@@ -209,28 +214,30 @@ export default function Form({
                 <label htmlFor={"checkbox" + field.key}>{field.label}</label>
               </div>
             );
-          } 
-            else if ((!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) && field.type === "autocomplete"){
-              return (
-                <AutoCompleteSearchBar
-                  required={field.required}
-                  autoFocus={field === fields[0]}
-                  label={field.autoCompleteProps.label}
-                  key={field.key}
-                  freeSolo={field.autoCompleteProps.freeSolo}
-                  baseUrl={field.autoCompleteProps.baseUrl}
-                  clearOnSelect={field.autoCompleteProps.clearOnSelect}
-                  onSelect={field.autoCompleteProps.onSelect}
-                  renderOption={field.autoCompleteProps.renderOption}
-                  getOptionLabel={field.autoCompleteProps.getOptionLabel}
-                  filterOut={field.autoCompleteProps.filterOut}
-                  helperText={field.autoCompleteProps.helperText}
-                  onUnselect={field.autoCompleteProps.onUnselect}
-                />
-              )
-            }
-            else if (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) {
-              return (
+          } else if (
+            (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) &&
+            field.type === "autocomplete"
+          ) {
+            return (
+              <AutoCompleteSearchBar
+                required={field.required}
+                autoFocus={field === fields[0]}
+                label={field.autoCompleteProps.label}
+                key={field.key}
+                freeSolo={field.autoCompleteProps.freeSolo}
+                baseUrl={field.autoCompleteProps.baseUrl}
+                clearOnSelect={field.autoCompleteProps.clearOnSelect}
+                onSelect={field.autoCompleteProps.onSelect}
+                renderOption={field.autoCompleteProps.renderOption}
+                getOptionLabel={field.autoCompleteProps.getOptionLabel}
+                filterOut={field.autoCompleteProps.filterOut}
+                helperText={field.autoCompleteProps.helperText}
+                onUnselect={field.autoCompleteProps.onUnselect}
+              />
+            );
+          } else if (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) {
+            return (
+              <>
                 <TextField
                   required={field.required}
                   fullWidth
@@ -250,7 +257,11 @@ export default function Form({
                     }
                   }}
                 />
-              );
+                {field.bottomLink &&
+                  field.bottomLink
+                }
+              </>
+            );
           }
         })}
         <Button

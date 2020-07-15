@@ -17,7 +17,9 @@ export default {
     icon: DescriptionIcon,
     iconName: "DescriptionIcon",
     name: "Description",
-    key: "shortdescription"
+    key: "shortdescription",
+    helptext:
+      "Describe what your organization is doing, how you work and what impact you have on climate change."
   },
   school: {
     icon: SchoolIcon,
@@ -30,12 +32,6 @@ export default {
     iconName: "LocationCityIcon",
     name: "City",
     key: "city"
-  },
-  state: {
-    PublicIcon,
-    iconName: "PublicIcon",
-    name: "State",
-    key: "state"
   },
   country: {
     icon: PublicIcon,

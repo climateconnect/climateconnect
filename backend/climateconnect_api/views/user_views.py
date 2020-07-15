@@ -182,23 +182,22 @@ class EditUserProfile(APIView):
             user_profile = UserProfile.objects.get(user=self.request.user)
         except UserProfile.DoesNotExist:
             raise NotFound('User not found.')
-
         user = user_profile.user
         if 'first_name' in request.data:
             user.first_name = request.data['first_name']
 
         if 'last_name' in request.data:
             user.last_name = request.data['last_name']
-
         user_profile.name = user.first_name + ' ' + user.last_name
         user_profile.url_slug = (user.first_name + user.last_name).lower() + str(user.id)
         user.save()
-
+        logger.error("starting to save image")
         if 'image' in request.data:
             user_profile.image = get_image_from_data_url(request.data['image'])[0]
+        logger.error("done with image")
         if 'background_image' in request.data:
-            user_profile.background_image = get_image_from_data_url(request.data['background_image'])[0]
-
+            user_profile.background_image = get_image_from_data_url(request.data['background_image'], True, 1280)[0]
+        logger.error("done with background image")
         if 'country' in request.data:
             user_profile.country = request.data['country']
 
@@ -221,7 +220,6 @@ class EditUserProfile(APIView):
             for skill_id in request.data['skills']:
                 skill = Skill.objects.get(id=int(skill_id))
                 user_profile.skills.add(skill)
-
         user_profile.save()
         serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
