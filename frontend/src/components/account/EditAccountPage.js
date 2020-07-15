@@ -396,13 +396,12 @@ export default function EditAccountPage({
       alert("Please upload either a png or a jpg file.");
     const options = {
       maxSizeMB: 0.5,
-      maxWidthOrHeight: 300,
+      maxWidthOrHeight: 600,
       useWebWorker: true
     };
 
     try {
       const compressedFile = await imageCompression(file, options);
-
       setTempImages(() => {
         return {
           ...tempImages,

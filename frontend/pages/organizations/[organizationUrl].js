@@ -49,7 +49,6 @@ export default function OrganizationPage({
   organizationTypes,
   infoMetadata
 }) {
-  console.log(organization);
   const [message, setMessage] = React.useState("");
 
   useEffect(() => {
@@ -57,8 +56,6 @@ export default function OrganizationPage({
     if (params.message) setMessage(decodeURI(params.message));
   });
   const { user } = useContext(UserContext);
-  if(user)
-    console.log(members.find(m => m.id === user.id))
   return (
     <WideLayout message={message} title={organization ? organization.name : "Not found"}>
       {organization ? (
@@ -80,7 +77,6 @@ export default function OrganizationPage({
 OrganizationPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  console.log(organizationUrl);
   return {
     organization: await getOrganizationByUrlIfExists(organizationUrl, token),
     projects: await getProjectsByOrganization(organizationUrl, token),
@@ -117,7 +113,6 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
     }));
   };
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
-  console.log(members)
   return (
     <AccountPage
       account={organization}
@@ -191,7 +186,7 @@ async function getOrganizationByUrlIfExists(organizationUrl, token) {
     );
     return parseOrganization(resp.data);
   } catch (err) {
-    //console.log(err);
+    console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
