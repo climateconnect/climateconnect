@@ -151,7 +151,8 @@ export default function MultiLevelSelector({
   };
 
   const onClickSelect = item => {
-    if (selected.length >= maxSelections) alert("You can only choose up to 3 " + itemNamePlural);
+    if (selected.length >= maxSelections)
+      alert("You can only choose up to " + maxSelections + " " + itemNamePlural);
     else setSelected([...selected, item]);
   };
 
