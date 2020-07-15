@@ -61,8 +61,8 @@ export default function Footer({ className, noSpacingTop, noAbsolutePosition }) 
     >
       <Box className={classes.flexContainer}>
         <Box className={classes.leftBox}>
-          <Link href="/impressum">
-            <a className={classes.inheritColor}>Impressum</a>
+          <Link href="/imprint">
+            <a className={classes.inheritColor}>Imprint</a>
           </Link>
         </Box>
         <Box component="span" className={classes.centerText}>
