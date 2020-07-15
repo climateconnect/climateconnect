@@ -17,7 +17,12 @@ export default function ProjectSubmittedPage({ isDraft, url_slug }) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      {isDraft ? (
+      {!url_slug ? (
+        <Typography variant="h5" color="error" className={classes.headline}>
+          There has been an error when trying to publish your project. Check the console for more
+          information.
+        </Typography>
+      ) : isDraft ? (
         <>
           <Typography variant="h5" className={classes.headline}>
             Your project has saved as a draft!

@@ -183,7 +183,7 @@ const getDefaultProjectValues = (loggedInUser, statusOptions) => {
     collaborating_organizations: [],
     isPersonalProject: true,
     //TODO: Should contain the logged in user as the creator and parent_user by default
-    team_members: [{ ...loggedInUser, isCreator: true }]
+    team_members: [{ ...loggedInUser }]
   };
 };
 

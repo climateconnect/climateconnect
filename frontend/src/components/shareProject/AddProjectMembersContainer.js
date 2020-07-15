@@ -48,7 +48,6 @@ export default function AddProjectMembersContainer({
       ]
     });
   };
-
   return (
     <div className={blockClassName}>
       <Typography className={classes.info}>
@@ -67,6 +66,8 @@ export default function AddProjectMembersContainer({
                 availabilityOptions={availabilityOptions}
                 rolesOptions={rolesOptions}
                 onChange={handleChangeMember}
+                creatorRole={rolesOptions.find(r => r.name === "Creator")}
+                fullRolesOptions={rolesOptions}
               />
             );
         })}
