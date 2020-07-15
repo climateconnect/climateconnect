@@ -125,7 +125,7 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
         <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
       )}
       <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
+        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects: <Button variant="contained" color="primary" href="/share">Share a project</Button></div>
         {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
         ) : (

@@ -177,21 +177,26 @@ export default function Form({
         {fields.map(field => {
           if (field.select) {
             return (
-              <SelectField
-                defaultValue={field.select.defaultValue}
-                required={field.required}
-                options={field.select.values}
-                label={field.label}
-                className={classes.blockElement}
-                key={field.label + fields.indexOf(field)}
-                onChange={() => handleValueChange(event, field.key, field.type, true)}
-                InputProps={{
-                  classes: {
-                    root: classes.inputField,
-                    notchedOutline: classes.notchedOutline
-                  }
-                }}
-              />
+              <>
+                <SelectField
+                  defaultValue={field.select.defaultValue}
+                  required={field.required}
+                  options={field.select.values}
+                  label={field.label}
+                  className={classes.blockElement}
+                  key={field.label + fields.indexOf(field)}
+                  onChange={() => handleValueChange(event, field.key, field.type, true)}
+                  InputProps={{
+                    classes: {
+                      root: classes.inputField,
+                      notchedOutline: classes.notchedOutline
+                    }
+                  }}
+                />
+                {field.bottomLink &&
+                  field.bottomLink
+                }
+              </>
             );
           } else if (field.type === "checkbox") {
             return (
@@ -232,25 +237,30 @@ export default function Form({
             );
           } else if (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) {
             return (
-              <TextField
-                required={field.required}
-                fullWidth
-                autoFocus={field === fields[0]}
-                label={field.label}
-                key={field.key}
-                type={field.type}
-                variant="outlined"
-                value={values[field.key]}
-                className={classes.blockElement}
-                onBlur={handleBlur}
-                onChange={() => handleValueChange(event, field.key, field.type)}
-                InputProps={{
-                  classes: {
-                    root: classes.inputField,
-                    notchedOutline: classes.notchedOutline
-                  }
-                }}
-              />
+              <>
+                <TextField
+                  required={field.required}
+                  fullWidth
+                  autoFocus={field === fields[0]}
+                  label={field.label}
+                  key={field.key}
+                  type={field.type}
+                  variant="outlined"
+                  value={values[field.key]}
+                  className={classes.blockElement}
+                  onBlur={handleBlur}
+                  onChange={() => handleValueChange(event, field.key, field.type)}
+                  InputProps={{
+                    classes: {
+                      root: classes.inputField,
+                      notchedOutline: classes.notchedOutline
+                    }
+                  }}
+                />
+                {field.bottomLink &&
+                  field.bottomLink
+                }
+              </>
             );
           }
         })}

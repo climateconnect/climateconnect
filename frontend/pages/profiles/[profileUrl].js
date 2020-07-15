@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
-import { Container, Typography } from "@material-ui/core";
+import { Container, Typography, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import { useContext } from "react";
@@ -137,7 +137,7 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
         <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
       )}
       <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects:</div>
+        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects: <Button variant="contained" color="primary" href="/share">Share a project</Button></div>
         {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
         ) : (
@@ -145,7 +145,7 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
         )}
       </Container>
       <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Organizations:</div>
+        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Organizations: <Button variant="contained" color="primary" href="/createorganization">Create an organization</Button></div>
         {organizations && organizations.length > 0 ? (
           <OrganizationPreviews organizations={organizations} showOrganizationType />
         ) : (
