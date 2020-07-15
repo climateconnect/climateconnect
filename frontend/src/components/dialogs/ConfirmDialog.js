@@ -56,7 +56,7 @@ ConfirmDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   cancelText: PropTypes.string.isRequired,
   confirmText: PropTypes.string.isRequired,
-  text: PropTypes.string.isRequired,
+  text: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
   title: PropTypes.string.isRequired,
   className: PropTypes.string
 };
