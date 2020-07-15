@@ -15,12 +15,12 @@ from organization.serializers.project import (ProjectFromProjectParentsSerialize
 from organization.serializers.tags import (OrganizationTagsSerializer)
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from organization.models import Organization, OrganizationMember, ProjectParents, OrganizationTags, OrganizationTagging
-from climateconnect_api.models.user import UserProfile
-from organization.permissions import OrganizationReadWritePermission
-from climateconnect_api.models import Role
+from organization.permissions import (OrganizationReadWritePermission, OrganizationReadWritePermission, OrganizationMemberReadWritePermission, AddOrganizationMemberPermission, ChangeOrganizationCreatorPermission)
+from climateconnect_api.models import Role, UserProfile
 from organization.pagination import (OrganizationsPagination, ProjectsPagination)
 from climateconnect_api.pagination import MembersPagination
 from climateconnect_main.utility.general import get_image_from_data_url
+from climateconnect_api.models import Role
 import logging
 logger = logging.getLogger(__name__)
 
@@ -153,15 +153,13 @@ class ListCreateOrganizationMemberView(ListCreateAPIView):
 
 
 class UpdateOrganizationMemberView(RetrieveUpdateDestroyAPIView):
-    permission_classes = [OrganizationReadWritePermission]
+    permission_classes = [OrganizationMemberReadWritePermission]
     serializer_class = OrganizationMemberSerializer
 
     def get_queryset(self):
-        try:
-            organization = Organization.objects.get(url_slug=str(self.kwargs['url_slug']))
-        except Organization.DoesNotExist:
-            raise NotFound('Organization not found')
-
+        logger.error("updating organization members")
+        organization = Organization.objects.get(url_slug=str(self.kwargs['url_slug']))
+        logger.error(OrganizationMember.objects.filter(id=int(self.kwargs['pk']), organization=organization))
         return OrganizationMember.objects.filter(id=int(self.kwargs['pk']), organization=organization)
 
     def perform_destroy(self, instance):
@@ -169,8 +167,88 @@ class UpdateOrganizationMemberView(RetrieveUpdateDestroyAPIView):
         return "Organization Member successfully deleted."
 
     def perform_update(self, serializer):
+        logger.error("performing update!")
         serializer.save()
         return serializer.data
+
+class AddOrganizationMembersView(APIView):
+    permission_classes = [AddOrganizationMemberPermission]
+
+    def post(self, request, url_slug):
+        organization = Organization.objects.get(url_slug=url_slug)
+
+        roles = Role.objects.all()
+        if 'organization_members' not in request.data:
+            return Response({
+                'message': 'Missing required parameters'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        for member in request.data['organization_members']:
+            try:
+                user = User.objects.get(id=int(member['id']))
+            except User.DoesNotExist:
+                logger.error("[AddOrganizationMembersView] Passed user id {} does not exists".format(int(member['id'])))
+                continue
+            if 'permission_type_id' not in member:
+                logger.error("[AddOrganizationMembersView] Not permissions passed for user id {}.".format(int(member['id'])))
+                continue
+            user_role = roles.filter(id=int(member['permission_type_id'])).first()
+            if user:
+                OrganizationMember.objects.create(
+                    organization=organization, user=user, role=user_role, role_in_organization=member['role_in_organization']
+                )
+                    
+                logger.info("Organization member created for user {}".format(user.id))
+
+        return Response({'message': 'Member added to the organization'}, status=status.HTTP_201_CREATED)
+
+class ChangeOrganizationCreator(APIView):
+    permission_classes = [ChangeOrganizationCreatorPermission]
+
+    def post(self, request, url_slug):
+        if 'user' not in request.data:
+            return Response({
+                'message': 'Missing required parameters'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            new_creator_user = User.objects.get(id=int(request.data['user']))
+        except User.DoesNotExist:
+            raise NotFound(detail="Profile not found.", code=status.HTTP_404_NOT_FOUND)   
+        
+        if request.user.id == new_creator_user.id:
+            return Response({
+                'message': 'Missing required parameters'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        organization = Organization.objects.get(url_slug=url_slug)
+        roles = Role.objects.all()        
+        logger.error(new_creator_user)
+        logger.error(organization)
+        if OrganizationMember.objects.filter(user=new_creator_user, organization = organization).exists():
+            # update old creator profile and new creator profile
+            logger.error('updating new creator')
+            new_creator = OrganizationMember.objects.filter(user=request.data['user'], organization = organization, id = request.data['id'])[0]
+            new_creator.role = roles.filter(role_type=Role.ALL_TYPE)[0]
+            if('role_in_organization' in request.data):
+                new_creator.role_in_organization = request.data['role_in_organization']
+            new_creator.save()
+        else:
+            # create new creator profile and update old creator profile
+            logger.error('adding new creator')
+            new_creator = OrganizationMember.objects.create(
+                role = roles.filter(role_type=Role.ALL_TYPE)[0],
+                organization = organization,
+                user = new_creator_user
+            )
+            if('role_in_organization' in request.data):
+                new_creator.role_in_organization = request.data['role_in_organization']
+            new_creator.save()
+        old_creator = OrganizationMember.objects.filter(user=request.user, organization = organization,)[0]
+        old_creator.role = roles.filter(role_type=Role.READ_WRITE_TYPE)[0]
+        old_creator.save()
+
+        return Response({'message': 'Changed organization creator'}, status=status.HTTP_200_OK)
+
 
 class PersonalOrganizationsView(ListAPIView):
     permission_classes = (IsAuthenticated,)

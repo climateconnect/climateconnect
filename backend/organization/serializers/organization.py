@@ -46,7 +46,7 @@ class OrganizationStubSerializer(serializers.ModelSerializer):
 class OrganizationMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrganizationMember
-        fields = ('id', 'user', 'role', 'time_per_week', 'role_in_organization', 'organization')
+        fields = ('id', 'user', 'role', 'role_in_organization', 'organization')
 
     def to_representation(self, instance):
         user_profile = None if not instance.user.user_profile else\

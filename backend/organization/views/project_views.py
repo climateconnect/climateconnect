@@ -202,6 +202,7 @@ class ListProjectCommentsView(ListAPIView):
         ).order_by('id')
     
 class AddProjectMembersView(APIView):
+    #TODO: update permission: only admins or creators should be able to call this route
     permission_classes = [IsAuthenticated]
 
     def post(self, request, project_id):
