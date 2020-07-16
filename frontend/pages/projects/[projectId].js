@@ -127,7 +127,6 @@ function NoProjectFoundLayout() {
   );
 }
 
-// This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getProjectByIdIfExists(projectUrl, token) {
   try {
     const resp = await axios.get(

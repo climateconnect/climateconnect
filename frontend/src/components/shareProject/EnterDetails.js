@@ -9,6 +9,8 @@ import CollaborateSection from "./CollaborateSection";
 import AddSummarySection from "./AddSummarySection";
 import AddPhotoSection from "./AddPhotoSection";
 import BottomNavigation from "./BottomNavigation";
+import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
+import collaborationTexts from "../../../public/data/collaborationTexts";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -156,7 +158,6 @@ export default function EnterDetails({
   const onAllowCollaboratorsChange = event => {
     handleSetProjectData({ collaborators_welcome: event.target.checked });
   };
-
   return (
     <>
       <Container maxWidth="lg">
@@ -243,6 +244,7 @@ export default function EnterDetails({
                 </IconButton>
               </Tooltip>
             </Typography>
+            <ProjectDescriptionHelp status={projectData.status} />
             <TextField
               variant="outlined"
               fullWidth
@@ -261,7 +263,7 @@ export default function EnterDetails({
               color="primary"
               className={classes.subHeader}
             >
-              Allow collaboration on your project?
+              {collaborationTexts.allow[projectData.status.name]}
               <Tooltip title={helpTexts.collaboration} className={classes.tooltip}>
                 <IconButton>
                   <HelpOutlineIcon />
@@ -288,6 +290,7 @@ export default function EnterDetails({
               open={open}
               handleSetOpen={handleSetOpen}
               skillsOptions={skillsOptions}
+              collaborationTexts={collaborationTexts}
             />
           )}
           <BottomNavigation
