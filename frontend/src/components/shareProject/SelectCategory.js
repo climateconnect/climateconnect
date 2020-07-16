@@ -1,5 +1,5 @@
 import React from "react";
-import { Container } from "@material-ui/core";
+import { Container, Typography } from "@material-ui/core";
 import MultiLevelSelector from "../general/MultiLevelSelector";
 import { makeStyles } from "@material-ui/core/styles";
 import BottomNavigation from "./BottomNavigation";
@@ -23,7 +23,15 @@ const useStyles = makeStyles(theme => {
     },
     nextStepButton: {
       float: "right"
-    }
+    },
+    appealText: {
+      textAlign: "center",
+      fontWeight: "bold"
+    },
+    appealBox: {
+      marginTop: theme.spacing(4),
+      marginBottom: theme.spacing(-2)
+    },
   };
 });
 
@@ -55,6 +63,10 @@ export default function SelectCategory({
 
   return (
     <Container maxWidth="lg">
+      <div className={classes.appealBox}>
+        <Typography className={classes.appealText}>You can combine categories. For example if you fund treeplanting, select both {"Afforestation/Reforestration"} and {"Funding"}</Typography>
+        <Typography className={classes.appealText}>This way you can specify what you are doing and in which field.</Typography>
+      </div>
       <div className={classes.block}>
         <MultiLevelSelector
           itemsToSelectFrom={categoryOptions}
