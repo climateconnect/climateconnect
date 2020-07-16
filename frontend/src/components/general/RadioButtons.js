@@ -79,7 +79,7 @@ export default function RadioButtons({ values, defaultValue, value, className, o
           value={value.key}
           key={value.key}
           control={<StyledRadio />}
-          label={value.label}
+          label={value.label ? value.label : value.name}
         />
       ))}
     </RadioGroup>

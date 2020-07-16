@@ -245,7 +245,7 @@ function SelectedList({ selected, itemNamePlural, maxSelections, className, onCl
       <List className={classes.selectedList}>
         {selected.map((item, index) => (
           <ListItem
-            key={item.key + "selected"}
+            key={index}
             button
             className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
               classes.selectedItem

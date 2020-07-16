@@ -7,7 +7,8 @@ import {
   LinearProgress,
   Typography,
   IconButton,
-  Checkbox
+  Checkbox,
+  Switch
 } from "@material-ui/core";
 import SelectField from "./SelectField";
 import { makeStyles } from "@material-ui/core/styles";
@@ -69,6 +70,21 @@ const useStyles = makeStyles(theme => ({
   rightAlignedButton: {
     float: "right",
     marginTop: theme.spacing(4)
+  },
+  switchText: {
+    textAlign: "center",
+    position: "relative"
+  },
+  bold: {
+    fontWeight: "bold"
+  },
+  flexBlock: {
+    display: "flex",
+    justifyContent: "space-around"
+  },
+  switchTextContainer: {
+    display: "flex",
+    alignItems: "center"
   }
 }));
 
@@ -89,7 +105,8 @@ export default function Form({
   onSubmit,
   errorMessage,
   onGoBack,
-  alignButtonsRight
+  alignButtonsRight,
+  className
 }) {
   const classes = useStyles();
 
@@ -98,7 +115,7 @@ export default function Form({
     fields.reduce((obj, field) => {
       if (field.select) obj[field.key] = field.select.defaultValue ? field.select.defaultValue : "";
       else if (field.value) obj[field.key] = field.value;
-      else if (field.type === "checkbox") obj[field.key] = field.checked ? field.checked : false;
+      else if (field.type === "checkbox" || field.type === "switch") obj[field.key] = field.checked ? field.checked : false;
       else obj[field.key] = "";
       return obj;
     }, {})
@@ -120,9 +137,9 @@ export default function Form({
   function handleValueChange(event, key, type, updateInstantly) {
     const newValues = {
       ...values,
-      [key]: type === "checkbox" ? event.target.checked : event.target.value
+      [key]: (type === "checkbox" || type === "switch") ? event.target.checked : event.target.value
     };
-    if (type === "checkbox") {
+    if (type === "checkbox" || type === "switch") {
       const dependentFields = fields.filter(
         f => f.onlyShowIfChecked && f.onlyShowIfChecked === key
       );
@@ -138,7 +155,7 @@ export default function Form({
   }
 
   return (
-    <div className={classes.root}>
+    <div className={`${className ? className : classes.root}`}>
       {messages.headerMessage ? (
         <Typography component="h2" variant="subtitle1" className={classes.centerText}>
           {onGoBack && (
@@ -175,11 +192,12 @@ export default function Form({
           </Typography>
         )}
         {fields.map(field => {
-          if (field.select) {
+          if ((!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) && field.select) {
             return (
-              <>
+              <React.Fragment key={field.key}>
                 <SelectField
-                  defaultValue={field.select.defaultValue}
+                  controlledValue={{name: values[field.key]}}
+                  controlled
                   required={field.required}
                   options={field.select.values}
                   label={field.label}
@@ -193,10 +211,8 @@ export default function Form({
                     }
                   }}
                 />
-                {field.bottomLink &&
-                  field.bottomLink
-                }
-              </>
+                {field.bottomLink && field.bottomLink}
+              </React.Fragment>
             );
           } else if (field.type === "checkbox") {
             return (
@@ -214,6 +230,27 @@ export default function Form({
                 <label htmlFor={"checkbox" + field.key}>{field.label}</label>
               </div>
             );
+          } else if (field.type === "switch") {
+            console.log(values[field.key])
+            return (
+              <div className={classes.flexBlock} key={field.key}>
+                <span className={classes.switchTextContainer}>
+                  <Typography className={`${classes.switchText} ${!values[field.key] && classes.bold}`} color={values[field.key] ? "secondary" : "primary"}>{field.falseLabel}</Typography>
+                </span>
+                <Switch
+                  id={"checkbox" + field.key}
+                  checked={values[field.key]}
+                  required={field.required}
+                  color="primary"
+                  name="checkedA"
+                  inputProps={{ "aria-label": "secondary checkbox" }}
+                  onChange={() => handleValueChange(event, field.key, field.type)}
+                />
+                <span className={classes.switchTextContainer}>
+                  <Typography className={`${classes.switchText} ${values[field.key] && classes.bold}`} color={values[field.key] ? "primary" : "secondary"}>{field.trueLabel}</Typography>
+                </span>
+              </div>
+            )
           } else if (
             (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) &&
             field.type === "autocomplete"
@@ -237,13 +274,12 @@ export default function Form({
             );
           } else if (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) {
             return (
-              <>
+              <React.Fragment key={field.key}>
                 <TextField
                   required={field.required}
                   fullWidth
                   autoFocus={field === fields[0]}
                   label={field.label}
-                  key={field.key}
                   type={field.type}
                   variant="outlined"
                   value={values[field.key]}
@@ -257,10 +293,8 @@ export default function Form({
                     }
                   }}
                 />
-                {field.bottomLink &&
-                  field.bottomLink
-                }
-              </>
+                {field.bottomLink && field.bottomLink}
+              </React.Fragment>
             );
           }
         })}
