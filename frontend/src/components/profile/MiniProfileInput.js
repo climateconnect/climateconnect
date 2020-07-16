@@ -1,12 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  Avatar,
-  Typography,
-  Tooltip,
-  IconButton,
-  TextField,
-  Button
-} from "@material-ui/core";
+import { Avatar, Typography, Tooltip, IconButton, TextField, Button } from "@material-ui/core";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import SelectField from "../general/SelectField";
 import { makeStyles } from "@material-ui/core/styles";
