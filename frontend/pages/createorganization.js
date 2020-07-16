@@ -10,7 +10,7 @@ import LoginNudge from "../src/components/general/LoginNudge";
 import UserContext from "../src/components/context/UserContext";
 import Router from "next/router";
 
-export default function CreateOrganization({ tagOptions, token }) {
+export default function CreateOrganization({ tagOptions, token, rolesOptions }) {
   const [errorMessages, setErrorMessages] = React.useState({
     basicOrganizationInfo: "",
     detailledOrganizationInfo: ""
@@ -82,7 +82,7 @@ export default function CreateOrganization({ tagOptions, token }) {
   };
 
   const handleDetailledInfoSubmit = (event, account) => {
-    const organizationToSubmit = parseOrganizationForRequest(account, user);
+    const organizationToSubmit = parseOrganizationForRequest(account, user, rolesOptions);
     console.log(organizationToSubmit);
     for (const prop of Object.keys(requiredPropErrors)) {
       if (!organizationToSubmit[prop]) {
@@ -147,8 +147,23 @@ CreateOrganization.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   return {
     tagOptions: await getTags(token),
-    token: token
+    token: token,
+    rolesOptions: await getRolesOptions(token)
   };
+};
+
+const getRolesOptions = async token => {
+  try {
+    const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
+    if (resp.data.results.length === 0) return null;
+    else {
+      return resp.data.results;
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
 };
 
 async function getTags(token) {
@@ -171,9 +186,9 @@ async function getTags(token) {
   }
 }
 
-const parseOrganizationForRequest = (o, user) => {
+const parseOrganizationForRequest = (o, user, rolesOptions) => {
   const organization = {
-    team_members: [{ user_id: user.id, permission_type_id: 3 }],
+    team_members: [{ user_id: user.id, permission_type_id: rolesOptions.find(r=>r.name==="Creator").id }],
     name: o.name,
     background_image: o.background_image,
     image: o.image,
