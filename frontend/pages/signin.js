@@ -45,7 +45,7 @@ export default function Signin() {
     event.preventDefault();
     axios
       .post(process.env.API_URL + "/login/", {
-        username: values.username,
+        username: values.username.toLowerCase(),
         password: values.password
       })
       .then(function(response) {
