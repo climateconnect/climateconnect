@@ -21,7 +21,7 @@ def get_user_verification_url(user):
     )
 
     url = ("%s/user/activate?id=%s&expires=%s" % (
-        settings.EMAIL_VERIFICATION_URL, user.id, expire_url_string
+        settings.FRONTEND_URL, user.id, expire_url_string
     ))
 
     return url

@@ -1,4 +1,6 @@
 from django.contrib.auth import (authenticate, login)
+import datetime
+from django.utils import timezone
 
 # Rest imports
 from rest_framework import status
@@ -89,7 +91,6 @@ class SignUpView(APIView):
             user=user, country=request.data['country'],
             city=request.data['city'],
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
-            is_profile_verified=True #TODO: change this after automatic E-Mails are implemented
         )
 
         send_user_verification_email(user)
@@ -226,3 +227,28 @@ class EditUserProfile(APIView):
         user_profile.save()
         serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserEmailVerificationLinkView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        if 'id' and 'expires' not in request.data
+            return Response({'message': 'Required parameters are missing.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(id=int(request.data['id']))
+        except User.DoesNotExist:
+            return Response({'message': 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if user:
+            # convert timestamp
+            expire_time_string = request.data['expires'].replace("%2B", "+").replace("%2D", "-")
+            expire_time = datetime.datetime.fromisoformat(expire_time_string)
+            if expire_time <= timezone.now():
+                return Response({'message': 'Verification link expired.'}, status=status.HTTP_403_FORBIDDEN)
+            else:
+                # TODO: set user profile to verified.
+                user.user_profile.is_profile_verified = True
+                user.user_profile.save()
+                return Response({"message": "Your profile is successfully verified"}, status=status.HTTP_200_OK)
