@@ -1,10 +1,11 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography, Tooltip, IconButton, Button } from "@material-ui/core";
+import { Typography, Tooltip, IconButton, Button, useMediaQuery } from "@material-ui/core";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 import imageCompression from "browser-image-compression";
+import { getImageDialogHeight } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -56,6 +57,7 @@ export default function AddPhotoSection({
   const classes = useStyles(projectData);
   const [tempImage, setTempImage] = React.useState(projectData.image);
   const inputFileRef = React.useRef(null);
+  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
 
   const handleDialogClickOpen = dialogName => {
     handleSetOpen({ [dialogName]: true });
@@ -134,7 +136,7 @@ export default function AddPhotoSection({
         open={open.avatarDialog}
         imageUrl={tempImage}
         borderRadius={0}
-        height={300}
+        height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 300}
         ratio={16 / 9}
       />
     </>

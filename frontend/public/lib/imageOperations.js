@@ -8,3 +8,8 @@ export function getImageUrl(url) {
     return url;
   }
 }
+
+export function getImageDialogHeight(screenWidth) {
+  console.log((screenWidth / 16) * 9);
+  return (screenWidth / 16) * 9 * 0.7;
+}
