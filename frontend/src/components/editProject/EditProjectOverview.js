@@ -72,7 +72,6 @@ export default function EditProjectOverview({
   tagsOptions
 }) {
   const classes = useStyles();
-  console.log(project);
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
   };
@@ -142,7 +141,6 @@ function LargeScreenOverview({ project, handleChangeProject, tagsOptions }) {
 }
 
 const InputShortDescription = ({ project, handleChangeProject }) => {
-  console.log(handleChangeProject);
   return (
     <TextField
       label="Summary"
@@ -194,7 +192,6 @@ const InputLocation = ({ project, handleChangeProject }) => {
 
 const InputTags = ({ project, handleChangeProject, tagsOptions }) => {
   const classes = useStyles();
-  console.log(handleChangeProject);
   const [open, setOpen] = React.useState(false);
   const [selectedItems, setSelectedItems] = React.useState(project.tags ? [...project.tags] : []);
 
@@ -205,7 +202,6 @@ const InputTags = ({ project, handleChangeProject, tagsOptions }) => {
   const handleCategoriesDialogClose = tags => {
     if (tags) handleChangeProject(tags, "tags");
     setOpen(false);
-    console.log("closed");
   };
 
   const handleTagDelete = tag => {
@@ -303,7 +299,7 @@ const InputImage = ({ project, handleChangeProject, screenSize }) => {
     if (image && image instanceof HTMLCanvasElement)
       handleChangeProject(image.toDataURL("image/jpeg"), "image");
   };
-  console.log(window.innerWidth);
+
   return (
     <>
       <label htmlFor="photo" className={classes.imageZoneWrapper}>
