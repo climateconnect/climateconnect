@@ -205,7 +205,7 @@ function parseProject(project) {
     url_slug: project.url_slug,
     image: project.image,
     status: project.status,
-    location: project.city + " " + project.country,
+    location: project.city + ", " + project.country,
     description: project.description,
     shortdescription: project.short_description,
     collaborators_welcome: project.collaborators_welcome,
