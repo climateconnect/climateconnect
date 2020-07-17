@@ -78,13 +78,15 @@ export default function ManageOrganizationMembers({
           else return c;
         })
       ]);
-    } else
+    } else{
+      console.log(m)
       setCurrentMembers([
         ...currentMembers.map(c => {
           if (c.url_slug === m.url_slug) return m;
           else return c;
         })
       ]);
+    }
   };
   const handleRemoveMember = member => {
     setCurrentMembers([...currentMembers.filter(m => m.id !== member.id)]);
@@ -127,7 +129,15 @@ export default function ManageOrganizationMembers({
           message: "You have successfully updated your organization's members"
         }
       });
-    }).catch;
+    }).catch(() => {
+      console.log("error!")
+        Router.push({
+          pathname: "/organizations/" + organization.url_slug,
+          query: {
+            errorMessage: "Not all your updates have worked."
+          }
+        });
+    });
   };
 
   const onSubmit = async () => {
@@ -200,6 +210,7 @@ export default function ManageOrganizationMembers({
       })
       .catch(function(error) {
         console.log(error);
+        throw error
       });
   };
 
@@ -223,6 +234,7 @@ export default function ManageOrganizationMembers({
       })
       .catch(function(error) {
         console.log(error);
+        throw error
       });
   };
 
@@ -241,6 +253,7 @@ export default function ManageOrganizationMembers({
       })
       .catch(function(error) {
         console.log(error);
+        throw error
       });
   };
 
@@ -340,7 +353,7 @@ const parseMembersForCreateRequest = members => {
   return {
     organization_members: members.map(m => ({
       ...m,
-      permission_type_id: m.role.role_type,
+      permission_type_id: m.role.id,
       role_in_organization: m.role_in_organization ? m.role_in_organization : ""
     }))
   };
@@ -350,7 +363,7 @@ const parseMemberForUpdateRequest = (m, organization) => {
   return {
     id: m.member_id,
     user: m.id,
-    role: m.role.role_type,
+    role: m.role.id,
     role_in_organization: m.role_in_organization ? m.role_in_organization : "",
     organization: organization.id
   };
@@ -360,7 +373,7 @@ const parseMemberForNewCreatorRequest = (m, organization) => {
   return {
     id: m.member_id,
     user: m.id,
-    role: m.role.role_type,
+    role: m.role.id,
     role_in_organization: m.role_in_organization ? m.role_in_organization : "",
     organization: organization.id
   };
