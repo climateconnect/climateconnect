@@ -143,6 +143,7 @@ class MemberProfileView(APIView):
             serializer = UserProfileStubSerializer(profile)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class ListMemberProjectsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
@@ -155,6 +156,7 @@ class ListMemberProjectsView(ListAPIView):
             user=UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user,
         ).order_by('id')
 
+
 class ListMemberOrganizationsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
@@ -166,6 +168,7 @@ class ListMemberOrganizationsView(ListAPIView):
         return OrganizationMember.objects.filter(
             user=UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user,
         ).order_by('id')
+
 
 class EditUserProfile(APIView):
     permission_classes = [UserPermission]
@@ -233,7 +236,8 @@ class UserEmailVerificationLinkView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        if 'id' and 'expires' not in request.data
+        print(request.data)
+        if 'id' not in request.data or 'expires' not in request.data:
             return Response({'message': 'Required parameters are missing.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -241,14 +245,20 @@ class UserEmailVerificationLinkView(APIView):
         except User.DoesNotExist:
             return Response({'message': 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if user:
+        if user and UserProfile.objects.filter(user=user).exists():
             # convert timestamp
             expire_time_string = request.data['expires'].replace("%2B", "+").replace("%2D", "-")
             expire_time = datetime.datetime.fromisoformat(expire_time_string)
             if expire_time <= timezone.now():
                 return Response({'message': 'Verification link expired.'}, status=status.HTTP_403_FORBIDDEN)
             else:
-                # TODO: set user profile to verified.
-                user.user_profile.is_profile_verified = True
-                user.user_profile.save()
-                return Response({"message": "Your profile is successfully verified"}, status=status.HTTP_200_OK)
+                if user.user_profile.is_profile_verified:
+                    return Response({
+                        'message': 'Account already verified. Please contact us if you are having trouble signing in.'
+                    }, status=status.HTTP_204_NO_CONTENT)
+                else:
+                    user.user_profile.is_profile_verified = True
+                    user.user_profile.save()
+                    return Response({"message": "Your profile is successfully verified"}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'Permission Denied'}, status=status.HTTP_403_FORBIDDEN)
