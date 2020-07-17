@@ -3,7 +3,7 @@ import { Container, IconButton } from "@material-ui/core";
 import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
 import { makeStyles } from "@material-ui/core/styles";
 import OrganizersContainer from "./OrganizersContainer";
-import BottomNavigation from "./BottomNavigation";
+import BottomNavigation from "../general/BottomNavigation";
 import AddProjectMembersContainer from "./AddProjectMembersContainer";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 
@@ -33,7 +33,7 @@ export default function AddTeam({
   projectData,
   handleSetProjectData,
   onSubmit,
-  saveAsDraft,
+  /*saveAsDraft,*/
   goToPreviousStep,
   availabilityOptions,
   rolesOptions

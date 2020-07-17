@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Typography } from "@material-ui/core";
 import MultiLevelSelector from "../general/MultiLevelSelector";
 import { makeStyles } from "@material-ui/core/styles";
-import BottomNavigation from "./BottomNavigation";
+import BottomNavigation from "../general/BottomNavigation";
 
 const useStyles = makeStyles(theme => {
   return {

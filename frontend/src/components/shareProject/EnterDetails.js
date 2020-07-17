@@ -8,7 +8,7 @@ import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import CollaborateSection from "./CollaborateSection";
 import AddSummarySection from "./AddSummarySection";
 import AddPhotoSection from "./AddPhotoSection";
-import BottomNavigation from "./BottomNavigation";
+import BottomNavigation from "../general/BottomNavigation";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import collaborationTexts from "../../../public/data/collaborationTexts";
 
