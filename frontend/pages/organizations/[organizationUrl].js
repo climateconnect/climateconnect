@@ -50,14 +50,18 @@ export default function OrganizationPage({
   infoMetadata
 }) {
   const [message, setMessage] = React.useState("");
+  const [errorMessage, setErrorMessage] = React.useState("");
 
   useEffect(() => {
     const params = getParams(window.location.href);
-    if (params.message) setMessage(decodeURI(params.message));
+    if (params.message) 
+      setMessage(decodeURI(params.message));
+    if (params.errorMessage) 
+      setErrorMessage(decodeURI(params.message));
   });
   const { user } = useContext(UserContext);
   return (
-    <WideLayout message={message} title={organization ? organization.name : "Not found"}>
+    <WideLayout errorMessage={errorMessage} message={message} title={organization ? organization.name : "Not found"}>
       {organization ? (
         <OrganizationLayout
           organization={organization}
