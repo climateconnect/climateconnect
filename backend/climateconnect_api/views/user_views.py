@@ -217,9 +217,16 @@ class EditUserProfile(APIView):
             user_profile.availability = availability
 
         if 'skills' in request.data:
+            for skill in user_profile.skills.all():
+                if not skill.id in request.data['skills']:
+                    logger.error("this skill needs to be deleted: "+skill.name)
+                    user_profile.skills.remove(skill)
             for skill_id in request.data['skills']:
-                skill = Skill.objects.get(id=int(skill_id))
-                user_profile.skills.add(skill)
+                try:
+                    skill = Skill.objects.get(id=int(skill_id))
+                    user_profile.skills.add(skill)
+                except Skill.DoesNotExist:
+                    logger.error("Passed skill id {} does not exists")
         user_profile.save()
         serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
