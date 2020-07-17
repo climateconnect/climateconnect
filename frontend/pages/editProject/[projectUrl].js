@@ -36,6 +36,10 @@ export default function EditProjectPage({
     ...project,
     status: statusOptions.find(s => s.name === project.status)
   });
+  project = {
+    ...project,
+    status: statusOptions.find(s => s.name === project.status)
+  }
   const { user } = useContext(UserContext);
 
   const handleSetProject = newProject => {
@@ -81,12 +85,14 @@ export default function EditProjectPage({
     return (
       <WideLayout className={classes.root} title={"Edit project " + project.name} hideHeadline>
         <EditProjectRoot
+          oldProject={project}
           project={curProject}
           skillsOptions={skillsOptions}
           userOrganizations={userOrganizations}
           statusOptions={statusOptions}
           handleSetProject={handleSetProject}
           tagsOptions={tagsOptions}
+          token={token}
         />
       </WideLayout>
     );
@@ -128,7 +134,6 @@ async function getProjectByIdIfExists(projectUrl, token) {
     );
     if (resp.data.length === 0) return null;
     else {
-      console.log(resp);
       return parseProject(resp.data);
     }
   } catch (err) {
@@ -143,7 +148,8 @@ const parseProject = project => ({
   image: getImageUrl(project.image),
   tags: project.tags.map(t => t.project_tag),
   project_parents: project.project_parents[0],
-  is_personal_project: !project.project_parents[0].parent_organization
+  is_personal_project: !project.project_parents[0].parent_organization,
+  skills: project.skills.map(s=>({...s, key: s.id}))
 });
 
 const getSkillsOptions = async token => {
@@ -151,7 +157,7 @@ const getSkillsOptions = async token => {
     const resp = await axios.get(process.env.API_URL + "/skills/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
     else {
-      return parseOptions(resp.data.results, "parent_skill");
+      return parseOptions(resp.data.results.map(s=>({...s, key: s.id})), "parent_skill");
     }
   } catch (err) {
     console.log(err);
