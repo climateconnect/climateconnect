@@ -37,9 +37,9 @@ export default function ProjectPage({ project, members, posts, comments }) {
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) setMessage(decodeURI(params.message));
-  })
+  });
   return (
-    <WideLayout message={message}title={project ? project.name : "Project not found"}>
+    <WideLayout message={message} title={project ? project.name : "Project not found"}>
       {project ? (
         <ProjectLayout
           project={{ ...project, team: members, timeline_posts: posts, comments: comments }}

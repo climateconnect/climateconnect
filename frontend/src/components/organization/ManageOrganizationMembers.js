@@ -78,8 +78,8 @@ export default function ManageOrganizationMembers({
           else return c;
         })
       ]);
-    } else{
-      console.log(m)
+    } else {
+      console.log(m);
       setCurrentMembers([
         ...currentMembers.map(c => {
           if (c.url_slug === m.url_slug) return m;
@@ -121,23 +121,25 @@ export default function ManageOrganizationMembers({
 
   const handleSubmit = () => {
     event.preventDefault();
-    onSubmit().then(() => {
-      console.log("done!");
-      Router.push({
-        pathname: "/organizations/" + organization.url_slug,
-        query: {
-          message: "You have successfully updated your organization's members"
-        }
-      });
-    }).catch(() => {
-      console.log("error!")
+    onSubmit()
+      .then(() => {
+        console.log("done!");
+        Router.push({
+          pathname: "/organizations/" + organization.url_slug,
+          query: {
+            message: "You have successfully updated your organization's members"
+          }
+        });
+      })
+      .catch(() => {
+        console.log("error!");
         Router.push({
           pathname: "/organizations/" + organization.url_slug,
           query: {
             errorMessage: "Not all your updates have worked."
           }
         });
-    });
+      });
   };
 
   const onSubmit = async () => {
@@ -210,7 +212,7 @@ export default function ManageOrganizationMembers({
       })
       .catch(function(error) {
         console.log(error);
-        throw error
+        throw error;
       });
   };
 
@@ -234,7 +236,7 @@ export default function ManageOrganizationMembers({
       })
       .catch(function(error) {
         console.log(error);
-        throw error
+        throw error;
       });
   };
 
@@ -253,7 +255,7 @@ export default function ManageOrganizationMembers({
       })
       .catch(function(error) {
         console.log(error);
-        throw error
+        throw error;
       });
   };
 

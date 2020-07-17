@@ -39,7 +39,7 @@ export default function EditProjectPage({
   project = {
     ...project,
     status: statusOptions.find(s => s.name === project.status)
-  }
+  };
   const { user } = useContext(UserContext);
 
   const handleSetProject = newProject => {
@@ -149,7 +149,7 @@ const parseProject = project => ({
   tags: project.tags.map(t => t.project_tag),
   project_parents: project.project_parents[0],
   is_personal_project: !project.project_parents[0].parent_organization,
-  skills: project.skills.map(s=>({...s, key: s.id}))
+  skills: project.skills.map(s => ({ ...s, key: s.id }))
 });
 
 const getSkillsOptions = async token => {
@@ -157,7 +157,10 @@ const getSkillsOptions = async token => {
     const resp = await axios.get(process.env.API_URL + "/skills/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
     else {
-      return parseOptions(resp.data.results.map(s=>({...s, key: s.id})), "parent_skill");
+      return parseOptions(
+        resp.data.results.map(s => ({ ...s, key: s.id })),
+        "parent_skill"
+      );
     }
   } catch (err) {
     console.log(err);

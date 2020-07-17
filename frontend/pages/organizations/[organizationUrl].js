@@ -54,14 +54,16 @@ export default function OrganizationPage({
 
   useEffect(() => {
     const params = getParams(window.location.href);
-    if (params.message) 
-      setMessage(decodeURI(params.message));
-    if (params.errorMessage) 
-      setErrorMessage(decodeURI(params.message));
+    if (params.message) setMessage(decodeURI(params.message));
+    if (params.errorMessage) setErrorMessage(decodeURI(params.message));
   });
   const { user } = useContext(UserContext);
   return (
-    <WideLayout errorMessage={errorMessage} message={message} title={organization ? organization.name : "Not found"}>
+    <WideLayout
+      errorMessage={errorMessage}
+      message={message}
+      title={organization ? organization.name : "Not found"}
+    >
       {organization ? (
         <OrganizationLayout
           organization={organization}

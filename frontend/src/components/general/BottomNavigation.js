@@ -33,49 +33,46 @@ export default function BottomNavigation({
   saveAsDraft
 }) {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
 
   const onClickCancelDialogOpen = () => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
-  const handleClickCancel = (cancelled) => {
-    if(cancelled){
-      onClickCancel()
-      setOpen(false)
-    }else 
-      setOpen(false)
-  }
+  const handleClickCancel = cancelled => {
+    if (cancelled) {
+      onClickCancel();
+      setOpen(false);
+    } else setOpen(false);
+  };
 
   return (
     <div className={`${classes.navigationButtonWrapper} ${className}`}>
-      {onClickPreviousStep &&
+      {onClickPreviousStep && (
         <Button variant="contained" className={classes.backButton} onClick={onClickPreviousStep}>
           Back
         </Button>
-      }
+      )}
       <div className={classes.nextStepButtonsContainer}>
-        {
-          onClickCancel && (
-            <>
-              <Button
-                variant="contained"
-                onClick={onClickCancelDialogOpen}
-                className={`${classes.backButton} ${classes.draftButton}`}
-              >
-                Cancel
-              </Button>
-              <ConfirmDialog 
-                open={open}
-                onClose={handleClickCancel}
-                cancelText="No"
-                confirmText="Yes"
-                text="Do you really want to leave without saving your changes?"
-                title="Leave without saving changes?"
-              />
-            </>
-          )
-        }
+        {onClickCancel && (
+          <>
+            <Button
+              variant="contained"
+              onClick={onClickCancelDialogOpen}
+              className={`${classes.backButton} ${classes.draftButton}`}
+            >
+              Cancel
+            </Button>
+            <ConfirmDialog
+              open={open}
+              onClose={handleClickCancel}
+              cancelText="No"
+              confirmText="Yes"
+              text="Do you really want to leave without saving your changes?"
+              title="Leave without saving changes?"
+            />
+          </>
+        )}
         {saveAsDraft && (
           <Button
             variant="contained"
@@ -99,11 +96,11 @@ function NextButtons({ nextStepButtonType, onClickNextStep }) {
       </Button>
     );
   else if (nextStepButtonType === "save")
-      return (
-        <Button variant="contained" color="primary" type="submit">
-          Save Changes
-        </Button>
-      )
+    return (
+      <Button variant="contained" color="primary" type="submit">
+        Save Changes
+      </Button>
+    );
   else if (nextStepButtonType === "publish")
     return (
       <Button variant="contained" color="primary" type="submit">

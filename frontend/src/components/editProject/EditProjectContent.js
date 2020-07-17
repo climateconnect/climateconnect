@@ -61,51 +61,54 @@ export default function EditProjectContent({
   const [selectedItems, setSelectedItems] = React.useState(
     project.skills ? [...project.skills] : []
   );
-  const [open, setOpen] = React.useState({skills: false, connections: false})
+  const [open, setOpen] = React.useState({ skills: false, connections: false });
   const statusesWithStartDate = statusOptions.filter(s => s.has_start_date).map(s => s.id);
   const statusesWithEndDate = statusOptions.filter(s => s.has_end_date).map(s => s.id);
-  
-  
+
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
   };
 
   const onClickSkillsDialogOpen = () => {
-    setOpen({...open, skills: true})
-  }
+    setOpen({ ...open, skills: true });
+  };
 
   const handleSkillDelete = skill => {
     handleSetProject({
-      ...project, 
-      skills: project.skills.filter(s=>s.id !== skill.id)
+      ...project,
+      skills: project.skills.filter(s => s.id !== skill.id)
     });
-    setSelectedItems(
-      project.skills.filter(s=>s.id !== skill.id)
-    );
-  }
+    setSelectedItems(project.skills.filter(s => s.id !== skill.id));
+  };
 
   const handleSkillsDialogClose = skills => {
-    if(skills) handleSetProject({ ...project, skills: skills })
-    setOpen({...open, skills: false})
-  }
+    if (skills) handleSetProject({ ...project, skills: skills });
+    setOpen({ ...open, skills: false });
+  };
 
   const onClickConnectionsDialogOpen = () => {
     setOpen({ ...open, connections: true });
   };
 
   const handleConnectionDelete = connection => {
-    handleSetProject({ ...project, helpful_connections: project.helpful_connections.filter(c=> c != connection)})
-  }
+    handleSetProject({
+      ...project,
+      helpful_connections: project.helpful_connections.filter(c => c != connection)
+    });
+  };
 
   const handleConnectionsDialogClose = connection => {
     if (project.helpful_connections && project.helpful_connections.includes(connection))
       alert("You can not add the same connection twice.");
-    else{
+    else {
       if (connection)
-        handleSetProject({...project, helpful_connections: [...project.helpful_connections, connection]})
-      setOpen({...open, connections: false})
+        handleSetProject({
+          ...project,
+          helpful_connections: [...project.helpful_connections, connection]
+        });
+      setOpen({ ...open, connections: false });
     }
-  }
+  };
 
   return (
     <div>
@@ -139,9 +142,7 @@ export default function EditProjectContent({
                 handleChangeProject(
                   {
                     ...project.project_parents,
-                    parent_organization: userOrganizations.find(
-                      o => o.name === event.target.value
-                    )
+                    parent_organization: userOrganizations.find(o => o.name === event.target.value)
                   },
                   "project_parents"
                 )
@@ -191,26 +192,23 @@ export default function EditProjectContent({
           )}
         </div>
         <div className={classes.block}>
-          <ProjectDescriptionHelp status={project.status} />            
+          <ProjectDescriptionHelp status={project.status} />
           <TextField
             variant="outlined"
             fullWidth
             multiline
             rows={9}
             label="Project description"
-            onChange={event => handleChangeProject(event.target.value.substring(0, 4000), "description")}
+            onChange={event =>
+              handleChangeProject(event.target.value.substring(0, 4000), "description")
+            }
             helperText={"Describe your project in detail. Please only use English!"}
             placeholder={`Describe your project in more detail.\n\n-What are you trying to achieve?\n-How are you trying to achieve it\n-What were the biggest challenges?\n-What insights have you gained during the implementation?`}
             value={project.description}
           />
         </div>
         <div className={classes.block}>
-          <Typography
-            component="h2"
-            variant="h6"
-            color="primary"
-            className={classes.subHeader}
-          >
+          <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
             {collaborationTexts.allow[project.status.name]}
           </Typography>
           <Switch
@@ -221,7 +219,7 @@ export default function EditProjectContent({
             color="primary"
           />
         </div>
-        {project.collaborators_welcome && 
+        {project.collaborators_welcome && (
           <>
             <div className={classes.block}>
               <Typography
@@ -248,7 +246,7 @@ export default function EditProjectContent({
                 <Button variant="contained" color="primary" onClick={onClickSkillsDialogOpen}>
                   {project.skills && project.skills.length ? "Edit skills" : "Add Skills"}
                 </Button>
-              </div>          
+              </div>
             </div>
             <div className={classes.block}>
               <Typography
@@ -276,7 +274,7 @@ export default function EditProjectContent({
               </Button>
             </div>
           </>
-        }
+        )}
       </div>
       <MultiLevelSelectDialog
         open={open.skills}

@@ -30,16 +30,16 @@ export default function EditProjectRoot({
   token,
   oldProject
 }) {
-  const classes = useStyles()
+  const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
-  console.log(project)
+  console.log(project);
   const handleCancel = () => {
     Router.push("/projects/" + project.url_slug + "/");
-  }
+  };
 
-  const handleSubmit = event => {    
-    event.preventDefault()
-    console.log(parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)))
+  const handleSubmit = event => {
+    event.preventDefault();
+    console.log(parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)));
     axios
       .patch(
         process.env.API_URL + "/api/projects/" + project.url_slug + "/",
@@ -50,8 +50,7 @@ export default function EditProjectRoot({
         Router.push({
           pathname: "/projects/" + response.data.url_slug,
           query: {
-            message:
-              "You have successfully edited your project."
+            message: "You have successfully edited your project."
           }
         });
       })
@@ -59,7 +58,7 @@ export default function EditProjectRoot({
         console.log(error);
         if (error) console.log(error.response);
       });
-  }  
+  };
 
   return (
     <Container disableGutters={isNarrowScreen}>
@@ -78,7 +77,7 @@ export default function EditProjectRoot({
           skillsOptions={skillsOptions}
         />
         <Divider className={classes.divider} />
-        <BottomNavigation 
+        <BottomNavigation
           onClickCancel={handleCancel}
           nextStepButtonType="save"
           className={classes.bottomNavigation}
@@ -90,23 +89,20 @@ export default function EditProjectRoot({
 
 const getProjectWithoutRedundancies = (newProject, oldProject) => {
   return Object.keys(newProject).reduce((obj, key) => {
-    if(newProject[key] !== oldProject[key]){
-      obj[key] = newProject[key]
+    if (newProject[key] !== oldProject[key]) {
+      obj[key] = newProject[key];
     }
     return obj;
-  }, {})
-}
+  }, {});
+};
 
 const parseProjectForRequest = project => {
-  console.log(project)
-  const ret = {...project}
-  if(project.skills)
-    ret.skills = project.skills.map(s=>s.id)
-  if(project.tags)
-    ret.project_tags = project.tags.map(t=>t.id)
-  if(project.status)
-    ret.status = project.status.id
-  if(project.project_parents && project.project_parents.parent_organization)
-    ret.parent_organization = project.project_parents.parent_organization.id
-  return ret
-}
+  console.log(project);
+  const ret = { ...project };
+  if (project.skills) ret.skills = project.skills.map(s => s.id);
+  if (project.tags) ret.project_tags = project.tags.map(t => t.id);
+  if (project.status) ret.status = project.status.id;
+  if (project.project_parents && project.project_parents.parent_organization)
+    ret.parent_organization = project.project_parents.parent_organization.id;
+  return ret;
+};

@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => {
     appealBox: {
       marginTop: theme.spacing(4),
       marginBottom: theme.spacing(-2)
-    },
+    }
   };
 });
 
@@ -64,8 +64,13 @@ export default function SelectCategory({
   return (
     <Container maxWidth="lg">
       <div className={classes.appealBox}>
-        <Typography className={classes.appealText}>You can combine categories. For example if you fund treeplanting, select both {"Afforestation/Reforestration"} and {"Funding"}</Typography>
-        <Typography className={classes.appealText}>This way you can specify what you are doing and in which field.</Typography>
+        <Typography className={classes.appealText}>
+          You can combine categories. For example if you fund treeplanting, select both{" "}
+          {"Afforestation/Reforestration"} and {"Funding"}
+        </Typography>
+        <Typography className={classes.appealText}>
+          This way you can specify what you are doing and in which field.
+        </Typography>
       </div>
       <div className={classes.block}>
         <MultiLevelSelector

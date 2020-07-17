@@ -115,7 +115,8 @@ export default function Form({
     fields.reduce((obj, field) => {
       if (field.select) obj[field.key] = field.select.defaultValue ? field.select.defaultValue : "";
       else if (field.value) obj[field.key] = field.value;
-      else if (field.type === "checkbox" || field.type === "switch") obj[field.key] = field.checked ? field.checked : false;
+      else if (field.type === "checkbox" || field.type === "switch")
+        obj[field.key] = field.checked ? field.checked : false;
       else obj[field.key] = "";
       return obj;
     }, {})
@@ -137,7 +138,7 @@ export default function Form({
   function handleValueChange(event, key, type, updateInstantly) {
     const newValues = {
       ...values,
-      [key]: (type === "checkbox" || type === "switch") ? event.target.checked : event.target.value
+      [key]: type === "checkbox" || type === "switch" ? event.target.checked : event.target.value
     };
     if (type === "checkbox" || type === "switch") {
       const dependentFields = fields.filter(
@@ -192,11 +193,14 @@ export default function Form({
           </Typography>
         )}
         {fields.map(field => {
-          if ((!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) && field.select) {
+          if (
+            (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) &&
+            field.select
+          ) {
             return (
               <React.Fragment key={field.key}>
                 <SelectField
-                  controlledValue={{name: values[field.key]}}
+                  controlledValue={{ name: values[field.key] }}
                   controlled
                   required={field.required}
                   options={field.select.values}
@@ -231,11 +235,16 @@ export default function Form({
               </div>
             );
           } else if (field.type === "switch") {
-            console.log(values[field.key])
+            console.log(values[field.key]);
             return (
               <div className={classes.flexBlock} key={field.key}>
                 <span className={classes.switchTextContainer}>
-                  <Typography className={`${classes.switchText} ${!values[field.key] && classes.bold}`} color={values[field.key] ? "secondary" : "primary"}>{field.falseLabel}</Typography>
+                  <Typography
+                    className={`${classes.switchText} ${!values[field.key] && classes.bold}`}
+                    color={values[field.key] ? "secondary" : "primary"}
+                  >
+                    {field.falseLabel}
+                  </Typography>
                 </span>
                 <Switch
                   id={"checkbox" + field.key}
@@ -247,10 +256,15 @@ export default function Form({
                   onChange={() => handleValueChange(event, field.key, field.type)}
                 />
                 <span className={classes.switchTextContainer}>
-                  <Typography className={`${classes.switchText} ${values[field.key] && classes.bold}`} color={values[field.key] ? "primary" : "secondary"}>{field.trueLabel}</Typography>
+                  <Typography
+                    className={`${classes.switchText} ${values[field.key] && classes.bold}`}
+                    color={values[field.key] ? "primary" : "secondary"}
+                  >
+                    {field.trueLabel}
+                  </Typography>
                 </span>
               </div>
-            )
+            );
           } else if (
             (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) &&
             field.type === "autocomplete"

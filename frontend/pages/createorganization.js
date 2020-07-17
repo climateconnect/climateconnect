@@ -188,7 +188,9 @@ async function getTags(token) {
 
 const parseOrganizationForRequest = (o, user, rolesOptions) => {
   const organization = {
-    team_members: [{ user_id: user.id, permission_type_id: rolesOptions.find(r=>r.name==="Creator").id }],
+    team_members: [
+      { user_id: user.id, permission_type_id: rolesOptions.find(r => r.name === "Creator").id }
+    ],
     name: o.name,
     background_image: o.background_image,
     image: o.image,

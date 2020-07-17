@@ -113,21 +113,31 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function ProjectContent({ project }) {
-  const classes = useStyles();  
+  const classes = useStyles();
   const { user } = useContext(UserContext);
   const [showFullDescription, setShowFullDescription] = React.useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
-  const user_permissions =  user && project.team.find(m=>m.id === user.id) ? project.team.find(m=>m.id === user.id).permissions : null
+  const user_permissions =
+    user && project.team.find(m => m.id === user.id)
+      ? project.team.find(m => m.id === user.id).permissions
+      : null;
   return (
     <div>
       <div className={classes.contentBlock}>
         <div className={classes.createdBy}>
-          {user_permissions && ["Creator", "Administrator"].includes(user_permissions) &&
-            <Button className={classes.editProjectButton} variant="contained" color="primary"href={"/editProject/"+project.url_slug}>Edit project</Button>
-          }
+          {user_permissions && ["Creator", "Administrator"].includes(user_permissions) && (
+            <Button
+              className={classes.editProjectButton}
+              variant="contained"
+              color="primary"
+              href={"/editProject/" + project.url_slug}
+            >
+              Edit project
+            </Button>
+          )}
           <Typography>
             Created: <DateDisplay date={new Date(project.creation_date)} />
-          </Typography>          
+          </Typography>
           <div>
             <Typography component="span">
               Started <TimeAgo date={new Date(project.start_date)} /> by
