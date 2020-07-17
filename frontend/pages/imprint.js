@@ -36,7 +36,7 @@ const Impressum = () => (
       </a>
       <br />
       <br />
-      Register entry
+      <h2>Register entry</h2>
       <br />
       Entry in: Handelsregister
       <br />

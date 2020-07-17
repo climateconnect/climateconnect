@@ -50,14 +50,20 @@ export default function OrganizationPage({
   infoMetadata
 }) {
   const [message, setMessage] = React.useState("");
+  const [errorMessage, setErrorMessage] = React.useState("");
 
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) setMessage(decodeURI(params.message));
+    if (params.errorMessage) setErrorMessage(decodeURI(params.message));
   });
   const { user } = useContext(UserContext);
   return (
-    <WideLayout message={message} title={organization ? organization.name : "Not found"}>
+    <WideLayout
+      errorMessage={errorMessage}
+      message={message}
+      title={organization ? organization.name : "Not found"}
+    >
       {organization ? (
         <OrganizationLayout
           organization={organization}
@@ -125,7 +131,12 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
         <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
       )}
       <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects: <Button variant="contained" color="primary" href="/share">Share a project</Button></div>
+        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
+          Projects:{" "}
+          <Button variant="contained" color="primary" href="/share">
+            Share a project
+          </Button>
+        </div>
         {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
         ) : (

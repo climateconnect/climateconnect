@@ -7,7 +7,8 @@ import {
   TextField,
   Typography,
   Tooltip,
-  IconButton
+  IconButton,
+  useMediaQuery
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -19,6 +20,7 @@ import SelectDialog from "./../dialogs/SelectDialog";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import imageCompression from "browser-image-compression";
+import { getImageDialogHeight } from "../../../public/lib/imageOperations";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -201,6 +203,7 @@ export default function EditAccountPage({
 }) {
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState(account);
+  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const classes = useStyles(editedAccount);
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
@@ -595,7 +598,7 @@ export default function EditAccountPage({
         onClose={handleBackgroundClose}
         open={open.backgroundDialog}
         imageUrl={tempImages.background_image}
-        height={200}
+        height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
         mobileHeight={80}
         mediumHeight={120}
         ratio={3}
@@ -605,7 +608,7 @@ export default function EditAccountPage({
         open={open.avatarDialog}
         imageUrl={tempImages.image}
         borderRadius={10000}
-        height={300}
+        height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
         ratio={1}
       />
       {possibleAccountTypes && (

@@ -137,7 +137,12 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
         <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
       )}
       <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Projects: <Button variant="contained" color="primary" href="/share">Share a project</Button></div>
+        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
+          Projects:{" "}
+          <Button variant="contained" color="primary" href="/share">
+            Share a project
+          </Button>
+        </div>
         {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
         ) : (
@@ -145,7 +150,12 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
         )}
       </Container>
       <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>Organizations: <Button variant="contained" color="primary" href="/createorganization">Create an organization</Button></div>
+        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
+          Organizations:{" "}
+          <Button variant="contained" color="primary" href="/createorganization">
+            Create an organization
+          </Button>
+        </div>
         {organizations && organizations.length > 0 ? (
           <OrganizationPreviews organizations={organizations} showOrganizationType />
         ) : (

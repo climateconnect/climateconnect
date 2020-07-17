@@ -72,7 +72,9 @@ export default function SelectField({
       size={size}
       disabled={disabled}
     >
-      {(!defaultValue || defaultValue === "") && !multiple && <option value="" />}
+      {!controlledValue && (!defaultValue || defaultValue === "") && !multiple && (
+        <option value="" />
+      )}
       {options.map((value, index) => {
         if (multiple)
           return (

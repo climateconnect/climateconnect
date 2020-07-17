@@ -16,11 +16,12 @@ from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
 from organization.serializers.tags import (ProjectTagsSerializer)
 from organization.utility.project import create_new_project
-from organization.permissions import OrganizationProjectCreationPermission
+from organization.permissions import (OrganizationProjectCreationPermission, ProjectReadWritePermission)
 from organization.pagination import (ProjectsPagination, MembersPagination, ProjectPostPagination, ProjectCommentPagination)
 from organization.utility.organization import (
     check_organization,
 )
+from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.models import Role, Skill, Availability
 import logging
 logger = logging.getLogger(__name__)
@@ -130,7 +131,7 @@ class CreateProjectView(APIView):
 
 
 class ProjectAPIView(APIView):
-    permission_classes = [OrganizationProjectCreationPermission]
+    permission_classes = [ProjectReadWritePermission]
 
     def get(self, request, url_slug, format=None):
         try:
@@ -148,33 +149,83 @@ class ProjectAPIView(APIView):
         except Project.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
 
-        if request.data['name'] != project.name:
+        if 'name' in request.data and request.data['name'] != project.name:
             project.name = request.data['name']
             project.url_slug = request.data['name'] + str(project.id)
 
-        if request.data['skills']:
-            for skill_name in request.data['skills']:
+        if 'skills' in request.data:
+            for skill in project.skills.all():
+                if not skill.id in request.data['skills']:
+                    logger.error("this skill needs to be deleted: "+skill.name)
+                    project.skills.remove(skill)
+            for skill_id in request.data['skills']:
                 try:
-                    skill = Skill.objects.get(name=skill_name)
+                    skill = Skill.objects.get(id=skill_id)
                     project.skills.add(skill)
                 except Skill.DoesNotExist:
-                    logger.error("Passed skill name {} does not exists")
+                    logger.error("Passed skill id {} does not exists")
+        
+        old_project_taggings = ProjectTagging.objects.filter(project=project).values('project_tag')
+        if 'project_tags' in request.data:
+            for tag in old_project_taggings:
+                if not tag['project_tag'] in request.data['project_tags']:
+                    logger.error("this tag needs to be deleted: "+str(tag['project_tag']))
+                    tag_to_delete = ProjectTags.objects.get(id=tag['project_tag'])
+                    ProjectTagging.objects.filter(project=project, project_tag=tag_to_delete).delete()
+            for tag_id in request.data['project_tags']:
+                if not old_project_taggings.filter(project_tag=tag_id).exists():
+                    try:
+                        tag = ProjectTags.objects.get(id=tag_id)
+                        ProjectTagging.objects.create(
+                            project_tag=tag, project=project
+                        )
+                    except ProjectTags.DoesNotExist:
+                        logger.error("Passed tag id {} does not exists")
 
-        project.image = request.data["image"]
-        project.status = request.data["status"]
-        project.start_date = parse(request.data['start_date']) if request.data['start_date'] else None
-        project.end_date = parse(request.data['end_date']) if request.data['end_date'] else None
-        project.short_description = request.data['short_description']
-        project.description = request.data['description']
-        project.country = request.data['country']
-        project.city = request.data['city']
-        project.collaborators_welcome = request.data['collaborators_welcome']
-        project.helpful_connections = request.data['helpful_connections']
+
+        if 'image' in request.data:
+            project.image = get_image_from_data_url(request.data['image'])[0]
+        if 'status' in request.data:
+            try:
+                project_status = ProjectStatus.objects.get(id=int(request.data['status']))
+            except ProjectStatus.DoesNotExist:
+                raise NotFound('Project status not found.')
+            project.status = project_status
+        if 'start_date' in request.data:
+            project.start_date = parse(request.data['start_date'])
+        if 'end_date' in request.data:
+            project.end_date = parse(request.data['end_date'])
+        if 'short_description' in request.data:
+            project.short_description = request.data['short_description']
+        if 'description' in request.data:
+            project.description = request.data['description']
+        if 'country' in request.data:
+            project.country = request.data['country']
+        if 'city' in request.data:
+            project.city = request.data['city']
+        if 'collaborators_welcome' in request.data:
+            project.collaborators_welcome = request.data['collaborators_welcome']
+        if 'helpful_connections' in request.data:
+            project.helpful_connections = request.data['helpful_connections']
+        if 'is_personal_project' in request.data:
+            if request.data['is_personal_project'] == True:
+                project_parents = ProjectParents.objects.get(project=project)
+                project_parents.parent_organization = None
+                project_parents.save()
+        if 'parent_organization' in request.data:
+            project_parents = ProjectParents.objects.get(project=project)
+            try:
+                organization = Organization.objects.get(id=request.data['parent_organization'])
+            except Organization.DoesNotExist:
+                logger.error("Passed parent organization id {} does not exist")
+            project_parents.parent_organization = organization
+            project_parents.save()
 
         project.save()
 
         return Response({
-            'message': 'Project {} successfully updated'.format(project.name)
+            'message': 'Project {} successfully updated'.format(project.name),
+            'url_slug': project.url_slug
         }, status=status.HTTP_200_OK)
 
 class ListProjectPostsView(ListAPIView):

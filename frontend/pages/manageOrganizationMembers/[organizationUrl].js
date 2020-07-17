@@ -34,13 +34,19 @@ export default function manageOrganizationMembers({
   );
   if (!user)
     return (
-      <WideLayout title="Please log in to create an organization" hideHeadline={true}>
-        <LoginNudge fullPage whatToDo="create an organization" />
+      <WideLayout
+        title="Please log in to manage the members of this organization"
+        hideHeadline={true}
+      >
+        <LoginNudge fullPage whatToDo="manage the members of this organization" />
       </WideLayout>
     );
   else if (!members.find(m => m.id === user.id))
     return (
-      <WideLayout title="Please log in to create an organization" hideHeadline={true}>
+      <WideLayout
+        title="Please log in to manage the members of an organization"
+        hideHeadline={true}
+      >
         <Typography variant="h4" color="primary" className={classes.headline}>
           You are not a member of this organization. Go to{" "}
           <a href={"/organizations/" + organization.url_slug}>the organization page</a> and click
@@ -53,9 +59,9 @@ export default function manageOrganizationMembers({
     members.find(m => m.id === user.id).role.name != "Administrator"
   )
     return (
-      <WideLayout title="Please log in to create an organization" hideHeadline={true}>
+      <WideLayout title="No permission to manage members of this organization" hideHeadline={true}>
         <Typography variant="h4" color="primary" className={classes.headline}>
-          You need to be an administrator to manage organization members.
+          You need to be an administrator of the organization to manage organization members.
         </Typography>
       </WideLayout>
     );

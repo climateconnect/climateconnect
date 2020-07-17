@@ -7,11 +7,25 @@ const useStyles = makeStyles(theme => ({
   orgBottomLink: {
     textAlign: "center",
     marginTop: theme.spacing(1)
+  },
+  appealText: {
+    textAlign: "center",
+    fontWeight: "bold"
+  },
+  appealBox: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2)
+  },
+  form: {
+    maxWidth: 700,
+    margin: "0 auto",
+    padding: theme.spacing(4),
+    paddingTop: theme.spacing(2)
   }
-}))
+}));
 
 export default function Share({ project, handleSetProjectData, goToNextStep, userOrganizations }) {
-  const classes = useStyles()
+  const classes = useStyles();
   const organizations = !userOrganizations
     ? []
     : userOrganizations.map(org => {
@@ -20,20 +34,38 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
           ...org
         };
       });
-  const organizationOptions = [
-    { key: "personalproject", name: "Personal project" },
-    ...organizations
-  ];
+  const organizationOptions = [...organizations];
+  const parent_organization_name = project.parent_organization
+    ? project.parent_organization.name
+      ? project.parent_organization.name
+      : project.parent_organization
+    : "";
   const fields = [
+    {
+      falseLabel: "Personal Project",
+      trueLabel: "Organization's project",
+      key: "is_organization_project",
+      type: "switch",
+      checked: project.is_organization_project
+    },
     {
       required: true,
       label: "Organization",
       select: {
         values: organizationOptions,
-        defaultValue: project.parent_organization
+        defaultValue: parent_organization_name
       },
       key: "parent_organization",
-      bottomLink: <Typography className={classes.orgBottomLink}>If your organization does not exit yet <Link href="/createorganization" underline="always">click here</Link> to create it.</Typography>
+      bottomLink: (
+        <Typography className={classes.orgBottomLink}>
+          If your organization does not exit yet{" "}
+          <Link href="/createorganization" underline="always">
+            click here
+          </Link>{" "}
+          to create it.
+        </Typography>
+      ),
+      onlyShowIfChecked: "is_organization_project"
     },
     {
       required: true,
@@ -69,8 +101,10 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
   const onSubmit = (event, values) => {
     console.log(values);
     event.preventDefault();
-    Object.keys(values).map(k => (values[k] = values[k].trim()));
-    if (values.parent_organization === "Personal project")
+    Object.keys(values).map(
+      k => (values[k] = values[k] && values[k] != true ? values[k].trim() : values[k])
+    );
+    if (!values.parent_organization)
       handleSetProjectData({
         ...values,
         isPersonalProject: true
@@ -78,14 +112,30 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
     else
       handleSetProjectData({
         ...values,
-        parent_organization: getOrgObject(values.parent_organization)
+        parent_organization: getOrgObject(values.parent_organization),
+        isPersonalProject: false
       });
     goToNextStep();
   };
-
+  console.log(project);
   return (
     <>
-      <Form fields={fields} messages={messages} onSubmit={onSubmit} alignButtonsRight />
+      <div className={classes.appealBox}>
+        <Typography color="secondary" className={classes.appealText}>
+          Please make sure to only use English when sharing a project.
+        </Typography>
+        <Typography color="secondary" className={classes.appealText}>
+          This way most people can benefit from your ideas and experiences to fight climate change
+          together!
+        </Typography>
+      </div>
+      <Form
+        className={classes.form}
+        fields={fields}
+        messages={messages}
+        onSubmit={onSubmit}
+        alignButtonsRight
+      />
     </>
   );
 }
