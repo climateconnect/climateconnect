@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import ConfirmDialog from "../dialogs/ConfirmDialog";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -26,17 +27,55 @@ const useStyles = makeStyles(theme => {
 export default function BottomNavigation({
   className,
   onClickPreviousStep,
+  onClickCancel,
   nextStepButtonType,
   onClickNextStep,
   saveAsDraft
 }) {
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false)
+
+  const onClickCancelDialogOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClickCancel = (cancelled) => {
+    if(cancelled){
+      onClickCancel()
+      setOpen(false)
+    }else 
+      setOpen(false)
+  }
+
   return (
-    <div className={`${className} ${classes.navigationButtonWrapper}`}>
-      <Button variant="contained" className={classes.backButton} onClick={onClickPreviousStep}>
-        Back
-      </Button>
+    <div className={`${classes.navigationButtonWrapper} ${className}`}>
+      {onClickPreviousStep &&
+        <Button variant="contained" className={classes.backButton} onClick={onClickPreviousStep}>
+          Back
+        </Button>
+      }
       <div className={classes.nextStepButtonsContainer}>
+        {
+          onClickCancel && (
+            <>
+              <Button
+                variant="contained"
+                onClick={onClickCancelDialogOpen}
+                className={`${classes.backButton} ${classes.draftButton}`}
+              >
+                Cancel
+              </Button>
+              <ConfirmDialog 
+                open={open}
+                onClose={handleClickCancel}
+                cancelText="No"
+                confirmText="Yes"
+                text="Do you really want to leave without saving your changes?"
+                title="Leave without saving changes?"
+              />
+            </>
+          )
+        }
         {saveAsDraft && (
           <Button
             variant="contained"
@@ -59,6 +98,12 @@ function NextButtons({ nextStepButtonType, onClickNextStep }) {
         Next Step
       </Button>
     );
+  else if (nextStepButtonType === "save")
+      return (
+        <Button variant="contained" color="primary" type="submit">
+          Save Changes
+        </Button>
+      )
   else if (nextStepButtonType === "publish")
     return (
       <Button variant="contained" color="primary" type="submit">
