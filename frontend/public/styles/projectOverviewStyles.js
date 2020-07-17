@@ -46,7 +46,8 @@ const projectOverviewStyles = theme => {
     flexContainer: {
       display: "flex",
       alignItems: "flex-start",
-      marginBottom: theme.spacing(1)
+      marginBottom: theme.spacing(1),
+      flexWrap: "wrap"
     },
     inlineImage: {
       display: "inline-block",
@@ -69,6 +70,18 @@ const projectOverviewStyles = theme => {
     subHeader: {
       fontWeight: 600,
       marginBottom: theme.spacing(1)
+    },
+    skill: {
+      display: "flex",
+      border: "1px solid black",
+      height: theme.spacing(5),
+      minWidth: 220,
+      maxWidth: "100%",
+      marginRight: theme.spacing(1),
+      background: "none",
+      borderRadius: 0,
+      fontSize: 16,
+      marginTop: theme.spacing(1)
     }
   };
 };
