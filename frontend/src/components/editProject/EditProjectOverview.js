@@ -60,8 +60,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: 12
   },
   openCategoriesDialogButton: {
-    marginLeft: theme.spacing(2),
-    marginTop: -4
+    marginTop: theme.spacing(1)
   }
 }));
 
@@ -183,7 +182,7 @@ const InputLocation = ({ project, handleChangeProject }) => {
         fullWidth
         value={project.city}
         type="text"
-        onChange={event => handleChangeProject(event.target.value, "city")}
+        onChange={event => handleChangeProject(event.target.value, "country")}
         required
       />
     </div>
@@ -242,6 +241,7 @@ const InputTags = ({ project, handleChangeProject, tagsOptions }) => {
         items={project.tags}
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}
+        maxSelections={3}
       />
     </div>
   );
