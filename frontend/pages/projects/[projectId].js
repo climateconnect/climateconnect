@@ -10,6 +10,7 @@ import ProjectOverview from "../../src/components/project/ProjectOverview";
 import ProjectContent from "../../src/components/project/ProjectContent";
 import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
 import ProjectCommentsContent from "../../src/components/project/ProjectCommentsContent";
+import { getParams } from "./../../public/lib/generalOperations";
 
 import tokenConfig from "../../public/config/tokenConfig";
 import axios from "axios";
@@ -32,8 +33,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function ProjectPage({ project, members, posts, comments }) {
+  const [message, setMessage] = React.useState("");
+  useEffect(() => {
+    const params = getParams(window.location.href);
+    if (params.message) setMessage(decodeURI(params.message));
+  })
   return (
-    <WideLayout title={project ? project.name : "Project not found"}>
+    <WideLayout message={message}title={project ? project.name : "Project not found"}>
       {project ? (
         <ProjectLayout
           project={{ ...project, team: members, timeline_posts: posts, comments: comments }}
