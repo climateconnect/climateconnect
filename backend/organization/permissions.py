@@ -1,5 +1,5 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-from organization.models import (Organization, OrganizationMember, ProjectMember, ProjectParents)
+from organization.models import (Organization, OrganizationMember, Project, ProjectMember, ProjectParents)
 from climateconnect_api.models import Role
 
 
@@ -18,6 +18,27 @@ class OrganizationProjectCreationPermission(BasePermission):
 
         return False
 
+class ProjectReadWritePermission(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+
+        try:
+            project = Project.objects.get(url_slug=str(view.kwargs.get('url_slug')))
+        except Project.DoesNotExist:
+            return False
+
+        if request.method == 'DELETE' and ProjectMember.objects.filter(
+            user=request.user, role__role_type=Role.ALL_TYPE, project=project
+        ).exists():
+            return True
+
+        if request.method in ['PUT', 'PATCH', 'POST'] and ProjectMember.objects.filter(
+            user=request.user, role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE], project=project
+        ).exists():
+            return True
+
+        return False
 
 class OrganizationReadWritePermission(BasePermission):
     def has_permission(self, request, view):
