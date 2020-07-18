@@ -5,6 +5,7 @@ from rest_framework.filters import SearchFilter
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
 
 from django.contrib.auth.models import User
 
@@ -29,8 +30,9 @@ logger = logging.getLogger(__name__)
 
 class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
-    filter_backends = [SearchFilter]
+    filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['url_slug']
+    filterset_fields = ['collaborators_welcome', 'country', 'city']
     pagination_class = ProjectsPagination
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
@@ -40,7 +42,6 @@ class ListProjectsView(ListAPIView):
     
     def get_queryset(self):
         return Project.objects.filter(is_draft=False)
-
 
 
 class CreateProjectView(APIView):
@@ -228,6 +229,7 @@ class ProjectAPIView(APIView):
             'url_slug': project.url_slug
         }, status=status.HTTP_200_OK)
 
+
 class ListProjectPostsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
@@ -240,6 +242,7 @@ class ListProjectPostsView(ListAPIView):
             project__url_slug=self.kwargs['url_slug'],
         ).order_by('id')
 
+
 class ListProjectCommentsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
@@ -251,7 +254,8 @@ class ListProjectCommentsView(ListAPIView):
         return ProjectComment.objects.filter(
             project__url_slug=self.kwargs['url_slug'],
         ).order_by('id')
-    
+
+
 class AddProjectMembersView(APIView):
     #TODO: update permission: only admins or creators should be able to call this route
     permission_classes = [IsAuthenticated]

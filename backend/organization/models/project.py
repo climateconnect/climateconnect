@@ -187,6 +187,7 @@ class ProjectParents(models.Model):
     def __str__(self):
         return "Project parent for project %s" % (self.project.id)
 
+
 class ProjectCollaborators(models.Model):
     project = models.ForeignKey(
         Project,
