@@ -10,6 +10,7 @@ import ProjectOverview from "../../src/components/project/ProjectOverview";
 import ProjectContent from "../../src/components/project/ProjectContent";
 import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
 import ProjectCommentsContent from "../../src/components/project/ProjectCommentsContent";
+import { getParams } from "./../../public/lib/generalOperations";
 
 import tokenConfig from "../../public/config/tokenConfig";
 import axios from "axios";
@@ -32,8 +33,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function ProjectPage({ project, members, posts, comments }) {
+  const [message, setMessage] = React.useState("");
+  useEffect(() => {
+    const params = getParams(window.location.href);
+    if (params.message) setMessage(decodeURI(params.message));
+  });
   return (
-    <WideLayout title={project ? project.name : "Project not found"}>
+    <WideLayout message={message} title={project ? project.name : "Project not found"}>
       {project ? (
         <ProjectLayout
           project={{ ...project, team: members, timeline_posts: posts, comments: comments }}
@@ -47,7 +53,7 @@ export default function ProjectPage({ project, members, posts, comments }) {
 
 ProjectPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
-  const projectUrl = encodeURI(ctx.query.projectId)
+  const projectUrl = encodeURI(ctx.query.projectId);
   return {
     project: await getProjectByIdIfExists(projectUrl, token),
     members: token ? await getProjectMembersByIdIfExists(projectUrl, token) : [],
@@ -127,7 +133,6 @@ function NoProjectFoundLayout() {
   );
 }
 
-// This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getProjectByIdIfExists(projectUrl, token) {
   try {
     const resp = await axios.get(
@@ -200,7 +205,7 @@ function parseProject(project) {
     url_slug: project.url_slug,
     image: project.image,
     status: project.status,
-    location: project.city + " " + project.country,
+    location: project.city + ", " + project.country,
     description: project.description,
     shortdescription: project.short_description,
     collaborators_welcome: project.collaborators_welcome,

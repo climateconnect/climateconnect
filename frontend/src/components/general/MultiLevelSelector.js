@@ -151,7 +151,8 @@ export default function MultiLevelSelector({
   };
 
   const onClickSelect = item => {
-    if (selected.length >= maxSelections) alert("You can only choose up to 3 " + itemNamePlural);
+    if (selected.length >= maxSelections)
+      alert("You can only choose up to " + maxSelections + " " + itemNamePlural);
     else setSelected([...selected, item]);
   };
 
@@ -244,7 +245,7 @@ function SelectedList({ selected, itemNamePlural, maxSelections, className, onCl
       <List className={classes.selectedList}>
         {selected.map((item, index) => (
           <ListItem
-            key={item.key + "selected"}
+            key={index}
             button
             className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
               classes.selectedItem

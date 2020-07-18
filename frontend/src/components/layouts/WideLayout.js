@@ -22,17 +22,23 @@ const useStyles = makeStyles(theme => ({
 
 export default function WideLayout({ children, title, message, messageType }) {
   const classes = useStyles();
-  const [alertOpen, setAlertOpen] = React.useState(true)
+  const [alertOpen, setAlertOpen] = React.useState(true);
 
   return (
     <LayoutWrapper theme={aboutTheme} title={title}>
-      <Header />      
+      <Header />
       <Container maxWidth={false} component="main" className={classes.main}>
-        {(message && alertOpen) &&
-          <Alert className={classes.alert} severity={messageType ? messageType : "success"} onClose={() => {setAlertOpen(false)}}>
+        {message && alertOpen && (
+          <Alert
+            className={classes.alert}
+            severity={messageType ? messageType : "success"}
+            onClose={() => {
+              setAlertOpen(false);
+            }}
+          >
             {message}
           </Alert>
-        }  
+        )}
         {children}
       </Container>
       <Footer />

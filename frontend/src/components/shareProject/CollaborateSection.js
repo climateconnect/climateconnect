@@ -10,7 +10,8 @@ const useStyles = makeStyles(theme => {
       display: "flex",
       border: "1px solid black",
       height: theme.spacing(5),
-      width: 220,
+      minWidth: 220,
+      maxWidth: "100%",
       marginRight: theme.spacing(1),
       background: "none",
       borderRadius: 0,
@@ -35,7 +36,8 @@ export default function CollaborateSection({
   ToolTipIcon,
   open,
   handleSetOpen,
-  skillsOptions
+  skillsOptions,
+  collaborationTexts
 }) {
   const classes = useStyles();
   const [selectedItems, setSelectedItems] = React.useState(
@@ -105,7 +107,7 @@ export default function CollaborateSection({
           color="primary"
           className={subHeaderClassName}
         >
-          Add skills that would be beneficial for collaborators to have
+          {collaborationTexts.skills[projectData.status.name]}
           <Tooltip title={helpTexts.addSkills} className={toolTipClassName}>
             <IconButton>
               <ToolTipIcon />
@@ -137,7 +139,7 @@ export default function CollaborateSection({
           color="primary"
           className={subHeaderClassName}
         >
-          Add connections that would be beneficial for collaborators to have
+          {collaborationTexts.connections[projectData.status.name]}
           <Tooltip title={helpTexts.addConnections} className={toolTipClassName}>
             <IconButton>
               <ToolTipIcon />

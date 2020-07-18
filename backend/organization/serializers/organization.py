@@ -1,5 +1,6 @@
 from organization.models import Organization, OrganizationMember
 from climateconnect_api.serializers.user import UserProfileStubSerializer
+from climateconnect_api.serializers.role import RoleSerializer
 from organization.serializers.tags import OrganizationTaggingSerializer
 
 from rest_framework import serializers
@@ -45,15 +46,16 @@ class OrganizationStubSerializer(serializers.ModelSerializer):
 class OrganizationMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrganizationMember
-        fields = ('id', 'user', 'role', 'time_per_week', 'role_in_organization', 'organization')
+        fields = ('id', 'user', 'role', 'role_in_organization', 'organization')
 
     def to_representation(self, instance):
         user_profile = None if not instance.user.user_profile else\
             UserProfileStubSerializer(instance.user.user_profile).data
+        permission = RoleSerializer(instance.role).data
         return {
             'id': instance.id,
             'user': user_profile,
-            'permission': instance.role.name,
+            'permission': permission,
             'organization': instance.organization.name,
             'time_per_week': None if not instance.time_per_week else instance.time_per_week.name,
             'role_in_organization': instance.role_in_organization

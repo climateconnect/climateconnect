@@ -1,9 +1,11 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography, Tooltip, IconButton, Button } from "@material-ui/core";
+import { Typography, Tooltip, IconButton, Button, useMediaQuery } from "@material-ui/core";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
+import imageCompression from "browser-image-compression";
+import { getImageDialogHeight } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -55,17 +57,28 @@ export default function AddPhotoSection({
   const classes = useStyles(projectData);
   const [tempImage, setTempImage] = React.useState(projectData.image);
   const inputFileRef = React.useRef(null);
+  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
 
   const handleDialogClickOpen = dialogName => {
     handleSetOpen({ [dialogName]: true });
   };
 
-  const onImageChange = event => {
+  const onImageChange = async event => {
     const file = event.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
-    setTempImage(URL.createObjectURL(file));
-    handleDialogClickOpen("avatarDialog");
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 550,
+      useWebWorker: true
+    };
+    try {
+      const compressedFile = await imageCompression(file, options);
+      setTempImage(URL.createObjectURL(compressedFile));
+      handleDialogClickOpen("avatarDialog");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const onUploadImageClick = event => {
@@ -123,7 +136,7 @@ export default function AddPhotoSection({
         open={open.avatarDialog}
         imageUrl={tempImage}
         borderRadius={0}
-        height={300}
+        height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 300}
         ratio={16 / 9}
       />
     </>

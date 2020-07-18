@@ -35,8 +35,20 @@ urlpatterns = [
         organization_views.ListCreateOrganizationMemberView.as_view(), name='list-create-organization-member-view'
     ),
     path(
-        'organizations/<str:url_slug>/members/<int:pk>/',
-        organization_views.UpdateOrganizationMemberView.as_view(), name='update-orgnaization-member-view'
+        'organizations/<str:url_slug>/update_member/<int:pk>/',
+        organization_views.UpdateOrganizationMemberView.as_view(), name='update-organization-member-view'
+    ),
+    path(
+        'organizations/<str:url_slug>/add_members/',
+        organization_views.AddOrganizationMembersView.as_view(), name='add-organization-member-view'
+    ),
+    path(
+        'organizations/<str:url_slug>/change_creator/',
+        organization_views.ChangeOrganizationCreator.as_view(), name='change-organization-creator-view'
+    ),
+    path(
+        'organizationtags/',
+        organization_views.ListOrganizationTags.as_view(), name='list-organization-tags'
     ),
     path(
         'my_organizations/',

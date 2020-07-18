@@ -1,8 +1,7 @@
-import React from "react";
-import Link from "next/link";
+import React, { useContext } from "react";
 import TimeAgo from "react-timeago";
 import humanizeDuration from "humanize-duration";
-import { Typography, Button } from "@material-ui/core";
+import { Typography, Button, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 import DateDisplay from "./../general/DateDisplay";
@@ -15,6 +14,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import MessageContent from "../communication/MessageContent";
+import UserContext from "../context/UserContext";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -106,17 +106,35 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
     fontWeight: "bold"
+  },
+  editProjectButton: {
+    float: "right"
   }
 }));
 
 export default function ProjectContent({ project }) {
   const classes = useStyles();
+  const { user } = useContext(UserContext);
   const [showFullDescription, setShowFullDescription] = React.useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
+  const user_permissions =
+    user && project.team.find(m => m.id === user.id)
+      ? project.team.find(m => m.id === user.id).permissions
+      : null;
   return (
     <div>
       <div className={classes.contentBlock}>
         <div className={classes.createdBy}>
+          {user_permissions && ["Creator", "Administrator"].includes(user_permissions) && (
+            <Button
+              className={classes.editProjectButton}
+              variant="contained"
+              color="primary"
+              href={"/editProject/" + project.url_slug}
+            >
+              Edit project
+            </Button>
+          )}
           <Typography>
             Created: <DateDisplay date={new Date(project.creation_date)} />
           </Typography>
@@ -136,6 +154,7 @@ export default function ProjectContent({ project }) {
                   size="small"
                   className={classes.creator}
                   organization={project.creator}
+                  nolink
                 />
               </Link>
             )}
@@ -173,7 +192,7 @@ export default function ProjectContent({ project }) {
         <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
           Project description
         </Typography>
-        <Typography>
+        <Typography component="div">
           {project.description ? (
             showFullDescription ||
             project.description.length <= MAX_DISPLAYED_DESCRIPTION_LENGTH ? (

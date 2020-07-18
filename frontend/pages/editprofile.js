@@ -8,6 +8,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { parseProfile } from "./../public/lib/profileOperations";
 import Cookies from "next-cookies";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
+import { getImageUrl } from "../public/lib/imageOperations";
 
 //temporary fake data
 import TEMP_INFOMETADATA from "./../public/data/profile_info_metadata.json";
@@ -39,7 +40,6 @@ export default function EditProfilePage({
   });
   const { user } = useContext(UserContext);
   infoMetadata.availability.options = availabilityOptions;
-  console.log(infoMetadata.availability.options);
   const profile = user ? parseProfile(user, true, true) : null;
   const saveChanges = (event, editedAccount) => {
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
@@ -173,7 +173,7 @@ async function getProfileInfoMetadata() {
 
 const parseProfileForRequest = (profile, availabilityOptions, user) => {
   console.log(availabilityOptions);
-  const availability = availabilityOptions.find(o => o.name == profile.info.availability)
+  const availability = availabilityOptions.find(o => o.name == profile.info.availability);
   return {
     first_name: profile.first_name,
     last_name: profile.last_name,
@@ -182,7 +182,7 @@ const parseProfileForRequest = (profile, availabilityOptions, user) => {
     country: profile.info.country,
     city: profile.info.city,
     biography: profile.info.bio,
-    availability: availability ? availability.id : (user.availability ? user.availability.id : null),
+    availability: availability ? availability.id : user.availability ? user.availability.id : null,
     skills: profile.info.skills.map(s => s.id)
   };
 };
@@ -191,8 +191,8 @@ const getProfileWithoutRedundantOptions = (user, newProfile) => {
   const oldProfile = {
     ...user,
     skills: user.skills.map(s => s.id),
-    image: process.env.API_URL + user.image,
-    background_image: process.env.API_URL + user.background_image,
+    image: getImageUrl(user.image),
+    background_image: getImageUrl(user.background_image),
     availability: user.availability && user.availability.id
   };
   const finalProfile = {};

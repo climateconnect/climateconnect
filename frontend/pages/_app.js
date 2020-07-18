@@ -37,7 +37,7 @@ export default class MyApp extends App {
         });
         return null;
       }
-    };    
+    };
 
     this.signIn = async (token, expiry) => {
       //TODO: set httpOnly=true to make cookie only accessible by server

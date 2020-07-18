@@ -33,7 +33,7 @@ const steps = [
   {
     key: "selectCategory",
     text: "project category",
-    headline: "Select your project's category"
+    headline: "Select 1-3 categories that fit your project"
   },
   {
     key: "enterDetails",
@@ -64,7 +64,8 @@ export default function ShareProjectRoot({
         role: rolesOptions.find(r => r.name === "Creator"),
         role_in_project: ""
       },
-      statusOptions
+      statusOptions,
+      userOrganizations
     )
   );
   const [curStep, setCurStep] = React.useState(steps[0]);
@@ -174,16 +175,17 @@ export default function ShareProjectRoot({
 }
 
 //TODO: remove some of these default values as they are just for testing
-const getDefaultProjectValues = (loggedInUser, statusOptions) => {
+const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations) => {
   return {
     collaborators_welcome: true,
     status: statusOptions.find(s => s.id === DEFAULT_STATUS),
     skills: [],
     helpful_connections: [],
     collaborating_organizations: [],
-    isPersonalProject: true,
+    isPersonalProject: !(userOrganizations && userOrganizations.length > 0),
+    is_organization_project: userOrganizations && userOrganizations.length > 0,
     //TODO: Should contain the logged in user as the creator and parent_user by default
-    team_members: [{ ...loggedInUser, isCreator: true }]
+    team_members: [{ ...loggedInUser }]
   };
 };
 

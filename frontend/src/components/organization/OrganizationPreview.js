@@ -1,6 +1,6 @@
 import React from "react";
 import OrganizationMetaData from "./OrganizationMetadata";
-import { Typography, Card, CardMedia, CardContent, Link } from "@material-ui/core";
+import { Typography, Card, CardMedia, CardContent, Link, Avatar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
@@ -28,12 +28,10 @@ const useStyles = makeStyles(theme => {
     },
     media: {
       height: 80,
+      width: 80,
       backgroundSize: "contain",
-      margin: "0 auto",
       marginTop: theme.spacing(3),
-      marginLeft: theme.spacing(2),
-      marginRight: theme.spacing(2),
-      verticalAlign: "center"
+      margin: "0 auto"
     },
     noUnderline: {
       textDecoration: "inherit",
@@ -49,11 +47,12 @@ export default function OrganizationPreview({ organization, showMembers, showOrg
   return (
     <Link href={`/organizations/${organization.url_slug}`} className={classes.noUnderline}>
       <Card className={classes.root} variant="outlined">
-        <CardMedia
+        <Avatar
+          alt={organization.name}
+          size="large"
+          src={getImageUrl(organization.image)}
           className={classes.media}
-          component={"div"}
-          title={organization.name}
-          image={getImageUrl(organization.image)}
+          component="div"
         />
         <CardContent>
           <Typography variant="subtitle1" component="h2" className={classes.bold}>

@@ -53,6 +53,7 @@ class ProjectMember(models.Model):
         verbose_name = "Project Member"
         verbose_name_plural = "Project Members"
         ordering = ['id']
+        unique_together =('user', 'project')
 
     def __str__(self):
         return "User %d member for Project %s" % (self.user.id, self.project.name)
@@ -104,6 +105,7 @@ class OrganizationMember(models.Model):
         verbose_name = 'Organization Member'
         verbose_name_plural = 'Organization Members'
         ordering = ['-id']
+        unique_together =('user', 'organization')
 
     def __str__(self):
         return "User %d member for organization %s" % (self.user.id, self.organization.name)
