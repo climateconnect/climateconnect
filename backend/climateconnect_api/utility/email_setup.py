@@ -11,24 +11,18 @@ sg = sendgrid.SendGridAPIClient(
 )
 
 
-def get_user_verification_url(user):
-    # Set expire time 4 hours for user verification
-    expires = timezone.now() + timedelta(hours=4)
-    expire_url_string = (
-        expires.isoformat()
-        .replace("+", "%2B")
-        .replace("-", "%2D")
-    )
-
-    url = ("%s/user/activate?id=%s&expires=%s" % (
-        settings.FRONTEND_URL, user.id, expire_url_string
+def get_user_verification_url(verification_key):
+    # TODO: Set expire time for user verification
+    verification_key_str = verification_key.replace("-", "%2D")
+    url = ("%s/user/activate?uuid=%s" % (
+        settings.FRONTEND_URL, verification_key_str
     ))
 
     return url
 
 
-def send_user_verification_email(user):
-    url = get_user_verification_url(user)
+def send_user_verification_email(user, verification_key):
+    url = get_user_verification_url(verification_key)
 
     data = {
         "personalizations": [

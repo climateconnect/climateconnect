@@ -1,3 +1,4 @@
+import uuid
 from django.contrib.auth import (authenticate, login)
 import datetime
 from django.utils import timezone
@@ -87,13 +88,14 @@ class SignUpView(APIView):
 
         url_slug = (user.first_name + user.last_name).lower() + str(user.id)
 
-        UserProfile.objects.create(
+        user_profile = UserProfile.objects.create(
             user=user, country=request.data['country'],
             city=request.data['city'],
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
+            verification_key=uuid.uuid4()
         )
 
-        send_user_verification_email(user)
+        send_user_verification_email(user, user_profile.verification_key)
 
         message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(user.email)  # NOQA
 
@@ -241,29 +243,25 @@ class UserEmailVerificationLinkView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        print(request.data)
-        if 'id' not in request.data or 'expires' not in request.data:
+        if 'uuid' not in request.data:
             return Response({'message': 'Required parameters are missing.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # convert verification string
+        verification_key = request.data['uuid'].replace('%2D', '-')
+
         try:
-            user = User.objects.get(id=int(request.data['id']))
+            user_profile = UserProfile.objects.get(verification_key=verification_key)
         except User.DoesNotExist:
             return Response({'message': 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if user and UserProfile.objects.filter(user=user).exists():
-            # convert timestamp
-            expire_time_string = request.data['expires'].replace("%2B", "+").replace("%2D", "-")
-            expire_time = datetime.datetime.fromisoformat(expire_time_string)
-            if expire_time <= timezone.now():
-                return Response({'message': 'Verification link expired.'}, status=status.HTTP_403_FORBIDDEN)
+        if user_profile:
+            if user_profile.is_profile_verified:
+                return Response({
+                    'message': 'Account already verified. Please contact us if you are having trouble signing in.'
+                }, status=status.HTTP_204_NO_CONTENT)
             else:
-                if user.user_profile.is_profile_verified:
-                    return Response({
-                        'message': 'Account already verified. Please contact us if you are having trouble signing in.'
-                    }, status=status.HTTP_204_NO_CONTENT)
-                else:
-                    user.user_profile.is_profile_verified = True
-                    user.user_profile.save()
-                    return Response({"message": "Your profile is successfully verified"}, status=status.HTTP_200_OK)
+                user_profile.is_profile_verified = True
+                user_profile.save()
+                return Response({"message": "Your profile is successfully verified"}, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'Permission Denied'}, status=status.HTTP_403_FORBIDDEN)
