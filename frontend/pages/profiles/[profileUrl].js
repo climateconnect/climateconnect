@@ -136,7 +136,7 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
       {!user && (
         <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
       )}
-      <Container>
+      <Container id="projects">
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
           Projects:{" "}
           <Button variant="contained" color="primary" href="/share">

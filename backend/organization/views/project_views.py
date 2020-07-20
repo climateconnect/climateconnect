@@ -33,7 +33,7 @@ class ListProjectsView(ListAPIView):
     search_fields = ['url_slug']
     pagination_class = ProjectsPagination
     serializer_class = ProjectSerializer
-    queryset = Project.objects.all()
+    queryset = Project.objects.filter(is_draft=False)
 
     def get_serializer_class(self):
         return ProjectStubSerializer
@@ -139,7 +139,11 @@ class ProjectAPIView(APIView):
         except Project.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
         #TODO: get number of followers
-
+        if project.is_draft:
+            try:
+                ProjectMember.objects.get(user=self.request.user, project=project, role__role_type__in=[Role.ALL_TYPE, Role.READ_ONLY_TYPE])
+            except ProjectMember.DoesNotExist:
+                return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
         serializer = ProjectSerializer(project, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -181,8 +185,8 @@ class ProjectAPIView(APIView):
                         )
                     except ProjectTags.DoesNotExist:
                         logger.error("Passed tag id {} does not exists")
-
-
+        
+        
         if 'image' in request.data:
             project.image = get_image_from_data_url(request.data['image'])[0]
         if 'status' in request.data:
@@ -203,6 +207,8 @@ class ProjectAPIView(APIView):
             project.country = request.data['country']
         if 'city' in request.data:
             project.city = request.data['city']
+        if 'is_draft' in request.data:
+            project.is_draft = False
         if 'collaborators_welcome' in request.data:
             project.collaborators_welcome = request.data['collaborators_welcome']
         if 'helpful_connections' in request.data:

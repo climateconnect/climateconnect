@@ -11,6 +11,7 @@ import ProjectContent from "../../src/components/project/ProjectContent";
 import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
 import ProjectCommentsContent from "../../src/components/project/ProjectCommentsContent";
 import { getParams } from "./../../public/lib/generalOperations";
+import Router from "next/router";
 
 import tokenConfig from "../../public/config/tokenConfig";
 import axios from "axios";
@@ -37,6 +38,8 @@ export default function ProjectPage({ project, members, posts, comments }) {
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) setMessage(decodeURI(params.message));
+    if(project.is_draft)
+      Router.push("/editProject/"+project.url_slug)
   });
   return (
     <WideLayout message={message} title={project ? project.name : "Project not found"}>
@@ -218,11 +221,12 @@ function parseProject(project) {
       ? project.project_parents[0].parent_organization
       : project.project_parents[0].parent_user,
     isPersonalProject: !project.project_parents[0].parent_organization,
+    is_draft: project.is_draft,
     tags: project.tags.map(t => t.project_tag.name),
     collaborating_organizations: project.collaborating_organizations.map(
       o => o.collaborating_organization
     )
-  };
+  }
 }
 
 function parseProjectMembers(projectMembers) {

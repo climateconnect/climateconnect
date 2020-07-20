@@ -132,7 +132,7 @@ export default function ProjectContent({ project }) {
               color="primary"
               href={"/editProject/" + project.url_slug}
             >
-              Edit project
+              {project.is_draft ? "Edit Draft" : "Edit Project"}
             </Button>
           )}
           <Typography>
