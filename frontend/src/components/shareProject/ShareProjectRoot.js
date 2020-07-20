@@ -105,14 +105,25 @@ export default function ShareProjectRoot({
   const saveAsDraft = event => {
     event.preventDefault();
     console.log(project);
-    setProject({ ...project, is_draft: true });
+    axios
+      .post(
+        process.env.API_URL + "/api/create_project/",
+        formatProjectForRequest({...project, is_draft: true}),
+        tokenConfig(token)
+      )
+      .then(function(response) {
+        setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
+      })
+      .catch(function(error) {
+        console.log(error);
+        if (error) console.log(error.response);
+      });
     setFinished(true);
   };
 
   const handleSetProject = newProjectData => {
     setProject({ ...project, ...newProjectData });
   };
-
   return (
     <>
       {!finished ? (
@@ -167,7 +178,7 @@ export default function ShareProjectRoot({
         </>
       ) : (
         <>
-          <ProjectSubmittedPage isDraft={project.is_draft} url_slug={project.url_slug} />
+          <ProjectSubmittedPage user={user} isDraft={project.is_draft} url_slug={project.url_slug} />
         </>
       )}
     </>

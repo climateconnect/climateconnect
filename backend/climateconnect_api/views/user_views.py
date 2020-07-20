@@ -149,9 +149,16 @@ class ListMemberProjectsView(ListAPIView):
     serializer_class = ProjectFromProjectMemberSerializer
 
     def get_queryset(self):
-        return ProjectMember.objects.filter(
-            user=UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user,
-        ).order_by('id')
+        searched_user = UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user
+        if self.request.user == searched_user:            
+            return ProjectMember.objects.filter(
+                user=searched_user
+            ).order_by('-id')
+        else:
+            return ProjectMember.objects.filter(
+                user=searched_user,
+                project__is_draft=False
+            ).order_by('-id')
 
 class ListMemberOrganizationsView(ListAPIView):
     permission_classes = [AllowAny]

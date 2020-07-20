@@ -30,7 +30,8 @@ export default function BottomNavigation({
   onClickCancel,
   nextStepButtonType,
   onClickNextStep,
-  saveAsDraft
+  saveAsDraft,
+  additionalButtons
 }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -73,6 +74,16 @@ export default function BottomNavigation({
             />
           </>
         )}
+        {additionalButtons && additionalButtons.map((b, index) => (
+          <Button 
+            key={index}
+            variant="contained"
+            onClick={b.onClick}
+            className={`${classes.backButton} ${classes.draftButton}`}
+          >
+            {b.text}
+          </Button>
+        ))}
         {saveAsDraft && (
           <Button
             variant="contained"
