@@ -54,7 +54,6 @@ class Skill(models.Model):
         on_delete=models.PROTECT
     )
 
-
     created_at = models.DateTimeField(
         help_text="Time when skill was created",
         verbose_name="Created At",
@@ -65,6 +64,14 @@ class Skill(models.Model):
         help_text="Time when skill was updated",
         verbose_name="Updated At",
         auto_now=True
+    )
+
+    details = models.CharField(
+        help_text="Additional details about the skill",
+        verbose_name="Details",
+        max_length=128,
+        null=True,
+        blank=True
     )
 
     class Meta:
