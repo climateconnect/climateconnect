@@ -109,7 +109,7 @@ function ProjectLayout({ project }) {
           <ProjectContent project={project} />
         </TabContent>
         <TabContent value={tabValue} index={1}>
-          <ProjectTeamContent team={project.team} />
+          <ProjectTeamContent project={project}/>
         </TabContent>
         <TabContent value={tabValue} index={2}>
           <ProjectCommentsContent comments={project.comments} />
@@ -235,7 +235,7 @@ function parseProjectMembers(projectMembers) {
       ...m.user,
       url_slug: m.user.url_slug,
       role: m.role_in_project,
-      permissions: m.role.name,
+      permission: m.role.name,
       availability: m.availability,
       name: m.user.first_name + " " + m.user.last_name,
       location: m.user.city ? m.user.city + ", " + m.user.country : m.user.country

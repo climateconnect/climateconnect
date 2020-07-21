@@ -221,9 +221,7 @@ class ChangeOrganizationCreator(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         organization = Organization.objects.get(url_slug=url_slug)
-        roles = Role.objects.all()        
-        logger.error(new_creator_user)
-        logger.error(organization)
+        roles = Role.objects.all()     
         if OrganizationMember.objects.filter(user=new_creator_user, organization = organization).exists():
             # update old creator profile and new creator profile
             logger.error('updating new creator')
@@ -270,6 +268,7 @@ class ListOrganizationProjectsAPIView(ListAPIView):
     def get_queryset(self):
         return ProjectParents.objects.filter(
             parent_organization__url_slug=self.kwargs['url_slug'],
+            project__is_draft=False
         ).order_by('id')
 
 class ListOrganizationMembersAPIView(ListAPIView):

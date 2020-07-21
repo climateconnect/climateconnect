@@ -2,5 +2,10 @@ service: frontend
 
 runtime: nodejs12
 
+handlers:
+- url: /
+  secure: always
+  static_dir: pages
+
 env_variables:
   API_URL: "https://inbound-lexicon-271522.ey.r.appspot.com"

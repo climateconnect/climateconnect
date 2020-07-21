@@ -101,7 +101,8 @@ export default function MiniProfileInput({
       setOptions(fullRolesOptions);
       onChange({
         ...profile,
-        role: creatorRole
+        role: creatorRole,
+        changeCreator: true
       });
     }
   };
@@ -174,7 +175,7 @@ export default function MiniProfileInput({
             className={classes.field}
             options={availabilityOptions}
             onChange={handleChangeAvailability}
-            value={profile.availability}
+            defaultValue={profile.availability}
             required
           />
         </>
