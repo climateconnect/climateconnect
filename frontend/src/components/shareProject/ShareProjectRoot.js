@@ -193,6 +193,7 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
     skills: [],
     helpful_connections: [],
     collaborating_organizations: [],
+    parent_organization: userOrganizations[0],
     isPersonalProject: !(userOrganizations && userOrganizations.length > 0),
     is_organization_project: userOrganizations && userOrganizations.length > 0,
     //TODO: Should contain the logged in user as the creator and parent_user by default
