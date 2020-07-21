@@ -63,12 +63,16 @@ urlpatterns = [
     path('projects/<str:url_slug>/comments/', project_views.ListProjectCommentsView.as_view(), name="project-comments-api"),
     path('create_project/', project_views.CreateProjectView.as_view(), name='create-project-api'),
     path(
-        'projects/<int:project_id>/add_members/',
+        'projects/<str:url_slug>/add_members/',
         project_views.AddProjectMembersView.as_view(), name='add-project-members-api'
     ),
     path(
-        'projects/<int:project_id>/members/<int:member_id>/',
+        'projects/<str:url_slug>/members/<int:pk>/',
         project_views.UpdateProjectMemberView.as_view(), name='update-project-member-api'
+    ),
+    path(
+        'projects/<str:url_slug>/change_creator/',
+        project_views.ChangeProjectCreator.as_view(), name='change-project-creator-view'
     ),
     path('projecttags/', project_views.ListProjectTags.as_view(), name='list-project-tags'),
     path('projectstatus/', project_views.ListProjectStatus.as_view(), name='list-project-status')

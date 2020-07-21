@@ -109,10 +109,16 @@ class ProjectMemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProjectMember
-        fields = ('user', 'role', 'role_in_project', 'availability')
+        fields = ('id', 'user', 'role', 'role_in_project', 'availability')
 
     def get_user(self, obj):
         return UserProfileStubSerializer(UserProfile.objects.filter(user=obj.user)[0]).data
+
+class InsertProjectMemberSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProjectMember
+        fields = ('id', 'user', 'role', 'role_in_project', 'availability')
 
 class ProjectCollaboratorsSerializer(serializers.ModelSerializer):
     collaborating_organization = serializers.SerializerMethodField()

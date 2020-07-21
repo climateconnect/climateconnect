@@ -150,7 +150,7 @@ class ListMemberProjectsView(ListAPIView):
 
     def get_queryset(self):
         searched_user = UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user
-        if self.request.user == searched_user:            
+        if self.request.user == searched_user:     
             return ProjectMember.objects.filter(
                 user=searched_user
             ).order_by('-id')
