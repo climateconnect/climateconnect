@@ -52,7 +52,7 @@ const LINKS = [
     text: "Share a project",
     iconForDrawer: AddCircleIcon
   },
-  {
+  /*{
     href: "/inbox",
     text: "Inbox",
     iconForDrawer: NotificationsIcon,
@@ -64,7 +64,7 @@ const LINKS = [
     icon: NotificationsIcon,
     alwaysDisplayDirectly: true,
     onlyShowLoggedIn: true
-  },
+  },*/
   {
     href: "/signin",
     text: "Log in",
@@ -90,7 +90,7 @@ const getLoggedInLinks = ({ loggedInUser }) => {
       iconForDrawer: AccountCircleIcon
     },
     {
-      href: "/profiles/" + loggedInUser.url_slug,
+      href: "/profiles/" + loggedInUser.url_slug+"/#projects",
       text: "My Projects",
       iconForDrawer: GroupWorkIcon
     },

@@ -118,7 +118,7 @@ export default function ProjectContent({ project }) {
   const [showFullDescription, setShowFullDescription] = React.useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
   const user_permissions =
-    user && project.team.find(m => m.id === user.id)
+    user && project.team && project.team.find(m => m.id === user.id)
       ? project.team.find(m => m.id === user.id).permissions
       : null;
   return (
@@ -132,7 +132,7 @@ export default function ProjectContent({ project }) {
               color="primary"
               href={"/editProject/" + project.url_slug}
             >
-              Edit project
+              {project.is_draft ? "Edit Draft" : "Edit Project"}
             </Button>
           )}
           <Typography>

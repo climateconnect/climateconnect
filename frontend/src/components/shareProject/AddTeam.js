@@ -33,7 +33,7 @@ export default function AddTeam({
   projectData,
   handleSetProjectData,
   onSubmit,
-  /*saveAsDraft,*/
+  saveAsDraft,
   goToPreviousStep,
   availabilityOptions,
   rolesOptions
@@ -134,7 +134,7 @@ export default function AddTeam({
           className={classes.block}
           onClickPreviousStep={onClickPreviousStep}
           nextStepButtonType="publish"
-          /*saveAsDraft={saveAsDraft}*/
+          saveAsDraft={saveAsDraft}
         />
       </form>
     </Container>

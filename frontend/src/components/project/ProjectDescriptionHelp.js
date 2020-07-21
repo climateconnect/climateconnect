@@ -51,7 +51,7 @@ export default function ProjectDescriptionHelp({ status }) {
       <Typography>Please touch on the following points in your project description:</Typography>
       <ul>
         {bulletPoints.map((p, index) => (
-          <li key={index}>{p[status.name]}</li>
+          <li key={index}>{p[status.name] ? p[status.name] : p["In Progress"]}</li>
         ))}
       </ul>
     </>

@@ -28,18 +28,68 @@ export default function EditProjectRoot({
   handleSetProject,
   tagsOptions,
   token,
-  oldProject
+  oldProject,
+  user
 }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
-  console.log(project);
+  
+  const draftReqiredProperties = [
+    "name",
+    "city",
+    "country"
+  ]
+
+  const onSaveDraft = () => {    
+    if(draftReqiredProperties.filter(p => !project[p]).length>0)
+      draftReqiredProperties.map(p=> {
+        if(!project[p]){
+          alert("Your project draft is missing the following reqired property: "+p)
+        }
+      })  
+    else
+      axios
+        .patch(
+          process.env.API_URL + "/api/projects/" + project.url_slug + "/",
+          parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
+          tokenConfig(token)
+        )
+        .then(function() {
+          Router.push({
+            pathname: "/profiles/" + user.url_slug,
+            query: {
+              message: "You have successfully edited your project."
+            }
+          });
+        })
+        .catch(function(error) {
+          console.log(error);
+          if (error) console.log(error.response);
+        });
+  }
+
+  const additionalButtons =[
+    {
+      text: "Save Changes as draft",
+      argument: "save",
+      onClick: onSaveDraft
+    }
+  ]
+
   const handleCancel = () => {
     Router.push("/projects/" + project.url_slug + "/");
   };
 
   const handleSubmit = event => {
     event.preventDefault();
-    console.log(parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)));
+    const projectToSubmit = project
+    let was_draft = false
+    if(project.is_draft){
+      projectToSubmit.is_draft = false
+      was_draft = true
+    }
+
+    console.log(parseProjectForRequest(getProjectWithoutRedundancies(projectToSubmit, oldProject)));
     axios
       .patch(
         process.env.API_URL + "/api/projects/" + project.url_slug + "/",
@@ -50,7 +100,10 @@ export default function EditProjectRoot({
         Router.push({
           pathname: "/projects/" + response.data.url_slug,
           query: {
-            message: "You have successfully edited your project."
+            message: was_draft ? 
+                        "Your project has been published. Great work!"
+                      :
+                        "You have successfully edited your project."
           }
         });
       })
@@ -79,7 +132,8 @@ export default function EditProjectRoot({
         <Divider className={classes.divider} />
         <BottomNavigation
           onClickCancel={handleCancel}
-          nextStepButtonType="save"
+          additionalButtons={additionalButtons}
+          nextStepButtonType={project.is_draft ? "publish" : "save"}
           className={classes.bottomNavigation}
         />
       </form>

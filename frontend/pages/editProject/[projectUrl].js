@@ -93,6 +93,7 @@ export default function EditProjectPage({
           handleSetProject={handleSetProject}
           tagsOptions={tagsOptions}
           token={token}
+          user={user}
         />
       </WideLayout>
     );
