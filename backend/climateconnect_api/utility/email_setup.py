@@ -13,8 +13,8 @@ sg = sendgrid.SendGridAPIClient(
 
 def get_user_verification_url(verification_key):
     # TODO: Set expire time for user verification
-    verification_key_str = verification_key.replace("-", "%2D")
-    url = ("%s/user/activate?uuid=%s" % (
+    verification_key_str = str(verification_key).replace("-", "%2D")
+    url = ("%s/activate/%s" % (
         settings.FRONTEND_URL, verification_key_str
     ))
 
