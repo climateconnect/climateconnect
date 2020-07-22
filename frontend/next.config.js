@@ -29,7 +29,8 @@ module.exports = {
       return {
         "/": { page: "/" },
         "/zoom": { page: "/zoom" },
-        "/stream": { page: "/stream" }
+        "/stream": { page: "/stream" },
+        "/support": { page: "/support" }
       };
     else return defaultPathMap;
   }

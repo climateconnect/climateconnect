@@ -43,5 +43,15 @@
     "name": "Fabian Schiller",
     "image": "fabianschiller.jpg",
     "location": "Erlangen, Germany"
+  },
+  {
+    "name": "Julius Butze",
+    "image": "juliusbutze.jpg",
+    "location": "Augsburg, Germany"
+  },
+  {
+    "name": "Susan Chesnut",
+    "image": "susanchesnut.jpg",
+    "location": "Houston, USA"
   }
 ]

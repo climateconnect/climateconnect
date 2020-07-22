@@ -64,7 +64,7 @@ class SignUpView(APIView):
     def post(self, request):
         required_params = [
             'email', 'password', 'first_name', 'last_name',
-            'country', 'city'
+            'country', 'city', 'email_project_suggestions', 'email_updates_on_projects'
         ]
         for param in required_params:
             if param not in request.data:
@@ -88,7 +88,8 @@ class SignUpView(APIView):
             user=user, country=request.data['country'],
             city=request.data['city'],
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
-            is_profile_verified=True #TODO: change this after automatic E-Mails are implemented
+            is_profile_verified=True, email_project_suggestions=request.data['email_project_suggestions'],
+            email_updates_on_projects=request.data['email_updates_on_projects'] #TODO: change this after automatic E-Mails are implemented
         )
 
         # TODO: Call a function that sends an email to user.
