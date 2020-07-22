@@ -72,17 +72,22 @@ export default function ShareProjectRoot({
   const [curStep, setCurStep] = React.useState(steps[0]);
   const [finished, setFinished] = React.useState(false);
 
-  useEffect(()=> {
-    if(window) {
-      Router.beforePopState(() => {
-        const result = window.confirm("Are you sure you want to leave? You will lose your project.");
-        if(!result) {
-          return false
+  useEffect(() => {
+    if (window) {
+      const location = window.location.href;
+      Router.beforePopState(({ url, as, options }) => {
+        if (location.includes("/share") && as != "/share") {
+          const result = window.confirm(
+            "Are you sure you want to leave? You will lose your project."
+          );
+          if (!result) {
+            return false;
+          }
         }
-        return true
-      })
+        return true;
+      });
     }
-  })
+  });
 
   const goToNextStep = () => {
     setCurStep(steps[steps.indexOf(curStep) + 1]);

@@ -11,6 +11,9 @@ const useStyles = makeStyles(theme => ({
   mainHeading: {
     textAlign: "center",
     margin: `${theme.spacing(4)}px 0`
+  },
+  alert: {
+    width: "100%"
   }
 }));
 
@@ -29,18 +32,18 @@ export default function Layout({
     <LayoutWrapper theme={theme} title={title}>
       <Header noSpacingBottom={noSpacingBottom} />
       <Container maxWidth="lg" component="main">
+        {message && alertOpen && (
+          <Alert
+            className={classes.alert}
+            severity={messageType ? messageType : "success"}
+            onClose={() => {
+              setAlertOpen(false);
+            }}
+          >
+            {message}
+          </Alert>
+        )}
         <Container maxWidth="sm">
-          {message && alertOpen && (
-            <Alert
-              className={classes.alert}
-              severity={messageType ? messageType : "success"}
-              onClose={() => {
-                setAlertOpen(false);
-              }}
-            >
-              {message}
-            </Alert>
-          )}
           {!hideHeadline && (
             <Typography component="h1" variant="h5" className={classes.mainHeading}>
               {title}

@@ -46,7 +46,9 @@ export default function Signup() {
       first_name: values.first_name,
       last_name: values.last_name,
       country: values.country,
-      city: values.city
+      city: values.city,
+      email_project_suggestions: values.emails,
+      email_updates_on_projects: values.emails
     });
     const payload = {
       email: userInfo.email.trim(),
@@ -54,7 +56,9 @@ export default function Signup() {
       first_name: values.first_name.trim(),
       last_name: values.last_name.trim(),
       country: values.country.trim(),
-      city: values.city.trim()
+      city: values.city.trim(),
+      email_project_suggestions: values.emails,
+      email_updates_on_projects: values.emails
     };
     const config = {
       headers: {
@@ -64,7 +68,8 @@ export default function Signup() {
     };
     axios
       .post(process.env.API_URL + "/signup/", payload, config)
-      .then(function() {
+      .then(function(resp) {
+        console.log(resp);
         Router.push({
           pathname: "/accountcreated/"
         });
@@ -72,6 +77,7 @@ export default function Signup() {
         //setCurStep(steps[2]);
       })
       .catch(function(error) {
+        console.log(error);
         if (error.response.data.message)
           setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data.message });
         else if (error.response.data.length > 0)
