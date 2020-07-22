@@ -38,8 +38,7 @@ export default function ProjectPage({ project, members, posts, comments }) {
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) setMessage(decodeURI(params.message));
-    if(project.is_draft)
-      Router.push("/editProject/"+project.url_slug)
+    if (project.is_draft) Router.push("/editProject/" + project.url_slug);
   });
   return (
     <WideLayout message={message} title={project ? project.name : "Project not found"}>
@@ -109,7 +108,7 @@ function ProjectLayout({ project }) {
           <ProjectContent project={project} />
         </TabContent>
         <TabContent value={tabValue} index={1}>
-          <ProjectTeamContent project={project}/>
+          <ProjectTeamContent project={project} />
         </TabContent>
         <TabContent value={tabValue} index={2}>
           <ProjectCommentsContent comments={project.comments} />
@@ -226,7 +225,7 @@ function parseProject(project) {
     collaborating_organizations: project.collaborating_organizations.map(
       o => o.collaborating_organization
     )
-  }
+  };
 }
 
 function parseProjectMembers(projectMembers) {

@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => {
     draftTriangle: {
       width: 0,
       height: 0,
-      borderTop: "100px solid "+theme.palette.primary.main,
+      borderTop: "100px solid " + theme.palette.primary.main,
       borderRight: "100px solid transparent"
     },
     draftText: {
@@ -58,18 +58,21 @@ export default function ProjectPreview({ project }) {
   const classes = useStyles();
 
   return (
-    <Link href={project.is_draft ? `/editProject/${project.url_slug}` : `/projects/${project.url_slug}`} className={classes.noUnderline}>
+    <Link
+      href={project.is_draft ? `/editProject/${project.url_slug}` : `/projects/${project.url_slug}`}
+      className={classes.noUnderline}
+    >
       <Card className={classes.root} variant="outlined">
         <CardMedia
           className={classes.media}
           title={project.name}
           image={getImageUrl(project.image)}
         >
-          {project.is_draft && 
+          {project.is_draft && (
             <div className={classes.draftTriangle}>
               <div className={classes.draftText}>Draft</div>
             </div>
-          }
+          )}
         </CardMedia>
         <CardContent>
           <Typography variant="subtitle1" component="h2" className={classes.bold}>

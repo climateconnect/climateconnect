@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
   editButton: {
     marginBottom: theme.spacing(1)
   }
-}))
+}));
 
 function getTeamWithAdditionalInfo(team) {
   return team.map(m => {
@@ -22,7 +22,7 @@ function getTeamWithAdditionalInfo(team) {
         icon: LocationOnIcon,
         iconName: "LocationOnIcon",
         toolTipText: "Location"
-      });      
+      });
     if (m.role)
       additionalInfo.push({
         text: m.role,
@@ -42,17 +42,16 @@ function getTeamWithAdditionalInfo(team) {
 
 export default function TeamContent({ project }) {
   const { user } = useContext(UserContext);
-  const classes = useStyles()
+  const classes = useStyles();
   if (!user) return <LoginNudge whatToDo="see this project's team  members" />;
   else if (project.team)
     return (
       <>
         {user &&
-        !!project.team.find(m => m.id === user.id) &&
-        ["Creator", "Administrator"].includes(
-          project.team.find(m => m.id === user.id).permission
-        ) && 
-          (
+          !!project.team.find(m => m.id === user.id) &&
+          ["Creator", "Administrator"].includes(
+            project.team.find(m => m.id === user.id).permission
+          ) && (
             <div>
               <Button
                 className={classes.editButton}
@@ -63,8 +62,7 @@ export default function TeamContent({ project }) {
                 Manage members
               </Button>
             </div>
-          )
-        }
+          )}
         <ProfilePreviews
           profiles={getTeamWithAdditionalInfo(project.team)}
           allowMessage

@@ -41,21 +41,24 @@ export default function ManageOrganizationMembers({
     return member.id === user.id || user_role.role_type > member.role.role_type;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     event.preventDefault();
     onSubmit()
       .then(() => {
-        redirect("/organizations/" + organization.url_slug, {message: "You have successfully updated your organization's members"});
+        redirect("/organizations/" + organization.url_slug, {
+          message: "You have successfully updated your organization's members"
+        });
       })
-      .catch((e) => {
+      .catch(e => {
         console.log(e);
-        redirect("/organizations/" + organization.url_slug, {errorMessage: "Not all your updates have worked."});
+        redirect("/organizations/" + organization.url_slug, {
+          errorMessage: "Not all your updates have worked."
+        });
       });
   };
 
   const onSubmit = async () => {
-    if(!verifyInput())
-      return false;
+    if (!verifyInput()) return false;
     const allChangedMembers = getAllChangedMembers();
     return Promise.all(
       allChangedMembers.map(m => {
@@ -99,9 +102,9 @@ export default function ManageOrganizationMembers({
 
     if (creatorChange.length > 0)
       allChangedMembers.push({ new_creator: creatorChange[0], operation: "creator_change" });
-    
-    return allChangedMembers
-  }
+
+    return allChangedMembers;
+  };
 
   const verifyInput = () => {
     if (currentMembers.filter(cm => cm.role.name === "Creator").length !== 1) {
@@ -112,47 +115,47 @@ export default function ManageOrganizationMembers({
       alert("error(There wasn't a creator)");
       return false;
     }
-    return true
-  }
+    return true;
+  };
 
   const deleteMember = m => {
     apiRequest(
-      "delete", 
+      "delete",
       "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
-      token, 
+      token,
       null,
       true
-    )
+    );
   };
 
   const updateMember = m => {
     apiRequest(
-      "patch", 
+      "patch",
       "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
-      token, 
+      token,
       parseMemberForUpdateRequest(m, organization),
       true
-    )
+    );
   };
 
   const createMembers = organization_members => {
     apiRequest(
-      "post", 
+      "post",
       "/api/organizations/" + organization.url_slug + "/add_members/",
-      token, 
+      token,
       parseMembersForCreateRequest(organization_members, organization),
       true
-    )
+    );
   };
 
   const updateCreator = new_creator => {
     apiRequest(
-      "post", 
+      "post",
       "/api/organizations/" + organization.url_slug + "/change_creator/",
-      token, 
+      token,
       parseMemberForUpdateRequest(new_creator, organization),
       true
-    )
+    );
   };
 
   return (
@@ -161,11 +164,11 @@ export default function ManageOrganizationMembers({
         Manage members of {organization.name}
       </Typography>
       <form onSubmit={handleSubmit}>
-        <ManageMembers 
-          currentMembers = {currentMembers}
-          rolesOptions = {rolesOptions}
-          setCurrentMembers = {setCurrentMembers}
-          availabilityOptions = {availabilityOptions}
+        <ManageMembers
+          currentMembers={currentMembers}
+          rolesOptions={rolesOptions}
+          setCurrentMembers={setCurrentMembers}
+          availabilityOptions={availabilityOptions}
           user={user}
           canEdit={canEdit}
           role_property_name="role_in_organization"
@@ -173,7 +176,7 @@ export default function ManageOrganizationMembers({
           setUserRole={setUserRole}
           hideHoursPerWeek
           isOrganization
-        />  
+        />
         <div className={classes.buttonsContainer}>
           <div className={classes.buttons}>
             <Button
@@ -189,7 +192,7 @@ export default function ManageOrganizationMembers({
             </Button>
           </div>
         </div>
-      </form>    
+      </form>
     </>
   );
 }

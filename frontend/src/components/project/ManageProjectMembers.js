@@ -1,6 +1,6 @@
-import React from "react"
-import ManageMembers from "../manageMembers/ManageMembers"
-import { Typography, Button } from "@material-ui/core"
+import React from "react";
+import ManageMembers from "../manageMembers/ManageMembers";
+import { Typography, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 
@@ -20,8 +20,8 @@ const useStyles = makeStyles(theme => {
       height: 40,
       width: "100%"
     }
-  }
-})
+  };
+});
 
 export default function ManageProjectMembers({
   user,
@@ -31,28 +31,29 @@ export default function ManageProjectMembers({
   rolesOptions,
   project,
   token,
-  availabilityOptions,
+  availabilityOptions
 }) {
   const classes = useStyles();
   const [user_role, setUserRole] = React.useState(members.find(m => m.id === user.id).role);
   if (!user_role) setUserRole(members.find(m => m.id === user.id).role);
 
-  const handleSubmit = (event) => {
-    event.preventDefault()
+  const handleSubmit = event => {
+    event.preventDefault();
     onSubmit()
-      .then((ret) => {
-        if(ret !== false)
-          redirect("/projects/" + project.url_slug, {message: "You have successfully updated your project's team"});
+      .then(ret => {
+        if (ret !== false)
+          redirect("/projects/" + project.url_slug, {
+            message: "You have successfully updated your project's team"
+          });
       })
-      .catch((e) => {
+      .catch(e => {
         console.log(e);
-        redirect("/projects/" + project.url_slug, {message: "Not all your updates have worked."});
+        redirect("/projects/" + project.url_slug, { message: "Not all your updates have worked." });
       });
-  }
+  };
 
   const onSubmit = async () => {
-    if(!verifyInput())
-      return false;
+    if (!verifyInput()) return false;
     const allChangedMembers = getAllChangedMembers();
     return Promise.all(
       allChangedMembers.map(m => {
@@ -66,7 +67,7 @@ export default function ManageProjectMembers({
         }
       })
     );
-  }
+  };
 
   const getAllChangedMembers = () => {
     const oldCreatorId = members.filter(m => m.role.name === "Creator")[0].id;
@@ -96,9 +97,9 @@ export default function ManageProjectMembers({
 
     if (creatorChange.length > 0)
       allChangedMembers.push({ new_creator: creatorChange[0], operation: "creator_change" });
-    
-    return allChangedMembers
-  }
+
+    return allChangedMembers;
+  };
 
   const verifyInput = () => {
     if (currentMembers.filter(cm => cm.role.name === "Creator").length !== 1) {
@@ -109,8 +110,8 @@ export default function ManageProjectMembers({
       alert("error(There wasn't a creator)");
       return false;
     }
-    return true
-  }
+    return true;
+  };
 
   const canEdit = member => {
     return member.id === user.id || user_role.role_type > member.role.role_type;
@@ -118,42 +119,42 @@ export default function ManageProjectMembers({
 
   const deleteMember = m => {
     apiRequest(
-      "delete", 
+      "delete",
       "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
-      token, 
+      token,
       null,
       true
-    )
+    );
   };
 
   const updateMember = m => {
     apiRequest(
-      "patch", 
+      "patch",
       "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
-      token, 
+      token,
       parseMemberForUpdateRequest(m, project),
       true
-    )
+    );
   };
 
   const createMembers = team_members => {
     apiRequest(
-      "post", 
+      "post",
       "/api/projects/" + project.url_slug + "/add_members/",
-      token, 
+      token,
       parseMembersForCreateRequest(team_members, project),
       true
-    )
+    );
   };
 
   const updateCreator = new_creator => {
     apiRequest(
-      "post", 
+      "post",
       "/api/projects/" + project.url_slug + "/change_creator/",
-      token, 
+      token,
       parseMemberForUpdateRequest(new_creator, project),
       true
-    )
+    );
   };
   return (
     <>
@@ -162,10 +163,10 @@ export default function ManageProjectMembers({
       </Typography>
       <form onSubmit={handleSubmit}>
         <ManageMembers
-          currentMembers = {currentMembers}
-          rolesOptions = {rolesOptions}
-          setCurrentMembers = {setCurrentMembers}
-          availabilityOptions = {availabilityOptions}
+          currentMembers={currentMembers}
+          rolesOptions={rolesOptions}
+          setCurrentMembers={setCurrentMembers}
+          availabilityOptions={availabilityOptions}
           user={user}
           canEdit={canEdit}
           role_property_name="role_in_project"
@@ -189,7 +190,7 @@ export default function ManageProjectMembers({
         </div>
       </form>
     </>
-  )
+  );
 }
 
 const parseMembersForCreateRequest = members => {

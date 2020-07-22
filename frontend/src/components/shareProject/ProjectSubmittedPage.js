@@ -28,7 +28,9 @@ export default function ProjectSubmittedPage({ user, isDraft, url_slug }) {
             Your project has saved as a draft!
           </Typography>
           <Typography variant="h5" className={classes.headline}>
-            You can view, edit and publish your project drafts <a href={"/profiles/"+user.url_slug+"/#projects"}>in the my projects section</a> of your profile
+            You can view, edit and publish your project drafts{" "}
+            <a href={"/profiles/" + user.url_slug + "/#projects"}>in the my projects section</a> of
+            your profile
           </Typography>
         </>
       ) : (

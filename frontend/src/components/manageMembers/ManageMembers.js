@@ -1,6 +1,6 @@
-import React from "react"
-import { makeStyles, IconButton } from "@material-ui/core"
-import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar"
+import React from "react";
+import { makeStyles, IconButton } from "@material-ui/core";
+import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import MiniProfileInput from "../profile/MiniProfileInput";
 
@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(4),
     marginTop: theme.spacing(2)
   }
-}))
+}));
 
 export default function ManageMembers({
   currentMembers,
@@ -45,7 +45,7 @@ export default function ManageMembers({
   hideHoursPerWeek,
   isOrganization
 }) {
-  const classes = useStyles()
+  const classes = useStyles();
   const renderSearchOption = option => {
     return (
       <React.Fragment>
@@ -71,7 +71,7 @@ export default function ManageMembers({
 
   const handleChangeMember = m => {
     if (m.changeCreator) {
-      handleCreatorChange(m)
+      handleCreatorChange(m);
     } else {
       setCurrentMembers([
         ...currentMembers.map(c => {
@@ -92,7 +92,7 @@ export default function ManageMembers({
         else return c;
       })
     ]);
-  }
+  };
 
   const handleRemoveMember = member => {
     setCurrentMembers([...currentMembers.filter(m => m.id !== member.id)]);
@@ -143,9 +143,8 @@ export default function ManageMembers({
                 allowAppointingCreator={m.id !== user.id && user_role.name === "Creator"}
               />
             );
-          })
-        }
+          })}
       </div>
     </div>
-  )
+  );
 }

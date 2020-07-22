@@ -10,7 +10,7 @@ import links from "../public/data/links.js";
 import quotes_with_images from "../public/data/quotes_with_images.js";
 import open_positions from "../public/data/open_positions";
 //local components
-import AboutHeaderImage from "../src/components/about/AboutHeaderImage";
+import HeaderImage from "../src/components/staticpages/HeaderImage";
 import InfoBubble from "../src/components/about/InfoBubble";
 import InfoLink from "../src/components/about/InfoLink";
 import MemberCarousel from "../src/components/about/MemberCarousel";
@@ -18,6 +18,9 @@ import QuoteSlideShow from "../src/components/about/QuoteSlideShow";
 
 const useStyles = makeStyles(theme => {
   return {
+    headerImageContainer: {
+      marginBottom: theme.spacing(10)
+    },
     centeredText: {
       textAlign: "center"
     },
@@ -102,7 +105,7 @@ export default function About() {
   return (
     <>
       <WideLayout title="About Climate Connect">
-        <AboutHeaderImage />
+        <HeaderImage className={classes.headerImageContainer} src={"images/about_background.jpg"} />
         <Typography
           component="h1"
           variant="h4"

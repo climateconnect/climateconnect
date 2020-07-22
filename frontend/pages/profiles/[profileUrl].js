@@ -127,7 +127,7 @@ ProfilePage.getInitialProps = async ctx => {
 
 function ProfileLayout({ profile, projects, organizations, profileTypes, infoMetadata, user }) {
   const classes = useStyles();
-  const isOwnAccount = user && user.url_slug === profile.url_slug
+  const isOwnAccount = user && user.url_slug === profile.url_slug;
   return (
     <AccountPage
       account={profile}
@@ -144,27 +144,42 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
       <Container className={classes.container} id="projects">
         <h2>
           {isOwnAccount ? "Your projects:" : "This user's projects:"}
-          <Button variant="contained" color="primary" href="/share" className={classes.createButton}>
+          <Button
+            variant="contained"
+            color="primary"
+            href="/share"
+            className={classes.createButton}
+          >
             Share a project
           </Button>
-        </h2>        
+        </h2>
         {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
         ) : (
-          <Typography>{(isOwnAccount ? "You are" : "This user is") + " not involved in any projects yet!"}</Typography>
+          <Typography>
+            {(isOwnAccount ? "You are" : "This user is") + " not involved in any projects yet!"}
+          </Typography>
         )}
       </Container>
       <Container className={classes.container}>
         <h2>
           {isOwnAccount ? "Your organizations" : "This user's organizations:"}
-          <Button variant="contained" color="primary" href="/createorganization" className={classes.createButton}>
+          <Button
+            variant="contained"
+            color="primary"
+            href="/createorganization"
+            className={classes.createButton}
+          >
             Create an organization
           </Button>
         </h2>
         {organizations && organizations.length > 0 ? (
           <OrganizationPreviews organizations={organizations} showOrganizationType />
         ) : (
-          <Typography>{(isOwnAccount ? "You are" : "This user is") + " not involved in any organizations yet!"}</Typography>
+          <Typography>
+            {(isOwnAccount ? "You are" : "This user is") +
+              " not involved in any organizations yet!"}
+          </Typography>
         )}
       </Container>
     </AccountPage>

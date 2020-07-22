@@ -137,7 +137,11 @@ export default function EditProjectContent({
           ) : (
             <SelectField
               controlled
-              controlledValue={project.project_parents.parent_organization ? project.project_parents.parent_organization : userOrganizations[0]}
+              controlledValue={
+                project.project_parents.parent_organization
+                  ? project.project_parents.parent_organization
+                  : userOrganizations[0]
+              }
               onChange={event =>
                 handleChangeProject(
                   {
@@ -209,7 +213,9 @@ export default function EditProjectContent({
         </div>
         <div className={classes.block}>
           <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
-            {collaborationTexts.allow[project.status.name] ? collaborationTexts.allow[project.status.name] : collaborationTexts.allow["In Progress"]}
+            {collaborationTexts.allow[project.status.name]
+              ? collaborationTexts.allow[project.status.name]
+              : collaborationTexts.allow["In Progress"]}
           </Typography>
           <Switch
             checked={project.collaborators_welcome}
@@ -228,7 +234,9 @@ export default function EditProjectContent({
                 color="primary"
                 className={classes.subHeader}
               >
-                {collaborationTexts.skills[project.status.name] ? collaborationTexts.skills[project.status.name] : collaborationTexts.skills["In Progress"]}
+                {collaborationTexts.skills[project.status.name]
+                  ? collaborationTexts.skills[project.status.name]
+                  : collaborationTexts.skills["In Progress"]}
               </Typography>
               <div>
                 {project.skills && (
@@ -255,7 +263,9 @@ export default function EditProjectContent({
                 color="primary"
                 className={classes.subHeader}
               >
-                {collaborationTexts.connections[project.status.name] ? collaborationTexts.connections[project.status.name] : collaborationTexts.connections["In Progress"]}
+                {collaborationTexts.connections[project.status.name]
+                  ? collaborationTexts.connections[project.status.name]
+                  : collaborationTexts.connections["In Progress"]}
               </Typography>
               {project.helpful_connections && (
                 <List className={classes.flexContainer}>
