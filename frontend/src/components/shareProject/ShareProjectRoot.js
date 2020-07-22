@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 const DEFAULT_STATUS = 2;
@@ -10,6 +10,7 @@ import AddTeam from "./AddTeam";
 import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
+import Router from "next/router";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -70,6 +71,18 @@ export default function ShareProjectRoot({
   );
   const [curStep, setCurStep] = React.useState(steps[0]);
   const [finished, setFinished] = React.useState(false);
+
+  useEffect(()=> {
+    if(window) {
+      Router.beforePopState(() => {
+        const result = window.confirm("Are you sure you want to leave? You will lose your project.");
+        if(!result) {
+          return false
+        }
+        return true
+      })
+    }
+  })
 
   const goToNextStep = () => {
     setCurStep(steps[steps.indexOf(curStep) + 1]);
