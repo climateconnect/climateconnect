@@ -10,21 +10,17 @@ const useStyles = makeStyles(theme => {
       },
       position: "relative",
       textAlign: "center",
-      backgroundImage: "url("+props.image+")",
+      backgroundImage: "url(" + props.image + ")",
       backgroundSize: "cover",
       height: 250,
       [theme.breakpoints.down("xs")]: {
         height: 180
-      },
+      }
     })
   };
 });
 
-export default function HeaderImage({src, children, className}) {
-  const classes = useStyles({image: src});
-  return (
-    <div className={`${classes.imageContainer} ${className}`}>
-      {children}
-    </div>
-  )
+export default function HeaderImage({ src, children, className }) {
+  const classes = useStyles({ image: src });
+  return <div className={`${classes.imageContainer} ${className}`}>{children}</div>;
 }

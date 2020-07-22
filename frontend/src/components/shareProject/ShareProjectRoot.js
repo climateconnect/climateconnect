@@ -108,7 +108,7 @@ export default function ShareProjectRoot({
     axios
       .post(
         process.env.API_URL + "/api/create_project/",
-        formatProjectForRequest({...project, is_draft: true}),
+        formatProjectForRequest({ ...project, is_draft: true }),
         tokenConfig(token)
       )
       .then(function(response) {
@@ -178,7 +178,11 @@ export default function ShareProjectRoot({
         </>
       ) : (
         <>
-          <ProjectSubmittedPage user={user} isDraft={project.is_draft} url_slug={project.url_slug} />
+          <ProjectSubmittedPage
+            user={user}
+            isDraft={project.is_draft}
+            url_slug={project.url_slug}
+          />
         </>
       )}
     </>
