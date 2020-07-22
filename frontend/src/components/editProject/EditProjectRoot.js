@@ -29,11 +29,11 @@ export default function EditProjectRoot({
   tagsOptions,
   token,
   oldProject,
-  user
+  user,
+  user_role
 }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
-
   const draftReqiredProperties = ["name", "city", "country"];
 
   const onSaveDraft = () => {
@@ -108,6 +108,28 @@ export default function EditProjectRoot({
       });
   };
 
+  const deleteProject = () => {
+    axios
+      .delete(
+        process.env.API_URL + "/api/projects/"+project.url_slug+"/",
+        tokenConfig(token)
+      )
+      .then(function(response) {
+        console.log(response)
+        Router.push({
+          pathname: "/profiles/" + user.url_slug,
+          query: {
+            message:
+              "You have successfully deleted your project."
+          }
+        });
+      })
+      .catch(function(error) {
+        console.log(error);
+        if (error) console.log(error.response);
+      });
+  }
+
   return (
     <Container disableGutters={isNarrowScreen}>
       <form onSubmit={handleSubmit}>
@@ -123,6 +145,8 @@ export default function EditProjectRoot({
           statusOptions={statusOptions}
           userOrganizations={userOrganizations}
           skillsOptions={skillsOptions}
+          user_role={user_role}
+          deleteProject={deleteProject}
         />
         <Divider className={classes.divider} />
         <BottomNavigation

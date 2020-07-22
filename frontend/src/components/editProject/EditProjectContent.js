@@ -8,6 +8,7 @@ import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import collaborationTexts from "../../../public/data/collaborationTexts";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import EnterTextDialog from "../dialogs/EnterTextDialog";
+import ConfirmDialog from "../dialogs/ConfirmDialog";
 
 const useStyles = makeStyles(theme => ({
   select: {
@@ -47,6 +48,14 @@ const useStyles = makeStyles(theme => ({
     padding: 0,
     marginBottom: theme.spacing(3),
     marginTop: theme.spacing(2)
+  },
+  deleteProjectButton: {
+    float: "right",
+    backgroundColor: theme.palette.error.main,
+    color: "white",
+    "&:hover": {
+      backgroundColor: "#ea6962"
+    }
   }
 }));
 
@@ -55,13 +64,15 @@ export default function EditProjectContent({
   handleSetProject,
   statusOptions,
   userOrganizations,
-  skillsOptions
+  skillsOptions,
+  user_role,
+  deleteProject
 }) {
   const classes = useStyles();
   const [selectedItems, setSelectedItems] = React.useState(
     project.skills ? [...project.skills] : []
   );
-  const [open, setOpen] = React.useState({ skills: false, connections: false });
+  const [open, setOpen] = React.useState({ skills: false, connections: false, delete: false });
   const statusesWithStartDate = statusOptions.filter(s => s.has_start_date).map(s => s.id);
   const statusesWithEndDate = statusOptions.filter(s => s.has_end_date).map(s => s.id);
 
@@ -110,6 +121,18 @@ export default function EditProjectContent({
     }
   };
 
+  const handleClickDeleteProjectPopup = () => {
+    console.log("oh no, we gotta delete the project!")
+    setOpen({...open, delete: true})
+  }
+
+  const handleDeleteProjectDialogClose = confirmed => {
+    if(confirmed){
+      deleteProject()
+    }
+    setOpen({...open, delete: false})
+  }
+
   return (
     <div>
       <div className={classes.block}>
@@ -124,6 +147,16 @@ export default function EditProjectContent({
           />
           <Typography component="span">{"Organization's project"}</Typography>
         </div>
+        {user_role.name === "Creator" &&
+          <Button
+            classes={{root: classes.deleteProjectButton, focusVisible: classes.deleteProjectButtonFocus}}
+            variant="contained"
+            color="error"
+            onClick={handleClickDeleteProjectPopup}
+          >
+            {project.is_draft ? "Delete Draft" : "Delete Project"}
+          </Button>
+        }
         <div className={classes.block}>
           {project.is_personal_project ? (
             <>
@@ -302,6 +335,14 @@ export default function EditProjectContent({
         applyText="Add"
         inputLabel="Connection"
         title="Add a helpful connection"
+      />
+      <ConfirmDialog
+        open={open.delete}
+        onClose={handleDeleteProjectDialogClose}
+        cancelText="No"
+        confirmText="Yes"
+        title="Do you really want to delete your project?"
+        text='If you delete your project, it will be lost. Are you sure that you want to delete it?'
       />
     </div>
   );

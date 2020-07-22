@@ -237,6 +237,17 @@ class ProjectAPIView(APIView):
             'message': 'Project {} successfully updated'.format(project.name),
             'url_slug': project.url_slug
         }, status=status.HTTP_200_OK)
+    
+    def delete(self, request, url_slug, format=None):
+        try:
+            project = Project.objects.get(url_slug=str(url_slug))            
+        except Project.DoesNotExist:
+            return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
+        project.delete()
+        return Response({
+            'message': 'Project {} successfully deleted'.format(project.name),
+            'url_slug': project.url_slug
+        }, status=status.HTTP_200_OK)
 
 class ListProjectPostsView(ListAPIView):
     permission_classes = [AllowAny]
