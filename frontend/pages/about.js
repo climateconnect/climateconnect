@@ -105,7 +105,7 @@ export default function About() {
   return (
     <>
       <WideLayout title="About Climate Connect">
-        <HeaderImage className={classes.headerImageContainer} src={"images/about_background.jpg"}/>
+        <HeaderImage className={classes.headerImageContainer} src={"images/about_background.jpg"} />
         <Typography
           component="h1"
           variant="h4"

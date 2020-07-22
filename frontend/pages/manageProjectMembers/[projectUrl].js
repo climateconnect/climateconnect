@@ -34,23 +34,16 @@ export default function manageProjectMembers({
   );
   if (!user)
     return (
-      <WideLayout
-        title="Please log in to manage the members of this project"
-        hideHeadline={true}
-      >
+      <WideLayout title="Please log in to manage the members of this project" hideHeadline={true}>
         <LoginNudge fullPage whatToDo="manage the members of this project" />
       </WideLayout>
     );
   else if (!members.find(m => m.id === user.id))
     return (
-      <WideLayout
-        title="Please log in to manage the members of an project"
-        hideHeadline={true}
-      >
+      <WideLayout title="Please log in to manage the members of an project" hideHeadline={true}>
         <Typography variant="h4" color="primary" className={classes.headline}>
           You are not a member of this project. Go to{" "}
-          <a href={"/projects/" + project.url_slug}>the project page</a> and click
-          join to join it.
+          <a href={"/projects/" + project.url_slug}>the project page</a> and click join to join it.
         </Typography>
       </WideLayout>
     );

@@ -90,7 +90,7 @@ const getLoggedInLinks = ({ loggedInUser }) => {
       iconForDrawer: AccountCircleIcon
     },
     {
-      href: "/profiles/" + loggedInUser.url_slug+"/#projects",
+      href: "/profiles/" + loggedInUser.url_slug + "/#projects",
       text: "My Projects",
       iconForDrawer: GroupWorkIcon
     },
