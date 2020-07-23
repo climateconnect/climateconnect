@@ -16,13 +16,17 @@ const useStyles = makeStyles(theme => ({
 export default function AccountCreated() {
   const classes = useStyles();
   return (
-    <Layout title="Account created">
+    <Layout title="Account created" hideHeadline>
       <Paper className={classes.root}>
         <Typography variant="h5" className={classes.headline}>
-          Congratulations! You have created your account!
+          Congratulations! Just one more step to complete your signup!
         </Typography>
         <Typography variant="h4">
-          <Link href="/signin">Click here to log in.</Link>
+          <div>We have sent you an E-Mail with a link!</div>
+          <div>Please click on the link to activate your account.</div>
+          <br/>
+          <Typography variant="h6">Make sure to also check your spam folder incase you cannot find the E-Mail.</Typography>
+          <Typography variant="h6">If you are experiencing any problems, contact us at support@climateconnect.earth</Typography>
         </Typography>
       </Paper>
     </Layout>
