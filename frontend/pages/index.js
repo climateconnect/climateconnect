@@ -19,6 +19,7 @@ import tokenConfig from "../public/config/tokenConfig";
 import axios from "axios";
 import Link from "next/link";
 import { getParams } from "../public/lib/generalOperations";
+import CookieBanner from "../src/components/general/CookieBanner";
 
 const useStyles = makeStyles(theme => {
   return {

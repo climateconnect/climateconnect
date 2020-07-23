@@ -48,7 +48,8 @@
     "react-timeago": "^4.4.0",
     "react-truncate": "^2.4.0",
     "universal-cookie": "^4.0.3",
-    "browser-image-compression": "^1.0.12"
+    "browser-image-compression": "^1.0.12",
+    "react-loader-spinner": "^3.1.14"
   },
   "devDependencies": {
     "enzyme": "^3.10.0",
