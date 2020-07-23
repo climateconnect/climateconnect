@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Typography, Link } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import Layout from "../../src/components/layouts/layout"
 import axios from 'axios';
 import tokenConfig from '../../public/config/tokenConfig';
