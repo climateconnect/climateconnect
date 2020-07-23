@@ -28,7 +28,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import InfoIcon from "@material-ui/icons/Info";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import NotificationsIcon from "@material-ui/icons/Notifications";
+//import NotificationsIcon from "@material-ui/icons/Notifications";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
@@ -38,7 +38,7 @@ import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const LINKS = [
   {
-    href: "/supportus",
+    href: "/support",
     text: "Support us",
     iconForDrawer: SentimentSatisfiedIcon
   },
@@ -52,7 +52,7 @@ const LINKS = [
     text: "Share a project",
     iconForDrawer: AddCircleIcon
   },
-  {
+  /*{
     href: "/inbox",
     text: "Inbox",
     iconForDrawer: NotificationsIcon,
@@ -64,7 +64,7 @@ const LINKS = [
     icon: NotificationsIcon,
     alwaysDisplayDirectly: true,
     onlyShowLoggedIn: true
-  },
+  },*/
   {
     href: "/signin",
     text: "Log in",
@@ -90,7 +90,7 @@ const getLoggedInLinks = ({ loggedInUser }) => {
       iconForDrawer: AccountCircleIcon
     },
     {
-      href: "/profiles/" + loggedInUser.url_slug,
+      href: "/profiles/" + loggedInUser.url_slug + "/#projects",
       text: "My Projects",
       iconForDrawer: GroupWorkIcon
     },

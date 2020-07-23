@@ -81,7 +81,8 @@ export default function EditProjectPage({
         </Typography>
       </WideLayout>
     );
-  else
+  else{
+    const user_role = members.find(m => m.user && m.user.id === user.id).role
     return (
       <WideLayout className={classes.root} title={"Edit project " + project.name} hideHeadline>
         <EditProjectRoot
@@ -93,9 +94,12 @@ export default function EditProjectPage({
           handleSetProject={handleSetProject}
           tagsOptions={tagsOptions}
           token={token}
+          user={user}
+          user_role={user_role}
         />
       </WideLayout>
     );
+  }
 }
 
 EditProjectPage.getInitialProps = async ctx => {

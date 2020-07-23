@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function ProjectSubmittedPage({ isDraft, url_slug }) {
+export default function ProjectSubmittedPage({ user, isDraft, url_slug }) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -26,6 +26,11 @@ export default function ProjectSubmittedPage({ isDraft, url_slug }) {
         <>
           <Typography variant="h5" className={classes.headline}>
             Your project has saved as a draft!
+          </Typography>
+          <Typography variant="h5" className={classes.headline}>
+            You can view, edit and publish your project drafts{" "}
+            <a href={"/profiles/" + user.url_slug + "/#projects"}>in the my projects section</a> of
+            your profile
           </Typography>
         </>
       ) : (

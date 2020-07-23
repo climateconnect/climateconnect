@@ -117,22 +117,22 @@ export default function ProjectContent({ project }) {
   const { user } = useContext(UserContext);
   const [showFullDescription, setShowFullDescription] = React.useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
-  const user_permissions =
-    user && project.team.find(m => m.id === user.id)
-      ? project.team.find(m => m.id === user.id).permissions
+  const user_permission =
+    user && project.team && project.team.find(m => m.id === user.id)
+      ? project.team.find(m => m.id === user.id).permission
       : null;
   return (
     <div>
       <div className={classes.contentBlock}>
         <div className={classes.createdBy}>
-          {user_permissions && ["Creator", "Administrator"].includes(user_permissions) && (
+          {user_permission && ["Creator", "Administrator"].includes(user_permission) && (
             <Button
               className={classes.editProjectButton}
               variant="contained"
               color="primary"
               href={"/editProject/" + project.url_slug}
             >
-              Edit project
+              {project.is_draft ? "Edit Draft" : "Edit Project"}
             </Button>
           )}
           <Typography>

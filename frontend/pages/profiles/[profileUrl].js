@@ -42,9 +42,6 @@ const useStyles = makeStyles(theme => {
       },
       padding: 0
     },
-    subtitle: {
-      color: `${theme.palette.secondary.main}`
-    },
     content: {
       paddingTop: theme.spacing(1),
       paddingBottom: theme.spacing(1),
@@ -59,10 +56,6 @@ const useStyles = makeStyles(theme => {
         display: "flex"
       }
     },
-    cardHeadline: {
-      marginTop: theme.spacing(3),
-      marginBottom: theme.spacing(1)
-    },
     noprofile: {
       textAlign: "center",
       padding: theme.spacing(5)
@@ -73,6 +66,17 @@ const useStyles = makeStyles(theme => {
     loginNudge: {
       textAlign: "center",
       margin: "0 auto"
+    },
+    container: {
+      position: "relative"
+    },
+    createButton: {
+      right: theme.spacing(1),
+      position: "absolute",
+      [theme.breakpoints.down("xs")]: {
+        position: "relative",
+        marginTop: theme.spacing(2)
+      }
     }
   };
 });
@@ -123,12 +127,13 @@ ProfilePage.getInitialProps = async ctx => {
 
 function ProfileLayout({ profile, projects, organizations, profileTypes, infoMetadata, user }) {
   const classes = useStyles();
+  const isOwnAccount = user && user.url_slug === profile.url_slug;
   return (
     <AccountPage
       account={profile}
       default_background={DEFAULT_BACKGROUND_IMAGE}
       editHref={"/editprofile"}
-      isOwnAccount={user && user.url_slug === profile.url_slug}
+      isOwnAccount={isOwnAccount}
       type="profile"
       possibleAccountTypes={profileTypes}
       infoMetadata={infoMetadata}
@@ -136,30 +141,45 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
       {!user && (
         <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
       )}
-      <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
-          Projects:{" "}
-          <Button variant="contained" color="primary" href="/share">
+      <Container className={classes.container} id="projects">
+        <h2>
+          {isOwnAccount ? "Your projects:" : "This user's projects:"}
+          <Button
+            variant="contained"
+            color="primary"
+            href="/share"
+            className={classes.createButton}
+          >
             Share a project
           </Button>
-        </div>
+        </h2>
         {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
         ) : (
-          <Typography>This user is not involved in any projects yet!</Typography>
+          <Typography>
+            {(isOwnAccount ? "You are" : "This user is") + " not involved in any projects yet!"}
+          </Typography>
         )}
       </Container>
-      <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
-          Organizations:{" "}
-          <Button variant="contained" color="primary" href="/createorganization">
+      <Container className={classes.container}>
+        <h2>
+          {isOwnAccount ? "Your organizations" : "This user's organizations:"}
+          <Button
+            variant="contained"
+            color="primary"
+            href="/createorganization"
+            className={classes.createButton}
+          >
             Create an organization
           </Button>
-        </div>
+        </h2>
         {organizations && organizations.length > 0 ? (
           <OrganizationPreviews organizations={organizations} showOrganizationType />
         ) : (
-          <Typography>This user is not involved in any organizations yet!</Typography>
+          <Typography>
+            {(isOwnAccount ? "You are" : "This user is") +
+              " not involved in any organizations yet!"}
+          </Typography>
         )}
       </Container>
     </AccountPage>

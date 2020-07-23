@@ -28,7 +28,9 @@ module.exports = {
     if (process.env.PRE_LAUNCH)
       return {
         "/": { page: "/" },
-        "/zoom": { page: "/zoom" }
+        "/zoom": { page: "/zoom" },
+        "/stream": { page: "/stream" },
+        "/support": { page: "/support" }
       };
     else return defaultPathMap;
   }

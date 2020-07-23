@@ -1,5 +1,5 @@
 from dateutil.parser import parse
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView,RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.filters import SearchFilter
 from rest_framework.views import APIView
@@ -10,14 +10,16 @@ from django.contrib.auth.models import User
 
 from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging, ProjectStatus, ProjectCollaborators
 from organization.serializers.project import (
-    ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer
+    ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer,InsertProjectMemberSerializer
 )
 from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
 from organization.serializers.tags import (ProjectTagsSerializer)
 from organization.utility.project import create_new_project
-from organization.permissions import (OrganizationProjectCreationPermission, ProjectReadWritePermission)
-from organization.pagination import (ProjectsPagination, MembersPagination, ProjectPostPagination, ProjectCommentPagination)
+from organization.permissions import (OrganizationProjectCreationPermission, ProjectReadWritePermission, AddProjectMemberPermission, ProjectMemberReadWritePermission, ChangeProjectCreatorPermission)
+from organization.pagination import (
+    ProjectsPagination, MembersPagination, ProjectPostPagination, ProjectCommentPagination
+)
 from organization.utility.organization import (
     check_organization,
 )
@@ -33,7 +35,7 @@ class ListProjectsView(ListAPIView):
     search_fields = ['url_slug']
     pagination_class = ProjectsPagination
     serializer_class = ProjectSerializer
-    queryset = Project.objects.all()
+    queryset = Project.objects.filter(is_draft=False)
 
     def get_serializer_class(self):
         return ProjectStubSerializer
@@ -91,7 +93,6 @@ class CreateProjectView(APIView):
 
         # There are only certain roles user can have. So get all the roles first.
         roles = Role.objects.all()
-        availabilities = Availability.objects.all()
         team_members = request.data['team_members']
             
         if 'project_tags' in request.data:
@@ -109,7 +110,10 @@ class CreateProjectView(APIView):
 
         for member in team_members:
             user_role = roles.filter(id=int(member['role'])).first()
-            user_availability = availabilities.filter(id=int(member['availability'])).first()
+            try:
+                user_availability = Availability.objects.filter(id=int(member['availability'])).first()
+            except Availability.DoesNotExist:
+                raise NotFound(detail="Availability not found.", code=status.HTTP_404_NOT_FOUND)
             try:
                 user = User.objects.get(id=int(member['id']))
             except User.DoesNotExist:
@@ -139,7 +143,11 @@ class ProjectAPIView(APIView):
         except Project.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
         #TODO: get number of followers
-
+        if project.is_draft:
+            try:
+                ProjectMember.objects.get(user=self.request.user, project=project, role__role_type__in=[Role.ALL_TYPE, Role.READ_ONLY_TYPE])
+            except ProjectMember.DoesNotExist:
+                return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
         serializer = ProjectSerializer(project, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -181,8 +189,8 @@ class ProjectAPIView(APIView):
                         )
                     except ProjectTags.DoesNotExist:
                         logger.error("Passed tag id {} does not exists")
-
-
+        
+        
         if 'image' in request.data:
             project.image = get_image_from_data_url(request.data['image'])[0]
         if 'status' in request.data:
@@ -203,6 +211,8 @@ class ProjectAPIView(APIView):
             project.country = request.data['country']
         if 'city' in request.data:
             project.city = request.data['city']
+        if 'is_draft' in request.data:
+            project.is_draft = False
         if 'collaborators_welcome' in request.data:
             project.collaborators_welcome = request.data['collaborators_welcome']
         if 'helpful_connections' in request.data:
@@ -225,6 +235,17 @@ class ProjectAPIView(APIView):
 
         return Response({
             'message': 'Project {} successfully updated'.format(project.name),
+            'url_slug': project.url_slug
+        }, status=status.HTTP_200_OK)
+    
+    def delete(self, request, url_slug, format=None):
+        try:
+            project = Project.objects.get(url_slug=str(url_slug))            
+        except Project.DoesNotExist:
+            return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
+        project.delete()
+        return Response({
+            'message': 'Project {} successfully deleted'.format(project.name),
             'url_slug': project.url_slug
         }, status=status.HTTP_200_OK)
 
@@ -253,14 +274,10 @@ class ListProjectCommentsView(ListAPIView):
         ).order_by('id')
     
 class AddProjectMembersView(APIView):
-    #TODO: update permission: only admins or creators should be able to call this route
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AddProjectMemberPermission]
 
-    def post(self, request, project_id):
-        try:
-            project = Project.objects.get(id=int(project_id))
-        except Project.DoesNotExist:
-            return Response({'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+    def post(self, request, url_slug):
+        project = Project.objects.get(url_slug=url_slug)
 
         roles = Role.objects.all()
         if 'team_members' not in request.data:
@@ -270,55 +287,94 @@ class AddProjectMembersView(APIView):
 
         for member in request.data['team_members']:
             try:
-                user = User.objects.get(id=int(member['user_id']))
+                user = User.objects.get(id=int(member['id']))
             except User.DoesNotExist:
-                logger.error("[AddProjectMembersView] Passed user id {} does not exists".format(int(member['user_id'])))
+                logger.error("[AddProjectMembersView] Passed user id {} does not exists".format(int(member['id'])))
                 continue
-
+            if 'permission_type_id' not in member:
+                logger.error("[AddProjectMembersView] Not permissions passed for user id {}.".format(int(member['id'])))
+                continue
             user_role = roles.filter(id=int(member['permission_type_id'])).first()
+            try:
+                user_availability = Availability.objects.filter(id=int(member['availability'])).first()
+            except Availability.DoesNotExist:
+                raise NotFound(detail="Availability not found.", code=status.HTTP_404_NOT_FOUND)
             if user:
                 ProjectMember.objects.create(
-                    project=project, user=user, role=user_role
+                    project=project, user=user, role=user_role, role_in_project=member['role_in_project'], availability=user_availability
                 )
                 logger.info("Project member created for user {}".format(user.id))
 
         return Response({'message': 'Member added to the project'}, status=status.HTTP_201_CREATED)
 
 
-class UpdateProjectMemberView(APIView):
-    permission_classes = [IsAuthenticated]
+class UpdateProjectMemberView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [ProjectMemberReadWritePermission]
+    serializer_class = InsertProjectMemberSerializer
 
-    def confirm_project_and_members(self, project_id, member_id):
-        if not Project.objects.filter(id=int(project_id)).exists():
-            return Response({'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+    def get_queryset(self):
+        project = Project.objects.get(url_slug=str(self.kwargs['url_slug']))
+        return ProjectMember.objects.filter(id=int(self.kwargs['pk']), project=project)
 
-        try:
-            project_member = ProjectMember.objects.get(id=int(member_id))
-        except ProjectMember.DoesNotExist:
+    def perform_destroy(self, instance):
+        instance.delete()
+        return "Project Member successfully deleted."
+
+    def perform_update(self, serializer):
+        serializer.save()
+        return serializer.data
+
+class ChangeProjectCreator(APIView):
+    permission_classes = [ChangeProjectCreatorPermission]
+
+    def post(self, request, url_slug):
+        if 'user' not in request.data:
             return Response({
-                'message': 'Member not found.'
-            }, status=status.HTTP_404_NOT_FOUND)
+                'message': 'Missing required parameters'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            new_creator_user = User.objects.get(id=int(request.data['user']))
+        except User.DoesNotExist:
+            raise NotFound(detail="Profile not found.", code=status.HTTP_404_NOT_FOUND)
+        
+        if request.user.id == new_creator_user.id:
+            return Response({
+                'message': 'Missing required parameters'
+            }, status=status.HTTP_400_BAD_REQUEST)
 
-        return project_member
+        project = Project.objects.get(url_slug=url_slug)
+        roles = Role.objects.all()   
 
-    def get(self, request, project_id, member_id):
-        project_member = self.confirm_project_and_members(project_id, member_id)
-        serializer = ProjectMemberSerializer(project_member, many=False)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        if ProjectMember.objects.filter(user=new_creator_user, project = project).exists():
+            # update old creator profile and new creator profile
+            logger.error('updating new creator')
+            new_creator = ProjectMember.objects.filter(user=request.data['user'], project = project, id = request.data['id'])[0]
+            new_creator.role = roles.filter(role_type=Role.ALL_TYPE)[0]
+            if('role_in_project' in request.data):
+                new_creator.role_in_project = request.data['role_in_project']
+            if('availability' in request.data):
+                try:
+                    user_availability = Availability.objects.filter(id=int(request.data['availability'])).first()
+                except Availability.DoesNotExist:
+                    raise NotFound(detail="Availability not found.", code=status.HTTP_404_NOT_FOUND)
+                new_creator.user_availability = request.data['availability']
+            new_creator.save()
+        else:
+            # create new creator profile and update old creator profile
+            logger.error('adding new creator')
+            new_creator = ProjectMember.objects.create(
+                role = roles.filter(role_type=Role.ALL_TYPE)[0],
+                project = project,
+                user = new_creator_user
+            )
+            if('role_in_project' in request.data):
+                new_creator.role_in_project = request.data['role_in_project']
+            new_creator.save()
+        old_creator = ProjectMember.objects.filter(user=request.user, project = project)[0]
+        old_creator.role = roles.filter(role_type=Role.READ_WRITE_TYPE)[0]
+        old_creator.save()
 
-    def patch(self, request, project_id, member_id):
-        project_member = self.confirm_project_and_members(project_id, member_id)
-        roles = Role.objects.all()
-        # Update user role.
-        user_role = roles.filter(id=int(request.data['permission_type_id'])).first()
-        project_member.role = user_role
-        project_member.save()
-        return Response({'message': 'Member updated'}, status=status.HTTP_200_OK)
-
-    def delete(self, request, project_id, member_id):
-        project_member = self.confirm_project_and_members(project_id, member_id)
-        project_member.delete()
-        return Response({'message': 'Member deleted'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Changed project creator'}, status=status.HTTP_200_OK)
 
 
 class ListProjectMembersView(ListAPIView):

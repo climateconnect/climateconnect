@@ -64,7 +64,8 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
-    "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com"
+    "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
+    "https://alpha.climateconnect.earth"
 ]
 APPEND_SLASH = False
 

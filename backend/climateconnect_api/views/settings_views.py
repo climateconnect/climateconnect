@@ -28,7 +28,7 @@ class UserAccountSettingsView(APIView):
                 else:
                     raise ValidationError('Password do not match.')
             else:
-                raise ValidationError('Please enter correct password or click I forgot my password.')
+                raise ValidationError('Incorrect password. Did you forget your password?')
 
         if 'email' in request.data:
             # TODO: Add email confirmation method.
@@ -38,6 +38,7 @@ class UserAccountSettingsView(APIView):
             user.user_profile.email_updates_on_projects = request.data['email_updates_on_projects']
             user.user_profile.email_project_suggestions = request.data['email_project_suggestions']
 
+        user.user_profile.save()
         user.save()
 
         return Response({'message': 'Account successfully updated'}, status=status.HTTP_200_OK)

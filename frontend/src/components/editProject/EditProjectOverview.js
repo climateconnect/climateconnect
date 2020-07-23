@@ -180,7 +180,7 @@ const InputLocation = ({ project, handleChangeProject }) => {
         label="Country"
         variant="outlined"
         fullWidth
-        value={project.city}
+        value={project.country}
         type="text"
         onChange={event => handleChangeProject(event.target.value, "country")}
         required

@@ -1,7 +1,7 @@
 import React from "react";
+import ManageMembers from "../manageMembers/ManageMembers";
 import { Typography, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import ManageMembers from "../manageMembers/ManageMembers";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 
 const useStyles = makeStyles(theme => {
@@ -23,13 +23,13 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function ManageOrganizationMembers({
+export default function ManageProjectMembers({
   user,
   members,
   currentMembers,
   setCurrentMembers,
   rolesOptions,
-  organization,
+  project,
   token,
   availabilityOptions
 }) {
@@ -37,23 +37,18 @@ export default function ManageOrganizationMembers({
   const [user_role, setUserRole] = React.useState(members.find(m => m.id === user.id).role);
   if (!user_role) setUserRole(members.find(m => m.id === user.id).role);
 
-  const canEdit = member => {
-    return member.id === user.id || user_role.role_type > member.role.role_type;
-  };
-
   const handleSubmit = event => {
     event.preventDefault();
     onSubmit()
-      .then(() => {
-        redirect("/organizations/" + organization.url_slug, {
-          message: "You have successfully updated your organization's members"
-        });
+      .then(ret => {
+        if (ret !== false)
+          redirect("/projects/" + project.url_slug, {
+            message: "You have successfully updated your project's team"
+          });
       })
       .catch(e => {
         console.log(e);
-        redirect("/organizations/" + organization.url_slug, {
-          errorMessage: "Not all your updates have worked."
-        });
+        redirect("/projects/" + project.url_slug, { message: "Not all your updates have worked." });
       });
   };
 
@@ -65,7 +60,7 @@ export default function ManageOrganizationMembers({
         if (m.operation === "delete") deleteMember(m);
         if (m.operation === "update") updateMember(m);
         if (m.operation === "create") {
-          createMembers(m.organization_members);
+          createMembers(m.team_members);
         }
         if (m.operation === "creator_change") {
           updateCreator(m.new_creator);
@@ -98,7 +93,7 @@ export default function ManageOrganizationMembers({
       ...updatedMembers.map(m => ({ ...m, operation: "update" }))
     ];
     if (createdMembers.length > 0)
-      allChangedMembers.push({ organization_members: [...createdMembers], operation: "create" });
+      allChangedMembers.push({ team_members: [...createdMembers], operation: "create" });
 
     if (creatorChange.length > 0)
       allChangedMembers.push({ new_creator: creatorChange[0], operation: "creator_change" });
@@ -108,7 +103,7 @@ export default function ManageOrganizationMembers({
 
   const verifyInput = () => {
     if (currentMembers.filter(cm => cm.role.name === "Creator").length !== 1) {
-      alert("There must be exactly one creator of an organization.");
+      alert("There must be exactly one creator of a project.");
       return false;
     }
     if (!members.filter(m => m.role.name === "Creator").length === 1) {
@@ -118,10 +113,14 @@ export default function ManageOrganizationMembers({
     return true;
   };
 
+  const canEdit = member => {
+    return member.id === user.id || user_role.role_type > member.role.role_type;
+  };
+
   const deleteMember = m => {
     apiRequest(
       "delete",
-      "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
+      "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
       token,
       null,
       true
@@ -131,19 +130,19 @@ export default function ManageOrganizationMembers({
   const updateMember = m => {
     apiRequest(
       "patch",
-      "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
+      "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
       token,
-      parseMemberForUpdateRequest(m, organization),
+      parseMemberForUpdateRequest(m, project),
       true
     );
   };
 
-  const createMembers = organization_members => {
+  const createMembers = team_members => {
     apiRequest(
       "post",
-      "/api/organizations/" + organization.url_slug + "/add_members/",
+      "/api/projects/" + project.url_slug + "/add_members/",
       token,
-      parseMembersForCreateRequest(organization_members, organization),
+      parseMembersForCreateRequest(team_members, project),
       true
     );
   };
@@ -151,17 +150,16 @@ export default function ManageOrganizationMembers({
   const updateCreator = new_creator => {
     apiRequest(
       "post",
-      "/api/organizations/" + organization.url_slug + "/change_creator/",
+      "/api/projects/" + project.url_slug + "/change_creator/",
       token,
-      parseMemberForUpdateRequest(new_creator, organization),
+      parseMemberForUpdateRequest(new_creator, project),
       true
     );
   };
-
   return (
     <>
       <Typography variant="h4" color="primary" className={classes.headline}>
-        Manage members of {organization.name}
+        Manage members of {project.name}
       </Typography>
       <form onSubmit={handleSubmit}>
         <ManageMembers
@@ -171,17 +169,15 @@ export default function ManageOrganizationMembers({
           availabilityOptions={availabilityOptions}
           user={user}
           canEdit={canEdit}
-          role_property_name="role_in_organization"
+          role_property_name="role_in_project"
           user_role={user_role}
           setUserRole={setUserRole}
-          hideHoursPerWeek
-          isOrganization
         />
         <div className={classes.buttonsContainer}>
           <div className={classes.buttons}>
             <Button
               className={classes.button}
-              href={"/organizations/" + organization.url_slug}
+              href={"/projects/" + project.url_slug}
               variant="contained"
               color="secondary"
             >
@@ -199,20 +195,22 @@ export default function ManageOrganizationMembers({
 
 const parseMembersForCreateRequest = members => {
   return {
-    organization_members: members.map(m => ({
+    team_members: members.map(m => ({
       ...m,
       permission_type_id: m.role.id,
-      role_in_organization: m.role_in_organization ? m.role_in_organization : ""
+      role_in_project: m.role_in_project ? m.role_in_project : "",
+      availability: m.availability.id
     }))
   };
 };
 
-const parseMemberForUpdateRequest = (m, organization) => {
+const parseMemberForUpdateRequest = (m, project) => {
   return {
     id: m.member_id,
     user: m.id,
     role: m.role.id,
-    role_in_organization: m.role_in_organization ? m.role_in_organization : "",
-    organization: organization.id
+    role_in_project: m.role_in_project ? m.role_in_project : "",
+    project: project.id,
+    availability: m.availability.id
   };
 };

@@ -68,7 +68,7 @@ class SignUpView(APIView):
     def post(self, request):
         required_params = [
             'email', 'password', 'first_name', 'last_name',
-            'country', 'city'
+            'country', 'city', 'email_project_suggestions', 'email_updates_on_projects'
         ]
         for param in required_params:
             if param not in request.data:
@@ -92,7 +92,9 @@ class SignUpView(APIView):
             user=user, country=request.data['country'],
             city=request.data['city'],
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
-            verification_key=uuid.uuid4()
+            verification_key=uuid.uuid4(),
+            email_project_suggestions=request.data['email_project_suggestions'],
+            email_updates_on_projects=request.data['email_updates_on_projects']
         )
 
         send_user_verification_email(user, user_profile.verification_key)
@@ -154,9 +156,16 @@ class ListMemberProjectsView(ListAPIView):
     serializer_class = ProjectFromProjectMemberSerializer
 
     def get_queryset(self):
-        return ProjectMember.objects.filter(
-            user=UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user,
-        ).order_by('id')
+        searched_user = UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user
+        if self.request.user == searched_user:     
+            return ProjectMember.objects.filter(
+                user=searched_user
+            ).order_by('-id')
+        else:
+            return ProjectMember.objects.filter(
+                user=searched_user,
+                project__is_draft=False
+            ).order_by('-id')
 
 
 class ListMemberOrganizationsView(ListAPIView):

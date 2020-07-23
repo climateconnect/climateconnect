@@ -6,7 +6,7 @@ const project_status_metadata = [
   },
   {
     key: "inprogress",
-    name: "In progress",
+    name: "In Progress",
     createProjectLabel: "in progress"
   },
   {
