@@ -104,6 +104,11 @@ class UserProfile(models.Model):
         default=False
     )
 
+    verification_key = models.UUIDField(
+        help_text="On signup create a unique key that will be used for user's profile verification",
+        verbose_name="Verification Key", null=True, blank=True, unique=True
+    )
+
     availability = models.ForeignKey(
         Availability,
         help_text="Points to user's availability for a work",

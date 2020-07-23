@@ -1,4 +1,7 @@
+import uuid
 from django.contrib.auth import (authenticate, login)
+import datetime
+from django.utils import timezone
 
 # Rest imports
 from rest_framework import status
@@ -28,6 +31,7 @@ from organization.serializers.organization import OrganizationsFromProjectMember
 
 from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.permissions import UserPermission
+from climateconnect_api.utility.email_setup import send_user_verification_email
 import logging
 logger = logging.getLogger(__name__)
 
@@ -84,15 +88,16 @@ class SignUpView(APIView):
 
         url_slug = (user.first_name + user.last_name).lower() + str(user.id)
 
-        UserProfile.objects.create(
+        user_profile = UserProfile.objects.create(
             user=user, country=request.data['country'],
             city=request.data['city'],
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
-            is_profile_verified=True, email_project_suggestions=request.data['email_project_suggestions'],
-            email_updates_on_projects=request.data['email_updates_on_projects'] #TODO: change this after automatic E-Mails are implemented
+            verification_key=uuid.uuid4(),
+            email_project_suggestions=request.data['email_project_suggestions'],
+            email_updates_on_projects=request.data['email_updates_on_projects']
         )
 
-        # TODO: Call a function that sends an email to user.
+        send_user_verification_email(user, user_profile.verification_key)
 
         message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(user.email)  # NOQA
 
@@ -142,6 +147,7 @@ class MemberProfileView(APIView):
             serializer = UserProfileStubSerializer(profile)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class ListMemberProjectsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
@@ -161,6 +167,7 @@ class ListMemberProjectsView(ListAPIView):
                 project__is_draft=False
             ).order_by('-id')
 
+
 class ListMemberOrganizationsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
@@ -172,6 +179,7 @@ class ListMemberOrganizationsView(ListAPIView):
         return OrganizationMember.objects.filter(
             user=UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user,
         ).order_by('id')
+
 
 class EditUserProfile(APIView):
     permission_classes = [UserPermission]
@@ -238,3 +246,32 @@ class EditUserProfile(APIView):
         user_profile.save()
         serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserEmailVerificationLinkView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        if 'uuid' not in request.data:
+            return Response({'message': 'Required parameters are missing.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # convert verification string
+        print(request.data)
+        verification_key = request.data['uuid'].replace('%2D', '-')
+
+        try:
+            user_profile = UserProfile.objects.get(verification_key=verification_key)
+        except User.DoesNotExist:
+            return Response({'message': 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if user_profile:
+            if user_profile.is_profile_verified:
+                return Response({
+                    'message': 'Account already verified. Please contact us if you are having trouble signing in.'
+                }, status=status.HTTP_204_NO_CONTENT)
+            else:
+                user_profile.is_profile_verified = True
+                user_profile.save()
+                return Response({"message": "Your profile is successfully verified"}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'Permission Denied'}, status=status.HTTP_403_FORBIDDEN)
