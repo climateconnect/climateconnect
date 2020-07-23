@@ -26,6 +26,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('ping/', status_views.PingPongView.as_view(), name='ping-pong-api'),
+    # User views
     path('login/', user_views.LoginView.as_view(), name='login-api'),
     path('logout/', knox_views.LogoutView.as_view(), name='logout-api'),
     path('signup/', user_views.SignUpView.as_view(), name="signup-api"),
@@ -40,7 +41,13 @@ urlpatterns = [
         name='user-account-settings-api'
     ),
     path('api/edit_profile/', user_views.EditUserProfile.as_view(), name='edit-user-profile-api'),
+    path(
+        'api/verify_profile/',
+        user_views.UserEmailVerificationLinkView.as_view(), name='user-email-verification-link-api'
+    ),
+    # Organization views
     path('api/', include('organization.urls')),
+    # Common views
     path('availability/', common_views.ListAvailabilitiesView.as_view(), name='list-availabilities-api'),
     path('skills/', common_views.ListSkillsView.as_view(), name='list-skills-api'),
     path('roles/', role_views.ListRolesView.as_view(), name='list-roles-api')
