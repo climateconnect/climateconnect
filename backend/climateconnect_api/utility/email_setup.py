@@ -20,6 +20,15 @@ def get_user_verification_url(verification_key):
 
     return url
 
+def get_new_email_verification_url(verification_key):
+    #TODO: Set expire time for new email verification
+    verification_key_str = str(verification_key).replace("-", "%2D")
+    url = ("%s/activate_email/%s" % (
+        settings.FRONTEND_URL, verification_key_str
+    ))
+
+    return url
+
 
 def send_user_verification_email(user, verification_key):
     url = get_user_verification_url(verification_key)
@@ -48,6 +57,42 @@ def send_user_verification_email(user, verification_key):
             }
         ],
         "template_id": settings.SENDGRID_EMAIL_VERIFICATION_TEMPLATE_ID
+    }
+
+    try:
+        sg.client.mail.send.post(request_body=data)
+    except Exception as ex:
+        logger.error("%s: Error sending email: %s" % (
+            send_user_verification_email.__name__, ex
+        ))
+
+def send_new_email_verification(user, new_email, verification_key):
+    url = get_new_email_verification_url(verification_key)
+    data = {
+        "personalizations": [
+            {
+                "to": [
+                    {
+                        "email": user.email
+                    }
+                ],
+                "dynamic_template_data": {
+                    "FirstName": user.first_name,
+                    "URL": url,
+                    "NewMail": new_email
+                },
+            },
+        ],
+        "from": {
+            "email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL
+        },
+        "content": [
+            {
+                "type": "text/html",
+                "value": " "
+            }
+        ],
+        "template_id": settings.SENDGRID_NEW_EMAIL_VERIFICATION_TEMPLATE_ID
     }
 
     try:

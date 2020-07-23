@@ -47,7 +47,7 @@ async function profileVerification (uuid) {
 
 export default function ProfileVerified({successMessage, errorMessage}) {
     return(
-        <Layout title="Account Verification">
+        <Layout title="Account Verified">
           {
             successMessage != '' ? (
                 <div>

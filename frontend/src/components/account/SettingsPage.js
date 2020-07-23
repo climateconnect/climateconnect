@@ -12,6 +12,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import tokenConfig from "../../../public/config/tokenConfig";
 import Axios from "axios";
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { redirect } from "../../../public/lib/apiOperations";
 
 const useStyles = makeStyles(theme => ({
   blockElement: {
@@ -59,7 +60,6 @@ const possibleEmailPreferences = [
 ];
 
 export default function SettingsPage({ settings, setSettings, token, setMessage }) {
-  console.log(token);
   const classes = useStyles();
   const [errors, setErrors] = React.useState({
     passworderror: "",
@@ -157,7 +157,24 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       });
     else {
       setErrors({ ...errors, newemailerror: "" });
-      //TODO: make API request to change email
+      Axios.post(
+        process.env.API_URL + "/api/account_settings/",
+        {email: newEmail},
+        tokenConfig(token)
+      )
+        .then(function(response) {
+          redirect("/",{
+            'message' : "An E-Mail to confirm this E-Mail address change has been sent to your old E-Mail address."
+        });
+        })
+        .catch(function(error) {
+          console.log(error);
+          setErrors({
+            ...errors,
+            newemailerror: "Error!"
+          });
+          if (error) console.log(error.response);
+        });
     }
   };
 
@@ -300,6 +317,9 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         <Button className={classes.blockElement} variant="contained" color="primary" type="submit">
           Change email
         </Button>
+        <Typography className={classes.blockElement} variant="body2">
+          Changing your E-Mail will not change the E-Mail you use for Login. It will just change the E-Mail that your E-Mails are delivered to.
+        </Typography>
       </form>
       <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
         Change email preferences
@@ -369,7 +389,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       </Typography>
       <Divider />
       <Button
-        href={"/editprofile" + settings.url_slug}
+        href={"/editprofile"}
         className={`${classes.editProfilePageButton}`}
         variant="contained"
         color="primary"

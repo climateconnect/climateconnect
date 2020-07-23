@@ -18,6 +18,7 @@ import Cookies from "next-cookies";
 import tokenConfig from "../public/config/tokenConfig";
 import axios from "axios";
 import Link from "next/link";
+import { getParams } from "../public/lib/generalOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -85,12 +86,19 @@ export default function Index({ projectsObject, organizationsObject, membersObje
     organizations: false
   });
   const [hash, setHash] = React.useState(null);
+  const [message, setMessage] = React.useState("")
+  const [errorMessage, setErrorMessage] = React.useState("")
   const typesByTabValue = ["projects", "organizations", "members"];
   useEffect(() => {
     if (window.location.hash) {
       setHash(window.location.hash.replace("#", ""));
       setTabValue(typesByTabValue.indexOf(window.location.hash.replace("#", "")));
     }
+    const params = getParams(window.location.href);
+    if (params.message) 
+      setMessage(decodeURI(params.message));
+    if(params.errorMessage)
+      setErrorMessage(decodeURI(params.errorMessage))
   });
   const [tabValue, setTabValue] = React.useState(hash ? typesByTabValue.indexOf(hash) : 0);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
@@ -172,7 +180,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
       {process.env.PRE_LAUNCH === "true" ? (
         <About />
       ) : (
-        <Layout title="Work on the most effective climate projects">
+        <Layout title="Work on the most effective climate projects" message={errorMessage?errorMessage:message} messageType={errorMessage?"error":"success"}>
           <div className={classes.filterSection}>
             <div className={classes.filterSectionFirstLine}>
               <Button

@@ -45,6 +45,10 @@ urlpatterns = [
         'api/verify_profile/',
         user_views.UserEmailVerificationLinkView.as_view(), name='user-email-verification-link-api'
     ),
+    path(
+        'api/verify_new_email/',
+        settings_views.ChangeEmailView.as_view(), name='user-new-email-verification-link-api'
+    ),
     # Organization views
     path('api/', include('organization.urls')),
     # Common views

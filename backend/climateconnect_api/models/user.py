@@ -144,6 +144,13 @@ class UserProfile(models.Model):
         default=0
     )
 
+    pending_new_email = models.EmailField(
+        help_text="If the user is in the process of changing their email, this field will show the potential new email",
+        verbose_name="Potential new E-Mail address",
+        null=True,
+        blank=True
+    )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "User Profile"

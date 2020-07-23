@@ -27,7 +27,6 @@ export default function Layout({
 }) {
   const classes = useStyles();
   const [alertOpen, setAlertOpen] = React.useState(true);
-
   return (
     <LayoutWrapper theme={theme} title={title}>
       <Header noSpacingBottom={noSpacingBottom} />
