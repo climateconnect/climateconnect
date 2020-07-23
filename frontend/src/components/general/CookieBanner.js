@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => {
   }
 })
 
-export default function CookieBanner() {
+export default function CookieBanner({closeBanner}) {
   const classes = useStyles()
   const [checked, setChecked] = React.useState({necessary: true, statistics: false})
   const cookies = new Cookies(); 
@@ -38,16 +38,20 @@ export default function CookieBanner() {
   }
 
   const confirmSelection = () => {
-    console.log('setting selection cookies')
     cookies.set(
       "acceptedNecessary", 
       true,
       { path: "/", sameSite: true }
     )
+    cookies.set(
+      "acceptedStatistics", 
+      false,
+      { path: "/", sameSite: true }
+    )
+    closeBanner()
   }
 
   const enableAll = () => {
-    console.log('setting cookies')
     cookies.set(
       "acceptedNecessary", 
       true,
@@ -58,6 +62,7 @@ export default function CookieBanner() {
       true,
       { path: "/", sameSite: true }
     )
+    closeBanner()
   }
 
   return (

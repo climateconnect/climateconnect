@@ -151,8 +151,8 @@ export default function Index({ projectsObject, organizationsObject, membersObje
   const loadMoreMembers = async page => {
     const newMembersObject = await getMembers(page, token);
     setNextPages({ ...nextPages, members: nextPages.members + 1 });
-    const newMembers = membersWithAdditionalInfo(newMembersObject.members);
-    setHasMore({ ...hasMore, members: newMembersObject.hasMore });
+    const newMembers = newMembersObject && newMembersObject.members && membersWithAdditionalInfo(newMembersObject.members);
+    setHasMore({ ...hasMore, members: !newMembersObject?false:newMembersObject.hasMore });
     return [...newMembers];
   };
 

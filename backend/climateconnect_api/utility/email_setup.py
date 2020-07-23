@@ -22,6 +22,10 @@ def get_user_verification_url(verification_key):
 
 def get_new_email_verification_url(verification_key):
     #TODO: Set expire time for new email verification
+    logger.error("template id:"+settings.SENDGRID_EMAIL_VERIFICATION_TEMPLATE_ID)
+    logger.error("frontend url:"+settings.FRONTEND_URL)
+    logger.error("support mail:"+settings.CLIMATE_CONNECT_SUPPORT_EMAIL)
+    logger.error("sendgrid key:"+settings.SENDGRID_API_KEY)
     verification_key_str = str(verification_key).replace("-", "%2D")
     url = ("%s/activate_email/%s" % (
         settings.FRONTEND_URL, verification_key_str

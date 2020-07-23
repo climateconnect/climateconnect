@@ -93,6 +93,8 @@ async function getLoggedInUser(cookies) {
       return resp.data;
     } catch (err) {
       if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+      if(err.response.data.detail === "Invalid token.")
+        cookies.remove("token")
       return null;
     }
   } else {

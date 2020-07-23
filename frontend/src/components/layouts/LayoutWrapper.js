@@ -3,7 +3,6 @@ import Head from "next/head";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import CookieBanner from "../general/CookieBanner";
 import Cookies from "universal-cookie";
-import Loader from "react-loader-spinner"
 import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
@@ -31,13 +30,13 @@ export default function LayoutWrapper({ title, children, theme }) {
   const classes = useStyles();
   const cookies = new Cookies()
   const [loading, setLoading] = React.useState(true)
+  const [bannerOpen, setBannerOpen] = React.useState(true)
   const acceptedNecessary = cookies.get('acceptedNecessary')
   const acceptedStatistics = cookies.get('acceptedStatistics')
-  console.log(acceptedNecessary)
-  console.log(acceptedStatistics)
   useEffect(()=>{
     setLoading(false)
   })
+  const closeBanner = () => setBannerOpen(false)
   if(loading)
     return (
       <>
@@ -69,8 +68,8 @@ export default function LayoutWrapper({ title, children, theme }) {
         <ThemeProvider theme={theme}>
           <div className={classes.leaveSpaceForFooter}>
             {children}
-            {!acceptedNecessary &&
-              <CookieBanner />
+            {!acceptedNecessary && bannerOpen &&
+              <CookieBanner closeBanner={closeBanner}/>
             }
           </div>
         </ThemeProvider>
