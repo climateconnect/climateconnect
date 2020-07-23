@@ -45,9 +45,12 @@ class LoginView(KnowLoginView):
             return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
         
         user = authenticate(username=request.data['username'], password=request.data['password'])
-        if user:
-            login(request, user)
+        if user:            
             user_profile = UserProfile.objects.filter(user = user)[0]
+            if not user_profile.is_profile_verified:
+                message = "You first have to activate your account by clicking the link we sent to your E-Mail."
+                return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
+            login(request, user)
             if user_profile.has_logged_in<2:
                 user_profile.has_logged_in = user_profile.has_logged_in +1 
                 user_profile.save()
