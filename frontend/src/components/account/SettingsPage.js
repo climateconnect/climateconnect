@@ -11,6 +11,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import tokenConfig from "../../../public/config/tokenConfig";
 import Axios from "axios";
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 const useStyles = makeStyles(theme => ({
   blockElement: {
@@ -36,6 +37,13 @@ const useStyles = makeStyles(theme => ({
   editProfilePageButton: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2)
+  },
+  deleteMessage: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    marginTop: theme.spacing(5),
+    marginBottom: theme.spacing(5)
   }
 }));
 
@@ -368,6 +376,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       >
         Edit profile page
       </Button>
+      <Typography variant="subtitle2" className={classes.deleteMessage}><InfoOutlinedIcon />If you wish to delete this account, send an E-Mail to support@climateconnect.earth</Typography> 
     </>
   );
 }

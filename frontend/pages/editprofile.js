@@ -121,6 +121,7 @@ function ProfileLayout({
       handleCancel={handleCancel}
       skillsOptions={skillsOptions}
       splitName
+      deleteEmail="support@climateconnect.earth"
     />
   );
 }
