@@ -240,12 +240,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
               />
             ) : (
               <Typography component="h4" variant="h5" className={classes.infoMessage}>
-                There is no projects on this site yet.{" "}
-                <Link href="/share">
-                  <Typography color="primary" className={classes.link} component="h5" variant="h5">
-                    Share a project to create the first one!
-                  </Typography>
-                </Link>
+                We could not connect to the API. If this happens repeatedly, contact support@climateconnect.earth.
               </Typography>
             )}
           </TabContent>
