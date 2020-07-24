@@ -173,7 +173,6 @@ async function getProfileInfoMetadata() {
 }
 
 const parseProfileForRequest = (profile, availabilityOptions, user) => {
-  console.log(availabilityOptions);
   const availability = availabilityOptions.find(o => o.name == profile.info.availability);
   return {
     first_name: profile.first_name,
@@ -184,7 +183,8 @@ const parseProfileForRequest = (profile, availabilityOptions, user) => {
     city: profile.info.city,
     biography: profile.info.bio,
     availability: availability ? availability.id : user.availability ? user.availability.id : null,
-    skills: profile.info.skills.map(s => s.id)
+    skills: profile.info.skills.map(s => s.id),
+    website: profile.info.website
   };
 };
 

@@ -20,7 +20,8 @@ export function parseProfile(profile, detailledSkills, keepOldProps) {
       location: profile.city + ", " + profile.country,
       bio: profile.biography,
       skills: profile.skills && profile.skills.map(s => s.name),
-      availability: profile.availability && profile.availability.name
+      availability: profile.availability && profile.availability.name,
+      website: profile.website
     }
   };
   if (keepOldProps) delete user.info.location;
@@ -33,7 +34,6 @@ const SIGN_UP_MESSAGE =
 
 export function redirectOnLogin(user) {
   if (user.has_logged_in < 2) {
-    console.log("it is smaller than 3!");
     Router.push({
       pathname: "/editprofile",
       query: {

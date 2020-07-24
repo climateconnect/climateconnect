@@ -20,6 +20,13 @@
     "missingMessage": "This user hasn't added a bio yet.",
     "maxLength": 240
   },
+  "website": {
+    "name": "Website",
+    "type": "text",
+    "key": "bio",
+    "maxLength": 240,
+    "linkify": true
+  },
   "city": {
     "name": "City",
     "key": "city",

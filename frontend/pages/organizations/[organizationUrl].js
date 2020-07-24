@@ -259,7 +259,8 @@ function parseOrganization(organization) {
       shortdescription: organization.short_description,
       school: organization.school,
       organ: organization.organ,
-      parent_organization: organization.parent_organization
+      parent_organization: organization.parent_organization,
+      website: organization.website
     }
   };
 }

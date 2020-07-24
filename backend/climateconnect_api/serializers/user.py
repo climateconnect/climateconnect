@@ -20,7 +20,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name',
             'url_slug', 'image', 'background_image',
             'country', 'state', 'city', 'biography', 'is_profile_verified',
-            'availability', 'skills', 'has_logged_in'
+            'availability', 'skills', 'has_logged_in', 'website'
         )
 
     def get_id(self, obj):
@@ -49,7 +49,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'id', 'first_name', 'last_name',
             'url_slug', 'image', 'background_image',
             'country', 'state', 'city', 'biography', 'is_profile_verified',
-            'availability', 'skills'
+            'availability', 'skills', 'website'
         )
 
     def get_id(self, obj):
@@ -72,7 +72,7 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'first_name', 'last_name',
             'url_slug', 'image', 'background_image',
-            'country', 'state', 'city'
+            'country', 'state', 'city', 'website'
         )
 
     def get_id(self, obj):

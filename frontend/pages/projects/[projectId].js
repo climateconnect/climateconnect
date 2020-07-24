@@ -224,7 +224,8 @@ function parseProject(project) {
     tags: project.tags.map(t => t.project_tag.name),
     collaborating_organizations: project.collaborating_organizations.map(
       o => o.collaborating_organization
-    )
+    ),
+    website: project.website
   };
 }
 

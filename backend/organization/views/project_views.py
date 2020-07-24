@@ -213,6 +213,8 @@ class ProjectAPIView(APIView):
             project.city = request.data['city']
         if 'is_draft' in request.data:
             project.is_draft = False
+        if 'website' in request.data:
+            project.website = request.data['website']
         if 'collaborators_welcome' in request.data:
             project.collaborators_welcome = request.data['collaborators_welcome']
         if 'helpful_connections' in request.data:

@@ -102,6 +102,7 @@ function SmallScreenOverview({ project, handleChangeProject, tagsOptions }) {
         <InputName project={project} screenSize="small" />
         <InputShortDescription project={project} handleChangeProject={handleChangeProject} />
         <InputLocation project={project} handleChangeProject={handleChangeProject} />
+        <InputWebsite project={project} handleChangeProject={handleChangeProject} />
         <InputTags
           tagsOptions={tagsOptions}
           project={project}
@@ -128,6 +129,7 @@ function LargeScreenOverview({ project, handleChangeProject, tagsOptions }) {
         <div className={classes.inlineProjectInfo}>
           <InputShortDescription project={project} handleChangeProject={handleChangeProject} />
           <InputLocation project={project} handleChangeProject={handleChangeProject} />
+          <InputWebsite project={project} handleChangeProject={handleChangeProject} />
           <InputTags
             tagsOptions={tagsOptions}
             project={project}
@@ -188,6 +190,23 @@ const InputLocation = ({ project, handleChangeProject }) => {
     </div>
   );
 };
+
+const InputWebsite = ({project, handleChangeProject}) => {
+  const classes = useStyles();
+  return (
+    <div className={classes.projectInfoEl}>
+      <TextField
+        label="Website"
+        variant="outlined"
+        fullWidth
+        value={project.website}
+        className={classes.input}
+        type="text"
+        onChange={event => handleChangeProject(event.target.value, "website")}
+      />
+    </div>
+  )
+}
 
 const InputTags = ({ project, handleChangeProject, tagsOptions }) => {
   const classes = useStyles();

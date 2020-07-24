@@ -1,15 +1,23 @@
 import React from "react";
-import { Container, Typography, Button, Tooltip } from "@material-ui/core";
+import { Container, Typography, Button, Tooltip, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
 import ExploreIcon from "@material-ui/icons/Explore";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import MessageContent from "../communication/MessageContent";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
+import LanguageIcon from '@material-ui/icons/Language';
+import Linkify from "react-linkify";
 
 const useStyles = makeStyles(theme => ({
   ...projectOverviewStyles(theme)
 }));
+
+const componentDecorator = (href, text, key) => (
+  <Link color="primary" underline="always" href={href} key={key} target="_blank" rel="noopener noreferrer">
+    {text}
+  </Link>
+);
 
 export default function ProjectOverview({ project, smallScreen }) {
   const classes = useStyles();
@@ -41,6 +49,15 @@ function SmallScreenOverview({ project }) {
               <PlaceIcon color="primary" className={classes.icon} />
             </Tooltip>{" "}
             {project.location}
+          </Typography>
+        </div>
+        <div className={classes.projectInfoEl}>
+          <Typography>
+            <Tooltip title="Website">
+              <LanguageIcon color="primary" className={classes.icon} />
+            </Tooltip>{" "}
+            <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
+            
           </Typography>
         </div>
         <div className={classes.projectInfoEl}>
@@ -86,6 +103,14 @@ function LargeScreenOverview({ project }) {
                 <PlaceIcon color="primary" className={classes.icon} />
               </Tooltip>{" "}
               {project.location}
+            </Typography>
+          </div>
+          <div className={classes.projectInfoEl}>
+            <Typography>
+              <Tooltip title="Website">
+                <LanguageIcon color="primary" className={classes.icon} />
+              </Tooltip>{" "}
+              <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
             </Typography>
           </div>
           <div className={classes.projectInfoEl}>

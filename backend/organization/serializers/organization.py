@@ -12,7 +12,10 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ('id', 'types', 'name', 'url_slug', 'image', 'background_image', 'parent_organization', 'country', 'state', 'city', 'short_description', 'organ', 'school')
+        fields = ('id', 'types', 'name', 'url_slug', 'image', 
+            'background_image', 'parent_organization', 'country', 
+            'state', 'city', 'short_description', 'organ', 'school', 'website'
+        )
 
     def get_types(self, obj):
         serializer = OrganizationTaggingSerializer(obj.tag_organization, many=True)
@@ -25,7 +28,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
 class OrganizationMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
-        fields = ('id', 'name', 'url_slug', 'image', 'short_description', 'background_image', 'country', 'state', 'city')
+        fields = ('id', 'name', 'url_slug', 'image', 'short_description', 'background_image', 'country', 'state', 'city', 'website')
 
 class OrganizationCardSerializer(serializers.ModelSerializer):
     types = serializers.SerializerMethodField()

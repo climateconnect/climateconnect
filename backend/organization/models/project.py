@@ -129,6 +129,14 @@ class Project(models.Model):
         default=False
     )
 
+    website = models.CharField(
+        help_text="Website",
+        verbose_name="Project's website",
+        max_length=256,
+        null=True,
+        blank=True
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Project"

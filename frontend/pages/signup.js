@@ -51,7 +51,7 @@ export default function Signup() {
       email_updates_on_projects: values.emails
     });
     const payload = {
-      email: userInfo.email.trim(),
+      email: userInfo.email.trim().toLowerCase(),
       password: userInfo.password,
       first_name: values.first_name.trim(),
       last_name: values.last_name.trim(),

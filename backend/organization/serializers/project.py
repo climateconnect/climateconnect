@@ -27,7 +27,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             'collaborators_welcome', 
             'skills', 'helpful_connections',
             'project_parents', 'tags', 
-            'created_at', 'collaborating_organizations', 'is_draft'
+            'created_at', 'collaborating_organizations', 'is_draft',
+            'website'
         )
         read_only_fields = ['url_slug']
 
@@ -77,7 +78,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
             'name', 'url_slug', 
             'skills', 'image', 
             'status', 'country', 
-            'city', 'project_parents', 'is_draft'
+            'city', 'project_parents', 'is_draft','website'
         )
     
     def get_project_parents(self, obj):

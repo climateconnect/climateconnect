@@ -2,6 +2,7 @@ import React from "react";
 import { Container, Avatar, Typography, Chip, Button, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
+import Linkify from "react-linkify";
 
 const useStyles = makeStyles(theme => ({
   avatar: {
@@ -92,6 +93,12 @@ export default function AccountPage({
 }) {
   const classes = useStyles();
 
+  const componentDecorator = (href, text, key) => (
+    <Link color="primary" underline="always" href={href} key={key} target="_blank" rel="noopener noreferrer">
+      {text}
+    </Link>
+  );
+
   const displayAccountInfo = info =>
     Object.keys(info).map((key, index) => {
       if (info[key]) {
@@ -117,18 +124,29 @@ export default function AccountPage({
                   i.value.map(entry => (
                     <Chip size="medium" label={entry} key={entry} className={classes.chip} />
                   ))
-                ) : (
+                ) : i.missingMessage &&(
                   <div className={classes.content}>{i.missingMessage}</div>
                 )}
               </div>
             </div>
           );
+        } else if(i.linkify && value){
+          return (
+            <>
+              <div className={classes.subtitle}>{i.name}:</div>
+              <Linkify componentDecorator={componentDecorator} key={index}> 
+                <div className={classes.content}>         
+                  {value}
+                </div>
+              </Linkify>
+            </>
+          )
         } else if (value) {
           return (
             <div key={index}>
               <div className={classes.subtitle}>{i.name}:</div>
               <div className={classes.content}>
-                {value ? value + additionalText : i.missingMessage}
+              {value ? value + additionalText : i.missingMessage}
               </div>
             </div>
           );

@@ -229,6 +229,8 @@ class EditUserProfile(APIView):
             user_profile.city = request.data['city']
         if 'biography' in request.data:
             user_profile.biography = request.data['biography']
+        if 'website' in request.data:
+            user_profile.website = request.data['website']
 
         if 'availability' in request.data:
             try:

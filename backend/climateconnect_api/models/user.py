@@ -162,6 +162,14 @@ class UserProfile(models.Model):
         auto_now_add=True
     )
 
+    website = models.CharField(
+        help_text="Website",
+        verbose_name="User's Website",
+        max_length=256,
+        null=True,
+        blank=True
+    )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "User Profile"

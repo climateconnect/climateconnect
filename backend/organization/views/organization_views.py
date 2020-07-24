@@ -76,6 +76,8 @@ class CreateOrganizationView(APIView):
                 organization.city = request.data['city']
             if 'short_description' in request.data:
                 organization.short_description = request.data['short_description']
+            if 'website' in request.data:
+                organization.website = request.data['website']
             organization.save()
             roles = Role.objects.all()
             for member in request.data['team_members']:
