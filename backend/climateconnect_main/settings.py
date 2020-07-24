@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 from dotenv import find_dotenv, load_dotenv
-load_dotenv(find_dotenv('.backend_env_cloud'))
+load_dotenv(find_dotenv('.backend_env'))
 env = os.environ.get
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -165,6 +165,7 @@ SENDGRID_API_KEY = env('SENDGRID_API_KEY', '')
 CLIMATE_CONNECT_SUPPORT_EMAIL = env('CLIMATE_CONNECT_SUPPORT_EMAIL', '')
 SENDGRID_EMAIL_VERIFICATION_TEMPLATE_ID = env('SENDGRID_EMAIL_VERIFICATION_TEMPLATE_ID', '')
 SENDGRID_NEW_EMAIL_VERIFICATION_TEMPLATE_ID = env('SENDGRID_NEW_EMAIL_VERIFICATION_TEMPLATE_ID', '')
+SENDGRID_RESET_PASSWORD_TEMPLATE_ID = env('SENDGRID_RESET_PASSWORD_TEMPLATE_ID', '')
 FRONTEND_URL = env('FRONTEND_URL', '')
 
 EMAIL_HOST = env('EMAIL_HOST')

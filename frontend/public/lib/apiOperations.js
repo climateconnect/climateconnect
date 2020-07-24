@@ -24,6 +24,25 @@ export async function apiRequest(method, url, token, payload, throwError) {
   }
 }
 
+const config = {
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json"
+  }
+};
+
+export async function resendEmail(email, onSuccess, onError) {
+  axios
+  .post(process.env.API_URL + "/api/resend_verification_email/", {email: email}, config)
+  .then(function(resp) {
+    onSuccess(resp)
+  })
+  .catch(function(error) {
+    console.log(error);
+    onError(error)
+  });
+}
+
 export async function redirect(url, messages) {
   Router.push({
     pathname: url,

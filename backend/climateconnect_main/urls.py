@@ -49,6 +49,18 @@ urlpatterns = [
         'api/verify_new_email/',
         settings_views.ChangeEmailView.as_view(), name='user-new-email-verification-link-api'
     ),
+    path(
+        'api/send_reset_password_email/',
+        user_views.SendResetPasswordEmail.as_view(), name='send-reset-password-email'
+    ),
+    path(
+        'api/set_new_password/',
+        user_views.SetNewPassword.as_view(), name='set-new-password'
+    ),
+    path(
+        'api/resend_verification_email/',
+        user_views.ResendVerificationEmail.as_view(), name='resend-verification-email'
+    ),
     # Organization views
     path('api/', include('organization.urls')),
     # Common views
