@@ -151,7 +151,7 @@ export default function EditProjectRoot({
         <Divider className={classes.divider} />
         <BottomNavigation
           onClickCancel={handleCancel}
-          additionalButtons={additionalButtons}
+          additionalButtons={project.is_draft && additionalButtons}
           nextStepButtonType={project.is_draft ? "publish" : "save"}
           className={classes.bottomNavigation}
         />
