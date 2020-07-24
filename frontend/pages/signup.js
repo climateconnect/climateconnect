@@ -73,8 +73,6 @@ export default function Signup() {
         Router.push({
           pathname: "/accountcreated/"
         });
-        //TODO: readd this after automatic E-Mail sending is finished
-        //setCurStep(steps[2]);
       })
       .catch(function(error) {
         console.log(error);
