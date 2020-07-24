@@ -15,6 +15,7 @@ import Router from "next/router";
 
 import tokenConfig from "../../public/config/tokenConfig";
 import axios from "axios";
+import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,21 +31,35 @@ const useStyles = makeStyles(theme => ({
   tabContent: {
     padding: theme.spacing(2),
     textAlign: "left"
+  },
+  dialogText: {
+    textAlign: "center",
+    margin: "0 auto",
+    display: "block"
   }
 }));
 
-export default function ProjectPage({ project, members, posts, comments }) {
-  const [message, setMessage] = React.useState("");
+export default function ProjectPage({ project, members, posts, comments, token, following }) {
+  const [message, setMessage] = React.useState({});
+  const [isUserFollowing, setIsUserFollowing] = React.useState(following);
   useEffect(() => {
     const params = getParams(window.location.href);
-    if (params.message) setMessage(decodeURI(params.message));
+    if (params.message) setMessage({ message: decodeURI(params.message) });
     if (project.is_draft) Router.push("/editProject/" + project.url_slug);
   });
   return (
-    <WideLayout message={message} title={project ? project.name : "Project not found"}>
+    <WideLayout
+      message={message.message}
+      messageType={message.messageType}
+      title={project ? project.name : "Project not found"}
+    >
       {project ? (
         <ProjectLayout
           project={{ ...project, team: members, timeline_posts: posts, comments: comments }}
+          token={token}
+          setMessage={setMessage}
+          isUserFollowing={isUserFollowing}
+          setIsUserFollowing={setIsUserFollowing}
         />
       ) : (
         <NoProjectFoundLayout />
@@ -60,14 +75,17 @@ ProjectPage.getInitialProps = async ctx => {
     project: await getProjectByIdIfExists(projectUrl, token),
     members: token ? await getProjectMembersByIdIfExists(projectUrl, token) : [],
     posts: await getPostsByProject(projectUrl, token),
-    comments: await getCommentsByProject(projectUrl, token)
+    comments: await getCommentsByProject(projectUrl, token),
+    token: token,
+    following: await getIsUserFollowing(projectUrl, token)
   };
 };
 
-function ProjectLayout({ project }) {
+function ProjectLayout({ project, token, setMessage, isUserFollowing, setIsUserFollowing }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const [hash, setHash] = React.useState(null);
+  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState(false);
   const typesByTabValue = ["project", "team", "comments"];
   useEffect(() => {
     if (window.location.hash) {
@@ -84,9 +102,53 @@ function ProjectLayout({ project }) {
     setTabValue(newValue);
   };
 
+  const onConfirmDialogClose = confirmed => {
+    if (confirmed) toggleFollowProject();
+    setConfirmDialogOpen(false);
+  };
+
+  const handleToggleFollowProject = () => {
+    if (!token)
+      setMessage({
+        message: (
+          <span>
+            Please <a href="/signin">log in</a> to follow a project.
+          </span>
+        ),
+        messageType: "error"
+      });
+    else if (isUserFollowing) setConfirmDialogOpen(true);
+    else toggleFollowProject();
+  };
+
+  const toggleFollowProject = () => {
+    axios
+      .post(
+        process.env.API_URL + "/api/projects/" + project.url_slug + "/set_follow/",
+        { following: !isUserFollowing },
+        tokenConfig(token)
+      )
+      .then(function(response) {
+        setIsUserFollowing(response.data.following);
+        setMessage({
+          message: response.data.message,
+          messageType: "success"
+        });
+      })
+      .catch(function(error) {
+        console.log(error);
+        if (error && error.reponse) console.log(error.response);
+      });
+  };
+
   return (
     <div className={classes.root}>
-      <ProjectOverview project={project} smallScreen={isNarrowScreen} />
+      <ProjectOverview
+        project={project}
+        smallScreen={isNarrowScreen}
+        handleToggleFollowProject={handleToggleFollowProject}
+        isUserFollowing={isUserFollowing}
+      />
 
       <Container className={classes.noPadding}>
         <div className={classes.tabsWrapper}>
@@ -114,6 +176,20 @@ function ProjectLayout({ project }) {
           <ProjectCommentsContent comments={project.comments} />
         </TabContent>
       </Container>
+      <ConfirmDialog
+        open={confirmDialogOpen}
+        onClose={onConfirmDialogClose}
+        title="Do you really want to unfollow?"
+        text={
+          <span className={classes.dialogText}>
+            Are you sure that you want to unfollow this project?
+            <br />
+            You won't receive updates about it anymore
+          </span>
+        }
+        confirmText="Yes"
+        cancelText="No"
+      />
     </div>
   );
 }
@@ -145,6 +221,23 @@ async function getProjectByIdIfExists(projectUrl, token) {
     else {
       //TODO: get comments and timeline posts and project taggings
       return parseProject(resp.data);
+    }
+  } catch (err) {
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+async function getIsUserFollowing(projectUrl, token) {
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/api/projects/" + projectUrl + "/am_i_following/",
+      tokenConfig(token)
+    );
+    if (resp.data.length === 0) return null;
+    else {
+      //TODO: get comments and timeline posts and project taggings
+      return resp.data.is_following;
     }
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
@@ -225,7 +318,8 @@ function parseProject(project) {
     collaborating_organizations: project.collaborating_organizations.map(
       o => o.collaborating_organization
     ),
-    website: project.website
+    website: project.website,
+    number_of_followers: project.number_of_followers
   };
 }
 

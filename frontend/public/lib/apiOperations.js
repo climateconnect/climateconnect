@@ -33,14 +33,14 @@ const config = {
 
 export async function resendEmail(email, onSuccess, onError) {
   axios
-  .post(process.env.API_URL + "/api/resend_verification_email/", {email: email}, config)
-  .then(function(resp) {
-    onSuccess(resp)
-  })
-  .catch(function(error) {
-    console.log(error);
-    onError(error)
-  });
+    .post(process.env.API_URL + "/api/resend_verification_email/", { email: email }, config)
+    .then(function(resp) {
+      onSuccess(resp);
+    })
+    .catch(function(error) {
+      console.log(error);
+      onError(error);
+    });
 }
 
 export async function redirect(url, messages) {

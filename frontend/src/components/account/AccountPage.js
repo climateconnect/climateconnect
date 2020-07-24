@@ -94,7 +94,14 @@ export default function AccountPage({
   const classes = useStyles();
 
   const componentDecorator = (href, text, key) => (
-    <Link color="primary" underline="always" href={href} key={key} target="_blank" rel="noopener noreferrer">
+    <Link
+      color="primary"
+      underline="always"
+      href={href}
+      key={key}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       {text}
     </Link>
   );
@@ -120,33 +127,29 @@ export default function AccountPage({
             <div key={index} className={classes.infoElement}>
               <div className={classes.subtitle}>{i.name}:</div>
               <div className={classes.chipArray}>
-                {i && i.value && i.value.length > 0 ? (
-                  i.value.map(entry => (
-                    <Chip size="medium" label={entry} key={entry} className={classes.chip} />
-                  ))
-                ) : i.missingMessage &&(
-                  <div className={classes.content}>{i.missingMessage}</div>
-                )}
+                {i && i.value && i.value.length > 0
+                  ? i.value.map(entry => (
+                      <Chip size="medium" label={entry} key={entry} className={classes.chip} />
+                    ))
+                  : i.missingMessage && <div className={classes.content}>{i.missingMessage}</div>}
               </div>
             </div>
           );
-        } else if(i.linkify && value){
+        } else if (i.linkify && value) {
           return (
             <>
               <div className={classes.subtitle}>{i.name}:</div>
-              <Linkify componentDecorator={componentDecorator} key={index}> 
-                <div className={classes.content}>         
-                  {value}
-                </div>
+              <Linkify componentDecorator={componentDecorator} key={index}>
+                <div className={classes.content}>{value}</div>
               </Linkify>
             </>
-          )
+          );
         } else if (value) {
           return (
             <div key={index}>
               <div className={classes.subtitle}>{i.name}:</div>
               <div className={classes.content}>
-              {value ? value + additionalText : i.missingMessage}
+                {value ? value + additionalText : i.missingMessage}
               </div>
             </div>
           );

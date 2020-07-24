@@ -51,5 +51,5 @@ export default {
     key: "bio",
     maxLength: 240,
     linkify: true
-  },
+  }
 };

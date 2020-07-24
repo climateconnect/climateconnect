@@ -122,30 +122,33 @@ export default function EditProjectContent({
   };
 
   const handleClickDeleteProjectPopup = () => {
-    console.log("oh no, we gotta delete the project!")
-    setOpen({...open, delete: true})
-  }
+    console.log("oh no, we gotta delete the project!");
+    setOpen({ ...open, delete: true });
+  };
 
   const handleDeleteProjectDialogClose = confirmed => {
-    if(confirmed){
-      deleteProject()
+    if (confirmed) {
+      deleteProject();
     }
-    setOpen({...open, delete: false})
-  }
+    setOpen({ ...open, delete: false });
+  };
 
   const handleSwitchChange = event => {
-    if(event.target.checked && !project.project_parents.parent_organization && userOrganizations[0])
+    if (
+      event.target.checked &&
+      !project.project_parents.parent_organization &&
+      userOrganizations[0]
+    )
       handleSetProject({
-        ...project, 
+        ...project,
         project_parents: {
           ...project.project_parents,
           parent_organization: userOrganizations[0]
         },
         is_personal_project: !event.target.checked
-      })
-    else
-      handleChangeProject(!event.target.checked, "is_personal_project")
-  }
+      });
+    else handleChangeProject(!event.target.checked, "is_personal_project");
+  };
 
   return (
     <div>
@@ -161,16 +164,19 @@ export default function EditProjectContent({
           />
           <Typography component="span">{"Organization's project"}</Typography>
         </div>
-        {user_role.name === "Creator" &&
+        {user_role.name === "Creator" && (
           <Button
-            classes={{root: classes.deleteProjectButton, focusVisible: classes.deleteProjectButtonFocus}}
+            classes={{
+              root: classes.deleteProjectButton,
+              focusVisible: classes.deleteProjectButtonFocus
+            }}
             variant="contained"
             color="error"
             onClick={handleClickDeleteProjectPopup}
           >
             {project.is_draft ? "Delete Draft" : "Delete Project"}
           </Button>
-        }
+        )}
         <div className={classes.block}>
           {project.is_personal_project ? (
             <>
@@ -356,7 +362,7 @@ export default function EditProjectContent({
         cancelText="No"
         confirmText="Yes"
         title="Do you really want to delete your project?"
-        text='If you delete your project, it will be lost. Are you sure that you want to delete it?'
+        text="If you delete your project, it will be lost. Are you sure that you want to delete it?"
       />
     </div>
   );

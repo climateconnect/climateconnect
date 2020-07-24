@@ -11,7 +11,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import tokenConfig from "../../../public/config/tokenConfig";
 import Axios from "axios";
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import { redirect } from "../../../public/lib/apiOperations";
 
 const useStyles = makeStyles(theme => ({
@@ -71,7 +71,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
   const [passwordInputs, setPasswordInputs] = React.useState({
     oldpassword: "",
     newpassword: "",
-    confirmnewpassword: "",
+    confirmnewpassword: ""
     /*profileurlerror: ""*/
   });
   const [newEmail, setNewEmail] = React.useState("");
@@ -109,42 +109,42 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       setPasswordInputs({ ...passwordInputs, newpassword: "", confirmnewpassword: "" });
     } else {
       setErrors({ ...errors, passworderror: "" });
-      console.log(passwordInputs.newpassword)
+      console.log(passwordInputs.newpassword);
       Axios.post(
         process.env.API_URL + "/api/account_settings/",
-        { 
-          password: passwordInputs.newpassword, 
-          confirm_password: passwordInputs.confirmnewpassword ,
+        {
+          password: passwordInputs.newpassword,
+          confirm_password: passwordInputs.confirmnewpassword,
           old_password: passwordInputs.oldpassword
         },
         tokenConfig(token)
       )
-      .then(function(response) {
-        console.log(response)
-        setMessage(response.data.message);
-        setErrors({
-          ...errors,
-          passworderror: ""
-        });
-        setPasswordInputs({
-          oldpassword: "",
-          newpassword: "",
-          confirmnewpassword: "",
-          profileurlerror: ""
-        })
-        window.scrollTo(0, 0);
-      })
-      .catch(function(error) {
-        console.log(error.response.data);
-        console.log()
-        if(error.response && error.response.data)
+        .then(function(response) {
+          console.log(response);
+          setMessage(response.data.message);
           setErrors({
             ...errors,
-            passworderror: error.response.data[0]
+            passworderror: ""
           });
-          setMessage("")
-        if (error) console.log(error.response);
-      });
+          setPasswordInputs({
+            oldpassword: "",
+            newpassword: "",
+            confirmnewpassword: "",
+            profileurlerror: ""
+          });
+          window.scrollTo(0, 0);
+        })
+        .catch(function(error) {
+          console.log(error.response.data);
+          console.log();
+          if (error.response && error.response.data)
+            setErrors({
+              ...errors,
+              passworderror: error.response.data[0]
+            });
+          setMessage("");
+          if (error) console.log(error.response);
+        });
     }
   };
 
@@ -159,13 +159,14 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       setErrors({ ...errors, newemailerror: "" });
       Axios.post(
         process.env.API_URL + "/api/account_settings/",
-        {email: newEmail},
+        { email: newEmail },
         tokenConfig(token)
       )
         .then(function(response) {
-          redirect("/",{
-            'message' : "An E-Mail to confirm this E-Mail address change has been sent to your old E-Mail address."
-        });
+          redirect("/", {
+            message:
+              "An E-Mail to confirm this E-Mail address change has been sent to your old E-Mail address."
+          });
         })
         .catch(function(error) {
           console.log(error);
@@ -318,7 +319,8 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           Change email
         </Button>
         <Typography className={classes.blockElement} variant="body2">
-          Changing your E-Mail will not change the E-Mail you use for Login. It will just change the E-Mail that your E-Mails are delivered to.
+          Changing your E-Mail will not change the E-Mail you use for Login. It will just change the
+          E-Mail that your E-Mails are delivered to.
         </Typography>
       </form>
       <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
@@ -396,7 +398,10 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       >
         Edit profile page
       </Button>
-      <Typography variant="subtitle2" className={classes.deleteMessage}><InfoOutlinedIcon />If you wish to delete this account, send an E-Mail to support@climateconnect.earth</Typography> 
+      <Typography variant="subtitle2" className={classes.deleteMessage}>
+        <InfoOutlinedIcon />
+        If you wish to delete this account, send an E-Mail to support@climateconnect.earth
+      </Typography>
     </>
   );
 }

@@ -81,8 +81,8 @@ export default function EditProjectPage({
         </Typography>
       </WideLayout>
     );
-  else{
-    const user_role = members.find(m => m.user && m.user.id === user.id).role
+  else {
+    const user_role = members.find(m => m.user && m.user.id === user.id).role;
     return (
       <WideLayout className={classes.root} title={"Edit project " + project.name} hideHeadline>
         <EditProjectRoot

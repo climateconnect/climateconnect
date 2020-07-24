@@ -16,27 +16,27 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     position: "relative",
     flex: 1,
-    alignItems: 'center', 
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     height: "100vh",
     flexDirection: "column"
   },
   spinner: {
-    width:100
+    width: 100
   }
 }));
 
 export default function LayoutWrapper({ title, children, theme }) {
   const classes = useStyles();
-  const cookies = new Cookies()
-  const [loading, setLoading] = React.useState(true)
-  const [bannerOpen, setBannerOpen] = React.useState(true)
-  const acceptedNecessary = cookies.get('acceptedNecessary')
-  useEffect(()=>{
-    setLoading(false)
-  })
-  const closeBanner = () => setBannerOpen(false)
-  if(loading)
+  const cookies = new Cookies();
+  const [loading, setLoading] = React.useState(true);
+  const [bannerOpen, setBannerOpen] = React.useState(true);
+  const acceptedNecessary = cookies.get("acceptedNecessary");
+  useEffect(() => {
+    setLoading(false);
+  });
+  const closeBanner = () => setBannerOpen(false);
+  if (loading)
     return (
       <>
         <Head>
@@ -48,12 +48,14 @@ export default function LayoutWrapper({ title, children, theme }) {
         </Head>
         <ThemeProvider theme={theme}>
           <div className={classes.spinnerContainer}>
-            <div><img className={classes.spinner} src="/images/logo.png"/></div>
+            <div>
+              <img className={classes.spinner} src="/images/logo.png" />
+            </div>
             <Typography component="div">Loading...</Typography>
           </div>
         </ThemeProvider>
       </>
-    )
+    );
   else
     return (
       <>
@@ -67,9 +69,7 @@ export default function LayoutWrapper({ title, children, theme }) {
         <ThemeProvider theme={theme}>
           <div className={classes.leaveSpaceForFooter}>
             {children}
-            {!acceptedNecessary && bannerOpen &&
-              <CookieBanner closeBanner={closeBanner}/>
-            }
+            {!acceptedNecessary && bannerOpen && <CookieBanner closeBanner={closeBanner} />}
           </div>
         </ThemeProvider>
       </>
