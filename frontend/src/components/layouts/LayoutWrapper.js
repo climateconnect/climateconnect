@@ -48,7 +48,7 @@ export default function LayoutWrapper({ title, children, theme }) {
         </Head>
         <ThemeProvider theme={theme}>
           <div className={classes.spinnerContainer}>
-            <div><img className={classes.spinner} src="images/logo.png"/></div>
+            <div><img className={classes.spinner} src="/images/logo.png"/></div>
             <Typography component="div">Loading...</Typography>
           </div>
         </ThemeProvider>

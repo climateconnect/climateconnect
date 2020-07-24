@@ -133,6 +133,20 @@ export default function EditProjectContent({
     setOpen({...open, delete: false})
   }
 
+  const handleSwitchChange = event => {
+    if(event.target.checked && !project.project_parents.parent_organization && userOrganizations[0])
+      handleSetProject({
+        ...project, 
+        project_parents: {
+          ...project.project_parents,
+          parent_organization: userOrganizations[0]
+        },
+        is_personal_project: !event.target.checked
+      })
+    else
+      handleChangeProject(!event.target.checked, "is_personal_project")
+  }
+
   return (
     <div>
       <div className={classes.block}>
@@ -140,7 +154,7 @@ export default function EditProjectContent({
           <Typography component="span">Personal Project</Typography>
           <Switch
             checked={!project.is_personal_project}
-            onChange={event => handleChangeProject(!event.target.checked, "is_personal_project")}
+            onChange={handleSwitchChange}
             name="checkedA"
             inputProps={{ "aria-label": "secondary checkbox" }}
             color="primary"
