@@ -153,7 +153,10 @@ export default function Index({ projectsObject, organizationsObject, membersObje
     setNextPages({ ...nextPages, members: nextPages.members + 1 });
     const newMembers = newMembersObject && newMembersObject.members && membersWithAdditionalInfo(newMembersObject.members);
     setHasMore({ ...hasMore, members: !newMembersObject?false:newMembersObject.hasMore });
-    return [...newMembers];
+    if(newMembers && newMembers.length)
+      return [...newMembers];
+    else
+      return []
   };
 
   const membersWithAdditionalInfo = members => {

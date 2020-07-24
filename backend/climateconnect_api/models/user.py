@@ -151,6 +151,17 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    password_reset_key = models.UUIDField(
+        help_text="key for resetting your password",
+        verbose_name="Password reset key", null=True, blank=True, unique=True
+    )
+
+    password_reset_timeout = models.DateTimeField(
+        help_text="Time when the password reset times out",
+        verbose_name="Password reset timeout",
+        auto_now_add=True
+    )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "User Profile"
