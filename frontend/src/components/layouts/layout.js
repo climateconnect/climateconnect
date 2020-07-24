@@ -13,7 +13,8 @@ const useStyles = makeStyles(theme => ({
     margin: `${theme.spacing(4)}px 0`
   },
   alert: {
-    width: "100%"
+    width: "100%",
+    marginTop: -16
   }
 }));
 
