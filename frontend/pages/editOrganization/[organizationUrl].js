@@ -23,13 +23,10 @@ const useStyles = makeStyles(theme => ({
 
 //This route should only be accessible to admins of the organization
 
-export default function EditOrganizationPage({
-  organization,
-  tagOptions, 
-  token
-}) {
+export default function EditOrganizationPage({ organization, tagOptions, token }) {
   const saveChanges = (event, editedOrg) => {
-    const org = parseForRequest(getChanges(editedOrg, organization))
+    const org = parseForRequest(getChanges(editedOrg, organization));
+    console.log(org);
     axios
       .patch(
         process.env.API_URL + "/api/organizations/" + organization.url_slug + "/",
@@ -54,33 +51,28 @@ export default function EditOrganizationPage({
   };
   const getChanges = (o, oldO) => {
     const finalProfile = {};
-    const org = {...o, ...o.info}
-    delete org.info
-    const oldOrg = {...oldO, ...oldO.info}
-    delete oldOrg.info
+    const org = { ...o, ...o.info };
+    delete org.info;
+    const oldOrg = { ...oldO, ...oldO.info };
+    delete oldOrg.info;
     Object.keys(org).map(k => {
-      if (
-        oldOrg[k] &&
-        org[k] &&
-        Array.isArray(oldOrg[k]) &&
-        Array.isArray(org[k])
-      ) {
+      if (oldOrg[k] && org[k] && Array.isArray(oldOrg[k]) && Array.isArray(org[k])) {
         if (!arraysEqual(oldOrg[k], org[k])) finalProfile[k] = org[k];
-      } else if (oldOrg[k] !== org[k] && !(!oldOrg[k] && !org[k]))
-        finalProfile[k] = org[k];
+      } else if (oldOrg[k] !== org[k] && !(!oldOrg[k] && !org[k])) finalProfile[k] = org[k];
     });
     return finalProfile;
-  }
+  };
 
   function arraysEqual(_arr1, _arr2) {
-    if (!Array.isArray(_arr1) || !Array.isArray(_arr2) || _arr1.length !== _arr2.length) return false;
-  
+    if (!Array.isArray(_arr1) || !Array.isArray(_arr2) || _arr1.length !== _arr2.length)
+      return false;
+
     var arr1 = _arr1.concat().sort();
     var arr2 = _arr2.concat().sort();
     for (var i = 0; i < arr1.length; i++) {
       if (arr1[i] !== arr2[i]) return false;
     }
-  
+
     return true;
   }
 
@@ -106,7 +98,7 @@ export default function EditOrganizationPage({
 
 EditOrganizationPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
-  const url = ctx.query.organizationUrl
+  const url = ctx.query.organizationUrl;
   return {
     organization: await getOrganizationByUrlIfExists(url, token),
     tagOptions: await getTags(),
@@ -135,7 +127,7 @@ async function getOrganizationByUrlIfExists(organizationUrl, token) {
       process.env.API_URL + "/api/organizations/" + organizationUrl + "/",
       tokenConfig(token)
     );
-    return parseOrganization(resp.data)
+    return parseOrganization(resp.data);
   } catch (err) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
@@ -163,7 +155,7 @@ async function getTags(token) {
 }
 
 function parseOrganization(organization) {
-  const org =  {
+  const org = {
     url_slug: organization.url_slug,
     background_image: getImageUrl(organization.background_image),
     name: organization.name,
@@ -176,35 +168,32 @@ function parseOrganization(organization) {
       website: organization.website
     }
   };
-  org.types = org.types.map(t => t.key)
-  const additional_info = organization.types.reduce((additionalInfoArray, t)=>{
-    const type = t.organization_tag
-    if(type.additional_info && type.additional_info.length>0){
-      additionalInfoArray = additionalInfoArray.concat(type.additional_info)
-    }else
-      console.log(type.additional_info)
-    return additionalInfoArray
-  }, [])
-  additional_info.map(infoEl=>{
-    org.info[infoEl] = organization[infoEl]
-  })
+  org.types = org.types.map(t => t.key);
+  const additional_info = organization.types.reduce((additionalInfoArray, t) => {
+    const type = t.organization_tag;
+    if (type.additional_info && type.additional_info.length > 0) {
+      additionalInfoArray = additionalInfoArray.concat(type.additional_info);
+    } else console.log(type.additional_info);
+    return additionalInfoArray;
+  }, []);
+  additional_info.map(infoEl => {
+    org.info[infoEl] = organization[infoEl];
+  });
   //Add parent org late so it's the lowest entry on the page
-  const hasParentOrganization = organization.parent_organization && !!organization.parent_organization.name
-  if(hasParentOrganization)
-    org.info.parent_organization = organization.parent_organization
-  else
-    org.info.parent_organization = null
-  org.info.has_parent_organization = hasParentOrganization
-  return org
+  const hasParentOrganization =
+    organization.parent_organization && !!organization.parent_organization.name;
+  if (hasParentOrganization) org.info.parent_organization = organization.parent_organization;
+  else org.info.parent_organization = null;
+  org.info.has_parent_organization = hasParentOrganization;
+  return org;
 }
 
 const parseForRequest = org => {
   const parsedOrg = {
     ...org
-  }
-  if(org.shortdescription)
-    parsedOrg.short_description = org.shortdescription
-  if(org.parent_organization)
-    org.parent_organization = org.parent_organization ? org.parent_organization.id : null
-  return parsedOrg
-}
+  };
+  if (org.shortdescription) parsedOrg.short_description = org.shortdescription;
+  if (org.parent_organization)
+    parsedOrg.parent_organization = org.parent_organization ? org.parent_organization.id : null;
+  return parsedOrg;
+};

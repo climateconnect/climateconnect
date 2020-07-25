@@ -4,7 +4,7 @@ import SchoolIcon from "@material-ui/icons/School";
 import LocationCityIcon from "@material-ui/icons/LocationCity";
 import PublicIcon from "@material-ui/icons/Public";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
-import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
+import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
 
 export default {
   city: {
@@ -70,7 +70,7 @@ export default {
   has_parent_organization: {
     type: "checkbox",
     label: "We are a sub-organization of a larger organization (e.g. local group)"
-  }, 
+  },
   parent_organization: {
     icon: AccountBalanceIcon,
     iconName: "AccountBalanceIcon",

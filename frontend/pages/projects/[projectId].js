@@ -44,7 +44,9 @@ export default function ProjectPage({ project, members, posts, comments, token, 
   const [isUserFollowing, setIsUserFollowing] = React.useState(following);
   useEffect(() => {
     const params = getParams(window.location.href);
-    if (params.message) setMessage({ message: decodeURI(params.message) });
+    if (params.message && encodeURI(message.message) != params.message) {
+      setMessage({ message: decodeURI(params.message) });
+    }
     if (project.is_draft) Router.push("/editProject/" + project.url_slug);
   });
   return (

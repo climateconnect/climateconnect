@@ -340,7 +340,6 @@ export default function EditAccountPage({
 
   const displayAccountInfo = info =>
     Object.keys(info).map(key => {
-
       const handleChange = event => {
         setEditedAccount({
           ...editedAccount,
@@ -351,13 +350,13 @@ export default function EditAccountPage({
       const handleSetParentOrganization = newOrg => {
         setEditedAccount({
           ...editedAccount,
-          info: { 
-            ...editedAccount.info, 
+          info: {
+            ...editedAccount.info,
             parent_organization: newOrg,
             has_parent_organization: !!newOrg
           }
         });
-      }
+      };
 
       const i = getFullInfoElement(infoMetadata, key, info[key]);
 
@@ -375,7 +374,7 @@ export default function EditAccountPage({
             />
           </div>
         );
-      } else if(i.type==="checkbox"){
+      } else if (i.type === "checkbox") {
         return (
           <div className={classes.checkbox} key={i.key}>
             <Checkbox
@@ -384,38 +383,35 @@ export default function EditAccountPage({
               className={classes.inlineBlockElement}
               color="primary"
               size="small"
-              onChange={e => handleChange({target: { value: e.target.checked}})}
+              onChange={e => handleChange({ target: { value: e.target.checked } })}
             />
             <label htmlFor={"checkbox" + i.key}>{i.label}</label>
           </div>
-        )
-      }else if(
-        i.type === "auto_complete_searchbar" && i.key === "parent_organization" 
-        && (!i.show_if_ticked || editedAccount.info[i.show_if_ticked] === true)
-      ){
+        );
+      } else if (
+        i.type === "auto_complete_searchbar" &&
+        i.key === "parent_organization" &&
+        (!i.show_if_ticked || editedAccount.info[i.show_if_ticked] === true)
+      ) {
         const renderSearchOption = option => {
-          return (
-            <React.Fragment>
-              {option.name}
-            </React.Fragment>
-          );
+          return <React.Fragment>{option.name}</React.Fragment>;
         };
         return (
           <>
             <div className={classes.infoElement}>
-              {i.value &&
+              {i.value && (
                 <>
                   <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
-                  Parent organization: 
+                    Parent organization:
                   </Typography>
-                  <MiniOrganizationPreview 
+                  <MiniOrganizationPreview
                     organization={i.value}
                     size="small"
                     className={classes.infoElement}
                     onDelete={() => handleSetParentOrganization(null)}
                   />
                 </>
-              }
+              )}
               <AutoCompleteSearchBar
                 label={i.label}
                 className={`${classes.marginTop} ${classes.block}`}
@@ -429,8 +425,8 @@ export default function EditAccountPage({
               />
             </div>
           </>
-        )
-      }else if(key != "parent_organization"){
+        );
+      } else if (key != "parent_organization") {
         return (
           <div key={key} className={classes.infoElement}>
             <Typography className={classes.subtitle}>

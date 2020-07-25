@@ -19,7 +19,7 @@ import { getParams } from "./../../public/lib/generalOperations";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LoginNudge from "../../src/components/general/LoginNudge";
-import { parseOrganization } from "../../public/lib/organizationOperations"
+import { parseOrganization } from "../../public/lib/organizationOperations";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -120,12 +120,10 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
     }));
   };
 
-  const canEdit = user &&
-  !!members.find(m => m.id === user.id) &&
-  ["Creator", "Administrator"].includes(
-    members.find(m => m.id === user.id).permission
-  )
-
+  const canEdit =
+    user &&
+    !!members.find(m => m.id === user.id) &&
+    ["Creator", "Administrator"].includes(members.find(m => m.id === user.id).permission);
 
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
   return (
@@ -158,17 +156,17 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
           {canEdit && (
-              <div>
-                <Button
-                  className={classes.editButton}
-                  variant="contained"
-                  color="primary"
-                  href={"/manageOrganizationMembers/" + organization.url_slug}
-                >
-                  Manage members
-                </Button>
-              </div>
-            )}
+            <div>
+              <Button
+                className={classes.editButton}
+                variant="contained"
+                color="primary"
+                href={"/manageOrganizationMembers/" + organization.url_slug}
+              >
+                Manage members
+              </Button>
+            </div>
+          )}
           Members:
         </div>
         {members && members.length ? (

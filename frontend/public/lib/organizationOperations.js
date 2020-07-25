@@ -1,7 +1,7 @@
 import { getImageUrl } from "./imageOperations";
 
 export function parseOrganization(organization, reduceTypes) {
-  const org =  {
+  const org = {
     url_slug: organization.url_slug,
     background_image: getImageUrl(organization.background_image),
     name: organization.name,
@@ -15,19 +15,17 @@ export function parseOrganization(organization, reduceTypes) {
       website: organization.website
     }
   };
-  if(reduceTypes)
-    org.types = org.types.map(t => t.key)
-  const additional_info = organization.types.reduce((additionalInfoArray, t)=>{
-    const type = t.organization_tag
-    if(type.additional_info && type.additional_info.length>0){
-      additionalInfoArray = additionalInfoArray.concat(type.additional_info)
-    }else
-    return additionalInfoArray
-  }, [])
-  additional_info.map(infoEl=>{
-    org.info[infoEl] = organization[infoEl]
-  })
+  if (reduceTypes) org.types = org.types.map(t => t.key);
+  const additional_info = organization.types.reduce((additionalInfoArray, t) => {
+    const type = t.organization_tag;
+    if (type.additional_info && type.additional_info.length > 0) {
+      additionalInfoArray = additionalInfoArray.concat(type.additional_info);
+    } else return additionalInfoArray;
+  }, []);
+  additional_info.map(infoEl => {
+    org.info[infoEl] = organization[infoEl];
+  });
   //Add parent org late so it's the lowest entry on the page
-  org.info.parent_organization = organization.parent_organization
-  return org
+  org.info.parent_organization = organization.parent_organization;
+  return org;
 }

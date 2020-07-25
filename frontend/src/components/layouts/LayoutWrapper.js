@@ -33,7 +33,7 @@ export default function LayoutWrapper({ title, children, theme }) {
   const [bannerOpen, setBannerOpen] = React.useState(true);
   const acceptedNecessary = cookies.get("acceptedNecessary");
   useEffect(() => {
-    setLoading(false);
+    if (loading) setLoading(false);
   });
   const closeBanner = () => setBannerOpen(false);
   if (loading)

@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
   contactProjectButton: {
     marginLeft: theme.spacing(1)
   },
-  followButtonContainer:{
+  followButtonContainer: {
     display: "inline-flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -42,7 +42,6 @@ export default function ProjectOverview({
   isUserFollowing
 }) {
   const classes = useStyles();
-  console.log(project)
   return (
     <Container className={classes.projectOverview}>
       {smallScreen ? (
@@ -173,7 +172,7 @@ function LargeScreenOverview({ project, handleToggleFollowProject, isUserFollowi
 }
 
 function FollowButton({ project, isUserFollowing, handleToggleFollowProject }) {
-  const classes = useStyles()
+  const classes = useStyles();
   return (
     <span className={classes.followButtonContainer}>
       <Button
@@ -183,11 +182,11 @@ function FollowButton({ project, isUserFollowing, handleToggleFollowProject }) {
       >
         {isUserFollowing ? "Following" : "Follow"}
       </Button>
-      {project.number_of_followers>0 &&
+      {project.number_of_followers > 0 && (
         <Typography>
-          {project.number_of_followers} follower{project.number_of_followers>1 && "s"}
+          {project.number_of_followers} follower{project.number_of_followers > 1 && "s"}
         </Typography>
-      }
+      )}
     </span>
   );
 }
