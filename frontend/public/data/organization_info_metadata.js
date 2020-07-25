@@ -44,5 +44,12 @@ export default {
     iconName: "SupervisorAccountIcon",
     name: "Organ",
     key: "organ"
-  }
+  },
+  website: {
+    name: "Website",
+    type: "text",
+    key: "bio",
+    maxLength: 240,
+    linkify: true
+  },
 };

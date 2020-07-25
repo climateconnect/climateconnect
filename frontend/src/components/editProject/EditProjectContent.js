@@ -8,6 +8,7 @@ import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import collaborationTexts from "../../../public/data/collaborationTexts";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import EnterTextDialog from "../dialogs/EnterTextDialog";
+import ConfirmDialog from "../dialogs/ConfirmDialog";
 
 const useStyles = makeStyles(theme => ({
   select: {
@@ -47,6 +48,14 @@ const useStyles = makeStyles(theme => ({
     padding: 0,
     marginBottom: theme.spacing(3),
     marginTop: theme.spacing(2)
+  },
+  deleteProjectButton: {
+    float: "right",
+    backgroundColor: theme.palette.error.main,
+    color: "white",
+    "&:hover": {
+      backgroundColor: "#ea6962"
+    }
   }
 }));
 
@@ -55,13 +64,15 @@ export default function EditProjectContent({
   handleSetProject,
   statusOptions,
   userOrganizations,
-  skillsOptions
+  skillsOptions,
+  user_role,
+  deleteProject
 }) {
   const classes = useStyles();
   const [selectedItems, setSelectedItems] = React.useState(
     project.skills ? [...project.skills] : []
   );
-  const [open, setOpen] = React.useState({ skills: false, connections: false });
+  const [open, setOpen] = React.useState({ skills: false, connections: false, delete: false });
   const statusesWithStartDate = statusOptions.filter(s => s.has_start_date).map(s => s.id);
   const statusesWithEndDate = statusOptions.filter(s => s.has_end_date).map(s => s.id);
 
@@ -110,6 +121,32 @@ export default function EditProjectContent({
     }
   };
 
+  const handleClickDeleteProjectPopup = () => {
+    console.log("oh no, we gotta delete the project!")
+    setOpen({...open, delete: true})
+  }
+
+  const handleDeleteProjectDialogClose = confirmed => {
+    if(confirmed){
+      deleteProject()
+    }
+    setOpen({...open, delete: false})
+  }
+
+  const handleSwitchChange = event => {
+    if(event.target.checked && !project.project_parents.parent_organization && userOrganizations[0])
+      handleSetProject({
+        ...project, 
+        project_parents: {
+          ...project.project_parents,
+          parent_organization: userOrganizations[0]
+        },
+        is_personal_project: !event.target.checked
+      })
+    else
+      handleChangeProject(!event.target.checked, "is_personal_project")
+  }
+
   return (
     <div>
       <div className={classes.block}>
@@ -117,13 +154,23 @@ export default function EditProjectContent({
           <Typography component="span">Personal Project</Typography>
           <Switch
             checked={!project.is_personal_project}
-            onChange={event => handleChangeProject(!event.target.checked, "is_personal_project")}
+            onChange={handleSwitchChange}
             name="checkedA"
             inputProps={{ "aria-label": "secondary checkbox" }}
             color="primary"
           />
           <Typography component="span">{"Organization's project"}</Typography>
         </div>
+        {user_role.name === "Creator" &&
+          <Button
+            classes={{root: classes.deleteProjectButton, focusVisible: classes.deleteProjectButtonFocus}}
+            variant="contained"
+            color="error"
+            onClick={handleClickDeleteProjectPopup}
+          >
+            {project.is_draft ? "Delete Draft" : "Delete Project"}
+          </Button>
+        }
         <div className={classes.block}>
           {project.is_personal_project ? (
             <>
@@ -137,7 +184,11 @@ export default function EditProjectContent({
           ) : (
             <SelectField
               controlled
-              controlledValue={project.project_parents.parent_organization ? project.project_parents.parent_organization : userOrganizations[0]}
+              controlledValue={
+                project.project_parents.parent_organization
+                  ? project.project_parents.parent_organization
+                  : userOrganizations[0]
+              }
               onChange={event =>
                 handleChangeProject(
                   {
@@ -209,7 +260,9 @@ export default function EditProjectContent({
         </div>
         <div className={classes.block}>
           <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
-            {collaborationTexts.allow[project.status.name] ? collaborationTexts.allow[project.status.name] : collaborationTexts.allow["In Progress"]}
+            {collaborationTexts.allow[project.status.name]
+              ? collaborationTexts.allow[project.status.name]
+              : collaborationTexts.allow["In Progress"]}
           </Typography>
           <Switch
             checked={project.collaborators_welcome}
@@ -228,7 +281,9 @@ export default function EditProjectContent({
                 color="primary"
                 className={classes.subHeader}
               >
-                {collaborationTexts.skills[project.status.name] ? collaborationTexts.skills[project.status.name] : collaborationTexts.skills["In Progress"]}
+                {collaborationTexts.skills[project.status.name]
+                  ? collaborationTexts.skills[project.status.name]
+                  : collaborationTexts.skills["In Progress"]}
               </Typography>
               <div>
                 {project.skills && (
@@ -255,7 +310,9 @@ export default function EditProjectContent({
                 color="primary"
                 className={classes.subHeader}
               >
-                {collaborationTexts.connections[project.status.name] ? collaborationTexts.connections[project.status.name] : collaborationTexts.connections["In Progress"]}
+                {collaborationTexts.connections[project.status.name]
+                  ? collaborationTexts.connections[project.status.name]
+                  : collaborationTexts.connections["In Progress"]}
               </Typography>
               {project.helpful_connections && (
                 <List className={classes.flexContainer}>
@@ -292,6 +349,14 @@ export default function EditProjectContent({
         applyText="Add"
         inputLabel="Connection"
         title="Add a helpful connection"
+      />
+      <ConfirmDialog
+        open={open.delete}
+        onClose={handleDeleteProjectDialogClose}
+        cancelText="No"
+        confirmText="Yes"
+        title="Do you really want to delete your project?"
+        text='If you delete your project, it will be lost. Are you sure that you want to delete it?'
       />
     </div>
   );

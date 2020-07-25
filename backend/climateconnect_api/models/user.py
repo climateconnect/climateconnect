@@ -104,6 +104,11 @@ class UserProfile(models.Model):
         default=False
     )
 
+    verification_key = models.UUIDField(
+        help_text="On signup create a unique key that will be used for user's profile verification",
+        verbose_name="Verification Key", null=True, blank=True, unique=True
+    )
+
     availability = models.ForeignKey(
         Availability,
         help_text="Points to user's availability for a work",
@@ -137,6 +142,32 @@ class UserProfile(models.Model):
         help_text="Check if the user should be redirected to the edit profile page. Shows the number of logins up to 2",
         verbose_name="Number of logins up to 2",
         default=0
+    )
+
+    pending_new_email = models.EmailField(
+        help_text="If the user is in the process of changing their email, this field will show the potential new email",
+        verbose_name="Potential new E-Mail address",
+        null=True,
+        blank=True
+    )
+
+    password_reset_key = models.UUIDField(
+        help_text="key for resetting your password",
+        verbose_name="Password reset key", null=True, blank=True, unique=True
+    )
+
+    password_reset_timeout = models.DateTimeField(
+        help_text="Time when the password reset times out",
+        verbose_name="Password reset timeout",
+        auto_now_add=True
+    )
+
+    website = models.CharField(
+        help_text="Website",
+        verbose_name="User's Website",
+        max_length=256,
+        null=True,
+        blank=True
     )
 
     class Meta:

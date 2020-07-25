@@ -18,6 +18,8 @@ import Cookies from "next-cookies";
 import tokenConfig from "../public/config/tokenConfig";
 import axios from "axios";
 import Link from "next/link";
+import { getParams } from "../public/lib/generalOperations";
+import CookieBanner from "../src/components/general/CookieBanner";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -85,12 +87,19 @@ export default function Index({ projectsObject, organizationsObject, membersObje
     organizations: false
   });
   const [hash, setHash] = React.useState(null);
+  const [message, setMessage] = React.useState("")
+  const [errorMessage, setErrorMessage] = React.useState("")
   const typesByTabValue = ["projects", "organizations", "members"];
   useEffect(() => {
     if (window.location.hash) {
       setHash(window.location.hash.replace("#", ""));
       setTabValue(typesByTabValue.indexOf(window.location.hash.replace("#", "")));
     }
+    const params = getParams(window.location.href);
+    if (params.message) 
+      setMessage(decodeURI(params.message));
+    if(params.errorMessage)
+      setErrorMessage(decodeURI(params.errorMessage))
   });
   const [tabValue, setTabValue] = React.useState(hash ? typesByTabValue.indexOf(hash) : 0);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
@@ -142,9 +151,12 @@ export default function Index({ projectsObject, organizationsObject, membersObje
   const loadMoreMembers = async page => {
     const newMembersObject = await getMembers(page, token);
     setNextPages({ ...nextPages, members: nextPages.members + 1 });
-    const newMembers = membersWithAdditionalInfo(newMembersObject.members);
-    setHasMore({ ...hasMore, members: newMembersObject.hasMore });
-    return [...newMembers];
+    const newMembers = newMembersObject && newMembersObject.members && membersWithAdditionalInfo(newMembersObject.members);
+    setHasMore({ ...hasMore, members: !newMembersObject?false:newMembersObject.hasMore });
+    if(newMembers && newMembers.length)
+      return [...newMembers];
+    else
+      return []
   };
 
   const membersWithAdditionalInfo = members => {
@@ -172,7 +184,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
       {process.env.PRE_LAUNCH === "true" ? (
         <About />
       ) : (
-        <Layout title="Work on the most effective climate projects">
+        <Layout title="Work on the most effective climate projects" message={errorMessage?errorMessage:message} messageType={errorMessage?"error":"success"}>
           <div className={classes.filterSection}>
             <div className={classes.filterSectionFirstLine}>
               <Button
@@ -231,12 +243,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
               />
             ) : (
               <Typography component="h4" variant="h5" className={classes.infoMessage}>
-                There is no projects on this site yet.{" "}
-                <Link href="/share">
-                  <Typography color="primary" className={classes.link} component="h5" variant="h5">
-                    Share a project to create the first one!
-                  </Typography>
-                </Link>
+                We could not connect to the API. If this happens repeatedly, contact support@climateconnect.earth.
               </Typography>
             )}
           </TabContent>

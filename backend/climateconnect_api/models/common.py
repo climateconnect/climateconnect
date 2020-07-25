@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 
 class Availability(models.Model):
@@ -44,6 +46,13 @@ class Skill(models.Model):
         max_length=512
     )
 
+    # Skill name has spaces and we use skill filters for projects and users.
+    # This would help us for filters.
+    key = models.CharField(
+        help_text="Key of a skill", verbose_name="Key",
+        max_length=512, null=True, blank=True
+    )
+
     parent_skill = models.ForeignKey(
         'self',
         related_name="skill_parent",
@@ -83,3 +92,8 @@ class Skill(models.Model):
 
     def __str__(self):
         return "%s" % self.name
+
+
+@receiver(pre_save, sender=Skill)
+def save_skills_key(sender, instance, **kwargs):
+    instance.key = instance.name.replace(' ', '').lower()

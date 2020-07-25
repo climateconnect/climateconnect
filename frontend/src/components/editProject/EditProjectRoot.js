@@ -29,24 +29,20 @@ export default function EditProjectRoot({
   tagsOptions,
   token,
   oldProject,
-  user
+  user,
+  user_role
 }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
-  
-  const draftReqiredProperties = [
-    "name",
-    "city",
-    "country"
-  ]
+  const draftReqiredProperties = ["name", "city", "country"];
 
-  const onSaveDraft = () => {    
-    if(draftReqiredProperties.filter(p => !project[p]).length>0)
-      draftReqiredProperties.map(p=> {
-        if(!project[p]){
-          alert("Your project draft is missing the following reqired property: "+p)
+  const onSaveDraft = () => {
+    if (draftReqiredProperties.filter(p => !project[p]).length > 0)
+      draftReqiredProperties.map(p => {
+        if (!project[p]) {
+          alert("Your project draft is missing the following reqired property: " + p);
         }
-      })  
+      });
     else
       axios
         .patch(
@@ -66,15 +62,15 @@ export default function EditProjectRoot({
           console.log(error);
           if (error) console.log(error.response);
         });
-  }
+  };
 
-  const additionalButtons =[
+  const additionalButtons = [
     {
       text: "Save Changes as draft",
       argument: "save",
       onClick: onSaveDraft
     }
-  ]
+  ];
 
   const handleCancel = () => {
     Router.push("/projects/" + project.url_slug + "/");
@@ -82,11 +78,11 @@ export default function EditProjectRoot({
 
   const handleSubmit = event => {
     event.preventDefault();
-    const projectToSubmit = project
-    let was_draft = false
-    if(project.is_draft){
-      projectToSubmit.is_draft = false
-      was_draft = true
+    const projectToSubmit = project;
+    let was_draft = false;
+    if (project.is_draft) {
+      projectToSubmit.is_draft = false;
+      was_draft = true;
     }
 
     console.log(parseProjectForRequest(getProjectWithoutRedundancies(projectToSubmit, oldProject)));
@@ -100,10 +96,9 @@ export default function EditProjectRoot({
         Router.push({
           pathname: "/projects/" + response.data.url_slug,
           query: {
-            message: was_draft ? 
-                        "Your project has been published. Great work!"
-                      :
-                        "You have successfully edited your project."
+            message: was_draft
+              ? "Your project has been published. Great work!"
+              : "You have successfully edited your project."
           }
         });
       })
@@ -112,6 +107,28 @@ export default function EditProjectRoot({
         if (error) console.log(error.response);
       });
   };
+
+  const deleteProject = () => {
+    axios
+      .delete(
+        process.env.API_URL + "/api/projects/"+project.url_slug+"/",
+        tokenConfig(token)
+      )
+      .then(function(response) {
+        console.log(response)
+        Router.push({
+          pathname: "/profiles/" + user.url_slug,
+          query: {
+            message:
+              "You have successfully deleted your project."
+          }
+        });
+      })
+      .catch(function(error) {
+        console.log(error);
+        if (error) console.log(error.response);
+      });
+  }
 
   return (
     <Container disableGutters={isNarrowScreen}>
@@ -128,11 +145,13 @@ export default function EditProjectRoot({
           statusOptions={statusOptions}
           userOrganizations={userOrganizations}
           skillsOptions={skillsOptions}
+          user_role={user_role}
+          deleteProject={deleteProject}
         />
         <Divider className={classes.divider} />
         <BottomNavigation
           onClickCancel={handleCancel}
-          additionalButtons={additionalButtons}
+          additionalButtons={project.is_draft && additionalButtons}
           nextStepButtonType={project.is_draft ? "publish" : "save"}
           className={classes.bottomNavigation}
         />

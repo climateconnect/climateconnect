@@ -27,7 +27,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             'collaborators_welcome', 
             'skills', 'helpful_connections',
             'project_parents', 'tags', 
-            'created_at', 'collaborating_organizations', 'is_draft'
+            'created_at', 'collaborating_organizations', 'is_draft',
+            'website'
         )
         read_only_fields = ['url_slug']
 
@@ -79,7 +80,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
             'name', 'url_slug', 
             'skills', 'image', 
             'status', 'country', 
-            'city', 'project_parents', 'is_draft'
+            'city', 'project_parents', 'is_draft','website'
         )
     
     def get_project_parents(self, obj):
@@ -113,10 +114,17 @@ class ProjectMemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProjectMember
-        fields = ('user', 'role', 'role_in_project', 'availability')
+        fields = ('id', 'user', 'role', 'role_in_project', 'availability')
 
     def get_user(self, obj):
         return UserProfileStubSerializer(UserProfile.objects.filter(user=obj.user)[0]).data
+
+
+class InsertProjectMemberSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProjectMember
+        fields = ('id', 'user', 'role', 'role_in_project', 'availability')
 
 
 class ProjectCollaboratorsSerializer(serializers.ModelSerializer):

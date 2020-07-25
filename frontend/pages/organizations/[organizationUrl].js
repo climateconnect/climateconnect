@@ -228,7 +228,7 @@ async function getMembersByOrganization(organizationUrl, token) {
     );
     if (!resp.data) return null;
     else {
-      return parseProjectMembers(resp.data.results);
+      return parseOrganizationMembers(resp.data.results);
     }
   } catch (err) {
     console.log(err);
@@ -259,7 +259,8 @@ function parseOrganization(organization) {
       shortdescription: organization.short_description,
       school: organization.school,
       organ: organization.organ,
-      parent_organization: organization.parent_organization
+      parent_organization: organization.parent_organization,
+      website: organization.website
     }
   };
 }
@@ -274,7 +275,7 @@ function parseProjectStubs(projects) {
   });
 }
 
-function parseProjectMembers(members) {
+function parseOrganizationMembers(members) {
   return members.map(m => {
     const member = m.user;
     return {

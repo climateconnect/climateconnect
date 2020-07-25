@@ -21,6 +21,7 @@ import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import imageCompression from "browser-image-compression";
 import { getImageDialogHeight } from "../../../public/lib/imageOperations";
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -185,6 +186,13 @@ const useStyles = makeStyles(theme => ({
   helpIcon: {
     fontSize: 20,
     marginTop: -2
+  },
+  deleteMessage: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginTop: theme.spacing(10)
   }
 }));
 
@@ -199,7 +207,8 @@ export default function EditAccountPage({
   handleCancel,
   errorMessage,
   skillsOptions,
-  splitName
+  splitName,
+  deleteEmail
 }) {
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState(account);
@@ -490,7 +499,7 @@ export default function EditAccountPage({
           onClick={() => handleDialogClickOpen("confirmExitDialog")}
         >
           Cancel
-        </Button>
+        </Button>        
         <Container className={classes.avatarWithInfo}>
           <div className={classes.avatarContainer}>
             <label htmlFor="avatarPhoto">
@@ -591,9 +600,12 @@ export default function EditAccountPage({
         </Container>
         <Container className={classes.accountInfo}>
           {displayAccountInfo(editedAccount.info)}
-        </Container>
+        </Container>        
       </Container>
       {children}
+      {deleteEmail &&
+        <Typography variant="subtitle2" className={classes.deleteMessage}><InfoOutlinedIcon />If you wish to delete this account, send an E-Mail to {deleteEmail}</Typography> 
+      }
       <UploadImageDialog
         onClose={handleBackgroundClose}
         open={open.backgroundDialog}

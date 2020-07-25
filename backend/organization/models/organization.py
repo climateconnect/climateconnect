@@ -114,6 +114,14 @@ class Organization(models.Model):
         max_length=512
     )
 
+    website = models.CharField(
+        help_text="Website",
+        verbose_name="Organization's website",
+        max_length=256,
+        null=True,
+        blank=True
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Organization"

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 const DEFAULT_STATUS = 2;
@@ -10,6 +10,7 @@ import AddTeam from "./AddTeam";
 import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
+import Router from "next/router";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -71,6 +72,23 @@ export default function ShareProjectRoot({
   const [curStep, setCurStep] = React.useState(steps[0]);
   const [finished, setFinished] = React.useState(false);
 
+  useEffect(() => {
+    if (window) {
+      const location = window.location.href;
+      Router.beforePopState(({ url, as, options }) => {
+        if (location.includes("/share") && as != "/share") {
+          const result = window.confirm(
+            "Are you sure you want to leave? You will lose your project."
+          );
+          if (!result) {
+            return false;
+          }
+        }
+        return true;
+      });
+    }
+  });
+
   const goToNextStep = () => {
     setCurStep(steps[steps.indexOf(curStep) + 1]);
     //scroll to top when navigating to another step
@@ -108,7 +126,7 @@ export default function ShareProjectRoot({
     axios
       .post(
         process.env.API_URL + "/api/create_project/",
-        formatProjectForRequest({...project, is_draft: true}),
+        formatProjectForRequest({ ...project, is_draft: true }),
         tokenConfig(token)
       )
       .then(function(response) {
@@ -178,7 +196,11 @@ export default function ShareProjectRoot({
         </>
       ) : (
         <>
-          <ProjectSubmittedPage user={user} isDraft={project.is_draft} url_slug={project.url_slug} />
+          <ProjectSubmittedPage
+            user={user}
+            isDraft={project.is_draft}
+            url_slug={project.url_slug}
+          />
         </>
       )}
     </>
@@ -193,10 +215,12 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
     skills: [],
     helpful_connections: [],
     collaborating_organizations: [],
+    parent_organization: userOrganizations ? userOrganizations[0] : null,
     isPersonalProject: !(userOrganizations && userOrganizations.length > 0),
     is_organization_project: userOrganizations && userOrganizations.length > 0,
     //TODO: Should contain the logged in user as the creator and parent_user by default
-    team_members: [{ ...loggedInUser }]
+    team_members: [{ ...loggedInUser }],
+    website: ""
   };
 };
 

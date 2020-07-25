@@ -24,6 +24,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     country: "",
     verified: false,
     shortdescription: "",
+    website: "",
     types: []
   });
   const { user } = useContext(UserContext);
@@ -196,6 +197,7 @@ const parseOrganizationForRequest = (o, user, rolesOptions) => {
     image: o.image,
     city: o.info.city,
     country: o.info.country,
+    website: o.info.website,
     short_description: o.info.shortdescription,
     organization_tags: o.types
   };
