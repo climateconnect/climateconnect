@@ -21,7 +21,7 @@ import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LoginNudge from "../../src/components/general/LoginNudge";
 import { parseOrganization } from "../../public/lib/organizationOperations";
 
-const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
+const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
 const useStyles = makeStyles(theme => ({
   cardHeadline: {
