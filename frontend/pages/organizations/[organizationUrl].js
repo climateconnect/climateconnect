@@ -19,6 +19,7 @@ import { getParams } from "./../../public/lib/generalOperations";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LoginNudge from "../../src/components/general/LoginNudge";
+import { parseOrganization } from "../../public/lib/organizationOperations"
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
@@ -118,6 +119,14 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
       ]
     }));
   };
+
+  const canEdit = user &&
+  !!members.find(m => m.id === user.id) &&
+  ["Creator", "Administrator"].includes(
+    members.find(m => m.id === user.id).permission
+  )
+
+
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
   return (
     <AccountPage
@@ -126,6 +135,8 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
       editHref={"/editOrganization/" + organization.url_slug}
       type="organization"
       infoMetadata={infoMetadata}
+      isOwnAccount={canEdit}
+      editText={"Edit organization"}
     >
       {!user && (
         <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
@@ -146,11 +157,7 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
       <Divider className={classes.divider} />
       <Container>
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
-          {user &&
-            !!members.find(m => m.id === user.id) &&
-            ["Creator", "Administrator"].includes(
-              members.find(m => m.id === user.id).permission
-            ) && (
+          {canEdit && (
               <div>
                 <Button
                   className={classes.editButton}
@@ -243,26 +250,6 @@ async function getOrganizationTypes() {
 
 async function getOrganizationInfoMetadata() {
   return TEMP_INFOMETADATA;
-}
-
-function parseOrganization(organization) {
-  return {
-    url_slug: organization.url_slug,
-    background_image: organization.background_image,
-    name: organization.name,
-    image: organization.image,
-    types: organization.types.map(t => ({ ...t.organization_tag, key: t.organization_tag.id })),
-    info: {
-      location: organization.city
-        ? organization.city + ", " + organization.country
-        : organization.country,
-      shortdescription: organization.short_description,
-      school: organization.school,
-      organ: organization.organ,
-      parent_organization: organization.parent_organization,
-      website: organization.website
-    }
-  };
 }
 
 function parseProjectStubs(projects) {

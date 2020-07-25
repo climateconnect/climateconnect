@@ -117,21 +117,45 @@ class CreateOrganizationView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
-class OrganizationAPIView(RetrieveUpdateDestroyAPIView):
+class OrganizationAPIView(APIView):
     permission_classes = [OrganizationReadWritePermission]
-    serializer_class = OrganizationSerializer
     lookup_field = 'url_slug'
 
-    def get_queryset(self):
-        return Organization.objects.filter(url_slug=str(self.kwargs['url_slug']))
+    def get(self, request, url_slug, format=None):
+        try:
+            organization = Organization.objects.get(url_slug=str(url_slug))            
+        except Organization.DoesNotExist:
+            return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
+        serializer = OrganizationSerializer(organization, many=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def perform_update(self, serializer):
-        serializer.save()
-        return serializer
+    def patch(self, request, url_slug, format=None):
+        try:
+            organization = Organization.objects.get(url_slug=str(url_slug))            
+        except Organization.DoesNotExist:
+            return Response({'message': 'Organization not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
 
-    def perform_destroy(self, instance):
-        instance.delete()
-        return "Organization successfully deleted."
+        pass_through_params = ['name', 'state', 'city', 'country', 'short_description', 'school', 'organ', 'website']
+        for param in pass_through_params:
+            if param in request.data:
+                setattr(organization, param, request.data[param])
+        if 'image' in request.data:
+            organization.image = get_image_from_data_url(request.data['image'])[0]
+        if 'background_image' in request.data:
+            organization.background_image = get_image_from_data_url(request.data['background_image'])[0]
+        if 'parent_organization' in request.data:
+            if 'has_parent_organization' in request.data and request.data['has_parent_organization'] == False:
+                organization.parent_organization = None
+            else:
+                try:
+                    parent_organization = Organization.objects.get(id=request.data['parent_organization'])
+                except Organization.DoesNotExist:
+                    return Response({'message': 'Parent org not found for organization {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
+                organization.parent_organization = parent_organization
+            
+
+        organization.save()
+        return Response({'message': 'Successfully updated organization.'}, status=status.HTTP_200_OK)
 
 
 class ListCreateOrganizationMemberView(ListCreateAPIView):
