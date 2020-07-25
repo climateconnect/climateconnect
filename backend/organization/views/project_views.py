@@ -44,8 +44,8 @@ class ListProjectsView(ListAPIView):
     
     def get_queryset(self):
         projects = Project.objects.filter(is_draft=False)
-        if 'category' in self.request.query_params:
-            project_category = self.request.query_params.get('category').split(',')
+        if 'organization_type' in self.request.query_params:
+            project_category = self.request.query_params.get('organization_type').split(',')
             project_tags = ProjectTags.objects.filter(key__in=project_category)
             projects = projects.filter(
                 tag_project__project_tag__in=project_tags
@@ -54,6 +54,11 @@ class ListProjectsView(ListAPIView):
         if 'statuses' in self.request.query_params:
             statuses = self.request.query_params.get('statuses').split(',')
             projects = projects.filter(status__name__in=statuses)
+
+        if 'skills' in self.request.query_params:
+            skill_names = self.request.query_params.get('skills').split(',')
+            skills = Skill.objects.filter(key__in=skill_names)
+            projects = projects.filter(skills__in=skills).distinct('id')
         return projects
 
 
