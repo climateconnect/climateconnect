@@ -4,8 +4,23 @@ import SchoolIcon from "@material-ui/icons/School";
 import LocationCityIcon from "@material-ui/icons/LocationCity";
 import PublicIcon from "@material-ui/icons/Public";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
+import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 
 export default {
+  city: {
+    icon: PlaceIcon,
+    iconName: "PlaceIcon",
+    name: "City",
+    type: "location",
+    key: "city"
+  },
+  country: {
+    icon: PlaceIcon,
+    iconName: "PlaceIcon",
+    name: "Country",
+    type: "location",
+    key: "country"
+  },
   location: {
     icon: PlaceIcon,
     iconName: "PlaceIcon",
@@ -51,5 +66,20 @@ export default {
     key: "bio",
     maxLength: 240,
     linkify: true
+  },
+  has_parent_organization: {
+    type: "checkbox",
+    label: "We are a sub-organization of a larger organization (e.g. local group)"
+  }, 
+  parent_organization: {
+    icon: AccountBalanceIcon,
+    iconName: "AccountBalanceIcon",
+    type: "auto_complete_searchbar",
+    name: "Parent organization",
+    key: "parent_organization",
+    label: "Edit your parent organization",
+    show_if_ticked: "has_parent_organization",
+    baseUrl: "/api/organizations/?search=",
+    helperText: "Type the name of your parent organization"
   }
 };

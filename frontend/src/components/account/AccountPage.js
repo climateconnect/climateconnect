@@ -89,7 +89,8 @@ export default function AccountPage({
   editHref,
   infoMetadata,
   children,
-  isOwnAccount
+  isOwnAccount,
+  editText
 }) {
   const classes = useStyles();
 
@@ -178,7 +179,7 @@ export default function AccountPage({
             variant="contained"
             href={editHref}
           >
-            Edit Profile
+            {editText ? editText : "Edit Profile"}
           </Button>
         )}
         <Container className={classes.avatarWithInfo}>
