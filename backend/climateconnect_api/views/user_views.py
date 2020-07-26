@@ -5,6 +5,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 
 # Rest imports
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -127,14 +128,19 @@ class PersonalProfileView(APIView):
 class ListMemberProfilesView(ListAPIView):
     permission_classes = [AllowAny]
     pagination_class = MembersPagination
-    filter_backends = [SearchFilter]
-    search_fields = ['name']
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    search_fields = ['name', 'country', 'city']
 
     def get_serializer_class(self):
         return UserProfileStubSerializer
 
     def get_queryset(self):
-        return UserProfile.objects.filter(is_profile_verified=True)
+        user_profiles = UserProfile.objects.filter(is_profile_verified=True)
+        if 'skills' in self.request.query_params:
+            skill_names = self.request.query_params.get('skills').split(',')
+            skills = Skill.objects.filter(key__in=skill_names)
+            user_profiles = user_profiles.filter(skills__in=skills).distinct('id')
+        return user_profiles
 
 
 class MemberProfileView(APIView):

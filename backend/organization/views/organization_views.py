@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import NotFound
+from django_filters.rest_framework import DjangoFilterBackend
 
 from django.contrib.auth.models import User
 from organization.serializers.organization import (
@@ -27,13 +28,24 @@ logger = logging.getLogger(__name__)
 
 class ListOrganizationsAPIView(ListAPIView):
     permission_classes = [AllowAny]
-    filter_backends = [SearchFilter]
+    filter_backends = [SearchFilter, DjangoFilterBackend]
     pagination_class = OrganizationsPagination
     search_fields = ['name']
-    queryset = Organization.objects.all()
+    filterset_fields = ['country']
 
     def get_serializer_class(self):
         return OrganizationCardSerializer
+
+    def get_queryset(self):
+        organizations = Organization.objects.all()
+        if 'organization_type' in self.request.query_params:
+            org_type_key = self.request.query_params.get('organization_type').split(',')
+            organization_tags = OrganizationTags.objects.filter(key__in=org_type_key)
+            organizations = organizations.filter(
+                tag_organization__organization_tag=organization_tags
+            ).distinct('id')
+
+        return organizations
 
 
 class CreateOrganizationView(APIView):

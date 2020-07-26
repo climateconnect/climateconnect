@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db. models.signals import pre_save
+from django.dispatch import receiver
 
 from organization.models import Organization
 from organization.models.project import Project
@@ -11,7 +13,15 @@ class OrganizationTags(models.Model):
         verbose_name="Name",
         max_length=256
     )
-    
+
+    # Adding this because we use organization tags to filter organization
+    # and its not possible to filter Name because it contains spaces.
+    key = models.CharField(
+        help_text="Points to key of the tag. Example: `Student organization` becomes studentorganization",
+        verbose_name='Key',
+        max_length=256, null=True, blank=True
+    )
+
     parent_tag = models.ForeignKey(
         'self',
         related_name="organization_tag_parent",
@@ -28,7 +38,7 @@ class OrganizationTags(models.Model):
         auto_now_add=True
     )
 
-    additional_info  = ArrayField(
+    additional_info = ArrayField(
         models.CharField(max_length=264),
         null=True,
         blank=True,
@@ -48,6 +58,11 @@ class OrganizationTags(models.Model):
 
     def __str__(self):
         return "%s (%d)" % (self.name, self.id)
+
+
+@receiver(pre_save, sender=OrganizationTags)
+def create_organization_tag_key(sender, instance, **kwarfs):
+    instance.key = instance.name.replace(" ", "").lower()
 
 
 class OrganizationTagging(models.Model):
@@ -98,6 +113,14 @@ class ProjectTags(models.Model):
         max_length=256
     )
 
+    # Adding this because we use project tags to filter project and its not possible to filter Name because
+    # it contains spaces.
+    key = models.CharField(
+        help_text="Points to key of the tag. Example: `Student organization` becomes studentorganization",
+        verbose_name='Key',
+        max_length=256, null=True, blank=True
+    )
+
     parent_tag = models.ForeignKey(
         'self',
         related_name="project_tag_parent",
@@ -127,6 +150,11 @@ class ProjectTags(models.Model):
 
     def __str__(self):
         return "%s" % self.name
+
+
+@receiver(pre_save, sender=ProjectTags)
+def create_project_tag_key(sender, instance, **kwargs):
+    instance.key = instance.name.replace(" ", "").lower()
 
 
 class ProjectTagging(models.Model):

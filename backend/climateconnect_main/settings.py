@@ -46,7 +46,8 @@ LIBRARY_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'knox',
-    'corsheaders'
+    'corsheaders',
+    'django_filters'
 ]
 
 INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
