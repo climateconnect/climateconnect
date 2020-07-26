@@ -52,6 +52,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_number_of_followers(self, obj):
         return obj.project_following.count()
 
+
 class ProjectParentsSerializer(serializers.ModelSerializer):
     parent_organization = serializers.SerializerMethodField()
     parent_user = serializers.SerializerMethodField()
@@ -64,12 +65,13 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
         )
 
     def get_parent_organization(self, obj):
-        if(obj.parent_organization):
+        if obj.parent_organization:
             return OrganizationStubSerializer(obj.parent_organization).data
 
     def get_parent_user(self, obj):
-        if(obj.parent_user):
+        if obj.parent_user:
             return UserProfileStubSerializer(obj.parent_user.user_profile).data
+
 
 class ProjectMinimalSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True)
@@ -89,6 +91,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
         return serializer.data
 
+
 class ProjectStubSerializer(serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
     status = serializers.CharField(source='status.name', read_only=True)
@@ -99,7 +102,8 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             'id', 'name', 'url_slug', 
             'image', 'country', 
             'city', 'status',
-            'project_parents', 'is_draft'
+            'project_parents', 'collaborators_welcome',
+            'is_draft'
         )
     
     def get_project_parents(self, obj):
@@ -119,11 +123,13 @@ class ProjectMemberSerializer(serializers.ModelSerializer):
     def get_user(self, obj):
         return UserProfileStubSerializer(UserProfile.objects.filter(user=obj.user)[0]).data
 
+
 class InsertProjectMemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProjectMember
         fields = ('id', 'user', 'role', 'role_in_project', 'availability')
+
 
 class ProjectCollaboratorsSerializer(serializers.ModelSerializer):
     collaborating_organization = serializers.SerializerMethodField()

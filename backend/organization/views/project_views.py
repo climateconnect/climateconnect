@@ -5,6 +5,7 @@ from rest_framework.filters import SearchFilter
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
 
 from django.contrib.auth.models import User
 
@@ -32,8 +33,9 @@ logger = logging.getLogger(__name__)
 
 class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
-    filter_backends = [SearchFilter]
+    filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['url_slug']
+    filterset_fields = ['collaborators_welcome', 'country', 'city']
     pagination_class = ProjectsPagination
     serializer_class = ProjectSerializer
     queryset = Project.objects.filter(is_draft=False)
@@ -42,8 +44,23 @@ class ListProjectsView(ListAPIView):
         return ProjectStubSerializer
     
     def get_queryset(self):
-        return Project.objects.filter(is_draft=False)
+        projects = Project.objects.filter(is_draft=False)
+        if 'organization_type' in self.request.query_params:
+            project_category = self.request.query_params.get('organization_type').split(',')
+            project_tags = ProjectTags.objects.filter(key__in=project_category)
+            projects = projects.filter(
+                tag_project__project_tag__in=project_tags
+            ).distinct('id')
 
+        if 'statuses' in self.request.query_params:
+            statuses = self.request.query_params.get('statuses').split(',')
+            projects = projects.filter(status__name__in=statuses)
+
+        if 'skills' in self.request.query_params:
+            skill_names = self.request.query_params.get('skills').split(',')
+            skills = Skill.objects.filter(key__in=skill_names)
+            projects = projects.filter(skills__in=skills).distinct('id')
+        return projects
 
 
 class CreateProjectView(APIView):
@@ -252,6 +269,7 @@ class ProjectAPIView(APIView):
             'url_slug': project.url_slug
         }, status=status.HTTP_200_OK)
 
+
 class ListProjectPostsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
@@ -263,6 +281,7 @@ class ListProjectPostsView(ListAPIView):
         return Post.objects.filter(
             project__url_slug=self.kwargs['url_slug'],
         ).order_by('id')
+
 
 class ListProjectCommentsView(ListAPIView):
     permission_classes = [AllowAny]
