@@ -67,7 +67,7 @@ class CreateProjectView(APIView):
                     'message': 'Missing required information to create project:'+param+' Please contact administrator'
                 }, status=status.HTTP_400_BAD_REQUEST)
         try:
-            project_status = ProjectStatus.objects.get(id=int(request.data["status"]))
+            ProjectStatus.objects.get(id=int(request.data["status"]))
         except ProjectStatus.DoesNotExist:
             return Response({
                 'message': "Passed status {} does not exist".format(request.data["status"])
@@ -274,7 +274,7 @@ class ListProjectCommentsView(ListAPIView):
     def get_queryset(self):
         return ProjectComment.objects.filter(
             project__url_slug=self.kwargs['url_slug'],
-        ).order_by('id')
+        )
     
 class AddProjectMembersView(APIView):
     permission_classes = [AddProjectMemberPermission]
@@ -452,3 +452,41 @@ class IsUserFollowing(APIView):
         is_following = ProjectFollower.objects.filter(user=request.user, project=project).exists()
         return Response({'is_following': is_following}, status=status.HTTP_200_OK)
 
+class ProjectCommentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, url_slug):
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            raise NotFound(detail="Project not found:"+url_slug, code=status.HTTP_404_NOT_FOUND)
+        if 'content' not in request.data:
+            return Response({
+                'message': 'Missing required parameters'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        comment = ProjectComment.objects.create(
+            author_user = request.user, content=request.data['content'], project=project
+        )
+        if 'parent_comment' in request.data:
+            try:
+                parent_comment = ProjectComment.objects.get(id=request.data['parent_comment'])
+            except ProjectComment.DoesNotExist:
+                raise NotFound(detail="Parent comment not found:"+request.data['parent_comment'], code=status.HTTP_404_NOT_FOUND)
+            comment.parent_comment = parent_comment
+        comment.save()
+        return Response({'comment': ProjectCommentSerializer(comment).data}, status=status.HTTP_200_OK)
+
+    def delete(self, request, url_slug, comment_id):
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            raise NotFound(detail="Project not found:"+url_slug, code=status.HTTP_404_NOT_FOUND)
+        try:
+            comment = ProjectComment.objects.get(project=project, id=comment_id, author_user=request.user)
+        except ProjectComment.DoesNotExist:
+            raise NotFound(
+                detail="Project comment not found. Project:"+url_slug+" Comment:"+comment_id, 
+                code=status.HTTP_404_NOT_FOUND
+            )
+        comment.delete()
+        return Response(status=status.HTTP_200_OK)

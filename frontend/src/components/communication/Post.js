@@ -1,99 +1,204 @@
 import React from "react";
-import { Typography, Button } from "@material-ui/core";
-import ThumbUpOutlinedIcon from "@material-ui/icons/ThumbUpOutlined";
+import { Typography, Button, Avatar, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Posts from "./Posts";
-import MiniProfilePreview from "./../profile/MiniProfilePreview";
 import DateDisplay from "./../general/DateDisplay";
+import { getImageUrl } from "../../../public/lib/imageOperations";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import Truncate from "react-truncate";
+import CommentInput from "./CommentInput";
+import ConfirmDialog from "../dialogs/ConfirmDialog";
 
 const useStyles = makeStyles(theme => ({
   postDate: {
     color: theme.palette.grey[700]
   },
-  icon: {
-    verticalAlign: "bottom",
-    marginTop: 2,
-    paddingRight: theme.spacing(0.5)
+  commentFlexBox: {
+    display: "flex"
   },
-  viewRepliesButton: {
-    display: "block"
+  messageWithMetaData: {
+    display: "flex",
+    flexDirection: "column",
+    flexWrap: "wrap",
+    flex: 1
   },
-  smallAvatar: {
-    width: theme.spacing(3),
-    height: theme.spacing(3)
+  avatar: {
+    marginRight: theme.spacing(2)
   },
-  autoAvatar: {
-    width: theme.spacing(5),
-    height: theme.spacing(5)
+  username: {
+    fontWeight: "bold",
+    marginRight: theme.spacing(0.5)
   },
-  nameOfPoster: {
+  metadata: {
+    display: "flex"
+  },
+  message: {
+    lineHeight: 1.2
+  },
+  content: {
+    wordBreak: "break-word",
+    fontSize: 14
+  },
+  toggleExpanded: {
     fontWeight: 600,
-    marginBottom: theme.spacing(2)
+    fontSize: 14,
+    cursor: "pointer",
+    color: theme.palette.grey[700]
   },
-  thumbUpIcon: {
-    borderRadius: 10,
-    borderColor: theme.palette.primary.main
+  replyButton: {
+    color: theme.palette.grey[700]
   },
-  interactionBarButton: {
-    marginTop: theme.spacing(2)
+  toggleReplies: {
+    display: "flex",
+    alignItems: "center",
+    cursor: "pointer"
   }
 }));
 
-export default function Post({ post, type, className }) {
+export default function Post({
+  post,
+  type,
+  className,
+  maxLines,
+  user,
+  onSendComment,
+  onDeletePost
+}) {
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
   const [displayReplies, setDisplayReplies] = React.useState(false);
+  const [truncated, setTruncated] = React.useState(false);
+  const [expanded, setExpanded] = React.useState(false);
+  const [replyInterfaceExpanded, setInterfaceExpanded] = React.useState(false);
+
+  const expandReplyInterface = () => setInterfaceExpanded(true);
+
+  const unexpandReplyInterface = () => setInterfaceExpanded(false);
 
   const handleViewRepliesClick = () => {
     setDisplayReplies(!displayReplies);
   };
 
+  const handleSendComment = (curComment, parent_comment, clearInput) => {
+    onSendComment(curComment, parent_comment, clearInput, setDisplayReplies);
+  };
+
+  const handleTruncate = t => setTruncated(t);
+  const toggleExpand = () => setExpanded(!expanded);
+
+  const toggleDeleteDialogOpen = () => setOpen(!open);
+
+  const onConfirmDialogClose = confirmed => {
+    setOpen(false);
+    if(confirmed) 
+      onDeletePost(post);
+  };
+
   return (
     <div className={className}>
-      <Typography variant="body2" className={classes.postDate}>
-        <DateDisplay date={new Date(post.created_at)} />
-      </Typography>
       {type === "progresspost" ? (
         <Typography component="h3" variant="h6" color="primary" className={classes.nameOfPoster}>
           {post.author_user.first_name + " " + post.author_user.last_name}
         </Typography>
       ) : (
-        <MiniProfilePreview
-          profile={post.author_user}
-          avatarClassName={type === "reply" ? classes.smallAvatar : classes.autoAvatar}
-        />
-      )}
-      <Typography>{post.content}</Typography>
-      <div className={classes.interactionBar}>
-        <Button
-          variant="outlined"
-          size={type === "reply" ? "small" : "medium"}
-          startIcon={<ThumbUpOutlinedIcon />}
-          className={`${classes.thumbUpIcon} ${classes.interactionBarButton}`}
-        >
-          {post.likes ? post.likes : 0}
-        </Button>
-        {(type === "openingpost" || type === "progresspost") && (
-          <>
-            {post.replies && post.replies.length > 0 && (
-              <Button
-                className={`${classes.viewRepliesButton} ${classes.interactionBarButton}`}
-                onClick={handleViewRepliesClick}
+        <div className={classes.commentFlexBox}>
+          <Link href={"/profiles/" + post.author_user.url_slug} target="_blank">
+            <Avatar src={getImageUrl(post.author_user.image)} className={classes.avatar} />
+          </Link>
+          <span className={classes.messageWithMetaData}>
+            <div className={classes.metadata}>
+              <Link color="inherit" href={"/profiles/" + post.author_user.url_slug} target="_blank">
+                <Typography variant="body2" className={classes.username}>
+                  {post.author_user.first_name + " " + post.author_user.last_name}
+                </Typography>
+              </Link>
+              <Typography variant="body2" className={classes.postDate}>
+                <DateDisplay date={new Date(post.created_at)} />
+              </Typography>
+            </div>
+            <Typography component="div" className={classes.content}>
+              <Truncate
+                lines={!expanded && maxLines}
+                onTruncate={handleTruncate}
+                ellipsis={
+                  <div>
+                    <Link className={classes.toggleExpanded} onClick={toggleExpand}>
+                      Show more
+                    </Link>
+                  </div>
+                }
               >
-                {displayReplies ? "Hide " : "View "} {displayReplies ? "" : post.replies.length}{" "}
-                replies
-              </Button>
+                {post.content}
+              </Truncate>
+            </Typography>
+            {!truncated && expanded && (
+              <div>
+                <Link className={classes.toggleExpanded} onClick={toggleExpand}>
+                  Show less
+                </Link>
+              </div>
             )}
-          </>
-        )}
-      </div>
+            <div>
+              {type != "reply" &&
+                (replyInterfaceExpanded ? (
+                  <CommentInput
+                    user={user}
+                    onSendComment={handleSendComment}
+                    parent_comment={post.id}
+                    onCancel={unexpandReplyInterface}
+                  />
+                ) : (
+                  <Button onClick={expandReplyInterface} className={classes.replyButton}>
+                    Reply
+                  </Button>
+                ))}
+              {user && user.id === post.author_user.id && (
+                <Button onClick={toggleDeleteDialogOpen}>Delete</Button>
+              )}
+            </div>
+            <div>
+              {type != "reply" && !!post.replies && post.replies.length > 0 && (
+                <Link className={classes.toggleReplies} onClick={handleViewRepliesClick}>
+                  {!displayReplies ? (
+                    <>
+                      <ExpandMoreIcon />
+                      Show replies
+                    </>
+                  ) : (
+                    <>
+                      <ExpandLessIcon />
+                      Hide replies
+                    </>
+                  )}
+                </Link>
+              )}
+            </div>
+          </span>
+        </div>
+      )}
       <div>
         {post.replies &&
           post.replies.length > 0 &&
           displayReplies &&
           (type === "openingpost" || type === "progresspost") && (
-            <Posts posts={post.replies} type="reply" />
+            <Posts 
+              posts={post.replies} 
+              type="reply" 
+              user={user} 
+              maxLines={maxLines} 
+              onDeletePost={onDeletePost}
+            />
           )}
       </div>
+      <ConfirmDialog
+        open={open}
+        onClose={onConfirmDialogClose}
+        title="Delete comment"
+        text="Do you really want to delete this comment?"
+        confirmText="Yes"
+        cancelText="No"
+      />
     </div>
   );
 }
