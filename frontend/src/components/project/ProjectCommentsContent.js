@@ -26,7 +26,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
         { ...parent_comment, replies: [...parent_comment.replies, c] }
       ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setCurComments(newCurComments);
-    } else setCurComments([...project.comments, c]);
+    } else setCurComments([c, ...project.comments]);
   };
 
   const handleRemoveComment = c => {
@@ -55,7 +55,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
 
   const onDeleteComment = async post => {
     try {
-      const resp = await axios.delete(
+      await axios.delete(
         process.env.API_URL + "/api/projects/" + project.url_slug + "/comment/"+post.id+"/",
         tokenConfig(token)
       );

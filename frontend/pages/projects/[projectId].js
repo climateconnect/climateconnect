@@ -191,7 +191,7 @@ function ProjectLayout({
           >
             <Tab label="Project" />
             <Tab label="Team" />
-            <Tab label="Discussion" />
+            <Tab label="Comments" />
           </Tabs>
         </div>
       </Container>

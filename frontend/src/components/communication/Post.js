@@ -6,9 +6,9 @@ import DateDisplay from "./../general/DateDisplay";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import Truncate from "react-truncate";
 import CommentInput from "./CommentInput";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
+import MessageContent from "./MessageContent";
 
 const useStyles = makeStyles(theme => ({
   postDate: {
@@ -38,7 +38,8 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     wordBreak: "break-word",
-    fontSize: 14
+    fontSize: 14,
+    whiteSpace: "pre-wrap"
   },
   toggleExpanded: {
     fontWeight: 600,
@@ -68,10 +69,8 @@ export default function Post({
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [displayReplies, setDisplayReplies] = React.useState(false);
-  const [truncated, setTruncated] = React.useState(false);
-  const [expanded, setExpanded] = React.useState(false);
   const [replyInterfaceExpanded, setInterfaceExpanded] = React.useState(false);
-
+  console.log(post)
   const expandReplyInterface = () => setInterfaceExpanded(true);
 
   const unexpandReplyInterface = () => setInterfaceExpanded(false);
@@ -83,9 +82,6 @@ export default function Post({
   const handleSendComment = (curComment, parent_comment, clearInput) => {
     onSendComment(curComment, parent_comment, clearInput, setDisplayReplies);
   };
-
-  const handleTruncate = t => setTruncated(t);
-  const toggleExpand = () => setExpanded(!expanded);
 
   const toggleDeleteDialogOpen = () => setOpen(!open);
 
@@ -116,29 +112,8 @@ export default function Post({
               <Typography variant="body2" className={classes.postDate}>
                 <DateDisplay date={new Date(post.created_at)} />
               </Typography>
-            </div>
-            <Typography component="div" className={classes.content}>
-              <Truncate
-                lines={!expanded && maxLines}
-                onTruncate={handleTruncate}
-                ellipsis={
-                  <div>
-                    <Link className={classes.toggleExpanded} onClick={toggleExpand}>
-                      Show more
-                    </Link>
-                  </div>
-                }
-              >
-                {post.content}
-              </Truncate>
-            </Typography>
-            {!truncated && expanded && (
-              <div>
-                <Link className={classes.toggleExpanded} onClick={toggleExpand}>
-                  Show less
-                </Link>
-              </div>
-            )}
+            </div>            
+            <MessageContent content={post.content} maxLines={maxLines}/>            
             <div>
               {type != "reply" &&
                 (replyInterfaceExpanded ? (
