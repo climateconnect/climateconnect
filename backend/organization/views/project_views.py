@@ -45,7 +45,6 @@ class ListProjectsView(ListAPIView):
         return Project.objects.filter(is_draft=False)
 
 
-
 class CreateProjectView(APIView):
     permission_classes = [IsAuthenticated]
 
