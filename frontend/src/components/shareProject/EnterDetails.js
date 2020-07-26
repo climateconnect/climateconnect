@@ -139,8 +139,8 @@ export default function EnterDetails({
   const onWebsiteChange = event => {
     handleSetProjectData({
       website: event.target.value
-    })
-  }
+    });
+  };
 
   const isProjectDataValid = project => {
     if (!project.image) {
@@ -214,7 +214,7 @@ export default function EnterDetails({
                 />
               )}
             </div>
-          </div>          
+          </div>
           <div className={classes.block}>
             <AddPhotoSection
               projectData={projectData}
@@ -262,7 +262,7 @@ export default function EnterDetails({
               placeholder={`Describe your project in more detail.\n\n-What are you trying to achieve?\n-How are you trying to achieve it\n-What were the biggest challenges?\n-What insights have you gained during the implementation?`}
               value={projectData.description}
             />
-          </div>   
+          </div>
           <div className={classes.block}>
             <Typography
               component="h2"
@@ -279,7 +279,7 @@ export default function EnterDetails({
               value={projectData.website}
               helperText={"If your project has a website, you can enter it here."}
             />
-          </div>       
+          </div>
           <div className={classes.block}>
             <Typography
               component="h2"

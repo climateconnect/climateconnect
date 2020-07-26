@@ -19,7 +19,7 @@ import LoginNudge from "../../src/components/general/LoginNudge";
 import { parseProfile } from "./../../public/lib/profileOperations";
 import { getParams } from "./../../public/lib/generalOperations";
 
-const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
+const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_user.jpg";
 
 const useStyles = makeStyles(theme => {
   return {

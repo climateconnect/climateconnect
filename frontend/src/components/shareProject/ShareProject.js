@@ -58,7 +58,7 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
       key: "parent_organization",
       bottomLink: (
         <Typography className={classes.orgBottomLink}>
-          If your organization does not exit yet{" "}
+          If your organization does not exist yet{" "}
           <Link href="/createorganization" underline="always">
             click here
           </Link>{" "}

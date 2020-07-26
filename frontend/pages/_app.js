@@ -92,10 +92,9 @@ async function getLoggedInUser(cookies) {
       const resp = await axios.get(process.env.API_URL + "/api/my_profile/", tokenConfig(token));
       return resp.data;
     } catch (err) {
-      console.log(err)
+      console.log(err);
       if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-      if(err.response && err.response.data.detail === "Invalid token.")
-        cookies.remove("token")
+      if (err.response && err.response.data.detail === "Invalid token.") cookies.remove("token");
       return null;
     }
   } else {

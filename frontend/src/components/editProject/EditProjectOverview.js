@@ -191,7 +191,7 @@ const InputLocation = ({ project, handleChangeProject }) => {
   );
 };
 
-const InputWebsite = ({project, handleChangeProject}) => {
+const InputWebsite = ({ project, handleChangeProject }) => {
   const classes = useStyles();
   return (
     <div className={classes.projectInfoEl}>
@@ -205,8 +205,8 @@ const InputWebsite = ({project, handleChangeProject}) => {
         onChange={event => handleChangeProject(event.target.value, "website")}
       />
     </div>
-  )
-}
+  );
+};
 
 const InputTags = ({ project, handleChangeProject, tagsOptions }) => {
   const classes = useStyles();

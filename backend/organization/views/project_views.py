@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from django.contrib.auth.models import User
 
-from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging, ProjectStatus, ProjectCollaborators
+from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging, ProjectStatus, ProjectCollaborators, ProjectFollower
 from organization.serializers.project import (
     ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer,InsertProjectMemberSerializer
 )
@@ -24,6 +24,7 @@ from organization.pagination import (
 from organization.utility.organization import (
     check_organization,
 )
+from rest_framework.exceptions import ValidationError, NotFound
 from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.models import Role, Skill, Availability
 import logging
@@ -425,3 +426,49 @@ class ListProjectStatus(ListAPIView):
 
     def get_queryset(self):
         return ProjectStatus.objects.all()
+
+class SetFollowView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, url_slug):
+        if 'following' not in request.data:
+            return Response({
+                'message': 'Missing required parameters'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            raise NotFound(detail="Project not found.", code=status.HTTP_404_NOT_FOUND)
+
+        if request.data['following']==True:
+            if ProjectFollower.objects.filter(user=request.user, project=project).exists():
+                raise ValidationError("You're already following this project.")
+            else:
+                ProjectFollower.objects.create(user=request.user, project=project)
+                return Response({
+                    'message': 'You are now following this project. You will be notified when they post an update!',
+                    'following': True
+                }, status=status.HTTP_200_OK)
+        if request.data['following']==False:
+            try:
+                follower_object = ProjectFollower.objects.get(user=request.user, project=project)
+            except ProjectFollower.DoesNotExist:
+                raise NotFound(detail="You weren't following this project.", code=status.HTTP_404_NOT_FOUND)
+            follower_object.delete()
+            return Response({'message': 'You are not following this project anymore.', 'following': False}, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'message': 'Invalid value for variable "following"'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+class IsUserFollowing(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, url_slug):
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            raise NotFound(detail="Project not found:"+url_slug, code=status.HTTP_404_NOT_FOUND)
+        is_following = ProjectFollower.objects.filter(user=request.user, project=project).exists()
+        return Response({'is_following': is_following}, status=status.HTTP_200_OK)
+

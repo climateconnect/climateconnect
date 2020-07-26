@@ -1,4 +1,4 @@
-import { resendEmail } from "../public/lib/apiOperations"
+import { resendEmail } from "../public/lib/apiOperations";
 import React from "react";
 import Layout from "../src/components/layouts/layout";
 import Form from "../src/components/general/Form";
@@ -11,31 +11,30 @@ const fields = [
     key: "email",
     type: "email"
   }
-]
+];
 
 const messages = {
   submitMessage: "Send verification E-Mail again"
-}
+};
 
-export default function ResendVerificationEmail (){
+export default function ResendVerificationEmail() {
   const [errorMessage, setErrorMessage] = React.useState(null);
-    
-  const handleSubmit = async(event, values) => {
-    event.preventDefault()
-    resendEmail(values.email, onSuccess, onError)
-  }
+
+  const handleSubmit = async (event, values) => {
+    event.preventDefault();
+    resendEmail(values.email, onSuccess, onError);
+  };
 
   const onSuccess = resp => {
-    redirect("/",{
-      'message' : resp.data.message
+    redirect("/", {
+      message: resp.data.message
     });
-  }
+  };
 
   const onError = error => {
-    if(error.response && error.response.data)
-      setErrorMessage(error.response.data.message)
-  }
-  
+    if (error.response && error.response.data) setErrorMessage(error.response.data.message);
+  };
+
   return (
     <div>
       <Layout title="Resend verification Email">

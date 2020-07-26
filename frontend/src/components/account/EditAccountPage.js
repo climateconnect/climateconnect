@@ -8,7 +8,8 @@ import {
   Typography,
   Tooltip,
   IconButton,
-  useMediaQuery
+  useMediaQuery,
+  Checkbox
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -21,7 +22,9 @@ import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import imageCompression from "browser-image-compression";
 import { getImageDialogHeight } from "../../../public/lib/imageOperations";
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
+import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -343,7 +346,20 @@ export default function EditAccountPage({
           info: { ...editedAccount.info, [key]: event.target.value }
         });
       };
+
+      const handleSetParentOrganization = newOrg => {
+        setEditedAccount({
+          ...editedAccount,
+          info: {
+            ...editedAccount.info,
+            parent_organization: newOrg,
+            has_parent_organization: !!newOrg
+          }
+        });
+      };
+
       const i = getFullInfoElement(infoMetadata, key, info[key]);
+
       if (i.type === "array") {
         return displayInfoArrayData(key, i);
       } else if (i.type === "select") {
@@ -358,7 +374,59 @@ export default function EditAccountPage({
             />
           </div>
         );
-      } else {
+      } else if (i.type === "checkbox") {
+        return (
+          <div className={classes.checkbox} key={i.key}>
+            <Checkbox
+              id={"checkbox" + i.key}
+              checked={i.value}
+              className={classes.inlineBlockElement}
+              color="primary"
+              size="small"
+              onChange={e => handleChange({ target: { value: e.target.checked } })}
+            />
+            <label htmlFor={"checkbox" + i.key}>{i.label}</label>
+          </div>
+        );
+      } else if (
+        i.type === "auto_complete_searchbar" &&
+        i.key === "parent_organization" &&
+        (!i.show_if_ticked || editedAccount.info[i.show_if_ticked] === true)
+      ) {
+        const renderSearchOption = option => {
+          return <React.Fragment>{option.name}</React.Fragment>;
+        };
+        return (
+          <>
+            <div className={classes.infoElement}>
+              {i.value && (
+                <>
+                  <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
+                    Parent organization:
+                  </Typography>
+                  <MiniOrganizationPreview
+                    organization={i.value}
+                    size="small"
+                    className={classes.infoElement}
+                    onDelete={() => handleSetParentOrganization(null)}
+                  />
+                </>
+              )}
+              <AutoCompleteSearchBar
+                label={i.label}
+                className={`${classes.marginTop} ${classes.block}`}
+                baseUrl={process.env.API_URL + i.baseUrl}
+                freeSolo
+                clearOnSelect
+                onSelect={handleSetParentOrganization}
+                renderOption={renderSearchOption}
+                getOptionLabel={option => option.name}
+                helperText={i.helperText}
+              />
+            </div>
+          </>
+        );
+      } else if (key != "parent_organization") {
         return (
           <div key={key} className={classes.infoElement}>
             <Typography className={classes.subtitle}>
@@ -499,7 +567,7 @@ export default function EditAccountPage({
           onClick={() => handleDialogClickOpen("confirmExitDialog")}
         >
           Cancel
-        </Button>        
+        </Button>
         <Container className={classes.avatarWithInfo}>
           <div className={classes.avatarContainer}>
             <label htmlFor="avatarPhoto">
@@ -600,12 +668,15 @@ export default function EditAccountPage({
         </Container>
         <Container className={classes.accountInfo}>
           {displayAccountInfo(editedAccount.info)}
-        </Container>        
+        </Container>
       </Container>
       {children}
-      {deleteEmail &&
-        <Typography variant="subtitle2" className={classes.deleteMessage}><InfoOutlinedIcon />If you wish to delete this account, send an E-Mail to {deleteEmail}</Typography> 
-      }
+      {deleteEmail && (
+        <Typography variant="subtitle2" className={classes.deleteMessage}>
+          <InfoOutlinedIcon />
+          If you wish to delete this account, send an E-Mail to {deleteEmail}
+        </Typography>
+      )}
       <UploadImageDialog
         onClose={handleBackgroundClose}
         open={open.backgroundDialog}

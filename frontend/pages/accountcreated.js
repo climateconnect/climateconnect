@@ -13,7 +13,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-
 export default function AccountCreated() {
   const classes = useStyles();
 
@@ -26,10 +25,17 @@ export default function AccountCreated() {
         <Typography variant="h4">
           <div>We have sent you an E-Mail with a link!</div>
           <div>Please click on the link to activate your account.</div>
-          <br/>
-          <Typography variant="h6">Make sure to also check your spam/junk folder incase you cannot find the E-Mail.</Typography>
-          <Typography variant="h6">If you are experiencing any problems, contact us at support@climateconnect.earth</Typography>
-          <Typography variant="h6">If the E-Mail does not arrive after 5 minutes, <a href="/resend_verification_email">click here</a> to resend it.</Typography>
+          <br />
+          <Typography variant="h6">
+            Make sure to also check your spam/junk folder incase you cannot find the E-Mail.
+          </Typography>
+          <Typography variant="h6">
+            If you are experiencing any problems, contact us at support@climateconnect.earth
+          </Typography>
+          <Typography variant="h6">
+            If the E-Mail does not arrive after 5 minutes,{" "}
+            <a href="/resend_verification_email">click here</a> to resend it.
+          </Typography>
         </Typography>
       </Paper>
     </Layout>

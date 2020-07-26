@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Checkbox, Container, Button, useMediaQuery } from "@material-ui/core";
 import Cookies from "universal-cookie";
@@ -14,14 +14,14 @@ const useStyles = makeStyles(theme => {
       background: "white",
       borderTop: `1px solid ${theme.palette.secondary.main}`,
       paddingTop: theme.spacing(1),
-      [theme.breakpoints.down("md")]:{
+      [theme.breakpoints.down("md")]: {
         height: 200
       }
     },
     headline: {
       fontWeight: "bold",
       marginBottom: theme.spacing(1),
-      [theme.breakpoints.down("md")]:{
+      [theme.breakpoints.down("md")]: {
         fontSize: 15
       }
     },
@@ -50,68 +50,68 @@ const useStyles = makeStyles(theme => {
     leftButtonContainer: {
       display: "inline-block",
       [theme.breakpoints.down("md")]: {
-        width:"50%",
+        width: "50%",
         padding: theme.spacing(0.5)
       }
     },
     rightButtonContainer: {
       display: "inline-block",
       [theme.breakpoints.down("md")]: {
-        width:"50%",
+        width: "50%",
         padding: theme.spacing(0.5)
       }
     }
-  }
-})
+  };
+});
 
-export default function CookieBanner({closeBanner}) {
-  const classes = useStyles()
-  const [checked, setChecked] = React.useState({necessary: true, statistics: false})
-  const cookies = new Cookies(); 
+export default function CookieBanner({ closeBanner }) {
+  const classes = useStyles();
+  const [checked, setChecked] = React.useState({ necessary: true, statistics: false });
+  const cookies = new Cookies();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
 
   const onStatisticsChange = () => {
-    setChecked({...checked, statistics: !checked.statistics})
-  }
+    setChecked({ ...checked, statistics: !checked.statistics });
+  };
 
   const confirmSelection = () => {
-    cookies.set(
-      "acceptedNecessary", 
-      true,
-      { path: "/", sameSite: true }
-    )
-    cookies.set(
-      "acceptedStatistics", 
-      false,
-      { path: "/", sameSite: true }
-    )
-    closeBanner()
-  }
+    cookies.set("acceptedNecessary", true, { path: "/", sameSite: true });
+    cookies.set("acceptedStatistics", false, { path: "/", sameSite: true });
+    closeBanner();
+  };
 
   const enableAll = () => {
-    cookies.set(
-      "acceptedNecessary", 
-      true,
-      { path: "/", sameSite: true }
-    )
-    cookies.set(
-      "acceptedStatistics", 
-      true,
-      { path: "/", sameSite: true }
-    )
-    closeBanner()
-  }
+    cookies.set("acceptedNecessary", true, { path: "/", sameSite: true });
+    cookies.set("acceptedStatistics", true, { path: "/", sameSite: true });
+    closeBanner();
+  };
 
   return (
     <div className={classes.root}>
       <Container maxWidth="lg">
-        <Typography variant="h6" color="secondary" className={classes.headline}>Cookie information and settings</Typography>
-        {!isNarrowScreen &&
-          <Typography variant="body2">We use cookies in order to offer you an optimal service and to further improve our websites on the basis of statistics.</Typography>
-        }
-        <Typography variant="body2">For more information check out our <a href="privacy" target="_blank">privacy policy</a> and <a href="terms" target="_blank">terms of use</a></Typography>
-        <Checkbox defaultChecked checked={checked.necessary} disabled color="primary"/>Necessary
-        <Checkbox color="primary" checked={checked.statistics} onChange={onStatisticsChange}/>Statistics
+        <Typography variant="h6" color="secondary" className={classes.headline}>
+          Cookie information and settings
+        </Typography>
+        {!isNarrowScreen && (
+          <Typography variant="body2">
+            We use cookies in order to offer you an optimal service and to further improve our
+            websites on the basis of statistics.
+          </Typography>
+        )}
+        <Typography variant="body2">
+          For more information check out our{" "}
+          <a href="privacy" target="_blank">
+            privacy policy
+          </a>{" "}
+          and{" "}
+          <a href="terms" target="_blank">
+            terms of use
+          </a>
+        </Typography>
+        <Checkbox defaultChecked checked={checked.necessary} disabled color="primary" />
+        Necessary
+        <Checkbox color="primary" checked={checked.statistics} onChange={onStatisticsChange} />
+        Statistics
         <span className={classes.buttons}>
           <div className={classes.leftButtonContainer}>
             <Button variant="contained" className={classes.leftButton} onClick={confirmSelection}>
@@ -119,14 +119,17 @@ export default function CookieBanner({closeBanner}) {
             </Button>
           </div>
           <div className={classes.rightButtonContainer}>
-            <Button color="primary" className={classes.rightButton} variant="contained" onClick={enableAll}>
+            <Button
+              color="primary"
+              className={classes.rightButton}
+              variant="contained"
+              onClick={enableAll}
+            >
               Enable all cookies
             </Button>
           </div>
         </span>
       </Container>
     </div>
-  )
-
-
+  );
 }

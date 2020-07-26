@@ -75,7 +75,7 @@ export default function ShareProjectRoot({
   useEffect(() => {
     if (window) {
       const location = window.location.href;
-      Router.beforePopState(({ url, as, options }) => {
+      Router.beforePopState(({ as }) => {
         if (location.includes("/share") && as != "/share") {
           const result = window.confirm(
             "Are you sure you want to leave? You will lose your project."

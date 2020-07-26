@@ -110,17 +110,13 @@ export default function EditProjectRoot({
 
   const deleteProject = () => {
     axios
-      .delete(
-        process.env.API_URL + "/api/projects/"+project.url_slug+"/",
-        tokenConfig(token)
-      )
+      .delete(process.env.API_URL + "/api/projects/" + project.url_slug + "/", tokenConfig(token))
       .then(function(response) {
-        console.log(response)
+        console.log(response);
         Router.push({
           pathname: "/profiles/" + user.url_slug,
           query: {
-            message:
-              "You have successfully deleted your project."
+            message: "You have successfully deleted your project."
           }
         });
       })
@@ -128,7 +124,7 @@ export default function EditProjectRoot({
         console.log(error);
         if (error) console.log(error.response);
       });
-  }
+  };
 
   return (
     <Container disableGutters={isNarrowScreen}>

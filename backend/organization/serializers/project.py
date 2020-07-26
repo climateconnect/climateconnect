@@ -15,6 +15,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField()
     status = serializers.CharField(source='status.name', read_only=True)
     collaborating_organizations = serializers.SerializerMethodField()
+    number_of_followers = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -28,7 +29,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             'skills', 'helpful_connections',
             'project_parents', 'tags', 
             'created_at', 'collaborating_organizations', 'is_draft',
-            'website'
+            'website', 'number_of_followers'
         )
         read_only_fields = ['url_slug']
 
@@ -47,6 +48,9 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_tags(self, obj):
         serializer = ProjectTaggingSerializer(obj.tag_project, many=True)
         return serializer.data
+
+    def get_number_of_followers(self, obj):
+        return obj.project_following.count()
 
 
 class ProjectParentsSerializer(serializers.ModelSerializer):

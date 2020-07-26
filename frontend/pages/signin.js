@@ -24,7 +24,11 @@ export default function Signin() {
 
   const messages = {
     submitMessage: "Log in",
-    bottomMessage: <span>New to Climate Connect? <a href="/signup">Click here to create an account</a></span>
+    bottomMessage: (
+      <span>
+        New to Climate Connect? <a href="/signup">Click here to create an account</a>
+      </span>
+    )
   };
 
   const bottomLink = {
@@ -53,10 +57,19 @@ export default function Signin() {
       })
       .catch(function(error) {
         console.log(error);
-        if (error.response && error.response.data){
-          if(error.response.data.type === 'not_verified')
-            setErrorMessage(<span>You {"haven't"} activated you account yet. Click the link in the email we sent you or <a href="resend_verification_email" target="_blank">click here</a> to send the verification link again.</span>)
-          else setErrorMessage(error.response.data.message)
+        if (error.response && error.response.data) {
+          if (error.response.data.type === "not_verified")
+            setErrorMessage(
+              <span>
+                You {"haven't"} activated you account yet. Click the link in the email we sent you
+                or{" "}
+                <a href="resend_verification_email" target="_blank">
+                  click here
+                </a>{" "}
+                to send the verification link again.
+              </span>
+            );
+          else setErrorMessage(error.response.data.message);
         }
       });
   };

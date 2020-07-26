@@ -6,33 +6,62 @@ import ExploreIcon from "@material-ui/icons/Explore";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import MessageContent from "../communication/MessageContent";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
-import LanguageIcon from '@material-ui/icons/Language';
+import LanguageIcon from "@material-ui/icons/Language";
 import Linkify from "react-linkify";
 
 const useStyles = makeStyles(theme => ({
-  ...projectOverviewStyles(theme)
+  ...projectOverviewStyles(theme),
+  contactProjectButton: {
+    marginLeft: theme.spacing(1)
+  },
+  followButtonContainer: {
+    display: "inline-flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    textAlign: "center"
+  }
 }));
 
 const componentDecorator = (href, text, key) => (
-  <Link color="primary" underline="always" href={href} key={key} target="_blank" rel="noopener noreferrer">
+  <Link
+    color="primary"
+    underline="always"
+    href={href}
+    key={key}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
     {text}
   </Link>
 );
 
-export default function ProjectOverview({ project, smallScreen }) {
+export default function ProjectOverview({
+  project,
+  smallScreen,
+  handleToggleFollowProject,
+  isUserFollowing
+}) {
   const classes = useStyles();
   return (
     <Container className={classes.projectOverview}>
       {smallScreen ? (
-        <SmallScreenOverview project={project} />
+        <SmallScreenOverview
+          project={project}
+          handleToggleFollowProject={handleToggleFollowProject}
+          isUserFollowing={isUserFollowing}
+        />
       ) : (
-        <LargeScreenOverview project={project} />
+        <LargeScreenOverview
+          project={project}
+          handleToggleFollowProject={handleToggleFollowProject}
+          isUserFollowing={isUserFollowing}
+        />
       )}
     </Container>
   );
 }
 
-function SmallScreenOverview({ project }) {
+function SmallScreenOverview({ project, handleToggleFollowProject, isUserFollowing }) {
   const classes = useStyles();
   return (
     <>
@@ -51,15 +80,16 @@ function SmallScreenOverview({ project }) {
             {project.location}
           </Typography>
         </div>
-        <div className={classes.projectInfoEl}>
-          <Typography>
-            <Tooltip title="Website">
-              <LanguageIcon color="primary" className={classes.icon} />
-            </Tooltip>{" "}
-            <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
-            
-          </Typography>
-        </div>
+        {project.website && (
+          <div className={classes.projectInfoEl}>
+            <Typography>
+              <Tooltip title="Website">
+                <LanguageIcon color="primary" className={classes.icon} />
+              </Tooltip>{" "}
+              <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
+            </Typography>
+          </div>
+        )}
         <div className={classes.projectInfoEl}>
           <Typography>
             <Tooltip title="Categories">
@@ -69,11 +99,13 @@ function SmallScreenOverview({ project }) {
           </Typography>
         </div>
         <div className={classes.infoBottomBar}>
+          <FollowButton
+            isUserFollowing={isUserFollowing}
+            handleToggleFollowProject={handleToggleFollowProject}
+            project={project}
+          />
           <Button className={classes.contactProjectButton} variant="contained" color="primary">
             Contact
-          </Button>
-          <Button className={classes.followButton} variant="contained" color="primary">
-            Follow
           </Button>
         </div>
       </div>
@@ -81,7 +113,7 @@ function SmallScreenOverview({ project }) {
   );
 }
 
-function LargeScreenOverview({ project }) {
+function LargeScreenOverview({ project, handleToggleFollowProject, isUserFollowing }) {
   const classes = useStyles();
   return (
     <>
@@ -105,14 +137,16 @@ function LargeScreenOverview({ project }) {
               {project.location}
             </Typography>
           </div>
-          <div className={classes.projectInfoEl}>
-            <Typography>
-              <Tooltip title="Website">
-                <LanguageIcon color="primary" className={classes.icon} />
-              </Tooltip>{" "}
-              <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
-            </Typography>
-          </div>
+          {project.website && (
+            <div className={classes.projectInfoEl}>
+              <Typography>
+                <Tooltip title="Website">
+                  <LanguageIcon color="primary" className={classes.icon} />
+                </Tooltip>{" "}
+                <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
+              </Typography>
+            </div>
+          )}
           <div className={classes.projectInfoEl}>
             <Typography>
               <Tooltip title="Categories">
@@ -122,15 +156,37 @@ function LargeScreenOverview({ project }) {
             </Typography>
           </div>
           <div className={classes.infoBottomBar}>
+            <FollowButton
+              isUserFollowing={isUserFollowing}
+              handleToggleFollowProject={handleToggleFollowProject}
+              project={project}
+            />
             <Button className={classes.contactProjectButton} variant="contained" color="primary">
               Contact
-            </Button>
-            <Button className={classes.followButton} variant="contained" color="primary">
-              Follow
             </Button>
           </div>
         </div>
       </div>
     </>
+  );
+}
+
+function FollowButton({ project, isUserFollowing, handleToggleFollowProject }) {
+  const classes = useStyles();
+  return (
+    <span className={classes.followButtonContainer}>
+      <Button
+        onClick={handleToggleFollowProject}
+        variant="contained"
+        color={isUserFollowing ? "secondary" : "primary"}
+      >
+        {isUserFollowing ? "Following" : "Follow"}
+      </Button>
+      {project.number_of_followers > 0 && (
+        <Typography>
+          {project.number_of_followers} follower{project.number_of_followers > 1 && "s"}
+        </Typography>
+      )}
+    </span>
   );
 }

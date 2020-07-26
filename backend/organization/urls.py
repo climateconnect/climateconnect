@@ -74,6 +74,14 @@ urlpatterns = [
         'projects/<str:url_slug>/change_creator/',
         project_views.ChangeProjectCreator.as_view(), name='change-project-creator-view'
     ),
+    path(
+        'projects/<str:url_slug>/set_follow/',
+        project_views.SetFollowView.as_view(), name='set-follow-view'
+    ),
+    path(
+        'projects/<str:url_slug>/am_i_following/',
+        project_views.IsUserFollowing.as_view(), name='am-i-following-view'
+    ),
     path('projecttags/', project_views.ListProjectTags.as_view(), name='list-project-tags'),
     path('projectstatus/', project_views.ListProjectStatus.as_view(), name='list-project-status')
 ]
