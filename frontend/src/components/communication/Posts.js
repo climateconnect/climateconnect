@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 //@type: possible values are "openingpost", "reply", "progresspost"
-export default function Posts({ posts, type }) {
+export default function Posts({ posts, type, maxLines, user, onSendComment, onDeletePost }) {
   const classes = useStyles();
   const classNames = {
     reply: classes.indent,
@@ -66,6 +66,10 @@ export default function Posts({ posts, type }) {
             className={`${classes.post} ${type === "progresspost" &&
               classes.progressPost} ${index === 0 && type === "progresspost" && classes.firstPost}`}
             type={type}
+            maxLines={maxLines}
+            user={user}
+            onSendComment={onSendComment}
+            onDeletePost={onDeletePost}
           />
         ))}
     </div>

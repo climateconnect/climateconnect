@@ -218,7 +218,7 @@ export default function About() {
           color="secondary"
           className={`${classes.centeredText} ${classes.textBlock}`}
         >
-          Climate Connect gUG (haftungsbeschränkt) i.G.
+          Climate Connect gUG (haftungsbeschränkt)
           <br />
           IBAN: <span className={classes.bold}>DE02430609671072519500</span>
           <br />
