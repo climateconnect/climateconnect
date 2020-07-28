@@ -19,7 +19,7 @@ import QuoteSlideShow from "../src/components/about/QuoteSlideShow";
 const useStyles = makeStyles(theme => {
   return {
     headerImageContainer: {
-      marginBottom: theme.spacing(10)
+      marginBottom: theme.spacing(5)
     },
     centeredText: {
       textAlign: "center"
@@ -112,10 +112,8 @@ export default function About() {
           color="secondary"
           className={`${classes.centeredText} ${classes.textBlock}`}
         >
-          Climate Connect is a non-profit climate action platform that is currently in development.
-          Our goal is to connect climate protectors worldwide by giving them a platform to share
-          their projects or ideas to receive feedback, find specific help on a project and get
-          inspired for climate actions.
+          <Typography component="h2" variant="h4" className={classes.bold}>Climate Connect is a non-profit climate action platform.</Typography>
+          <div>Our goal is to connect climate protectors worldwide by giving them a platform to share their projects or ideas to receive feedback, find specific help on a project and get inspired for climate actions.</div>
         </Typography>
         <Typography
           component="h2"

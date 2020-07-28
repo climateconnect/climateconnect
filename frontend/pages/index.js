@@ -13,13 +13,18 @@ import possibleFilters from "./../public/data/possibleFilters";
 import OrganizationPreviews from "../src/components/organization/OrganizationPreviews";
 import ProfilePreviews from "../src/components/profile/ProfilePreviews";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
+import { 
+  getSkillsOptions, 
+  getStatusOptions, 
+  getProjectTagsOptions, 
+  getOrganizationTagsOptions 
+} from "../public/lib/getOptions"
 
 import Cookies from "next-cookies";
 import tokenConfig from "../public/config/tokenConfig";
 import axios from "axios";
 import Link from "next/link";
 import { getParams } from "../public/lib/generalOperations";
-import CookieBanner from "../src/components/general/CookieBanner";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -68,7 +73,33 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function Index({ projectsObject, organizationsObject, membersObject, token }) {
+export default function Index({ 
+  projectsObject, 
+  organizationsObject, 
+  membersObject, 
+  token, 
+  filterChoices 
+}) {
+  const membersWithAdditionalInfo = members => {
+    return members.map(p => {
+      return {
+        ...p,
+        additionalInfo: [
+          {
+            text: p.location,
+            icon: LocationOnIcon,
+            iconName: "LocationOnIcon",
+            importance: "high"
+          }
+        ]
+      };
+    });
+  };
+  const [items, setItems] = React.useState({
+    projects: projectsObject?[...projectsObject.projects]:[],
+    organizations: organizationsObject?[...organizationsObject.organizations]:[],
+    members: membersObject?membersWithAdditionalInfo(membersObject.members):[]
+  })
   const [hasMore, setHasMore] = React.useState({
     projects: !!projectsObject && projectsObject.hasMore,
     organizations: !!organizationsObject && organizationsObject.hasMore,
@@ -81,14 +112,10 @@ export default function Index({ projectsObject, organizationsObject, membersObje
     members: 2,
     organizations: 2
   });
-  const [isLoading, setIsLoading] = React.useState({
-    projects: false,
-    members: false,
-    organizations: false
-  });
   const [hash, setHash] = React.useState(null);
   const [message, setMessage] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState("");
+  const [urlEnding, setUrlEnding] = React.useState({projects: "", organizations: "", members: ""});
   const typesByTabValue = ["projects", "organizations", "members"];
   useEffect(() => {
     if (window.location.hash) {
@@ -107,6 +134,11 @@ export default function Index({ projectsObject, organizationsObject, membersObje
     members: {},
     organizations: {}
   });
+  const [searchFilters, setSearchFilters] = React.useState({
+    projects: {},
+    members: {},
+    organizations: {}
+  })
   const searchBarLabels = {
     projects: "Search for climate action projects",
     organizations: "Search for organizations fighting climate change",
@@ -127,56 +159,97 @@ export default function Index({ projectsObject, organizationsObject, membersObje
     setFiltersExpanded(false);
   };
 
+  const handleAddProjects = newProjects => {
+    console.log(newProjects)
+    console.log("adding new projects")
+    setItems({...items, projects: [...items.projects, ...newProjects]})
+  }
+
+  const handleAddOrganizations = newOrganizations => {
+    console.log(newOrganizations)
+    console.log("adding new organizations")
+    setItems({...items, organizations: [...items.organizations, ...newOrganizations]})
+  }
+
+  const handleAddMembers = newProfiles => {
+    console.log(newProfiles)
+    console.log("adding new profiles")
+    setItems({...items, members: [...items.members, ...newProfiles]})
+  }
+
   const loadMoreProjects = async () => {
-    const newProjectsObject = await getProjects(nextPages.projects, token);
-    setNextPages({ ...nextPages, projects: nextPages.projects + 1 });
-    const newProjects = newProjectsObject.projects;
-    setHasMore({ ...hasMore, projects: newProjectsObject.hasMore });
-    return [...newProjects];
+    try{
+      const newProjectsObject = await getProjects(nextPages.projects, token, urlEnding.projects);
+      setNextPages({ ...nextPages, projects: nextPages.projects + 1 });
+      const newProjects = newProjectsObject.projects;
+      setHasMore({ ...hasMore, projects: newProjectsObject.hasMore });
+      return [...newProjects];
+    }catch(e){
+      console.log(e)
+      setHasMore({...hasMore, projects: false})
+      return []
+    }    
   };
 
-  const loadMoreOrganizations = async page => {
-    const newOrganizationsObject = await getOrganizations(page, token);
-    setNextPages({ ...nextPages, organizations: nextPages.organizations + 1 });
-    const newOrganizations = newOrganizationsObject ? newOrganizationsObject.organizations : [];
-    setHasMore({
-      ...hasMore,
-      organizations: newOrganizationsObject ? newOrganizationsObject.hasMore : false
-    });
-    return [...newOrganizations];
+  const loadMoreOrganizations = async () => {
+    try{
+      const newOrganizationsObject = await getOrganizations(nextPages.organizations, token, urlEnding.organizations);
+      setNextPages({ ...nextPages, organizations: nextPages.organizations + 1 });
+      const newOrganizations = newOrganizationsObject ? newOrganizationsObject.organizations : [];
+      setHasMore({
+        ...hasMore,
+        organizations: newOrganizationsObject.hasMore
+      });
+      return [...newOrganizations];
+    }catch(e){
+      console.log(e)
+      setHasMore({...hasMore, organizations: false})
+      return []
+    }
   };
 
-  const loadMoreMembers = async page => {
-    const newMembersObject = await getMembers(page, token);
+  const loadMoreMembers = async () => {
+    try{
+    const newMembersObject = await getMembers(nextPages.members, token, urlEnding.members);
     setNextPages({ ...nextPages, members: nextPages.members + 1 });
-    const newMembers =
-      newMembersObject &&
-      newMembersObject.members &&
-      membersWithAdditionalInfo(newMembersObject.members);
-    setHasMore({ ...hasMore, members: !newMembersObject ? false : newMembersObject.hasMore });
-    if (newMembers && newMembers.length) return [...newMembers];
-    else return [];
-  };
+    const newMembers = membersWithAdditionalInfo(newMembersObject.members);
+    setHasMore({ ...hasMore, members: newMembersObject.hasMore });
+    return [...newMembers];
+    }catch(e){
+      console.log(e)
+      setHasMore({...hasMore, members: false})
+      return [];
+    }
+  }; 
 
-  const membersWithAdditionalInfo = members => {
-    return members.map(p => {
-      return {
-        ...p,
-        additionalInfo: [
-          {
-            text: p.location,
-            icon: LocationOnIcon,
-            iconName: "LocationOnIcon",
-            importance: "high"
-          }
-        ]
-      };
-    });
-  };
-
-  const applyNewFilters = (type, newFilters, closeFilters) => {
-    setFilters({ ...filters, [type]: newFilters });
-    if (closeFilters) setFiltersExpanded(false);
+  const applyNewFilters = async(type, newFilters, closeFilters) => {
+    if(filters !== newFilters){
+      setFilters({ ...filters, [type]: newFilters });
+      const newUrlEnding = buildUrlEndingFromFilters(newFilters)
+      if(urlEnding[type] != newUrlEnding){        
+        if (closeFilters) setFiltersExpanded(false);
+        try{
+          let filteredItemsObject;
+          if(type === "projects")
+            filteredItemsObject = await getProjects(1, token, newUrlEnding)
+          else if(type === "organizations")
+            filteredItemsObject = await getOrganizations(1, token, newUrlEnding)
+          else if(type === "members"){
+            console.log("type is members!")
+            filteredItemsObject = await getMembers(1, token, newUrlEnding)
+            console.log(filteredItemsObject)
+            filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members)
+          }else
+            console.log("cannot find type!")
+          setItems({...items, [type]: filteredItemsObject[type]})  
+          setHasMore({...hasMore, [type]: filteredItemsObject.hasMore})
+          setNextPages({...nextPages, [type]: 2})                
+          setUrlEnding({...urlEnding, [type]: newUrlEnding})
+        }catch(e){
+          console.log(e)
+        }
+      }
+    }
   };
   return (
     <>
@@ -207,7 +280,7 @@ export default function Index({ projectsObject, organizationsObject, membersObje
               <div className={classes.searchBarContainer}>
                 <FilterSearchBar
                   label={searchBarLabels[typesByTabValue[tabValue]]}
-                  className={classes.filterSearchbar}
+                  className={classes.filterSearchbar}                
                 />
               </div>
             </div>
@@ -233,16 +306,16 @@ export default function Index({ projectsObject, organizationsObject, membersObje
                 applyFilters={applyNewFilters}
                 filtersExpanded={filtersExpanded}
                 unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters[typesByTabValue[0]]}
+                possibleFilters={possibleFilters(typesByTabValue[0], filterChoices)}
               />
             )}
             {projectsObject && projectsObject.projects && projectsObject.projects.length ? (
               <ProjectPreviews
-                projects={projectsObject.projects}
+                projects={items.projects}
                 loadFunc={loadMoreProjects}
                 hasMore={hasMore.projects}
-                isLoading={isLoading.projects}
-                setIsLoading={setIsLoading}
+                handleAddProjects={handleAddProjects}
+                parentHandlesGridItems
               />
             ) : (
               <Typography component="h4" variant="h5" className={classes.infoMessage}>
@@ -259,17 +332,19 @@ export default function Index({ projectsObject, organizationsObject, membersObje
                 applyFilters={applyNewFilters}
                 filtersExpanded={filtersExpanded}
                 unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters[typesByTabValue[1]]}
+                possibleFilters={possibleFilters(typesByTabValue[1], filterChoices)}
               />
             )}
             {organizationsObject &&
             organizationsObject.organizations &&
             organizationsObject.organizations.length ? (
               <OrganizationPreviews
-                organizations={organizationsObject.organizations}
+                organizations={items.organizations}
                 loadFunc={loadMoreOrganizations}
                 hasMore={hasMore.organizations}
                 showOrganizationType
+                handleAddOrganizations={handleAddOrganizations}
+                parentHandlesGridItems
               />
             ) : (
               <Typography component="h4" variant="h5" className={classes.infoMessage}>
@@ -290,15 +365,17 @@ export default function Index({ projectsObject, organizationsObject, membersObje
                 applyFilters={applyNewFilters}
                 filtersExpanded={filtersExpanded}
                 unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters[typesByTabValue[2]]}
+                possibleFilters={possibleFilters(typesByTabValue[2], filterChoices)}
               />
             )}
             {membersObject && membersObject.members && membersObject.members.length ? (
               <ProfilePreviews
-                profiles={membersWithAdditionalInfo(membersObject.members)}
+                profiles={items.members}
                 loadFunc={loadMoreMembers}
                 hasMore={hasMore.members}
                 showAdditionalInfo
+                handleAddProfiles={handleAddMembers}
+                parentHandlesGridItems
               />
             ) : (
               <Typography component="h4" variant="h5" className={classes.infoMessage}>
@@ -317,6 +394,20 @@ export default function Index({ projectsObject, organizationsObject, membersObje
   );
 }
 
+const buildUrlEndingFromFilters = filters => {
+  console.log(filters)
+  let url = "&"
+  Object.keys(filters).map(filterKey=>{
+    if(filters[filterKey] && filters[filterKey].length>0){
+      if(Array.isArray(filters[filterKey]))
+        url += encodeURI(filterKey+"="+filters[filterKey].join())+"&"
+      else
+        url += encodeURI(filterKey+"="+filters[filterKey]+"&")
+    }
+  })
+  return url
+}
+
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -327,18 +418,28 @@ function TabContent({ value, index, children }) {
 
 Index.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  const filterChoices = {
+    project_categories: await getProjectTagsOptions(),
+    organization_types: await getOrganizationTagsOptions(),
+    skills: await getSkillsOptions(),
+    project_statuses: await getStatusOptions()
+  }
   return {
     projectsObject: await getProjects(1, token),
     organizationsObject: await getOrganizations(1, token),
     membersObject: await getMembers(1, token),
-    token: token
+    token: token,
+    filterChoices: filterChoices
   };
 };
 
-async function getProjects(page, token) {
+async function getProjects(page, token, urlEnding) {
+  let url = process.env.API_URL + "/api/projects/?page=" + page
+  if(urlEnding)
+    url += urlEnding
   try {
     const resp = await axios.get(
-      process.env.API_URL + "/api/projects/?page=" + page,
+      url,
       tokenConfig(token)
     );
     if (resp.data.length === 0) return null;
@@ -350,15 +451,18 @@ async function getProjects(page, token) {
       console.log("Error: ");
       console.log(err.response.data);
     } else console.log(err);
-    return null;
+    throw err;
   }
 }
 
 //TODO replace by db call. console.log is just there to pass lint
-async function getOrganizations(page, token) {
+async function getOrganizations(page, token, urlEnding) {
+  let url = process.env.API_URL + "/api/organizations/?page=" + page
+  if(urlEnding)
+    url += urlEnding
   try {
     const resp = await axios.get(
-      process.env.API_URL + "/api/organizations/?page=" + page,
+      url,
       tokenConfig(token)
     );
     if (resp.data.length === 0) return null;
@@ -375,10 +479,14 @@ async function getOrganizations(page, token) {
 }
 
 //TODO replace by db call. console.log is just there to pass lint
-async function getMembers(page, token) {
+async function getMembers(page, token, urlEnding) {
   try {
+    console.log("getting members for page "+page)
+    let url = process.env.API_URL + "/api/members/?page=" + page
+    if(urlEnding)
+      url += urlEnding
     const resp = await axios.get(
-      process.env.API_URL + "/api/members/?page=" + page,
+      url,
       tokenConfig(token)
     );
     if (resp.data.length === 0) return null;
@@ -387,7 +495,7 @@ async function getMembers(page, token) {
     }
   } catch (err) {
     if (err.response && err.response.data) {
-      console.log("Error: ");
+      console.log("Error getting members page "+page+": ");
       console.log(err.response.data);
     } else console.log(err);
     return null;

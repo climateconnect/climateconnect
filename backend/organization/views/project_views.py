@@ -9,9 +9,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from django.contrib.auth.models import User
 
-from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging, ProjectStatus, ProjectCollaborators, ProjectFollower
+from organization.models import (
+    Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging, 
+    ProjectStatus, ProjectCollaborators, ProjectFollower, OrganizationTags, OrganizationTagging
+)
 from organization.serializers.project import (
-    ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer,InsertProjectMemberSerializer
+    ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer, 
+    InsertProjectMemberSerializer
 )
 from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
@@ -45,21 +49,35 @@ class ListProjectsView(ListAPIView):
     
     def get_queryset(self):
         projects = Project.objects.filter(is_draft=False)
-        if 'organization_type' in self.request.query_params:
-            project_category = self.request.query_params.get('organization_type').split(',')
-            project_tags = ProjectTags.objects.filter(key__in=project_category)
+        if 'collaboration' in self.request.query_params:
+            collaborators_welcome = self.request.query_params.get('collaboration')
+            if collaborators_welcome == 'yes':
+                projects = projects.filter(collaborators_welcome=True)
+            if collaborators_welcome == 'no':
+                projects = projects.filter(collaborators_welcome=False)
+
+        if 'category' in self.request.query_params:
+            project_category = self.request.query_params.get('category').split(',')
+            project_tags = ProjectTags.objects.filter(name__in=project_category)
             projects = projects.filter(
                 tag_project__project_tag__in=project_tags
             ).distinct('id')
 
-        if 'statuses' in self.request.query_params:
-            statuses = self.request.query_params.get('statuses').split(',')
+        if 'status' in self.request.query_params:
+            statuses = self.request.query_params.get('status').split(',')
             projects = projects.filter(status__name__in=statuses)
 
         if 'skills' in self.request.query_params:
             skill_names = self.request.query_params.get('skills').split(',')
-            skills = Skill.objects.filter(key__in=skill_names)
+            skills = Skill.objects.filter(name__in=skill_names)
             projects = projects.filter(skills__in=skills).distinct('id')
+
+        if 'organization_type' in self.request.query_params:
+            organization_type_names = self.request.query_params.get('organization_type').split(',')
+            organization_types = OrganizationTags.objects.filter(name__in=organization_type_names)
+            organization_taggings = OrganizationTagging.objects.filter(organization_tag__in=organization_types)
+            project_parents = ProjectParents.objects.filter(parent_organization__tag_organization__in=organization_taggings)
+            projects = projects.filter(project_parent__in=project_parents)
         return projects
 
 
@@ -206,7 +224,7 @@ class ProjectAPIView(APIView):
                             project_tag=tag, project=project
                         )
                     except ProjectTags.DoesNotExist:
-                        logger.error("Passed tag id {} does not exists")
+                        logger.error("Passed proj tag id {} does not exists")
         
         
         if 'image' in request.data:

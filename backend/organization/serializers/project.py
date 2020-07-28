@@ -6,7 +6,7 @@ from climateconnect_api.serializers.common import (SkillSerializer, Availability
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.serializers.role import RoleSerializer
 from organization.serializers.organization import OrganizationStubSerializer
-from organization.serializers.tags import ProjectTaggingSerializer
+from organization.serializers.tags import ProjectTaggingSerializer, OrganizationTagging
 
 
 class ProjectSerializer(serializers.ModelSerializer):

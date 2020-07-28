@@ -9,7 +9,8 @@ import organization_info_metadata from "../../public/data/organization_info_meta
 import Cookies from "next-cookies";
 import axios from "axios";
 import tokenConfig from "../../public/config/tokenConfig";
-import { getImageUrl } from "../../public/lib/imageOperations";
+import { getImageUrl } from "./../../public/lib/imageOperations";
+import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
 
 const useStyles = makeStyles(theme => ({
   subtitle: {
@@ -24,12 +25,12 @@ const useStyles = makeStyles(theme => ({
 //This route should only be accessible to admins of the organization
 
 export default function EditOrganizationPage({ organization, tagOptions, token }) {
-  const saveChanges = (event, editedOrg) => {
+  const saveChanges = (event, editedOrg) => 
     const org = parseForRequest(getChanges(editedOrg, organization));
     console.log(org);
     axios
       .patch(
-        process.env.API_URL + "/api/organizations/" + organization.url_slug + "/",
+        process.env.API_URL + "/api/organizations/" + encodeURI(organization.url_slug) + "/",
         org,
         tokenConfig(token)
       )
@@ -98,10 +99,10 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
 
 EditOrganizationPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
-  const url = ctx.query.organizationUrl;
+  const url = encodeURI(ctx.query.organizationUrl);
   return {
     organization: await getOrganizationByUrlIfExists(url, token),
-    tagOptions: await getTags(),
+    tagOptions: await getOrganizationTagsOptions(),
     token: token
   };
 };
@@ -128,25 +129,6 @@ async function getOrganizationByUrlIfExists(organizationUrl, token) {
       tokenConfig(token)
     );
     return parseOrganization(resp.data);
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}
-
-async function getTags(token) {
-  try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/organizationtags/",
-      tokenConfig(token)
-    );
-    if (resp.data.results.length === 0) return null;
-    else {
-      return resp.data.results.map(t => {
-        return { ...t, key: t.id, additionalInfo: t.additional_info ? t.additional_info : [] };
-      });
-    }
   } catch (err) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);

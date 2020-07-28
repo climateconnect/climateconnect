@@ -3,7 +3,6 @@ import Layout from "../../src/components/layouts/layout";
 import Cookies from "next-cookies";
 import tokenConfig from "../../public/config/tokenConfig";
 import axios from "axios";
-import { parseOptions } from "../../public/lib/selectOptionsOperations";
 import EditProjectRoot from "../../src/components/editProject/EditProjectRoot";
 import { Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -11,6 +10,7 @@ import UserContext from "../../src/components/context/UserContext";
 import LoginNudge from "../../src/components/general/LoginNudge";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import { getImageUrl } from "../../public/lib/imageOperations";
+import { getSkillsOptions, getStatusOptions, getProjectTagsOptions } from "../../public/lib/getOptions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -108,27 +108,13 @@ EditProjectPage.getInitialProps = async ctx => {
   return {
     project: await getProjectByIdIfExists(projectUrl, token),
     members: await getMembersByProject(projectUrl, token),
-    skillsOptions: await getSkillsOptions(token),
+    skillsOptions: await getSkillsOptions(),
     userOrganizations: await getUserOrganizations(token),
-    statusOptions: await getStatusOptions(token),
-    tagsOptions: await getTagsOptions(token),
+    statusOptions: await getStatusOptions(),
+    tagsOptions: await getProjectTagsOptions(),
     token: token
   };
 };
-
-async function getTagsOptions(token) {
-  try {
-    const resp = await axios.get(process.env.API_URL + "/api/projecttags/", tokenConfig(token));
-    if (resp.data.results.length === 0) return null;
-    else {
-      return parseOptions(resp.data.results, "parent_tag");
-    }
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}
 
 async function getProjectByIdIfExists(projectUrl, token) {
   try {
@@ -156,23 +142,6 @@ const parseProject = project => ({
   skills: project.skills.map(s => ({ ...s, key: s.id }))
 });
 
-const getSkillsOptions = async token => {
-  try {
-    const resp = await axios.get(process.env.API_URL + "/skills/", tokenConfig(token));
-    if (resp.data.results.length === 0) return null;
-    else {
-      return parseOptions(
-        resp.data.results.map(s => ({ ...s, key: s.id })),
-        "parent_skill"
-      );
-    }
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-};
-
 const getUserOrganizations = async token => {
   try {
     const resp = await axios.get(
@@ -182,20 +151,6 @@ const getUserOrganizations = async token => {
     if (resp.data.length === 0) return null;
     else {
       return resp.data.map(o => o.organization);
-    }
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-};
-
-const getStatusOptions = async token => {
-  try {
-    const resp = await axios.get(process.env.API_URL + "/api/projectstatus/", tokenConfig(token));
-    if (resp.data.results.length === 0) return null;
-    else {
-      return resp.data.results;
     }
   } catch (err) {
     console.log(err);
