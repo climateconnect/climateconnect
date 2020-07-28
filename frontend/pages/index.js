@@ -135,10 +135,73 @@ export default function Index({
     organizations: {}
   });
   const [searchFilters, setSearchFilters] = React.useState({
-    projects: {},
-    members: {},
-    organizations: {}
+    projects: "",
+    members: "",
+    organizations: ""
   })
+  const onSearchValueChange = (type, newValue) => {
+    setSearchFilters({...searchFilters, [type]: newValue})
+  }
+
+  const onSearchSubmit = async type => {
+    const newUrlEnding = buildUrlEndingFromSearch(searchFilters[type])
+    if(urlEnding[type] != newUrlEnding){        
+      try{
+        let filteredItemsObject;
+        if(type === "projects")
+          filteredItemsObject = await getProjects(1, token, newUrlEnding)
+        else if(type === "organizations")
+          filteredItemsObject = await getOrganizations(1, token, newUrlEnding)
+        else if(type === "members"){
+          console.log("type is members!")
+          filteredItemsObject = await getMembers(1, token, newUrlEnding)
+          console.log(filteredItemsObject)
+          filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members)
+        }else
+          console.log("cannot find type!")
+        await (() =>{
+          setItems({...items, [type]: filteredItemsObject[type]})  
+          setHasMore({...hasMore, [type]: filteredItemsObject.hasMore})
+          setUrlEnding({...urlEnding, [type]: newUrlEnding})
+          setNextPages({...nextPages, [type]: 2})
+          return
+        })()       
+      }catch(e){
+        console.log(e)
+      }
+    }
+  }
+
+  const applyNewFilters = async(type, newFilters, closeFilters) => {
+    if(filters !== newFilters){
+      setFilters({ ...filters, [type]: newFilters });
+      const newUrlEnding = buildUrlEndingFromFilters(newFilters)
+      if(urlEnding[type] != newUrlEnding){        
+        if (closeFilters) setFiltersExpanded(false);
+        try{
+          let filteredItemsObject;
+          if(type === "projects")
+            filteredItemsObject = await getProjects(1, token, newUrlEnding)
+          else if(type === "organizations")
+            filteredItemsObject = await getOrganizations(1, token, newUrlEnding)
+          else if(type === "members"){
+            console.log("type is members!")
+            filteredItemsObject = await getMembers(1, token, newUrlEnding)
+            console.log(filteredItemsObject)
+            filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members)
+          }else
+            console.log("cannot find type!")
+          setItems({...items, [type]: filteredItemsObject[type]})  
+          setHasMore({...hasMore, [type]: filteredItemsObject.hasMore})
+          setNextPages({...nextPages, [type]: 2})                
+          setUrlEnding({...urlEnding, [type]: newUrlEnding})
+        }catch(e){
+          console.log(e)
+        }
+      }
+    }
+  };
+
   const searchBarLabels = {
     projects: "Search for climate action projects",
     organizations: "Search for organizations fighting climate change",
@@ -222,35 +285,6 @@ export default function Index({
     }
   }; 
 
-  const applyNewFilters = async(type, newFilters, closeFilters) => {
-    if(filters !== newFilters){
-      setFilters({ ...filters, [type]: newFilters });
-      const newUrlEnding = buildUrlEndingFromFilters(newFilters)
-      if(urlEnding[type] != newUrlEnding){        
-        if (closeFilters) setFiltersExpanded(false);
-        try{
-          let filteredItemsObject;
-          if(type === "projects")
-            filteredItemsObject = await getProjects(1, token, newUrlEnding)
-          else if(type === "organizations")
-            filteredItemsObject = await getOrganizations(1, token, newUrlEnding)
-          else if(type === "members"){
-            console.log("type is members!")
-            filteredItemsObject = await getMembers(1, token, newUrlEnding)
-            console.log(filteredItemsObject)
-            filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members)
-          }else
-            console.log("cannot find type!")
-          setItems({...items, [type]: filteredItemsObject[type]})  
-          setHasMore({...hasMore, [type]: filteredItemsObject.hasMore})
-          setNextPages({...nextPages, [type]: 2})                
-          setUrlEnding({...urlEnding, [type]: newUrlEnding})
-        }catch(e){
-          console.log(e)
-        }
-      }
-    }
-  };
   return (
     <>
       {process.env.PRE_LAUNCH === "true" ? (
@@ -279,8 +313,12 @@ export default function Index({
               </Button>
               <div className={classes.searchBarContainer}>
                 <FilterSearchBar
+                  type={typesByTabValue[tabValue]}
                   label={searchBarLabels[typesByTabValue[tabValue]]}
-                  className={classes.filterSearchbar}                
+                  className={classes.filterSearchbar}
+                  onSubmit={onSearchSubmit}
+                  onChange={onSearchValueChange}
+                  value={searchFilters[typesByTabValue[tabValue]]}
                 />
               </div>
             </div>
@@ -408,6 +446,10 @@ const buildUrlEndingFromFilters = filters => {
   return url
 }
 
+const buildUrlEndingFromSearch = searchValue => {
+  return "&search="+searchValue
+}
+
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -481,7 +523,7 @@ async function getOrganizations(page, token, urlEnding) {
 //TODO replace by db call. console.log is just there to pass lint
 async function getMembers(page, token, urlEnding) {
   try {
-    console.log("getting members for page "+page)
+    console.log("getting members for page "+page+" with urlEnding "+urlEnding)
     let url = process.env.API_URL + "/api/members/?page=" + page
     if(urlEnding)
       url += urlEnding

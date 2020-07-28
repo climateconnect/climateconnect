@@ -65,7 +65,7 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
         <span className={classes.checkboxLabels}>
           I agree to the{" "}
           <a href="terms" target="_blank">
-            Terms of service
+            Terms of Use
           </a>{" "}
           and{" "}
           <a href="privacy" target="_blank">

@@ -46,7 +46,7 @@ export default function ManageOrganizationMembers({
     onSubmit()
       .then(() => {
         redirect("/organizations/" + organization.url_slug, {
-          message: "You have successfully updated your organization's members"
+          message: "You have successfully updated your organization members"
         });
       })
       .catch(e => {

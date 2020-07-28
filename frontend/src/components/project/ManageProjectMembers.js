@@ -43,7 +43,7 @@ export default function ManageProjectMembers({
       .then(ret => {
         if (ret !== false)
           redirect("/projects/" + project.url_slug, {
-            message: "You have successfully updated your project's team"
+            message: "You have successfully updated your team"
           });
       })
       .catch(e => {
