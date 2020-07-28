@@ -8,7 +8,6 @@ import InstagramIcon from "@material-ui/icons/Instagram";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import FavoriteIcon from '@material-ui/icons/Favorite';
-import PublicIcon from '@material-ui/icons/Public';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -86,7 +85,7 @@ export default function Footer({ className, noSpacingTop, noAbsolutePosition }) 
             <a className={`${classes.inheritColor} ${classes.link}`}>Privacy</a>
           </Link>
           <Link href="/terms">
-            <a className={classes.inheritColor}>ToS</a>
+            <a className={classes.inheritColor}>Terms</a>
           </Link>
         </Box>
         {!isNarrowScreen &&

@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 //This route should only be accessible to admins of the organization
 
 export default function EditOrganizationPage({ organization, tagOptions, token }) {
-  const saveChanges = (event, editedOrg) => 
+  const saveChanges = (event, editedOrg) => {
     const org = parseForRequest(getChanges(editedOrg, organization));
     console.log(org);
     axios
