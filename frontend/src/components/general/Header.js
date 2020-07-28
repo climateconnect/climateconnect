@@ -43,6 +43,11 @@ const LINKS = [
     iconForDrawer: SentimentSatisfiedIcon
   },
   {
+    href: "/stream",
+    text: "Stream",
+    iconForDrawer: InfoIcon
+  },
+  {
     href: "/about",
     text: "About",
     iconForDrawer: InfoIcon
