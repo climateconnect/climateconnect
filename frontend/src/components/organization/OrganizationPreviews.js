@@ -10,6 +10,9 @@ const useStyles = makeStyles({
     padding: 0,
     listStyleType: "none",
     width: "100%"
+  },
+  loader: {
+    clear: "both"
   }
 });
 
@@ -18,8 +21,11 @@ export default function OrganizationPreviews({
   loadFunc,
   hasMore,
   showMembers,
-  showOrganizationType
+  showOrganizationType,
+  parentHandlesGridItems,
+  handleAddOrganizations
 }) {
+  const [isLoading, setIsLoading] = React.useState(false)
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(
     organizations.map((o, index) => (
@@ -33,16 +39,23 @@ export default function OrganizationPreviews({
   );
   if (!loadFunc) hasMore = false;
   const loadMore = async page => {
-    const newOrganizations = await loadFunc(page);
-    const newGridItems = newOrganizations.map((o, index) => (
-      <GridItem
-        key={(index + 1) * page}
-        organization={o}
-        showMembers={showMembers}
-        showOrganizationType={showOrganizationType}
-      />
-    ));
-    setGridItems([...gridItems, ...newGridItems]);
+    if(!isLoading){
+      setIsLoading(true);
+      const newOrganizations = await loadFunc(page);
+      if(!parentHandlesGridItems){
+        const newGridItems = newOrganizations.map((o, index) => (
+          <GridItem
+            key={(index + 1) * page}
+            organization={o}
+            showMembers={showMembers}
+            showOrganizationType={showOrganizationType}
+          />
+        ));
+        setGridItems([...gridItems, ...newGridItems]);
+      }else
+        handleAddOrganizations([...newOrganizations])
+      setIsLoading(false)
+    }
   };
 
   // TODO: use `organization.id` instead of index when using real organizations
@@ -50,9 +63,9 @@ export default function OrganizationPreviews({
     <InfiniteScroll
       pageStart={0}
       loadMore={loadMore}
-      hasMore={hasMore}
+      hasMore={hasMore && !isLoading}
       loader={
-        <div className="loader" key={0}>
+        <div className={classes.loader} key={0}>
           Loading ...
         </div>
       }
@@ -62,14 +75,27 @@ export default function OrganizationPreviews({
       className={`${classes.reset} ${classes.root}`}
       spacing={2}
     >
-      {gridItems}
+      {
+        parentHandlesGridItems ? 
+          (organizations && organizations.length>0 ?
+            organizations.map(o=>
+              <GridItem
+                key={o.url_slug}
+                organization={o}
+                showMembers={showMembers}
+                showOrganizationType={showOrganizationType}
+              />
+            )
+          : "No Results")      
+        : gridItems
+      }
     </InfiniteScroll>
   );
 }
 
 function GridItem({ organization, showMembers, showOrganizationType }) {
   return (
-    <Grid item xs={12} sm={6} md={4} lg={3} component="li">
+    <Grid key={organization.url_slug} item xs={12} sm={6} md={4} lg={3} component="li">
       <OrganizationPreview
         organization={organization}
         showMembers={showMembers}

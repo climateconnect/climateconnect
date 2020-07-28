@@ -31,7 +31,7 @@ class ListOrganizationsAPIView(ListAPIView):
     filter_backends = [SearchFilter, DjangoFilterBackend]
     pagination_class = OrganizationsPagination
     search_fields = ['name']
-    filterset_fields = ['country']
+    filterset_fields = ['city', 'country']
 
     def get_serializer_class(self):
         return OrganizationCardSerializer
@@ -39,11 +39,10 @@ class ListOrganizationsAPIView(ListAPIView):
     def get_queryset(self):
         organizations = Organization.objects.all()
         if 'organization_type' in self.request.query_params:
-            org_type_key = self.request.query_params.get('organization_type').split(',')
-            organization_tags = OrganizationTags.objects.filter(key__in=org_type_key)
-            organizations = organizations.filter(
-                tag_organization__organization_tag=organization_tags
-            ).distinct('id')
+            organization_type_names = self.request.query_params.get('organization_type').split(',')
+            organization_types = OrganizationTags.objects.filter(name__in=organization_type_names)
+            organization_taggings = OrganizationTagging.objects.filter(organization_tag__in=organization_types)
+            organizations = organizations.filter(tag_organization__in=organization_taggings).distinct('id')
 
         return organizations
 
@@ -146,7 +145,6 @@ class OrganizationAPIView(APIView):
             organization = Organization.objects.get(url_slug=str(url_slug))            
         except Organization.DoesNotExist:
             return Response({'message': 'Organization not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
-
         pass_through_params = ['name', 'state', 'city', 'country', 'short_description', 'school', 'organ', 'website']
         for param in pass_through_params:
             if param in request.data:
@@ -164,6 +162,21 @@ class OrganizationAPIView(APIView):
                 except Organization.DoesNotExist:
                     return Response({'message': 'Parent org not found for organization {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
                 organization.parent_organization = parent_organization
+        old_organization_taggings = OrganizationTagging.objects.filter(organization=organization).values('organization_tag')
+        if 'types' in request.data:
+            for tag in old_organization_taggings:
+                if not tag['organization_tag'] in request.data['types']:
+                    tag_to_delete = OrganizationTags.objects.get(id=tag['organization_tag'])
+                    OrganizationTagging.objects.filter(organization=organization, organization_tag=tag_to_delete).delete()
+            for tag_id in request.data['types']:
+                if not old_organization_taggings.filter(organization_tag=tag_id).exists():
+                    try:
+                        tag = OrganizationTags.objects.get(id=tag_id)
+                        OrganizationTagging.objects.create(
+                            organization_tag=tag, organization=organization
+                        )
+                    except OrganizationTags.DoesNotExist:
+                        logger.error("Passed org tag id {} does not exists")
             
 
         organization.save()

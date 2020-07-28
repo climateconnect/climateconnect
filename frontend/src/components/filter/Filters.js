@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => {
     },
     field: {
       display: "flex",
-      width: 200
+      width: 190
     },
     filterElement: props => ({
       marginRight: theme.spacing(props.filterElementMargin),
@@ -144,7 +144,8 @@ export default function Filters({
                   <MultiLevelSelectDialog
                     open={open[filter.key] ? true : false}
                     onClose={selectedSkills => handleClickDialogClose(filter.key, selectedSkills)}
-                    type={filter.itemsToChooseFromType}
+                    type={filter.itemType}
+                    itemsToChooseFrom={filter.itemsToChooseFrom}
                     items={currentFilters[filter.key]}
                     selectedItems={curSelectedItems}
                     setSelectedItems={handleSetSelectedItems}

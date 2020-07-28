@@ -1,6 +1,6 @@
 import React from "react";
 import OrganizationMetaData from "./OrganizationMetadata";
-import { Typography, Card, CardMedia, CardContent, Link, Avatar } from "@material-ui/core";
+import { Typography, Card, CardContent, Link, Avatar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 

@@ -129,7 +129,8 @@ class ListMemberProfilesView(ListAPIView):
     permission_classes = [AllowAny]
     pagination_class = MembersPagination
     filter_backends = [SearchFilter, DjangoFilterBackend]
-    search_fields = ['name', 'country', 'city']
+    filterset_fields = ['name', 'country', 'city']
+    search_fields = ['name']
 
     def get_serializer_class(self):
         return UserProfileStubSerializer
@@ -138,7 +139,7 @@ class ListMemberProfilesView(ListAPIView):
         user_profiles = UserProfile.objects.filter(is_profile_verified=True)
         if 'skills' in self.request.query_params:
             skill_names = self.request.query_params.get('skills').split(',')
-            skills = Skill.objects.filter(key__in=skill_names)
+            skills = Skill.objects.filter(name__in=skill_names)
             user_profiles = user_profiles.filter(skills__in=skills).distinct('id')
         return user_profiles
 
