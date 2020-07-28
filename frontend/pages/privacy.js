@@ -31,7 +31,7 @@ export default function Privacy(){
       
 
       <h2>1.Scope of application</h2>
-      Climate Connect gUG (herewith "Climate Connect" or "we") is committed to protecting your privacy and personal data. With this privacy policy we would like to inform you in detail about how we use your personal data.
+      Climate Connect gUG (herewith {"Climate Connect"} or {"we"}) is committed to protecting your privacy and personal data. With this privacy policy we would like to inform you in detail about how we use your personal data.
       This privacy policy applies to the use of your personal data when you visit our websites available at [www.climateconnect.earth] and when you contact us by e-mail, telephone, if you maintain a business relationship with us or use our services.
 
       <h2>2.Who is responsible and to whom can I reach out?</h2>
@@ -96,7 +96,7 @@ export default function Privacy(){
       Personal data is only collected directly from you, e.g., by visiting our websites or using the services offered, such as the possibility of registration, using our newsletter and contacting us by e-mail.
 
       <h2>5. For what purposes and on what legal basis do we process your data?</h2>
-      We process your personal data exclusively in accordance with the provisions of the General Data Protection Regulation ("GDPR"), and the Federal Data Protection Act (Bundesdatenschutzgesetz) ("BDSG"). In certain situations, we also process your personal data to fulfill other legal obligations or based on your explicit consent.
+      We process your personal data exclusively in accordance with the provisions of the General Data Protection Regulation ({"GDPR"}), and the Federal Data Protection Act (Bundesdatenschutzgesetz) ({"BDSG"}). In certain situations, we also process your personal data to fulfill other legal obligations or based on your explicit consent.
 
       <h3> 5.1 For the performance of a contract</h3>
       We process our personal data in order to provide the services of our website, in particular for the networking of users among each other and the projects provided, in line with Article 6 (1), first sentence e) GDPR.
@@ -199,10 +199,10 @@ export default function Privacy(){
       You can limit the use of Tracking Technologies by changing the settings of your browser. You can determine what access you grant us and whether and for how long cookies can be stored on your device. You can also delete cookies that have already been stored at any time. Please note that the functionality of our websites may be affected after deactivating all cookies. Similar functions (such as Flash cookies), which are used by so-called browser add-ons, can be switched off or deleted by changing the settings of the browser add-on or via the website of the browser add-on provider.
 
       <h3>12.1   What are cookies?</h3>
-      A cookie is a small file that is transferred during the use of a website from the host server of the website and stored on the user's device (desktop computer, laptop, tablet, smartphone, other Internet-enabled devices) by the browser used. Cookies are used to store information about the user and to retrieve it when the website is called up again.
+      A cookie is a small file that is transferred during the use of a website from the host server of the website and stored on the {"user's"} device (desktop computer, laptop, tablet, smartphone, other Internet-enabled devices) by the browser used. Cookies are used to store information about the user and to retrieve it when the website is called up again.
 
       <h3>12.2   What are cookies used for?</h3>
-      Cookies help us understand the use of our websites, analyze trends, administer the websites, track a user's steps on our websites, collect demographic information about our user base as a whole, allow you to navigate efficiently between the pages, remember your preferences and settings on our websites, and generally improve your browsing experience. We process the data collected using Tracking Technologies to (i) remember information so that you do not have to re-enter them during your visit or a new visit, (ii) recognize you across multiple devices, (iii) control the functionality and performance of our websites, (iv) collect aggregated metrics regarding the total number of visitors, total traffic, usage and demographic patterns on our websites, (v) diagnose and resolve technical issues, and (vi) otherwise plan and improve our website.
+      Cookies help us understand the use of our websites, analyze trends, administer the websites, track a {"user's"} steps on our websites, collect demographic information about our user base as a whole, allow you to navigate efficiently between the pages, remember your preferences and settings on our websites, and generally improve your browsing experience. We process the data collected using Tracking Technologies to (i) remember information so that you do not have to re-enter them during your visit or a new visit, (ii) recognize you across multiple devices, (iii) control the functionality and performance of our websites, (iv) collect aggregated metrics regarding the total number of visitors, total traffic, usage and demographic patterns on our websites, (v) diagnose and resolve technical issues, and (vi) otherwise plan and improve our website.
 
       <h3>12.3   What types of cookies are used on our websites?</h3>
       The cookies used on our website can usually be categorized as follows: mandatory cookies, analytical cookies, and function-related cookies.
@@ -214,7 +214,7 @@ export default function Privacy(){
       These cookies allow us to save a specific selection you have made and to adapt our website in such a way that it offers you extended functions and content. These cookies can be used, for example, to save your language selection or country selection.
 
       <h3>12.4   How long are cookies stored on my device?</h3>
-      The retention period depends essentially on whether the cookie is "persistent" or "session-based.” Session-based cookies are deleted after you leave the websites that set the cookie. Persistent cookies remain on your device even after you have finished browsing until they are deleted or until they have expired.
+      The retention period depends essentially on whether the cookie is {"persistent"} or {"session-based."} Session-based cookies are deleted after you leave the websites that set the cookie. Persistent cookies remain on your device even after you have finished browsing until they are deleted or until they have expired.
 
       <h3>12.5   Third party tracking and online services</h3>
       For the provision of our website we use the services of the third-party providers listed below. These third-party tools belong to the categories of the cookies described above and help us provide our services on our website or to promote our products and services over the internet. We share or allow YouTube, Google Fonts, and [fill in] to collect information about your use of our website over time. The information we share is only provided through cookies or similar web tracking technologies that recognize the device you are using to collect information, including click stream information, browser type, time and date you visited the site, whether you logged into your account for our services, or otherwise worked with us. The following provides additional information about these third parties:
@@ -255,7 +255,7 @@ export default function Privacy(){
       security reasons and to protect the transmission of confidential information
       that you send to us as the website provider, we use SSL or TLS encryption. You
       can recognize an encrypted connection by the fact that the address line of the
-      browser changes from "http://" to "https://" and by the
+      browser changes from {"http://"} to {"https://"} and by the
       lock symbol in your browser line.
       If SSL or TLS encryption is activated, the data you transmit to us cannot be read by third parties.
 

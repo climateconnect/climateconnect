@@ -20,8 +20,7 @@ export default function ProjectPreviews({
   projects, 
   loadFunc, 
   hasMore, 
-  parentHandlesGridItems,
-  handleAddProjects
+  parentHandlesGridItems
 }) {
   const classes = useStyles();
   const [isLoading, setIsLoading] = React.useState(false)
@@ -37,8 +36,7 @@ export default function ProjectPreviews({
       if(!parentHandlesGridItems){
         const newGridItems = newProjects.map(p => <GridItem key={p.url_slug} project={p} />);
         setGridItems([...gridItems, ...newGridItems]);        
-      }else
-        handleAddProjects([...newProjects])
+      }
       setIsLoading(false);
     }
   };

@@ -21,8 +21,7 @@ export default function ProfilePreviews({
   loadFunc, 
   hasMore, 
   showAdditionalInfo,
-  parentHandlesGridItems,
-  handleAddProfiles
+  parentHandlesGridItems
 }) {
   const classes = useStyles();
   const [isLoading, setIsLoading] = React.useState(false)
@@ -42,8 +41,7 @@ export default function ProfilePreviews({
           <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
         ));
         setGridItems([...gridItems, ...newGridItems]);
-      } else
-        handleAddProfiles([...newProfiles])
+      }
       setIsLoading(false)
     }
   };

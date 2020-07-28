@@ -23,7 +23,6 @@ export default function OrganizationPreviews({
   showMembers,
   showOrganizationType,
   parentHandlesGridItems,
-  handleAddOrganizations
 }) {
   const [isLoading, setIsLoading] = React.useState(false)
   const classes = useStyles();
@@ -52,8 +51,7 @@ export default function OrganizationPreviews({
           />
         ));
         setGridItems([...gridItems, ...newGridItems]);
-      }else
-        handleAddOrganizations([...newOrganizations])
+      }
       setIsLoading(false)
     }
   };

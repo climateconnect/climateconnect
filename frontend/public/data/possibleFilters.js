@@ -1,7 +1,5 @@
 import LocationOnOutlinedIcon from "@material-ui/icons/LocationOnOutlined";
 import DoneAllOutlinedIcon from "@material-ui/icons/DoneAllOutlined";
-import project_status_metadata from "./project_status_metadata";
-import organization_types from "./organization_types.json";
 import GroupIcon from "@material-ui/icons/Group";
 import ExploreOutlinedIcon from "@material-ui/icons/ExploreOutlined";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
