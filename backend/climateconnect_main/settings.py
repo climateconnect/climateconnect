@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 from dotenv import find_dotenv, load_dotenv
-load_dotenv(find_dotenv('.backend_env'))
+load_dotenv(find_dotenv('.backend_env_cloud'))
 env = os.environ.get
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -66,7 +66,8 @@ MIDDLEWARE = [
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
-    "https://alpha.climateconnect.earth"
+    "https://alpha.climateconnect.earth",
+    "https://climateconnect.earth"
 ]
 APPEND_SLASH = False
 
