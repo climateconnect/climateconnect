@@ -316,7 +316,7 @@ const InputImage = ({ project, handleChangeProject, screenSize }) => {
   const handleImageDialogClose = image => {
     setOpen(false);
     if (image && image instanceof HTMLCanvasElement)
-      handleChangeProject(image.toDataURL("image/jpeg"), "image");
+      handleChangeProject(image.toDataURL("image/png"), "image");
   };
 
   return (
