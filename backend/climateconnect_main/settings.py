@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 from dotenv import find_dotenv, load_dotenv
-load_dotenv(find_dotenv('.backend_env_cloud'))
+load_dotenv(find_dotenv('.backend_env'))
 env = os.environ.get
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,10 +25,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('ENVIRONMENT') in ('development', 'test',)
+DEBUG = env('DEBUG')
 # DEBUG = True
 
-ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'api.climateconnect.earth'
+]
+
+AUTO_VERIFY = env('AUTO_VERIFY')
 
 # Application definition
 
@@ -67,7 +73,8 @@ CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
     "https://alpha.climateconnect.earth",
-    "https://climateconnect.earth"
+    "https://climateconnect.earth",
+    "https://www.climateconnect.earth"
 ]
 APPEND_SLASH = False
 
