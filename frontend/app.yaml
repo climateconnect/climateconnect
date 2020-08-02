@@ -8,4 +8,4 @@ handlers:
   script: auto
 
 env_variables:
-  API_URL: "https://inbound-lexicon-271522.ey.r.appspot.com"
+  API_URL: "https://api.climateconnect.earth"
