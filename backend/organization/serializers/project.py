@@ -94,6 +94,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
 
 class ProjectStubSerializer(serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
     status = serializers.CharField(source='status.name', read_only=True)
     
     class Meta:
@@ -102,12 +103,16 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             'id', 'name', 'url_slug', 
             'image', 'country', 
             'city', 'status',
-            'project_parents', 'collaborators_welcome',
+            'project_parents', 'tags',
             'is_draft'
         )
     
     def get_project_parents(self, obj):
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
+        return serializer.data
+    
+    def get_tags(self, obj):
+        serializer = ProjectTaggingSerializer(obj.tag_project, many=True)
         return serializer.data
 
 

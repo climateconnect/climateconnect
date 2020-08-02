@@ -41,7 +41,7 @@ class ListProjectsView(ListAPIView):
     search_fields = ['url_slug']
     filterset_fields = ['collaborators_welcome', 'country', 'city']
     pagination_class = ProjectsPagination
-    serializer_class = ProjectSerializer
+    serializer_class = ProjectStubSerializer
     queryset = Project.objects.filter(is_draft=False)
 
     def get_serializer_class(self):
