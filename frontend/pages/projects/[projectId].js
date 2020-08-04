@@ -118,6 +118,9 @@ function ProjectLayout({
   const [hash, setHash] = React.useState(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = React.useState(false);
   const typesByTabValue = ["project", "team", "comments"];
+  const teamTabLabel = "Team " + (project && project.team ? `(${project.team.length})` : "(0)");
+  const commentsTabLabel = "Comments " + (project && project.comments ? `(${project.comments.length})` : "(0)");
+
   useEffect(() => {
     if (window.location.hash) {
       setHash(window.location.hash.replace("#", ""));
@@ -190,8 +193,8 @@ function ProjectLayout({
             indicatorColor="primary"
           >
             <Tab label="Project" />
-            <Tab label="Team" />
-            <Tab label="Comments" />
+            <Tab label={teamTabLabel} />
+            <Tab label={commentsTabLabel} />
           </Tabs>
         </div>
       </Container>
