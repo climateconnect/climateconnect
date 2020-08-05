@@ -2,6 +2,7 @@ import React from "react";
 import Form from "../general/Form";
 import { Typography, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import countries from "./../../../public/data/countries.json";
 
 const useStyles = makeStyles(theme => ({
   orgBottomLink: {
@@ -84,12 +85,15 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
     {
       required: true,
       label: "Country",
-      type: "text",
-      key: "country",
-      value: project.country
-    }
+      select: {
+        values: countries.map(country => {
+          return { key: country, name: country };
+        }),
+        defaultValue: countries[0]
+      },      
+      key: "country"
+    },
   ];
-
   const messages = {
     submitMessage: "Next Step"
   };
@@ -117,7 +121,6 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
       });
     goToNextStep();
   };
-  console.log(project);
   return (
     <>
       <div className={classes.appealBox}>

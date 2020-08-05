@@ -10,23 +10,40 @@ const useStyles = makeStyles({
     padding: 0,
     listStyleType: "none",
     width: "100%"
+  },
+  loader: {
+    clear: "both"
   }
 });
 
-export default function ProfilePreviews({ profiles, loadFunc, hasMore, showAdditionalInfo }) {
+export default function ProfilePreviews({ 
+  profiles, 
+  loadFunc, 
+  hasMore, 
+  showAdditionalInfo,
+  parentHandlesGridItems
+}) {
   const classes = useStyles();
+  const [isLoading, setIsLoading] = React.useState(false)
   const [gridItems, setGridItems] = React.useState(
-    profiles.map((o, index) => (
-      <GridItem key={index} profile={o} showAdditionalInfo={showAdditionalInfo} />
+    profiles.map((p) => (
+      <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
     ))
   );
   if (!loadFunc) hasMore = false;
   const loadMore = async page => {
-    const newProfiles = await loadFunc(page);
-    const newGridItems = newProfiles.map((o, index) => (
-      <GridItem key={(index + 1) * page} profile={o} showAdditionalInfo={showAdditionalInfo} />
-    ));
-    setGridItems([...gridItems, ...newGridItems]);
+    if (!isLoading) {
+      setIsLoading(true);
+      const newProfiles = await loadFunc(page);
+      if(!parentHandlesGridItems){
+        console.log("parent doesn't handle grid items")
+        const newGridItems = newProfiles.map((p) => (
+          <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
+        ));
+        setGridItems([...gridItems, ...newGridItems]);
+      }
+      setIsLoading(false)
+    }
   };
 
   // TODO: use `profile.id` instead of index when using real profiles
@@ -34,9 +51,9 @@ export default function ProfilePreviews({ profiles, loadFunc, hasMore, showAddit
     <InfiniteScroll
       pageStart={0}
       loadMore={loadMore}
-      hasMore={hasMore}
+      hasMore={hasMore && !isLoading}
       loader={
-        <div className="loader" key={0}>
+        <div className={classes.loader} key={1000}>
           Loading ...
         </div>
       }
@@ -46,7 +63,18 @@ export default function ProfilePreviews({ profiles, loadFunc, hasMore, showAddit
       className={`${classes.reset} ${classes.root}`}
       spacing={2}
     >
-      {gridItems}
+      {
+        parentHandlesGridItems ? 
+          (profiles && profiles.length>0 ?
+            profiles.map(p=>
+              <GridItem 
+                key={p.url_slug} 
+                profile={p} 
+                showAdditionalInfo={showAdditionalInfo}
+              />)
+          : "No Results")      
+        : gridItems
+      }
     </InfiniteScroll>
   );
 }

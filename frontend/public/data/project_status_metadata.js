@@ -11,7 +11,7 @@ const project_status_metadata = [
   },
   {
     key: "finished",
-    name: "Successfully finished",
+    name: "Successfully Finished",
     createProjectLabel: "successfully finished"
   },
   {

@@ -25,10 +25,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = env('ENVIRONMENT') in ('development', 'test',)
-DEBUG = True
+DEBUG = env('DEBUG')
+# DEBUG = True
 
-ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'api.climateconnect.earth'
+]
+
+AUTO_VERIFY = env('AUTO_VERIFY')
 
 # Application definition
 
@@ -48,6 +54,7 @@ LIBRARY_APPS = [
     'knox',
     'corsheaders',
     'channels',
+    'django_filters'
 ]
 
 INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
@@ -66,7 +73,9 @@ MIDDLEWARE = [
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
-    "https://alpha.climateconnect.earth"
+    "https://alpha.climateconnect.earth",
+    "https://climateconnect.earth",
+    "https://www.climateconnect.earth"
 ]
 APPEND_SLASH = False
 

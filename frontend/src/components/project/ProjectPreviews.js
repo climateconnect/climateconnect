@@ -16,20 +16,28 @@ const useStyles = makeStyles({
   }
 });
 
-export default function ProjectPreviews({ projects, loadFunc, hasMore, isLoading, setIsLoading }) {
+export default function ProjectPreviews({ 
+  projects, 
+  loadFunc, 
+  hasMore, 
+  parentHandlesGridItems
+}) {
   const classes = useStyles();
+  const [isLoading, setIsLoading] = React.useState(false)
   const [gridItems, setGridItems] = React.useState(
     projects.map(p => <GridItem key={p.url_slug} project={p} />)
   );
   if (!loadFunc) hasMore = false;
   const loadMore = async () => {
     //sometimes InfiniteScroll calls loadMore twice really fast. Therefore we're using isLoading to make sure it doesn't catch 2 pages at once
-    if (!isLoading.projects) {
-      setIsLoading({ ...isLoading, projects: true });
+    if (!isLoading) {
+      setIsLoading(true);
       const newProjects = await loadFunc();
-      const newGridItems = newProjects.map(p => <GridItem key={p.url_slug} project={p} />);
-      setGridItems([...gridItems, ...newGridItems]);
-      setIsLoading({ ...isLoading, projects: false });
+      if(!parentHandlesGridItems){
+        const newGridItems = newProjects.map(p => <GridItem key={p.url_slug} project={p} />);
+        setGridItems([...gridItems, ...newGridItems]);        
+      }
+      setIsLoading(false);
     }
   };
   // TODO: use `project.id` instead of index when using real projects
@@ -49,14 +57,20 @@ export default function ProjectPreviews({ projects, loadFunc, hasMore, isLoading
       className={`${classes.reset} ${classes.root}`}
       spacing={2}
     >
-      {gridItems}
+      {
+        parentHandlesGridItems ? 
+          (projects && projects.length>0 ?
+          projects.map(p=><GridItem key={p.url_slug} project={p} />)
+          : "No Results")      
+        : gridItems
+      }
     </InfiniteScroll>
   );
 }
 
 function GridItem({ project }) {
   return (
-    <Grid item xs={12} sm={6} md={4} lg={3} component="li">
+    <Grid key={project.url_slug} item xs={12} sm={6} md={4} lg={3} component="li">
       <ProjectPreview project={project} />
     </Grid>
   );

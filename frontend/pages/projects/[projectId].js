@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import Link from "next/link";
 import { Container, Tabs, Tab } from "@material-ui/core";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -16,6 +16,7 @@ import Router from "next/router";
 import tokenConfig from "../../public/config/tokenConfig";
 import axios from "axios";
 import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
+import UserContext from "../../src/components/context/UserContext";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -39,9 +40,27 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const parseComments = comments => {
+  return comments
+    .filter(c => {
+      return !c.parent_comment_id;
+    })
+    .map(c => {
+      return {
+        ...c,
+        replies: comments.filter(r => r.parent_comment_id === c.id)
+          .sort((a,b) => {
+            return new Date(a.created_at)-new Date(b.created_at)
+          })
+      };
+    });
+};
+
 export default function ProjectPage({ project, members, posts, comments, token, following }) {
+  const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
   const [isUserFollowing, setIsUserFollowing] = React.useState(following);
+  const { user } = useContext(UserContext);
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message && encodeURI(message.message) != params.message) {
@@ -57,11 +76,13 @@ export default function ProjectPage({ project, members, posts, comments, token, 
     >
       {project ? (
         <ProjectLayout
-          project={{ ...project, team: members, timeline_posts: posts, comments: comments }}
+          project={{ ...project, team: members, timeline_posts: posts, comments: curComments }}
           token={token}
           setMessage={setMessage}
           isUserFollowing={isUserFollowing}
           setIsUserFollowing={setIsUserFollowing}
+          user={user}
+          setCurComments={setCurComments}
         />
       ) : (
         <NoProjectFoundLayout />
@@ -83,7 +104,15 @@ ProjectPage.getInitialProps = async ctx => {
   };
 };
 
-function ProjectLayout({ project, token, setMessage, isUserFollowing, setIsUserFollowing }) {
+function ProjectLayout({
+  project,
+  token,
+  setMessage,
+  isUserFollowing,
+  setIsUserFollowing,
+  user,
+  setCurComments
+}) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const [hash, setHash] = React.useState(null);
@@ -162,7 +191,7 @@ function ProjectLayout({ project, token, setMessage, isUserFollowing, setIsUserF
           >
             <Tab label="Project" />
             <Tab label="Team" />
-            <Tab label="Discussion" />
+            <Tab label="Comments" />
           </Tabs>
         </div>
       </Container>
@@ -175,7 +204,12 @@ function ProjectLayout({ project, token, setMessage, isUserFollowing, setIsUserF
           <ProjectTeamContent project={project} />
         </TabContent>
         <TabContent value={tabValue} index={2}>
-          <ProjectCommentsContent comments={project.comments} />
+          <ProjectCommentsContent
+            project={project}
+            user={user}
+            token={token}
+            setCurComments={setCurComments}
+          />
         </TabContent>
       </Container>
       <ConfirmDialog
@@ -186,7 +220,7 @@ function ProjectLayout({ project, token, setMessage, isUserFollowing, setIsUserF
           <span className={classes.dialogText}>
             Are you sure that you want to unfollow this project?
             <br />
-            You won't receive updates about it anymore
+            You {"won't"} receive updates about it anymore
           </span>
         }
         confirmText="Yes"

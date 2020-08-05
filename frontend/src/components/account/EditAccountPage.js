@@ -214,7 +214,7 @@ export default function EditAccountPage({
   deleteEmail
 }) {
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
-  const [editedAccount, setEditedAccount] = React.useState(account);
+  const [editedAccount, setEditedAccount] = React.useState({...account});
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const classes = useStyles(editedAccount);
   //used for previewing images in UploadImageDialog

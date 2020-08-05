@@ -35,22 +35,80 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import SentimentSatisfiedIcon from "@material-ui/icons/SentimentSatisfied";
 import GroupWorkIcon from "@material-ui/icons/GroupWork";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+
+const useStyles = makeStyles(theme => {
+  return {
+    root: {
+      borderBottom: `1px solid ${theme.palette.grey[300]}`
+    },
+    spacingBottom: {
+      marginBottom: theme.spacing(2)
+    },
+    container: {
+      padding: theme.spacing(2),
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center"
+    },
+    logo: {
+      height: 60
+    },
+    buttonMarginLeft: {
+      marginLeft: theme.spacing(1)
+    },
+    marginRight: {
+      marginRight: theme.spacing(3)
+    },
+    loggedInRoot: {
+      display: "inline-block",
+      verticalAlign: "middle",
+      marginLeft: theme.spacing(2)
+    },
+    loggedInAvatar: {
+      height: 30,
+      width: 30
+    },
+    loggedInAvatarMobile: {
+      height: 60,
+      width: 60,
+      display: "block",
+      margin: "0 auto"
+    },
+    menuLink: {
+      color: theme.palette.primary.main,
+      textDecoration: "inherit"
+    },
+    shareProjectButton: {
+      height: 36,
+      marginLeft: theme.spacing(1),
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2)
+    }
+  };
+});
 
 const LINKS = [
-  {
-    href: "/support",
-    text: "Support us",
-    iconForDrawer: SentimentSatisfiedIcon
-  },
   {
     href: "/about",
     text: "About",
     iconForDrawer: InfoIcon
   },
   {
+    href: "/support",
+    text: "Donate",
+    iconForDrawer: SentimentSatisfiedIcon,
+    isOutlinedInHeader: true,
+    icon: FavoriteBorderIcon,
+    vanillaIfLoggedOut: true
+  },  
+  {
     href: "/share",
     text: "Share a project",
-    iconForDrawer: AddCircleIcon
+    iconForDrawer: AddCircleIcon,
+    isFilledInHeader: true,
+    className: "shareProjectButton",
+    vanillaIfLoggedOut: true
   },
   /*{
     href: "/inbox",
@@ -114,51 +172,6 @@ const getLoggedInLinks = ({ loggedInUser }) => {
   ];
 };
 
-const useStyles = makeStyles(theme => {
-  return {
-    root: {
-      borderBottom: `1px solid ${theme.palette.grey[300]}`
-    },
-    spacingBottom: {
-      marginBottom: theme.spacing(2)
-    },
-    container: {
-      padding: theme.spacing(2),
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center"
-    },
-    logo: {
-      height: 60
-    },
-    buttonMarginLeft: {
-      marginLeft: theme.spacing(1)
-    },
-    marginRight: {
-      marginRight: theme.spacing(3)
-    },
-    loggedInRoot: {
-      display: "inline-block",
-      verticalAlign: "middle",
-      marginLeft: theme.spacing(2)
-    },
-    loggedInAvatar: {
-      height: 30,
-      width: 30
-    },
-    loggedInAvatarMobile: {
-      height: 60,
-      width: 60,
-      display: "block",
-      margin: "0 auto"
-    },
-    menuLink: {
-      color: theme.palette.primary.main,
-      textDecoration: "inherit"
-    }
-  };
-});
-
 export default function Header({ className, noSpacingBottom }) {
   const classes = useStyles();
   const { user, signOut } = useContext(UserContext);
@@ -204,13 +217,19 @@ function NormalScreenLinks({ loggedInUser, handleLogout }) {
       ).map((link, index) => {
         const buttonProps = {};
         if (index !== 0) {
-          buttonProps.className = classes.buttonMarginLeft;
+          if(link.className)
+            buttonProps.className = classes[link.className]
+          else
+            buttonProps.className = classes.buttonMarginLeft;
         }
-        if (link.isOutlinedInHeader) {
+        if ((loggedInUser || !link.vanillaIfLoggedOut) && link.isOutlinedInHeader) {
           buttonProps.variant = "outlined";
         }
-        if (link.isFilledInHeader) {
+        if ((loggedInUser || !link.vanillaIfLoggedOut) && link.isFilledInHeader) {
           buttonProps.variant = "contained";
+        }
+        if((loggedInUser || !link.vanillaIfLoggedOut) && link.icon) {
+          buttonProps.startIcon= <link.icon />
         }
         const Icon = link.icon;
         return (

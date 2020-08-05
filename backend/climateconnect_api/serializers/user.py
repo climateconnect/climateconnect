@@ -84,6 +84,7 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
     def get_last_name(self, obj):
         return obj.user.last_name
 
+
 class UserProfileStubSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
     first_name = serializers.SerializerMethodField()

@@ -5,12 +5,17 @@ from rest_framework.filters import SearchFilter
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
 
 from django.contrib.auth.models import User
 
-from organization.models import Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging, ProjectStatus, ProjectCollaborators, ProjectFollower
+from organization.models import (
+    Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging, 
+    ProjectStatus, ProjectCollaborators, ProjectFollower, OrganizationTags, OrganizationTagging
+)
 from organization.serializers.project import (
-    ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer,InsertProjectMemberSerializer
+    ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer, 
+    InsertProjectMemberSerializer
 )
 from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
@@ -32,18 +37,48 @@ logger = logging.getLogger(__name__)
 
 class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
-    filter_backends = [SearchFilter]
+    filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['url_slug']
+    filterset_fields = ['collaborators_welcome', 'country', 'city']
     pagination_class = ProjectsPagination
-    serializer_class = ProjectSerializer
+    serializer_class = ProjectStubSerializer
     queryset = Project.objects.filter(is_draft=False)
 
     def get_serializer_class(self):
         return ProjectStubSerializer
     
     def get_queryset(self):
-        return Project.objects.filter(is_draft=False)
+        projects = Project.objects.filter(is_draft=False)
+        if 'collaboration' in self.request.query_params:
+            collaborators_welcome = self.request.query_params.get('collaboration')
+            if collaborators_welcome == 'yes':
+                projects = projects.filter(collaborators_welcome=True)
+            if collaborators_welcome == 'no':
+                projects = projects.filter(collaborators_welcome=False)
 
+        if 'category' in self.request.query_params:
+            project_category = self.request.query_params.get('category').split(',')
+            project_tags = ProjectTags.objects.filter(name__in=project_category)
+            projects = projects.filter(
+                tag_project__project_tag__in=project_tags
+            ).distinct('id')
+
+        if 'status' in self.request.query_params:
+            statuses = self.request.query_params.get('status').split(',')
+            projects = projects.filter(status__name__in=statuses)
+
+        if 'skills' in self.request.query_params:
+            skill_names = self.request.query_params.get('skills').split(',')
+            skills = Skill.objects.filter(name__in=skill_names)
+            projects = projects.filter(skills__in=skills).distinct('id')
+
+        if 'organization_type' in self.request.query_params:
+            organization_type_names = self.request.query_params.get('organization_type').split(',')
+            organization_types = OrganizationTags.objects.filter(name__in=organization_type_names)
+            organization_taggings = OrganizationTagging.objects.filter(organization_tag__in=organization_types)
+            project_parents = ProjectParents.objects.filter(parent_organization__tag_organization__in=organization_taggings)
+            projects = projects.filter(project_parent__in=project_parents)
+        return projects
 
 class CreateProjectView(APIView):
     permission_classes = [IsAuthenticated]
@@ -66,7 +101,7 @@ class CreateProjectView(APIView):
                     'message': 'Missing required information to create project:'+param+' Please contact administrator'
                 }, status=status.HTTP_400_BAD_REQUEST)
         try:
-            project_status = ProjectStatus.objects.get(id=int(request.data["status"]))
+            ProjectStatus.objects.get(id=int(request.data["status"]))
         except ProjectStatus.DoesNotExist:
             return Response({
                 'message': "Passed status {} does not exist".format(request.data["status"])
@@ -188,7 +223,7 @@ class ProjectAPIView(APIView):
                             project_tag=tag, project=project
                         )
                     except ProjectTags.DoesNotExist:
-                        logger.error("Passed tag id {} does not exists")
+                        logger.error("Passed proj tag id {} does not exists")
         
         
         if 'image' in request.data:
@@ -251,6 +286,7 @@ class ProjectAPIView(APIView):
             'url_slug': project.url_slug
         }, status=status.HTTP_200_OK)
 
+
 class ListProjectPostsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
@@ -263,6 +299,7 @@ class ListProjectPostsView(ListAPIView):
             project__url_slug=self.kwargs['url_slug'],
         ).order_by('id')
 
+
 class ListProjectCommentsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
@@ -273,7 +310,7 @@ class ListProjectCommentsView(ListAPIView):
     def get_queryset(self):
         return ProjectComment.objects.filter(
             project__url_slug=self.kwargs['url_slug'],
-        ).order_by('id')
+        )
     
 class AddProjectMembersView(APIView):
     permission_classes = [AddProjectMemberPermission]
@@ -451,3 +488,41 @@ class IsUserFollowing(APIView):
         is_following = ProjectFollower.objects.filter(user=request.user, project=project).exists()
         return Response({'is_following': is_following}, status=status.HTTP_200_OK)
 
+class ProjectCommentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, url_slug):
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            raise NotFound(detail="Project not found:"+url_slug, code=status.HTTP_404_NOT_FOUND)
+        if 'content' not in request.data:
+            return Response({
+                'message': 'Missing required parameters'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        comment = ProjectComment.objects.create(
+            author_user = request.user, content=request.data['content'], project=project
+        )
+        if 'parent_comment' in request.data:
+            try:
+                parent_comment = ProjectComment.objects.get(id=request.data['parent_comment'])
+            except ProjectComment.DoesNotExist:
+                raise NotFound(detail="Parent comment not found:"+request.data['parent_comment'], code=status.HTTP_404_NOT_FOUND)
+            comment.parent_comment = parent_comment
+        comment.save()
+        return Response({'comment': ProjectCommentSerializer(comment).data}, status=status.HTTP_200_OK)
+
+    def delete(self, request, url_slug, comment_id):
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            raise NotFound(detail="Project not found:"+url_slug, code=status.HTTP_404_NOT_FOUND)
+        try:
+            comment = ProjectComment.objects.get(project=project, id=comment_id, author_user=request.user)
+        except ProjectComment.DoesNotExist:
+            raise NotFound(
+                detail="Project comment not found. Project:"+url_slug+" Comment:"+comment_id, 
+                code=status.HTTP_404_NOT_FOUND
+            )
+        comment.delete()
+        return Response(status=status.HTTP_200_OK)

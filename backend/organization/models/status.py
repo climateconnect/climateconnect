@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class ProjectStatus(models.Model):
     name = models.CharField(
         help_text="Name of the project status",

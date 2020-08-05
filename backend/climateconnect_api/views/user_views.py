@@ -5,6 +5,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 
 # Rest imports
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -34,6 +35,7 @@ from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.permissions import UserPermission
 from climateconnect_api.utility.email_setup import send_user_verification_email
 from climateconnect_api.utility.email_setup import send_password_link
+from django.conf import settings
 import logging
 logger = logging.getLogger(__name__)
 
@@ -42,6 +44,7 @@ class LoginView(KnowLoginView):
     permission_classes = [AllowAny]
 
     def post(self, request, format=None):
+        logger.error("Auto verify:" + settings.AUTO_VERIFY)
         if 'username' and 'password' not in request.data:
             message = "Must include 'username' and 'password'"
             return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
@@ -103,9 +106,14 @@ class SignUpView(APIView):
             email_updates_on_projects=request.data['email_updates_on_projects']
         )
 
-        send_user_verification_email(user, user_profile.verification_key)
-
-        message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(user.email)  # NOQA
+        if settings.AUTO_VERIFY:
+            user_profile.is_profile_verified = True
+            user_profile.save()
+            message = "Congratulations! Your account has been created"
+        else:
+            send_user_verification_email(user, user_profile.verification_key)
+            message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(user.email)  # NOQA
+        
 
         return Response({'success': message}, status=status.HTTP_201_CREATED)
 
@@ -127,14 +135,20 @@ class PersonalProfileView(APIView):
 class ListMemberProfilesView(ListAPIView):
     permission_classes = [AllowAny]
     pagination_class = MembersPagination
-    filter_backends = [SearchFilter]
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    filterset_fields = ['name', 'country', 'city']
     search_fields = ['name']
 
     def get_serializer_class(self):
         return UserProfileStubSerializer
 
     def get_queryset(self):
-        return UserProfile.objects.filter(is_profile_verified=True)
+        user_profiles = UserProfile.objects.filter(is_profile_verified=True)
+        if 'skills' in self.request.query_params:
+            skill_names = self.request.query_params.get('skills').split(',')
+            skills = Skill.objects.filter(name__in=skill_names)
+            user_profiles = user_profiles.filter(skills__in=skills).distinct('id')
+        return user_profiles
 
 
 class MemberProfileView(APIView):

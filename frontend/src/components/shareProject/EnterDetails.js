@@ -270,12 +270,12 @@ export default function EnterDetails({
               color="primary"
               className={classes.subHeader}
             >
-              Project website(optional)
+              Project website
             </Typography>
             <TextField
               variant="outlined"
               onChange={event => onWebsiteChange(event)}
-              placeholder={`Project website(optional)`}
+              placeholder={`Project website`}
               value={projectData.website}
               helperText={"If your project has a website, you can enter it here."}
             />
