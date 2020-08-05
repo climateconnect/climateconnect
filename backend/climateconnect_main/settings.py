@@ -186,3 +186,11 @@ EMAIL_USE_TLS = True
 
 
 ASGI_APPLICATION = 'climateconnect_main.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(env('REDIS_HOST'), env('REDIS_PORT', 6379))]
+        }
+    }
+}
