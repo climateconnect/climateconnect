@@ -17,7 +17,6 @@ __pycache__
 *.swo
 *.py[cod]
 .idea/
-*.yaml
 
 # vscode
 /.vscode
