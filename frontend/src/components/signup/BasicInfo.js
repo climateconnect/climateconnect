@@ -4,12 +4,12 @@ import Form from "./../general/Form";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   appealText: {
     textAlign: "center",
     fontWeight: "bold"
   }
-}));
+});
 
 export default function BasicInfo({ handleSubmit, errorMessage, values }) {
   const classes = useStyles();
