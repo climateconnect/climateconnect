@@ -13,7 +13,9 @@ export default function FilterOverlay({
   handleClickDialogOpen,
   open,
   handleClickDialogClose,
-  handleUnselectFilter
+  handleUnselectFilter,
+  selectedItems,
+  setSelectedItems
 }) {
   const onClose = () => {
     unexpandFilters();
@@ -38,6 +40,8 @@ export default function FilterOverlay({
         open={open}
         handleClickDialogClose={handleClickDialogClose}
         isInOverlay
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
       />
       <SelectedFilters
         currentFilters={currentFilters}
