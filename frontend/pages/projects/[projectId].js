@@ -37,6 +37,11 @@ const useStyles = makeStyles(theme => ({
     textAlign: "center",
     margin: "0 auto",
     display: "block"
+  },
+  tab: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    width: 145
   }
 }));
 
@@ -189,9 +194,9 @@ function ProjectLayout({
             onChange={handleTabChange}
             indicatorColor="primary"
           >
-            <Tab label="Project" />
-            <Tab label="Team" />
-            <Tab label="Comments" />
+            <Tab label="Project" className={classes.tab}/>
+            <Tab label="Team" className={classes.tab}/>
+            <Tab label="Comments" className={classes.tab}/>
           </Tabs>
         </div>
       </Container>

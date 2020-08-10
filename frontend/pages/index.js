@@ -54,8 +54,9 @@ const useStyles = makeStyles(theme => {
       marginBottom: theme.spacing(3)
     },
     tab: {
-      textTransform: "none",
-      width: 130
+      width: 160,
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
     },
     tabContent: {
       marginTop: theme.spacing(2),
@@ -118,13 +119,6 @@ export default function Index({
     }
   }
   const [state, setState] = React.useState(initialState)
-  /*const setItems = items => setState({...state, items: {...items}})
-  const setHasMore = hasMore => setState({...state, hasMore: {...hasMore}})
-  const setNextPages = nextPages => {
-    console.log("setting next pages!")
-    console.log(nextPages)
-    setState({...state, nextPages: {...nextPages}})
-  }*/
   
   const classes = useStyles();
   //Django starts counting at page 1 and we always catch the first page on load.  
