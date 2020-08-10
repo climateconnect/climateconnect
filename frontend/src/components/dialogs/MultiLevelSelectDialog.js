@@ -13,7 +13,8 @@ export default function MultiLevelSelectDialog({
   maxSelections,
   itemsToChooseFrom,
   selectedItems,
-  setSelectedItems
+  setSelectedItems,
+  dragAble
 }) {
   const handleClose = () => {
     setSelectedItems(items ? items : []);
@@ -49,6 +50,7 @@ export default function MultiLevelSelectDialog({
         selected={selectedItems}
         setSelected={setSelectedItems}
         isInPopup
+        dragAble={dragAble}
       />
     </GenericDialog>
   );

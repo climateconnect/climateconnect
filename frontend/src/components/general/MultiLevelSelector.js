@@ -7,12 +7,13 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const useStyles = makeStyles(theme => {
   return {
     wrapper: props => ({
       margin: "0 auto",
-      display: "table",
+      display: "flex",
       marginTop: props.marginTop ? theme.spacing(8) : 0,
       [theme.breakpoints.down("sm")]: {
         marginTop: theme.spacing(4)
@@ -51,7 +52,7 @@ const useStyles = makeStyles(theme => {
     },
     firstItem: {
       borderTop: "1px solid black"
-    },
+    },    
     narrowScreenSubListItem: {
       borderLeft: "1px solid black",
       borderTop: 0
@@ -83,16 +84,20 @@ const useStyles = makeStyles(theme => {
       textAlign: "center"
     },
     selectedItemsHeader: {
-      fontWeight: "bold"
+      fontWeight: "bold"      
     },
     selectedItem: {
       background: theme.palette.primary.main,
       color: "white",
       marginBottom: theme.spacing(1),
+      borderTop: "1px solid black",
       "&:hover": {
         backgroundColor: theme.palette.primary.main,
         color: "white"
       }
+    },
+    firstSelectedItem: {
+      border: "5px solid black"
     },
     selectedItemIcon: {
       paddingLeft: theme.spacing(2),
@@ -137,7 +142,8 @@ export default function MultiLevelSelector({
   itemsToSelectFrom,
   maxSelections,
   itemNamePlural,
-  isInPopup
+  isInPopup,
+  dragAble
 }) {
   const [expanded, setExpanded] = React.useState(null);
 
@@ -164,6 +170,13 @@ export default function MultiLevelSelector({
     );
   };
 
+  const moveItem = (sourcePosition, destinationPosition) => {
+    const ret = selected;
+    const [removed] = ret.splice(sourcePosition, 1);
+    ret.splice(destinationPosition, 0, removed)
+    setSelected(ret)
+  }
+
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   return (
     <>
@@ -177,6 +190,8 @@ export default function MultiLevelSelector({
               onClickUnselect={onClickUnselect}
               className={`${classes.selectedWrapper} ${(isNarrowScreen || isInPopup) &&
                 classes.narrowScreenSelectedWrapper}`}
+              dragAble = {dragAble}
+              moveItem={moveItem}
             />
             {selected.length > 0 && <Divider className={classes.divider} />}
           </>
@@ -198,6 +213,8 @@ export default function MultiLevelSelector({
             maxSelections={maxSelections}
             onClickUnselect={onClickUnselect}
             className={classes.selectedWrapper}
+            dragAble={dragAble}
+            moveItem={moveItem}
           />
         )}
       </div>
@@ -232,10 +249,72 @@ function ListToChooseWrapper({
   );
 }
 
-function SelectedList({ selected, itemNamePlural, maxSelections, className, onClickUnselect }) {
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
+
+function SelectedList({ selected, itemNamePlural, maxSelections, className, onClickUnselect, dragAble, moveItem }) {
   const classes = useStyles({});
 
-  return (
+  const onDragEnd = (result) => {
+    // dropped outside the list
+    if (!result.destination)
+      return;
+
+    moveItem(result.source.index, result.destination.index)
+  }
+  
+  if(dragAble)
+    return (
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="droppable">
+          {(provided, snapshot) => (
+            <List
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className={classes.selectedList}
+            >
+              {selected.map((item, index) => {
+                return (
+                  <Draggable key={item.id} draggableId={"draggable"+item.id} index={index}>
+                    {(provided, snapshot) => {
+                      return (
+                        <ListItem
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          key={index}
+                          button
+                          className={`
+                            ${classes.listItem} 
+                            ${index == 0 && classes.firstItem} 
+                            ${classes.selectedItem}
+                            ${index == 0 && classes.firstSelectedItem}
+                          `}
+                          onClick={() => onClickUnselect(item)}
+                          disableRipple
+                        >
+                          <ListItemText>{item.name}</ListItemText>
+                          <ListItemIcon className={classes.selectedItemIcon}>
+                            <CloseIcon />
+                          </ListItemIcon>
+                        </ListItem>
+                      )
+                    }}    
+                  </Draggable>            
+                )
+              })}  
+              {provided.placeholder}            
+            </List>
+          )}
+        </Droppable>
+      </DragDropContext>
+    )
+  else return (
     <div className={className}>
       <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
         {selected.length > 0

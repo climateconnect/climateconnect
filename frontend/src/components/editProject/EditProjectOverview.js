@@ -261,6 +261,7 @@ const InputTags = ({ project, handleChangeProject, tagsOptions }) => {
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}
         maxSelections={3}
+        dragAble={true}
       />
     </div>
   );
