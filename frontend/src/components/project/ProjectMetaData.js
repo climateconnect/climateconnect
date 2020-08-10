@@ -1,10 +1,10 @@
 import React from "react";
 import { Box, Tooltip } from "@material-ui/core";
 import PlaceIcon from "@material-ui/icons/Place";
-import ProjectStatus from "./ProjectStatus";
 import { makeStyles } from "@material-ui/core/styles";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
+import ExploreIcon from "@material-ui/icons/Explore";
 
 const useStyles = makeStyles(theme => ({
   creatorImage: {
@@ -15,13 +15,21 @@ const useStyles = makeStyles(theme => ({
   cardIcon: {
     verticalAlign: "bottom",
     marginBottom: -2,
-    marginTop: 2
+    marginTop: 2,
+    marginRight: theme.spacing(0.5)
   },
   creator: {
     marginBottom: 5
   },
   status: {
     marginTop: theme.spacing(1)
+  },
+  infoItem: {
+    display: "flex",
+    marginTop: theme.spacing(0.5)
+  },
+  categoryText: {
+    marginTop: theme.spacing(0.5)
   }
 }));
 
@@ -51,8 +59,13 @@ export default function ProjectMetaData({ project }) {
           <PlaceIcon className={classes.cardIcon} />
         </Tooltip>
         {project.location}
-        <div>
-          <ProjectStatus status={project.status} className={classes.status} />
+        <div className={classes.infoItem}>
+          <Tooltip title="Categories">
+            <ExploreIcon className={classes.cardIcon} />
+          </Tooltip>{" "}
+          <span className={classes.categoryText}>
+            {project.tags.map(t=>t.project_tag.name)[0]}
+          </span>
         </div>
       </Box>
     </Box>
