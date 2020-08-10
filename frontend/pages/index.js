@@ -421,7 +421,7 @@ export default function Index({
             ) : (
               <Typography component="h4" variant="h5" className={classes.infoMessage}>
                 There are no organizations on this site yet.{" "}
-                <Link href="/share">
+                <Link href="/createorganization">
                   <Typography color="primary" className={classes.link} component="h5" variant="h5">
                     Create an organization to be the first one!
                   </Typography>
@@ -451,7 +451,7 @@ export default function Index({
             ) : (
               <Typography component="h4" variant="h5" className={classes.infoMessage}>
                 There are no members on this site yet.{" "}
-                <Link href="/share">
+                <Link href="/signup">
                   <Typography color="primary" className={classes.link} component="h5" variant="h5">
                     Create a profile to be the first one!
                   </Typography>
