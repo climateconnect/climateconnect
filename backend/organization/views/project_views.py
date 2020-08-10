@@ -132,6 +132,7 @@ class CreateProjectView(APIView):
         team_members = request.data['team_members']
             
         if 'project_tags' in request.data:
+            order = len(request.data['project_tags'])
             for project_tag_id in request.data['project_tags']:
                 try:
                     project_tag = ProjectTags.objects.get(id=int(project_tag_id))
@@ -140,8 +141,9 @@ class CreateProjectView(APIView):
                     continue
                 if project_tag:
                     ProjectTagging.objects.create(
-                        project=project, project_tag=project_tag
+                        project=project, project_tag=project_tag, order = order
                     )
+                    order = order - 1
                     logger.info("Project tagging created for project {}".format(project.id))
 
         for member in team_members:
@@ -209,23 +211,35 @@ class ProjectAPIView(APIView):
                 except Skill.DoesNotExist:
                     logger.error("Passed skill id {} does not exists")
         
-        old_project_taggings = ProjectTagging.objects.filter(project=project).values('project_tag')
+        old_project_taggings = ProjectTagging.objects.filter(project=project)
+        old_project_tags = old_project_taggings.values('project_tag')
         if 'project_tags' in request.data:
-            for tag in old_project_taggings:
+            order = len(request.data['project_tags'])
+            for tag in old_project_tags:
                 if not tag['project_tag'] in request.data['project_tags']:
                     logger.error("this tag needs to be deleted: "+str(tag['project_tag']))
                     tag_to_delete = ProjectTags.objects.get(id=tag['project_tag'])
                     ProjectTagging.objects.filter(project=project, project_tag=tag_to_delete).delete()
             for tag_id in request.data['project_tags']:
-                if not old_project_taggings.filter(project_tag=tag_id).exists():
+                old_taggings = old_project_taggings.filter(project_tag=tag_id)
+                if not old_taggings.exists():
                     try:
                         tag = ProjectTags.objects.get(id=tag_id)
                         ProjectTagging.objects.create(
-                            project_tag=tag, project=project
+                            project_tag=tag, project=project, order = order
                         )
                     except ProjectTags.DoesNotExist:
                         logger.error("Passed proj tag id {} does not exists")
-        
+                else:
+                    old_tagging = old_taggings[0]
+                    logger.error(order)
+                    logger.error(old_tagging.order)
+                    logger.error(old_tagging)
+                    if not old_tagging.order == order:
+                        old_tagging.order = int(order)
+                        logger.error(old_tagging.order)
+                        old_tagging.save()
+                order = order - 1
         
         if 'image' in request.data:
             project.image = get_image_from_data_url(request.data['image'])[0]
