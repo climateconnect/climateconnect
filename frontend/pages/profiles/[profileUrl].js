@@ -13,7 +13,7 @@ import OrganizationPreviews from "./../../src/components/organization/Organizati
 import AccountPage from "./../../src/components/account/AccountPage";
 
 import TEMP_PROFILE_TYPES from "./../../public/data/profile_types.json";
-import TEMP_INFOMETADATA from "./../../public/data/profile_info_metadata.json";
+import TEMP_INFOMETADATA from "./../../public/data/profile_info_metadata";
 import tokenConfig from "../../public/config/tokenConfig";
 import LoginNudge from "../../src/components/general/LoginNudge";
 import { parseProfile } from "./../../public/lib/profileOperations";

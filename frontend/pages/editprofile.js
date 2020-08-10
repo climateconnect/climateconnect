@@ -11,7 +11,7 @@ import { parseOptions } from "../public/lib/selectOptionsOperations";
 import { getImageUrl } from "../public/lib/imageOperations";
 
 //temporary fake data
-import TEMP_INFOMETADATA from "./../public/data/profile_info_metadata.json";
+import TEMP_INFOMETADATA from "./../public/data/profile_info_metadata";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
 import axios from "axios";

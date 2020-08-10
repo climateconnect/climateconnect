@@ -36,9 +36,10 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
         values: countries.map(country => {
           return { key: country, name: country };
         }),
-        defaultValue: values["country"] ? values["country"] : ""
+        defaultValue: values["country"] ? values["country"] : "",
+        addEmptyValue: true
       },
-      key: "country"
+      key: "country"      
     },
     {
       required: true,

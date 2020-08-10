@@ -8,6 +8,8 @@ import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 import imageCompression from "browser-image-compression";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
+import SelectField from "../general/SelectField";
+import countries from "./../../../public/data/countries.json"
 
 const useStyles = makeStyles(theme => ({
   ...projectOverviewStyles(theme),
@@ -178,14 +180,16 @@ const InputLocation = ({ project, handleChangeProject }) => {
         onChange={event => handleChangeProject(event.target.value, "city")}
         required
       />
-      <TextField
+      <SelectField
         label="Country"
         variant="outlined"
         fullWidth
-        value={project.country}
+        controlled
+        controlledValue={project.country}
         type="text"
         onChange={event => handleChangeProject(event.target.value, "country")}
         required
+        options = {countries.map(c=>({key:c.toLowerCase(), name:c}))}  
       />
     </div>
   );
