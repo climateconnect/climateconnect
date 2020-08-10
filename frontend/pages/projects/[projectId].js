@@ -123,6 +123,7 @@ function ProjectLayout({
   const [hash, setHash] = React.useState(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = React.useState(false);
   const typesByTabValue = ["project", "team", "comments"];
+
   useEffect(() => {
     if (window.location.hash) {
       setHash(window.location.hash.replace("#", ""));
@@ -131,6 +132,34 @@ function ProjectLayout({
   });
 
   const [tabValue, setTabValue] = React.useState(hash ? typesByTabValue.indexOf(hash) : 0);
+
+  // pagination will only return 12 members
+  const teamTabLabel = () => {
+    let teamLabel = "Team";
+    if (project && project.team) {
+      if (project.team.length === 12) {
+        teamLabel += ` (${project.team.length}+)`;
+      }
+      else if (project.team.length < 12 && project.team.length > 0) {
+        teamLabel += ` (${project.team.length})`;
+      }
+    }
+    return teamLabel;
+  }
+
+    // pagination will only return 10 comments
+  const commentsTabLabel = () => {
+    let commentsLabel = "Comments";
+    if (project && project.comments) {
+      if (project.comments.length === 10) {
+        commentsLabel += ` (${project.comments.length}+)`;
+      }
+      else if (project.team.length < 10 && project.comments.length > 0) {
+        commentsLabel += ` (${project.comments.length})`;
+      }
+    }
+    return commentsLabel;
+  }
 
   const handleTabChange = (event, newValue) => {
     if (newValue === 0) window.location.hash = "";
@@ -195,8 +224,8 @@ function ProjectLayout({
             indicatorColor="primary"
           >
             <Tab label="Project" className={classes.tab}/>
-            <Tab label="Team" className={classes.tab}/>
-            <Tab label="Comments" className={classes.tab}/>
+            <Tab label={teamTabLabel()} className={classes.tab}/>
+            <Tab label={commentsTabLabel()} className={classes.tab}/>
           </Tabs>
         </div>
       </Container>
