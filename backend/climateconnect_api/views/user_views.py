@@ -44,7 +44,6 @@ class LoginView(KnowLoginView):
     permission_classes = [AllowAny]
 
     def post(self, request, format=None):
-        logger.error("Auto verify:" + settings.AUTO_VERIFY)
         if 'username' and 'password' not in request.data:
             message = "Must include 'username' and 'password'"
             return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
