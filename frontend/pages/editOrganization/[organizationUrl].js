@@ -25,27 +25,40 @@ const useStyles = makeStyles(theme => ({
 //This route should only be accessible to admins of the organization
 
 export default function EditOrganizationPage({ organization, tagOptions, token }) {
+  const [errorMessage, setErrorMessage] = React.useState("")
+
+  const handleSetErrorMessage = msg => {
+    setErrorMessage(msg)
+    window.scrollTo(0, 0)
+  }
+
   const saveChanges = (event, editedOrg) => {
-    const org = parseForRequest(getChanges(editedOrg, organization));
-    console.log(org);
-    axios
-      .patch(
-        process.env.API_URL + "/api/organizations/" + encodeURI(organization.url_slug) + "/",
-        org,
-        tokenConfig(token)
-      )
-      .then(function() {
-        Router.push({
-          pathname: "/organizations/" + organization.url_slug,
-          query: {
-            message: "You have successfully edited your organization."
-          }
+    const error = verifyChanges(editedOrg).error
+    if(error){
+      handleSetErrorMessage(error)
+    }
+    else{
+      const org = parseForRequest(getChanges(editedOrg, organization));
+      console.log(org);
+      axios
+        .patch(
+          process.env.API_URL + "/api/organizations/" + encodeURI(organization.url_slug) + "/",
+          org,
+          tokenConfig(token)
+        )
+        .then(function() {
+          Router.push({
+            pathname: "/organizations/" + organization.url_slug,
+            query: {
+              message: "You have successfully edited your organization."
+            }
+          });
+        })
+        .catch(function(error) {
+          console.log(error);
+          if (error) console.log(error.response);
         });
-      })
-      .catch(function(error) {
-        console.log(error);
-        if (error) console.log(error.response);
-      });
+    }
   };
   const handleCancel = () => {
     Router.push("/organizations/" + organization.url_slug);
@@ -89,6 +102,7 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
           maxAccountTypes={2}
           handleSubmit={saveChanges}
           handleCancel={handleCancel}
+          errorMessage={errorMessage}
         />
       ) : (
         <NoOrganizationFoundLayout />
@@ -179,3 +193,35 @@ const parseForRequest = org => {
     parsedOrg.parent_organization = org.parent_organization ? org.parent_organization.id : null;
   return parsedOrg;
 };
+
+const verifyChanges = (newOrg) => {
+  const requiredPropErrors = {
+    image: 'Please add an avatar image by clicking the "Add Image" button.',
+    types: 'Please choose at least one organization type by clicking the "Add Type" button under the avatar.',
+    name: "Please type your organization name under the avatar image"
+  };
+  const requiredInfoPropErrors = {
+    city: "Please specify your city",
+    country: "Please specify your country"
+  }
+  console.log(newOrg)
+  for (const prop of Object.keys(requiredPropErrors)) {
+    if (!newOrg[prop] || (Array.isArray(newOrg[prop]) && newOrg[prop].length <= 0)) {
+      console.log(newOrg[prop])
+      console.log(prop)
+      return {
+        error: requiredPropErrors[prop]
+      };
+    }
+  }
+  for (const prop of Object.keys(requiredInfoPropErrors)) {
+    if (!newOrg.info[prop] || (Array.isArray(newOrg.info[prop]) && newOrg.info[prop].length <= 0)) {
+      console.log(newOrg[prop])
+      console.log(prop)
+      return {
+        error: requiredInfoPropErrors[prop]
+      };
+    }
+  }
+  return true
+}
