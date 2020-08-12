@@ -105,7 +105,7 @@ class SignUpView(APIView):
             email_updates_on_projects=request.data['email_updates_on_projects']
         )
 
-        if settings.AUTO_VERIFY:
+        if settings.AUTO_VERIFY == True:
             user_profile.is_profile_verified = True
             user_profile.save()
             message = "Congratulations! Your account has been created"

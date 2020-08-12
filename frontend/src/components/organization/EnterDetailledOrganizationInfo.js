@@ -2,14 +2,15 @@ import React from "react";
 import Router from "next/router";
 import EditAccountPage from "./../account/EditAccountPage";
 import organization_info_metadata from "./../../../public/data/organization_info_metadata.js";
-import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import Alert from "@material-ui/lab/Alert";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles(() => {
   return {
-    topMessageContainer: {
-      padding: theme.spacing(2),
-      textAlign: "center"
+    alert: {
+      textAlign: "center",
+      maxWidth: 1280,
+      margin: "0 auto"
     }
   };
 });
@@ -38,12 +39,13 @@ export default function EnterDetailledOrganizationInfo({
   };
   return (
     <div>
-      <div className={classes.topMessageContainer}>
-        <Typography color="primary">Almost done!</Typography>
-        <Typography color="primary">
-          Here you can customize your organization page and add details
-        </Typography>
-      </div>
+      {!errorMessage &&
+        <div>
+          <Alert severity="success" className={classes.alert}>
+            Almost done! Here you can customize your organization page and add details
+          </Alert>
+        </div>
+      }
       <EditAccountPage
         type="organization"
         account={organization}

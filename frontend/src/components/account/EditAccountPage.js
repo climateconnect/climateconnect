@@ -25,6 +25,7 @@ import { getImageDialogHeight } from "../../../public/lib/imageOperations";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
+import Alert from "@material-ui/lab/Alert";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -178,10 +179,10 @@ const useStyles = makeStyles(theme => ({
   dialogWidth: {
     width: 400
   },
-  errorMessage: {
+  alert: {
     textAlign: "center",
-    paddingBottom: theme.spacing(1),
-    paddingTop: theme.spacing(1)
+    maxWidth: 1280,
+    margin: "0 auto"
   },
   cursorPointer: {
     cursor: "pointer"
@@ -520,9 +521,11 @@ export default function EditAccountPage({
 
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
-      <Typography color="error" className={errorMessage && classes.errorMessage}>
-        {errorMessage}
-      </Typography>
+      {errorMessage &&
+        <Alert severity="error" className={classes.alert}>
+          {errorMessage}
+        </Alert>
+      }
       <div
         className={`${classes.backgroundContainer} ${
           editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor

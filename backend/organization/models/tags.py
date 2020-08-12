@@ -186,11 +186,18 @@ class ProjectTagging(models.Model):
         auto_now=True
     )
 
+    order = models.PositiveSmallIntegerField(
+        help_text="The bigger the number, the more to the top this category will be displayed",
+        verbose_name="Position of tag",
+        default=0
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Project Tagging"
         verbose_name_plural = "Project Taggings"
         unique_together = ('project', 'project_tag')
+        ordering = ["-order"]
 
     def __str__(self):
-        return "Tag %s => Project %s" % (self.project.name, self.project_tag.name)
+        return "Tag %s => Project %s" % (self.project_tag.name, self.project.name)

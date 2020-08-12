@@ -197,13 +197,16 @@ export default function Form({
             (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) &&
             field.select
           ) {
+            let options = field.select.values;
+            if(field.select.addEmptyValue)
+              options = ["", ...options]
             return (
               <React.Fragment key={field.key}>
                 <SelectField
                   controlledValue={{ name: values[field.key] }}
                   controlled
                   required={field.required}
-                  options={field.select.values}
+                  options={options}
                   label={field.label}
                   className={classes.blockElement}
                   key={field.label + fields.indexOf(field)}

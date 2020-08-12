@@ -1,4 +1,6 @@
-{
+import countries from "./countries.json"
+
+export default {
   "availability": {
     "name": "Availability",
     "key": "availability",
@@ -38,8 +40,9 @@
     "name": "Country",
     "key": "country",
     "missingMessage": "This user hasn't specified their country yet.",
-    "type": "location",
-    "order": 0
+    "type": "select",
+    "order": 0,
+    "options": countries.map(c=>({key:c.toLowerCase(), name:c}))  
   },
   "location": {
     "name": "Location",

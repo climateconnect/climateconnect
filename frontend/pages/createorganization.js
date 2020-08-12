@@ -15,7 +15,12 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     basicOrganizationInfo: "",
     detailledOrganizationInfo: ""
   });
-  console.log(tagOptions);
+  
+  const handleSetErrorMessages = newErrorMessages => {
+    setErrorMessages(newErrorMessages)
+    window.scrollTo(0, 0)
+  }
+
   const [organizationInfo, setOrganizationInfo] = React.useState({
     organizationname: "",
     hasparentorganization: false,
@@ -36,7 +41,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     //TODO: actually check if organization name is available
     try {
       if (values.hasparentorganization && !values.parentOrganization)
-        setErrorMessages({
+        handleSetErrorMessages({
           errorMessages,
           basicOrganizationInfo:
             "You have not selected a parent organization. Either untick the sub-organization field or choose/create your parent organization."
@@ -47,7 +52,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         );
         if (resp.data.results && resp.data.results.find(r => r.name === values.organizationname)) {
           const org = resp.data.results.find(r => r.name === values.organizationname);
-          setErrorMessages({
+          handleSetErrorMessages({
             errorMessages,
             basicOrganizationInfo: (
               <div>
@@ -75,8 +80,8 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
   };
 
   const requiredPropErrors = {
-    image: 'Please add an avatar image by clicking the "add image" button.',
-    organization_tags: 'Please choose at least one type by clicking the "add type" button.',
+    image: 'Please add an avatar image by clicking the "Add Image" button.',
+    organization_tags: 'Please choose at least one organization type by clicking the "Add Type" button under the avatar.',
     name: "Please type your organization name under the avatar image",
     city: "Please specify your city",
     country: "Please specify your country"
@@ -84,10 +89,9 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
 
   const handleDetailledInfoSubmit = (event, account) => {
     const organizationToSubmit = parseOrganizationForRequest(account, user, rolesOptions);
-    console.log(organizationToSubmit);
     for (const prop of Object.keys(requiredPropErrors)) {
-      if (!organizationToSubmit[prop]) {
-        setErrorMessages({
+      if (!organizationToSubmit[prop] || (Array.isArray(organizationToSubmit[prop]) && organizationToSubmit[prop].length <= 0)) {
+        handleSetErrorMessages({
           errorMessages,
           detailledOrganizationInfo: requiredPropErrors[prop]
         });

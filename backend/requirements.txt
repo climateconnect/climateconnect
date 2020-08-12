@@ -35,7 +35,7 @@ idna==2.9
 incremental==17.5.0
 mccabe==0.6.1
 msgpack==1.0.0
-Pillow==7.0.0
+Pillow==7.1.0
 protobuf==3.12.2
 psycopg2==2.8.4
 pyasn1==0.4.8

@@ -79,6 +79,7 @@ export default function SelectCategory({
           itemNamePlural="categories"
           selected={selectedCategories}
           setSelected={setSelectedCategories}
+          dragAble={true}
         />
       </div>
       <BottomNavigation

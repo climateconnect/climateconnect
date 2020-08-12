@@ -1,10 +1,9 @@
 import PlaceIcon from "@material-ui/icons/Place";
 import DescriptionIcon from "@material-ui/icons/Description";
 import SchoolIcon from "@material-ui/icons/School";
-import LocationCityIcon from "@material-ui/icons/LocationCity";
-import PublicIcon from "@material-ui/icons/Public";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
+import countries from "./countries.json"
 
 export default {
   city: {
@@ -18,8 +17,9 @@ export default {
     icon: PlaceIcon,
     iconName: "PlaceIcon",
     name: "Country",
-    type: "location",
-    key: "country"
+    key: "country",
+    type: "select",
+    options: countries.map(c=>({key:c.toLowerCase(), name:c}))  
   },
   location: {
     icon: PlaceIcon,
@@ -41,18 +41,6 @@ export default {
     iconName: "SchoolIcon",
     name: "School/University",
     key: "school"
-  },
-  city: {
-    icon: LocationCityIcon,
-    iconName: "LocationCityIcon",
-    name: "City",
-    key: "city"
-  },
-  country: {
-    icon: PublicIcon,
-    iconName: "PublicIcon",
-    name: "Country",
-    key: "country"
   },
   organ: {
     icon: SupervisorAccountIcon,

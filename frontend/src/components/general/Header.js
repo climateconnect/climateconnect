@@ -32,7 +32,6 @@ import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import SentimentSatisfiedIcon from "@material-ui/icons/SentimentSatisfied";
 import GroupWorkIcon from "@material-ui/icons/GroupWork";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
@@ -97,7 +96,7 @@ const LINKS = [
   {
     href: "/support",
     text: "Donate",
-    iconForDrawer: SentimentSatisfiedIcon,
+    iconForDrawer: FavoriteBorderIcon,
     isOutlinedInHeader: true,
     icon: FavoriteBorderIcon,
     vanillaIfLoggedOut: true

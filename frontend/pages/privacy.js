@@ -5,7 +5,7 @@ import React from "react"
 export default function Privacy(){
   return (
     <Layout title="Privacy Policy" hideHeadline>
-      <h1>Privacy Policy of Climate Connect gUG</h1>
+      <h1>Privacy Policy of Climate Connect gUG (haftungsbeschränkt)</h1>
 
       <div><b>as revised on July 2020</b></div>
       
@@ -31,14 +31,14 @@ export default function Privacy(){
       
 
       <h2>1.Scope of application</h2>
-      Climate Connect gUG (herewith {"Climate Connect"} or {"we"}) is committed to protecting your privacy and personal data. With this privacy policy we would like to inform you in detail about how we use your personal data.
+      Climate Connect gUG (haftungsbeschränkt) (herewith {"Climate Connect"} or {"we"}) is committed to protecting your privacy and personal data. With this privacy policy we would like to inform you in detail about how we use your personal data.
       This privacy policy applies to the use of your personal data when you visit our websites available at [www.climateconnect.earth] and when you contact us by e-mail, telephone, if you maintain a business relationship with us or use our services.
 
       <h2>2.Who is responsible and to whom can I reach out?</h2>
-      Climate Connect gUG, Böttigersteig 20, 91054 Erlangen, Germany, entered in the Commercial Register of the District Court of Fürth under the registration number HRB 18097, represented by Christoph Stoll, Tobias Wilhelm Rehm and Thomas Bove, is responsible for the processing of personal data described in this privacy policy.
+      Climate Connect gUG (haftungsbeschränkt), Böttigersteig 20, 91054 Erlangen, Germany, entered in the Commercial Register of the District Court of Fürth under the registration number HRB 18097, represented by Christoph Stoll, Tobias Wilhelm Rehm and Thomas Bove, is responsible for the processing of personal data described in this privacy policy.
       <div>You can contact the following office for all inquiries related to data protection:</div>
       <br/>
-      <div>Climate Connect gUG</div>
+      <div>Climate Connect gUG (haftungsbeschränkt)</div>
       <div>Böttigersteig 20</div>
       <div>91054 Erlangen</div>
       <div>Germany</div>
@@ -47,7 +47,7 @@ export default function Privacy(){
       <br/>
       We are not legally obliged to appoint a data protection officer. As a contact person for data protection issues, you are welcome to contact:
       <br/>
-      <div>Climate Connect gUG</div>
+      <div>Climate Connect gUG (haftungsbeschränkt)</div>
       <div>Tobias Rehm</div>
       <div>Böttigersteig 20</div>
       <div>91054 Erlangen</div>
@@ -67,8 +67,9 @@ export default function Privacy(){
       </ul>
 
       <h3>3.2 Which data do we process when you contact us?</h3>
-      Depending on your request, you can contact us via our websites or outside the Internet, either by telephone or in writing. We only store and process your e-mail address, telephone number, postal address, and other information that you have provided to us.
-
+      <div>Depending on your request, you can contact us via our websites or outside the Internet, either by telephone or in writing. We only store and process your e-mail address, telephone number, postal address, and other information that you have provided to us.</div>
+      
+      <div>We process data when you provide feedback or post user content on our site. For example, if you post a project or a comment on our website or a comment on our social media sites, your information, such as your account name and your comments, may be displayed on our website or on our social media pages.</div>
       <h3>3.3 Which data do we process when you register?</h3>
       On our website, we offer you the possibility to register by entering personal data. The data will be entered into an input mask, transmitted to us and stored. The data will not be passed on to third parties. The following data is collected during the registration process:
       <br/>
@@ -125,22 +126,34 @@ export default function Privacy(){
       <ul>
         <li><b>Third parties at your request</b>: you may choose to share your activities with your friends through email, text or on various social media networks;</li>
         <li><b>Service providers and advisors</b>: third party service providers that perform services for us, on our behalf, which may include payments processing, providing analytic services (e.g. Matomo; Matomo privacy policy is available at https://matomo.org/privacy-policy/) providing automatic email notification (e.g. Twilio; Twilio privacy policy is available at https://www.twilio.com/legal/tos )</li>
-        <li><b>The public</b>: when you provide feedback or post user content on our site. For example, if you post a project or a comment on our website or a comment on our social media sites, your information, such as your account name and your comments, may be displayed on our website or on our social media pages;</li>
-        <li><b>Law enforcement, regulators and other parties for legal reasons</b>: third parties as required by law or subpoena or if we reasonably believe that such action is necessary to (a) comply with the law and the reasonable requests of law enforcement; (b) to enforce our terms and policies or to protect the security or integrity of our Service; and/or (c) to exercise or protect the rights, property, or personal safety of Climate Connect, our visitors, or others; and</li>
         <li>
-          <b>Payment Processors</b>: We use – among other things – Paypal as a payment processor for donations. All PayPal transactions
-          are subject to PayPal’s Policy, which is available at https://www.paypal.com/uk/webapps/mpp/ua/privacy-full.
-          Also we use twingle. All twingle transactions are subject to twingle’s Policy,
-          which is available at https://www.twingle.de/datenschutz/. We will share your
-          payment and transaction information, including your name, address, company
-          name, email address and details of your chosen payment method and information
-          about your transaction.
+          <b>Transfer to processors</b>
+          We use external service providers for the operation of the website and sending E-Mail as well as for the handling of donation payments. 
+          We use Twilio (Sendgrid) for verifying your email address (for login, changing passwordand sending notifications) and for the handling of 
+          payments within the context of the donations such as Paypal and twingle [Matomo]. If we pass on your personal data, it is contractually 
+          assured that third parties only process the data on our behalf. For example processors are contractually obliged, to either delete or 
+          return the data when the contract is terminated.
+          All PayPal transactions are subject to PayPal’s Policy, which is available at https://www.paypal.com/uk/webapps/mpp/ua/privacy-full.  
+          All twingle transactions are subject to twingle’s Policy, which is available at https://www.twingle.de/datenschutz/. We will share your 
+          payment and transaction information, including your name, address, company name, email address and details of your chosen payment method 
+          and information about your transaction.
+          For example, our website uses the donation form of twingle GmbH, Prinzenallee 74, 13357 Berlin. The twingle GmbH provides the technical 
+          platform for the donation process for this donation form. The data you enter during the donation process (e.g. address, bank details, etc.) 
+          will be stored by twingle on servers in Germany for the sole purpose of processing the donation. We have concluded a contract with twingle 
+          for order data processing and fully implement the requirements of the EU Data Protection Basic Regulation and the German data protection 
+          authorities when using the twingle donation form. The transmission of your data is based on your consent and the processing for the fulfilment 
+          of a contract. You have the possibility to revoke your consent to data processing at any time. A revocation does not affect the effectiveness 
+          of data processing operations carried out in the past. In the case of a donation, we collect and use your personal data only to the extent 
+          necessary to fulfil and process your donation and, if applicable, to process your requests. The provision of the data is necessary for the 
+          handling of the donation process. Failure to provide the data means that your donation cannot be received. The processing is necessary for 
+          the handling of the donation. Your data will not be passed on to third parties without your expressed consent. The only exceptions to this 
+          are our service partners, who we need to process the donation, or service providers we use for processing orders. In addition to the 
+          recipients named in the respective clauses of this privacy policy, these are, for example, recipients of the following categories: 
+          Payment service providers, service providers for the dispatch of the donation receipt. In all cases we strictly observe the legal 
+          requirements. The scope of data transfer is limited to a minimum. You have the possibility to revoke your consent to data processing 
+          at any time. A revocation does not affect the effectiveness of data processing operations in the past.
         </li>
       </ul>
-
-      <h3>6.1 Transfer to processors</h3>
-      We use external service providers for the operation of the website such as Twilio (Sendgrid) for verifying your email address (for login, changing passwordand sending notifications) and for the handling of payments within the context of the donations such as Paypal and twingle [Matomo]. If we pass on your personal data, it is contractually assured that third parties only process the data on our behalf. For example processors are contractually obliged, to either delete or return the data when the contract is terminated.
-      For example, our website uses the donation form of twingle GmbH, Prinzenallee 74, 13357 Berlin. The twingle GmbH provides the technical platform for the donation process for this donation form. The data you enter during the donation process (e.g. address, bank details, etc.) will be stored by twingle on servers in Germany for the sole purpose of processing the donation. We have concluded a contract with twingle for order data processing and fully implement the requirements of the EU Data Protection Basic Regulation and the German data protection authorities when using the twingle donation form. The transmission of your data is based on your consent and the processing for the fulfilment of a contract. You have the possibility to revoke your consent to data processing at any time. A revocation does not affect the effectiveness of data processing operations carried out in the past. In the case of a donation, we collect and use your personal data only to the extent necessary to fulfil and process your donation and, if applicable, to process your requests. The provision of the data is necessary for the handling of the donation process. Failure to provide the data means that your donation cannot be received. The processing is necessary for the handling of the donation. Your data will not be passed on to third parties without your expressed consent. The only exceptions to this are our service partners, who we need to process the donation, or service providers we use for processing orders. In addition to the recipients named in the respective clauses of this privacy policy, these are, for example, recipients of the following categories: Payment service providers, service providers for the dispatch of the donation receipt. In all cases we strictly observe the legal requirements. The scope of data transfer is limited to a minimum. You have the possibility to revoke your consent to data processing at any time. A revocation does not affect the effectiveness of data processing operations in the past.
       <h3>6.2 Transfer based on legal obligations or for the protection of legitimate interests</h3>
       To the extent we are obliged to do so by law, court order, or by an enforceable official order, we will transfer your personal data to bodies entitled to receive information.
 
@@ -148,8 +161,10 @@ export default function Privacy(){
       If you have given us a separate consent form to use and transfer your personal data, your personal data may be passed on to the recipients named therein. As part of the provision of third-party services on our websites, personal data may be passed on to third parties. In addition, no personal data will be transferred on to third parties unless, in individual cases, there is a specific legal justification for the transfer, and your interests or fundamental rights and freedoms do not prevail.
 
       <h2>7. Do we transfer your data to third countries?</h2>
-      Your personal data will not be forwarded to countries outside the European Union or the European Economic Area, with the exception of your email and first name which is processed by our email automation tool Sendgrid (Twilio). Twilio acts in compliance with the GDPR.
-
+      For some types of processing, we may transfer your personal data to countries outside the European Union or the European Economic Area, to so-called third countries. 
+      In the course of a transfer of personal data to a third country, we will regularly provide appropriate guarantees, for example, by concluding the Standard Contractual 
+      Clauses of the European Commission to ensure that the transfer of data takes place with the same level of data protection that corresponds to the GDPR.
+      
       <h2>8. How long do we store your personal data?</h2>
       We process and store your personal data only as long as necessary for our processing purposes.
       Upon request, we will regularly delete the data collected and stored for our websites’ usage at any time. We will do this ourselves and within a few days, unless we have a particular interest in continuing storage for individual cases, e.g., cyberattacks.
@@ -179,7 +194,7 @@ export default function Privacy(){
       ACCORDING TO ARTICLE 21 (1) GDPR, YOU HAVE THE RIGHT TO OBJECT, ON GROUNDS RELATING TO YOUR PARTICULAR SITUATION, AT ANY TIME, TO PROCESSING OF PERSONAL DATA CONCERNING YOU WHICH IS BASED ON OUR LEGITIMATE INTERESTS. WE SHALL NO LONGER PROCESS THE PERSONAL DATA UNLESS WE DEMONSTRATE COMPELLING LEGITIMATE GROUNDS FOR THE PROCESSING WHICH OVERRIDE THE INTERESTS, RIGHTS, AND FREEDOMS OF YOU, OR FOR THE ESTABLISHMENT, EXERCISE, OR DEFENSE OF LEGAL CLAIMS.
 
       YOU CAN SEND YOUR OBJECTION INFORMALLY BY POST, FAX OR E-MAIL ADDRESSED TO:
-        <div>Climate Connect gUG</div>
+        <div>Climate Connect gUG (haftungsbeschränkt)</div>
         <div>Management</div>
         <div>Böttigersteig 20</div>
         <div>91054 Erlangen</div>
@@ -195,7 +210,7 @@ export default function Privacy(){
       Climate Connect does not use automated decision-making procedures, including profiling, unless we have explicitly informed you of them.
 
       <h2>12. What kind of cookies and tracking technology do we use?</h2>
-      For the provision, maintenance, and analysis of our websites and their usage, we use various software tools from third parties and ourselves, which are regularly based on the use of cookies, Flash cookies (also called Flash Local Shared Objects), web beacons or similar technologies (collectively as "Tracking Technologies"). Tracking Technologies can help us understand how you use our services (e.g., the pages you display or the links you click and other actions you perform with the services), give us information about your browser and online usage patterns (e.g., IP address, log data, browser type, browser language, referring/exiting pages and URLs, pages viewed, whether you have opened an e-mail, clicked links, screen resolution, page generation time, locations of user, etc.) as well as information about the devices with which you access our services. Tracking Technologies allow us to link the devices you use to access our services so that we can identify and contact you on the various devices you use.
+      For the provision, maintenance, and analysis of our websites and their usage, we use various software tools from third parties and ourselves, which are regularly based on the use of cookies, Flash cookies (also called Flash Local Shared Objects), web beacons or similar technologies (collectively as {"Tracking Technologies"}). Tracking Technologies can help us understand how you use our services (e.g., the pages you display or the links you click and other actions you perform with the services), give us information about your browser and online usage patterns (e.g., IP address, log data, browser type, browser language, referring/exiting pages and URLs, pages viewed, whether you have opened an e-mail, clicked links, screen resolution, page generation time, locations of user, etc.) as well as information about the devices with which you access our services. Tracking Technologies allow us to link the devices you use to access our services so that we can identify and contact you on the various devices you use.
       You can limit the use of Tracking Technologies by changing the settings of your browser. You can determine what access you grant us and whether and for how long cookies can be stored on your device. You can also delete cookies that have already been stored at any time. Please note that the functionality of our websites may be affected after deactivating all cookies. Similar functions (such as Flash cookies), which are used by so-called browser add-ons, can be switched off or deleted by changing the settings of the browser add-on or via the website of the browser add-on provider.
 
       <h3>12.1   What are cookies?</h3>
