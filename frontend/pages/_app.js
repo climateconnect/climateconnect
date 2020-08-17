@@ -28,7 +28,7 @@ export default class MyApp extends App {
       })
       if(!this.cookies.cookies)
         return false
-      if(!!DEVELOPMENT && this.cookies.get("acceptedStatistics")){
+      if(!DEVELOPMENT && this.cookies.get("acceptedStatistics")){
         return instance
       }else {
         removeUnnecesaryCookies()
