@@ -4,6 +4,7 @@ import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import CookieBanner from "../general/CookieBanner";
 import Cookies from "universal-cookie";
 import { Typography } from "@material-ui/core";
+import { useMatomo } from '@datapunt/matomo-tracker-react'
 
 const useStyles = makeStyles(theme => ({
   leaveSpaceForFooter: {
@@ -31,16 +32,18 @@ export default function LayoutWrapper({ title, children, theme }) {
   const cookies = new Cookies();
   const [loading, setLoading] = React.useState(true);
   const [bannerOpen, setBannerOpen] = React.useState(true);
+  const { trackPageView } = useMatomo()
   const acceptedNecessary = cookies.get("acceptedNecessary");
   useEffect(() => {
     if (loading) setLoading(false);
+    trackPageView()
   });
   const closeBanner = () => setBannerOpen(false);
   if (loading)
     return (
       <>
         <Head>
-          <title>{title}</title>
+          <title>Climate Connect</title>
           <link
             href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800"
             rel="stylesheet"

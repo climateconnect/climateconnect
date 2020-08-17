@@ -13,8 +13,7 @@ const useStyles = makeStyles(theme => ({
     margin: `${theme.spacing(4)}px 0`
   },
   alert: {
-    width: "100%",
-    marginTop: -16
+    width: "100%"
   }
 }));
 
@@ -27,17 +26,17 @@ export default function Layout({
   messageType
 }) {
   const classes = useStyles();
-  const [alertOpen, setAlertOpen] = React.useState(true);
+  const [hideAlertMessage, setHideAlertMessage] = React.useState(false);
   return (
     <LayoutWrapper theme={theme} title={title}>
       <Header noSpacingBottom={noSpacingBottom} />
       <Container maxWidth="lg" component="main">
-        {message && alertOpen && (
+        {message && !hideAlertMessage === message && (
           <Alert
             className={classes.alert}
             severity={messageType ? messageType : "success"}
             onClose={() => {
-              setAlertOpen(false);
+              setHideAlertMessage(message);
             }}
           >
             {message}

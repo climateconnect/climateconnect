@@ -79,7 +79,7 @@ export default function CookieBanner({ closeBanner }) {
 
   const confirmSelection = () => {
     cookies.set("acceptedNecessary", true, { path: "/", sameSite: true, expires:  oneYearFromNow });
-    cookies.set("acceptedStatistics", false, { path: "/", sameSite: true, expires:  oneYearFromNow });
+    cookies.set("acceptedStatistics", checked.statistics, { path: "/", sameSite: true, expires:  oneYearFromNow });
     closeBanner();
   };
 

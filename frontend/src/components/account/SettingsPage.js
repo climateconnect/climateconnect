@@ -13,6 +13,8 @@ import tokenConfig from "../../../public/config/tokenConfig";
 import Axios from "axios";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import { redirect } from "../../../public/lib/apiOperations";
+import Cookies from "universal-cookie";
+import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations"
 
 const useStyles = makeStyles(theme => ({
   blockElement: {
@@ -59,13 +61,21 @@ const possibleEmailPreferences = [
   }
 ];
 
+const possibleCookiePreferences = [
+  {
+    key: "acceptedStatistics",
+    text: "Enable Statistics cookies to help us improve Climate Connect"
+  }
+]
+
 export default function SettingsPage({ settings, setSettings, token, setMessage }) {
   const classes = useStyles();
   const [errors, setErrors] = React.useState({
     passworderror: "",
     newemailerror: "",
     /*profileurlerror: "",*/
-    emailpreferenceserror: ""
+    emailpreferenceserror: "",
+    cookiepreferencesserror: ""
   });
 
   const [passwordInputs, setPasswordInputs] = React.useState({
@@ -75,6 +85,14 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     /*profileurlerror: ""*/
   });
   const [newEmail, setNewEmail] = React.useState("");
+  const cookies = new Cookies(); 
+  const [cookiePreferences, setCookiePreferences] = React.useState(
+    possibleCookiePreferences.reduce((obj, p) => {
+      obj[p.key] = !!cookies.get(p.key);
+      return obj;
+    }, {})
+  )
+
   const [emailPreferences, setEmailPreferences] = React.useState(
     possibleEmailPreferences.reduce((obj, p) => {
       obj[p.key] = settings[p.key];
@@ -97,6 +115,13 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       [key]: event.target.checked
     });
   };
+
+  const handleCookiePreferenceChange = (event, key) => {
+    setCookiePreferences({
+      ...cookiePreferences,
+      [key]: event.target.checked
+    });
+  }
 
   /*const handleNewProfileUrlChange = event => {
     setNewProfileUrl(event.target.value);
@@ -179,9 +204,10 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     }
   };
 
-  const changePreferences = async () => {
+  const changeEmailPreferences = async () => {
     if (
       hasChanges(
+        settings,
         ["email_updates_on_projects", "email_project_suggestions"],
         [emailPreferences.email_updates_on_projects, emailPreferences.email_project_suggestions]
       )
@@ -215,13 +241,43 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     } else
       setErrors({
         ...errors,
-        emailpreferenceserror: "You haven't made any changes"
+        emailpreferenceserror: "You haven't made any changes."
       });
   };
 
-  const hasChanges = (oldKeys, newValues) => {
+  const changeCookiePreferences = async () => {
+    const now = new Date()
+    const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 1))
+    let hasChanges = false
+    Object.keys(cookiePreferences).map(p=> {    
+      if(cookies.get(p) === "true" && cookiePreferences[p] === false){
+        cookies.remove(p, { path: "/" })
+        if(p === "acceptedStatistics")
+          removeUnnecesaryCookies()
+        hasChanges = true
+      }
+      if(cookies.get(p) !== "true" && cookiePreferences[p] === true){
+        cookies.set(p, true, { path: "/", expires: oneYearFromNow, sameSite: true })
+        hasChanges = true
+      }
+    })
+    if(hasChanges){
+      setMessage("Cookie settings successfully updated.")
+      window.scrollTo(0, 0)
+      setErrors({
+        ...errors,
+        cookiepreferencesserror: ""
+      });
+    }else
+      setErrors({
+        ...errors,
+        cookiepreferencesserror: "You haven't made any changes."
+      })
+  }
+
+  const hasChanges = (oldObject, oldKeys, newValues) => {
     const changedKeys = oldKeys.filter((key, index) => {
-      return settings[key] !== newValues[index];
+      return oldObject[key] !== newValues[index];
     });
     return changedKeys.length > 0;
   };
@@ -353,9 +409,43 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         className={`${classes.editProfilePageButton}`}
         variant="contained"
         color="primary"
-        onClick={changePreferences}
+        onClick={changeEmailPreferences}
       >
         Change preferences
+      </Button>
+      <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
+        Change cookie settings
+      </Typography>
+      <Divider />
+      <div className={classes.blockElement}>
+        {errors.cookiepreferencesserror && (
+          <Typography className={classes.blockElement} color="error">
+            {errors.cookiepreferencesserror}
+          </Typography>
+        )}
+        {Object.keys(cookiePreferences).map(key => (
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={cookiePreferences[key]}
+                onChange={() => handleCookiePreferenceChange(event, key)}
+                name={key}
+                color="primary"
+              />
+            }
+            key={key}
+            label={possibleCookiePreferences.find(p => p.key === key).text}
+            className={classes.displayBlock}
+          />
+        ))}
+      </div>
+      <Button
+        className={`${classes.editProfilePageButton}`}
+        variant="contained"
+        color="primary"
+        onClick={changeCookiePreferences}
+      >
+        Change Cookie Settings
       </Button>
       {/*<Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
         Change your profile url
