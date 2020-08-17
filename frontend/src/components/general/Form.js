@@ -106,7 +106,8 @@ export default function Form({
   errorMessage,
   onGoBack,
   alignButtonsRight,
-  className
+  className,
+  fieldClassName
 }) {
   const classes = useStyles();
 
@@ -208,7 +209,7 @@ export default function Form({
                   required={field.required}
                   options={options}
                   label={field.label}
-                  className={classes.blockElement}
+                  className={`${classes.blockElement} ${fieldClassName}`}
                   key={field.label + fields.indexOf(field)}
                   onChange={() => handleValueChange(event, field.key, field.type, true)}
                   InputProps={{
@@ -300,7 +301,7 @@ export default function Form({
                   type={field.type}
                   variant="outlined"
                   value={values[field.key]}
-                  className={classes.blockElement}
+                  className={`${classes.blockElement} ${fieldClassName}`}
                   onBlur={handleBlur}
                   onChange={() => handleValueChange(event, field.key, field.type)}
                   InputProps={{
