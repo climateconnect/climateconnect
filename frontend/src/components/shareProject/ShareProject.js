@@ -3,7 +3,7 @@ import Form from "../general/Form";
 import { Typography, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import countries from "./../../../public/data/countries.json";
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 
 const useStyles = makeStyles(theme => ({
   orgBottomLink: {
@@ -89,7 +89,10 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
       value: project.name,
       bottomLink: (
         <Typography className={classes.BottomLinkFlex}>
-          <InfoOutlinedIcon className={classes.infoIcon} /><Typography>Use a title that makes people curious to learn more about your project</Typography>
+          <InfoOutlinedIcon className={classes.infoIcon} />
+          <Typography>
+            Use a title that makes people curious to learn more about your project
+          </Typography>
         </Typography>
       )
     },
@@ -108,9 +111,9 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
           return { key: country, name: country };
         }),
         defaultValue: countries[0]
-      },      
+      },
       key: "country"
-    },
+    }
   ];
   const messages = {
     submitMessage: "Next Step"
