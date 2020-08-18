@@ -16,17 +16,17 @@ const useStyles = makeStyles({
   }
 });
 
-export default function ProfilePreviews({ 
-  profiles, 
-  loadFunc, 
-  hasMore, 
+export default function ProfilePreviews({
+  profiles,
+  loadFunc,
+  hasMore,
   showAdditionalInfo,
   parentHandlesGridItems
 }) {
   const classes = useStyles();
-  const [isLoading, setIsLoading] = React.useState(false)
+  const [isLoading, setIsLoading] = React.useState(false);
   const [gridItems, setGridItems] = React.useState(
-    profiles.map((p) => (
+    profiles.map(p => (
       <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
     ))
   );
@@ -35,14 +35,14 @@ export default function ProfilePreviews({
     if (!isLoading) {
       setIsLoading(true);
       const newProfiles = await loadFunc(page);
-      if(!parentHandlesGridItems){
-        console.log("parent doesn't handle grid items")
-        const newGridItems = newProfiles.map((p) => (
+      if (!parentHandlesGridItems) {
+        console.log("parent doesn't handle grid items");
+        const newGridItems = newProfiles.map(p => (
           <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
         ));
         setGridItems([...gridItems, ...newGridItems]);
       }
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
@@ -63,18 +63,13 @@ export default function ProfilePreviews({
       className={`${classes.reset} ${classes.root}`}
       spacing={2}
     >
-      {
-        parentHandlesGridItems ? 
-          (profiles && profiles.length>0 ?
-            profiles.map(p=>
-              <GridItem 
-                key={p.url_slug} 
-                profile={p} 
-                showAdditionalInfo={showAdditionalInfo}
-              />)
-          : "No Results")      
-        : gridItems
-      }
+      {parentHandlesGridItems
+        ? profiles && profiles.length > 0
+          ? profiles.map(p => (
+              <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
+            ))
+          : "No Results"
+        : gridItems}
     </InfiniteScroll>
   );
 }

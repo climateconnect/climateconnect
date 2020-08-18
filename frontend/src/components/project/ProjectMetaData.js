@@ -64,7 +64,7 @@ export default function ProjectMetaData({ project }) {
             <ExploreIcon className={classes.cardIcon} />
           </Tooltip>{" "}
           <span className={classes.categoryText}>
-            {project.tags.map(t=>t.project_tag.name)[0]}
+            {project.tags.map(t => t.project_tag.name)[0]}
           </span>
         </div>
       </Box>

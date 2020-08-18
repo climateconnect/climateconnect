@@ -2,7 +2,7 @@ import React from "react";
 import Form from "./../general/Form";
 import { IconButton } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import countries from "./../../../public/data/countries.json"
+import countries from "./../../../public/data/countries.json";
 
 const renderSearchOption = option => {
   return (
@@ -72,9 +72,9 @@ export default function EnterBasicOrganizationInfo({
       type: "select",
       select: {
         defaultValue: organizationInfo["country"],
-        values: countries.map(c=>({key:c.toLowerCase(), name:c})),
+        values: countries.map(c => ({ key: c.toLowerCase(), name: c })),
         addEmptyValue: true
-      }      
+      }
     },
     {
       required: true,

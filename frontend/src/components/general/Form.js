@@ -199,8 +199,7 @@ export default function Form({
             field.select
           ) {
             let options = field.select.values;
-            if(field.select.addEmptyValue)
-              options = ["", ...options]
+            if (field.select.addEmptyValue) options = ["", ...options];
             return (
               <React.Fragment key={field.key}>
                 <SelectField

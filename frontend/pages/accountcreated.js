@@ -13,12 +13,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const verified = false
+const verified = false;
 
 export default function AccountCreated() {
   const classes = useStyles();
 
-  if(verified)
+  if (verified)
     return (
       <Layout title="Account created" hideHeadline>
         <Paper className={classes.root}>
@@ -30,7 +30,7 @@ export default function AccountCreated() {
           </Typography>
         </Paper>
       </Layout>
-    )
+    );
   else
     return (
       <Layout title="Account created" hideHeadline>

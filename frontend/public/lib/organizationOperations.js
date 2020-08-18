@@ -6,7 +6,9 @@ export function parseOrganization(organization, reduceTypes) {
     background_image: getImageUrl(organization.background_image),
     name: organization.name,
     image: getImageUrl(organization.image),
-    types: organization.types ? organization.types.map(t => ({ ...t.organization_tag, key: t.organization_tag.id })) : [],
+    types: organization.types
+      ? organization.types.map(t => ({ ...t.organization_tag, key: t.organization_tag.id }))
+      : [],
     info: {
       location: organization.city
         ? organization.city + ", " + organization.country
@@ -22,13 +24,13 @@ export function parseOrganization(organization, reduceTypes) {
       additionalInfoArray = additionalInfoArray.concat(type.additional_info);
     } else return additionalInfoArray;
   }, []);
-  if(additional_info){
+  if (additional_info) {
     additional_info.map(infoEl => {
       org.info[infoEl] = organization[infoEl];
     });
-  }else{
-    console.log(organization.types)
-    console.log(additional_info)
+  } else {
+    console.log(organization.types);
+    console.log(additional_info);
   }
   //Add parent org late so it's the lowest entry on the page
   org.info.parent_organization = organization.parent_organization;

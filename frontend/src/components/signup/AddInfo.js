@@ -39,7 +39,7 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
         defaultValue: values["country"] ? values["country"] : "",
         addEmptyValue: true
       },
-      key: "country"      
+      key: "country"
     },
     {
       required: true,
