@@ -240,9 +240,10 @@ class ProjectAPIView(APIView):
                         logger.error(old_tagging.order)
                         old_tagging.save()
                 order = order - 1
-        
         if 'image' in request.data:
             project.image = get_image_from_data_url(request.data['image'])[0]
+        if 'thumbnail_image' in request.data:
+            project.thumbnail_image = get_image_from_data_url(request.data['thumbnail_image'])[0]
         if 'status' in request.data:
             try:
                 project_status = ProjectStatus.objects.get(id=int(request.data['status']))

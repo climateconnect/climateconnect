@@ -33,6 +33,14 @@ class Project(models.Model):
         upload_to=project_image_path
     )
 
+    thumbnail_image = models.ImageField(
+        help_text="Image to show on project card",
+        verbose_name="Thumbnail image",
+        null=True,
+        blank=True,
+        upload_to=project_image_path
+    )
+
     status = models.ForeignKey(
         'ProjectStatus',
         help_text="Points to project's status",
@@ -142,7 +150,6 @@ class Project(models.Model):
         verbose_name = "Project"
         verbose_name_plural = "Projects"
         ordering = ['-id']
-
     def __str__(self):
         return "(%d) %s" % (self.pk, self.name)
 

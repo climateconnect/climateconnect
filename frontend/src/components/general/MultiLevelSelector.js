@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => {
   return {
     wrapper: props => ({
       margin: "0 auto",
-      display: "flex",
+      display: props.flexWrapper ? "flex" : "block",
       marginTop: props.marginTop ? theme.spacing(8) : 0,
       [theme.breakpoints.down("sm")]: {
         marginTop: theme.spacing(4),
@@ -150,7 +150,10 @@ export default function MultiLevelSelector({
 }) {
   const [expanded, setExpanded] = React.useState(null);
 
-  const useStylesProps = { marginTop: !isInPopup };
+  const useStylesProps = {
+    marginTop: !isInPopup,
+    flexWrapper: !isInPopup
+  };
 
   const classes = useStyles(useStylesProps);
 

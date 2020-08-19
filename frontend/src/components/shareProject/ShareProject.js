@@ -83,7 +83,7 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
     },
     {
       required: true,
-      label: "Title (Use a short, descriptive title, e.g. 'Generating energy from ocean waves')",
+      label: "Title (Use a short, english title, e.g. 'Generating energy from ocean waves')",
       type: "text",
       key: "name",
       value: project.name,
