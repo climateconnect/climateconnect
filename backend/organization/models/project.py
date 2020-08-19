@@ -145,11 +145,17 @@ class Project(models.Model):
         blank=True
     )
 
+    rating = models.PositiveSmallIntegerField(
+        help_text="The larger the number, the more to the top this project will be displayed",
+        verbose_name="Rating (1-100)",
+        default=100
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Project"
         verbose_name_plural = "Projects"
-        ordering = ['-id']
+        ordering = ['-rating', '-id']
     def __str__(self):
         return "(%d) %s" % (self.pk, self.name)
 
