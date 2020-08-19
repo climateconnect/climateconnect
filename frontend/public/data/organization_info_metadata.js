@@ -34,7 +34,7 @@ export default {
     name: "Description",
     key: "shortdescription",
     helptext:
-      "Describe what your organization is doing, how you work and what impact you have on climate change."
+      "Describe what your organization is doing, how you work and what impact you have on climate change. Please only use english!"
   },
   school: {
     icon: SchoolIcon,

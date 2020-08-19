@@ -107,7 +107,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             'is_draft'
         )
     
-    def get_project_parents(self, obj):
+    def get_project_parents(self, obj):        
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
         return serializer.data
     
@@ -117,9 +117,9 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     
     def get_image(self, obj):
         if obj.thumbnail_image:
-            return obj.thumbnail_image
-        else:
-            return obj.image
+            return obj.thumbnail_image.url
+        else:            
+            return obj.image.url
 
 
 class ProjectMemberSerializer(serializers.ModelSerializer):
