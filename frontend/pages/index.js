@@ -13,6 +13,7 @@ import possibleFilters from "./../public/data/possibleFilters";
 import OrganizationPreviews from "../src/components/organization/OrganizationPreviews";
 import ProfilePreviews from "../src/components/profile/ProfilePreviews";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
+import TextLoop from "react-text-loop";
 import {
   getSkillsOptions,
   getStatusOptions,
@@ -32,6 +33,9 @@ const useStyles = makeStyles(theme => {
       borderColor: "#707070",
       height: 40
     },
+    rightSidePlaceholder: {
+      width: 100
+    },
     filterSectionFirstLine: {
       display: "flex",
       justifyContent: "space-between",
@@ -43,13 +47,13 @@ const useStyles = makeStyles(theme => {
       alignItems: "center",
       justifyContent: "center"
     },
-    filterSearchbar: {
+    filterSearchbar: props => ({
       marginLeft: theme.spacing(2),
-      marginRight: theme.spacing(2),
+      marginRight: props.isMediumScreen ? 0 : theme.spacing(2),
       width: "100%",
       maxWidth: 650,
       margin: "0 auto"
-    },
+    }),
     filterSectionTabsWithContent: {
       marginBottom: theme.spacing(3)
     },
@@ -70,6 +74,19 @@ const useStyles = makeStyles(theme => {
       display: "inline-block",
       textDecoration: "underline",
       cursor: "pointer"
+    },
+    mainHeading: {
+      textAlign: "center",
+      margin: `${theme.spacing(4)}px 0`
+    },
+    titleText: {
+      display: "inline-block",
+      fontSize: 20
+    },
+    titleTextRight: {
+      display: "inline-block",
+      marginLeft: theme.spacing(0.75),
+      fontSize: 20
     }
   };
 });
@@ -119,8 +136,9 @@ export default function Index({
     }
   };
   const [state, setState] = React.useState(initialState);
-
-  const classes = useStyles();
+  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery(theme => theme.breakpoints.down("md"))
+  const classes = useStyles({isMediumScreen: isMediumScreen});
   //Django starts counting at page 1 and we always catch the first page on load.
   const [hash, setHash] = React.useState(null);
   const [message, setMessage] = React.useState("");
@@ -136,7 +154,6 @@ export default function Index({
     if (params.errorMessage) setErrorMessage(decodeURI(params.errorMessage));
   });
   const [tabValue, setTabValue] = React.useState(hash ? typesByTabValue.indexOf(hash) : 0);
-  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const [filtersExpanded, setFiltersExpanded] = React.useState(false);
   const [filters, setFilters] = React.useState({
     projects: {},
@@ -339,10 +356,25 @@ export default function Index({
         <About />
       ) : (
         <Layout
-          title="Work on the most effective climate projects"
+          title="Climate Connect - global climate action platform"
+          hideHeadline
           message={errorMessage ? errorMessage : message}
           messageType={errorMessage ? "error" : "success"}
         >
+          <div component="h1" variant="h5" className={classes.mainHeading}>
+            <TextLoop
+              mask={true}
+              interval={5000}
+            >
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>Share</Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>Find</Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>Work on</Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>Get inspired by</Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>Replicate</Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>Collaborate with</Typography>
+            </TextLoop>
+            <Typography component="h1" variant="h5" className={classes.titleTextRight}>the most effective climate projects</Typography>
+          </div>
           <div className={classes.filterSection}>
             <div className={classes.filterSectionFirstLine}>
               <Button
@@ -369,6 +401,9 @@ export default function Index({
                   value={searchFilters[typesByTabValue[tabValue]]}
                 />
               </div>
+              {!isMediumScreen &&
+                <div className={classes.rightSidePlaceholder}/>
+              }
             </div>
           </div>
           <Divider className={classes.mainDivider} />

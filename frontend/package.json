@@ -49,6 +49,7 @@
     "react-linkify": "^1.0.0-alpha",
     "react-loader-spinner": "^3.1.14",
     "react-multi-carousel": "^2.5.5",
+    "react-text-loop": "^2.3.0",
     "react-timeago": "^4.4.0",
     "react-truncate": "^2.4.0",
     "universal-cookie": "^4.0.3"
