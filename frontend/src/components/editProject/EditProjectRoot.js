@@ -7,7 +7,7 @@ import BottomNavigation from "../general/BottomNavigation";
 import Router from "next/router";
 import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
-import { blobFromObjectUrl } from "../../../public/lib/imageOperations"
+import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -37,7 +37,7 @@ export default function EditProjectRoot({
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const draftReqiredProperties = ["name", "city", "country"];
 
-  const onSaveDraft = async() => {
+  const onSaveDraft = async () => {
     if (draftReqiredProperties.filter(p => !project[p]).length > 0)
       draftReqiredProperties.map(p => {
         if (!project[p]) {
@@ -167,10 +167,10 @@ const getProjectWithoutRedundancies = (newProject, oldProject) => {
 
 const parseProjectForRequest = async project => {
   console.log(project);
-  const ret = { 
+  const ret = {
     ...project,
     image: await blobFromObjectUrl(project.image),
-    thumbnail_image: await blobFromObjectUrl(project.thumbnail_image) 
+    thumbnail_image: await blobFromObjectUrl(project.thumbnail_image)
   };
   if (project.skills) ret.skills = project.skills.map(s => s.id);
   if (project.tags) ret.project_tags = project.tags.map(t => t.id);

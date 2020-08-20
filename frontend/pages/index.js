@@ -80,13 +80,11 @@ const useStyles = makeStyles(theme => {
       margin: `${theme.spacing(4)}px 0`
     },
     titleText: {
-      display: "inline-block",
-      fontSize: 20
+      display: "inline-block"
     },
     titleTextRight: {
       display: "inline-block",
-      marginLeft: theme.spacing(0.75),
-      fontSize: 20
+      marginLeft: theme.spacing(0.75)
     }
   };
 });
@@ -137,8 +135,8 @@ export default function Index({
   };
   const [state, setState] = React.useState(initialState);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
-  const isMediumScreen = useMediaQuery(theme => theme.breakpoints.down("md"))
-  const classes = useStyles({isMediumScreen: isMediumScreen});
+  const isMediumScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
+  const classes = useStyles({ isMediumScreen: isMediumScreen });
   //Django starts counting at page 1 and we always catch the first page on load.
   const [hash, setHash] = React.useState(null);
   const [message, setMessage] = React.useState("");
@@ -362,18 +360,29 @@ export default function Index({
           messageType={errorMessage ? "error" : "success"}
         >
           <div component="h1" variant="h5" className={classes.mainHeading}>
-            <TextLoop
-              mask={true}
-              interval={5000}
-            >
-              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>Share</Typography>
-              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>Find</Typography>
-              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>Work on</Typography>
-              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>Get inspired by</Typography>
-              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>Replicate</Typography>
-              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>Collaborate with</Typography>
+            <TextLoop mask={true} interval={5000}>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Share
+              </Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Find
+              </Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Work on
+              </Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Get inspired by
+              </Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Replicate
+              </Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Collaborate with
+              </Typography>
             </TextLoop>
-            <Typography component="h1" variant="h5" className={classes.titleTextRight}>the most effective climate projects</Typography>
+            <Typography component="h1" variant="h5" className={classes.titleTextRight}>
+              the most effective climate projects
+            </Typography>
           </div>
           <div className={classes.filterSection}>
             <div className={classes.filterSectionFirstLine}>
@@ -401,9 +410,7 @@ export default function Index({
                   value={searchFilters[typesByTabValue[tabValue]]}
                 />
               </div>
-              {!isMediumScreen &&
-                <div className={classes.rightSidePlaceholder}/>
-              }
+              {!isMediumScreen && <div className={classes.rightSidePlaceholder} />}
             </div>
           </div>
           <Divider className={classes.mainDivider} />

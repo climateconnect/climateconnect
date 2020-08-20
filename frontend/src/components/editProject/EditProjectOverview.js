@@ -113,11 +113,7 @@ function SmallScreenOverview({ project, handleChangeProject, handleChangeImage, 
   const classes = useStyles();
   return (
     <>
-      <InputImage
-        project={project}
-        screenSize="small"
-        handleChangeImage={handleChangeImage}
-      />
+      <InputImage project={project} screenSize="small" handleChangeImage={handleChangeImage} />
       <div className={classes.blockProjectInfo}>
         <InputName project={project} screenSize="small" />
         <InputShortDescription project={project} handleChangeProject={handleChangeProject} />
@@ -140,11 +136,7 @@ function LargeScreenOverview({ project, handleChangeProject, handleChangeImage, 
       <InputName project={project} screenSize="large" handleChangeProject={handleChangeProject} />
       <div className={classes.flexContainer}>
         <div className={classes.largeScreenImageContainer}>
-          <InputImage
-            project={project}
-            screenSize="large"
-            handleChangeImage={handleChangeImage}
-          />
+          <InputImage project={project} screenSize="large" handleChangeImage={handleChangeImage} />
         </div>
         <div className={classes.inlineProjectInfo}>
           <InputShortDescription project={project} handleChangeProject={handleChangeProject} />
@@ -289,7 +281,7 @@ const InputTags = ({ project, handleChangeProject, tagsOptions }) => {
   );
 };
 
-const InputName = ({ project, screenSize, handleChangeProject, }) => {
+const InputName = ({ project, screenSize, handleChangeProject }) => {
   const classes = useStyles();
   return (
     <TextField

@@ -11,7 +11,7 @@ import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
 import Router from "next/router";
-import { blobFromObjectUrl } from "../../../public/lib/imageOperations"
+import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => {
   return {
