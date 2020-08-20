@@ -128,7 +128,7 @@ class Project(models.Model):
         models.CharField(max_length=264),
         blank=True,
         null=True,
-        size=5
+        size=10
     )
 
     is_draft = models.BooleanField(
