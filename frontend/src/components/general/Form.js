@@ -238,7 +238,6 @@ export default function Form({
               </div>
             );
           } else if (field.type === "switch") {
-            console.log(values[field.key]);
             return (
               <div className={classes.flexBlock} key={field.key}>
                 <span className={classes.switchTextContainer}>

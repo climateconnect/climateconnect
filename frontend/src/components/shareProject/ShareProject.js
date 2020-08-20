@@ -90,7 +90,7 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
       bottomLink: (
         <Typography className={classes.BottomLinkFlex}>
           <InfoOutlinedIcon className={classes.infoIcon} />
-          <Typography>
+          <Typography component="span">
             Use a title that makes people curious to learn more about your project
           </Typography>
         </Typography>

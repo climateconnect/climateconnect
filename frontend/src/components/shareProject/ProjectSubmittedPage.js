@@ -1,6 +1,7 @@
 import React from "react";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import LoadingContainer from "../general/LoadingContainer";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -13,15 +14,20 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function ProjectSubmittedPage({ user, isDraft, url_slug }) {
+export default function ProjectSubmittedPage({ user, isDraft, url_slug, hasError }) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      {!url_slug ? (
+      {hasError ? (
         <Typography variant="h5" color="error" className={classes.headline}>
           There has been an error when trying to publish your project. Check the console for more
           information.
         </Typography>
+      ) : !url_slug ?(
+        <LoadingContainer
+          headerHeight = {233}
+          footerHeight = {120}
+        />
       ) : isDraft ? (
         <>
           <Typography variant="h5" className={classes.headline}>
