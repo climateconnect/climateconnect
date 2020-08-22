@@ -7,6 +7,9 @@ import theme from "../src/themes/theme";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import UserContext from "../src/components/context/UserContext";
+const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT);
+import { MatomoProvider, createInstance } from '@datapunt/matomo-tracker-react'
+import { removeUnnecesaryCookies } from "./../public/lib/cookieOperations";
 
 //add global styles
 import "react-multi-carousel/lib/styles.css";
@@ -17,8 +20,26 @@ import tokenConfig from "../public/config/tokenConfig";
 export default class MyApp extends App {
   constructor(props) {
     super(props);
-    this.cookies = new Cookies();
-    this.state = { user: null };
+    this.cookies = new Cookies();    
+
+    this.createInstanceIfAllowed = () => {
+      const instance = createInstance({
+        urlBase: 'https://matomostats.climateconnect.earth/'
+      })
+      if(!this.cookies.cookies)
+        return false
+      if(!!DEVELOPMENT && this.cookies.get("acceptedStatistics")){
+        return instance
+      }else {
+        removeUnnecesaryCookies()
+        return false
+      }
+    }
+
+    this.state = { 
+      user: null,
+      matomoInstance: this.createInstanceIfAllowed() 
+    };
 
     //TODO: reload current path or main page while being logged out
     this.signOut = async () => {
@@ -48,7 +69,7 @@ export default class MyApp extends App {
         user: user
       });
     };
-  }
+  }  
 
   async componentDidMount() {
     const user = await getLoggedInUser(this.cookies);
@@ -60,7 +81,7 @@ export default class MyApp extends App {
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
-  }
+  }  
 
   render() {
     const { Component, pageProps } = this.props;
@@ -74,11 +95,21 @@ export default class MyApp extends App {
         <ThemeProvider theme={theme}>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
-          <UserContext.Provider
-            value={{ user: this.state.user, signOut: this.signOut, signIn: this.signIn }}
-          >
-            <Component {...pageProps} />
-          </UserContext.Provider>
+          {this.state.matomoInstance ?
+              <MatomoProvider value={this.state.matomoInstance}>
+                <UserContext.Provider
+                  value={{ user: this.state.user, signOut: this.signOut, signIn: this.signIn }}
+                >
+                  <Component {...pageProps} />
+                </UserContext.Provider>
+              </MatomoProvider>
+            :
+              <UserContext.Provider
+                value={{ user: this.state.user, signOut: this.signOut, signIn: this.signIn }}
+              >
+                <Component {...pageProps} />
+              </UserContext.Provider>
+          }
         </ThemeProvider>
       </React.Fragment>
     );
