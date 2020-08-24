@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class MessageParticipants(models.Model):
     chat_uuid = models.UUIDField(
         help_text="Unique ID for each message connection",
-        verbose_name="Chat UUID", unique=True
+        verbose_name="Chat UUID", unique=True, null=True, blank=True
     )
 
     # Making this a little bit future proof. If we want to introduce group chat we dont have to change too much
