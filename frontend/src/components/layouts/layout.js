@@ -33,10 +33,7 @@ export default function Layout({
     <LayoutWrapper theme={theme} title={title}>
       <Header noSpacingBottom={noSpacingBottom} />
       {isLoading ? (
-        <LoadingContainer
-          headerHeight = {113}
-          footerHeight = {80}
-        />
+        <LoadingContainer headerHeight={113} footerHeight={80} />
       ) : (
         <Container maxWidth="lg" component="main">
           {message && !hideAlertMessage === message && (

@@ -1,7 +1,60 @@
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.contrib.auth.models import User
 
+class Feedback(models.Model):
+    user = models.ForeignKey(
+        User,
+        related_name="feedback_user",
+        verbose_name="feedback_user",
+        help_text="Points to the user who gave the feedback",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
+    email = models.EmailField(
+        help_text="The email to which we should send the reply",
+        verbose_name="User Email",
+        null=True,
+        blank=True
+    )
+
+    text = models.TextField(
+        help_text="The text the user wrote",
+        verbose_name="Feedback"
+    )
+
+    send_response = models.BooleanField(
+        help_text="Checks whether we should response to this user",
+        verbose_name="User requested response",
+        default=False
+    )
+
+    created_at = models.DateTimeField(
+        help_text="Time when feedback was created",
+        verbose_name="Created At",
+        auto_now_add=True
+    )
+    
+    updated_at = models.DateTimeField(
+        help_text="Time when feedback was updated",
+        verbose_name="Updated At",
+        auto_now=True
+    )
+
+    class Meta:
+        app_label = "climateconnect_api"
+        verbose_name = "Feedback"
+        verbose_name_plural = "Feedback_Messages"
+        db_table = "climateconnect_feedback"
+        ordering = ["-id"]
+    
+    def __str__(self):
+        return "Feedback: %d" % (
+            self.id
+        )
 
 class Availability(models.Model):
     name = models.CharField(

@@ -28,30 +28,24 @@ export default function WideLayout({ children, title, message, messageType, isLo
   return (
     <LayoutWrapper theme={aboutTheme} title={title}>
       <Header />
-        {isLoading ? 
-          (
-            <LoadingContainer
-              headerHeight = {113}
-              footerHeight = {80}
-            />
-          ) :
-          (
-            <Container maxWidth={false} component="main" className={classes.main}>
-              {message && alertOpen && (
-                <Alert
-                  className={classes.alert}
-                  severity={messageType ? messageType : "success"}
-                  onClose={() => {
-                    setAlertOpen(false);
-                  }}
-                >
-                  {message}
-                </Alert>
-              )}
-              {children}
-            </Container>
-          )
-        }
+      {isLoading ? (
+        <LoadingContainer headerHeight={113} footerHeight={80} />
+      ) : (
+        <Container maxWidth={false} component="main" className={classes.main}>
+          {message && alertOpen && (
+            <Alert
+              className={classes.alert}
+              severity={messageType ? messageType : "success"}
+              onClose={() => {
+                setAlertOpen(false);
+              }}
+            >
+              {message}
+            </Alert>
+          )}
+          {children}
+        </Container>
+      )}
       <Footer />
     </LayoutWrapper>
   );

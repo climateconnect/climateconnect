@@ -277,7 +277,7 @@ function SelectedList({
     return (
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
-          {(provided) => (
+          {provided => (
             <List
               {...provided.droppableProps}
               ref={provided.innerRef}
@@ -286,7 +286,7 @@ function SelectedList({
               {selected.map((item, index) => {
                 return (
                   <Draggable key={item.id} draggableId={"draggable" + item.id} index={index}>
-                    {(provided) => {
+                    {provided => {
                       return (
                         <ListItem
                           ref={provided.innerRef}

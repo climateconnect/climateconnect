@@ -23,11 +23,8 @@ export default function ProjectSubmittedPage({ user, isDraft, url_slug, hasError
           There has been an error when trying to publish your project. Check the console for more
           information.
         </Typography>
-      ) : !url_slug ?(
-        <LoadingContainer
-          headerHeight = {233}
-          footerHeight = {120}
-        />
+      ) : !url_slug ? (
+        <LoadingContainer headerHeight={233} footerHeight={120} />
       ) : isDraft ? (
         <>
           <Typography variant="h5" className={classes.headline}>

@@ -18,7 +18,7 @@ const useStyles = makeStyles(() => ({
 }));
 export default function LoadingContainer({ headerHeight, footerHeight }) {
   const classes = useStyles({
-    subtractedHeight: (headerHeight + footerHeight).toString(),
+    subtractedHeight: (headerHeight + footerHeight).toString()
   });
   return (
     <div className={classes.spinnerContainer}>

@@ -115,7 +115,7 @@ export default function ShareProjectRoot({
       })
       .catch(function(error) {
         console.log(error);
-        setProject({...project, error: true})
+        setProject({ ...project, error: true });
         if (error) console.log(error.response);
       });
     setFinished(true);
@@ -135,7 +135,7 @@ export default function ShareProjectRoot({
       })
       .catch(function(error) {
         console.log(error);
-        setProject({...project, error: true})
+        setProject({ ...project, error: true });
         if (error) console.log(error.response);
       });
     setFinished(true);
