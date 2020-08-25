@@ -66,6 +66,7 @@ urlpatterns = [
     # Common views
     path('availability/', common_views.ListAvailabilitiesView.as_view(), name='list-availabilities-api'),
     path('skills/', common_views.ListSkillsView.as_view(), name='list-skills-api'),
-    path('roles/', role_views.ListRolesView.as_view(), name='list-roles-api')
+    path('roles/', role_views.ListRolesView.as_view(), name='list-roles-api'),
+    path('api/', include('chat_messages.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
