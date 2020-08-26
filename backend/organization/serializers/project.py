@@ -8,7 +8,6 @@ from climateconnect_api.serializers.role import RoleSerializer
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.tags import ProjectTaggingSerializer, OrganizationTagging
 
-
 class ProjectSerializer(serializers.ModelSerializer):
     skills = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
@@ -96,6 +95,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     status = serializers.CharField(source='status.name', read_only=True)
+    image = serializers.SerializerMethodField()
     
     class Meta:
         model = Project
@@ -107,13 +107,19 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             'is_draft'
         )
     
-    def get_project_parents(self, obj):
+    def get_project_parents(self, obj):        
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
         return serializer.data
     
     def get_tags(self, obj):
         serializer = ProjectTaggingSerializer(obj.tag_project, many=True)
         return serializer.data
+    
+    def get_image(self, obj):
+        if obj.thumbnail_image:
+            return obj.thumbnail_image.url
+        else:            
+            return obj.image.url
 
 
 class ProjectMemberSerializer(serializers.ModelSerializer):

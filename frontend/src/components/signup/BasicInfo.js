@@ -1,5 +1,4 @@
 import React from "react";
-import Layout from "./../layouts/layout";
 import Form from "./../general/Form";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -49,7 +48,7 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
   };
 
   return (
-    <Layout title="Sign Up">
+    <>
       <Typography color="secondary" className={classes.appealText}>
         Here you can create your personal account.
       </Typography>
@@ -63,6 +62,6 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
         onSubmit={(event, values) => handleSubmit(event, values)}
         errorMessage={errorMessage}
       />
-    </Layout>
+    </>
   );
 }

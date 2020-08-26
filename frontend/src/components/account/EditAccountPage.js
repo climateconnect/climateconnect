@@ -215,7 +215,7 @@ export default function EditAccountPage({
   deleteEmail
 }) {
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
-  const [editedAccount, setEditedAccount] = React.useState({...account});
+  const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const classes = useStyles(editedAccount);
   //used for previewing images in UploadImageDialog
@@ -521,11 +521,11 @@ export default function EditAccountPage({
 
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
-      {errorMessage &&
+      {errorMessage && (
         <Alert severity="error" className={classes.alert}>
           {errorMessage}
         </Alert>
-      }
+      )}
       <div
         className={`${classes.backgroundContainer} ${
           editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor

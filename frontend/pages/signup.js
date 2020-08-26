@@ -1,9 +1,9 @@
 import React from "react";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
-import ConfirmEmail from "./../src/components/signup/ConfirmEmail";
 import axios from "axios";
 import Router from "next/router";
+import Layout from "../src/components/layouts/layout";
 
 export default function Signup() {
   const [userInfo, setUserInfo] = React.useState({
@@ -16,7 +16,7 @@ export default function Signup() {
     city: ""
   });
 
-  const steps = ["basicinfo", "personalinfo", "confirmemail"];
+  const steps = ["basicinfo", "personalinfo"];
   const [curStep, setCurStep] = React.useState(steps[0]);
   const [errorMessages, setErrorMessages] = React.useState(
     steps.reduce((obj, step) => {
@@ -24,6 +24,7 @@ export default function Signup() {
       return obj;
     }, {})
   );
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleBasicInfoSubmit = (event, values) => {
     event.preventDefault();
@@ -66,6 +67,7 @@ export default function Signup() {
         "Content-Type": "application/json"
       }
     };
+    setIsLoading(true);
     axios
       .post(process.env.API_URL + "/signup/", payload, config)
       .then(function(resp) {
@@ -76,6 +78,7 @@ export default function Signup() {
       })
       .catch(function(error) {
         console.log(error);
+        setIsLoading(false);
         if (error.response.data.message)
           setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data.message });
         else if (error.response.data.length > 0)
@@ -94,22 +97,24 @@ export default function Signup() {
     setCurStep(steps[0]);
   };
 
-  if (curStep === "basicinfo")
-    return (
-      <BasicInfo
-        values={userInfo}
-        handleSubmit={handleBasicInfoSubmit}
-        errorMessage={errorMessages[steps[0]]}
-      />
-    );
-  else if (curStep === "personalinfo")
-    return (
-      <AddInfo
-        values={userInfo}
-        handleSubmit={handleAddInfoSubmit}
-        errorMessage={errorMessages[steps[1]]}
-        handleGoBack={handleGoBackFromAddInfo}
-      />
-    );
-  else if (curStep === "confirmemail") return <ConfirmEmail values={userInfo} />;
+  return (
+    <Layout title="Sign Up" isLoading={isLoading}>
+      {curStep === "basicinfo" ? (
+        <BasicInfo
+          values={userInfo}
+          handleSubmit={handleBasicInfoSubmit}
+          errorMessage={errorMessages[steps[0]]}
+        />
+      ) : (
+        curStep === "personalinfo" && (
+          <AddInfo
+            values={userInfo}
+            handleSubmit={handleAddInfoSubmit}
+            errorMessage={errorMessages[steps[1]]}
+            handleGoBack={handleGoBackFromAddInfo}
+          />
+        )
+      )}
+    </Layout>
+  );
 }

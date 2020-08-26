@@ -70,7 +70,7 @@ export default function Post({
   const [open, setOpen] = React.useState(false);
   const [displayReplies, setDisplayReplies] = React.useState(false);
   const [replyInterfaceExpanded, setInterfaceExpanded] = React.useState(false);
-  console.log(post)
+  console.log(post);
   const expandReplyInterface = () => setInterfaceExpanded(true);
 
   const unexpandReplyInterface = () => setInterfaceExpanded(false);
@@ -87,8 +87,7 @@ export default function Post({
 
   const onConfirmDialogClose = confirmed => {
     setOpen(false);
-    if(confirmed) 
-      onDeletePost(post);
+    if (confirmed) onDeletePost(post);
   };
 
   return (
@@ -112,8 +111,8 @@ export default function Post({
               <Typography variant="body2" className={classes.postDate}>
                 <DateDisplay date={new Date(post.created_at)} />
               </Typography>
-            </div>            
-            <MessageContent content={post.content} maxLines={maxLines}/>            
+            </div>
+            <MessageContent content={post.content} maxLines={maxLines} />
             <div>
               {type != "reply" &&
                 (replyInterfaceExpanded ? (
@@ -157,11 +156,11 @@ export default function Post({
           post.replies.length > 0 &&
           displayReplies &&
           (type === "openingpost" || type === "progresspost") && (
-            <Posts 
-              posts={post.replies} 
-              type="reply" 
-              user={user} 
-              maxLines={maxLines} 
+            <Posts
+              posts={post.replies}
+              type="reply"
+              user={user}
+              maxLines={maxLines}
               onDeletePost={onDeletePost}
             />
           )}

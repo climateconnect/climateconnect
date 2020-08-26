@@ -25,19 +25,18 @@ const useStyles = makeStyles(theme => ({
 //This route should only be accessible to admins of the organization
 
 export default function EditOrganizationPage({ organization, tagOptions, token }) {
-  const [errorMessage, setErrorMessage] = React.useState("")
+  const [errorMessage, setErrorMessage] = React.useState("");
 
   const handleSetErrorMessage = msg => {
-    setErrorMessage(msg)
-    window.scrollTo(0, 0)
-  }
+    setErrorMessage(msg);
+    window.scrollTo(0, 0);
+  };
 
   const saveChanges = (event, editedOrg) => {
-    const error = verifyChanges(editedOrg).error
-    if(error){
-      handleSetErrorMessage(error)
-    }
-    else{
+    const error = verifyChanges(editedOrg).error;
+    if (error) {
+      handleSetErrorMessage(error);
+    } else {
       const org = parseForRequest(getChanges(editedOrg, organization));
       console.log(org);
       axios
@@ -194,21 +193,22 @@ const parseForRequest = org => {
   return parsedOrg;
 };
 
-const verifyChanges = (newOrg) => {
+const verifyChanges = newOrg => {
   const requiredPropErrors = {
     image: 'Please add an avatar image by clicking the "Add Image" button.',
-    types: 'Please choose at least one organization type by clicking the "Add Type" button under the avatar.',
+    types:
+      'Please choose at least one organization type by clicking the "Add Type" button under the avatar.',
     name: "Please type your organization name under the avatar image"
   };
   const requiredInfoPropErrors = {
     city: "Please specify your city",
     country: "Please specify your country"
-  }
-  console.log(newOrg)
+  };
+  console.log(newOrg);
   for (const prop of Object.keys(requiredPropErrors)) {
     if (!newOrg[prop] || (Array.isArray(newOrg[prop]) && newOrg[prop].length <= 0)) {
-      console.log(newOrg[prop])
-      console.log(prop)
+      console.log(newOrg[prop]);
+      console.log(prop);
       return {
         error: requiredPropErrors[prop]
       };
@@ -216,12 +216,12 @@ const verifyChanges = (newOrg) => {
   }
   for (const prop of Object.keys(requiredInfoPropErrors)) {
     if (!newOrg.info[prop] || (Array.isArray(newOrg.info[prop]) && newOrg.info[prop].length <= 0)) {
-      console.log(newOrg[prop])
-      console.log(prop)
+      console.log(newOrg[prop]);
+      console.log(prop);
       return {
         error: requiredInfoPropErrors[prop]
       };
     }
   }
-  return true
-}
+  return true;
+};

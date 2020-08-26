@@ -62,15 +62,15 @@ export default function FilterContent({
   const handleUnselectFilter = (filterName, filterKey) => {
     setCurrentFilters({
       ...currentFilters,
-      [filterKey]: currentFilters[filterKey].filter(f=>f !== filterName)
+      [filterKey]: currentFilters[filterKey].filter(f => f !== filterName)
     });
     console.log(selectedItems);
     console.log(filterName);
     console.log(filterKey);
-    if(selectedItems[filterKey])
+    if (selectedItems[filterKey])
       setSelectedItems({
         ...selectedItems,
-        [filterKey]: selectedItems[filterKey].filter(i=>i.name !== filterName)
+        [filterKey]: selectedItems[filterKey].filter(i => i.name !== filterName)
       });
   };
   return (

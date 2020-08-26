@@ -15,11 +15,11 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     basicOrganizationInfo: "",
     detailledOrganizationInfo: ""
   });
-  
+
   const handleSetErrorMessages = newErrorMessages => {
-    setErrorMessages(newErrorMessages)
-    window.scrollTo(0, 0)
-  }
+    setErrorMessages(newErrorMessages);
+    window.scrollTo(0, 0);
+  };
 
   const [organizationInfo, setOrganizationInfo] = React.useState({
     organizationname: "",
@@ -81,7 +81,8 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
 
   const requiredPropErrors = {
     image: 'Please add an avatar image by clicking the "Add Image" button.',
-    organization_tags: 'Please choose at least one organization type by clicking the "Add Type" button under the avatar.',
+    organization_tags:
+      'Please choose at least one organization type by clicking the "Add Type" button under the avatar.',
     name: "Please type your organization name under the avatar image",
     city: "Please specify your city",
     country: "Please specify your country"
@@ -90,7 +91,10 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
   const handleDetailledInfoSubmit = (event, account) => {
     const organizationToSubmit = parseOrganizationForRequest(account, user, rolesOptions);
     for (const prop of Object.keys(requiredPropErrors)) {
-      if (!organizationToSubmit[prop] || (Array.isArray(organizationToSubmit[prop]) && organizationToSubmit[prop].length <= 0)) {
+      if (
+        !organizationToSubmit[prop] ||
+        (Array.isArray(organizationToSubmit[prop]) && organizationToSubmit[prop].length <= 0)
+      ) {
         handleSetErrorMessages({
           errorMessages,
           detailledOrganizationInfo: requiredPropErrors[prop]

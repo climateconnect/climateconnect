@@ -34,7 +34,7 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import GroupWorkIcon from "@material-ui/icons/GroupWork";
 import { getImageUrl } from "../../../public/lib/imageOperations";
-import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -100,7 +100,7 @@ const LINKS = [
     isOutlinedInHeader: true,
     icon: FavoriteBorderIcon,
     vanillaIfLoggedOut: true
-  },  
+  },
   {
     href: "/share",
     text: "Share a project",
@@ -216,10 +216,8 @@ function NormalScreenLinks({ loggedInUser, handleLogout }) {
       ).map((link, index) => {
         const buttonProps = {};
         if (index !== 0) {
-          if(link.className)
-            buttonProps.className = classes[link.className]
-          else
-            buttonProps.className = classes.buttonMarginLeft;
+          if (link.className) buttonProps.className = classes[link.className];
+          else buttonProps.className = classes.buttonMarginLeft;
         }
         if ((loggedInUser || !link.vanillaIfLoggedOut) && link.isOutlinedInHeader) {
           buttonProps.variant = "outlined";
@@ -227,8 +225,8 @@ function NormalScreenLinks({ loggedInUser, handleLogout }) {
         if ((loggedInUser || !link.vanillaIfLoggedOut) && link.isFilledInHeader) {
           buttonProps.variant = "contained";
         }
-        if((loggedInUser || !link.vanillaIfLoggedOut) && link.icon) {
-          buttonProps.startIcon= <link.icon />
+        if ((loggedInUser || !link.vanillaIfLoggedOut) && link.icon) {
+          buttonProps.startIcon = <link.icon />;
         }
         const Icon = link.icon;
         return (

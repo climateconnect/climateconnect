@@ -16,14 +16,9 @@ const useStyles = makeStyles({
   }
 });
 
-export default function ProjectPreviews({ 
-  projects, 
-  loadFunc, 
-  hasMore, 
-  parentHandlesGridItems
-}) {
+export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHandlesGridItems }) {
   const classes = useStyles();
-  const [isLoading, setIsLoading] = React.useState(false)
+  const [isLoading, setIsLoading] = React.useState(false);
   const [gridItems, setGridItems] = React.useState(
     projects.map(p => <GridItem key={p.url_slug} project={p} />)
   );
@@ -33,9 +28,9 @@ export default function ProjectPreviews({
     if (!isLoading) {
       setIsLoading(true);
       const newProjects = await loadFunc();
-      if(!parentHandlesGridItems){
+      if (!parentHandlesGridItems) {
         const newGridItems = newProjects.map(p => <GridItem key={p.url_slug} project={p} />);
-        setGridItems([...gridItems, ...newGridItems]);        
+        setGridItems([...gridItems, ...newGridItems]);
       }
       setIsLoading(false);
     }
@@ -57,13 +52,11 @@ export default function ProjectPreviews({
       className={`${classes.reset} ${classes.root}`}
       spacing={2}
     >
-      {
-        parentHandlesGridItems ? 
-          (projects && projects.length>0 ?
-          projects.map(p=><GridItem key={p.url_slug} project={p} />)
-          : "No Results")      
-        : gridItems
-      }
+      {parentHandlesGridItems
+        ? projects && projects.length > 0
+          ? projects.map(p => <GridItem key={p.url_slug} project={p} />)
+          : "No Results"
+        : gridItems}
     </InfiniteScroll>
   );
 }

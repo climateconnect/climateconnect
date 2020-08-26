@@ -26,6 +26,8 @@ def create_new_project(data: Dict) -> Project:
         project.city = data['city']
     if 'image' in data:
         project.image = get_image_from_data_url(data['image'])[0]
+    if 'thumbnail_image' in data:
+        project.thumbnail_image = get_image_from_data_url(data['thumbnail_image'])[0]
     if 'description' in data:
         project.description = data['description']
     if 'end_date' in data:

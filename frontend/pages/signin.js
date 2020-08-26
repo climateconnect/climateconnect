@@ -37,6 +37,7 @@ export default function Signin() {
   };
 
   const [errorMessage, setErrorMessage] = React.useState(null);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const { user, signIn } = useContext(UserContext);
   //TODO: remove router
@@ -44,16 +45,17 @@ export default function Signin() {
     redirectOnLogin(user);
   }
 
-  const handleSubmit = (event, values) => {
+  const handleSubmit = async (event, values) => {
     //don't redirect to the post url
     event.preventDefault();
+    setIsLoading(true);
     axios
       .post(process.env.API_URL + "/login/", {
         username: values.username.toLowerCase(),
         password: values.password
       })
-      .then(function(response) {
-        signIn(response.data.token, response.data.expiry, "/");
+      .then(async function(response) {
+        await signIn(response.data.token, response.data.expiry, "/");
       })
       .catch(function(error) {
         console.log(error);
@@ -70,12 +72,13 @@ export default function Signin() {
               </span>
             );
           else setErrorMessage(error.response.data.message);
+          setIsLoading(false);
         }
       });
   };
 
   return (
-    <Layout title="Log In">
+    <Layout title="Log In" isLoading={isLoading}>
       <Form
         fields={fields}
         messages={messages}

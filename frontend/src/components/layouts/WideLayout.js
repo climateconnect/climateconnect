@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import aboutTheme from "../../themes/aboutTheme";
 import LayoutWrapper from "./LayoutWrapper";
 import Alert from "@material-ui/lab/Alert";
+import LoadingContainer from "../general/LoadingContainer";
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -20,27 +21,31 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function WideLayout({ children, title, message, messageType }) {
+export default function WideLayout({ children, title, message, messageType, isLoading }) {
   const classes = useStyles();
   const [alertOpen, setAlertOpen] = React.useState(true);
 
   return (
     <LayoutWrapper theme={aboutTheme} title={title}>
       <Header />
-      <Container maxWidth={false} component="main" className={classes.main}>
-        {message && alertOpen && (
-          <Alert
-            className={classes.alert}
-            severity={messageType ? messageType : "success"}
-            onClose={() => {
-              setAlertOpen(false);
-            }}
-          >
-            {message}
-          </Alert>
-        )}
-        {children}
-      </Container>
+      {isLoading ? (
+        <LoadingContainer headerHeight={113} footerHeight={80} />
+      ) : (
+        <Container maxWidth={false} component="main" className={classes.main}>
+          {message && alertOpen && (
+            <Alert
+              className={classes.alert}
+              severity={messageType ? messageType : "success"}
+              onClose={() => {
+                setAlertOpen(false);
+              }}
+            >
+              {message}
+            </Alert>
+          )}
+          {children}
+        </Container>
+      )}
       <Footer />
     </LayoutWrapper>
   );
