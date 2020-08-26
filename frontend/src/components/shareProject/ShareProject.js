@@ -110,7 +110,7 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
         values: countries.map(country => {
           return { key: country, name: country };
         }),
-        defaultValue: countries[0]
+        defaultValue: project.country
       },
       key: "country"
     }
