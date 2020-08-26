@@ -261,7 +261,7 @@ export default function EditProjectContent({
             }
             helperText={"Describe your project in detail. Please only use English!"}
             placeholder={`Describe your project in more detail.\n\n-What are you trying to achieve?\n-How are you trying to achieve it\n-What were the biggest challenges?\n-What insights have you gained during the implementation?`}
-            value={project.description}
+            value={project.description?project.description:""}
           />
         </div>
         <div className={classes.block}>

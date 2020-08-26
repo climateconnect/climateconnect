@@ -5,7 +5,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import GenericDialog from "./../dialogs/GenericDialog";
 import UserContext from "../context/UserContext";
 
-
 const useStyles = makeStyles(theme => ({
   textField: {
     width: "100%"
@@ -39,8 +38,8 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
       message: element,
       email_address: email,
       send_response: checked
-    }
-    onClose(data) 
+    };
+    onClose(data);
   };
 
   const handleChange = event => {
@@ -81,7 +80,7 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
             onChange={e => setChecked(e.target.checked)}
           />
           <label htmlFor={"feedbackcheckbox"}>Please send me a response to my feedback</label>
-          {checked && !user &&(
+          {checked && !user && (
             <>
               <br />
               <TextField
@@ -95,12 +94,7 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
               />
             </>
           )}
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            className={classes.sendButton}
-          >
+          <Button variant="contained" color="primary" type="submit" className={classes.sendButton}>
             Send
           </Button>
         </form>

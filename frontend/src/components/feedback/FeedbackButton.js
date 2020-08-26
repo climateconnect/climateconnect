@@ -29,16 +29,20 @@ export default function FeedbackButton() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const cookies = new Cookies();
-  const [message, setMessage] = React.useState("")
+  const [message, setMessage] = React.useState("");
 
   const submitFeedback = async data => {
     const token = cookies.get("token");
     try {
-      const response = await axios.post(process.env.API_URL + "/api/feedback/", data, tokenConfig(token));
-      setMessage(response.data)
-    } catch(e) {
-      console.log(e)
-      console.log(e.response)
+      const response = await axios.post(
+        process.env.API_URL + "/api/feedback/",
+        data,
+        tokenConfig(token)
+      );
+      setMessage(response.data);
+    } catch (e) {
+      console.log(e);
+      console.log(e.response);
     }
   };
 
@@ -50,14 +54,14 @@ export default function FeedbackButton() {
   const handleOpenDialog = () => {
     setOpen(true);
   };
-  
+
   return (
     <>
-      {message &&
-        <Alert severity="success" className={classes.alert} onClose={()=>setMessage("")}>
+      {message && (
+        <Alert severity="success" className={classes.alert} onClose={() => setMessage("")}>
           {message}
         </Alert>
-      } 
+      )}
       <Button
         variant="contained"
         size="small"

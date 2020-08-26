@@ -168,10 +168,10 @@ const getProjectWithoutRedundancies = (newProject, oldProject) => {
 const parseProjectForRequest = async project => {
   console.log(project);
   const ret = {
-    ...project,
-    image: await blobFromObjectUrl(project.image),
-    thumbnail_image: await blobFromObjectUrl(project.thumbnail_image)
+    ...project
   };
+  if (project.image) ret.image = await blobFromObjectUrl(project.image)
+  if (project.thumbnail_image) ret.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image)
   if (project.skills) ret.skills = project.skills.map(s => s.id);
   if (project.tags) ret.project_tags = project.tags.map(t => t.id);
   if (project.status) ret.status = project.status.id;
