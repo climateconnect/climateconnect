@@ -110,7 +110,7 @@ export default function Support() {
   const classes = useStyles();
   return (
     <>
-      <WideLayout title="Support us">
+      <WideLayout title="Support us" isStaticPage>
         <HeaderImage src={"images/supportusheader.jpg"} className={classes.headerImageContainer}>
           <div className={classes.headerTextContainer}>
             <div className={classes.headerTextInnerContainer}>
@@ -119,7 +119,7 @@ export default function Support() {
                   Support us
                 </Typography>
                 <Typography variant="h1" className={classes.headerTextSmall}>
-                  Help us to keep Climate Connect running
+                  Help us to stay free and independent
                 </Typography>
               </div>
             </div>

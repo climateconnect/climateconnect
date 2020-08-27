@@ -21,13 +21,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function WideLayout({ children, title, message, messageType, isLoading }) {
+export default function WideLayout({ children, title, message, messageType, isLoading, isStaticPage }) {
   const classes = useStyles();
   const [alertOpen, setAlertOpen] = React.useState(true);
 
   return (
     <LayoutWrapper theme={aboutTheme} title={title}>
-      <Header />
+      <Header isStaticPage={isStaticPage}/>
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />
       ) : (
