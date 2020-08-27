@@ -6,3 +6,6 @@ from climateconnect_api.models.common import (
     Availability, Skill
 )
 from climateconnect_api.models.role import Role
+from climateconnect_api.models.faq import (
+    FaqSection, FaqQuestion
+)

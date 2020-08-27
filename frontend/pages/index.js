@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Layout from "../src/components/layouts/layout";
 import ProjectPreviews from "./../src/components/project/ProjectPreviews";
 import About from "./about";
-import { Divider, Button, Tab, Tabs, Typography, IconButton } from "@material-ui/core";
+import { Divider, Button, Tab, Tabs, Typography } from "@material-ui/core";
 import TuneIcon from "@material-ui/icons/Tune";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { makeStyles } from "@material-ui/core/styles";
@@ -13,7 +13,6 @@ import possibleFilters from "./../public/data/possibleFilters";
 import OrganizationPreviews from "../src/components/organization/OrganizationPreviews";
 import ProfilePreviews from "../src/components/profile/ProfilePreviews";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import TextLoop from "react-text-loop";
 import {
   getSkillsOptions,
@@ -77,27 +76,15 @@ const useStyles = makeStyles(theme => {
       cursor: "pointer"
     },
     mainHeading: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
       textAlign: "center",
-      flexWrap: "wrap"
-    },
-    mainHeadingContainer: {
       margin: `${theme.spacing(4)}px 0`
-    },
-    infoText: {
-      maxWidth: 1000,
-      margin: "0 auto",
-      fontSize: 14
     },
     titleText: {
       display: "inline-block"
     },
     titleTextRight: {
       display: "inline-block",
-      marginLeft: theme.spacing(0.75),
-      alignItems: "center"
+      marginLeft: theme.spacing(0.75)
     }
   };
 });
@@ -166,7 +153,6 @@ export default function Index({
   });
   const [tabValue, setTabValue] = React.useState(hash ? typesByTabValue.indexOf(hash) : 0);
   const [filtersExpanded, setFiltersExpanded] = React.useState(false);
-  const [infoTextExpanded, setInfoTextExpanded] = React.useState(false)
   const [filters, setFilters] = React.useState({
     projects: {},
     members: {},
@@ -373,40 +359,31 @@ export default function Index({
           message={errorMessage ? errorMessage : message}
           messageType={errorMessage ? "error" : "success"}
         >
-          <div className={classes.mainHeadingContainer}>          
-            <div className={classes.mainHeading}>
-              <TextLoop mask={true} interval={5000}>
-                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                  Share
-                </Typography>
-                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                  Find
-                </Typography>
-                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                  Work on
-                </Typography>
-                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                  Get inspired by
-                </Typography>
-                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                  Replicate
-                </Typography>
-                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                  Collaborate with
-                </Typography>
-              </TextLoop>
-              <Typography component="h1" variant="h5" className={classes.titleTextRight}>
-                the most effective climate projects 
+          <div component="h1" variant="h5" className={classes.mainHeading}>
+            <TextLoop mask={true} interval={5000}>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Share
               </Typography>
-              <IconButton><InfoOutlinedIcon color="primary" onClick={() => setInfoTextExpanded(!infoTextExpanded)} className={classes.infoIcon}/></IconButton>          
-            </div>  
-            {infoTextExpanded && 
-              <Typography className={classes.infoText}>
-                Climate Connect is a <b>global climate action platform</b>. We believe that we can only solve climate change if we all work together. This is why we created Climate Connect and wrote a really long placeholder text to try to illustrate how our website would look like if we allowed <b>people to show an info text</b>. This would also help with SEO I think, but I'm actually not sure about that, we'll just have to see.
-                {" "}<Typography component="span" className={classes.infoText} color="primary"><b>Hide Info</b></Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Find
               </Typography>
-            }        
-          </div>    
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Work on
+              </Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Get inspired by
+              </Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Replicate
+              </Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Collaborate with
+              </Typography>
+            </TextLoop>
+            <Typography component="h1" variant="h5" className={classes.titleTextRight}>
+              the most effective climate projects
+            </Typography>
+          </div>
           <div className={classes.filterSection}>
             <div className={classes.filterSectionFirstLine}>
               <Button

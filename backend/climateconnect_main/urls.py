@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from climateconnect_api.views import (
     status_views, user_views, common_views,
-    settings_views, common_views, role_views
+    settings_views, common_views, role_views, faq_views
 )
 from knox import views as knox_views
 from django.conf import settings
@@ -61,15 +61,19 @@ urlpatterns = [
         'api/resend_verification_email/',
         user_views.ResendVerificationEmail.as_view(), name='resend-verification-email'
     ),
+    path('availability/', common_views.ListAvailabilitiesView.as_view(), name='list-availabilities-api'),
+    path('skills/', common_views.ListSkillsView.as_view(), name='list-skills-api'),
+    path('roles/', role_views.ListRolesView.as_view(), name='list-roles-api'),
     path(
         'api/feedback/',
         common_views.ReceiveFeedback.as_view(), name='receive-feedback'
     ),
+    path(
+        'api/list_faq/',
+        faq_views.ListFaqView.as_view(), name='list-faq'
+    ),
     # Organization views
     path('api/', include('organization.urls')),
     # Common views
-    path('availability/', common_views.ListAvailabilitiesView.as_view(), name='list-availabilities-api'),
-    path('skills/', common_views.ListSkillsView.as_view(), name='list-skills-api'),
-    path('roles/', role_views.ListRolesView.as_view(), name='list-roles-api')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
