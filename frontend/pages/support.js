@@ -119,7 +119,7 @@ export default function Support() {
                   Support us
                 </Typography>
                 <Typography variant="h1" className={classes.headerTextSmall}>
-                  Help us to keep Climate Connect running
+                  Help us to stay free and independent
                 </Typography>
               </div>
             </div>
