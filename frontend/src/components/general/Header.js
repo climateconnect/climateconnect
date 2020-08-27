@@ -83,6 +83,32 @@ const useStyles = makeStyles(theme => {
       marginLeft: theme.spacing(1),
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2)
+    },
+    staticPageLinksWrapper: {
+      width: "100%",
+      height: 50,
+      background: "#E5E5E5"
+    },
+    staticPageLinksContainer: {
+      width: "100%",
+      maxWidth: 1280,
+      height: "100%"
+    },
+    staticPageLinks: {
+      float: "right",
+      display: "inline-flex",
+      height: "100%",
+      alignItems: "center"
+    },
+    staticPageLink: {
+      paddingLeft: theme.spacing(2),
+      marginLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+      marginRight: theme.spacing(2),
+      fontSize: 16,
+      fontWeight: "bold",
+      textDecoration: "inherit",
+      color: theme.palette.primary.main
     }
   };
 });
@@ -139,6 +165,21 @@ const LINKS = [
   }
 ];
 
+const STATIC_PAGE_LINKS =[
+  {
+    href: "/about",
+    text: "About us"
+  },
+  {
+    href: "/support",
+    text: "Donate"
+  },
+  {
+    href: "/faq",
+    text: "FAQ"
+  }
+]
+
 const getLoggedInLinks = ({ loggedInUser }) => {
   return [
     {
@@ -171,7 +212,7 @@ const getLoggedInLinks = ({ loggedInUser }) => {
   ];
 };
 
-export default function Header({ className, noSpacingBottom }) {
+export default function Header({ className, noSpacingBottom, isStaticPage }) {
   const classes = useStyles();
   const { user, signOut } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
@@ -195,12 +236,36 @@ export default function Header({ className, noSpacingBottom }) {
               <NarrowScreenLinks loggedInUser={user} handleLogout={signOut} />
             ) : (
               <NormalScreenLinks loggedInUser={user} handleLogout={signOut} />
-            )}
+            )}            
           </>
         )}
       </Container>
+      <div>
+        {isStaticPage &&
+          <StaticPageLinks />
+        }
+      </div>
     </Box>
   );
+}
+
+function StaticPageLinks() {
+  const classes = useStyles()
+  return (
+    <div className={classes.staticPageLinksWrapper}>
+      <Container className={classes.staticPageLinksContainer}>
+        <div className={classes.staticPageLinks}>
+          {STATIC_PAGE_LINKS.map((link, index)=>(
+              <Link href={link.href} key={index+"-"+link.text}>
+                <a className={classes.staticPageLink}>
+                  {link.text}
+                </a>
+              </Link>
+          ))}
+        </div>
+      </Container>
+    </div>
+  )
 }
 
 function NormalScreenLinks({ loggedInUser, handleLogout }) {

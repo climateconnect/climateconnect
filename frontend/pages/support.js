@@ -110,7 +110,7 @@ export default function Support() {
   const classes = useStyles();
   return (
     <>
-      <WideLayout title="Support us">
+      <WideLayout title="Support us" isStaticPage>
         <HeaderImage src={"images/supportusheader.jpg"} className={classes.headerImageContainer}>
           <div className={classes.headerTextContainer}>
             <div className={classes.headerTextInnerContainer}>

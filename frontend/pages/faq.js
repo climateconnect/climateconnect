@@ -93,7 +93,7 @@ export default function Faq({ questionsBySection, questions }) {
 
   return (
     <div>
-      <WideLayout title="FAQ">
+      <WideLayout title="FAQ" isStaticPage>
         <HeaderImage src={"images/supportusheader.jpg"} className={classes.headerImageContainer}>
           <div className={classes.headerTextContainer}>
             <div className={classes.headerTextInnerContainer}>

@@ -104,7 +104,7 @@ export default function About() {
   const classes = useStyles();
   return (
     <>
-      <WideLayout title="About Climate Connect">
+      <WideLayout title="About Climate Connect" isStaticPage>
         <HeaderImage className={classes.headerImageContainer} src={"images/about_background.jpg"} />
         <Typography
           component="h1"

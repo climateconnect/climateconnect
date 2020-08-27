@@ -25,13 +25,14 @@ export default function Layout({
   children,
   message,
   messageType,
-  isLoading
+  isLoading,
+  isStaticPage
 }) {
   const classes = useStyles();
   const [hideAlertMessage, setHideAlertMessage] = React.useState(false);
   return (
     <LayoutWrapper theme={theme} title={title}>
-      <Header noSpacingBottom={noSpacingBottom} />
+      <Header noSpacingBottom={noSpacingBottom} isStaticPage={isStaticPage}/>
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />
       ) : (

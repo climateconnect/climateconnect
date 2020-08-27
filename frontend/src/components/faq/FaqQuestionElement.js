@@ -24,7 +24,10 @@ const useStyles = makeStyles(theme => {
       fontWeight: "bold",
       fontSize: 19,
       width: "100%",
-      paddingRight: 50
+      [theme.breakpoints.down("xs")]: {
+        fontSize: 16,
+        fontWeight: "normal"
+      }
     },
     answerWrapper: {
       width: "100%",
@@ -35,7 +38,10 @@ const useStyles = makeStyles(theme => {
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(3),
       fontSize: 17,
-      lineHeight: 1.5
+      lineHeight: 1.5,
+      [theme.breakpoints.down("xs")]: {
+        fontSize: 16
+      }
     }
   };
 });
