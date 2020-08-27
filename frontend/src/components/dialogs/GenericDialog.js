@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
   dialogContent: {
     padding: theme.spacing(2),
     [theme.breakpoints.down("md")]: {
-      padding: theme.spacing(1),
+      padding: theme.spacing(2),
       paddingTop: 0
     }
   },
@@ -30,10 +30,10 @@ const useStyles = makeStyles(theme => ({
     top: theme.spacing(1),
     color: theme.palette.grey[500]
   },
-  titleText: {
+  titleText: props => ({
     marginLeft: theme.spacing(5),
-    paddingRight: 150
-  },
+    paddingRight: props.useApplyButton ? 150 : 0
+  }),
   applyButton: {
     position: "absolute",
     right: theme.spacing(2),
@@ -53,7 +53,7 @@ export default function GenericDialog({
   topBarFixed,
   fullScreen
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ useApplyButton: useApplyButton });
 
   const handleCancel = () => {
     onClose(false);

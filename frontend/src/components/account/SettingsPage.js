@@ -14,7 +14,7 @@ import Axios from "axios";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import { redirect } from "../../../public/lib/apiOperations";
 import Cookies from "universal-cookie";
-import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations"
+import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations";
 
 const useStyles = makeStyles(theme => ({
   blockElement: {
@@ -66,7 +66,7 @@ const possibleCookiePreferences = [
     key: "acceptedStatistics",
     text: "Enable Statistics cookies to help us improve Climate Connect"
   }
-]
+];
 
 export default function SettingsPage({ settings, setSettings, token, setMessage }) {
   const classes = useStyles();
@@ -85,13 +85,13 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     /*profileurlerror: ""*/
   });
   const [newEmail, setNewEmail] = React.useState("");
-  const cookies = new Cookies(); 
+  const cookies = new Cookies();
   const [cookiePreferences, setCookiePreferences] = React.useState(
     possibleCookiePreferences.reduce((obj, p) => {
       obj[p.key] = !!cookies.get(p.key);
       return obj;
     }, {})
-  )
+  );
 
   const [emailPreferences, setEmailPreferences] = React.useState(
     possibleEmailPreferences.reduce((obj, p) => {
@@ -121,7 +121,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       ...cookiePreferences,
       [key]: event.target.checked
     });
-  }
+  };
 
   /*const handleNewProfileUrlChange = event => {
     setNewProfileUrl(event.target.value);
@@ -246,34 +246,33 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
   };
 
   const changeCookiePreferences = async () => {
-    const now = new Date()
-    const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 1))
-    let hasChanges = false
-    Object.keys(cookiePreferences).map(p=> {    
-      if(cookies.get(p) === "true" && cookiePreferences[p] === false){
-        cookies.remove(p, { path: "/" })
-        if(p === "acceptedStatistics")
-          removeUnnecesaryCookies()
-        hasChanges = true
+    const now = new Date();
+    const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 1));
+    let hasChanges = false;
+    Object.keys(cookiePreferences).map(p => {
+      if (cookies.get(p) === "true" && cookiePreferences[p] === false) {
+        cookies.remove(p, { path: "/" });
+        if (p === "acceptedStatistics") removeUnnecesaryCookies();
+        hasChanges = true;
       }
-      if(cookies.get(p) !== "true" && cookiePreferences[p] === true){
-        cookies.set(p, true, { path: "/", expires: oneYearFromNow, sameSite: true })
-        hasChanges = true
+      if (cookies.get(p) !== "true" && cookiePreferences[p] === true) {
+        cookies.set(p, true, { path: "/", expires: oneYearFromNow, sameSite: true });
+        hasChanges = true;
       }
-    })
-    if(hasChanges){
-      setMessage("Cookie settings successfully updated.")
-      window.scrollTo(0, 0)
+    });
+    if (hasChanges) {
+      setMessage("Cookie settings successfully updated.");
+      window.scrollTo(0, 0);
       setErrors({
         ...errors,
         cookiepreferencesserror: ""
       });
-    }else
+    } else
       setErrors({
         ...errors,
         cookiepreferencesserror: "You haven't made any changes."
-      })
-  }
+      });
+  };
 
   const hasChanges = (oldObject, oldKeys, newValues) => {
     const changedKeys = oldKeys.filter((key, index) => {

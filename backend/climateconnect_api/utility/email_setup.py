@@ -165,3 +165,38 @@ def send_password_link(user, password_reset_key):
         logger.error("%s: Error sending email: %s" % (
             send_user_verification_email.__name__, ex
         ))
+
+def send_feedback_email(email, message, send_response):
+    data = {
+        "personalizations": [
+            {
+                "to": [
+                    {
+                        "email": "feedback@climateconnect.earth"
+                    }
+                ],
+                "dynamic_template_data": {
+                    "text": message,
+                    "sendReply": send_response,
+                    "email": email
+                }
+            },
+        ],
+        "from": {
+            "email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL
+        },
+        "content": [
+            {
+                "type": "text/html",
+                "value": " "
+            }
+        ],
+        "template_id": settings.SENDGRID_FEEDBACK_TEMPLATE_ID
+    }
+    try:
+        sg.client.mail.send.post(request_body=data)
+    except Exception as ex:
+        logger.error("%s: Error sending email: %s" % (
+            send_feedback_email.__name__, ex
+        ))
+        logger.error(ex.body)

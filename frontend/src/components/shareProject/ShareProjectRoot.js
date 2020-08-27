@@ -11,6 +11,7 @@ import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
 import Router from "next/router";
+import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -101,13 +102,12 @@ export default function ShareProjectRoot({
     window.scrollTo(0, 0);
   };
 
-  const submitProject = event => {
+  const submitProject = async event => {
     event.preventDefault();
-    console.log(formatProjectForRequest(project));
     axios
       .post(
         process.env.API_URL + "/api/create_project/",
-        formatProjectForRequest(project),
+        await formatProjectForRequest(project),
         tokenConfig(token)
       )
       .then(function(response) {
@@ -115,18 +115,19 @@ export default function ShareProjectRoot({
       })
       .catch(function(error) {
         console.log(error);
+        setProject({ ...project, error: true });
         if (error) console.log(error.response);
       });
     setFinished(true);
   };
 
-  const saveAsDraft = event => {
+  const saveAsDraft = async event => {
     event.preventDefault();
     console.log(project);
     axios
       .post(
         process.env.API_URL + "/api/create_project/",
-        formatProjectForRequest({ ...project, is_draft: true }),
+        await formatProjectForRequest({ ...project, is_draft: true }),
         tokenConfig(token)
       )
       .then(function(response) {
@@ -134,6 +135,7 @@ export default function ShareProjectRoot({
       })
       .catch(function(error) {
         console.log(error);
+        setProject({ ...project, error: true });
         if (error) console.log(error.response);
       });
     setFinished(true);
@@ -200,6 +202,7 @@ export default function ShareProjectRoot({
             user={user}
             isDraft={project.is_draft}
             url_slug={project.url_slug}
+            hasError={project.error}
           />
         </>
       )}
@@ -224,7 +227,7 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
   };
 };
 
-const formatProjectForRequest = project => {
+const formatProjectForRequest = async project => {
   return {
     ...project,
     status: project.status.id,
@@ -238,6 +241,8 @@ const formatProjectForRequest = project => {
     })),
     project_tags: project.project_tags.map(s => s.key),
     parent_organization: project.parent_organization.id,
-    collaborating_organizations: project.collaborating_organizations.map(o => o.id)
+    collaborating_organizations: project.collaborating_organizations.map(o => o.id),
+    image: await blobFromObjectUrl(project.image),
+    thumbnail_image: await blobFromObjectUrl(project.thumbnail_image)
   };
 };

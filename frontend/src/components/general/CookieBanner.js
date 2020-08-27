@@ -74,18 +74,22 @@ export default function CookieBanner({ closeBanner }) {
     setChecked({ ...checked, statistics: !checked.statistics });
   };
 
-  const now = new Date()
-  const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 1))
+  const now = new Date();
+  const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 1));
 
   const confirmSelection = () => {
-    cookies.set("acceptedNecessary", true, { path: "/", sameSite: true, expires:  oneYearFromNow });
-    cookies.set("acceptedStatistics", checked.statistics, { path: "/", sameSite: true, expires:  oneYearFromNow });
+    cookies.set("acceptedNecessary", true, { path: "/", sameSite: true, expires: oneYearFromNow });
+    cookies.set("acceptedStatistics", checked.statistics, {
+      path: "/",
+      sameSite: true,
+      expires: oneYearFromNow
+    });
     closeBanner();
   };
 
   const enableAll = () => {
-    cookies.set("acceptedNecessary", true, { path: "/", sameSite: true, expires:  oneYearFromNow });
-    cookies.set("acceptedStatistics", true, { path: "/", sameSite: true, expires:  oneYearFromNow });
+    cookies.set("acceptedNecessary", true, { path: "/", sameSite: true, expires: oneYearFromNow });
+    cookies.set("acceptedStatistics", true, { path: "/", sameSite: true, expires: oneYearFromNow });
     closeBanner();
   };
 

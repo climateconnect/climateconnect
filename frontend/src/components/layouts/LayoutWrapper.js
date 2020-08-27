@@ -4,7 +4,8 @@ import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import CookieBanner from "../general/CookieBanner";
 import Cookies from "universal-cookie";
 import { Typography } from "@material-ui/core";
-import { useMatomo } from '@datapunt/matomo-tracker-react'
+import { useMatomo } from "@datapunt/matomo-tracker-react";
+import FeedbackButton from "../feedback/FeedbackButton";
 
 const useStyles = makeStyles(theme => ({
   leaveSpaceForFooter: {
@@ -32,11 +33,11 @@ export default function LayoutWrapper({ title, children, theme }) {
   const cookies = new Cookies();
   const [loading, setLoading] = React.useState(true);
   const [bannerOpen, setBannerOpen] = React.useState(true);
-  const { trackPageView } = useMatomo()
+  const { trackPageView } = useMatomo();
   const acceptedNecessary = cookies.get("acceptedNecessary");
   useEffect(() => {
     if (loading) setLoading(false);
-    trackPageView()
+    trackPageView();
   });
   const closeBanner = () => setBannerOpen(false);
   if (loading)
@@ -73,6 +74,7 @@ export default function LayoutWrapper({ title, children, theme }) {
           <div className={classes.leaveSpaceForFooter}>
             {children}
             {!acceptedNecessary && bannerOpen && <CookieBanner closeBanner={closeBanner} />}
+            <FeedbackButton />
           </div>
         </ThemeProvider>
       </>

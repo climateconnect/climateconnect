@@ -179,12 +179,6 @@ class ProjectAPIView(APIView):
             project = Project.objects.get(url_slug=str(url_slug))            
         except Project.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
-        #TODO: get number of followers
-        if project.is_draft:
-            try:
-                ProjectMember.objects.get(user=self.request.user, project=project, role__role_type__in=[Role.ALL_TYPE, Role.READ_ONLY_TYPE])
-            except ProjectMember.DoesNotExist:
-                return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
         serializer = ProjectSerializer(project, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -239,9 +233,10 @@ class ProjectAPIView(APIView):
                         logger.error(old_tagging.order)
                         old_tagging.save()
                 order = order - 1
-        
         if 'image' in request.data:
             project.image = get_image_from_data_url(request.data['image'])[0]
+        if 'thumbnail_image' in request.data:
+            project.thumbnail_image = get_image_from_data_url(request.data['thumbnail_image'])[0]
         if 'status' in request.data:
             try:
                 project_status = ProjectStatus.objects.get(id=int(request.data['status']))

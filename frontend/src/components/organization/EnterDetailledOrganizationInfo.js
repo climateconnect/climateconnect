@@ -39,13 +39,13 @@ export default function EnterDetailledOrganizationInfo({
   };
   return (
     <div>
-      {!errorMessage &&
+      {!errorMessage && (
         <div>
           <Alert severity="success" className={classes.alert}>
             Almost done! Here you can customize your organization page and add details
           </Alert>
         </div>
-      }
+      )}
       <EditAccountPage
         type="organization"
         account={organization}

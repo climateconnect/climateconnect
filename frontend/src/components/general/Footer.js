@@ -7,7 +7,7 @@ import TwitterIcon from "@material-ui/icons/Twitter";
 import InstagramIcon from "@material-ui/icons/Instagram";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import YouTubeIcon from "@material-ui/icons/YouTube";
-import FavoriteIcon from '@material-ui/icons/Favorite';
+import FavoriteIcon from "@material-ui/icons/Favorite";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -56,7 +56,7 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(0.5)
   },
   earth: {
-    color:"blue",
+    color: "blue",
     marginLeft: theme.spacing(1),
     height: 20
   },
@@ -88,11 +88,12 @@ export default function Footer({ className, noSpacingTop, noAbsolutePosition }) 
             <a className={classes.inheritColor}>Terms</a>
           </Link>
         </Box>
-        {!isNarrowScreen &&
-        <Box component="span" className={classes.centerText}>
-          Made with <FavoriteIcon className={classes.heart}/> for <img className={classes.earth} src="/images/earth.svg" />
-        </Box>
-        }
+        {!isNarrowScreen && (
+          <Box component="span" className={classes.centerText}>
+            Made with <FavoriteIcon className={classes.heart} /> for{" "}
+            <img className={classes.earth} src="/images/earth.svg" />
+          </Box>
+        )}
         <Box component="span" className={classes.rightBox}>
           <a
             href="https://github.com/climateconnect/climateconnect"

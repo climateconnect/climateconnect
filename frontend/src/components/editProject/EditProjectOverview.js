@@ -2,14 +2,19 @@ import React from "react";
 import { Container, Typography, TextField, Button, List, Chip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
-import { getImageUrl, getImageDialogHeight } from "../../../public/lib/imageOperations";
+import {
+  getImageUrl,
+  getImageDialogHeight,
+  getCompressedJPG,
+  whitenTransparentPixels,
+  getResizedImage
+} from "../../../public/lib/imageOperations";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
-import imageCompression from "browser-image-compression";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import SelectField from "../general/SelectField";
-import countries from "./../../../public/data/countries.json"
+import countries from "./../../../public/data/countries.json";
 
 const useStyles = makeStyles(theme => ({
   ...projectOverviewStyles(theme),
@@ -76,18 +81,27 @@ export default function EditProjectOverview({
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
   };
+  const handleChangeImage = (newImage, newThumbnailImage) => {
+    handleSetProject({
+      ...project,
+      image: newImage,
+      thumbnail_image: newThumbnailImage
+    });
+  };
   return (
     <Container className={classes.projectOverview}>
       {smallScreen ? (
         <SmallScreenOverview
           project={project}
           handleChangeProject={handleChangeProject}
+          handleChangeImage={handleChangeImage}
           tagsOptions={tagsOptions}
         />
       ) : (
         <LargeScreenOverview
           project={project}
           handleChangeProject={handleChangeProject}
+          handleChangeImage={handleChangeImage}
           tagsOptions={tagsOptions}
         />
       )}
@@ -95,11 +109,11 @@ export default function EditProjectOverview({
   );
 }
 
-function SmallScreenOverview({ project, handleChangeProject, tagsOptions }) {
+function SmallScreenOverview({ project, handleChangeProject, handleChangeImage, tagsOptions }) {
   const classes = useStyles();
   return (
     <>
-      <InputImage project={project} screenSize="small" handleChangeProject={handleChangeProject} />
+      <InputImage project={project} screenSize="small" handleChangeImage={handleChangeImage} />
       <div className={classes.blockProjectInfo}>
         <InputName project={project} screenSize="small" />
         <InputShortDescription project={project} handleChangeProject={handleChangeProject} />
@@ -115,18 +129,14 @@ function SmallScreenOverview({ project, handleChangeProject, tagsOptions }) {
   );
 }
 
-function LargeScreenOverview({ project, handleChangeProject, tagsOptions }) {
+function LargeScreenOverview({ project, handleChangeProject, handleChangeImage, tagsOptions }) {
   const classes = useStyles();
   return (
     <>
       <InputName project={project} screenSize="large" handleChangeProject={handleChangeProject} />
       <div className={classes.flexContainer}>
         <div className={classes.largeScreenImageContainer}>
-          <InputImage
-            project={project}
-            screenSize="large"
-            handleChangeProject={handleChangeProject}
-          />
+          <InputImage project={project} screenSize="large" handleChangeImage={handleChangeImage} />
         </div>
         <div className={classes.inlineProjectInfo}>
           <InputShortDescription project={project} handleChangeProject={handleChangeProject} />
@@ -189,7 +199,7 @@ const InputLocation = ({ project, handleChangeProject }) => {
         type="text"
         onChange={event => handleChangeProject(event.target.value, "country")}
         required
-        options = {countries.map(c=>({key:c.toLowerCase(), name:c}))}  
+        options={countries.map(c => ({ key: c.toLowerCase(), name: c }))}
       />
     </div>
   );
@@ -286,7 +296,7 @@ const InputName = ({ project, screenSize, handleChangeProject }) => {
   );
 };
 
-const InputImage = ({ project, handleChangeProject, screenSize }) => {
+const InputImage = ({ project, screenSize, handleChangeImage }) => {
   const classes = useStyles(project);
 
   const inputFileRef = React.useRef(null);
@@ -299,18 +309,9 @@ const InputImage = ({ project, handleChangeProject, screenSize }) => {
     const file = event.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
-    const options = {
-      maxSizeMB: 0.5,
-      maxWidthOrHeight: 550,
-      useWebWorker: true
-    };
-    try {
-      const compressedFile = await imageCompression(file, options);
-      setTempImage(URL.createObjectURL(compressedFile));
-      setOpen(true);
-    } catch (error) {
-      console.log(error);
-    }
+    const image = await getCompressedJPG(file, 0.5);
+    setTempImage(image);
+    setOpen(true);
   };
 
   const onUploadImageClick = event => {
@@ -318,10 +319,21 @@ const InputImage = ({ project, handleChangeProject, screenSize }) => {
     inputFileRef.current.click();
   };
 
-  const handleImageDialogClose = image => {
+  const handleImageDialogClose = async image => {
     setOpen(false);
-    if (image && image instanceof HTMLCanvasElement)
-      handleChangeProject(image.toDataURL("image/png"), "image");
+    if (image && image instanceof HTMLCanvasElement) {
+      whitenTransparentPixels(image);
+      image.toBlob(async function(blob) {
+        const resizedBlob = URL.createObjectURL(blob);
+        const thumbnailBlob = await getResizedImage(
+          URL.createObjectURL(blob),
+          290,
+          160,
+          "image/jpeg"
+        );
+        handleChangeImage(resizedBlob, thumbnailBlob);
+      }, "image/jpeg");
+    }
   };
 
   return (

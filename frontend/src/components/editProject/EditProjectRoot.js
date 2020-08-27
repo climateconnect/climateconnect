@@ -7,6 +7,7 @@ import BottomNavigation from "../general/BottomNavigation";
 import Router from "next/router";
 import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
+import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -36,7 +37,7 @@ export default function EditProjectRoot({
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const draftReqiredProperties = ["name", "city", "country"];
 
-  const onSaveDraft = () => {
+  const onSaveDraft = async () => {
     if (draftReqiredProperties.filter(p => !project[p]).length > 0)
       draftReqiredProperties.map(p => {
         if (!project[p]) {
@@ -47,7 +48,7 @@ export default function EditProjectRoot({
       axios
         .patch(
           process.env.API_URL + "/api/projects/" + project.url_slug + "/",
-          parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
+          await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
           tokenConfig(token)
         )
         .then(function() {
@@ -76,7 +77,7 @@ export default function EditProjectRoot({
     Router.push("/projects/" + project.url_slug + "/");
   };
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault();
     const projectToSubmit = project;
     let was_draft = false;
@@ -85,11 +86,10 @@ export default function EditProjectRoot({
       was_draft = true;
     }
 
-    console.log(parseProjectForRequest(getProjectWithoutRedundancies(projectToSubmit, oldProject)));
     axios
       .patch(
         process.env.API_URL + "/api/projects/" + project.url_slug + "/",
-        parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
+        await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
         tokenConfig(token)
       )
       .then(function(response) {
@@ -165,9 +165,13 @@ const getProjectWithoutRedundancies = (newProject, oldProject) => {
   }, {});
 };
 
-const parseProjectForRequest = project => {
+const parseProjectForRequest = async project => {
   console.log(project);
-  const ret = { ...project };
+  const ret = {
+    ...project
+  };
+  if (project.image) ret.image = await blobFromObjectUrl(project.image)
+  if (project.thumbnail_image) ret.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image)
   if (project.skills) ret.skills = project.skills.map(s => s.id);
   if (project.tags) ret.project_tags = project.tags.map(t => t.id);
   if (project.status) ret.status = project.status.id;

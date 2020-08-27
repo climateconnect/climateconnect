@@ -3,11 +3,18 @@ import Form from "../general/Form";
 import { Typography, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import countries from "./../../../public/data/countries.json";
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 
 const useStyles = makeStyles(theme => ({
   orgBottomLink: {
     textAlign: "center",
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(0.5)
+  },
+  BottomLinkFlex: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: theme.spacing(0.5)
   },
   appealText: {
     textAlign: "center",
@@ -22,6 +29,12 @@ const useStyles = makeStyles(theme => ({
     margin: "0 auto",
     padding: theme.spacing(4),
     paddingTop: theme.spacing(2)
+  },
+  infoIcon: {
+    marginRight: theme.spacing(0.5)
+  },
+  field: {
+    marginTop: theme.spacing(3)
   }
 }));
 
@@ -70,10 +83,18 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
     },
     {
       required: true,
-      label: "Project name",
+      label: "Title (Use a short, english title, e.g. 'Generating energy from ocean waves')",
       type: "text",
       key: "name",
-      value: project.name
+      value: project.name,
+      bottomLink: (
+        <Typography className={classes.BottomLinkFlex}>
+          <InfoOutlinedIcon className={classes.infoIcon} />
+          <Typography component="span">
+            Use a title that makes people curious to learn more about your project
+          </Typography>
+        </Typography>
+      )
     },
     {
       required: true,
@@ -89,10 +110,10 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
         values: countries.map(country => {
           return { key: country, name: country };
         }),
-        defaultValue: countries[0]
-      },      
+        defaultValue: project.country
+      },
       key: "country"
-    },
+    }
   ];
   const messages = {
     submitMessage: "Next Step"
@@ -138,6 +159,7 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
         messages={messages}
         onSubmit={onSubmit}
         alignButtonsRight
+        fieldClassName={classes.field}
       />
     </>
   );

@@ -1,5 +1,4 @@
 import React from "react";
-import Layout from "./../layouts/layout";
 import Form from "./../general/Form";
 import countries from "./../../../public/data/countries.json";
 import { makeStyles } from "@material-ui/core/styles";
@@ -39,7 +38,7 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
         defaultValue: values["country"] ? values["country"] : "",
         addEmptyValue: true
       },
-      key: "country"      
+      key: "country"
     },
     {
       required: true,
@@ -93,7 +92,7 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
   };
 
   return (
-    <Layout title="Sign Up">
+    <>
       <Form
         fields={fields}
         messages={messages}
@@ -102,6 +101,6 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
         errorMessage={errorMessage}
         onGoBack={handleGoBack}
       />
-    </Layout>
+    </>
   );
 }

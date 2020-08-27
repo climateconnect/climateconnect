@@ -10,7 +10,11 @@ import UserContext from "../../src/components/context/UserContext";
 import LoginNudge from "../../src/components/general/LoginNudge";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import { getImageUrl } from "../../public/lib/imageOperations";
-import { getSkillsOptions, getStatusOptions, getProjectTagsOptions } from "../../public/lib/getOptions";
+import {
+  getSkillsOptions,
+  getStatusOptions,
+  getProjectTagsOptions
+} from "../../public/lib/getOptions";
 
 const useStyles = makeStyles(theme => ({
   root: {

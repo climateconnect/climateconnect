@@ -33,6 +33,14 @@ class Project(models.Model):
         upload_to=project_image_path
     )
 
+    thumbnail_image = models.ImageField(
+        help_text="Image to show on project card",
+        verbose_name="Thumbnail image",
+        null=True,
+        blank=True,
+        upload_to=project_image_path
+    )
+
     status = models.ForeignKey(
         'ProjectStatus',
         help_text="Points to project's status",
@@ -120,7 +128,7 @@ class Project(models.Model):
         models.CharField(max_length=264),
         blank=True,
         null=True,
-        size=5
+        size=10
     )
 
     is_draft = models.BooleanField(
@@ -137,12 +145,17 @@ class Project(models.Model):
         blank=True
     )
 
+    rating = models.PositiveSmallIntegerField(
+        help_text="The larger the number, the more to the top this project will be displayed",
+        verbose_name="Rating (1-100)",
+        default=100
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Project"
         verbose_name_plural = "Projects"
-        ordering = ['-id']
-
+        ordering = ['-rating', '-id']
     def __str__(self):
         return "(%d) %s" % (self.pk, self.name)
 

@@ -4,7 +4,11 @@ import { Typography, Tooltip, IconButton, Button, useMediaQuery } from "@materia
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
-import imageCompression from "browser-image-compression";
+import {
+  getResizedImage,
+  whitenTransparentPixels,
+  getCompressedJPG
+} from "./../../../public/lib/imageOperations";
 import { getImageDialogHeight } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => {
@@ -67,18 +71,9 @@ export default function AddPhotoSection({
     const file = event.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
-    const options = {
-      maxSizeMB: 0.5,
-      maxWidthOrHeight: 550,
-      useWebWorker: true
-    };
-    try {
-      const compressedFile = await imageCompression(file, options);
-      setTempImage(URL.createObjectURL(compressedFile));
-      handleDialogClickOpen("avatarDialog");
-    } catch (error) {
-      console.log(error);
-    }
+    const image = await getCompressedJPG(file, 0.5);
+    setTempImage(image);
+    handleDialogClickOpen("avatarDialog");
   };
 
   const onUploadImageClick = event => {
@@ -86,10 +81,23 @@ export default function AddPhotoSection({
     inputFileRef.current.click();
   };
 
-  const handleAvatarDialogClose = image => {
+  const handleAvatarDialogClose = async image => {
     handleSetOpen({ avatarDialog: false });
     if (image && image instanceof HTMLCanvasElement) {
-      handleSetProjectData({ image: image.toDataURL("image/png") });
+      whitenTransparentPixels(image);
+      image.toBlob(async function(blob) {
+        const resizedBlob = URL.createObjectURL(blob);
+        const thumbnailBlob = await getResizedImage(
+          URL.createObjectURL(blob),
+          290,
+          160,
+          "image/jpeg"
+        );
+        handleSetProjectData({
+          image: resizedBlob,
+          thumbnail_image: thumbnailBlob
+        });
+      }, "image/jpeg");
     }
   };
 

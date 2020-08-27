@@ -48,9 +48,7 @@ export async function getProjectTagsOptions() {
 
 export async function getOrganizationTagsOptions() {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/organizationtags/"
-    );
+    const resp = await axios.get(process.env.API_URL + "/api/organizationtags/");
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results.map(t => {

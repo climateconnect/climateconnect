@@ -11,7 +11,6 @@ import ProjectContent from "../../src/components/project/ProjectContent";
 import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
 import ProjectCommentsContent from "../../src/components/project/ProjectCommentsContent";
 import { getParams } from "./../../public/lib/generalOperations";
-import Router from "next/router";
 
 import tokenConfig from "../../public/config/tokenConfig";
 import axios from "axios";
@@ -53,9 +52,10 @@ const parseComments = comments => {
     .map(c => {
       return {
         ...c,
-        replies: comments.filter(r => r.parent_comment_id === c.id)
-          .sort((a,b) => {
-            return new Date(a.created_at)-new Date(b.created_at)
+        replies: comments
+          .filter(r => r.parent_comment_id === c.id)
+          .sort((a, b) => {
+            return new Date(a.created_at) - new Date(b.created_at);
           })
       };
     });
@@ -71,7 +71,6 @@ export default function ProjectPage({ project, members, posts, comments, token, 
     if (params.message && encodeURI(message.message) != params.message) {
       setMessage({ message: decodeURI(params.message) });
     }
-    if (project.is_draft) Router.push("/editProject/" + project.url_slug);
   });
   return (
     <WideLayout
@@ -139,27 +138,25 @@ function ProjectLayout({
     if (project && project.team) {
       if (project.team.length === 12) {
         teamLabel += ` (${project.team.length}+)`;
-      }
-      else if (project.team.length < 12 && project.team.length > 0) {
+      } else if (project.team.length < 12 && project.team.length > 0) {
         teamLabel += ` (${project.team.length})`;
       }
     }
     return teamLabel;
-  }
+  };
 
-    // pagination will only return 10 comments
+  // pagination will only return 10 comments
   const commentsTabLabel = () => {
     let commentsLabel = "Comments";
     if (project && project.comments) {
       if (project.comments.length === 10) {
         commentsLabel += ` (${project.comments.length}+)`;
-      }
-      else if (project.team.length < 10 && project.comments.length > 0) {
+      } else if (project.team.length < 10 && project.comments.length > 0) {
         commentsLabel += ` (${project.comments.length})`;
       }
     }
     return commentsLabel;
-  }
+  };
 
   const handleTabChange = (event, newValue) => {
     if (newValue === 0) window.location.hash = "";
@@ -223,9 +220,9 @@ function ProjectLayout({
             onChange={handleTabChange}
             indicatorColor="primary"
           >
-            <Tab label="Project" className={classes.tab}/>
-            <Tab label={teamTabLabel()} className={classes.tab}/>
-            <Tab label={commentsTabLabel()} className={classes.tab}/>
+            <Tab label="Project" className={classes.tab} />
+            <Tab label={teamTabLabel()} className={classes.tab} />
+            <Tab label={commentsTabLabel()} className={classes.tab} />
           </Tabs>
         </div>
       </Container>

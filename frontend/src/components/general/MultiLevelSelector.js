@@ -13,10 +13,11 @@ const useStyles = makeStyles(theme => {
   return {
     wrapper: props => ({
       margin: "0 auto",
-      display: "flex",
+      display: props.flexWrapper ? "flex" : "block",
       marginTop: props.marginTop ? theme.spacing(8) : 0,
       [theme.breakpoints.down("sm")]: {
-        marginTop: theme.spacing(4)
+        marginTop: theme.spacing(4),
+        display: "block"
       }
     }),
     list: {
@@ -52,7 +53,7 @@ const useStyles = makeStyles(theme => {
     },
     firstItem: {
       borderTop: "1px solid black"
-    },    
+    },
     narrowScreenSubListItem: {
       borderLeft: "1px solid black",
       borderTop: 0
@@ -84,7 +85,7 @@ const useStyles = makeStyles(theme => {
       textAlign: "center"
     },
     selectedItemsHeader: {
-      fontWeight: "bold"      
+      fontWeight: "bold"
     },
     selectedItem: {
       background: theme.palette.primary.main,
@@ -107,10 +108,12 @@ const useStyles = makeStyles(theme => {
       display: "inline-block",
       width: 700,
       [theme.breakpoints.down("md")]: {
-        width: 650 - theme.spacing(8)
+        width: 650 - theme.spacing(8),
+        margin: "0 auto"
       },
       [theme.breakpoints.down("xs")]: {
-        width: "auto"
+        width: "auto",
+        margin: "0 auto"
       }
     },
     narrowScreenListWrapper: {
@@ -147,7 +150,10 @@ export default function MultiLevelSelector({
 }) {
   const [expanded, setExpanded] = React.useState(null);
 
-  const useStylesProps = { marginTop: !isInPopup };
+  const useStylesProps = {
+    marginTop: !isInPopup,
+    flexWrapper: !isInPopup
+  };
 
   const classes = useStyles(useStylesProps);
 
@@ -173,9 +179,9 @@ export default function MultiLevelSelector({
   const moveItem = (sourcePosition, destinationPosition) => {
     const ret = selected;
     const [removed] = ret.splice(sourcePosition, 1);
-    ret.splice(destinationPosition, 0, removed)
-    setSelected(ret)
-  }
+    ret.splice(destinationPosition, 0, removed);
+    setSelected(ret);
+  };
 
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   return (
@@ -190,7 +196,7 @@ export default function MultiLevelSelector({
               onClickUnselect={onClickUnselect}
               className={`${classes.selectedWrapper} ${(isNarrowScreen || isInPopup) &&
                 classes.narrowScreenSelectedWrapper}`}
-              dragAble = {dragAble}
+              dragAble={dragAble}
               moveItem={moveItem}
             />
             {selected.length > 0 && <Divider className={classes.divider} />}
@@ -249,30 +255,29 @@ function ListToChooseWrapper({
   );
 }
 
-const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-
-  return result;
-};
-
-function SelectedList({ selected, itemNamePlural, maxSelections, className, onClickUnselect, dragAble, moveItem }) {
+function SelectedList({
+  selected,
+  itemNamePlural,
+  maxSelections,
+  className,
+  onClickUnselect,
+  dragAble,
+  moveItem
+}) {
   const classes = useStyles({});
 
-  const onDragEnd = (result) => {
+  const onDragEnd = result => {
     // dropped outside the list
-    if (!result.destination)
-      return;
+    if (!result.destination) return;
 
-    moveItem(result.source.index, result.destination.index)
-  }
-  
-  if(dragAble)
+    moveItem(result.source.index, result.destination.index);
+  };
+
+  if (dragAble)
     return (
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
-          {(provided, snapshot) => (
+          {provided => (
             <List
               {...provided.droppableProps}
               ref={provided.innerRef}
@@ -280,8 +285,8 @@ function SelectedList({ selected, itemNamePlural, maxSelections, className, onCl
             >
               {selected.map((item, index) => {
                 return (
-                  <Draggable key={item.id} draggableId={"draggable"+item.id} index={index}>
-                    {(provided, snapshot) => {
+                  <Draggable key={item.id} draggableId={"draggable" + item.id} index={index}>
+                    {provided => {
                       return (
                         <ListItem
                           ref={provided.innerRef}
@@ -303,44 +308,45 @@ function SelectedList({ selected, itemNamePlural, maxSelections, className, onCl
                             <CloseIcon />
                           </ListItemIcon>
                         </ListItem>
-                      )
-                    }}    
-                  </Draggable>            
-                )
-              })}  
-              {provided.placeholder}            
+                      );
+                    }}
+                  </Draggable>
+                );
+              })}
+              {provided.placeholder}
             </List>
           )}
         </Droppable>
       </DragDropContext>
-    )
-  else return (
-    <div className={className}>
-      <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
-        {selected.length > 0
-          ? "Selected " + itemNamePlural
-          : "Select between 1 and " + maxSelections + " " + itemNamePlural + "!"}
-      </Typography>
-      <List className={classes.selectedList}>
-        {selected.map((item, index) => (
-          <ListItem
-            key={index}
-            button
-            className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
-              classes.selectedItem
-            }`}
-            onClick={() => onClickUnselect(item)}
-            disableRipple
-          >
-            <ListItemText>{item.name}</ListItemText>
-            <ListItemIcon className={classes.selectedItemIcon}>
-              <CloseIcon />
-            </ListItemIcon>
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  );
+    );
+  else
+    return (
+      <div className={className}>
+        <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
+          {selected.length > 0
+            ? "Selected " + itemNamePlural
+            : "Select between 1 and " + maxSelections + " " + itemNamePlural + "!"}
+        </Typography>
+        <List className={classes.selectedList}>
+          {selected.map((item, index) => (
+            <ListItem
+              key={index}
+              button
+              className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
+                classes.selectedItem
+              }`}
+              onClick={() => onClickUnselect(item)}
+              disableRipple
+            >
+              <ListItemText>{item.name}</ListItemText>
+              <ListItemIcon className={classes.selectedItemIcon}>
+                <CloseIcon />
+              </ListItemIcon>
+            </ListItem>
+          ))}
+        </List>
+      </div>
+    );
 }
 
 function ListToChooseFrom({

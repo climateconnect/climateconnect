@@ -30,8 +30,8 @@ export default function CommentsContent({ user, project, token, setCurComments }
   };
 
   const handleRemoveComment = c => {
-    setCurComments([...project.comments.filter(pc => pc.id !== c.id)])
-  }
+    setCurComments([...project.comments.filter(pc => pc.id !== c.id)]);
+  };
 
   const onSendComment = async (curComment, parent_comment, clearInput, setDisplayReplies) => {
     const comment = curComment;
@@ -56,10 +56,10 @@ export default function CommentsContent({ user, project, token, setCurComments }
   const onDeleteComment = async post => {
     try {
       await axios.delete(
-        process.env.API_URL + "/api/projects/" + project.url_slug + "/comment/"+post.id+"/",
+        process.env.API_URL + "/api/projects/" + project.url_slug + "/comment/" + post.id + "/",
         tokenConfig(token)
       );
-      handleRemoveComment(post)
+      handleRemoveComment(post);
     } catch (err) {
       console.log(err);
       if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);

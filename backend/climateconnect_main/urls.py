@@ -61,6 +61,10 @@ urlpatterns = [
         'api/resend_verification_email/',
         user_views.ResendVerificationEmail.as_view(), name='resend-verification-email'
     ),
+    path(
+        'api/feedback/',
+        common_views.ReceiveFeedback.as_view(), name='receive-feedback'
+    ),
     # Organization views
     path('api/', include('organization.urls')),
     # Common views

@@ -13,12 +13,13 @@ import possibleFilters from "./../public/data/possibleFilters";
 import OrganizationPreviews from "../src/components/organization/OrganizationPreviews";
 import ProfilePreviews from "../src/components/profile/ProfilePreviews";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
-import { 
-  getSkillsOptions, 
-  getStatusOptions, 
-  getProjectTagsOptions, 
-  getOrganizationTagsOptions 
-} from "../public/lib/getOptions"
+import TextLoop from "react-text-loop";
+import {
+  getSkillsOptions,
+  getStatusOptions,
+  getProjectTagsOptions,
+  getOrganizationTagsOptions
+} from "../public/lib/getOptions";
 
 import Cookies from "next-cookies";
 import tokenConfig from "../public/config/tokenConfig";
@@ -32,6 +33,9 @@ const useStyles = makeStyles(theme => {
       borderColor: "#707070",
       height: 40
     },
+    rightSidePlaceholder: {
+      width: 100
+    },
     filterSectionFirstLine: {
       display: "flex",
       justifyContent: "space-between",
@@ -43,20 +47,20 @@ const useStyles = makeStyles(theme => {
       alignItems: "center",
       justifyContent: "center"
     },
-    filterSearchbar: {
+    filterSearchbar: props => ({
       marginLeft: theme.spacing(2),
-      marginRight: theme.spacing(2),
+      marginRight: props.isMediumScreen ? 0 : theme.spacing(2),
       width: "100%",
       maxWidth: 650,
       margin: "0 auto"
-    },
+    }),
     filterSectionTabsWithContent: {
       marginBottom: theme.spacing(3)
     },
     tab: {
       width: 160,
       paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
+      paddingRight: theme.spacing(2)
     },
     tabContent: {
       marginTop: theme.spacing(2),
@@ -70,16 +74,27 @@ const useStyles = makeStyles(theme => {
       display: "inline-block",
       textDecoration: "underline",
       cursor: "pointer"
+    },
+    mainHeading: {
+      textAlign: "center",
+      margin: `${theme.spacing(4)}px 0`
+    },
+    titleText: {
+      display: "inline-block"
+    },
+    titleTextRight: {
+      display: "inline-block",
+      marginLeft: theme.spacing(0.75)
     }
   };
 });
 
-export default function Index({ 
-  projectsObject, 
-  organizationsObject, 
-  membersObject, 
-  token, 
-  filterChoices 
+export default function Index({
+  projectsObject,
+  organizationsObject,
+  membersObject,
+  token,
+  filterChoices
 }) {
   const membersWithAdditionalInfo = members => {
     return members.map(p => {
@@ -98,9 +113,9 @@ export default function Index({
   };
   const initialState = {
     items: {
-      projects: projectsObject?[...projectsObject.projects]:[],
-      organizations: organizationsObject?[...organizationsObject.organizations]:[],
-      members: membersObject?membersWithAdditionalInfo(membersObject.members):[]
+      projects: projectsObject ? [...projectsObject.projects] : [],
+      organizations: organizationsObject ? [...organizationsObject.organizations] : [],
+      members: membersObject ? membersWithAdditionalInfo(membersObject.members) : []
     },
     hasMore: {
       projects: !!projectsObject && projectsObject.hasMore,
@@ -117,11 +132,12 @@ export default function Index({
       organizations: "",
       members: ""
     }
-  }
-  const [state, setState] = React.useState(initialState)
-  
-  const classes = useStyles();
-  //Django starts counting at page 1 and we always catch the first page on load.  
+  };
+  const [state, setState] = React.useState(initialState);
+  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
+  const classes = useStyles({ isMediumScreen: isMediumScreen });
+  //Django starts counting at page 1 and we always catch the first page on load.
   const [hash, setHash] = React.useState(null);
   const [message, setMessage] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState("");
@@ -136,7 +152,6 @@ export default function Index({
     if (params.errorMessage) setErrorMessage(decodeURI(params.errorMessage));
   });
   const [tabValue, setTabValue] = React.useState(hash ? typesByTabValue.indexOf(hash) : 0);
-  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
   const [filtersExpanded, setFiltersExpanded] = React.useState(false);
   const [filters, setFilters] = React.useState({
     projects: {},
@@ -147,68 +162,65 @@ export default function Index({
     projects: "",
     members: "",
     organizations: ""
-  })
+  });
   const onSearchValueChange = (type, newValue) => {
-    setSearchFilters({...searchFilters, [type]: newValue})
-  }
+    setSearchFilters({ ...searchFilters, [type]: newValue });
+  };
 
   const onSearchSubmit = async type => {
-    const newUrlEnding = buildUrlEndingFromSearch(searchFilters[type])
-    if(state.urlEnding[type] != newUrlEnding){        
-      try{
+    const newUrlEnding = buildUrlEndingFromSearch(searchFilters[type]);
+    if (state.urlEnding[type] != newUrlEnding) {
+      try {
         let filteredItemsObject;
-        if(type === "projects")
-          filteredItemsObject = await getProjects(1, token, newUrlEnding)
-        else if(type === "organizations")
-          filteredItemsObject = await getOrganizations(1, token, newUrlEnding)
-        else if(type === "members"){
-          console.log("type is members!")
-          filteredItemsObject = await getMembers(1, token, newUrlEnding)
-          console.log(filteredItemsObject)
-          filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members)
-        }else{
-          console.log("cannot find type!")            
+        if (type === "projects") filteredItemsObject = await getProjects(1, token, newUrlEnding);
+        else if (type === "organizations")
+          filteredItemsObject = await getOrganizations(1, token, newUrlEnding);
+        else if (type === "members") {
+          console.log("type is members!");
+          filteredItemsObject = await getMembers(1, token, newUrlEnding);
+          console.log(filteredItemsObject);
+          filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
+        } else {
+          console.log("cannot find type!");
         }
         setState({
           ...state,
-          items: {...state.items, [type]: filteredItemsObject[type]},
-          hasMore: {...state.hasMore, [type]: filteredItemsObject.hasMore},
-          urlEnding: {...state.urlEnding, [type]: newUrlEnding},
-          nextPages: {...state.nextPages, [type]: 2}
-        })
-      }catch(e){
-        console.log(e)
+          items: { ...state.items, [type]: filteredItemsObject[type] },
+          hasMore: { ...state.hasMore, [type]: filteredItemsObject.hasMore },
+          urlEnding: { ...state.urlEnding, [type]: newUrlEnding },
+          nextPages: { ...state.nextPages, [type]: 2 }
+        });
+      } catch (e) {
+        console.log(e);
       }
     }
-  }
+  };
 
-  const applyNewFilters = async(type, newFilters, closeFilters) => {
-    console.log("applying new filters!")
-    if(filters !== newFilters){
+  const applyNewFilters = async (type, newFilters, closeFilters) => {
+    console.log("applying new filters!");
+    if (filters !== newFilters) {
       setFilters({ ...filters, [type]: newFilters });
-      const newUrlEnding = buildUrlEndingFromFilters(newFilters)
-      if(state.urlEnding[type] != newUrlEnding){        
+      const newUrlEnding = buildUrlEndingFromFilters(newFilters);
+      if (state.urlEnding[type] != newUrlEnding) {
         if (closeFilters) setFiltersExpanded(false);
-        try{
+        try {
           let filteredItemsObject;
-          if(type === "projects")
-            filteredItemsObject = await getProjects(1, token, newUrlEnding)
-          else if(type === "organizations")
-            filteredItemsObject = await getOrganizations(1, token, newUrlEnding)
-          else if(type === "members"){
-            filteredItemsObject = await getMembers(1, token, newUrlEnding)
-            filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members)
-          }else
-            console.log("cannot find type!")
+          if (type === "projects") filteredItemsObject = await getProjects(1, token, newUrlEnding);
+          else if (type === "organizations")
+            filteredItemsObject = await getOrganizations(1, token, newUrlEnding);
+          else if (type === "members") {
+            filteredItemsObject = await getMembers(1, token, newUrlEnding);
+            filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
+          } else console.log("cannot find type!");
           setState({
             ...state,
-            items: {...state.items, [type]: filteredItemsObject[type]},
-            hasMore: {...state.hasMore, [type]: filteredItemsObject.hasMore},
-            urlEnding: {...state.urlEnding, [type]: newUrlEnding},
-            nextPages: {...state.nextPages, [type]: 2}
-          })
-        }catch(e){
-          console.log(e)
+            items: { ...state.items, [type]: filteredItemsObject[type] },
+            hasMore: { ...state.hasMore, [type]: filteredItemsObject.hasMore },
+            urlEnding: { ...state.urlEnding, [type]: newUrlEnding },
+            nextPages: { ...state.nextPages, [type]: 2 }
+          });
+        } catch (e) {
+          console.log(e);
         }
       }
     }
@@ -235,40 +247,48 @@ export default function Index({
   };
 
   const loadMoreProjects = async () => {
-    try{
-      const newProjectsObject = await getProjects(state.nextPages.projects, token, state.urlEnding.projects);
+    try {
+      const newProjectsObject = await getProjects(
+        state.nextPages.projects,
+        token,
+        state.urlEnding.projects
+      );
       const newProjects = newProjectsObject.projects;
       setState({
         ...state,
-        nextPages: { 
-          ...state.nextPages, 
-          projects: state.nextPages.projects + 1 
+        nextPages: {
+          ...state.nextPages,
+          projects: state.nextPages.projects + 1
         },
-        hasMore: { 
-          ...state.hasMore, 
-          projects: newProjectsObject.hasMore 
+        hasMore: {
+          ...state.hasMore,
+          projects: newProjectsObject.hasMore
         },
         items: {
-          ...state.items, 
+          ...state.items,
           projects: [...state.items.projects, ...newProjects]
         }
-      })
-      
+      });
+
       return [...newProjects];
-    }catch(e){
-      console.log("error")
-      console.log(e)
+    } catch (e) {
+      console.log("error");
+      console.log(e);
       setState({
         ...state,
-        hasMore: {...state.hasMore, projects: false}
-      })
-      return []
-    }    
+        hasMore: { ...state.hasMore, projects: false }
+      });
+      return [];
+    }
   };
 
   const loadMoreOrganizations = async () => {
-    try{
-      const newOrganizationsObject = await getOrganizations(state.nextPages.organizations, token, state.urlEnding.organizations);
+    try {
+      const newOrganizationsObject = await getOrganizations(
+        state.nextPages.organizations,
+        token,
+        state.urlEnding.organizations
+      );
       const newOrganizations = newOrganizationsObject ? newOrganizationsObject.organizations : [];
       setState({
         ...state,
@@ -277,11 +297,14 @@ export default function Index({
           ...state.hasMore,
           organizations: newOrganizationsObject.hasMore
         },
-        items: {...state.items, organizations: [...state.items.organizations, ...newOrganizations]}
-      })
+        items: {
+          ...state.items,
+          organizations: [...state.items.organizations, ...newOrganizations]
+        }
+      });
       return [...newOrganizations];
-    }catch(e){
-      console.log(e)
+    } catch (e) {
+      console.log(e);
       setState({
         ...state,
         nextPages: { ...state.nextPages, organizations: state.nextPages.organizations + 1 },
@@ -289,37 +312,41 @@ export default function Index({
           ...state.hasMore,
           organizations: false
         }
-      })
-      return []
+      });
+      return [];
     }
   };
 
   const loadMoreMembers = async () => {
-    try{
-    const newMembersObject = await getMembers(state.nextPages.members, token, state.urlEnding.members);
-    const newMembers = membersWithAdditionalInfo(newMembersObject.members);
-    setState({
-      ...state,
-      nextPages: { ...state.nextPages, members: state.nextPages.members + 1 },
-      hasMore: {
-        ...state.hasMore,
-        members: newMembersObject.hasMore
-      },
-      items: {...state.items, members: [...state.items.members, ...newMembers]}
-    })
-    return [...newMembers];
-    }catch(e){
-      console.log(e)
+    try {
+      const newMembersObject = await getMembers(
+        state.nextPages.members,
+        token,
+        state.urlEnding.members
+      );
+      const newMembers = membersWithAdditionalInfo(newMembersObject.members);
+      setState({
+        ...state,
+        nextPages: { ...state.nextPages, members: state.nextPages.members + 1 },
+        hasMore: {
+          ...state.hasMore,
+          members: newMembersObject.hasMore
+        },
+        items: { ...state.items, members: [...state.items.members, ...newMembers] }
+      });
+      return [...newMembers];
+    } catch (e) {
+      console.log(e);
       setState({
         ...state,
         hasMore: {
           ...state.hasMore,
           members: false
         }
-      })
+      });
       return [];
     }
-  }; 
+  };
 
   return (
     <>
@@ -327,10 +354,36 @@ export default function Index({
         <About />
       ) : (
         <Layout
-          title="Work on the most effective climate projects"
+          title="Climate Connect - global climate action platform"
+          hideHeadline
           message={errorMessage ? errorMessage : message}
           messageType={errorMessage ? "error" : "success"}
         >
+          <div component="h1" variant="h5" className={classes.mainHeading}>
+            <TextLoop mask={true} interval={5000}>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Share
+              </Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Find
+              </Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Work on
+              </Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Get inspired by
+              </Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Replicate
+              </Typography>
+              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                Collaborate with
+              </Typography>
+            </TextLoop>
+            <Typography component="h1" variant="h5" className={classes.titleTextRight}>
+              the most effective climate projects
+            </Typography>
+          </div>
           <div className={classes.filterSection}>
             <div className={classes.filterSectionFirstLine}>
               <Button
@@ -357,6 +410,7 @@ export default function Index({
                   value={searchFilters[typesByTabValue[tabValue]]}
                 />
               </div>
+              {!isMediumScreen && <div className={classes.rightSidePlaceholder} />}
             </div>
           </div>
           <Divider className={classes.mainDivider} />
@@ -466,21 +520,20 @@ export default function Index({
 }
 
 const buildUrlEndingFromFilters = filters => {
-  let url = "&"
-  Object.keys(filters).map(filterKey=>{
-    if(filters[filterKey] && filters[filterKey].length>0){
-      if(Array.isArray(filters[filterKey]))
-        url += encodeURI(filterKey+"="+filters[filterKey].join())+"&"
-      else
-        url += encodeURI(filterKey+"="+filters[filterKey]+"&")
+  let url = "&";
+  Object.keys(filters).map(filterKey => {
+    if (filters[filterKey] && filters[filterKey].length > 0) {
+      if (Array.isArray(filters[filterKey]))
+        url += encodeURI(filterKey + "=" + filters[filterKey].join()) + "&";
+      else url += encodeURI(filterKey + "=" + filters[filterKey] + "&");
     }
-  })
-  return url
-}
+  });
+  return url;
+};
 
 const buildUrlEndingFromSearch = searchValue => {
-  return "&search="+searchValue
-}
+  return "&search=" + searchValue;
+};
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -497,7 +550,7 @@ Index.getInitialProps = async ctx => {
     organization_types: await getOrganizationTagsOptions(),
     skills: await getSkillsOptions(),
     project_statuses: await getStatusOptions()
-  }
+  };
   return {
     projectsObject: await getProjects(1, token),
     organizationsObject: await getOrganizations(1, token),
@@ -508,14 +561,10 @@ Index.getInitialProps = async ctx => {
 };
 
 async function getProjects(page, token, urlEnding) {
-  let url = process.env.API_URL + "/api/projects/?page=" + page
-  if(urlEnding)
-    url += urlEnding
+  let url = process.env.API_URL + "/api/projects/?page=" + page;
+  if (urlEnding) url += urlEnding;
   try {
-    const resp = await axios.get(
-      url,
-      tokenConfig(token)
-    );
+    const resp = await axios.get(url, tokenConfig(token));
     if (resp.data.length === 0) return null;
     else {
       return { projects: parseProjects(resp.data.results), hasMore: !!resp.data.next };
@@ -531,14 +580,10 @@ async function getProjects(page, token, urlEnding) {
 
 //TODO replace by db call. console.log is just there to pass lint
 async function getOrganizations(page, token, urlEnding) {
-  let url = process.env.API_URL + "/api/organizations/?page=" + page
-  if(urlEnding)
-    url += urlEnding
+  let url = process.env.API_URL + "/api/organizations/?page=" + page;
+  if (urlEnding) url += urlEnding;
   try {
-    const resp = await axios.get(
-      url,
-      tokenConfig(token)
-    );
+    const resp = await axios.get(url, tokenConfig(token));
     if (resp.data.length === 0) return null;
     else {
       return { organizations: parseOrganizations(resp.data.results), hasMore: !!resp.data.next };
@@ -555,21 +600,17 @@ async function getOrganizations(page, token, urlEnding) {
 //TODO replace by db call. console.log is just there to pass lint
 async function getMembers(page, token, urlEnding) {
   try {
-    console.log("getting members for page "+page+" with urlEnding "+urlEnding)
-    let url = process.env.API_URL + "/api/members/?page=" + page
-    if(urlEnding)
-      url += urlEnding
-    const resp = await axios.get(
-      url,
-      tokenConfig(token)
-    );
+    console.log("getting members for page " + page + " with urlEnding " + urlEnding);
+    let url = process.env.API_URL + "/api/members/?page=" + page;
+    if (urlEnding) url += urlEnding;
+    const resp = await axios.get(url, tokenConfig(token));
     if (resp.data.length === 0) return null;
     else {
       return { members: parseMembers(resp.data.results), hasMore: !!resp.data.next };
     }
   } catch (err) {
     if (err.response && err.response.data) {
-      console.log("Error getting members page "+page+": ");
+      console.log("Error getting members page " + page + ": ");
       console.log(err.response.data);
     } else console.log(err);
     return null;

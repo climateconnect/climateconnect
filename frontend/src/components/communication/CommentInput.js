@@ -40,8 +40,7 @@ export default function CommentInput({ user, onSendComment, parent_comment, onCa
 
   const handleSendComment = event => {
     if (event) event.preventDefault();
-    if(!curComment)
-      alert("Your comment cannot be empty")
+    if (!curComment) alert("Your comment cannot be empty");
     onSendComment(curComment, parent_comment, clearInput);
   };
 
@@ -49,7 +48,7 @@ export default function CommentInput({ user, onSendComment, parent_comment, onCa
     setCurComment("");
     if (onCancel) onCancel();
   };
-  
+
   if (user)
     return (
       <div>
