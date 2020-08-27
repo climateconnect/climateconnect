@@ -31,16 +31,18 @@ class ConnectMessageParticipantsView(APIView):
 
         if participant_user:
             participants = [user, participant_user]
-            message_participants, created = MessageParticipants.objects.get_or_create(
-                participants__in=participants,
-            )
 
-            if created:
-                message_participants.chat_uuid = str(uuid4())
+            if MessageParticipants.objects.filter(participants__in=participants).exists():
+                return Response(None, status=status.HTTP_200_OK)
+            else:
+                message_participants = MessageParticipants.objects.create(
+                    chat_uuid=str(uuid4())
+                )
+                for user in participants:
+                    message_participants.add(user)
+
                 message_participants.save()
 
-            # TODO: Add a websocket connection. Connect to the chat.
-            DirectMessageConsumer(group_name='chat').connect()
-            return Response({
-                'message': 'Participants successfully connected'
-            }, status=status.HTTP_200_OK)
+                return Response({
+                    'message': 'Participants successfully connected'
+                }, status=status.HTTP_201_CREATED)

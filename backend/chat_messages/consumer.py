@@ -3,19 +3,15 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 
 class DirectMessageConsumer(AsyncWebsocketConsumer):
-    def __init__(self, group_name, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.group_name = group_name
-
     async def connect(self):
         await self.channel_layer.group_add(
-            self.group_name, self.channel_name
+            'chat', self.channel_name
         )
         await self.accept()
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
-            self.group_name,
+            'chat',
             self.channel_name
         )
 
@@ -26,7 +22,7 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
 
         # Send message to room group
         await self.channel_layer.group_send(
-            self.group_name,
+            'chat',
             {
                 'type': 'chat_message',
                 'message': message
