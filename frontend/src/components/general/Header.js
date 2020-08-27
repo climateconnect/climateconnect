@@ -98,7 +98,11 @@ const useStyles = makeStyles(theme => {
       float: "right",
       display: "inline-flex",
       height: "100%",
-      alignItems: "center"
+      alignItems: "center",
+      [theme.breakpoints.down("xs")]: {
+        width: "100%",
+        justifyContent: "space-between"
+      }
     },
     staticPageLink: {
       paddingLeft: theme.spacing(2),
@@ -108,7 +112,10 @@ const useStyles = makeStyles(theme => {
       fontSize: 16,
       fontWeight: "bold",
       textDecoration: "inherit",
-      color: theme.palette.primary.main
+      color: theme.palette.primary.main,
+      [theme.breakpoints.down("xs")]: {
+        padding: 0
+      }
     }
   };
 });
@@ -168,7 +175,7 @@ const LINKS = [
 const STATIC_PAGE_LINKS =[
   {
     href: "/about",
-    text: "About us"
+    text: "About Us"
   },
   {
     href: "/support",
