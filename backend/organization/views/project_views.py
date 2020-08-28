@@ -5,7 +5,7 @@ from rest_framework.filters import SearchFilter
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django_filters.rest_framework import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 
 from django.contrib.auth.models import User
 
@@ -35,11 +35,24 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class ProjectsOrderingFilter(OrderingFilter):
+    def filter_queryset(self, request, queryset, view):
+        ordering = request.query_params.get('sort_by')
+        print(ordering)
+        if ordering is not None:
+            if ordering == 'newest':
+                queryset = queryset.order_by('-id')
+            elif ordering == 'oldest':                
+                queryset = queryset.order_by('id')
+            else:                
+                queryset = queryset.order_by('rating')
+        return queryset
+
 class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
-    filter_backends = [SearchFilter, DjangoFilterBackend]
+    filter_backends = [SearchFilter, DjangoFilterBackend, ProjectsOrderingFilter]
     search_fields = ['url_slug']
-    filterset_fields = ['collaborators_welcome', 'country', 'city']
+    filterset_fields = ['collaborators_welcome', 'country', 'city']    
     pagination_class = ProjectsPagination
     serializer_class = ProjectStubSerializer
     queryset = Project.objects.filter(is_draft=False)
@@ -54,7 +67,7 @@ class ListProjectsView(ListAPIView):
             if collaborators_welcome == 'yes':
                 projects = projects.filter(collaborators_welcome=True)
             if collaborators_welcome == 'no':
-                projects = projects.filter(collaborators_welcome=False)
+                projects = projects.filter(collaborators_welcome=False)              
 
         if 'category' in self.request.query_params:
             project_category = self.request.query_params.get('category').split(',')
