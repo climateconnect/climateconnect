@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import Layout from "../src/components/layouts/layout";
 import ProjectPreviews from "./../src/components/project/ProjectPreviews";
 import About from "./about";
-import { Divider, Button, Tab, Tabs, Typography } from "@material-ui/core";
+import { Divider, Button, Tab, Tabs, Typography, IconButton } from "@material-ui/core";
 import TuneIcon from "@material-ui/icons/Tune";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { makeStyles } from "@material-ui/core/styles";
@@ -14,18 +14,24 @@ import OrganizationPreviews from "../src/components/organization/OrganizationPre
 import ProfilePreviews from "../src/components/profile/ProfilePreviews";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import TextLoop from "react-text-loop";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import {
   getSkillsOptions,
   getStatusOptions,
   getProjectTagsOptions,
   getOrganizationTagsOptions
 } from "../public/lib/getOptions";
-
-import Cookies from "next-cookies";
+import about_page_info from "../public/data/about_page_info";
+import NextCookies from "next-cookies";
+import Cookies from "universal-cookie";
 import tokenConfig from "../public/config/tokenConfig";
 import axios from "axios";
 import Link from "next/link";
 import { getParams } from "../public/lib/generalOperations";
+import InfoBubble from "../src/components/about/InfoBubble";
+import theme from "../src/themes/theme";
+import UserContext from "../src/components/context/UserContext";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -75,16 +81,56 @@ const useStyles = makeStyles(theme => {
       textDecoration: "underline",
       cursor: "pointer"
     },
+    shareLink: {
+      color: theme.palette.primary.main,
+      textDecoration: "inherit"
+    },
+    mainHeadingContainer: {
+      margin: `${theme.spacing(4)}px 0`,
+      marginBottom: theme.spacing(3)
+    },
+    bubbleGrid: {
+      padding: 0,
+      width: "100%",
+      margin: "0 auto",
+      display: "flex",
+      justifyContent: "center",
+      flexFlow: "wrap",
+      marginTop: theme.spacing(1.5)
+    },
     mainHeading: {
       textAlign: "center",
-      margin: `${theme.spacing(4)}px 0`
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexWrap: "wrap"
     },
     titleText: {
-      display: "inline-block"
+      display: "inline-block",
+      [theme.breakpoints.down("xs")]: {
+        fontSize: 17,
+        fontWeight: "bold"
+      }
     },
     titleTextRight: {
       display: "inline-block",
-      marginLeft: theme.spacing(0.75)
+      marginLeft: theme.spacing(0.75),
+      [theme.breakpoints.down("xs")]: {
+        fontSize: 17,
+        fontWeight: "bold"
+      }
+    },
+    infoTextContainer: {
+      maxWidth: 1000,
+      margin: "0 auto",
+      textAlign: "center",
+      marginTop: theme.spacing(2)
+    },
+    highlightedText: {
+      fontWeight: "bold"
+    },
+    textAboveButton: {
+      marginBottom: theme.spacing(1)
     }
   };
 });
@@ -94,8 +140,11 @@ export default function Index({
   organizationsObject,
   membersObject,
   token,
-  filterChoices
+  filterChoices,
+  hideInfo
 }) {
+  const { user } = useContext(UserContext);
+  const cookies = new Cookies();
   const membersWithAdditionalInfo = members => {
     return members.map(p => {
       return {
@@ -141,6 +190,7 @@ export default function Index({
   const [hash, setHash] = React.useState(null);
   const [message, setMessage] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState("");
+  const [showInfoText, setShowInfoText] = React.useState(!hideInfo);
   const typesByTabValue = ["projects", "organizations", "members"];
   useEffect(() => {
     if (window.location.hash) {
@@ -166,6 +216,18 @@ export default function Index({
   const onSearchValueChange = (type, newValue) => {
     setSearchFilters({ ...searchFilters, [type]: newValue });
   };
+
+  const toggleShowInfoText = () => {
+    const now = new Date();
+    const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 1));
+    if(showInfoText) {      
+      cookies.set("hideInfo", true, { path: "/", expires: oneYearFromNow, sameSite: true })
+      setShowInfoText(false)
+    } else{   
+      cookies.set("hideInfo", false, { path: "/", expires: oneYearFromNow, sameSite: true })
+      setShowInfoText(true)
+    }
+  }
 
   const onSearchSubmit = async type => {
     const newUrlEnding = buildUrlEndingFromSearch(searchFilters[type]);
@@ -348,6 +410,8 @@ export default function Index({
     }
   };
 
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
+
   return (
     <>
       {process.env.PRE_LAUNCH === "true" ? (
@@ -359,30 +423,57 @@ export default function Index({
           message={errorMessage ? errorMessage : message}
           messageType={errorMessage ? "error" : "success"}
         >
-          <div component="h1" variant="h5" className={classes.mainHeading}>
-            <TextLoop mask={true} interval={5000}>
-              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                Share
+          <div className={classes.mainHeadingContainer}>
+            <div component="h1" variant="h5" className={classes.mainHeading}>
+              <TextLoop mask={true} interval={5000}>
+                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                  Share
+                </Typography>
+                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                  Find
+                </Typography>
+                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                  Work on
+                </Typography>
+                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                  Get inspired by
+                </Typography>
+                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                  Replicate
+                </Typography>
+                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
+                  Collaborate with
+                </Typography>
+              </TextLoop>
+              <Typography component="h1" variant="h5" className={classes.titleTextRight}>
+                the most effective climate projects 
               </Typography>
-              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                Find
-              </Typography>
-              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                Work on
-              </Typography>
-              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                Get inspired by
-              </Typography>
-              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                Replicate
-              </Typography>
-              <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                Collaborate with
-              </Typography>
-            </TextLoop>
-            <Typography component="h1" variant="h5" className={classes.titleTextRight}>
-              the most effective climate projects
-            </Typography>
+              {!isSmallScreen &&
+                <IconButton onClick={toggleShowInfoText} className={classes.toggleInfoTextButton}>
+                  {showInfoText ? <ExpandLessIcon color="primary" /> : <ExpandMoreIcon color="primary"/>}
+                </IconButton> 
+              }                         
+            </div>
+            {showInfoText && 
+              <div className={classes.infoTextContainer}>
+                <Typography component="div">
+                  {!isSmallScreen && (
+                    <>
+                      <Typography className={classes.highlightedText}>Climate Connect is a free, non-profit climate action platform.</Typography>                 
+                      <div className={classes.bubbleGrid}>
+                        {about_page_info.map((info, index) => (
+                          <InfoBubble data={info} key={index} size="small" color="primary"/>
+                        ))}
+                      </div>                  
+                      <Typography className={`${classes.highlightedText} ${classes.textAboveButton}`}>We need global collaboration to effectively fight climate change.</Typography>
+                    </>
+                  )}  
+                  {!user &&                
+                    <Button href="signup" variant="outlined"><a className={classes.shareLink}><b>Join Climate Connect</b></a></Button>
+                  }
+                  </Typography>
+              </div>
+            }
           </div>
           <div className={classes.filterSection}>
             <div className={classes.filterSectionFirstLine}>
@@ -544,7 +635,7 @@ function TabContent({ value, index, children }) {
 }
 
 Index.getInitialProps = async ctx => {
-  const { token } = Cookies(ctx);
+  const { token, hideInfo } = NextCookies(ctx);
   const filterChoices = {
     project_categories: await getProjectTagsOptions(),
     organization_types: await getOrganizationTagsOptions(),
@@ -556,7 +647,8 @@ Index.getInitialProps = async ctx => {
     organizationsObject: await getOrganizations(1, token),
     membersObject: await getMembers(1, token),
     token: token,
-    filterChoices: filterChoices
+    filterChoices: filterChoices,
+    hideInfo: hideInfo === "true"
   };
 };
 
