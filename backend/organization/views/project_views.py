@@ -52,7 +52,7 @@ class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter, DjangoFilterBackend, ProjectsOrderingFilter]
     search_fields = ['url_slug']
-    filterset_fields = ['collaborators_welcome', 'country', 'city']    
+    filterset_fields = ['collaborators_welcome', 'country', 'city']
     pagination_class = ProjectsPagination
     serializer_class = ProjectStubSerializer
     queryset = Project.objects.filter(is_draft=False)
@@ -67,7 +67,7 @@ class ListProjectsView(ListAPIView):
             if collaborators_welcome == 'yes':
                 projects = projects.filter(collaborators_welcome=True)
             if collaborators_welcome == 'no':
-                projects = projects.filter(collaborators_welcome=False)              
+                projects = projects.filter(collaborators_welcome=False)
 
         if 'category' in self.request.query_params:
             project_category = self.request.query_params.get('category').split(',')
