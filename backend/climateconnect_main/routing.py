@@ -4,7 +4,7 @@ from channels.auth import AuthMiddlewareStack
 from chat_messages.consumer import DirectMessageConsumer
 
 application = ProtocolTypeRouter({
-    "websocket": URLRouter([
+    "websocket": AuthMiddlewareStack(URLRouter([
         path("ws/chat", DirectMessageConsumer, name='chat-messaging')
-    ])
+    ]))
 })

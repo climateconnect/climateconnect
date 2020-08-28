@@ -111,7 +111,7 @@ export default function About() {
   }
   return (
     <>
-      <WideLayout title="About Climate Connect">
+      <WideLayout title="About Climate Connect" isStaticPage>
         <HeaderImage className={classes.headerImageContainer} src={"images/about_background.jpg"} />
         <Typography
           component="h1"
