@@ -38,14 +38,11 @@ logger = logging.getLogger(__name__)
 class ProjectsOrderingFilter(OrderingFilter):
     def filter_queryset(self, request, queryset, view):
         ordering = request.query_params.get('sort_by')
-        print(ordering)
         if ordering is not None:
             if ordering == 'newest':
                 queryset = queryset.order_by('-id')
             elif ordering == 'oldest':                
                 queryset = queryset.order_by('id')
-            else:                
-                queryset = queryset.order_by('rating')
         return queryset
 
 class ListProjectsView(ListAPIView):
