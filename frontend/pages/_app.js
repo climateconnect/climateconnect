@@ -10,6 +10,7 @@ import UserContext from "../src/components/context/UserContext";
 const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT);
 import { MatomoProvider, createInstance } from "@datapunt/matomo-tracker-react";
 import { removeUnnecesaryCookies } from "./../public/lib/cookieOperations";
+import WebSocketService from "../public/lib/webSockets";
 
 //add global styles
 import "react-multi-carousel/lib/styles.css";
@@ -71,6 +72,11 @@ export default class MyApp extends App {
   }
 
   async componentDidMount() {
+    console.log(process.env.SOCKET_URL);
+    const client = new WebSocket(process.env.SOCKET_URL + '/ws/chat/');
+    client.onopen = () => {
+      console.log("Connected");
+    }
     const user = await getLoggedInUser(this.cookies);
     if (user) {
       this.setState({ user });

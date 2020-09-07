@@ -17,8 +17,6 @@ import MemberCarousel from "../src/components/about/MemberCarousel";
 import QuoteSlideShow from "../src/components/about/QuoteSlideShow";
 
 
-const client = new WebSocket(process.env.SOCKET_URL + '/ws/chat/');
-
 const useStyles = makeStyles(theme => {
   return {
     headerImageContainer: {
@@ -105,10 +103,6 @@ function shuffle(array) {
 
 export default function About() {
   const classes = useStyles();
-  console.log("Dip");
-  client.onopen = () => {
-    console.log("Test");
-  }
   return (
     <>
       <WideLayout title="About Climate Connect" isStaticPage>
