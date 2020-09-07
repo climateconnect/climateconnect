@@ -4,8 +4,8 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => {
   return {
-    bubble: {
-      minWidth: 180,
+    bubble: props => ({
+      minWidth: props.size !== "small" &&180,
       padding: 0,
       display: "flex",
       flexDirection: "column",
@@ -13,17 +13,19 @@ const useStyles = makeStyles(theme => {
       paddingRight: theme.spacing(2),
       paddingLeft: theme.spacing(2),
       textAlign: "center"
-    },
-    icon: {
-      width: 90,
-      height: 90,
+    }),
+    icon: props => ({
+      width: props.size==="small" ? 45 : 90,
+      height: props.size==="small" ? 45 : 90,
       display: "block",
       margin: "0 auto"
-    },
-    title: {
-      paddingTop: theme.spacing(2),
+    }),
+    title: props=>({
+      fontSize: props.size==="small" && 14,
+      fontWeight: props.size==="small" && "bold",
+      paddingTop: theme.spacing(1),
       paddingBottom: theme.spacing(2)
-    },
+    }),
     infoText: {
       fontSize: 20
     },
@@ -37,8 +39,8 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function InfoBubble({ data, iconColor, textColor, bold, maxWidth }) {
-  const classes = useStyles({ maxWidth: maxWidth });
+export default function InfoBubble({ data, iconColor, textColor, bold, maxWidth, size }) {
+  const classes = useStyles({ maxWidth: maxWidth, size: size });
   return (
     <div className={classes.bubble}>
       <Box>
