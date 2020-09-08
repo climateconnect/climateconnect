@@ -5,6 +5,6 @@ from chat_messages.consumer import DirectMessageConsumer
 
 application = ProtocolTypeRouter({
     "websocket": AuthMiddlewareStack(URLRouter([
-        path("ws/chat/", DirectMessageConsumer, name='chat-messaging')
+        path("ws/chat/<str:room_name>/", DirectMessageConsumer, name='chat-messaging')
     ]))
 })

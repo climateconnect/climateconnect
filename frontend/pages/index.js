@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from "react";
 import Layout from "../src/components/layouts/layout";
 import ProjectPreviews from "./../src/components/project/ProjectPreviews";
 import About from "./about";
-import { Divider, Button, Tab, Tabs, Typography } from "@material-ui/core";
+import { Divider, Button, Tab, Tabs, Typography, IconButton } from "@material-ui/core";
 import TuneIcon from "@material-ui/icons/Tune";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { makeStyles } from "@material-ui/core/styles";
