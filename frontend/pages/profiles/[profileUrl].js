@@ -128,6 +128,19 @@ ProfilePage.getInitialProps = async ctx => {
 function ProfileLayout({ profile, projects, organizations, profileTypes, infoMetadata, user }) {
   const classes = useStyles();
   const isOwnAccount = user && user.url_slug === profile.url_slug;
+  const handleConnectBtn = () => {
+    const tokenObj = Cookies('ctx');
+    console.log(tokenObj.token);
+    axios.post(
+        process.env.API_URL + '/api/connect_participants/',
+        {'user_id': user.id},
+        tokenConfig(tokenObj.token)
+    ).then(function(response){
+      console.log(response);
+    }).catch(function(error) {
+      console.log(error.response);
+    })
+  }
   return (
     <AccountPage
       account={profile}
@@ -142,7 +155,7 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
         <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
       )}
       <Container className={classes.container} id="projects">
-        <Button variant="contained" color="primary">Connect</Button>
+        <Button variant="contained" color="primary" onClick={handleConnectBtn}>Connect</Button>
         <h2>
           {isOwnAccount ? "Your projects:" : "This user's projects:"}
           <Button

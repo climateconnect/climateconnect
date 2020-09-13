@@ -171,13 +171,13 @@ async function getProfileByUrlIfExists(profileUrl) {
   return TEMP_FEATURED_PROFILE_DATA.profiles.find(({ url }) => url === profileUrl);
 }
 
-async function getLoggedInUser() {
-  return { url: "christophstoll" };
+async function getLoggedInUser(profileUrl) {
+  return { url: profileUrl };
 }
 
 async function getMessagesWithUser(profileUrl) {
   //This is imitating the logged in user. Will be replaced by a jwt check later.
-  const user = await getLoggedInUser();
+  const user = await getLoggedInUser(profileUrl);
   return TEMP_MESSAGE_DATA.messages.filter(
     m =>
       (m.sender === profileUrl && m.receiver === user.url_slug) ||

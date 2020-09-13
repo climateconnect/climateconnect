@@ -32,13 +32,15 @@ class ConnectMessageParticipantsView(APIView):
 
         if participant_user:
             participants = [user, participant_user]
+            participant_profile_url = participant_user.user_profile.url_slug
 
             if MessageParticipants.objects.filter(participants__in=participants).exists():
                 message_participant = MessageParticipants.objects.filter(
                     participants__in=participants
                 ).first()
                 return Response({
-                    'chat_id': message_participant.chat_uuid
+                    'chat_id': message_participant.chat_uuid,
+                    'profile_url': participant_profile_url
                 }, status=status.HTTP_200_OK)
             else:
                 message_participants = MessageParticipants.objects.create(
@@ -49,7 +51,8 @@ class ConnectMessageParticipantsView(APIView):
 
                 message_participants.save()
                 return Response({
-                    'chat_id': message_participants.chat_uuid
+                    'chat_id': message_participants.chat_uuid,
+                    'profile_url': participant_profile_url
                 }, status=status.HTTP_201_CREATED)
 
 
