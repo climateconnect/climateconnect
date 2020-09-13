@@ -142,6 +142,7 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
         <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
       )}
       <Container className={classes.container} id="projects">
+        <Button variant="contained" color="primary">Connect</Button>
         <h2>
           {isOwnAccount ? "Your projects:" : "This user's projects:"}
           <Button
