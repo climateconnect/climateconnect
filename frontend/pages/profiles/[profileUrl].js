@@ -131,14 +131,17 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
   const handleConnectBtn = () => {
     const tokenObj = Cookies('ctx');
     console.log(tokenObj.token);
+    console.log(profile)
     axios.post(
         process.env.API_URL + '/api/connect_participants/',
-        {'user_id': user.id},
+        {'profile_url_slug': profile.url_slug},
         tokenConfig(tokenObj.token)
     ).then(function(response){
       console.log(response);
+      // TODO: Send user to messageUser/profileURL
     }).catch(function(error) {
       console.log(error.response);
+      // TODO: Show error message that user cant connect
     })
   }
   return (
