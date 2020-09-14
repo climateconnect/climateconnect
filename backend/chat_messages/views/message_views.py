@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from chat_messages.models import MessageParticipants, Message
 from chat_messages.serializers.message import MessageSerializer
 from chat_messages.pagination import ChatMessagePagination
+from climateconnect_api.models import UserProfile
 
 
 class ConnectMessageParticipantsView(APIView):
@@ -18,42 +19,54 @@ class ConnectMessageParticipantsView(APIView):
 
     def post(self, request):
         user = request.user
-        if 'user_id' not in request.data:
+        if 'profile_url_slug' not in request.data:
             return Response({
                 'message': 'Required parameter is missing'
             }, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            participant_user = User.objects.get(id=int(request.data['user_id']))
+            user_profile = UserProfile.objects.get(
+                url_slug=str(request.data['profile_url_slug'])
+            )
         except User.DoesNotExist:
             return Response({
                 'message': 'Participant not found'
             }, status=status.HTTP_404_NOT_FOUND)
 
+        participant_user = user_profile.user
         if participant_user:
             participants = [user, participant_user]
-            participant_profile_url = participant_user.user_profile.url_slug
 
-            if MessageParticipants.objects.filter(participants__in=participants).exists():
-                message_participant = MessageParticipants.objects.filter(
-                    participants__in=participants
-                ).first()
-                return Response({
-                    'chat_id': message_participant.chat_uuid,
-                    'profile_url': participant_profile_url
-                }, status=status.HTTP_200_OK)
-            else:
-                message_participants = MessageParticipants.objects.create(
-                    chat_uuid=str(uuid4())
-                )
-                for user in participants:
-                    message_participants.participants.add(user)
+            message_participants = MessageParticipants.objects.create(
+                chat_uuid=str(uuid4())
+            )
+            for user in participants:
+                message_participants.participants.add(user)
 
-                message_participants.save()
-                return Response({
-                    'chat_id': message_participants.chat_uuid,
-                    'profile_url': participant_profile_url
-                }, status=status.HTTP_201_CREATED)
+            message_participants.save()
+            return Response({
+                'chat_id': message_participants.chat_uuid,
+                'profile_url': user_profile.url_slug
+            }, status=status.HTTP_201_CREATED)
+
+
+class ListParticipantsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, url_slug):
+        try:
+            profile = UserProfile.objects.get(url_slug=str(url_slug))
+        except UserProfile.DoesNotExist:
+            return Response({
+                'message': "Profile not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        participants = MessageParticipants.objects.filter(
+            participants=profile.user
+        )
+        # TODO: Add serializer to return information.
+
+        return Response(None, status=status.HTTP_200_OK)
 
 
 class GetChatMessages(ListAPIView):
