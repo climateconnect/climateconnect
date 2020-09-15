@@ -6,12 +6,11 @@ from django.contrib.auth.models import User
 
 
 class DirectMessageConsumer(AsyncWebsocketConsumer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    async def connect(self):
         self.user = self.scope['user']
         self.room_name = self.scope['url_route']['kwargs']['room_name']
-
-    async def connect(self):
+        print(self.room_name)
+        print(self.user)
         if not self.user.is_anonymous:
             await self.channel_layer.group_add(
                 self.room_name, self.channel_name

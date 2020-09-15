@@ -9,16 +9,22 @@ class MessageParticipants(models.Model):
         verbose_name="Chat UUID", unique=True, null=True, blank=True
     )
 
-    # Making this a little bit future proof. If we want to introduce group chat we dont have to change too much
-    # information on this table.
-    participants = models.ManyToManyField(
-        User,
-        help_text="Points to users who participated in a chat.",
-        verbose_name="Participants",
-        related_name="message_participants"
+    participant_one = models.ForeignKey(
+        User, related_name="user_participant_one",
+        help_text="Points to first participant of the chat",
+        verbose_name="Participant One",
+        on_delete=models.CASCADE
     )
 
-    # Again this to make it a bit more future proof. If we introduced a feature to block someone this might come handy.
+    participant_two = models.ForeignKey(
+        User, related_name="user_participant_two",
+        help_text="Points to second participant of the chat",
+        verbose_name="Participant Two",
+        on_delete=models.CASCADE
+    )
+
+    # Making it a bit more future proof.
+    # If we introduced a feature to block someone this might come handy.
     is_active = models.BooleanField(
         help_text="Check if the chat between participants are active or not."
                   "If they are not active that means a user has blocked another person.",
@@ -40,8 +46,9 @@ class MessageParticipants(models.Model):
         verbose_name_plural = "Message Participants"
 
     def __str__(self):
-        users = ",".join(str(user.id) for user in self.participants.all())
-        return "Participants: %s" % users
+        return "Participants: %s => %s" % (
+            self.participant_one.username, self.participant_two.username
+        )
 
 
 class Message(models.Model):
