@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Link from "next/link";
 import { Typography, IconButton, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -9,6 +9,10 @@ import MiniProfilePreview from "../../src/components/profile/MiniProfilePreview"
 import Messages from "../../src/components/communication/chat/Messages";
 import SendIcon from "@material-ui/icons/Send";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
+import Cookies from "next-cookies";
+import axios from "axios";
+import tokenConfig from "../../public/config/tokenConfig";
+import WebSocketService from "../../public/lib/webSockets";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -57,6 +61,23 @@ const useStyles = makeStyles(theme => {
 });
 
 export default function ProfilePage({ user, chatting_partner, messages }) {
+  useEffect(() => {
+    const tokenObj = Cookies('ctx');
+    console.log(user);
+    axios.post(
+        process.env.API_URL + '/api/connect_participants/',
+        {'profile_url_slug': user.url},
+        tokenConfig(tokenObj.token)
+    ).then(function(response){
+      console.log(response);
+      const client = WebSocketService('/ws/chat/' + response.data['chat_id'] + '/');
+      client.onopen = () => {console.log("connected")};
+    }).catch(function(error) {
+      console.log(error.response);
+      // TODO: Show error message that user cant connect
+    })
+  })
+
   return (
     <FixedHeightLayout title={chatting_partner ? "Message " + chatting_partner.name : "Not found"}>
       {chatting_partner ? (
@@ -74,7 +95,7 @@ export default function ProfilePage({ user, chatting_partner, messages }) {
 
 ProfilePage.getInitialProps = async ctx => {
   return {
-    user: await getLoggedInUser(),
+    user: await getLoggedInUser(ctx.query.profileUrl),
     chatting_partner: await getProfileByUrlIfExists(ctx.query.profileUrl),
     messages: await getMessagesWithUser(ctx.query.profileUrl)
   };

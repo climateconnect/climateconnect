@@ -6,6 +6,7 @@ import axios from "axios";
 import { useContext } from "react";
 import Cookies from "next-cookies";
 import UserContext from "./../../src/components/context/UserContext";
+import Router from "next/router";
 
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
@@ -129,20 +130,7 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
   const classes = useStyles();
   const isOwnAccount = user && user.url_slug === profile.url_slug;
   const handleConnectBtn = () => {
-    const tokenObj = Cookies('ctx');
-    console.log(tokenObj.token);
-    console.log(profile)
-    axios.post(
-        process.env.API_URL + '/api/connect_participants/',
-        {'profile_url_slug': profile.url_slug},
-        tokenConfig(tokenObj.token)
-    ).then(function(response){
-      console.log(response);
-      // TODO: Send user to messageUser/profileURL
-    }).catch(function(error) {
-      console.log(error.response);
-      // TODO: Show error message that user cant connect
-    })
+    Router.push('/messageUser/' + profile.url_slug);
   }
   return (
     <AccountPage
