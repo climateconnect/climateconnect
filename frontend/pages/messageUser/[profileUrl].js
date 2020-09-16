@@ -69,7 +69,7 @@ export default function ProfilePage({ user, chatting_partner, messages }) {
         {'profile_url_slug': user.url},
         tokenConfig(tokenObj.token)
     ).then(function(response){
-      setChatUUID(response.data['chat_id'])
+      setChatUUID(response.data['chat_uuid'])
     }).catch(function(error) {
       console.log(error.response);
       // TODO: Show error message that user cant connect

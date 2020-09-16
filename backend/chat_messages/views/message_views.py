@@ -47,7 +47,7 @@ class ConnectMessageParticipantsView(APIView):
                     Q(participant_two=user) | Q(participant_two=participant_user)
                 ).first()
                 return Response({
-                    'chat_id': message_participant.chat_uuid,
+                    'chat_uuid': message_participant.chat_uuid,
                     'profile_url': user_profile.url_slug
                 }, status=status.HTTP_200_OK)
             else:
@@ -58,7 +58,7 @@ class ConnectMessageParticipantsView(APIView):
                 )
 
                 return Response({
-                    'chat_id': message_participant.chat_uuid,
+                    'chat_uuid': message_participant.chat_uuid,
                     'profile_url': user_profile.url_slug
                 }, status=status.HTTP_201_CREATED)
 
