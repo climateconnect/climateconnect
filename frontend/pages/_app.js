@@ -14,6 +14,7 @@ import { removeUnnecesaryCookies } from "./../public/lib/cookieOperations";
 //add global styles
 import "react-multi-carousel/lib/styles.css";
 import tokenConfig from "../public/config/tokenConfig";
+import WebSocketService from "../public/lib/webSockets";
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
@@ -71,6 +72,10 @@ export default class MyApp extends App {
   }
 
   async componentDidMount() {
+    const client =  WebSocketService('/ws/chat/');
+    client.onopen = () => {
+      console.log("connected");
+    }
     const user = await getLoggedInUser(this.cookies);
     if (user) {
       this.setState({ user });

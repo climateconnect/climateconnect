@@ -12,7 +12,6 @@ import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import Cookies from "next-cookies";
 import axios from "axios";
 import tokenConfig from "../../public/config/tokenConfig";
-import WebSocketService from "../../public/lib/webSockets";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -70,8 +69,6 @@ export default function ProfilePage({ user, chatting_partner, messages }) {
         tokenConfig(tokenObj.token)
     ).then(function(response){
       console.log(response);
-      const client = WebSocketService('/ws/chat/' + response.data['chat_id'] + '/');
-      client.onopen = () => {console.log("connected")};
     }).catch(function(error) {
       console.log(error.response);
       // TODO: Show error message that user cant connect

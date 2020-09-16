@@ -8,12 +8,9 @@ from django.contrib.auth.models import User
 class DirectMessageConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope['user']
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        print(self.room_name)
-        print(self.user)
         if not self.user.is_anonymous:
             await self.channel_layer.group_add(
-                self.room_name, self.channel_name
+                'direct_message', self.channel_name
             )
             await self.accept()
         else:
@@ -21,7 +18,7 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
-            self.room_name,
+            'direct_message',
             self.channel_name
         )
 
@@ -29,12 +26,11 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data, bytes_data=None):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.user = self.scope['user']
 
         # Send message to room group
         await self.channel_layer.group_send(
-            self.room_name,
+            'direct_message',
             {
                 'type': 'chat_message',
                 'message': message

@@ -10,7 +10,9 @@ from uuid import uuid4
 from django.contrib.auth.models import User
 from django.db.models import Q
 from chat_messages.models import MessageParticipants, Message
-from chat_messages.serializers.message import MessageSerializer
+from chat_messages.serializers.message import (
+    MessageSerializer, MessageParticipantSerializer
+)
 from chat_messages.pagination import ChatMessagePagination
 from climateconnect_api.models import UserProfile
 
@@ -73,11 +75,11 @@ class ListParticipantsView(APIView):
             }, status=status.HTTP_404_NOT_FOUND)
 
         participants = MessageParticipants.objects.filter(
-            participants=profile.user
+            Q(participant_one=profile.user) | Q(participant_two=profile.user)
         )
-        # TODO: Add serializer to return information.
+        serializer = MessageParticipantSerializer(participants, many=True)
 
-        return Response(None, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class GetChatMessages(ListAPIView):
