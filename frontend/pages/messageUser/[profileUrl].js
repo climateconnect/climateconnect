@@ -60,6 +60,7 @@ const useStyles = makeStyles(theme => {
 });
 
 export default function ProfilePage({ user, chatting_partner, messages }) {
+  const [chatUUID, setChatUUID] = useState();
   useEffect(() => {
     const tokenObj = Cookies('ctx');
     console.log(user);
@@ -68,7 +69,7 @@ export default function ProfilePage({ user, chatting_partner, messages }) {
         {'profile_url_slug': user.url},
         tokenConfig(tokenObj.token)
     ).then(function(response){
-      console.log(response);
+      setChatUUID(response.data['chat_id'])
     }).catch(function(error) {
       console.log(error.response);
       // TODO: Show error message that user cant connect
