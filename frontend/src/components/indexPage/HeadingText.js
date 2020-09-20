@@ -1,7 +1,7 @@
-import React from "react"
-import { Typography, makeStyles, IconButton } from "@material-ui/core"
-import TextLoop from "react-text-loop"
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import React from "react";
+import { Typography, makeStyles, IconButton } from "@material-ui/core";
+import TextLoop from "react-text-loop";
+import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -36,14 +36,14 @@ const useStyles = makeStyles(theme => {
       fontWeight: "bold",
       fontSize: 30,
       [theme.breakpoints.down("md")]: {
-        fontSize:21
+        fontSize: 21
       },
       [theme.breakpoints.down("xs")]: {
         fontSize: 12.5
       }
-    },  
+    },
     mainHeadingText: props => ({
-      background: props.mobile ? "none": "white",
+      background: props.mobile ? "none" : "white",
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2)
     }),
@@ -51,16 +51,23 @@ const useStyles = makeStyles(theme => {
       paddingLeft: 0,
       paddingRight: theme.spacing(1)
     }
-  }
-})
+  };
+});
 
-export default function HeadingText({mobile, showInfoText, toggleShowInfoText}) {
-  const classes = useStyles({mobile: mobile});
-  console.log(toggleShowInfoText)
-  console.log(showInfoText)
+export default function HeadingText({ mobile, showInfoText, toggleShowInfoText }) {
+  const classes = useStyles({ mobile: mobile });
+  console.log(toggleShowInfoText);
+  console.log(showInfoText);
   return (
-    <div component="h1" variant="h5" className={`${classes.mainHeading} ${!showInfoText && classes.mainHeadingInfoTextHidde}`}>
-      <div className={`${classes.mainHeadingText} ${!showInfoText && classes.mainHeadingTextInfoHidden}`}>
+    <div
+      component="h1"
+      variant="h5"
+      className={`${classes.mainHeading} ${!showInfoText && classes.mainHeadingInfoTextHidde}`}
+    >
+      <div
+        className={`${classes.mainHeadingText} ${!showInfoText &&
+          classes.mainHeadingTextInfoHidden}`}
+      >
         <TextLoop mask={true} interval={5000}>
           <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
             Share
@@ -81,13 +88,20 @@ export default function HeadingText({mobile, showInfoText, toggleShowInfoText}) 
             {mobile ? "Join" : "Collaborate with"}
           </Typography>
         </TextLoop>
-        <Typography component="h1" variant="h5" className={classes.titleTextRight} color="secondary">
-          the most effective climate projects 
-        </Typography>        
+        <Typography
+          component="h1"
+          variant="h5"
+          className={classes.titleTextRight}
+          color="secondary"
+        >
+          the most effective climate projects
+        </Typography>
       </div>
-      {toggleShowInfoText && !showInfoText &&
-        <IconButton onClick={toggleShowInfoText} className={classes.toggleButton}><KeyboardArrowDownIcon /></IconButton>
-      }                       
+      {toggleShowInfoText && !showInfoText && (
+        <IconButton onClick={toggleShowInfoText} className={classes.toggleButton}>
+          <KeyboardArrowDownIcon />
+        </IconButton>
+      )}
     </div>
-  )
+  );
 }

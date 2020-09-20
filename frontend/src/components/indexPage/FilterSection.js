@@ -1,5 +1,5 @@
-import React from "react"
-import { Button, makeStyles, useMediaQuery } from "@material-ui/core"
+import React from "react";
+import { Button, makeStyles } from "@material-ui/core";
 import TuneIcon from "@material-ui/icons/Tune";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import FilterSearchBar from "../filter/FilterSearchBar";
@@ -8,7 +8,7 @@ const useStyles = makeStyles(theme => {
   return {
     filterButton: {
       borderColor: "#707070",
-      height: 40,
+      height: 40
     },
     rightSidePlaceholder: {
       width: 100
@@ -40,8 +40,8 @@ const useStyles = makeStyles(theme => {
       color: "black !important",
       borderColor: "black !important"
     }
-  }
-})
+  };
+});
 
 const searchBarLabels = {
   projects: "Search for climate action projects",
@@ -53,11 +53,11 @@ const buildUrlEndingFromSearch = searchValue => {
   return "&search=" + searchValue;
 };
 
-export default function FilterSection({ 
-  filtersExpanded, 
+export default function FilterSection({
+  filtersExpanded,
   setFiltersExpanded,
   typesByTabValue,
-  tabValue,  
+  tabValue,
   getProjects,
   getOrganizations,
   getMembers,
@@ -71,12 +71,12 @@ export default function FilterSection({
     projects: "",
     members: "",
     organizations: ""
-  });  
+  });
 
   const InputLabelClasses = {
     root: classes.inputLabel,
     notchedOutline: classes.inputLabel
-  }
+  };
 
   const onClickExpandFilters = () => {
     setFiltersExpanded(!filtersExpanded);
@@ -84,7 +84,7 @@ export default function FilterSection({
 
   const onSearchValueChange = (type, newValue) => {
     setSearchFilters({ ...searchFilters, [type]: newValue });
-  };  
+  };
 
   const onSearchSubmit = async type => {
     const newUrlEnding = buildUrlEndingFromSearch(searchFilters[type]);
@@ -117,7 +117,7 @@ export default function FilterSection({
 
   return (
     <div className={classes.filterSection}>
-      <div className={classes.filterSectionFirstLine}>        
+      <div className={classes.filterSectionFirstLine}>
         <div className={classes.searchBarContainer}>
           <FilterSearchBar
             type={typesByTabValue[tabValue]}
@@ -134,16 +134,12 @@ export default function FilterSection({
           className={classes.filterButton}
           onClick={onClickExpandFilters}
           startIcon={
-            filtersExpanded ? (
-              <HighlightOffIcon color="primary" />
-            ) : (
-              <TuneIcon color="primary" />
-            )
+            filtersExpanded ? <HighlightOffIcon color="primary" /> : <TuneIcon color="primary" />
           }
         >
           Filter
         </Button>
       </div>
     </div>
-  )
+  );
 }

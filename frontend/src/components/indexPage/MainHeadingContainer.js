@@ -1,12 +1,12 @@
-import React, { useContext } from "react"
-import { makeStyles, Typography, IconButton, useMediaQuery, Button } from "@material-ui/core"
+import React, { useContext } from "react";
+import { makeStyles, Typography, IconButton, useMediaQuery, Button } from "@material-ui/core";
 import about_page_info from "../../../public/data/about_page_info";
 import InfoBubble from "../../../src/components/about/InfoBubble";
-import theme from "../../themes/theme"
+import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import Cookies from "universal-cookie";
 import HeadingText from "./HeadingText";
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => {
     mainHeadingContainer: {
       margin: `0 auto`,
       marginBottom: theme.spacing(3)
-    },        
+    },
     infoTextContainer: {
       maxWidth: 1260,
       margin: "0 auto",
@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => {
     },
     shareLink: {
       textDecoration: "inherit"
-    }, 
+    },
     links: {
       display: "flex",
       justifyContent: "space-between",
@@ -62,7 +62,7 @@ const useStyles = makeStyles(theme => {
     },
     outerContainer: {
       display: "flex",
-      maxWidth:1400,
+      maxWidth: 1400,
       margin: "0 auto"
     },
     storyIconLeft: {
@@ -75,11 +75,11 @@ const useStyles = makeStyles(theme => {
     storyIconRight: {
       width: 370,
       direction: "rtl",
-      float:"right",
+      float: "right",
       userDrag: "none",
       [theme.breakpoints.down("md")]: {
         width: 340
-      },
+      }
     },
     storyIconContainer: {
       overflow: "hidden"
@@ -97,12 +97,12 @@ const useStyles = makeStyles(theme => {
       position: "absolute",
       right: 0
     }
-  }
-})
+  };
+});
 
 export default function MainHeadingContainer({ hideInfo }) {
   const [showInfoText, setShowInfoText] = React.useState(!hideInfo);
-  const classes = useStyles()
+  const classes = useStyles();
   const { user } = useContext(UserContext);
   const cookies = new Cookies();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -110,48 +110,65 @@ export default function MainHeadingContainer({ hideInfo }) {
   const toggleShowInfoText = () => {
     const now = new Date();
     const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 1));
-    if(showInfoText) {      
-      cookies.set("hideInfo", true, { path: "/", expires: oneYearFromNow, sameSite: true })
-      setShowInfoText(false)
-    } else{   
-      cookies.set("hideInfo", false, { path: "/", expires: oneYearFromNow, sameSite: true })
-      setShowInfoText(true)
+    if (showInfoText) {
+      cookies.set("hideInfo", true, { path: "/", expires: oneYearFromNow, sameSite: true });
+      setShowInfoText(false);
+    } else {
+      cookies.set("hideInfo", false, { path: "/", expires: oneYearFromNow, sameSite: true });
+      setShowInfoText(true);
     }
-  }
+  };
 
   return (
     <div className={classes.mainHeadingOuterContainer}>
       <div className={classes.mainHeadingContainer}>
-        <HeadingText showInfoText={showInfoText} toggleShowInfoText={toggleShowInfoText}/>
-        {showInfoText && 
+        <HeadingText showInfoText={showInfoText} toggleShowInfoText={toggleShowInfoText} />
+        {showInfoText && (
           <div className={classes.outerContainer}>
             <div className={classes.storyIconContainer}>
-              <img src="/icons/mainpage-left.svg" className={classes.storyIconLeft}/>
+              <img src="/icons/mainpage-left.svg" className={classes.storyIconLeft} />
             </div>
             <div className={classes.infoTextContainer}>
-              <Typography component="div">                
-                <Typography className={classes.boxText}>Climate Connect is a free, non-profit climate action platform - </Typography>   
-                <Typography className={classes.boxText}>Bringing everyone involved in climate action together.</Typography>              
+              <Typography component="div">
+                <Typography className={classes.boxText}>
+                  Climate Connect is a free, non-profit climate action platform -{" "}
+                </Typography>
+                <Typography className={classes.boxText}>
+                  Bringing everyone involved in climate action together.
+                </Typography>
                 <div className={classes.bubbleGrid}>
                   {about_page_info.map((info, index) => (
-                    <InfoBubble data={info} key={index} size={isMediumScreen?"small":"medium"} color="primary"/>
+                    <InfoBubble
+                      data={info}
+                      key={index}
+                      size={isMediumScreen ? "small" : "medium"}
+                      color="primary"
+                    />
                   ))}
-                </div>                  
-                <Typography className={`${classes.textAboveButton} ${classes.boxText}`}>We need global collaboration to effectively fight climate change.</Typography>
-                <div className={classes.buttonsDiv}>
-                  {!user &&                
-                    <Button href="signup" variant="contained" color="primary"><a className={classes.shareLink}><b>Join Climate Connect Now</b></a></Button>
-                  }
-                  <IconButton onClick={toggleShowInfoText} className={classes.toggleButton}><KeyboardArrowUpIcon /></IconButton>
                 </div>
+                <Typography className={`${classes.textAboveButton} ${classes.boxText}`}>
+                  We need global collaboration to effectively fight climate change.
                 </Typography>
+                <div className={classes.buttonsDiv}>
+                  {!user && (
+                    <Button href="signup" variant="contained" color="primary">
+                      <a className={classes.shareLink}>
+                        <b>Join Climate Connect Now</b>
+                      </a>
+                    </Button>
+                  )}
+                  <IconButton onClick={toggleShowInfoText} className={classes.toggleButton}>
+                    <KeyboardArrowUpIcon />
+                  </IconButton>
+                </div>
+              </Typography>
             </div>
             <div className={classes.storyIconContainer}>
-              <img src="/icons/mainpage-right.svg" className={classes.storyIconRight}/>
+              <img src="/icons/mainpage-right.svg" className={classes.storyIconRight} />
             </div>
           </div>
-        }
+        )}
       </div>
     </div>
-  )
+  );
 }

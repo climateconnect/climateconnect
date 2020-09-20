@@ -172,7 +172,7 @@ const LINKS = [
   }
 ];
 
-const STATIC_PAGE_LINKS =[
+const STATIC_PAGE_LINKS = [
   {
     href: "/about",
     text: "About Us"
@@ -185,7 +185,7 @@ const STATIC_PAGE_LINKS =[
     href: "/faq",
     text: "FAQ"
   }
-]
+];
 
 const getLoggedInLinks = ({ loggedInUser }) => {
   return [
@@ -243,36 +243,30 @@ export default function Header({ className, noSpacingBottom, isStaticPage }) {
               <NarrowScreenLinks loggedInUser={user} handleLogout={signOut} />
             ) : (
               <NormalScreenLinks loggedInUser={user} handleLogout={signOut} />
-            )}            
+            )}
           </>
         )}
       </Container>
-      <div>
-        {isStaticPage &&
-          <StaticPageLinks />
-        }
-      </div>
+      <div>{isStaticPage && <StaticPageLinks />}</div>
     </Box>
   );
 }
 
 function StaticPageLinks() {
-  const classes = useStyles()
+  const classes = useStyles();
   return (
     <div className={classes.staticPageLinksWrapper}>
       <Container className={classes.staticPageLinksContainer}>
         <div className={classes.staticPageLinks}>
-          {STATIC_PAGE_LINKS.map((link, index)=>(
-              <Link href={link.href} key={index+"-"+link.text}>
-                <a className={classes.staticPageLink}>
-                  {link.text}
-                </a>
-              </Link>
+          {STATIC_PAGE_LINKS.map((link, index) => (
+            <Link href={link.href} key={index + "-" + link.text}>
+              <a className={classes.staticPageLink}>{link.text}</a>
+            </Link>
           ))}
         </div>
       </Container>
     </div>
-  )
+  );
 }
 
 function NormalScreenLinks({ loggedInUser, handleLogout }) {

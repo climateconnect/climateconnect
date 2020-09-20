@@ -58,7 +58,7 @@ export default function Index({
   token,
   filterChoices,
   hideInfo
-}) {  
+}) {
   const membersWithAdditionalInfo = members => {
     return members.map(p => {
       return {
@@ -98,7 +98,7 @@ export default function Index({
   };
   const [state, setState] = React.useState(initialState);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
-  const isLargeScreen = useMediaQuery('(min-width:1000px')
+  const isLargeScreen = useMediaQuery("(min-width:1000px");
   const classes = useStyles();
   //Django starts counting at page 1 and we always catch the first page on load.
   const [hash, setHash] = React.useState(null);
@@ -150,13 +150,13 @@ export default function Index({
         }
       }
     }
-  };  
+  };
 
   const handleTabChange = (event, newValue) => {
     if (newValue === 0) window.location.hash = "";
     else window.location.hash = typesByTabValue[newValue];
     setTabValue(newValue);
-  };  
+  };
 
   const unexpandFilters = () => {
     setFiltersExpanded(false);
@@ -262,7 +262,7 @@ export default function Index({
       });
       return [];
     }
-  };  
+  };
 
   return (
     <>
@@ -275,25 +275,24 @@ export default function Index({
           message={errorMessage ? errorMessage : message}
           messageType={errorMessage ? "error" : "success"}
         >
-          {
-            isLargeScreen ?
-              <MainHeadingContainer hideInfo={hideInfo}/>
-            :
-              <MainHeadingContainerMobile />
-          }
+          {isLargeScreen ? (
+            <MainHeadingContainer hideInfo={hideInfo} />
+          ) : (
+            <MainHeadingContainerMobile />
+          )}
           <Container maxWidth="lg">
-            <FilterSection 
-              filtersExpanded = {filtersExpanded}
-              setFiltersExpanded = {setFiltersExpanded}
-              typesByTabValue = {typesByTabValue}
-              tabValue = {tabValue}
-              getProjects = {getProjects}
-              getOrganizations = {getOrganizations}
-              getMembers = {getMembers}
-              membersWithAdditionalInfo = {membersWithAdditionalInfo}
-              token = {token}
-              state = {state}
-              setState = {setState}
+            <FilterSection
+              filtersExpanded={filtersExpanded}
+              setFiltersExpanded={setFiltersExpanded}
+              typesByTabValue={typesByTabValue}
+              tabValue={tabValue}
+              getProjects={getProjects}
+              getOrganizations={getOrganizations}
+              getMembers={getMembers}
+              membersWithAdditionalInfo={membersWithAdditionalInfo}
+              token={token}
+              state={state}
+              setState={setState}
             />
             <Tabs
               variant={isNarrowScreen ? "fullWidth" : "standard"}
@@ -307,7 +306,7 @@ export default function Index({
               <Tab label={capitalizeFirstLetter(typesByTabValue[1])} className={classes.tab} />
               <Tab label={capitalizeFirstLetter(typesByTabValue[2])} className={classes.tab} />
             </Tabs>
-            <Divider className={classes.mainContentDivider}/>
+            <Divider className={classes.mainContentDivider} />
             <TabContent value={tabValue} index={0}>
               {filtersExpanded && tabValue === 0 && (
                 <FilterContent
@@ -359,7 +358,12 @@ export default function Index({
                 <Typography component="h4" variant="h5" className={classes.infoMessage}>
                   There are no organizations on this site yet.{" "}
                   <Link href="/createorganization">
-                    <Typography color="primary" className={classes.link} component="h5" variant="h5">
+                    <Typography
+                      color="primary"
+                      className={classes.link}
+                      component="h5"
+                      variant="h5"
+                    >
                       Create an organization to be the first one!
                     </Typography>
                   </Link>
@@ -389,7 +393,12 @@ export default function Index({
                 <Typography component="h4" variant="h5" className={classes.infoMessage}>
                   There are no members on this site yet.{" "}
                   <Link href="/signup">
-                    <Typography color="primary" className={classes.link} component="h5" variant="h5">
+                    <Typography
+                      color="primary"
+                      className={classes.link}
+                      component="h5"
+                      variant="h5"
+                    >
                       Create a profile to be the first one!
                     </Typography>
                   </Link>

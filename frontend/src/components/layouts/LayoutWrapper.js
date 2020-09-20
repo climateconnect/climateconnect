@@ -75,9 +75,7 @@ export default function LayoutWrapper({ title, children, theme }) {
           <div className={classes.leaveSpaceForFooter}>
             {children}
             {!acceptedNecessary && bannerOpen && <CookieBanner closeBanner={closeBanner} />}
-            {!isSmallerThanMediumScreen &&
-              <FeedbackButton />
-            }
+            {!isSmallerThanMediumScreen && <FeedbackButton />}
           </div>
         </ThemeProvider>
       </>

@@ -1,4 +1,10 @@
-const NECESSARY_COOKIES = ["acceptedNecessary", "acceptedStatistics", "csrftoken", "token", "hideInfo"];
+const NECESSARY_COOKIES = [
+  "acceptedNecessary",
+  "acceptedStatistics",
+  "csrftoken",
+  "token",
+  "hideInfo"
+];
 import Cookies from "universal-cookie";
 
 export function removeUnnecesaryCookies() {

@@ -12,24 +12,24 @@ const useStyles = makeStyles(theme => {
       fontWeight: "bold",
       marginBottm: theme.spacing(2)
     }
-  }
-})
+  };
+});
 
 export default function FilteredFaqContent({ searchValue, questions }) {
-  const classes = useStyles()
+  const classes = useStyles();
   return (
     <div className={classes.root}>
       <Typography className={classes.header}>
-        Search results for 
+        Search results for
         <Typography className={classes.header} component="span" color="primary">
           {' "' + searchValue + '"'}
         </Typography>
       </Typography>
-      {
-        questions.filter(q => q.question.includes(searchValue)).map((q, index) => (
-          <FaqQuestionElement key={index} questionObject={q}/>
-        ))
-      }
+      {questions
+        .filter(q => q.question.includes(searchValue))
+        .map((q, index) => (
+          <FaqQuestionElement key={index} questionObject={q} />
+        ))}
     </div>
   );
 }
