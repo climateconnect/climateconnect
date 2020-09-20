@@ -15,13 +15,13 @@ const useStyles = makeStyles(theme => {
       textAlign: "center"
     }),
     icon: props => ({
-      width: props.size==="small" ? 45 : 90,
-      height: props.size==="small" ? 45 : 90,
+      width: props.size==="small" ? 45 : props.size==="medium" ? 60 : 90,
+      height: props.size==="small" ? 45 : props.size==="medium" ? 60 : 90,
       display: "block",
       margin: "0 auto"
     }),
     title: props=>({
-      fontSize: props.size==="small" && 14,
+      fontSize: (props.size==="small" && 14) || (props.size==="medium" && 20),
       fontWeight: props.size==="small" && "bold",
       paddingTop: theme.spacing(1),
       paddingBottom: theme.spacing(2)

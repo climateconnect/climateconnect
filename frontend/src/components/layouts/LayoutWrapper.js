@@ -3,7 +3,7 @@ import Head from "next/head";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import CookieBanner from "../general/CookieBanner";
 import Cookies from "universal-cookie";
-import { Typography } from "@material-ui/core";
+import { Typography, useMediaQuery } from "@material-ui/core";
 import { useMatomo } from "@datapunt/matomo-tracker-react";
 import FeedbackButton from "../feedback/FeedbackButton";
 
@@ -30,6 +30,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function LayoutWrapper({ title, children, theme }) {
   const classes = useStyles();
+  const isSmallerThanMediumScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
   const cookies = new Cookies();
   const [loading, setLoading] = React.useState(true);
   const [bannerOpen, setBannerOpen] = React.useState(true);
@@ -74,7 +75,9 @@ export default function LayoutWrapper({ title, children, theme }) {
           <div className={classes.leaveSpaceForFooter}>
             {children}
             {!acceptedNecessary && bannerOpen && <CookieBanner closeBanner={closeBanner} />}
-            <FeedbackButton />
+            {!isSmallerThanMediumScreen &&
+              <FeedbackButton />
+            }
           </div>
         </ThemeProvider>
       </>
