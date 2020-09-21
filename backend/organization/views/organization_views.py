@@ -309,6 +309,7 @@ class PersonalOrganizationsView(ListAPIView):
         serializer = UserOrganizationSerializer(user_organization_members, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class ListOrganizationProjectsAPIView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
@@ -321,6 +322,7 @@ class ListOrganizationProjectsAPIView(ListAPIView):
             parent_organization__url_slug=self.kwargs['url_slug'],
             project__is_draft=False
         ).order_by('id')
+
 
 class ListOrganizationMembersAPIView(ListAPIView):
     permission_classes = [AllowAny]

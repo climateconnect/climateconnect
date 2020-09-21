@@ -75,5 +75,6 @@ urlpatterns = [
     # Organization views
     path('api/', include('organization.urls')),
     # Common views
+    path('api/', include('chat_messages.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

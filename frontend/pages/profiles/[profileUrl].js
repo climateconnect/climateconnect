@@ -6,6 +6,7 @@ import axios from "axios";
 import { useContext } from "react";
 import Cookies from "next-cookies";
 import UserContext from "./../../src/components/context/UserContext";
+import Router from "next/router";
 
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
@@ -128,6 +129,9 @@ ProfilePage.getInitialProps = async ctx => {
 function ProfileLayout({ profile, projects, organizations, profileTypes, infoMetadata, user }) {
   const classes = useStyles();
   const isOwnAccount = user && user.url_slug === profile.url_slug;
+  const handleConnectBtn = () => {
+    Router.push('/messageUser/' + profile.url_slug);
+  }
   return (
     <AccountPage
       account={profile}
@@ -142,6 +146,7 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
         <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
       )}
       <Container className={classes.container} id="projects">
+        <Button variant="contained" color="primary" onClick={handleConnectBtn}>Connect</Button>
         <h2>
           {isOwnAccount ? "Your projects:" : "This user's projects:"}
           <Button

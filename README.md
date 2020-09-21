@@ -18,14 +18,19 @@ We are using Python/Django for backend and Next.js for frontend.
     ```
 3.  Clone github repository `git clone <URL>`
 
+### Run docker compose
+Currently, we use docker to run redis server locally. If you do not have docker installed locally follow this official documentation from docker: https://docs.docker.com/get-docker/
+
+1. Go to backend directory `cd backend`
+2. Run `docker-compose up`. This will start redis server on docker
+
 ### Backend
 
 Once you clone the repository start backend server.
 
 1.  Go to backend directory `cd backend`
 2.  Run `pip install -r requirements.txt` to install all backend libararies.
-3.  Create `.backend_env` to include backend environment variables. Note: Connect with other
-    collaborators to get env variables
+3.  Create `.backend_env` to include backend environment variables. You can find upto date sample env variables in `backend/local-env-setup.md` file.
 4.  Run `python manage.py migrate` to run django migrations. Note: This command is used for
     when you first start or whenever you are adding or updating database models.
 5.  Run server using `python manage.py runserver`.

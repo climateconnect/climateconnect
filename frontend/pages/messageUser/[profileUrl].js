@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Link from "next/link";
 import { Typography, IconButton, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -9,6 +9,9 @@ import MiniProfilePreview from "../../src/components/profile/MiniProfilePreview"
 import Messages from "../../src/components/communication/chat/Messages";
 import SendIcon from "@material-ui/icons/Send";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
+import Cookies from "next-cookies";
+import axios from "axios";
+import tokenConfig from "../../public/config/tokenConfig";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -57,6 +60,22 @@ const useStyles = makeStyles(theme => {
 });
 
 export default function ProfilePage({ user, chatting_partner, messages }) {
+  const [chatUUID, setChatUUID] = useState();
+  useEffect(() => {
+    const tokenObj = Cookies('ctx');
+    console.log(user);
+    axios.post(
+        process.env.API_URL + '/api/connect_participants/',
+        {'profile_url_slug': user.url},
+        tokenConfig(tokenObj.token)
+    ).then(function(response){
+      setChatUUID(response.data['chat_uuid'])
+    }).catch(function(error) {
+      console.log(error.response);
+      // TODO: Show error message that user cant connect
+    })
+  })
+
   return (
     <FixedHeightLayout title={chatting_partner ? "Message " + chatting_partner.name : "Not found"}>
       {chatting_partner ? (
@@ -74,7 +93,7 @@ export default function ProfilePage({ user, chatting_partner, messages }) {
 
 ProfilePage.getInitialProps = async ctx => {
   return {
-    user: await getLoggedInUser(),
+    user: await getLoggedInUser(ctx.query.profileUrl),
     chatting_partner: await getProfileByUrlIfExists(ctx.query.profileUrl),
     messages: await getMessagesWithUser(ctx.query.profileUrl)
   };
@@ -171,13 +190,13 @@ async function getProfileByUrlIfExists(profileUrl) {
   return TEMP_FEATURED_PROFILE_DATA.profiles.find(({ url }) => url === profileUrl);
 }
 
-async function getLoggedInUser() {
-  return { url: "christophstoll" };
+async function getLoggedInUser(profileUrl) {
+  return { url: profileUrl };
 }
 
 async function getMessagesWithUser(profileUrl) {
   //This is imitating the logged in user. Will be replaced by a jwt check later.
-  const user = await getLoggedInUser();
+  const user = await getLoggedInUser(profileUrl);
   return TEMP_MESSAGE_DATA.messages.filter(
     m =>
       (m.sender === profileUrl && m.receiver === user.url_slug) ||
