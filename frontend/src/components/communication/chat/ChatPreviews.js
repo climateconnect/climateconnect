@@ -3,8 +3,6 @@ import PropTypes from "prop-types";
 import {
   List,
   ListItem,
-  ListItemAvatar,
-  Avatar,
   ListItemText,
   Divider,
   Badge
@@ -12,6 +10,7 @@ import {
 import Truncate from "react-truncate";
 import { makeStyles } from "@material-ui/core/styles";
 import DateDisplay from "../../general/DateDisplay";
+import MiniProfilePreview from "../../profile/MiniProfilePreview";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -30,6 +29,9 @@ const useStyles = makeStyles(theme => {
     unread: {
       color: theme.palette.success.main
     },
+    contentPreview: {
+      marginLeft: theme.spacing(4)
+    },
     unreadPreview: {
       fontWeight: "bold"
     }
@@ -41,6 +43,7 @@ export default function ChatPreviews({ chats }) {
   return (
     <List>
       {chats.map((chat, index) => {
+        console.log(chat.chatting_partner);
         return (
           <React.Fragment key={index}>
             {index === 0 && <Divider component="li" />}
@@ -51,15 +54,15 @@ export default function ChatPreviews({ chats }) {
               alignItems="flex-start"
               key={index}
             >
-              <ListItemAvatar>
-                <Avatar alt={chat.chatting_partner.name} src={chat.chatting_partner.image} />
-              </ListItemAvatar>
+              <MiniProfilePreview profile={chat.chatting_partner} size="medium" nolink />
               <ListItemText
                 secondary={
                   <>
                     <Truncate
                       lines={2}
-                      className={chat.unread_count ? classes.unreadPreview : ""}
+                      className={`${classes.contentPreview} ${
+                        chat.unread_count ? classes.unreadPreview : ""
+                      }`}
                       ellipsis={"..."}
                     >
                       {chat.content}

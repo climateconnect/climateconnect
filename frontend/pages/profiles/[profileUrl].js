@@ -130,8 +130,8 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
   const classes = useStyles();
   const isOwnAccount = user && user.url_slug === profile.url_slug;
   const handleConnectBtn = () => {
-    Router.push('/messageUser/' + profile.url_slug);
-  }
+    Router.push("/messageUser/" + profile.url_slug);
+  };
   return (
     <AccountPage
       account={profile}
@@ -146,7 +146,9 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
         <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
       )}
       <Container className={classes.container} id="projects">
-        <Button variant="contained" color="primary" onClick={handleConnectBtn}>Connect</Button>
+        <Button variant="contained" color="primary" onClick={handleConnectBtn}>
+          Connect
+        </Button>
         <h2>
           {isOwnAccount ? "Your projects:" : "This user's projects:"}
           <Button
