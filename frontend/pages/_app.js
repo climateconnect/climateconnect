@@ -72,13 +72,16 @@ export default class MyApp extends App {
   }
 
   async componentDidMount() {
-    const client =  WebSocketService('/ws/chat/');
+    const client = WebSocketService("/ws/chat/");
     client.onopen = () => {
       console.log("connected");
-    }
+    };
     const user = await getLoggedInUser(this.cookies);
     if (user) {
-      this.setState({ user });
+      this.setState({
+        user: user,
+        chatSocket: client
+      });
     }
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");
@@ -102,14 +105,24 @@ export default class MyApp extends App {
           {this.state.matomoInstance ? (
             <MatomoProvider value={this.state.matomoInstance}>
               <UserContext.Provider
-                value={{ user: this.state.user, signOut: this.signOut, signIn: this.signIn }}
+                value={{
+                  user: this.state.user,
+                  signOut: this.signOut,
+                  signIn: this.signIn,
+                  chatSocket: this.state.chatSocket
+                }}
               >
                 <Component {...pageProps} />
               </UserContext.Provider>
             </MatomoProvider>
           ) : (
             <UserContext.Provider
-              value={{ user: this.state.user, signOut: this.signOut, signIn: this.signIn }}
+              value={{
+                user: this.state.user,
+                signOut: this.signOut,
+                signIn: this.signIn,
+                chatSocket: this.state.chatSocket
+              }}
             >
               <Component {...pageProps} />
             </UserContext.Provider>
