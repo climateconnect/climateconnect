@@ -90,6 +90,7 @@ class Message(models.Model):
     class Meta:
         verbose_name = 'Message'
         verbose_name_plural = 'Messages'
+        ordering = ["-id"]
 
     def __str__(self):
         return "%s sent message to participants in this chat %s" % (self.sender.id, self.message_participant_id)
