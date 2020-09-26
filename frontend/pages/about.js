@@ -16,7 +16,6 @@ import InfoLink from "../src/components/about/InfoLink";
 import MemberCarousel from "../src/components/about/MemberCarousel";
 import QuoteSlideShow from "../src/components/about/QuoteSlideShow";
 
-
 const useStyles = makeStyles(theme => {
   return {
     headerImageContainer: {

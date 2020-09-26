@@ -1,10 +1,15 @@
 import React from "react";
 import WideLayout from "../src/components/layouts/WideLayout";
-import { Container, Typography } from "@material-ui/core";
+import { Container, Typography, Button } from "@material-ui/core";
 import ChatPreviews from "../src/components/communication/chat/ChatPreviews";
-import TEMP_MESSAGE_DATA from "../public/data/messages.json";
-import TEMP_FEATURED_PROFILE_DATA from "../public/data/profiles.json";
 import { makeStyles } from "@material-ui/core/styles";
+import Cookies from "next-cookies";
+import axios from "axios";
+import AddIcon from "@material-ui/icons/Add";
+import tokenConfig from "../public/config/tokenConfig";
+import UserContext from "../src/components/context/UserContext";
+import LoadingContainer from "../src/components/general/LoadingContainer";
+import AutoCompleteSearchBar from "../src/components/general/AutoCompleteSearchBar";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -15,12 +20,24 @@ const useStyles = makeStyles(theme => {
       paddingTop: theme.spacing(2),
       paddingBottom: theme.spacing(2),
       textAlign: "center"
+    },
+    newChatButton: {
+      marginBottom: theme.spacing(2)
     }
   };
 });
 
-export default function Inbox({ chats }) {
+export default function Inbox({ chatData }) {
   const classes = useStyles();
+  console.log(chatData);
+  const { user } = React.useContext(UserContext);
+  const [userSearchEnabled, setUserSearchEnabled] = React.useState(false);
+  console.log(chatData);
+
+  const enableUserSearch = () => {
+    setUserSearchEnabled(true);
+  };
+
   return (
     <div>
       <WideLayout title="Inbox">
@@ -28,67 +45,55 @@ export default function Inbox({ chats }) {
           <Typography component="h1" variant="h4" className={classes.headline}>
             Inbox
           </Typography>
-          <ChatPreviews chats={chats} />
+          {userSearchEnabled ? (
+            <div>Insert Autocomplete searchbar here</div>
+          ) : (
+            <Button
+              className={classes.newChatButton}
+              startIcon={<AddIcon />}
+              variant="contained"
+              color="primary"
+              onClick={enableUserSearch}
+            >
+              New Chat
+            </Button>
+          )}
+          {user ? (
+            <ChatPreviews chats={parseChats(chatData, user)} user={user} />
+          ) : (
+            <LoadingContainer />
+          )}
         </Container>
       </WideLayout>
     </div>
   );
 }
 
+const parseChats = (chats, user) =>
+  chats.map(chat => ({
+    ...chat,
+    chatting_partner:
+      chat.participant_one.id === user.id ? chat.participant_two : chat.participant_one,
+    unread_count: chat.unread_count,
+    content: chat.last_message.content
+  }));
+
 Inbox.getInitialProps = async ctx => {
+  const { token } = Cookies(ctx);
   return {
-    chats: await getChatsOfLoggedInUser(ctx.query.profileUrl)
+    chatData: await getChatsOfLoggedInUser(token)
   };
 };
 
-// This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
-async function getProfileByUrlIfExists(profileUrl) {
-  return TEMP_FEATURED_PROFILE_DATA.profiles.find(({ url_slug }) => url_slug === profileUrl);
-}
-
-async function getLoggedInUser() {
-  return TEMP_FEATURED_PROFILE_DATA.profiles.find(p => p.url_slug === "christophstoll");
-}
-
-//This function is really ugly but it doesn't matter, because it will be replaced with a single DB call.
-async function getChatsOfLoggedInUser() {
-  //This is imitating the logged in user. Will be replaced by a jwt check later.
-  const user = await getLoggedInUser();
-  const messagesWithUser = TEMP_MESSAGE_DATA.messages.filter(
-    m => m.sender === user.url_slug || m.receiver === user.url_slug
-  );
-  const messagesByChattingPartner = messagesWithUser.map(msg => {
-    return {
-      chatting_partner: msg.receiver === user.url_slug ? msg.sender : msg.receiver,
-      date: msg.date,
-      read: msg.read,
-      sent: msg.sender === user.url_slug,
-      content: msg.content
-    };
-  });
-
-  const newestMessageWithPartnerOnly = messagesByChattingPartner.filter(msg => {
-    const messagesWithPartnerByDate = messagesByChattingPartner
-      .filter(m => m.chatting_partner === msg.chatting_partner)
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
-    if (messagesWithPartnerByDate.indexOf(msg) === 0) return true;
-  });
-
-  return Promise.all(
-    newestMessageWithPartnerOnly
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .map(async msg => {
-        return {
-          ...msg,
-          chatting_partner: await getProfileByUrlIfExists(msg.chatting_partner),
-          unread_count: messagesByChattingPartner.filter(msgToFilter => {
-            return (
-              msgToFilter.chatting_partner === msg.chatting_partner &&
-              !msgToFilter.sent &&
-              !msg.read
-            );
-          }).length
-        };
-      })
-  );
+async function getChatsOfLoggedInUser(token) {
+  try {
+    const resp = await axios.get(process.env.API_URL + "/api/chats/", tokenConfig(token));
+    console.log(resp.data.results);
+    return resp.data.results;
+  } catch (err) {
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    console.log("error!");
+    console.log(err);
+    return null;
+  }
 }
