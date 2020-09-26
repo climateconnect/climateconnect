@@ -1,10 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React, { useState, useContext } from "react";
 import Link from "next/link";
 import { Typography, IconButton, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import FixedHeightLayout from "../../src/components/layouts/FixedHeightLayout";
-import TEMP_FEATURED_PROFILE_DATA from "../../public/data/profiles.json";
-import TEMP_MESSAGE_DATA from "../../public/data/messages.json";
 import MiniProfilePreview from "../../src/components/profile/MiniProfilePreview";
 import Messages from "../../src/components/communication/chat/Messages";
 import SendIcon from "@material-ui/icons/Send";
@@ -12,6 +10,8 @@ import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import Cookies from "next-cookies";
 import axios from "axios";
 import tokenConfig from "../../public/config/tokenConfig";
+import { getMessageFromServer } from "./../../public/lib/messagingOperations";
+import UserContext from "../../src/components/context/UserContext";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -59,30 +59,104 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function ProfilePage({ user, chatting_partner, messages }) {
+export default function MessageUser({ chatting_partner, token }) {
+  const { user, chatSocket } = useContext(UserContext);
   const [chatUUID, setChatUUID] = useState();
-  useEffect(() => {
-    const tokenObj = Cookies('ctx');
-    console.log(user);
-    axios.post(
-        process.env.API_URL + '/api/connect_participants/',
-        {'profile_url_slug': user.url},
-        tokenConfig(tokenObj.token)
-    ).then(function(response){
-      setChatUUID(response.data['chat_uuid'])
-    }).catch(function(error) {
-      console.log(error.response);
-      // TODO: Show error message that user cant connect
-    })
-  })
+  const [loading, setLoading] = useState(true);
+  const [socketClosed, setSocketClosed] = useState(false);
+  const [state, setState] = React.useState({
+    hasMore: false,
+    nextPage: 2,
+    messages: React.useState()
+  });
+
+  if (user && !chatUUID) {
+    axios
+      .post(
+        process.env.API_URL + "/api/connect_participants/",
+        { profile_url_slug: chatting_partner.url_slug },
+        tokenConfig(token)
+      )
+      .then(async function(response) {
+        setChatUUID(response.data["chat_uuid"]);
+        const messages = await getChatMessagesByUUID(response.data["chat_uuid"], token, 1);
+        const sortedMessages = messages.messages.sort((a, b) => a.id - b.id);
+        setState({
+          ...state,
+          messages: sortedMessages,
+          hasMore: messages.hasMore
+        });
+        setLoading(false);
+      })
+      .catch(function(error) {
+        console.log(error.response);
+        // TODO: Show error message that user cant connect
+      });
+  }
+  console.log(state.messages);
+
+  if (chatSocket) {
+    chatSocket.onmessage = async rawData => {
+      const data = JSON.parse(rawData.data);
+      const message = await getMessageFromServer(data.message_id, token);
+      setState({ ...state, messages: [...state.messages, message] });
+    };
+    chatSocket.onclose = () => {
+      setSocketClosed(true);
+    };
+  }
+
+  const loadMoreProjects = async () => {
+    try {
+      const newMessagesObject = await getChatMessagesByUUID(
+        chatUUID,
+        token,
+        state.nextPage,
+        state.nextLink
+      );
+      const newMessages = newMessagesObject.messages;
+      const sortedMessages = newMessages.sort((a, b) => a.id - b.id);
+      setState({
+        ...state,
+        nextPage: state.nextPage + 1,
+        nextLink: newMessagesObject.nextLink,
+        hasMore: newMessagesObject.hasMore,
+        messages: [...sortedMessages, ...state.messages]
+      });
+
+      return [...sortedMessages];
+    } catch (e) {
+      console.log("error");
+      console.log(e);
+      setState({
+        ...state,
+        hasMore: false
+      });
+      return [];
+    }
+  };
+
+  const sendMessage = async message => {
+    chatSocket.send(JSON.stringify({ message: message, chat_uuid: chatUUID }));
+  };
 
   return (
-    <FixedHeightLayout title={chatting_partner ? "Message " + chatting_partner.name : "Not found"}>
+    <FixedHeightLayout
+      title={
+        chatting_partner
+          ? "Message " + chatting_partner.first_name + " " + chatting_partner.last_name
+          : "Not found"
+      }
+    >
       {chatting_partner ? (
         <MessagingLayout
-          user={user}
           chatting_partner={chatting_partner}
-          message_history={messages}
+          messages={state.messages}
+          loading={loading}
+          sendMessage={sendMessage}
+          socketClosed={socketClosed}
+          loadMoreProjects={loadMoreProjects}
+          hasMore={state.hasMore}
         />
       ) : (
         <NoProfileFoundLayout />
@@ -91,32 +165,32 @@ export default function ProfilePage({ user, chatting_partner, messages }) {
   );
 }
 
-ProfilePage.getInitialProps = async ctx => {
+MessageUser.getInitialProps = async ctx => {
+  const { token } = Cookies(ctx);
+  console.log(ctx.query.profileUrl);
   return {
-    user: await getLoggedInUser(ctx.query.profileUrl),
     chatting_partner: await getProfileByUrlIfExists(ctx.query.profileUrl),
-    messages: await getMessagesWithUser(ctx.query.profileUrl)
+    token: token
   };
 };
 
-function MessagingLayout({ user, chatting_partner, message_history }) {
+function MessagingLayout({
+  chatting_partner,
+  messages,
+  loading,
+  sendMessage,
+  socketClosed,
+  loadMoreProjects,
+  hasMore
+}) {
   const classes = useStyles();
-
+  console.log("messages");
+  console.log(messages);
   const [curMessage, setCurMessage] = React.useState("");
-  const [messages, setMessages] = React.useState(message_history);
+  //TODO show user when socket has closed
 
   const onSendMessage = event => {
-    if (curMessage.trim().length > 0) {
-      setMessages([
-        ...messages,
-        {
-          receiver: chatting_partner.url_slug,
-          sender: user.url_slug,
-          content: curMessage,
-          date: new Date()
-        }
-      ]);
-    }
+    sendMessage(curMessage);
     setCurMessage("");
     if (event) event.preventDefault();
   };
@@ -137,11 +211,17 @@ function MessagingLayout({ user, chatting_partner, message_history }) {
         </IconButton>
         <MiniProfilePreview profile={chatting_partner} />
       </div>
-      <Messages
-        messages={messages}
-        chatting_partner={chatting_partner}
-        className={`${classes.content} ${classes.maxWidth}`}
-      />
+      {loading ? (
+        <div>Loading</div>
+      ) : (
+        <Messages
+          messages={messages}
+          chatting_partner={chatting_partner}
+          className={`${classes.content} ${classes.maxWidth}`}
+          hasMore={hasMore}
+          loadFunc={loadMoreProjects}
+        />
+      )}
       <div className={`${classes.bottomBar} ${classes.maxWidth}`}>
         <form className={classes.sendMessageBarContent} onSubmit={onSendMessage}>
           <TextField
@@ -185,21 +265,37 @@ function NoProfileFoundLayout() {
   );
 }
 
+async function getChatMessagesByUUID(chat_uuid, token, page, link) {
+  try {
+    const url = link
+      ? link
+      : process.env.API_URL + "/api/messages/?chat_uuid=" + chat_uuid + "&page=" + page;
+    const resp = await axios.get(url, tokenConfig(token));
+    return {
+      messages: resp.data.results,
+      hasMore: !!resp.data.next && resp.data.next !== link,
+      nextLink: resp.data.next
+    };
+  } catch (err) {
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    console.log("error!");
+    console.log(err);
+    return null;
+  }
+}
+
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
-async function getProfileByUrlIfExists(profileUrl) {
-  return TEMP_FEATURED_PROFILE_DATA.profiles.find(({ url }) => url === profileUrl);
-}
-
-async function getLoggedInUser(profileUrl) {
-  return { url: profileUrl };
-}
-
-async function getMessagesWithUser(profileUrl) {
-  //This is imitating the logged in user. Will be replaced by a jwt check later.
-  const user = await getLoggedInUser(profileUrl);
-  return TEMP_MESSAGE_DATA.messages.filter(
-    m =>
-      (m.sender === profileUrl && m.receiver === user.url_slug) ||
-      (m.sender === user.url_slug && m.receiver === profileUrl)
-  );
+async function getProfileByUrlIfExists(profileUrl, token) {
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/api/member/" + profileUrl + "/",
+      tokenConfig(token)
+    );
+    return resp.data;
+  } catch (err) {
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    console.log("error!");
+    console.log(err);
+    return null;
+  }
 }
