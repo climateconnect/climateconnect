@@ -13,8 +13,10 @@ from chat_messages.models import MessageParticipants, Message
 from chat_messages.serializers.message import (
     MessageSerializer, MessageParticipantSerializer
 )
-from chat_messages.pagination import ChatMessagePagination
+from chat_messages.pagination import ChatMessagePagination, ChatsPagination
 from climateconnect_api.models import UserProfile
+from chat_messages.permissions import IsPartOfChat
+from chat_messages.utility.chat_setup import set_read
 
 
 class ConnectMessageParticipantsView(APIView):
@@ -81,6 +83,21 @@ class ListParticipantsView(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class getChatsView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = MessageParticipantSerializer
+    pagination_class = ChatsPagination
+
+    def get_queryset(self):
+        chats = MessageParticipants.objects.filter(                
+            Q(participant_one=self.request.user) | Q(participant_two=self.request.user)
+        )
+        if chats.exists():
+            return chats
+        else:
+            return []
+
+
 
 class GetChatMessages(ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -92,17 +109,29 @@ class GetChatMessages(ListAPIView):
             return NotFound('Required parameter missing')
 
         chat_uuid = self.request.query_params.get('chat_uuid')
-
+        user = self.request.user
         try:
-            message_participant = MessageParticipants.objects.get(
-                chat_uuid=chat_uuid
+            message_participant = MessageParticipants.objects.get(                
+                Q(participant_one=user) | Q(participant_two=user),
+                chat_uuid=chat_uuid, 
             )
         except MessageParticipants.DoesNotExist:
-            raise NotFound('There are no participants.')
-
+            raise NotFound('You are not a particicapt of this chat.')
+        
         if message_participant:
             messages = Message.objects.filter(
                 message_participant=message_participant
             )
-            serializer = MessageSerializer(messages, many=True)
-            return serializer.data
+            set_read(messages)
+            return messages
+
+class GetChatMessage(APIView):
+    permission_classes = [IsPartOfChat]
+
+    def get(self, request, id, format=None):
+        try:
+            message = Message.objects.get(id=id)
+        except Message.DoesNotExist:
+            raise NotFound('This message does not exist')
+        serializer = MessageSerializer(message, many=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)

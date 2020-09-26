@@ -26,27 +26,29 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data, bytes_data=None):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
+        chat_uuid = text_data_json['chat_uuid']
         self.user = self.scope['user']
-
         # Send message to room group
+        message_object = await self.new_message(chat_uuid, self.user, message)
         await self.channel_layer.group_send(
             'direct_message',
             {
                 'type': 'chat_message',
-                'message': message
+                'message': message,
+                'chat_uuid': chat_uuid,
+                'message_id': message_object.id
             }
         )
 
-    def new_message(self, chat_uuid, user, message_content):
+    async def new_message(self, chat_uuid, user, message_content):
         try:
             message_participant = MessageParticipants.objects.get(
                 chat_uuid=chat_uuid
             )
         except MessageParticipants.DoesNotExist:
             message_participant = None
-
         if message_participant:
-            Message.objects.create(
+            return Message.objects.create(
                 content=message_content, sender=user,
                 message_participant=message_participant,
                 sent_at=timezone.now()
@@ -58,6 +60,8 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
             message = event['message']
             # Send message to WebSocket
             await self.send(text_data=json.dumps({
-                'message': message
+                'message': message,
+                'type': event['type'],
+                'chat_uuid': event['chat_uuid'],
+                'message_id': event['message_id']
             }))
-            self.new_message(event['chat_uuid'], self.user, message)

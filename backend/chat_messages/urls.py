@@ -15,8 +15,18 @@ urlpatterns = [
         name='get-message-participants-api'
     ),
     path(
+        'chats/',
+        message_views.getChatsView.as_view(),
+        name='get-chats-api'
+    ),
+    path(
         'messages/',
         message_views.GetChatMessages.as_view(),
-        name='get-chat-messages-apis'
+        name='get-chat-messages-api'
+    ),
+    path(
+        'message/<int:id>/',
+        message_views.GetChatMessage.as_view(),
+        name='get-chat-message-api'
     )
 ]
