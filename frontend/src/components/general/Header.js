@@ -35,6 +35,8 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import GroupWorkIcon from "@material-ui/icons/GroupWork";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import MailOutlineIcon from "@material-ui/icons/MailOutline";
+import NotificationsIcon from "@material-ui/icons/Notifications";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -81,6 +83,7 @@ const useStyles = makeStyles(theme => {
     shareProjectButton: {
       height: 36,
       marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1),
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2)
     },
@@ -116,7 +119,8 @@ const useStyles = makeStyles(theme => {
       [theme.breakpoints.down("xs")]: {
         padding: 0
       }
-    }
+    },
+    dropdownLink: {}
   };
 });
 
@@ -142,8 +146,8 @@ const LINKS = [
     className: "shareProjectButton",
     vanillaIfLoggedOut: true
   },
-  /*{
-    href: "/inbox",
+  {
+    type: "notificationsButton",
     text: "Inbox",
     iconForDrawer: NotificationsIcon,
     hasBadge: true,
@@ -151,10 +155,11 @@ const LINKS = [
     badgeNumber: 0,
     onlyShowIconOnNormalScreen: true,
     onlyShowIconOnMobile: true,
+    className: "notificationsButton",
     icon: NotificationsIcon,
     alwaysDisplayDirectly: true,
     onlyShowLoggedIn: true
-  },*/
+  },
   {
     href: "/signin",
     text: "Log in",
@@ -195,6 +200,11 @@ const getLoggedInLinks = ({ loggedInUser }) => {
       iconForDrawer: AccountCircleIcon
     },
     {
+      href: "/inbox",
+      text: "Inbox",
+      iconForDrawer: MailOutlineIcon
+    },
+    {
       href: "/profiles/" + loggedInUser.url_slug + "/#projects",
       text: "My Projects",
       iconForDrawer: GroupWorkIcon
@@ -222,7 +232,10 @@ const getLoggedInLinks = ({ loggedInUser }) => {
 export default function Header({ className, noSpacingBottom, isStaticPage }) {
   const classes = useStyles();
   const { user, signOut } = useContext(UserContext);
+  const [notificationsHidden, setNotificationsHidden] = React.useState(false);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
+
+  const toggleShowNotifications = () => setNotificationsHidden(!notificationsHidden)
 
   return (
     <Box
@@ -240,9 +253,19 @@ export default function Header({ className, noSpacingBottom, isStaticPage }) {
         ) : (
           <>
             {isNarrowScreen ? (
-              <NarrowScreenLinks loggedInUser={user} handleLogout={signOut} />
+              <NarrowScreenLinks
+                loggedInUser={user}
+                handleLogout={signOut}
+                notificationsHidden={notificationsHidden}
+                toggleShowNotifications={toggleShowNotifications}
+              />
             ) : (
-              <NormalScreenLinks loggedInUser={user} handleLogout={signOut} />
+              <NormalScreenLinks
+                loggedInUser={user}
+                handleLogout={signOut}
+                notificationsHidden={notificationsHidden}
+                toggleShowNotifications={toggleShowNotifications}
+              />
             )}
           </>
         )}
@@ -269,7 +292,7 @@ function StaticPageLinks() {
   );
 }
 
-function NormalScreenLinks({ loggedInUser, handleLogout }) {
+function NormalScreenLinks({ loggedInUser, handleLogout, toggleShowNotifications }) {
   const classes = useStyles();
 
   return (
@@ -294,9 +317,13 @@ function NormalScreenLinks({ loggedInUser, handleLogout }) {
         if ((loggedInUser || !link.vanillaIfLoggedOut) && link.icon) {
           buttonProps.startIcon = <link.icon />;
         }
+        if (link.type === "notificationsButton") 
+          buttonProps.onClick = toggleShowNotifications;
+        if (link.href)
+          buttonProps.href = link.href
         const Icon = link.icon;
         return (
-          <Link href={link.href} key={link.href}>
+          <>
             <a className={classes.menuLink}>
               {link.onlyShowIconOnNormalScreen ? (
                 <IconButton color="primary" {...buttonProps} className={classes.link}>
@@ -314,7 +341,7 @@ function NormalScreenLinks({ loggedInUser, handleLogout }) {
                 </Button>
               )}
             </a>
-          </Link>
+          </>
         );
       })}
       {loggedInUser && (
@@ -324,7 +351,7 @@ function NormalScreenLinks({ loggedInUser, handleLogout }) {
   );
 }
 
-function NarrowScreenLinks({ loggedInUser, handleLogout }) {
+function NarrowScreenLinks({ loggedInUser, handleLogout, toggleShowNotifications }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const openDrawer = setIsDrawerOpen.bind(null, true);
@@ -336,7 +363,6 @@ function NarrowScreenLinks({ loggedInUser, handleLogout }) {
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
   );
-
   return (
     <>
       <Box>
@@ -349,8 +375,12 @@ function NarrowScreenLinks({ loggedInUser, handleLogout }) {
           if (index === linksOutsideDrawer.length - 1) {
             buttonProps.className = classes.marginRight;
           }
+          if (link.type === "notificationsButton") 
+            buttonProps.onClick = toggleShowNotifications;
+          if (link.href)
+            buttonProps.href = link.href
           return (
-            <Link href={link.href} key={link.href}>
+            <>
               {link.onlyShowIconOnMobile ? (
                 <IconButton color="primary" className={classes.marginRight}>
                   {link.hasBadge && link.badgeNumber > 0 ? (
@@ -366,7 +396,7 @@ function NarrowScreenLinks({ loggedInUser, handleLogout }) {
                   {link.text}
                 </Button>
               )}
-            </Link>
+            </>
           );
         })}
         <IconButton edge="start" color="inherit" aria-label="menu" onClick={openDrawer}>
@@ -477,17 +507,17 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout }) => {
               {getLoggedInLinks({ loggedInUser })
                 .filter(link => !link.showOnMobileOnly)
                 .map((link, index) => (
-                  <MenuItem key={index}>
+                  <>
                     {link.isLogoutButton ? (
-                      <div onClick={handleLogout} className={classes.menuLink}>
+                      <MenuItem key={index} component="button" onClick={handleLogout}>
                         {link.text}
-                      </div>
+                      </MenuItem>
                     ) : (
-                      <Link href={link.href}>
-                        <a className={classes.menuLink}>{link.text}</a>
-                      </Link>
+                      <MenuItem key={index} component="button" href={link.href}>
+                        {link.text}
+                      </MenuItem>
                     )}
-                  </MenuItem>
+                  </>
                 ))}
             </MenuList>
           </Paper>
