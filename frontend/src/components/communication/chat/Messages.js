@@ -20,13 +20,15 @@ const styles = theme => {
     },
     receivedMessage: {
       backgroundColor: theme.palette.grey[300],
-      padding: theme.spacing(1)
+      padding: theme.spacing(1),
+      paddingRight: theme.spacing(4)
     },
     sentMessage: {
       backgroundColor: theme.palette.primary.main,
       padding: theme.spacing(1),
       color: "white",
-      textAlign: "left"
+      textAlign: "left",
+      paddingRight: theme.spacing(4)
     },
     message: {
       maxWidth: "70%",
@@ -110,7 +112,7 @@ class Messages extends React.Component {
           <div className={this.props.classes.noHistoryText}>
             <p>
               This is the very beginning of your conversation with{" "}
-              {this.props.chatting_partner.name}.
+              {this.props.chatting_partner.first_name+" "+this.props.chatting_partner.last_name}.
             </p>
             <p>Write a message to get the conversation started!</p>
           </div>
