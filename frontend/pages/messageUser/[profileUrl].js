@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => {
 });
 
 export default function MessageUser({ chatting_partner, token }) {
-  const { user, chatSocket } = useContext(UserContext);
+  const { user, chatSocket, refreshNotifications } = useContext(UserContext);
   const [chatUUID, setChatUUID] = useState();
   const [loading, setLoading] = useState(true);
   const [socketClosed, setSocketClosed] = useState(false);
@@ -81,6 +81,7 @@ export default function MessageUser({ chatting_partner, token }) {
         setChatUUID(response.data["chat_uuid"]);
         const messages = await getChatMessagesByUUID(response.data["chat_uuid"], token, 1);
         const sortedMessages = messages.messages.sort((a, b) => a.id - b.id);
+        await refreshNotifications()
         setState({
           ...state,
           messages: sortedMessages,
@@ -184,8 +185,6 @@ function MessagingLayout({
   hasMore
 }) {
   const classes = useStyles();
-  console.log("messages");
-  console.log(messages);
   const [curMessage, setCurMessage] = React.useState("");
   //TODO show user when socket has closed
 

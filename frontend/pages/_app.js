@@ -38,7 +38,9 @@ export default class MyApp extends App {
 
     this.state = {
       user: null,
-      matomoInstance: this.createInstanceIfAllowed()
+      matomoInstance: this.createInstanceIfAllowed(),
+      notifications: null,
+      chatSocket: null
     };
 
     //TODO: reload current path or main page while being logged out
@@ -60,6 +62,13 @@ export default class MyApp extends App {
       }
     };
 
+    this.refreshNotifications = async () => {
+      const notifications = await getNotifications(this.cookies);
+      this.setState({
+        notifications: notifications
+      })
+    };
+
     this.signIn = async (token, expiry) => {
       //TODO: set httpOnly=true to make cookie only accessible by server
       //TODO: set secure=true to make cookie only accessible through HTTPS
@@ -76,11 +85,16 @@ export default class MyApp extends App {
     client.onopen = () => {
       console.log("connected");
     };
+    client.onmessage = async () => {
+      await this.refreshNotifications()
+    };
     const user = await getLoggedInUser(this.cookies);
+    const notifications = await getNotifications(this.cookies);
     if (user) {
       this.setState({
         user: user,
-        chatSocket: client
+        chatSocket: client,
+        notifications: notifications
       });
     }
     // Remove the server-side injected CSS.
@@ -109,7 +123,9 @@ export default class MyApp extends App {
                   user: this.state.user,
                   signOut: this.signOut,
                   signIn: this.signIn,
-                  chatSocket: this.state.chatSocket
+                  chatSocket: this.state.chatSocket,
+                  notifications: this.state.notifications,
+                  refreshNotifications: this.refreshNotifications
                 }}
               >
                 <Component {...pageProps} />
@@ -121,7 +137,9 @@ export default class MyApp extends App {
                 user: this.state.user,
                 signOut: this.signOut,
                 signIn: this.signIn,
-                chatSocket: this.state.chatSocket
+                chatSocket: this.state.chatSocket,
+                notifications: this.state.notifications,
+                refreshNotifications: this.refreshNotifications
               }}
             >
               <Component {...pageProps} />
@@ -147,5 +165,21 @@ async function getLoggedInUser(cookies) {
     }
   } else {
     return null;
+  }
+}
+
+async function getNotifications(cookies) {
+  const token = cookies.get("token");
+  if (token) {
+    try {
+      const resp = await axios.get(process.env.API_URL + "/api/notifications/", tokenConfig(token));
+      return resp.data.results;
+    } catch (err) {
+      if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+      if (err.response && err.response.data.detail === "Invalid token.") cookies.remove("token");
+      return null;
+    }
+  } else {
+    return [];
   }
 }
