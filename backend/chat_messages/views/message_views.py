@@ -58,29 +58,6 @@ class ConnectMessageParticipantsView(APIView):
                     'chat_uuid': message_participant.chat_uuid,
                     'profile_url': user_profile.url_slug
                 })
-            # if MessageParticipants.objects.filter(
-            #     Q(participant_one=user) | Q(participant_one=participant_user),
-            #     Q(participant_two=user) | Q(participant_two=participant_user)
-            # ).exists():
-            #     message_participant = MessageParticipants.objects.filter(
-            #         Q(participant_one=user) | Q(participant_one=participant_user),
-            #         Q(participant_two=user) | Q(participant_two=participant_user)
-            #     ).first()
-            #     return Response({
-            #         'chat_uuid': message_participant.chat_uuid,
-            #         'profile_url': user_profile.url_slug
-            #     }, status=status.HTTP_200_OK)
-            # else:
-            #     message_participant = MessageParticipants.objects.create(
-            #         chat_uuid=str(uuid4()),
-            #         participant_one=user,
-            #         participant_two=participant_user
-            #     )
-
-            #     return Response({
-            #         'chat_uuid': message_participant.chat_uuid,
-            #         'profile_url': user_profile.url_slug
-            #     }, status=status.HTTP_201_CREATED)
 
 
 class ListParticipantsView(APIView):
