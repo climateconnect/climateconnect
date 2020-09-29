@@ -122,7 +122,8 @@ class GetChatMessages(ListAPIView):
             messages = Message.objects.filter(
                 message_participant=message_participant
             )
-            set_read(messages)
+            if messages: 
+                set_read(messages, user, True)
             return messages
 
 class GetChatMessage(APIView):
@@ -130,8 +131,11 @@ class GetChatMessage(APIView):
 
     def get(self, request, id, format=None):
         try:
-            message = Message.objects.get(id=id)
+            message_queryset = Message.objects.filter(id=id)
+            message = message_queryset[0]
         except Message.DoesNotExist:
             raise NotFound('This message does not exist')
+        if not message.sender == request.user:
+            set_read(message_queryset, self.request.user, True)
         serializer = MessageSerializer(message, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)

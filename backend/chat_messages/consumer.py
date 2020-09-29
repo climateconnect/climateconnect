@@ -3,6 +3,7 @@ from django.utils import timezone
 from channels.generic.websocket import AsyncWebsocketConsumer
 from chat_messages.models import Message, MessageParticipants
 from django.contrib.auth.models import User
+from chat_messages.utility.notification import create_private_message_notification
 
 
 class DirectMessageConsumer(AsyncWebsocketConsumer):
@@ -48,11 +49,12 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
         except MessageParticipants.DoesNotExist:
             message_participant = None
         if message_participant:
+            create_private_message_notification(message_participant, user, message_content)
             return Message.objects.create(
                 content=message_content, sender=user,
                 message_participant=message_participant,
                 sent_at=timezone.now()
-            )
+            )            
 
     # Receive message from room group
     async def chat_message(self, event):

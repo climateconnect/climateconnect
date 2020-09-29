@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from climateconnect_api.views import (
     status_views, user_views, common_views,
-    settings_views, common_views, role_views, faq_views
+    settings_views, common_views, role_views, 
+    faq_views, notifications_views
 )
 from knox import views as knox_views
 from django.conf import settings
@@ -71,6 +72,10 @@ urlpatterns = [
     path(
         'api/list_faq/',
         faq_views.ListFaqView.as_view(), name='list-faq'
+    ),
+    path(
+        'api/notifications/',
+        notifications_views.ListNotificationsView.as_view(), name='list-notifications'
     ),
     # Organization views
     path('api/', include('organization.urls')),

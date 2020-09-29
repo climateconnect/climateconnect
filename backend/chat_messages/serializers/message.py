@@ -44,4 +44,6 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
 
     def get_unread_count(self, obj):
         request = self.context.get('request', None)
-        return Message.objects.filter(message_participant=obj, sender = request.user, read_at=None).count()
+        unread_messages_unfiltered = Message.objects.filter(message_participant=obj, read_at=None)
+        unread_messages = Message.objects.filter(message_participant=obj, read_at=None).exclude(sender=request.user).count()
+        return unread_messages
