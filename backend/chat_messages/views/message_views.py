@@ -40,29 +40,47 @@ class ConnectMessageParticipantsView(APIView):
 
         participant_user = user_profile.user
         if participant_user:
-            if MessageParticipants.objects.filter(
-                Q(participant_one=user) | Q(participant_one=participant_user),
-                Q(participant_two=user) | Q(participant_two=participant_user)
-            ).exists():
+            participants = [user, participant_user]
+            if MessageParticipants.objects.filter(participants__in=participants).distinct():
                 message_participant = MessageParticipants.objects.filter(
-                    Q(participant_one=user) | Q(participant_one=participant_user),
-                    Q(participant_two=user) | Q(participant_two=participant_user)
-                ).first()
+                    participants__in=participants
+                ).distinct().first()
                 return Response({
                     'chat_uuid': message_participant.chat_uuid,
                     'profile_url': user_profile.url_slug
                 }, status=status.HTTP_200_OK)
             else:
-                message_participant = MessageParticipants.objects.create(
-                    chat_uuid=str(uuid4()),
-                    participant_one=user,
-                    participant_two=participant_user
-                )
+                message_participant = MessageParticipants.objects.create(chat_uuid=str(uuid4()))
+                for user in participants:
+                    message_participant.participants.add(user)
 
                 return Response({
                     'chat_uuid': message_participant.chat_uuid,
                     'profile_url': user_profile.url_slug
-                }, status=status.HTTP_201_CREATED)
+                })
+            # if MessageParticipants.objects.filter(
+            #     Q(participant_one=user) | Q(participant_one=participant_user),
+            #     Q(participant_two=user) | Q(participant_two=participant_user)
+            # ).exists():
+            #     message_participant = MessageParticipants.objects.filter(
+            #         Q(participant_one=user) | Q(participant_one=participant_user),
+            #         Q(participant_two=user) | Q(participant_two=participant_user)
+            #     ).first()
+            #     return Response({
+            #         'chat_uuid': message_participant.chat_uuid,
+            #         'profile_url': user_profile.url_slug
+            #     }, status=status.HTTP_200_OK)
+            # else:
+            #     message_participant = MessageParticipants.objects.create(
+            #         chat_uuid=str(uuid4()),
+            #         participant_one=user,
+            #         participant_two=participant_user
+            #     )
+
+            #     return Response({
+            #         'chat_uuid': message_participant.chat_uuid,
+            #         'profile_url': user_profile.url_slug
+            #     }, status=status.HTTP_201_CREATED)
 
 
 class ListParticipantsView(APIView):
@@ -77,26 +95,28 @@ class ListParticipantsView(APIView):
             }, status=status.HTTP_404_NOT_FOUND)
 
         participants = MessageParticipants.objects.filter(
-            Q(participant_one=profile.user) | Q(participant_two=profile.user)
+            participants=profile.user
         )
-        serializer = MessageParticipantSerializer(participants, many=True)
+        serializer = MessageParticipantSerializer(
+            participants, many=True, context={'user': request.user}
+        )
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class getChatsView(ListAPIView):
+
+class GetChatsView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = MessageParticipantSerializer
     pagination_class = ChatsPagination
 
     def get_queryset(self):
-        chats = MessageParticipants.objects.filter(                
-            Q(participant_one=self.request.user) | Q(participant_two=self.request.user)
+        chats = MessageParticipants.objects.filter(
+            partcipants=self.request.user
         )
         if chats.exists():
             return chats
         else:
             return []
-
 
 
 class GetChatMessages(ListAPIView):
@@ -112,11 +132,11 @@ class GetChatMessages(ListAPIView):
         user = self.request.user
         try:
             message_participant = MessageParticipants.objects.get(                
-                Q(participant_one=user) | Q(participant_two=user),
+                participants=user,
                 chat_uuid=chat_uuid, 
             )
         except MessageParticipants.DoesNotExist:
-            raise NotFound('You are not a particicapt of this chat.')
+            raise NotFound('You are not a participant of this chat.')
         
         if message_participant:
             messages = Message.objects.filter(
@@ -124,6 +144,7 @@ class GetChatMessages(ListAPIView):
             )
             set_read(messages)
             return messages
+
 
 class GetChatMessage(APIView):
     permission_classes = [IsPartOfChat]
