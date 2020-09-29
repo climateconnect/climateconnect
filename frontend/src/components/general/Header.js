@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import noop from "lodash/noop";
-import Link from "next/link";
 import {
   Box,
   Container,
@@ -17,7 +16,8 @@ import {
   MenuItem,
   Popper,
   Paper,
-  ClickAwayListener
+  ClickAwayListener,
+  Link
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -37,6 +37,9 @@ import { getImageUrl } from "../../../public/lib/imageOperations";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
 import NotificationsIcon from "@material-ui/icons/Notifications";
+import NotificationsBox from "../communication/notifications/NotificationsBox";
+import Notification from "../communication/notifications/Notification";
+import HomeIcon from '@material-ui/icons/Home';
 
 const useStyles = makeStyles(theme => {
   return {
@@ -75,6 +78,9 @@ const useStyles = makeStyles(theme => {
       width: 60,
       display: "block",
       margin: "0 auto"
+    },
+    loggedInLink: {
+      color: theme.palette.primary.main
     },
     menuLink: {
       color: theme.palette.primary.main,
@@ -126,6 +132,15 @@ const useStyles = makeStyles(theme => {
 
 const LINKS = [
   {
+    href: "/",
+    text: "Home",
+    iconForDrawer: HomeIcon,
+    onlyShowIconOnNormalScreen: true,
+    onlyShowIconOnMobile: true,
+    icon: HomeIcon,
+    alwaysDisplayDirectly: true
+  },
+  {
     href: "/about",
     text: "About",
     iconForDrawer: InfoIcon
@@ -151,8 +166,6 @@ const LINKS = [
     text: "Inbox",
     iconForDrawer: NotificationsIcon,
     hasBadge: true,
-    //TODO: replace by user's unread notifications
-    badgeNumber: 0,
     onlyShowIconOnNormalScreen: true,
     onlyShowIconOnMobile: true,
     className: "notificationsButton",
@@ -231,11 +244,18 @@ const getLoggedInLinks = ({ loggedInUser }) => {
 
 export default function Header({ className, noSpacingBottom, isStaticPage }) {
   const classes = useStyles();
-  const { user, signOut } = useContext(UserContext);
-  const [notificationsHidden, setNotificationsHidden] = React.useState(false);
+  const { user, signOut, notifications } = useContext(UserContext);
+  const [anchorEl, setAnchorEl] = React.useState(false);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
 
-  const toggleShowNotifications = () => setNotificationsHidden(!notificationsHidden)
+  const toggleShowNotifications = event => {
+    if(!anchorEl)
+      setAnchorEl(event.currentTarget)
+    else
+      setAnchorEl(null)
+  }
+
+  const onNotificationsClose = () => setAnchorEl(null)
 
   return (
     <Box
@@ -256,15 +276,19 @@ export default function Header({ className, noSpacingBottom, isStaticPage }) {
               <NarrowScreenLinks
                 loggedInUser={user}
                 handleLogout={signOut}
-                notificationsHidden={notificationsHidden}
+                anchorEl={anchorEl}
                 toggleShowNotifications={toggleShowNotifications}
+                onNotificationsClose={onNotificationsClose}
+                notifications={notifications}
               />
             ) : (
               <NormalScreenLinks
                 loggedInUser={user}
                 handleLogout={signOut}
-                notificationsHidden={notificationsHidden}
+                anchorEl={anchorEl}
                 toggleShowNotifications={toggleShowNotifications}
+                onNotificationsClose={onNotificationsClose}
+                notifications={notifications}
               />
             )}
           </>
@@ -290,9 +314,9 @@ function StaticPageLinks() {
       </Container>
     </div>
   );
-}
+          }
 
-function NormalScreenLinks({ loggedInUser, handleLogout, toggleShowNotifications }) {
+function NormalScreenLinks({ loggedInUser, handleLogout, anchorEl, toggleShowNotifications, onNotificationsClose, notifications }) {
   const classes = useStyles();
 
   return (
@@ -323,25 +347,39 @@ function NormalScreenLinks({ loggedInUser, handleLogout, toggleShowNotifications
           buttonProps.href = link.href
         const Icon = link.icon;
         return (
-          <>
+          <React.Fragment key={index}>
             <a className={classes.menuLink}>
               {link.onlyShowIconOnNormalScreen ? (
-                <IconButton color="primary" {...buttonProps} className={classes.link}>
-                  {link.hasBadge && link.badgeNumber > 0 ? (
-                    <Badge badgeContent={link.badgeNumber} color="error">
+                <>
+                  <IconButton color="primary" {...buttonProps} className={classes.link}>
+                    {link.hasBadge && notifications.length > 0 ? (
+                      <Badge badgeContent={notifications.length} color="error">
+                        <Icon />
+                      </Badge>
+                    ) : (
                       <Icon />
-                    </Badge>
-                  ) : (
-                    <Icon />
-                  )}
-                </IconButton>
+                    )}
+                  </IconButton>
+                  {link.type === "notificationsButton" && anchorEl &&
+                    <NotificationsBox 
+                      anchorEl={anchorEl}
+                      keepMounted
+                      open={Boolean(anchorEl)}
+                      onClose={onNotificationsClose}
+                    >
+                      {notifications.map((n, index) => (
+                        <Notification key={index} notification={n} />
+                      ))}
+                    </NotificationsBox>
+                  }
+                </>
               ) : (
                 <Button color="primary" {...buttonProps}>
                   {link.text}
                 </Button>
               )}
             </a>
-          </>
+          </React.Fragment>
         );
       })}
       {loggedInUser && (
@@ -351,7 +389,7 @@ function NormalScreenLinks({ loggedInUser, handleLogout, toggleShowNotifications
   );
 }
 
-function NarrowScreenLinks({ loggedInUser, handleLogout, toggleShowNotifications }) {
+function NarrowScreenLinks({ loggedInUser, handleLogout, anchorEl, toggleShowNotifications, onNotificationsCloses }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const openDrawer = setIsDrawerOpen.bind(null, true);
@@ -380,9 +418,9 @@ function NarrowScreenLinks({ loggedInUser, handleLogout, toggleShowNotifications
           if (link.href)
             buttonProps.href = link.href
           return (
-            <>
+            <React.Fragment key={index}>
               {link.onlyShowIconOnMobile ? (
-                <IconButton color="primary" className={classes.marginRight}>
+                <IconButton color="primary" className={classes.marginRight} key={index}>
                   {link.hasBadge && link.badgeNumber > 0 ? (
                     <Badge badgeContent={link.badgeNumber} color="error">
                       <Icon />
@@ -392,11 +430,11 @@ function NarrowScreenLinks({ loggedInUser, handleLogout, toggleShowNotifications
                   )}
                 </IconButton>
               ) : (
-                <Button color="primary" {...buttonProps}>
+                <Button color="primary" {...buttonProps} key={index}>
                   {link.text}
                 </Button>
               )}
-            </>
+            </React.Fragment>
           );
         })}
         <IconButton edge="start" color="inherit" aria-label="menu" onClick={openDrawer}>
@@ -448,7 +486,7 @@ function NarrowScreenLinks({ loggedInUser, handleLogout, toggleShowNotifications
                       <ListItemIcon>
                         <Icon color="primary" />
                       </ListItemIcon>
-                      <ListItemText primary={link.text} />
+                      <ListItemText primary={link.text}/>
                     </ListItem>
                   );
                 else
@@ -458,7 +496,7 @@ function NarrowScreenLinks({ loggedInUser, handleLogout, toggleShowNotifications
                         <ListItemIcon>
                           <Icon color="primary" />
                         </ListItemIcon>
-                        <ListItemText primary={link.text} />
+                        <ListItemText primary={link.text}/>
                       </ListItem>
                     </Link>
                   );
@@ -507,17 +545,17 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout }) => {
               {getLoggedInLinks({ loggedInUser })
                 .filter(link => !link.showOnMobileOnly)
                 .map((link, index) => (
-                  <>
+                  <React.Fragment key={index}>
                     {link.isLogoutButton ? (
-                      <MenuItem key={index} component="button" onClick={handleLogout}>
+                      <MenuItem key={index} component="button" onClick={handleLogout} className={classes.loggedInLink}>
                         {link.text}
                       </MenuItem>
                     ) : (
-                      <MenuItem key={index} component="button" href={link.href}>
+                      <MenuItem key={index} component="button" href={link.href} className={classes.loggedInLink}>
                         {link.text}
                       </MenuItem>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
             </MenuList>
           </Paper>
