@@ -112,7 +112,8 @@ class Messages extends React.Component {
           <div className={this.props.classes.noHistoryText}>
             <p>
               This is the very beginning of your conversation with{" "}
-              {this.props.chatting_partner.first_name+" "+this.props.chatting_partner.last_name}.
+              {this.props.chatting_partner.first_name + " " + this.props.chatting_partner.last_name}
+              .
             </p>
             <p>Write a message to get the conversation started!</p>
           </div>

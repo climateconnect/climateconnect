@@ -16,12 +16,12 @@ const useStyles = makeStyles(theme => ({
   sentTime: {
     color: "#bdb8c7"
   }
-}))
+}));
 
 export default function Message({ message, classes, chatting_partner }) {
-  const ownClasses = useStyles()
+  const ownClasses = useStyles();
   const received = message.sender.url_slug === chatting_partner.url_slug;
-  const sent_date = getDateTime(message.sent_at)
+  const sent_date = getDateTime(message.sent_at);
   return (
     <div
       className={`${received ? classes.receivedContainer : classes.sentContainer} ${
@@ -33,10 +33,12 @@ export default function Message({ message, classes, chatting_partner }) {
         color={received ? "default" : "primary"}
         className={`${received ? classes.receivedMessage : classes.sentMessage} ${classes.message}`}
       >
-        <MessageContent content={message.content} />    
+        <MessageContent content={message.content} />
         <div className={ownClasses.timeContainer}>
-          <div className={`${ownClasses.time} ${!received && ownClasses.sentTime}`}>{sent_date}</div>
-        </div>    
+          <div className={`${ownClasses.time} ${!received && ownClasses.sentTime}`}>
+            {sent_date}
+          </div>
+        </div>
       </span>
     </div>
   );

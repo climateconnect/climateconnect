@@ -56,7 +56,12 @@ export default function ChatPreviews({ chats }) {
               key={index}
               className={classes.listItem}
             >
-              <MiniProfilePreview className={classes.miniProfilePreview} profile={chat.chatting_partner} size="medium" nolink />
+              <MiniProfilePreview
+                className={classes.miniProfilePreview}
+                profile={chat.chatting_partner}
+                size="medium"
+                nolink
+              />
               <ListItemText
                 secondary={
                   <>
@@ -81,7 +86,7 @@ export default function ChatPreviews({ chats }) {
                       )}
                       <div className={classes.timeContainer}>
                         <div className={classes.time}>{getDateTime(chat.last_message.sent_at)}</div>
-                      </div>  
+                      </div>
                     </div>
                   </>
                 }

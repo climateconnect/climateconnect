@@ -50,7 +50,7 @@ export default function Inbox({ chatData }) {
   console.log(chatData);
   const { user } = React.useContext(UserContext);
   const [userSearchEnabled, setUserSearchEnabled] = React.useState(false);
-  const [newChatMembers, setNewChatMembers] = React.useState([])
+  const [newChatMembers, setNewChatMembers] = React.useState([]);
   console.log(chatData);
 
   const enableUserSearch = () => {
@@ -58,19 +58,19 @@ export default function Inbox({ chatData }) {
   };
 
   const disableUserSearch = () => {
-    setUserSearchEnabled(false)
-  }
+    setUserSearchEnabled(false);
+  };
 
   const handleAddNewChatMember = member => {
-    setNewChatMembers([...newChatMembers, member])
-  }
+    setNewChatMembers([...newChatMembers, member]);
+  };
 
   const handleStartChat = () => {
-    if(newChatMembers.length === 1)
+    if (newChatMembers.length === 1)
       Router.push({
-        pathname: "/messageUser/" + newChatMembers[0].url_slug+"/"
-      })
-  }
+        pathname: "/messageUser/" + newChatMembers[0].url_slug + "/"
+      });
+  };
 
   const renderSearchOption = option => {
     return (
@@ -92,9 +92,13 @@ export default function Inbox({ chatData }) {
           </Typography>
           {userSearchEnabled ? (
             <div className={classes.searchSectionContainer}>
-              <AutoCompleteSearchBar 
-                label={newChatMembers.length<1 ? "Search user to message..." : "Add more chat participants..."}
-                baseUrl={process.env.API_URL+"/api/members/?search="}
+              <AutoCompleteSearchBar
+                label={
+                  newChatMembers.length < 1
+                    ? "Search user to message..."
+                    : "Add more chat participants..."
+                }
+                baseUrl={process.env.API_URL + "/api/members/?search="}
                 clearOnSelect
                 freeSolo
                 filterOut={newChatMembers}
@@ -109,15 +113,11 @@ export default function Inbox({ chatData }) {
                 ))}
               </div>
               <div className={classes.buttonBar}>
-                <Button 
-                  variant="contained" 
-                  color="primary" 
-                  onClick={handleStartChat}
-                >
+                <Button variant="contained" color="primary" onClick={handleStartChat}>
                   Start Chat
                 </Button>
-                <Button 
-                  variant="contained" 
+                <Button
+                  variant="contained"
                   className={classes.cancelButton}
                   onClick={disableUserSearch}
                 >

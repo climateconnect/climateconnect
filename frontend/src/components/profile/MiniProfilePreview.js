@@ -12,7 +12,8 @@ const useStyles = makeStyles(theme => {
     profileName: {
       display: "inline-block",
       verticalAlign: "middle",
-      marginLeft: theme.spacing(1)
+      marginLeft: theme.spacing(1),
+      whiteSpace: "nowrap"
     },
     smallProfileName: {
       fontSize: 14

@@ -81,7 +81,7 @@ export default function MessageUser({ chatting_partner, token }) {
         setChatUUID(response.data["chat_uuid"]);
         const messages = await getChatMessagesByUUID(response.data["chat_uuid"], token, 1);
         const sortedMessages = messages.messages.sort((a, b) => a.id - b.id);
-        await refreshNotifications()
+        await refreshNotifications();
         setState({
           ...state,
           messages: sortedMessages,

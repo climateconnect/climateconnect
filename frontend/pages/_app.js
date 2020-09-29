@@ -66,7 +66,7 @@ export default class MyApp extends App {
       const notifications = await getNotifications(this.cookies);
       this.setState({
         notifications: notifications
-      })
+      });
     };
 
     this.signIn = async (token, expiry) => {
@@ -86,7 +86,7 @@ export default class MyApp extends App {
       console.log("connected");
     };
     client.onmessage = async () => {
-      await this.refreshNotifications()
+      await this.refreshNotifications();
     };
     const user = await getLoggedInUser(this.cookies);
     const notifications = await getNotifications(this.cookies);

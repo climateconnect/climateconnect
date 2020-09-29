@@ -39,7 +39,7 @@ import MailOutlineIcon from "@material-ui/icons/MailOutline";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import NotificationsBox from "../communication/notifications/NotificationsBox";
 import Notification from "../communication/notifications/Notification";
-import HomeIcon from '@material-ui/icons/Home';
+import HomeIcon from "@material-ui/icons/Home";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -249,13 +249,11 @@ export default function Header({ className, noSpacingBottom, isStaticPage }) {
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
 
   const toggleShowNotifications = event => {
-    if(!anchorEl)
-      setAnchorEl(event.currentTarget)
-    else
-      setAnchorEl(null)
-  }
+    if (!anchorEl) setAnchorEl(event.currentTarget);
+    else setAnchorEl(null);
+  };
 
-  const onNotificationsClose = () => setAnchorEl(null)
+  const onNotificationsClose = () => setAnchorEl(null);
 
   return (
     <Box
@@ -314,9 +312,16 @@ function StaticPageLinks() {
       </Container>
     </div>
   );
-          }
+}
 
-function NormalScreenLinks({ loggedInUser, handleLogout, anchorEl, toggleShowNotifications, onNotificationsClose, notifications }) {
+function NormalScreenLinks({
+  loggedInUser,
+  handleLogout,
+  anchorEl,
+  toggleShowNotifications,
+  onNotificationsClose,
+  notifications
+}) {
   const classes = useStyles();
 
   return (
@@ -341,10 +346,8 @@ function NormalScreenLinks({ loggedInUser, handleLogout, anchorEl, toggleShowNot
         if ((loggedInUser || !link.vanillaIfLoggedOut) && link.icon) {
           buttonProps.startIcon = <link.icon />;
         }
-        if (link.type === "notificationsButton") 
-          buttonProps.onClick = toggleShowNotifications;
-        if (link.href)
-          buttonProps.href = link.href
+        if (link.type === "notificationsButton") buttonProps.onClick = toggleShowNotifications;
+        if (link.href) buttonProps.href = link.href;
         const Icon = link.icon;
         return (
           <React.Fragment key={index}>
@@ -360,8 +363,8 @@ function NormalScreenLinks({ loggedInUser, handleLogout, anchorEl, toggleShowNot
                       <Icon />
                     )}
                   </IconButton>
-                  {link.type === "notificationsButton" && anchorEl &&
-                    <NotificationsBox 
+                  {link.type === "notificationsButton" && anchorEl && (
+                    <NotificationsBox
                       anchorEl={anchorEl}
                       keepMounted
                       open={Boolean(anchorEl)}
@@ -371,7 +374,7 @@ function NormalScreenLinks({ loggedInUser, handleLogout, anchorEl, toggleShowNot
                         <Notification key={index} notification={n} />
                       ))}
                     </NotificationsBox>
-                  }
+                  )}
                 </>
               ) : (
                 <Button color="primary" {...buttonProps}>
@@ -389,7 +392,13 @@ function NormalScreenLinks({ loggedInUser, handleLogout, anchorEl, toggleShowNot
   );
 }
 
-function NarrowScreenLinks({ loggedInUser, handleLogout, anchorEl, toggleShowNotifications, onNotificationsCloses }) {
+function NarrowScreenLinks({
+  loggedInUser,
+  handleLogout,
+  anchorEl,
+  toggleShowNotifications,
+  onNotificationsCloses
+}) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const openDrawer = setIsDrawerOpen.bind(null, true);
@@ -413,10 +422,8 @@ function NarrowScreenLinks({ loggedInUser, handleLogout, anchorEl, toggleShowNot
           if (index === linksOutsideDrawer.length - 1) {
             buttonProps.className = classes.marginRight;
           }
-          if (link.type === "notificationsButton") 
-            buttonProps.onClick = toggleShowNotifications;
-          if (link.href)
-            buttonProps.href = link.href
+          if (link.type === "notificationsButton") buttonProps.onClick = toggleShowNotifications;
+          if (link.href) buttonProps.href = link.href;
           return (
             <React.Fragment key={index}>
               {link.onlyShowIconOnMobile ? (
@@ -486,7 +493,7 @@ function NarrowScreenLinks({ loggedInUser, handleLogout, anchorEl, toggleShowNot
                       <ListItemIcon>
                         <Icon color="primary" />
                       </ListItemIcon>
-                      <ListItemText primary={link.text}/>
+                      <ListItemText primary={link.text} />
                     </ListItem>
                   );
                 else
@@ -496,7 +503,7 @@ function NarrowScreenLinks({ loggedInUser, handleLogout, anchorEl, toggleShowNot
                         <ListItemIcon>
                           <Icon color="primary" />
                         </ListItemIcon>
-                        <ListItemText primary={link.text}/>
+                        <ListItemText primary={link.text} />
                       </ListItem>
                     </Link>
                   );
@@ -547,11 +554,21 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout }) => {
                 .map((link, index) => (
                   <React.Fragment key={index}>
                     {link.isLogoutButton ? (
-                      <MenuItem key={index} component="button" onClick={handleLogout} className={classes.loggedInLink}>
+                      <MenuItem
+                        key={index}
+                        component="button"
+                        onClick={handleLogout}
+                        className={classes.loggedInLink}
+                      >
                         {link.text}
                       </MenuItem>
                     ) : (
-                      <MenuItem key={index} component="button" href={link.href} className={classes.loggedInLink}>
+                      <MenuItem
+                        key={index}
+                        component="button"
+                        href={link.href}
+                        className={classes.loggedInLink}
+                      >
                         {link.text}
                       </MenuItem>
                     )}
