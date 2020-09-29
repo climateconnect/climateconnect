@@ -1,6 +1,6 @@
 import React from "react";
 import WideLayout from "../src/components/layouts/WideLayout";
-import { Container, Typography, Button } from "@material-ui/core";
+import { Container, Typography, Button, IconButton } from "@material-ui/core";
 import ChatPreviews from "../src/components/communication/chat/ChatPreviews";
 import { makeStyles } from "@material-ui/core/styles";
 import Cookies from "next-cookies";
@@ -10,6 +10,9 @@ import tokenConfig from "../public/config/tokenConfig";
 import UserContext from "../src/components/context/UserContext";
 import LoadingContainer from "../src/components/general/LoadingContainer";
 import AutoCompleteSearchBar from "../src/components/general/AutoCompleteSearchBar";
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import MiniProfilePreview from "../src/components/profile/MiniProfilePreview";
+import Router from "next/router";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -23,6 +26,21 @@ const useStyles = makeStyles(theme => {
     },
     newChatButton: {
       marginBottom: theme.spacing(2)
+    },
+    searchSectionContainer: {
+      marginBottom: theme.spacing(4)
+    },
+    buttonBar: {
+      position: "relative",
+      height: 40
+    },
+    cancelButton: {
+      position: "absolute",
+      right: 0
+    },
+    newChatParticipantsContainer: {
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2)
     }
   };
 });
@@ -32,10 +50,37 @@ export default function Inbox({ chatData }) {
   console.log(chatData);
   const { user } = React.useContext(UserContext);
   const [userSearchEnabled, setUserSearchEnabled] = React.useState(false);
+  const [newChatMembers, setNewChatMembers] = React.useState([])
   console.log(chatData);
 
   const enableUserSearch = () => {
     setUserSearchEnabled(true);
+  };
+
+  const disableUserSearch = () => {
+    setUserSearchEnabled(false)
+  }
+
+  const handleAddNewChatMember = member => {
+    setNewChatMembers([...newChatMembers, member])
+  }
+
+  const handleStartChat = () => {
+    if(newChatMembers.length === 1)
+      Router.push({
+        pathname: "/messageUser/" + newChatMembers[0].url_slug+"/"
+      })
+  }
+
+  const renderSearchOption = option => {
+    return (
+      <React.Fragment>
+        <IconButton>
+          <AddCircleOutlineIcon />
+        </IconButton>
+        {option.first_name + " " + option.last_name}
+      </React.Fragment>
+    );
   };
 
   return (
@@ -46,7 +91,40 @@ export default function Inbox({ chatData }) {
             Inbox
           </Typography>
           {userSearchEnabled ? (
-            <div>Insert Autocomplete searchbar here</div>
+            <div className={classes.searchSectionContainer}>
+              <AutoCompleteSearchBar 
+                label={newChatMembers.length<1 ? "Search user to message..." : "Add more chat participants..."}
+                baseUrl={process.env.API_URL+"/api/members/?search="}
+                clearOnSelect
+                freeSolo
+                filterOut={newChatMembers}
+                onSelect={handleAddNewChatMember}
+                renderOption={renderSearchOption}
+                getOptionLabel={option => option.first_name + " " + option.last_name}
+                helperText="Type the name of the user(s) you want to message."
+              />
+              <div className={classes.newChatParticipantsContainer}>
+                {newChatMembers.map((m, index) => (
+                  <MiniProfilePreview key={index} profile={m} />
+                ))}
+              </div>
+              <div className={classes.buttonBar}>
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  onClick={handleStartChat}
+                >
+                  Start Chat
+                </Button>
+                <Button 
+                  variant="contained" 
+                  className={classes.cancelButton}
+                  onClick={disableUserSearch}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
           ) : (
             <Button
               className={classes.newChatButton}
