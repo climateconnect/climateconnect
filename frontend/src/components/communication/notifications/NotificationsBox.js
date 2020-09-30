@@ -3,7 +3,8 @@ import { withStyles, Menu } from "@material-ui/core";
 
 const NotificationsBox = withStyles({
   paper: {
-    border: "1px solid #d3d4d5"
+    border: "1px solid #d3d4d5",
+    minWidth: 300
   }
 })(props => (
   <Menu

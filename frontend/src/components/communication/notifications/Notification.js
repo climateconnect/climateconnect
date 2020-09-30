@@ -13,6 +13,9 @@ const useStyles = makeStyles(() => {
   return {
     messageSender: {
       fontWeight: "bold"
+    },
+    listItemText: {
+      whiteSpace: "normal"
     }
   };
 });
@@ -23,8 +26,10 @@ const StyledMenuItem = withStyles(theme => ({
         color: theme.palette.common.white
       }
     },
-    width: 450,
-    maxWidth: "100%"
+    maxWidth: 450,
+    [theme.breakpoints.down("xs")]: {
+      maxWidth: "80%"
+    }
   }
 }))(MenuItem);
 
@@ -39,13 +44,14 @@ const NOTIFICATION_TYPES = [
   "reply_to_post_comment"
 ];
 
-export default function Notification({ notification }) {
-  console.log("rendering notification");
-  console.log(notification);
-  const type = NOTIFICATION_TYPES[notification.notification_type];
-  if (type) console.log("type of notification: " + type);
-  if (type === "private_message") return <PrivateMessageNotification notification={notification} />;
-  else return <></>;
+export default function Notification({ notification, isPlaceholder }) {
+  if(isPlaceholder)
+    return <PlaceholderNotification />
+  else{
+    const type = NOTIFICATION_TYPES[notification.notification_type];
+    if (type === "private_message") return <PrivateMessageNotification notification={notification} />;
+    else return <></>;
+  }
 }
 
 const PrivateMessageNotification = ({ notification }) => {
@@ -68,3 +74,17 @@ const PrivateMessageNotification = ({ notification }) => {
     </Link>
   );
 };
+
+const PlaceholderNotification = () => {
+  const classes = useStyles();
+  return (
+    <StyledMenuItem>
+      <ListItemText 
+        className={classes.listItemText} 
+        disableTypography
+      >
+        You're all caught up! Here you will be notified on private messages, interactions with your content and updates from projects you follow.
+      </ListItemText>
+    </StyledMenuItem>
+  )
+}

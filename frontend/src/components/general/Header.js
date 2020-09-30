@@ -17,7 +17,9 @@ import {
   Popper,
   Paper,
   ClickAwayListener,
-  Link
+  Link,
+  Typography,
+  Divider
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -28,7 +30,6 @@ import MenuIcon from "@material-ui/icons/Menu";
 import InfoIcon from "@material-ui/icons/Info";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-//import NotificationsIcon from "@material-ui/icons/Notifications";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
@@ -126,7 +127,10 @@ const useStyles = makeStyles(theme => {
         padding: 0
       }
     },
-    dropdownLink: {}
+    notificationsHeadline: {
+      padding: theme.spacing(2),
+      textAlign: "center"
+    }
   };
 });
 
@@ -369,10 +373,17 @@ function NormalScreenLinks({
                       keepMounted
                       open={Boolean(anchorEl)}
                       onClose={onNotificationsClose}
+                      isEmpty={notifications.length===0}
                     >
-                      {notifications.map((n, index) => (
-                        <Notification key={index} notification={n} />
-                      ))}
+                      <Typography className={classes.notificationsHeadline} component="h1" variant="h5">Notifications</Typography>
+                      <Divider />
+                      {notifications.length > 0 ?
+                        notifications.map((n, index) => (
+                          <Notification key={index} notification={n} />
+                        ))
+                        :
+                          <Notification key={index} isPlaceholder/>
+                      }
                     </NotificationsBox>
                   )}
                 </>
