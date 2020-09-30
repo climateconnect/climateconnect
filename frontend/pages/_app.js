@@ -39,7 +39,7 @@ export default class MyApp extends App {
     this.state = {
       user: null,
       matomoInstance: this.createInstanceIfAllowed(),
-      notifications: null,
+      notifications: [],
       chatSocket: null
     };
 
