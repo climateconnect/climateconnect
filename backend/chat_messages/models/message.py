@@ -9,18 +9,10 @@ class MessageParticipants(models.Model):
         verbose_name="Chat UUID", unique=True, null=True, blank=True
     )
 
-    participant_one = models.ForeignKey(
-        User, related_name="user_participant_one",
-        help_text="Points to first participant of the chat",
-        verbose_name="Participant One",
-        on_delete=models.CASCADE
-    )
-
-    participant_two = models.ForeignKey(
-        User, related_name="user_participant_two",
-        help_text="Points to second participant of the chat",
-        verbose_name="Participant Two",
-        on_delete=models.CASCADE
+    participants = models.ManyToManyField(
+        User, related_name="participant_users",
+        help_text="Points to list users in a group",
+        verbose_name="Participants"
     )
 
     # Making it a bit more future proof.
@@ -46,8 +38,8 @@ class MessageParticipants(models.Model):
         verbose_name_plural = "Message Participants"
 
     def __str__(self):
-        return "Participants: %s => %s" % (
-            self.participant_one.username, self.participant_two.username
+        return "Participants: %s" % (
+            self.participants.all()
         )
 
 

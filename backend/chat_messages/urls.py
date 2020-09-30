@@ -16,7 +16,7 @@ urlpatterns = [
     ),
     path(
         'chats/',
-        message_views.getChatsView.as_view(),
+        message_views.GetChatsView.as_view(),
         name='get-chats-api'
     ),
     path(
