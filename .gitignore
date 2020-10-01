@@ -21,3 +21,5 @@ __pycache__
 
 # vscode
 /.vscode
+backend/.vscode
+frontend/.vscode
