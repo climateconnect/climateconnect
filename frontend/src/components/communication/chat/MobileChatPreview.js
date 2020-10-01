@@ -29,13 +29,13 @@ const useStyles = makeStyles(theme => {
       textOverflow: "ellipsis",
       whiteSpace: "nowrap"
     }
-  }
-})
+  };
+});
 
 export default function MobileChatPreview({ chat, isFirstChat }) {
-  const classes = useStyles()
+  const classes = useStyles();
   const isGroupChat = !chat.chatting_partner && !!chat.name;
-  const last_activity = chat.last_message ? chat.last_message.sent_at : chat.created_at
+  const last_activity = chat.last_message ? chat.last_message.sent_at : chat.created_at;
   return (
     <>
       {isFirstChat && <Divider component="li" />}
@@ -53,9 +53,7 @@ export default function MobileChatPreview({ chat, isFirstChat }) {
               ? chat.name
               : chat.chatting_partner.first_name + " " + chat.chatting_partner.last_name
           }
-          secondary={
-            chat.content
-          }
+          secondary={chat.content}
           secondaryTypographyProps={{
             className: classes.content
           }}
@@ -72,7 +70,7 @@ export default function MobileChatPreview({ chat, isFirstChat }) {
                 badgeContent={chat.unread_count}
               />
             </span>
-          )}          
+          )}
         </span>
       </ListItem>
       <Divider component="li" />

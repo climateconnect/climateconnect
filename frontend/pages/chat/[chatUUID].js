@@ -189,7 +189,7 @@ function MessagingLayout({
   messages,
   loading,
   sendMessage,
-  socketClosed,
+  /*socketClosed,*/
   loadMoreMessages,
   hasMore,
   title,

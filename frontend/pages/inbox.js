@@ -72,7 +72,6 @@ export default function Inbox({ chatData, token }) {
   const [newChatMembers, setNewChatMembers] = React.useState([]);
   const [errorMessage, setErrorMessage] = React.useState("");
   const [groupName, setGroupName] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
 
   const handleGroupNameChange = e => {
     setGroupName(e.target.value);
@@ -142,7 +141,7 @@ export default function Inbox({ chatData, token }) {
 
   return (
     <div>
-      <WideLayout title="Inbox" messageType="error" message={errorMessage} isLoading={loading}>
+      <WideLayout title="Inbox" messageType="error" message={errorMessage}>
         <Container maxWidth="md" className={classes.root}>
           <Typography component="h1" variant="h4" className={classes.headline}>
             Inbox

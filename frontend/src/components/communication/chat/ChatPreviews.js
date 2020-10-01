@@ -77,7 +77,8 @@ export default function ChatPreviews({ chats }) {
     <List>
       {chats.map((chat, index) => {
         const lastAction = chat.last_message ? chat.last_message.sent_at : chat.created_at;
-        if (isNarrowScreen) return <MobileChatPreview key={index} chat={chat} isFirstChat={index===0}/>;
+        if (isNarrowScreen)
+          return <MobileChatPreview key={index} chat={chat} isFirstChat={index === 0} />;
         else
           return (
             <React.Fragment key={index}>
@@ -128,7 +129,7 @@ export default function ChatPreviews({ chats }) {
                               badgeContent={chat.unread_count}
                             />
                           </span>
-                        )}                        
+                        )}
                       </span>
                     </>
                   }

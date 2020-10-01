@@ -128,8 +128,8 @@ const PlaceholderNotification = () => {
     <Link href="/inbox" underline="none" color="inherit">
       <StyledMenuItem>
         <ListItemText className={classes.listItemText} disableTypography>
-          You're all caught up! Here you will be notified on private messages, interactions with
-          your content and updates from projects you follow.
+          {`You're all caught up! Here you will be notified on private messages, interactions with
+          your content and updates from projects you follow.`}
           <div>
             <Link className={classes.goToInboxText}>Go to Inbox</Link>
           </div>
