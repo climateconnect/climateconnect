@@ -5,14 +5,19 @@ from chat_messages.views import message_views
 app_name = 'chat_messages'
 urlpatterns = [
     path(
-        'connect_participants/',
-        message_views.ConnectMessageParticipantsView.as_view(),
+        'chat/<str:chat_uuid>/',
+        message_views.GetChatView.as_view(),
         name='connect-participants-api'
     ),
     path(
-        'profiles/<str:url_slug>/participants/',
-        message_views.ListParticipantsView.as_view(),
-        name='get-message-participants-api'
+        'start_group_chat/',
+        message_views.StartGroupChatView.as_view(),
+        name='start-group-chat-api'
+    ),
+    path(
+        'start_private_chat/',
+        message_views.StartPrivateChat.as_view(),
+        name='start-private-chat-api'
     ),
     path(
         'chats/',
