@@ -55,7 +55,6 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
         return UserProfileStubSerializer(user_profiles, many=True).data
 
     def get_unread_count(self, obj):
-        print(self.context)
         user = self.context.get('request', None).user
         unread_receivers = MessageReceiver.objects.filter(receiver=user, read_at=None).values('message')
         unread_messages = Message.objects.filter(id__in=[(obj['message']) for obj in unread_receivers], message_participant=obj).count()

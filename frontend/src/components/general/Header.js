@@ -140,9 +140,7 @@ const LINKS = [
     text: "Home",
     iconForDrawer: HomeIcon,
     onlyShowIconOnNormalScreen: true,
-    onlyShowIconOnMobile: true,
-    icon: HomeIcon,
-    alwaysDisplayDirectly: true
+    icon: HomeIcon
   },
   {
     href: "/about",
@@ -327,7 +325,6 @@ function NormalScreenLinks({
   notifications
 }) {
   const classes = useStyles();
-
   return (
     <Box>
       {LINKS.filter(
@@ -355,7 +352,7 @@ function NormalScreenLinks({
         const Icon = link.icon;
         return (
           <React.Fragment key={index}>
-            <a className={classes.menuLink}>
+            <span className={classes.menuLink}>
               {link.onlyShowIconOnNormalScreen ? (
                 <>
                   <IconButton color="primary" {...buttonProps} className={classes.link}>
@@ -373,17 +370,22 @@ function NormalScreenLinks({
                       keepMounted
                       open={Boolean(anchorEl)}
                       onClose={onNotificationsClose}
-                      isEmpty={notifications.length===0}
                     >
-                      <Typography className={classes.notificationsHeadline} component="h1" variant="h5">Notifications</Typography>
+                      <Typography
+                        className={classes.notificationsHeadline}
+                        component="h1"
+                        variant="h5"
+                      >
+                        Notifications
+                      </Typography>
                       <Divider />
-                      {notifications.length > 0 ?
+                      {notifications.length > 0 ? (
                         notifications.map((n, index) => (
                           <Notification key={index} notification={n} />
                         ))
-                        :
-                          <Notification key={index} isPlaceholder/>
-                      }
+                      ) : (
+                        <Notification key={index} isPlaceholder />
+                      )}
                     </NotificationsBox>
                   )}
                 </>
@@ -392,7 +394,7 @@ function NormalScreenLinks({
                   {link.text}
                 </Button>
               )}
-            </a>
+            </span>
           </React.Fragment>
         );
       })}
@@ -408,7 +410,8 @@ function NarrowScreenLinks({
   handleLogout,
   anchorEl,
   toggleShowNotifications,
-  onNotificationsCloses
+  onNotificationsClose,
+  notifications
 }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -438,15 +441,41 @@ function NarrowScreenLinks({
           return (
             <React.Fragment key={index}>
               {link.onlyShowIconOnMobile ? (
-                <IconButton color="primary" className={classes.marginRight} key={index}>
-                  {link.hasBadge && link.badgeNumber > 0 ? (
-                    <Badge badgeContent={link.badgeNumber} color="error">
+                <>
+                  <IconButton color="primary" className={classes.marginRight} {...buttonProps}>
+                    {link.hasBadge && notifications.length > 0 > 0 ? (
+                      <Badge badgeContent={notifications.length} color="error">
+                        <Icon />
+                      </Badge>
+                    ) : (
                       <Icon />
-                    </Badge>
-                  ) : (
-                    <Icon />
+                    )}
+                  </IconButton>
+                  {link.type === "notificationsButton" && anchorEl && (
+                    <NotificationsBox
+                      anchorEl={anchorEl}
+                      keepMounted
+                      open={Boolean(anchorEl)}
+                      onClose={onNotificationsClose}
+                    >
+                      <Typography
+                        className={classes.notificationsHeadline}
+                        component="h1"
+                        variant="h5"
+                      >
+                        Notifications
+                      </Typography>
+                      <Divider />
+                      {notifications.length > 0 ? (
+                        notifications.map((n, index) => (
+                          <Notification key={index} notification={n} />
+                        ))
+                      ) : (
+                        <Notification key={index} isPlaceholder />
+                      )}
+                    </NotificationsBox>
                   )}
-                </IconButton>
+                </>
               ) : (
                 <Button color="primary" {...buttonProps} key={index}>
                   {link.text}

@@ -8,3 +8,12 @@ export async function getMessageFromServer(message_id, token) {
   );
   return resp.data;
 }
+
+export async function startPrivateChat(profile, token) {
+  const resp = await axios.post(
+    process.env.API_URL + "/api/start_private_chat/",
+    { profile_url_slug: profile.url_slug },
+    tokenConfig(token)
+  );
+  return resp.data;
+}

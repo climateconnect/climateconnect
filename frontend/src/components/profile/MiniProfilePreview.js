@@ -1,7 +1,8 @@
 import React from "react";
-import { Link, Avatar, Typography } from "@material-ui/core";
+import { Link, Avatar, Typography, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
+import ClearIcon from "@material-ui/icons/Clear";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -21,21 +22,39 @@ const useStyles = makeStyles(theme => {
     smallAvatar: {
       height: 20,
       width: 20
+    },
+    wrapper: {
+      display: "inline-flex",
+      alignItems: "center"
     }
   };
 });
 
-export default function MiniProfilePreview({ className, profile, avatarClassName, size, nolink }) {
+export default function MiniProfilePreview({
+  className,
+  profile,
+  avatarClassName,
+  size,
+  nolink,
+  onDelete
+}) {
   const classes = useStyles();
   if (!nolink)
     return (
-      <Link
-        color="inherit"
-        href={"/profiles/" + profile.url_slug}
-        className={`${classes.avatarWithInfo} ${className}`}
-      >
-        <Content profile={profile} avatarClassName={avatarClassName} size={size} />
-      </Link>
+      <div className={classes.wrapper}>
+        <Link
+          color="inherit"
+          href={"/profiles/" + profile.url_slug}
+          className={`${classes.avatarWithInfo} ${className}`}
+        >
+          <Content profile={profile} avatarClassName={avatarClassName} size={size} />
+        </Link>
+        {onDelete && (
+          <IconButton onClick={() => onDelete(profile)}>
+            <ClearIcon />
+          </IconButton>
+        )}
+      </div>
     );
   else
     return (

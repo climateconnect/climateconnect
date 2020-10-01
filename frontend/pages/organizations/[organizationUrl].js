@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import { Typography, Container, Button, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Cookies from "next-cookies";
+import NextCookies from "next-cookies";
 import axios from "axios";
 import { useContext } from "react";
 import UserContext from "./../../src/components/context/UserContext";
@@ -20,6 +20,9 @@ import LocationOnIcon from "@material-ui/icons/LocationOn";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LoginNudge from "../../src/components/general/LoginNudge";
 import { parseOrganization } from "../../public/lib/organizationOperations";
+import { startPrivateChat } from "../../public/lib/messagingOperations";
+import Router from "next/router";
+import Cookies from "universal-cookie";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -82,7 +85,7 @@ export default function OrganizationPage({
 }
 
 OrganizationPage.getInitialProps = async ctx => {
-  const { token } = Cookies(ctx);
+  const { token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
   return {
     organization: await getOrganizationByUrlIfExists(organizationUrl, token),
@@ -95,6 +98,7 @@ OrganizationPage.getInitialProps = async ctx => {
 
 function OrganizationLayout({ organization, projects, members, infoMetadata, user }) {
   const classes = useStyles();
+  const cookies = new Cookies();
   const getMembersWithAdditionalInfo = members => {
     return members.map(m => ({
       ...m,
@@ -120,6 +124,14 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
     }));
   };
 
+  const handleConnectBtn = async e => {
+    e.preventDefault();
+    const token = cookies.get("token");
+    const creator = members.filter(m => m.isCreator === true)[0];
+    const chat = await startPrivateChat(creator, token);
+    Router.push("/chat/" + chat.chat_uuid + "/");
+  };
+
   const canEdit =
     user &&
     !!members.find(m => m.id === user.id) &&
@@ -137,11 +149,19 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
       editText={"Edit organization"}
     >
       {!user && (
-        <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
+        <LoginNudge
+          className={classes.loginNudge}
+          whatToDo="see this organization's full information"
+        />
       )}
       <Container>
+        {user && !canEdit && (
+          <Button variant="contained" color="primary" onClick={handleConnectBtn}>
+            Message
+          </Button>
+        )}
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
-          Projects:{" "}
+          This {"organization's"} Projects:{" "}
           <Button variant="contained" color="primary" href="/share">
             Share a project
           </Button>
@@ -267,6 +287,7 @@ function parseOrganizationMembers(members) {
       ...member,
       name: member.first_name + " " + member.last_name,
       permission: m.permission.name === "Creator" ? "Administrator" : m.permission.name,
+      isCreator: m.permission.name === "Creator",
       time_per_week: m.time_per_week,
       role_in_organization: m.role_in_organization,
       location: member.city ? member.city + ", " + member.country : member.country
