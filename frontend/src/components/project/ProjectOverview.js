@@ -8,6 +8,9 @@ import MessageContent from "../communication/MessageContent";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import LanguageIcon from "@material-ui/icons/Language";
 import Linkify from "react-linkify";
+import Cookies from "universal-cookie";
+import { startPrivateChat } from "../../../public/lib/messagingOperations";
+import Router from "next/router";
 
 const useStyles = makeStyles(theme => ({
   ...projectOverviewStyles(theme),
@@ -42,6 +45,13 @@ export default function ProjectOverview({
   isUserFollowing
 }) {
   const classes = useStyles();
+  const cookies = new Cookies();
+  const handleClickContact = async event => {
+    event.preventDefault();
+    const creator = project.team.filter(m => m.permission === "Creator")[0];
+    const chat = await startPrivateChat(creator, cookies.get("token"));
+    Router.push("/chat/" + chat.chat_uuid + "/");
+  };
   return (
     <Container className={classes.projectOverview}>
       {smallScreen ? (
@@ -49,19 +59,26 @@ export default function ProjectOverview({
           project={project}
           handleToggleFollowProject={handleToggleFollowProject}
           isUserFollowing={isUserFollowing}
+          handleClickContact={handleClickContact}
         />
       ) : (
         <LargeScreenOverview
           project={project}
           handleToggleFollowProject={handleToggleFollowProject}
           isUserFollowing={isUserFollowing}
+          handleClickContact={handleClickContact}
         />
       )}
     </Container>
   );
 }
 
-function SmallScreenOverview({ project, handleToggleFollowProject, isUserFollowing }) {
+function SmallScreenOverview({
+  project,
+  handleToggleFollowProject,
+  isUserFollowing,
+  handleClickContact
+}) {
   const classes = useStyles();
   return (
     <>
@@ -104,7 +121,12 @@ function SmallScreenOverview({ project, handleToggleFollowProject, isUserFollowi
             handleToggleFollowProject={handleToggleFollowProject}
             project={project}
           />
-          <Button className={classes.contactProjectButton} variant="contained" color="primary">
+          <Button
+            className={classes.contactProjectButton}
+            variant="contained"
+            color="primary"
+            onClick={handleClickContact}
+          >
             Contact
           </Button>
         </div>
@@ -113,7 +135,12 @@ function SmallScreenOverview({ project, handleToggleFollowProject, isUserFollowi
   );
 }
 
-function LargeScreenOverview({ project, handleToggleFollowProject, isUserFollowing }) {
+function LargeScreenOverview({
+  project,
+  handleToggleFollowProject,
+  isUserFollowing,
+  handleClickContact
+}) {
   const classes = useStyles();
   return (
     <>
@@ -161,8 +188,13 @@ function LargeScreenOverview({ project, handleToggleFollowProject, isUserFollowi
               handleToggleFollowProject={handleToggleFollowProject}
               project={project}
             />
-            <Button className={classes.contactProjectButton} variant="contained" color="primary">
-              Contact
+            <Button
+              className={classes.contactProjectButton}
+              variant="contained"
+              color="primary"
+              onClick={handleClickContact}
+            >
+              Contact organizer
             </Button>
           </div>
         </div>

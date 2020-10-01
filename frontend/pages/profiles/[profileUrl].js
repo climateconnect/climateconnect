@@ -6,6 +6,7 @@ import axios from "axios";
 import { useContext } from "react";
 import Cookies from "next-cookies";
 import UserContext from "./../../src/components/context/UserContext";
+import Router from "next/router";
 
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
@@ -18,6 +19,7 @@ import tokenConfig from "../../public/config/tokenConfig";
 import LoginNudge from "../../src/components/general/LoginNudge";
 import { parseProfile } from "./../../public/lib/profileOperations";
 import { getParams } from "./../../public/lib/generalOperations";
+import { startPrivateChat } from "../../public/lib/messagingOperations";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_user.jpg";
 
@@ -86,7 +88,8 @@ export default function ProfilePage({
   projects,
   organizations,
   profileTypes,
-  infoMetadata
+  infoMetadata,
+  token
 }) {
   const { user } = useContext(UserContext);
   const [message, setMessage] = React.useState("");
@@ -105,6 +108,7 @@ export default function ProfilePage({
           profileTypes={profileTypes}
           infoMetadata={infoMetadata}
           user={user}
+          token={token}
         />
       ) : (
         <NoProfileFoundLayout />
@@ -121,13 +125,27 @@ ProfilePage.getInitialProps = async ctx => {
     organizations: await getOrganizationsByUser(profileUrl, token),
     projects: await getProjectsByUser(profileUrl, token),
     profileTypes: await getProfileTypes(),
-    infoMetadata: await getProfileInfoMetadata()
+    infoMetadata: await getProfileInfoMetadata(),
+    token: token
   };
 };
 
-function ProfileLayout({ profile, projects, organizations, profileTypes, infoMetadata, user }) {
+function ProfileLayout({
+  profile,
+  projects,
+  organizations,
+  profileTypes,
+  infoMetadata,
+  user,
+  token
+}) {
   const classes = useStyles();
   const isOwnAccount = user && user.url_slug === profile.url_slug;
+  const handleConnectBtn = async e => {
+    e.preventDefault();
+    const chat = await startPrivateChat(profile, token);
+    Router.push("/chat/" + chat.chat_uuid + "/");
+  };
   return (
     <AccountPage
       account={profile}
@@ -142,6 +160,11 @@ function ProfileLayout({ profile, projects, organizations, profileTypes, infoMet
         <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
       )}
       <Container className={classes.container} id="projects">
+        {user && user.url_slug !== profile.url_slug && (
+          <Button variant="contained" color="primary" onClick={handleConnectBtn}>
+            Message
+          </Button>
+        )}
         <h2>
           {isOwnAccount ? "Your projects:" : "This user's projects:"}
           <Button

@@ -23,7 +23,7 @@ if (process.env.IS_BUILDING_ON_GOOGLE_CLOUD) {
 }
 
 module.exports = {
-  env: pick(environmentVariableSource, ["PRE_LAUNCH", "API_URL", "ENVIRONMENT"]),
+  env: pick(environmentVariableSource, ["PRE_LAUNCH", "API_URL", "ENVIRONMENT", "SOCKET_URL"]),
   exportPathMap: async function(defaultPathMap) {
     if (process.env.PRE_LAUNCH)
       return {

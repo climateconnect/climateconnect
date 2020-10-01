@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles(theme => {
   return {
     bubble: props => ({
-      minWidth: props.size !== "small" &&180,
+      minWidth: props.size !== "small" && 180,
       padding: 0,
       display: "flex",
       flexDirection: "column",
@@ -15,14 +15,14 @@ const useStyles = makeStyles(theme => {
       textAlign: "center"
     }),
     icon: props => ({
-      width: props.size==="small" ? 45 : 90,
-      height: props.size==="small" ? 45 : 90,
+      width: props.size === "small" ? 45 : props.size === "medium" ? 60 : 90,
+      height: props.size === "small" ? 45 : props.size === "medium" ? 60 : 90,
       display: "block",
       margin: "0 auto"
     }),
-    title: props=>({
-      fontSize: props.size==="small" && 14,
-      fontWeight: props.size==="small" && "bold",
+    title: props => ({
+      fontSize: (props.size === "small" && 14) || (props.size === "medium" && 20),
+      fontWeight: props.size === "small" && "bold",
       paddingTop: theme.spacing(1),
       paddingBottom: theme.spacing(2)
     }),

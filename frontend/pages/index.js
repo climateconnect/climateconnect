@@ -1,70 +1,34 @@
-import React, { useEffect, useContext } from "react";
-import Layout from "../src/components/layouts/layout";
+import React, { useEffect } from "react";
 import ProjectPreviews from "./../src/components/project/ProjectPreviews";
 import About from "./about";
-import { Divider, Button, Tab, Tabs, Typography, IconButton } from "@material-ui/core";
-import TuneIcon from "@material-ui/icons/Tune";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import { Divider, Tab, Tabs, Typography, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import FilterSearchBar from "../src/components/filter/FilterSearchBar";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import FilterContent from "../src/components/filter/FilterContent";
 import possibleFilters from "./../public/data/possibleFilters";
 import OrganizationPreviews from "../src/components/organization/OrganizationPreviews";
 import ProfilePreviews from "../src/components/profile/ProfilePreviews";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
-import TextLoop from "react-text-loop";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import {
   getSkillsOptions,
   getStatusOptions,
   getProjectTagsOptions,
   getOrganizationTagsOptions
 } from "../public/lib/getOptions";
-import about_page_info from "../public/data/about_page_info";
 import NextCookies from "next-cookies";
-import Cookies from "universal-cookie";
 import tokenConfig from "../public/config/tokenConfig";
 import axios from "axios";
 import Link from "next/link";
 import { getParams } from "../public/lib/generalOperations";
-import InfoBubble from "../src/components/about/InfoBubble";
-import theme from "../src/themes/theme";
-import UserContext from "../src/components/context/UserContext";
+import MainHeadingContainer from "../src/components/indexPage/MainHeadingContainer";
+import WideLayout from "../src/components/layouts/WideLayout";
+import FilterSection from "../src/components/indexPage/FilterSection";
+import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
 
 const useStyles = makeStyles(theme => {
   return {
-    filterButton: {
-      borderColor: "#707070",
-      height: 40
-    },
-    rightSidePlaceholder: {
-      width: 100
-    },
-    filterSectionFirstLine: {
-      display: "flex",
-      justifyContent: "space-between",
-      marginBottom: theme.spacing(2)
-    },
-    searchBarContainer: {
-      flexGrow: 100,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    },
-    filterSearchbar: props => ({
-      marginLeft: theme.spacing(2),
-      marginRight: props.isMediumScreen ? 0 : theme.spacing(2),
-      width: "100%",
-      maxWidth: 650,
-      margin: "0 auto"
-    }),
-    filterSectionTabsWithContent: {
-      marginBottom: theme.spacing(3)
-    },
     tab: {
-      width: 160,
+      width: 200,
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2)
     },
@@ -81,56 +45,8 @@ const useStyles = makeStyles(theme => {
       textDecoration: "underline",
       cursor: "pointer"
     },
-    shareLink: {
-      color: theme.palette.primary.main,
-      textDecoration: "inherit"
-    },
-    mainHeadingContainer: {
-      margin: `${theme.spacing(4)}px 0`,
+    mainContentDivider: {
       marginBottom: theme.spacing(3)
-    },
-    bubbleGrid: {
-      padding: 0,
-      width: "100%",
-      margin: "0 auto",
-      display: "flex",
-      justifyContent: "center",
-      flexFlow: "wrap",
-      marginTop: theme.spacing(1.5)
-    },
-    mainHeading: {
-      textAlign: "center",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexWrap: "wrap"
-    },
-    titleText: {
-      display: "inline-block",
-      [theme.breakpoints.down("xs")]: {
-        fontSize: 17,
-        fontWeight: "bold"
-      }
-    },
-    titleTextRight: {
-      display: "inline-block",
-      marginLeft: theme.spacing(0.75),
-      [theme.breakpoints.down("xs")]: {
-        fontSize: 17,
-        fontWeight: "bold"
-      }
-    },
-    infoTextContainer: {
-      maxWidth: 1000,
-      margin: "0 auto",
-      textAlign: "center",
-      marginTop: theme.spacing(2)
-    },
-    highlightedText: {
-      fontWeight: "bold"
-    },
-    textAboveButton: {
-      marginBottom: theme.spacing(1)
     }
   };
 });
@@ -143,8 +59,6 @@ export default function Index({
   filterChoices,
   hideInfo
 }) {
-  const { user } = useContext(UserContext);
-  const cookies = new Cookies();
   const membersWithAdditionalInfo = members => {
     return members.map(p => {
       return {
@@ -184,13 +98,12 @@ export default function Index({
   };
   const [state, setState] = React.useState(initialState);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
-  const isMediumScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
-  const classes = useStyles({ isMediumScreen: isMediumScreen });
+  const isLargeScreen = useMediaQuery("(min-width:1000px");
+  const classes = useStyles();
   //Django starts counting at page 1 and we always catch the first page on load.
   const [hash, setHash] = React.useState(null);
   const [message, setMessage] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState("");
-  const [showInfoText, setShowInfoText] = React.useState(!hideInfo);
   const typesByTabValue = ["projects", "organizations", "members"];
   useEffect(() => {
     if (window.location.hash) {
@@ -208,55 +121,6 @@ export default function Index({
     members: {},
     organizations: {}
   });
-  const [searchFilters, setSearchFilters] = React.useState({
-    projects: "",
-    members: "",
-    organizations: ""
-  });
-  const onSearchValueChange = (type, newValue) => {
-    setSearchFilters({ ...searchFilters, [type]: newValue });
-  };
-
-  const toggleShowInfoText = () => {
-    const now = new Date();
-    const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 1));
-    if(showInfoText) {      
-      cookies.set("hideInfo", true, { path: "/", expires: oneYearFromNow, sameSite: true })
-      setShowInfoText(false)
-    } else{   
-      cookies.set("hideInfo", false, { path: "/", expires: oneYearFromNow, sameSite: true })
-      setShowInfoText(true)
-    }
-  }
-
-  const onSearchSubmit = async type => {
-    const newUrlEnding = buildUrlEndingFromSearch(searchFilters[type]);
-    if (state.urlEnding[type] != newUrlEnding) {
-      try {
-        let filteredItemsObject;
-        if (type === "projects") filteredItemsObject = await getProjects(1, token, newUrlEnding);
-        else if (type === "organizations")
-          filteredItemsObject = await getOrganizations(1, token, newUrlEnding);
-        else if (type === "members") {
-          console.log("type is members!");
-          filteredItemsObject = await getMembers(1, token, newUrlEnding);
-          console.log(filteredItemsObject);
-          filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
-        } else {
-          console.log("cannot find type!");
-        }
-        setState({
-          ...state,
-          items: { ...state.items, [type]: filteredItemsObject[type] },
-          hasMore: { ...state.hasMore, [type]: filteredItemsObject.hasMore },
-          urlEnding: { ...state.urlEnding, [type]: newUrlEnding },
-          nextPages: { ...state.nextPages, [type]: 2 }
-        });
-      } catch (e) {
-        console.log(e);
-      }
-    }
-  };
 
   const applyNewFilters = async (type, newFilters, closeFilters) => {
     console.log("applying new filters!");
@@ -288,20 +152,10 @@ export default function Index({
     }
   };
 
-  const searchBarLabels = {
-    projects: "Search for climate action projects",
-    organizations: "Search for organizations fighting climate change",
-    members: "Search for people active against climate change"
-  };
-
   const handleTabChange = (event, newValue) => {
     if (newValue === 0) window.location.hash = "";
     else window.location.hash = typesByTabValue[newValue];
     setTabValue(newValue);
-  };
-
-  const onClickExpandFilters = () => {
-    setFiltersExpanded(!filtersExpanded);
   };
 
   const unexpandFilters = () => {
@@ -410,201 +264,149 @@ export default function Index({
     }
   };
 
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
-
   return (
     <>
       {process.env.PRE_LAUNCH === "true" ? (
         <About />
       ) : (
-        <Layout
+        <WideLayout
           title="Climate Connect - global climate action platform"
           hideHeadline
           message={errorMessage ? errorMessage : message}
           messageType={errorMessage ? "error" : "success"}
         >
-          <div className={classes.mainHeadingContainer}>
-            <div component="h1" variant="h5" className={classes.mainHeading}>
-              <TextLoop mask={true} interval={5000}>
-                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                  Share
-                </Typography>
-                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                  Find
-                </Typography>
-                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                  Work on
-                </Typography>
-                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                  Get inspired by
-                </Typography>
-                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                  Replicate
-                </Typography>
-                <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-                  Collaborate with
-                </Typography>
-              </TextLoop>
-              <Typography component="h1" variant="h5" className={classes.titleTextRight}>
-                the most effective climate projects 
-              </Typography>
-              {!isSmallScreen &&
-                <IconButton onClick={toggleShowInfoText} className={classes.toggleInfoTextButton}>
-                  {showInfoText ? <ExpandLessIcon color="primary" /> : <ExpandMoreIcon color="primary"/>}
-                </IconButton> 
-              }                         
-            </div>
-            {showInfoText && 
-              <div className={classes.infoTextContainer}>
-                <Typography component="div">
-                  {!isSmallScreen && (
-                    <>
-                      <Typography className={classes.highlightedText}>Climate Connect is a free, non-profit climate action platform.</Typography>                 
-                      <div className={classes.bubbleGrid}>
-                        {about_page_info.map((info, index) => (
-                          <InfoBubble data={info} key={index} size="small" color="primary"/>
-                        ))}
-                      </div>                  
-                      <Typography className={`${classes.highlightedText} ${classes.textAboveButton}`}>We need global collaboration to effectively fight climate change.</Typography>
-                    </>
-                  )}  
-                  {!user &&                
-                    <Button href="signup" variant="outlined"><a className={classes.shareLink}><b>Join Climate Connect</b></a></Button>
-                  }
-                  </Typography>
-              </div>
-            }
-          </div>
-          <div className={classes.filterSection}>
-            <div className={classes.filterSectionFirstLine}>
-              <Button
-                variant="outlined"
-                className={classes.filterButton}
-                onClick={onClickExpandFilters}
-                startIcon={
-                  filtersExpanded ? (
-                    <HighlightOffIcon color="primary" />
-                  ) : (
-                    <TuneIcon color="primary" />
-                  )
-                }
-              >
-                Filter
-              </Button>
-              <div className={classes.searchBarContainer}>
-                <FilterSearchBar
-                  type={typesByTabValue[tabValue]}
-                  label={searchBarLabels[typesByTabValue[tabValue]]}
-                  className={classes.filterSearchbar}
-                  onSubmit={onSearchSubmit}
-                  onChange={onSearchValueChange}
-                  value={searchFilters[typesByTabValue[tabValue]]}
+          {isLargeScreen ? (
+            <MainHeadingContainer hideInfo={hideInfo} />
+          ) : (
+            <MainHeadingContainerMobile />
+          )}
+          <Container maxWidth="lg">
+            <FilterSection
+              filtersExpanded={filtersExpanded}
+              setFiltersExpanded={setFiltersExpanded}
+              typesByTabValue={typesByTabValue}
+              tabValue={tabValue}
+              getProjects={getProjects}
+              getOrganizations={getOrganizations}
+              getMembers={getMembers}
+              membersWithAdditionalInfo={membersWithAdditionalInfo}
+              token={token}
+              state={state}
+              setState={setState}
+            />
+            <Tabs
+              variant={isNarrowScreen ? "fullWidth" : "standard"}
+              value={tabValue}
+              onChange={handleTabChange}
+              indicatorColor="primary"
+              textColor="primary"
+              centered={true}
+            >
+              <Tab label={capitalizeFirstLetter(typesByTabValue[0])} className={classes.tab} />
+              <Tab label={capitalizeFirstLetter(typesByTabValue[1])} className={classes.tab} />
+              <Tab label={capitalizeFirstLetter(typesByTabValue[2])} className={classes.tab} />
+            </Tabs>
+            <Divider className={classes.mainContentDivider} />
+            <TabContent value={tabValue} index={0}>
+              {filtersExpanded && tabValue === 0 && (
+                <FilterContent
+                  className={classes.tabContent}
+                  type={typesByTabValue[0]}
+                  applyFilters={applyNewFilters}
+                  filtersExpanded={filtersExpanded}
+                  unexpandFilters={unexpandFilters}
+                  possibleFilters={possibleFilters(typesByTabValue[0], filterChoices)}
                 />
-              </div>
-              {!isMediumScreen && <div className={classes.rightSidePlaceholder} />}
-            </div>
-          </div>
-          <Divider className={classes.mainDivider} />
-          <Tabs
-            variant={isNarrowScreen ? "fullWidth" : "standard"}
-            value={tabValue}
-            onChange={handleTabChange}
-            indicatorColor="primary"
-            textColor="primary"
-          >
-            <Tab label={capitalizeFirstLetter(typesByTabValue[0])} className={classes.tab} />
-            <Tab label={capitalizeFirstLetter(typesByTabValue[1])} className={classes.tab} />
-            <Tab label={capitalizeFirstLetter(typesByTabValue[2])} className={classes.tab} />
-          </Tabs>
-          <Divider />
-          <TabContent value={tabValue} index={0}>
-            {filtersExpanded && tabValue === 0 && (
-              <FilterContent
-                className={classes.tabContent}
-                type={typesByTabValue[0]}
-                applyFilters={applyNewFilters}
-                filtersExpanded={filtersExpanded}
-                unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters(typesByTabValue[0], filterChoices)}
-              />
-            )}
-            {projectsObject && projectsObject.projects && projectsObject.projects.length ? (
-              <ProjectPreviews
-                projects={state.items.projects}
-                loadFunc={loadMoreProjects}
-                hasMore={state.hasMore.projects}
-                parentHandlesGridItems
-              />
-            ) : (
-              <Typography component="h4" variant="h5" className={classes.infoMessage}>
-                We could not connect to the API. If this happens repeatedly, contact
-                support@climateconnect.earth.
-              </Typography>
-            )}
-          </TabContent>
-          <TabContent value={tabValue} index={1} className={classes.tabContent}>
-            {filtersExpanded && tabValue === 1 && (
-              <FilterContent
-                className={classes.tabContent}
-                type={typesByTabValue[1]}
-                applyFilters={applyNewFilters}
-                filtersExpanded={filtersExpanded}
-                unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters(typesByTabValue[1], filterChoices)}
-              />
-            )}
-            {organizationsObject &&
-            organizationsObject.organizations &&
-            organizationsObject.organizations.length ? (
-              <OrganizationPreviews
-                organizations={state.items.organizations}
-                loadFunc={loadMoreOrganizations}
-                hasMore={state.hasMore.organizations}
-                showOrganizationType
-                parentHandlesGridItems
-              />
-            ) : (
-              <Typography component="h4" variant="h5" className={classes.infoMessage}>
-                There are no organizations on this site yet.{" "}
-                <Link href="/createorganization">
-                  <Typography color="primary" className={classes.link} component="h5" variant="h5">
-                    Create an organization to be the first one!
-                  </Typography>
-                </Link>
-              </Typography>
-            )}
-          </TabContent>
-          <TabContent value={tabValue} index={2} className={classes.tabContent}>
-            {filtersExpanded && tabValue === 2 && (
-              <FilterContent
-                className={classes.tabContent}
-                type={typesByTabValue[2]}
-                applyFilters={applyNewFilters}
-                filtersExpanded={filtersExpanded}
-                unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters(typesByTabValue[2], filterChoices)}
-              />
-            )}
-            {membersObject && membersObject.members && membersObject.members.length ? (
-              <ProfilePreviews
-                profiles={state.items.members}
-                loadFunc={loadMoreMembers}
-                hasMore={state.hasMore.members}
-                showAdditionalInfo
-                parentHandlesGridItems
-              />
-            ) : (
-              <Typography component="h4" variant="h5" className={classes.infoMessage}>
-                There are no members on this site yet.{" "}
-                <Link href="/signup">
-                  <Typography color="primary" className={classes.link} component="h5" variant="h5">
-                    Create a profile to be the first one!
-                  </Typography>
-                </Link>
-              </Typography>
-            )}
-          </TabContent>
-        </Layout>
+              )}
+              {projectsObject && projectsObject.projects && projectsObject.projects.length ? (
+                <ProjectPreviews
+                  projects={state.items.projects}
+                  loadFunc={loadMoreProjects}
+                  hasMore={state.hasMore.projects}
+                  parentHandlesGridItems
+                  className={classes.itemsContainer}
+                />
+              ) : (
+                <Typography component="h4" variant="h5" className={classes.infoMessage}>
+                  We could not connect to the API. If this happens repeatedly, contact
+                  support@climateconnect.earth.
+                </Typography>
+              )}
+            </TabContent>
+            <TabContent value={tabValue} index={1} className={classes.tabContent}>
+              {filtersExpanded && tabValue === 1 && (
+                <FilterContent
+                  className={classes.tabContent}
+                  type={typesByTabValue[1]}
+                  applyFilters={applyNewFilters}
+                  filtersExpanded={filtersExpanded}
+                  unexpandFilters={unexpandFilters}
+                  possibleFilters={possibleFilters(typesByTabValue[1], filterChoices)}
+                />
+              )}
+              {organizationsObject &&
+              organizationsObject.organizations &&
+              organizationsObject.organizations.length ? (
+                <OrganizationPreviews
+                  organizations={state.items.organizations}
+                  loadFunc={loadMoreOrganizations}
+                  hasMore={state.hasMore.organizations}
+                  showOrganizationType
+                  parentHandlesGridItems
+                />
+              ) : (
+                <Typography component="h4" variant="h5" className={classes.infoMessage}>
+                  There are no organizations on this site yet.{" "}
+                  <Link href="/createorganization">
+                    <Typography
+                      color="primary"
+                      className={classes.link}
+                      component="h5"
+                      variant="h5"
+                    >
+                      Create an organization to be the first one!
+                    </Typography>
+                  </Link>
+                </Typography>
+              )}
+            </TabContent>
+            <TabContent value={tabValue} index={2} className={classes.tabContent}>
+              {filtersExpanded && tabValue === 2 && (
+                <FilterContent
+                  className={classes.tabContent}
+                  type={typesByTabValue[2]}
+                  applyFilters={applyNewFilters}
+                  filtersExpanded={filtersExpanded}
+                  unexpandFilters={unexpandFilters}
+                  possibleFilters={possibleFilters(typesByTabValue[2], filterChoices)}
+                />
+              )}
+              {membersObject && membersObject.members && membersObject.members.length ? (
+                <ProfilePreviews
+                  profiles={state.items.members}
+                  loadFunc={loadMoreMembers}
+                  hasMore={state.hasMore.members}
+                  showAdditionalInfo
+                  parentHandlesGridItems
+                />
+              ) : (
+                <Typography component="h4" variant="h5" className={classes.infoMessage}>
+                  There are no members on this site yet.{" "}
+                  <Link href="/signup">
+                    <Typography
+                      color="primary"
+                      className={classes.link}
+                      component="h5"
+                      variant="h5"
+                    >
+                      Create a profile to be the first one!
+                    </Typography>
+                  </Link>
+                </Typography>
+              )}
+            </TabContent>
+          </Container>
+        </WideLayout>
       )}
     </>
   );
@@ -620,10 +422,6 @@ const buildUrlEndingFromFilters = filters => {
     }
   });
   return url;
-};
-
-const buildUrlEndingFromSearch = searchValue => {
-  return "&search=" + searchValue;
 };
 
 function capitalizeFirstLetter(string) {

@@ -14,6 +14,7 @@ import { removeUnnecesaryCookies } from "./../public/lib/cookieOperations";
 //add global styles
 import "react-multi-carousel/lib/styles.css";
 import tokenConfig from "../public/config/tokenConfig";
+import WebSocketService from "../public/lib/webSockets";
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
@@ -37,7 +38,9 @@ export default class MyApp extends App {
 
     this.state = {
       user: null,
-      matomoInstance: this.createInstanceIfAllowed()
+      matomoInstance: this.createInstanceIfAllowed(),
+      notifications: [],
+      chatSocket: null
     };
 
     //TODO: reload current path or main page while being logged out
@@ -59,6 +62,13 @@ export default class MyApp extends App {
       }
     };
 
+    this.refreshNotifications = async () => {
+      const notifications = await getNotifications(this.cookies);
+      this.setState({
+        notifications: notifications
+      });
+    };
+
     this.signIn = async (token, expiry) => {
       //TODO: set httpOnly=true to make cookie only accessible by server
       //TODO: set secure=true to make cookie only accessible through HTTPS
@@ -71,9 +81,21 @@ export default class MyApp extends App {
   }
 
   async componentDidMount() {
+    const client = WebSocketService("/ws/chat/");
+    client.onopen = () => {
+      console.log("connected");
+    };
+    client.onmessage = async () => {
+      await this.refreshNotifications();
+    };
     const user = await getLoggedInUser(this.cookies);
+    const notifications = await getNotifications(this.cookies);
     if (user) {
-      this.setState({ user });
+      this.setState({
+        user: user,
+        chatSocket: client,
+        notifications: notifications
+      });
     }
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");
@@ -97,14 +119,28 @@ export default class MyApp extends App {
           {this.state.matomoInstance ? (
             <MatomoProvider value={this.state.matomoInstance}>
               <UserContext.Provider
-                value={{ user: this.state.user, signOut: this.signOut, signIn: this.signIn }}
+                value={{
+                  user: this.state.user,
+                  signOut: this.signOut,
+                  signIn: this.signIn,
+                  chatSocket: this.state.chatSocket,
+                  notifications: this.state.notifications,
+                  refreshNotifications: this.refreshNotifications
+                }}
               >
                 <Component {...pageProps} />
               </UserContext.Provider>
             </MatomoProvider>
           ) : (
             <UserContext.Provider
-              value={{ user: this.state.user, signOut: this.signOut, signIn: this.signIn }}
+              value={{
+                user: this.state.user,
+                signOut: this.signOut,
+                signIn: this.signIn,
+                chatSocket: this.state.chatSocket,
+                notifications: this.state.notifications,
+                refreshNotifications: this.refreshNotifications
+              }}
             >
               <Component {...pageProps} />
             </UserContext.Provider>
@@ -129,5 +165,21 @@ async function getLoggedInUser(cookies) {
     }
   } else {
     return null;
+  }
+}
+
+async function getNotifications(cookies) {
+  const token = cookies.get("token");
+  if (token) {
+    try {
+      const resp = await axios.get(process.env.API_URL + "/api/notifications/", tokenConfig(token));
+      return resp.data.results;
+    } catch (err) {
+      if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+      if (err.response && err.response.data.detail === "Invalid token.") cookies.remove("token");
+      return null;
+    }
+  } else {
+    return [];
   }
 }

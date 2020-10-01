@@ -40,7 +40,7 @@ AUTO_VERIFY = env('AUTO_VERIFY')
 
 CUSTOM_APPS = [
     'climateconnect_api',
-    'organization'
+    'organization', 'chat_messages'
 ]
 
 LIBRARY_APPS = [
@@ -53,6 +53,7 @@ LIBRARY_APPS = [
     'rest_framework',
     'knox',
     'corsheaders',
+    'channels',
     'django_filters'
 ]
 
@@ -183,3 +184,14 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = env('EMAIL_PORT')
 EMAIL_USE_TLS = True
+
+
+ASGI_APPLICATION = 'climateconnect_main.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(env('REDIS_HOST'), env('REDIS_PORT', 6379))]
+        }
+    }
+}
