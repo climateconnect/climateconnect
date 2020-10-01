@@ -1,5 +1,5 @@
 from django.db import models
-from chat_messages.models.message import MessageParticipants
+from chat_messages.models.message import MessageParticipants, MessageReceiver
 from organization.models.content import (ProjectComment, PostComment, Post)
 from organization.models.followers import ProjectFollower
 from django.contrib.auth.models import User
@@ -13,6 +13,7 @@ class Notification(models.Model):
     PROJECT_UPDATE_POST = 5
     POST_COMMENT = 6
     REPLY_TO_POST_COMMENT = 7
+    GROUP_MESSAGE = 8
     NOTIFICATION_TYPES = (
         (BROADCAST, "broadcast"),
         (PRIVATE_MESSAGE, "private_message"),
@@ -22,6 +23,7 @@ class Notification(models.Model):
         (PROJECT_UPDATE_POST, "project_update_post"),
         (POST_COMMENT, "post_comment"),
         (REPLY_TO_POST_COMMENT, "reply_to_post_comment"),
+        (GROUP_MESSAGE, "group_message")
     )
 
     notification_type = models.IntegerField(
@@ -39,12 +41,6 @@ class Notification(models.Model):
         help_text="Points to chat for notifications of type 'private_message'",
         verbose_name="Chat", on_delete=models.CASCADE,
         null=True, blank=True
-    )
-
-    chat_message_sender = models.ForeignKey(
-        User, related_name="notification_chat_message_sender",
-        help_text="Sender of a chat message on notifications of type 'private_message",
-        verbose_name="Chat message sender", null=True, blank=True, on_delete=models.PROTECT
     )
 
     project_comment = models.ForeignKey(
@@ -75,6 +71,10 @@ class Notification(models.Model):
         help_text="Time when participants started a messaging",
         verbose_name="Created at", auto_now_add=True
     )
+
+    class Meta:
+        verbose_name_plural = "Notifications"
+        ordering = ["-id"]
 
 class UserNotification(models.Model):
     user = models.ForeignKey(
