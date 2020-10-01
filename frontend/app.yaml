@@ -9,3 +9,4 @@ handlers:
 
 env_variables:
   API_URL: "https://api.climateconnect.earth"
+  SOCKET_URL: "ws://api.climateconnect.earth"
