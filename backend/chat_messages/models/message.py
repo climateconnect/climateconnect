@@ -15,6 +15,12 @@ class MessageParticipants(models.Model):
         verbose_name="Participants"
     )
 
+    name = models.CharField(
+        help_text="Name of the chat",
+        verbose_name="chat_name",
+        max_length=128, default=""
+    )
+
     # Making it a bit more future proof.
     # If we introduced a feature to block someone this might come handy.
     is_active = models.BooleanField(
@@ -28,6 +34,11 @@ class MessageParticipants(models.Model):
         verbose_name="Created at", auto_now_add=True
     )
 
+    last_message_at = models.DateTimeField(
+        help_text="Time when the last message in this chat was sent",
+        verbose_name="Last message at", auto_now_add=True
+    )
+
     deactivated_at = models.DateTimeField(
         help_text="Time when one of the user has deactivated their chat.",
         verbose_name="Deactivated at",
@@ -36,6 +47,7 @@ class MessageParticipants(models.Model):
 
     class Meta:
         verbose_name_plural = "Message Participants"
+        ordering = ["-last_message_at", "-created_at"]
 
     def __str__(self):
         return "Participants: %s" % (
@@ -69,11 +81,6 @@ class Message(models.Model):
         null=True, blank=True
     )
 
-    read_at = models.DateTimeField(
-        help_text="Time when all participants have read a messages",
-        verbose_name='Read at', null=True, blank=True
-    )
-
     updated_at = models.DateTimeField(
         help_text="Time when sender updated a message", verbose_name="Updated at",
         null=True, blank=True
@@ -85,4 +92,31 @@ class Message(models.Model):
         ordering = ["-id"]
 
     def __str__(self):
-        return "%s sent message to participants in this chat %s" % (self.sender.id, self.message_participant_id)
+        return "Message %s from %s in chat %s" % (self.id, self.sender.id, self.message_participant_id)
+
+class MessageReceiver(models.Model):
+    receiver = models.ForeignKey(
+        User, related_name="messagereceiver_receiver",
+        help_text="Points to the user who received the message",
+        verbose_name="Receiver", null=False, blank=False,
+        on_delete=models.CASCADE
+    )
+
+    message = models.ForeignKey(
+        Message, related_name="messacereceiver_message",
+        help_text="Points to the message that was received",
+        verbose_name="Message", null=False, blank=False,
+        on_delete=models.CASCADE
+    )
+
+    read_at = models.DateTimeField(
+        help_text="Time when all participants have read a messages",
+        verbose_name='Read at', null=True, blank=True
+    )
+
+    class Meta:
+        verbose_name = 'Message Receiver'
+        verbose_name_plural = 'Message Receivers'
+
+    def __str__(self):
+        return "Message to %s %s" % (self.receiver.first_name, self.receiver.last_name)
