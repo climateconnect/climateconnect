@@ -56,8 +56,6 @@ const useStyles = makeStyles(theme => {
 
 export default function HeadingText({ mobile, showInfoText, toggleShowInfoText }) {
   const classes = useStyles({ mobile: mobile });
-  console.log(toggleShowInfoText);
-  console.log(showInfoText);
   return (
     <div
       component="h1"

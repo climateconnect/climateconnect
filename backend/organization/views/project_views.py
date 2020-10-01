@@ -90,7 +90,6 @@ class ListProjectsView(ListAPIView):
             projects = projects.filter(project_parent__in=project_parents)
         return projects
 
-
 class CreateProjectView(APIView):
     permission_classes = [IsAuthenticated]
 

@@ -9,3 +9,6 @@ from climateconnect_api.models.role import Role
 from climateconnect_api.models.faq import (
     FaqSection, FaqQuestion
 )
+from climateconnect_api.models.notification import (
+    Notification, UserNotification
+)
