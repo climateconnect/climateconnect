@@ -20,7 +20,7 @@ jobs:
       with:
         node-version: '12.x'
 
-    - name: npm install, build, and test
+    - name: npm install, build
       run: |
         cd frontend
         yarn
