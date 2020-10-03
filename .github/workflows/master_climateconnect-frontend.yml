@@ -25,6 +25,7 @@ jobs:
         cd frontend
         yarn
         yarn build
+        yarn start
 
     - name: 'Deploy to Azure Web App'
       uses: azure/webapps-deploy@v2
