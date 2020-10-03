@@ -7,7 +7,6 @@
     "pretest": "yarn run lint",
     "format": "prettier --write '**/*.{js,jsx,json,md}'",
     "lint": "eslint .",
-    "test": "jest",
     "dev": "next dev",
     "build": "next build",
     "start": "next start --port $PORT",
