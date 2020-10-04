@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start --port 3000",
+    "start": "next start --port 80",
     "export": "next export",
     "deploy": "yarn build && yarn export"
   },
