@@ -72,7 +72,7 @@ export default class MyApp extends App {
     this.signIn = async (token, expiry) => {
       //TODO: set httpOnly=true to make cookie only accessible by server
       //TODO: set secure=true to make cookie only accessible through HTTPS
-      this.cookies.set("token", token, { path: "/", expires: new Date(expiry), sameSite: true });
+      this.cookies.set("token", token, { path: "/", expires: new Date(expiry), secure: true, sameSite: "strict" });
       const user = await getLoggedInUser(this.cookies);
       this.setState({
         user: user
