@@ -6,7 +6,7 @@ name: Build and deploy Node.js app to Azure Web App - climateconnect-frontend
 on:
   push:
     branches:
-      - master
+      - azure-deploy-test
 
 jobs:
   build-and-deploy:
@@ -31,5 +31,5 @@ jobs:
       with:
         app-name: 'climateconnect-frontend'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_afd1120bcb684a47b7ab6429fdf211ff }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_7cb728a4e5b140f4820730c621d4d7cd }}
         package: .
