@@ -12,17 +12,12 @@ app.prepare().then(() => {
     // Be sure to pass `true` as the second argument to `url.parse`.
     // This tells it to parse the query portion of the URL.
     const parsedUrl = parse(req.url, true)
-    const { pathname, query } = parsedUrl
-
-    if (pathname === '/a') {
-      app.render(req, res, '/a', query)
-    } else if (pathname === '/b') {
-      app.render(req, res, '/b', query)
-    } else {
-      handle(req, res, parsedUrl)
-    }
-  }).listen(8080, (err) => {
+    console.log("printing env")
+    console.log(process.env)
+    
+    handle(req, res, parsedUrl)
+  }).listen(3000, (err) => {
     if (err) throw err
-    console.log('> Ready on http://localhost:8080')
+    console.log('> Ready on http://localhost:3000')
   })
 })
