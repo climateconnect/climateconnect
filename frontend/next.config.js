@@ -7,16 +7,8 @@ const pick = require("lodash/pick");
 // This is a bit of a hack but is fairly straightforward. If we change our
 // production build setup, we should revisit this code.
 let environmentVariableSource;
-if (process.env.IS_BUILDING_ON_GOOGLE_CLOUD) {
-  const yaml = require("js-yaml");
-  const fs = require("fs");
-  const path = require("path");
-
-  const appDotYamlPath = path.join(__dirname, "app.yaml");
-  const appDotYamlContents = fs.readFileSync(appDotYamlPath, "utf8");
-  const appDotYaml = yaml.safeLoad(appDotYamlContents);
-
-  environmentVariableSource = appDotYaml.env_variables;
+if (process.env.IS_BUILDING_ON_AZURE) {
+  environmentVariableSource = process.env;
 } else {
   require("dotenv").config();
   environmentVariableSource = process.env;
