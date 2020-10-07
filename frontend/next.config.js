@@ -8,12 +8,16 @@ const pick = require("lodash/pick");
 // production build setup, we should revisit this code.
 let environmentVariableSource;
 if (process.env.IS_BUILDING_ON_AZURE) {
+  console.log("building on azure...")
   environmentVariableSource = process.env;
 } else {
+  console.log("not building on azure")
   require("dotenv").config();
   environmentVariableSource = process.env;
 }
 
+console.log(environmentVariableSource)
+console.log(pick(environmentVariableSource, ["PRE_LAUNCH", "API_URL", "ENVIRONMENT", "SOCKET_URL"]))
 module.exports = {
   env: pick(environmentVariableSource, ["PRE_LAUNCH", "API_URL", "ENVIRONMENT", "SOCKET_URL"]),
   exportPathMap: async function(defaultPathMap) {
