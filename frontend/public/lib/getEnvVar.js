@@ -4,7 +4,8 @@ const fallback_values = {
   ENVIRONMENT: "production"
 }
 
-export default function getEnvVar({ name }) {
+export default function getEnvVar(name) {
+  console.log("getting env var:"+name)
   if(process.env[name])
     return process.env[name]
   else
