@@ -12,10 +12,9 @@ app.prepare().then(() => {
     // Be sure to pass `true` as the second argument to `url.parse`.
     // This tells it to parse the query portion of the URL.
     const parsedUrl = parse(req.url, true)
-    
     handle(req, res, parsedUrl)
-  }).listen(8080, (err) => {
+  }).listen(process.env.PORT, (err) => {
     if (err) throw err
-    console.log('> Ready on http://localhost:8080')
+    console.log('> Ready on http://localhost:'+process.env.PORT)
   })
 })

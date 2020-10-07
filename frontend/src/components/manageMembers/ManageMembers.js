@@ -3,6 +3,7 @@ import { makeStyles, IconButton } from "@material-ui/core";
 import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import MiniProfileInput from "../profile/MiniProfileInput";
+import getEnvVar from "../../../public/lib/getEnvVar";
 
 const useStyles = makeStyles(theme => ({
   searchBarContainer: {
@@ -104,7 +105,7 @@ export default function ManageMembers({
         <AutoCompleteSearchBar
           label="Search for your organization's members"
           className={`${classes.searchBar} ${classes.block}`}
-          baseUrl={process.env.API_URL + "/api/members/?search="}
+          baseUrl={getEnvVar("API_URL") + "/api/members/?search="}
           clearOnSelect
           freeSolo
           filterOut={[...currentMembers]}

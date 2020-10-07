@@ -9,6 +9,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GroupIcon from "@material-ui/icons/Group";
+import getEnvVar from "../../../../public/lib/getEnvVar";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -75,7 +76,7 @@ const PrivateMessageNotification = ({ notification }) => {
         <ListItemAvatar>
           <Avatar
             alt={sender.first_name + " " + sender.last_name}
-            src={process.env.API_URL + sender.image}
+            src={getEnvVar("API_URL") + sender.image}
           />
         </ListItemAvatar>
         <ListItemText

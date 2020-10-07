@@ -6,6 +6,7 @@ import OrganizersContainer from "./OrganizersContainer";
 import BottomNavigation from "../general/BottomNavigation";
 import AddProjectMembersContainer from "./AddProjectMembersContainer";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import getEnvVar from "../../../public/lib/getEnvVar";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -104,7 +105,7 @@ export default function AddTeam({
           <AutoCompleteSearchBar
             label="Search for your team members"
             className={`${classes.searchBar} ${classes.block}`}
-            baseUrl={process.env.API_URL + "/api/members/?search="}
+            baseUrl={getEnvVar("API_URL") + "/api/members/?search="}
             clearOnSelect
             freeSolo
             filterOut={[...projectData.team_members]}

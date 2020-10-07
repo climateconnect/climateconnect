@@ -1,10 +1,11 @@
 const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT);
 import imageCompression from "browser-image-compression";
+import getEnvVar from "./getEnvVar";
 
 export function getImageUrl(url) {
   if (!url) return;
   if (DEVELOPMENT && !url.includes("http:") && !url.includes("https:")) {
-    return process.env.API_URL + url;
+    return getEnvVar("API_URL") + url;
   } else {
     return url;
   }

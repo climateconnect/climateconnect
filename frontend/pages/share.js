@@ -7,6 +7,7 @@ import LoginNudge from "../src/components/general/LoginNudge";
 import UserContext from "../src/components/context/UserContext";
 import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
+import getEnvVar from "../public/lib/getEnvVar";
 
 export default function Share({
   availabilityOptions,
@@ -57,7 +58,7 @@ Share.getInitialProps = async ctx => {
 
 const getAvailabilityOptions = async token => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/availability/", tokenConfig(token));
+    const resp = await axios.get(getEnvVar("API_URL") + "/availability/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -71,7 +72,7 @@ const getAvailabilityOptions = async token => {
 
 const getCategoryOptions = async token => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/projecttags/", tokenConfig(token));
+    const resp = await axios.get(getEnvVar("API_URL") + "/api/projecttags/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
     else {
       return parseOptions(resp.data.results, "parent_tag");
@@ -85,7 +86,7 @@ const getCategoryOptions = async token => {
 
 const getSkillsOptions = async token => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/skills/", tokenConfig(token));
+    const resp = await axios.get(getEnvVar("API_URL") + "/skills/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
     else {
       return parseOptions(resp.data.results, "parent_skill");
@@ -99,7 +100,7 @@ const getSkillsOptions = async token => {
 
 const getRolesOptions = async token => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
+    const resp = await axios.get(getEnvVar("API_URL") + "/roles/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -113,7 +114,7 @@ const getRolesOptions = async token => {
 
 const getStatusOptions = async token => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/projectstatus/", tokenConfig(token));
+    const resp = await axios.get(getEnvVar("API_URL") + "/api/projectstatus/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -128,7 +129,7 @@ const getStatusOptions = async token => {
 const getUserOrganizations = async token => {
   try {
     const resp = await axios.get(
-      process.env.API_URL + "/api/my_organizations/",
+      getEnvVar("API_URL") + "/api/my_organizations/",
       tokenConfig(token)
     );
     if (resp.data.length === 0) return null;

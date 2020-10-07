@@ -5,6 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import getEnvVar from "../../../public/lib/getEnvVar";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -55,7 +56,7 @@ export default function OrganizersContainer({
           <AutoCompleteSearchBar
             label="Search for collaborating organizations"
             className={`${searchBarClassName} ${blockClassName}`}
-            baseUrl={process.env.API_URL + "/api/organizations/?search="}
+            baseUrl={getEnvVar("API_URL") + "/api/organizations/?search="}
             clearOnSelect
             freeSolo
             onSelect={handleAddOrganization}

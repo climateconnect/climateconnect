@@ -1,9 +1,10 @@
 import axios from "axios";
 import { parseOptions } from "./selectOptionsOperations";
+import getEnvVar from "./getEnvVar";
 
 export async function getSkillsOptions() {
   try {
-    const resp = await axios.get(process.env.API_URL + "/skills/");
+    const resp = await axios.get(getEnvVar("API_URL") + "/skills/");
     if (resp.data.results.length === 0) return null;
     else {
       return parseOptions(
@@ -20,7 +21,7 @@ export async function getSkillsOptions() {
 
 export async function getStatusOptions() {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/projectstatus/");
+    const resp = await axios.get(getEnvVar("API_URL") + "/api/projectstatus/");
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -34,7 +35,7 @@ export async function getStatusOptions() {
 
 export async function getProjectTagsOptions() {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/projecttags/");
+    const resp = await axios.get(getEnvVar("API_URL") + "/api/projecttags/");
     if (resp.data.results.length === 0) return null;
     else {
       return parseOptions(resp.data.results, "parent_tag");
@@ -48,7 +49,7 @@ export async function getProjectTagsOptions() {
 
 export async function getOrganizationTagsOptions() {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/organizationtags/");
+    const resp = await axios.get(getEnvVar("API_URL") + "/api/organizationtags/");
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results.map(t => {

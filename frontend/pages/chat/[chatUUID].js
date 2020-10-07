@@ -12,6 +12,7 @@ import tokenConfig from "../../public/config/tokenConfig";
 import { getMessageFromServer } from "../../public/lib/messagingOperations";
 import UserContext from "../../src/components/context/UserContext";
 import ChatTitle from "../../src/components/communication/chat/ChatTitle";
+import getEnvVar from "../../public/lib/getEnvVar";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -309,7 +310,7 @@ function NoChatFoundLayout() {
 
 async function getChat(chat_uuid, token) {
   const resp = await axios.get(
-    process.env.API_URL + "/api/chat/" + chat_uuid + "/",
+    getEnvVar("API_URL") + "/api/chat/" + chat_uuid + "/",
     tokenConfig(token)
   );
   return {
@@ -322,7 +323,7 @@ async function getChatMessagesByUUID(chat_uuid, token, page, link) {
   try {
     const url = link
       ? link
-      : process.env.API_URL + "/api/messages/?chat_uuid=" + chat_uuid + "&page=" + page;
+      : getEnvVar("API_URL") + "/api/messages/?chat_uuid=" + chat_uuid + "&page=" + page;
     const resp = await axios.get(url, tokenConfig(token));
     return {
       messages: resp.data.results,

@@ -24,6 +24,7 @@ import MainHeadingContainer from "../src/components/indexPage/MainHeadingContain
 import WideLayout from "../src/components/layouts/WideLayout";
 import FilterSection from "../src/components/indexPage/FilterSection";
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
+import getEnvVar from "../public/lib/getEnvVar";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -451,7 +452,7 @@ Index.getInitialProps = async ctx => {
 };
 
 async function getProjects(page, token, urlEnding) {
-  let url = process.env.API_URL + "/api/projects/?page=" + page;
+  let url = getEnvVar("API_URL") + "/api/projects/?page=" + page;
   if (urlEnding) url += urlEnding;
   try {
     const resp = await axios.get(url, tokenConfig(token));
@@ -470,7 +471,7 @@ async function getProjects(page, token, urlEnding) {
 
 //TODO replace by db call. console.log is just there to pass lint
 async function getOrganizations(page, token, urlEnding) {
-  let url = process.env.API_URL + "/api/organizations/?page=" + page;
+  let url = getEnvVar("API_URL") + "/api/organizations/?page=" + page;
   if (urlEnding) url += urlEnding;
   try {
     const resp = await axios.get(url, tokenConfig(token));
@@ -491,7 +492,7 @@ async function getOrganizations(page, token, urlEnding) {
 async function getMembers(page, token, urlEnding) {
   try {
     console.log("getting members for page " + page + " with urlEnding " + urlEnding);
-    let url = process.env.API_URL + "/api/members/?page=" + page;
+    let url = getEnvVar("API_URL") + "/api/members/?page=" + page;
     if (urlEnding) url += urlEnding;
     const resp = await axios.get(url, tokenConfig(token));
     if (resp.data.length === 0) return null;

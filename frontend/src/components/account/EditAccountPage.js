@@ -26,6 +26,7 @@ import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import Alert from "@material-ui/lab/Alert";
+import getEnvVar from "../../../public/lib/getEnvVar";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -416,7 +417,7 @@ export default function EditAccountPage({
               <AutoCompleteSearchBar
                 label={i.label}
                 className={`${classes.marginTop} ${classes.block}`}
-                baseUrl={process.env.API_URL + i.baseUrl}
+                baseUrl={getEnvVar("API_URL") + i.baseUrl}
                 freeSolo
                 clearOnSelect
                 onSelect={handleSetParentOrganization}

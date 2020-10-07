@@ -5,6 +5,7 @@ import { Typography, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import tokenConfig from "../../../public/config/tokenConfig.js";
 import axios from "axios";
+import getEnvVar from "../../../public/lib/getEnvVar.js";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -39,7 +40,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
     if (parent_comment) payload.parent_comment = parent_comment;
     try {
       const resp = await axios.post(
-        process.env.API_URL + "/api/projects/" + project.url_slug + "/comment/",
+        getEnvVar("API_URL") + "/api/projects/" + project.url_slug + "/comment/",
         payload,
         tokenConfig(token)
       );
@@ -56,7 +57,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
   const onDeleteComment = async post => {
     try {
       await axios.delete(
-        process.env.API_URL + "/api/projects/" + project.url_slug + "/comment/" + post.id + "/",
+        getEnvVar("API_URL") + "/api/projects/" + project.url_slug + "/comment/" + post.id + "/",
         tokenConfig(token)
       );
       handleRemoveComment(post);

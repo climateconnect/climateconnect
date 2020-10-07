@@ -3,6 +3,7 @@ import Layout from "../../src/components/layouts/layout";
 import Form from "../../src/components/general/Form";
 import axios from "axios";
 import { redirect } from "../../public/lib/apiOperations";
+import getEnvVar from "../../public/lib/getEnvVar";
 
 ResetPassword.getInitialProps = async ctx => {
   const uuid = encodeURI(ctx.query.uuid);
@@ -66,7 +67,7 @@ async function requestSetPassword(uuid, new_password, setErrorMessage) {
   };
   try {
     const response = await axios.post(
-      process.env.API_URL + "/api/set_new_password/",
+      getEnvVar("API_URL") + "/api/set_new_password/",
       payload,
       config
     );

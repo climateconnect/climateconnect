@@ -6,6 +6,7 @@ import SettingsPage from "../src/components/account/SettingsPage";
 import Cookies from "next-cookies";
 import Axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
+import getEnvVar from "../public/lib/getEnvVar";
 
 export default function Settings({ settings, token }) {
   const { user } = useContext(UserContext);
@@ -42,7 +43,7 @@ Settings.getInitialProps = async ctx => {
 const getSettings = async token => {
   try {
     const resp = await Axios.get(
-      process.env.API_URL + "/api/account_settings/",
+      getEnvVar("API_URL") + "/api/account_settings/",
       tokenConfig(token)
     );
     return resp.data;

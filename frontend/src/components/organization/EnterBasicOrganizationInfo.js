@@ -3,6 +3,7 @@ import Form from "./../general/Form";
 import { IconButton } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import countries from "./../../../public/data/countries.json";
+import getEnvVar from "../../../public/lib/getEnvVar";
 
 const renderSearchOption = option => {
   return (
@@ -47,7 +48,7 @@ export default function EnterBasicOrganizationInfo({
       type: "autocomplete",
       autoCompleteProps: {
         label: "Search for your parent organization",
-        baseUrl: process.env.API_URL + "/api/organizations/?search=",
+        baseUrl: getEnvVar("API_URL") + "/api/organizations/?search=",
         onSelect: setParentOrganization,
         renderOption: renderSearchOption,
         getOptionLabel: getOptionLabel,

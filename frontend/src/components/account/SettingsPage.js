@@ -15,6 +15,7 @@ import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import { redirect } from "../../../public/lib/apiOperations";
 import Cookies from "universal-cookie";
 import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations";
+import getEnvVar from "../../../public/lib/getEnvVar";
 
 const useStyles = makeStyles(theme => ({
   blockElement: {
@@ -136,7 +137,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       setErrors({ ...errors, passworderror: "" });
       console.log(passwordInputs.newpassword);
       Axios.post(
-        process.env.API_URL + "/api/account_settings/",
+        getEnvVar("API_URL") + "/api/account_settings/",
         {
           password: passwordInputs.newpassword,
           confirm_password: passwordInputs.confirmnewpassword,
@@ -183,7 +184,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     else {
       setErrors({ ...errors, newemailerror: "" });
       Axios.post(
-        process.env.API_URL + "/api/account_settings/",
+        getEnvVar("API_URL") + "/api/account_settings/",
         { email: newEmail },
         tokenConfig(token)
       )
@@ -213,7 +214,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       )
     ) {
       Axios.post(
-        process.env.API_URL + "/api/account_settings/",
+        getEnvVar("API_URL") + "/api/account_settings/",
         emailPreferences,
         tokenConfig(token)
       )

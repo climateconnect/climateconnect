@@ -9,6 +9,7 @@ import axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
 import UnfilteredFaqContent from "../src/components/faq/UnfilteredFaqContent";
 import FilteredFaqContent from "../src/components/faq/FilteredFaqContent";
+import getEnvVar from "../public/lib/getEnvVar";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -147,7 +148,7 @@ Faq.getInitialProps = async ctx => {
 
 const getQuestionsWithAnswers = async token => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/list_faq/", tokenConfig(token));
+    const resp = await axios.get(getEnvVar("API_URL") + "/api/list_faq/", tokenConfig(token));
     if (resp.data.length === 0) return null;
     else {
       return {

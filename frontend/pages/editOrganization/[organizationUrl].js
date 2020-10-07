@@ -11,6 +11,7 @@ import axios from "axios";
 import tokenConfig from "../../public/config/tokenConfig";
 import { getImageUrl } from "./../../public/lib/imageOperations";
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
+import getEnvVar from "../../public/lib/getEnvVar";
 
 const useStyles = makeStyles(theme => ({
   subtitle: {
@@ -41,7 +42,7 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
       console.log(org);
       axios
         .patch(
-          process.env.API_URL + "/api/organizations/" + encodeURI(organization.url_slug) + "/",
+          getEnvVar("API_URL") + "/api/organizations/" + encodeURI(organization.url_slug) + "/",
           org,
           tokenConfig(token)
         )
@@ -138,7 +139,7 @@ function NoOrganizationFoundLayout() {
 async function getOrganizationByUrlIfExists(organizationUrl, token) {
   try {
     const resp = await axios.get(
-      process.env.API_URL + "/api/organizations/" + organizationUrl + "/",
+      getEnvVar("API_URL") + "/api/organizations/" + organizationUrl + "/",
       tokenConfig(token)
     );
     return parseOrganization(resp.data);
