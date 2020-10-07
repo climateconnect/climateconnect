@@ -49,6 +49,9 @@ export default function Signin() {
     //don't redirect to the post url
     event.preventDefault();
     setIsLoading(true);
+    console.log(process.env)
+    console.log("making a request to this url:")
+    console.log(process.env.API_URL + "/login/")
     axios
       .post(process.env.API_URL + "/login/", {
         username: values.username.toLowerCase(),

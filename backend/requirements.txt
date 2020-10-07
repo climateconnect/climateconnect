@@ -8,7 +8,7 @@ cachetools==4.1.0
 certifi==2020.4.5.1
 cffi==1.14.0
 channels==2.4.0
-channels-redis==3.0.1
+channels-redis==2.4.2
 chardet==3.0.4
 constantly==15.1.0
 cryptography==2.8
@@ -17,7 +17,7 @@ Django==2.2.13
 django-cors-headers==3.2.1
 django-filter==2.3.0
 django-rest-knox==4.1.0
-django-storages==1.9.1
+django-storages[azure]==1.9.1
 djangorestframework==3.11.0
 entrypoints==0.3
 factory-boy==2.12.0

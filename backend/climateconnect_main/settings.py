@@ -31,7 +31,8 @@ DEBUG = env('DEBUG')
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'api.climateconnect.earth'
+    'api.climateconnect.earth',
+    'climateconnect-backend.azurewebsites.net'
 ]
 
 AUTO_VERIFY = env('AUTO_VERIFY')
@@ -148,15 +149,15 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-if(env('ENVIRONMENT') not in('development', 'test')):
-    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-    GS_BUCKET_NAME = env('GS_BUCKET_NAME')
-    STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-STATIC_URL = '/static/' if env('ENVIRONMENT') in ('development', 'test') else 'https://storage.googleapis.com/{}/'.format(GS_BUCKET_NAME)
-STATIC_ROOT = env('STATIC_ROOT') if env('ENVIRONMENT') in ('development', 'test') else "static/"
+DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+STATICFILES_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+AZURE_ACCOUNT_NAME = env('AZURE_ACCOUNT_NAME')
+AZURE_ACCOUNT_KEY = env('AZURE_ACCOUNT_KEY')
+AZURE_CONTAINER = env('AZURE_CONTAINER')
+STATIC_URL = 'https://'+env('AZURE_ACCOUNT_NAME')+'.'+env('AZURE_HOST')+'/{}/'.format(env('AZURE_CONTAINER'))
+STATIC_ROOT = "static/"
 MEDIA_ROOT = env('MEDIA_ROOT')
 MEDIA_URL = '/media/'
 
@@ -191,7 +192,11 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [(env('REDIS_HOST'), env('REDIS_PORT', 6379))]
+            "hosts": [{
+                "address": (env('REDIS_HOST'), env('REDIS_PORT')),
+                "password": env('REDIS_PASSWORD'),
+                "ssl": True
+            }]
         }
     }
 }
