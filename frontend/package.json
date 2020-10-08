@@ -38,7 +38,7 @@
     "humanize-duration": "^3.22.0",
     "lodash": "^4.17.15",
     "node-fetch": "^2.6.1",
-    "next": "^9.5.3",
+    "next": "^9.5.4",
     "next-cookies": "^2.0.3",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
