@@ -25,14 +25,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = False
 # DEBUG = True
 
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'api.climateconnect.earth',
-    'climateconnect-backend.azurewebsites.net'
+    'climateconnect-backend.azurewebsites.net',
+    'climateconnect-frontend.azurewebsites.net'
 ]
 
 AUTO_VERIFY = env('AUTO_VERIFY')
