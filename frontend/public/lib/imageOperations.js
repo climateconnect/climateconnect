@@ -1,4 +1,4 @@
-const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT);
+const DEVELOPMENT = ["development", "develop", "test"].includes(getEnvVar("ENVIRONMENT"));
 import imageCompression from "browser-image-compression";
 import getEnvVar from "./getEnvVar";
 

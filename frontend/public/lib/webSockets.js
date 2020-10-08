@@ -1,3 +1,5 @@
+import getEnvVar from "./getEnvVar";
+
 export default function WebSocketService(apiURLStr) {
-  return new WebSocket(process.env.SOCKET_URL + apiURLStr);
+  return new WebSocket(getEnvVar("SOCKET_URL") + apiURLStr);
 }
