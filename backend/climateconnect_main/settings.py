@@ -33,7 +33,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'api.climateconnect.earth',
     'climateconnect-backend.azurewebsites.net',
-    'climateconnect-frontend.azurewebsites.net'
+    'climateconnect-frontend.azurewebsites.net',
+    'api.cc-test-domain.com'
 ]
 
 AUTO_VERIFY = env('AUTO_VERIFY')
