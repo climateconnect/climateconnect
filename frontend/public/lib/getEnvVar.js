@@ -1,6 +1,6 @@
 const fallback_values = {
   API_URL: "https://api.cc-test-domain.com",
-  SOCKET_URL: "wss://api.cc-test-domain.com",
+  SOCKET_URL: "ws://climateconnect-backend.azurewebsites.net",
   ENVIRONMENT: "production"
 }
 
