@@ -1,5 +1,5 @@
 const fallback_values = {
-  API_URL: "https://cc-test-domain.com",
+  API_URL: "https://api.cc-test-domain.com",
   SOCKET_URL: "wss://cc-test-domain.com",
   ENVIRONMENT: "production"
 }
