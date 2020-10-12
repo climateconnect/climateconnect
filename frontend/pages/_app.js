@@ -21,7 +21,6 @@ export default class MyApp extends App {
   constructor(props) {
     super(props);
     this.cookies = new Cookies();
-    console.log(process.env)
     this.createInstanceIfAllowed = () => {
       const instance = createInstance({
         urlBase: "https://matomostats.climateconnect.earth/"
@@ -35,7 +34,9 @@ export default class MyApp extends App {
         return false;
       }
     };
-
+    this.API_URL = process.env.API_URL
+    this.ENVIRONMENT = process.env.ENVIRONMENT
+    this.SOCKET_URL = process.env.SOCKET_URL
     this.state = {
       user: null,
       matomoInstance: this.createInstanceIfAllowed(),
@@ -106,7 +107,17 @@ export default class MyApp extends App {
 
   render() {
     const { Component, pageProps } = this.props;
-
+    const contextValues = {
+        user: this.state.user,
+        signOut: this.signOut,
+        signIn: this.signIn,
+        chatSocket: this.state.chatSocket,
+        notifications: this.state.notifications,
+        refreshNotifications: this.refreshNotifications,
+        API_URL: this.API_URL,
+        ENVIRONMENT: this.ENVIRONMENT,
+        SOCKET_URL: this.SOCKET_URL
+    }
     return (
       <React.Fragment>
         <Head>
@@ -119,28 +130,14 @@ export default class MyApp extends App {
           {this.state.matomoInstance ? (
             <MatomoProvider value={this.state.matomoInstance}>
               <UserContext.Provider
-                value={{
-                  user: this.state.user,
-                  signOut: this.signOut,
-                  signIn: this.signIn,
-                  chatSocket: this.state.chatSocket,
-                  notifications: this.state.notifications,
-                  refreshNotifications: this.refreshNotifications
-                }}
+                value={contextValues}
               >
                 <Component {...pageProps} />
               </UserContext.Provider>
             </MatomoProvider>
           ) : (
             <UserContext.Provider
-              value={{
-                user: this.state.user,
-                signOut: this.signOut,
-                signIn: this.signIn,
-                chatSocket: this.state.chatSocket,
-                notifications: this.state.notifications,
-                refreshNotifications: this.refreshNotifications
-              }}
+              value={contextValues}
             >
               <Component {...pageProps} />
             </UserContext.Provider>
