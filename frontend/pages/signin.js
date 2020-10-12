@@ -5,7 +5,7 @@ import axios from "axios";
 import { useContext } from "react";
 import UserContext from "./../src/components/context/UserContext";
 import { redirectOnLogin } from "../public/lib/profileOperations";
-import getEnvVar from "../public/lib/getEnvVar";
+
 
 export default function Signin() {
   const fields = [
@@ -41,6 +41,9 @@ export default function Signin() {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const { user, signIn } = useContext(UserContext);
+  console.log(process.env)
+  console.log(process.env.ENVIRONMENT)
+  process.env.ENVIRONMENT
   //TODO: remove router
   if (user) {
     console.log("there is a user now!")
@@ -52,10 +55,10 @@ export default function Signin() {
     setIsLoading(true);
     console.log(process.env.API_URL)
     console.log("making a request to this url:")
-    console.log(getEnvVar("API_URL"))
-    console.log(getEnvVar("API_URL") + "/login/")
+    console.log(process.env.API_URL)
+    console.log(process.env.API_URL + "/login/")
     axios
-      .post(getEnvVar("API_URL") + "/login/", {
+      .post(process.env.API_URL + "/login/", {
         username: values.username.toLowerCase(),
         password: values.password
       })

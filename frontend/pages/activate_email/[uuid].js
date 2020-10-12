@@ -7,7 +7,7 @@ import Cookies from "universal-cookie";
 import UserContext from "../../src/components/context/UserContext";
 import LoginNudge from "../../src/components/general/LoginNudge";
 import { redirect } from "../../public/lib/apiOperations";
-import getEnvVar from "../../public/lib/getEnvVar";
+
 
 ProfileVerified.getInitialProps = async ctx => {
   const uuid = encodeURI(ctx.query.uuid);
@@ -22,7 +22,7 @@ async function newEmailVerification(uuid, token) {
   };
   try {
     const response = await axios.post(
-      getEnvVar("API_URL") + "/api/verify_new_email/",
+      process.env.API_URL + "/api/verify_new_email/",
       payload,
       tokenConfig(token)
     );

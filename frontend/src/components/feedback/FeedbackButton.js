@@ -6,7 +6,7 @@ import tokenConfig from "../../../public/config/tokenConfig";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import Alert from "@material-ui/lab/Alert";
-import getEnvVar from "../../../public/lib/getEnvVar";
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,7 +36,7 @@ export default function FeedbackButton() {
     const token = cookies.get("token");
     try {
       const response = await axios.post(
-        getEnvVar("API_URL") + "/api/feedback/",
+        process.env.API_URL + "/api/feedback/",
         data,
         tokenConfig(token)
       );

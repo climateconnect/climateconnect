@@ -15,7 +15,7 @@ import {
   getStatusOptions,
   getProjectTagsOptions
 } from "../../public/lib/getOptions";
-import getEnvVar from "../../public/lib/getEnvVar";
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -124,7 +124,7 @@ EditProjectPage.getInitialProps = async ctx => {
 async function getProjectByIdIfExists(projectUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/projects/" + projectUrl + "/",
+      process.env.API_URL + "/api/projects/" + projectUrl + "/",
       tokenConfig(token)
     );
     if (resp.data.length === 0) return null;
@@ -150,7 +150,7 @@ const parseProject = project => ({
 const getUserOrganizations = async token => {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/my_organizations/",
+      process.env.API_URL + "/api/my_organizations/",
       tokenConfig(token)
     );
     if (resp.data.length === 0) return null;
@@ -167,7 +167,7 @@ const getUserOrganizations = async token => {
 async function getMembersByProject(projectUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/projects/" + projectUrl + "/members/",
+      process.env.API_URL + "/api/projects/" + projectUrl + "/members/",
       tokenConfig(token)
     );
     if (!resp.data) return null;

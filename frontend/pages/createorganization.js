@@ -9,7 +9,7 @@ import tokenConfig from "../public/config/tokenConfig";
 import LoginNudge from "../src/components/general/LoginNudge";
 import UserContext from "../src/components/context/UserContext";
 import Router from "next/router";
-import getEnvVar from "../public/lib/getEnvVar";
+
 
 export default function CreateOrganization({ tagOptions, token, rolesOptions }) {
   const [errorMessages, setErrorMessages] = React.useState({
@@ -49,7 +49,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         });
       else {
         const resp = await axios.get(
-          getEnvVar("API_URL") + "/api/organizations/?search=" + values.organizationname
+          process.env.API_URL + "/api/organizations/?search=" + values.organizationname
         );
         if (resp.data.results && resp.data.results.find(r => r.name === values.organizationname)) {
           const org = resp.data.results.find(r => r.name === values.organizationname);
@@ -105,7 +105,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     }
     axios
       .post(
-        getEnvVar("API_URL") + "/api/create_organization/",
+        process.env.API_URL + "/api/create_organization/",
         organizationToSubmit,
         tokenConfig(token)
       )
@@ -164,7 +164,7 @@ CreateOrganization.getInitialProps = async ctx => {
 
 const getRolesOptions = async token => {
   try {
-    const resp = await axios.get(getEnvVar("API_URL") + "/roles/", tokenConfig(token));
+    const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -179,7 +179,7 @@ const getRolesOptions = async token => {
 async function getTags(token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/organizationtags/",
+      process.env.API_URL + "/api/organizationtags/",
       tokenConfig(token)
     );
     if (resp.data.results.length === 0) return null;

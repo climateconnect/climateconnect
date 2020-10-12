@@ -13,7 +13,7 @@ import AutoCompleteSearchBar from "../src/components/general/AutoCompleteSearchB
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import MiniProfilePreview from "../src/components/profile/MiniProfilePreview";
 import Router from "next/router";
-import getEnvVar from "../public/lib/getEnvVar";
+
 
 const useStyles = makeStyles(theme => {
   return {
@@ -109,7 +109,7 @@ export default function Inbox({ chatData, token }) {
         payload.profile_url_slug = newChatMembers[0].url_slug;
       }
       axios
-        .post(getEnvVar("API_URL") + urlPostfix, payload, tokenConfig(token))
+        .post(process.env.API_URL + urlPostfix, payload, tokenConfig(token))
         .then(async function(response) {
           Router.push("/chat/" + response.data.chat_uuid + "/");
         })
@@ -155,7 +155,7 @@ export default function Inbox({ chatData, token }) {
                     ? "Search user to message..."
                     : "Add more chat participants..."
                 }
-                baseUrl={getEnvVar("API_URL") + "/api/members/?search="}
+                baseUrl={process.env.API_URL + "/api/members/?search="}
                 clearOnSelect
                 freeSolo
                 filterOut={getUsersToFilterOut()}
@@ -242,7 +242,7 @@ Inbox.getInitialProps = async ctx => {
 
 async function getChatsOfLoggedInUser(token) {
   try {
-    const resp = await axios.get(getEnvVar("API_URL") + "/api/chats/", tokenConfig(token));
+    const resp = await axios.get(process.env.API_URL + "/api/chats/", tokenConfig(token));
     return resp.data.results;
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);

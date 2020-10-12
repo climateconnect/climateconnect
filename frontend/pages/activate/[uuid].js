@@ -2,7 +2,7 @@ import React from "react";
 import { Typography, Link } from "@material-ui/core";
 import Layout from "../../src/components/layouts/layout";
 import axios from "axios";
-import getEnvVar from "../../public/lib/getEnvVar";
+
 
 ProfileVerified.getInitialProps = async ctx => {
   const uuid = encodeURI(ctx.query.uuid);
@@ -25,7 +25,7 @@ async function profileVerification(uuid) {
   };
   try {
     const response = await axios.post(
-      getEnvVar("API_URL") + "/api/verify_profile/",
+      process.env.API_URL + "/api/verify_profile/",
       payload,
       config
     );

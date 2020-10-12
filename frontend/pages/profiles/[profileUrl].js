@@ -20,7 +20,7 @@ import LoginNudge from "../../src/components/general/LoginNudge";
 import { parseProfile } from "./../../public/lib/profileOperations";
 import { getParams } from "./../../public/lib/generalOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
-import getEnvVar from "../../public/lib/getEnvVar";
+
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_user.jpg";
 
@@ -228,7 +228,7 @@ function NoProfileFoundLayout() {
 async function getProfileByUrlIfExists(profileUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/member/" + profileUrl + "/",
+      process.env.API_URL + "/api/member/" + profileUrl + "/",
       tokenConfig(token)
     );
     return parseProfile(resp.data);
@@ -243,7 +243,7 @@ async function getProfileByUrlIfExists(profileUrl, token) {
 async function getProjectsByUser(profileUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/member/" + profileUrl + "/projects/",
+      process.env.API_URL + "/api/member/" + profileUrl + "/projects/",
       tokenConfig(token)
     );
     if (!resp.data) return null;
@@ -260,7 +260,7 @@ async function getProjectsByUser(profileUrl, token) {
 async function getOrganizationsByUser(profileUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/member/" + profileUrl + "/organizations/",
+      process.env.API_URL + "/api/member/" + profileUrl + "/organizations/",
       tokenConfig(token)
     );
     if (!resp.data) return null;

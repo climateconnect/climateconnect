@@ -4,7 +4,7 @@ import Form from "../src/components/general/Form";
 import axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
 import { redirect } from "../public/lib/apiOperations";
-import getEnvVar from "../public/lib/getEnvVar";
+
 
 const fields = [
   {
@@ -27,7 +27,7 @@ export default function ResetPassword() {
     if (values.email) {
       try {
         const response = await axios.post(
-          getEnvVar("API_URL") + "/api/send_reset_password_email/",
+          process.env.API_URL + "/api/send_reset_password_email/",
           { email: values.email },
           tokenConfig
         );

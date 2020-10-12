@@ -8,7 +8,7 @@ import Router from "next/router";
 import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
-import getEnvVar from "../../../public/lib/getEnvVar";
+
 
 const useStyles = makeStyles(theme => {
   return {
@@ -48,7 +48,7 @@ export default function EditProjectRoot({
     else
       axios
         .patch(
-          getEnvVar("API_URL") + "/api/projects/" + project.url_slug + "/",
+          process.env.API_URL + "/api/projects/" + project.url_slug + "/",
           await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
           tokenConfig(token)
         )
@@ -89,7 +89,7 @@ export default function EditProjectRoot({
 
     axios
       .patch(
-        getEnvVar("API_URL") + "/api/projects/" + project.url_slug + "/",
+        process.env.API_URL + "/api/projects/" + project.url_slug + "/",
         await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
         tokenConfig(token)
       )
@@ -111,7 +111,7 @@ export default function EditProjectRoot({
 
   const deleteProject = () => {
     axios
-      .delete(getEnvVar("API_URL") + "/api/projects/" + project.url_slug + "/", tokenConfig(token))
+      .delete(process.env.API_URL + "/api/projects/" + project.url_slug + "/", tokenConfig(token))
       .then(function(response) {
         console.log(response);
         Router.push({

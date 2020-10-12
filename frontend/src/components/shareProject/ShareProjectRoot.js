@@ -12,7 +12,7 @@ import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
 import Router from "next/router";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
-import getEnvVar from "../../../public/lib/getEnvVar";
+
 
 const useStyles = makeStyles(theme => {
   return {
@@ -107,7 +107,7 @@ export default function ShareProjectRoot({
     event.preventDefault();
     axios
       .post(
-        getEnvVar("API_URL") + "/api/create_project/",
+        process.env.API_URL + "/api/create_project/",
         await formatProjectForRequest(project),
         tokenConfig(token)
       )
@@ -127,7 +127,7 @@ export default function ShareProjectRoot({
     console.log(project);
     axios
       .post(
-        getEnvVar("API_URL") + "/api/create_project/",
+        process.env.API_URL + "/api/create_project/",
         await formatProjectForRequest({ ...project, is_draft: true }),
         tokenConfig(token)
       )

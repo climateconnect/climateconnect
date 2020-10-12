@@ -10,7 +10,7 @@ import LoginNudge from "../../src/components/general/LoginNudge";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ManageOrganizationMembers from "../../src/components/organization/ManageOrganizationMembers";
-import getEnvVar from "../../public/lib/getEnvVar";
+
 
 const useStyles = makeStyles(theme => {
   return {
@@ -99,7 +99,7 @@ manageOrganizationMembers.getInitialProps = async ctx => {
 async function getOrganizationByUrlIfExists(organizationUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/organizations/" + organizationUrl + "/",
+      process.env.API_URL + "/api/organizations/" + organizationUrl + "/",
       tokenConfig(token)
     );
     return parseOrganization(resp.data);
@@ -113,7 +113,7 @@ async function getOrganizationByUrlIfExists(organizationUrl, token) {
 async function getMembersByOrganization(organizationUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/organizations/" + organizationUrl + "/members/",
+      process.env.API_URL + "/api/organizations/" + organizationUrl + "/members/",
       tokenConfig(token)
     );
     if (!resp.data) return null;
@@ -133,7 +133,7 @@ function parseOrganizationMembers(members) {
     return {
       ...member,
       member_id: m.id,
-      image: getEnvVar("API_URL") + member.image,
+      image: process.env.API_URL + member.image,
       name: member.first_name + " " + member.last_name,
       role: m.permission,
       time_per_week: m.time_per_week,
@@ -165,7 +165,7 @@ function parseOrganization(organization) {
 
 const getRolesOptions = async token => {
   try {
-    const resp = await axios.get(getEnvVar("API_URL") + "/roles/", tokenConfig(token));
+    const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -179,7 +179,7 @@ const getRolesOptions = async token => {
 
 const getAvailabilityOptions = async token => {
   try {
-    const resp = await axios.get(getEnvVar("API_URL") + "/availability/", tokenConfig(token));
+    const resp = await axios.get(process.env.API_URL + "/availability/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;

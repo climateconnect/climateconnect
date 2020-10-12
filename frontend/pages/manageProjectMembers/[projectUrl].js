@@ -10,7 +10,7 @@ import LoginNudge from "../../src/components/general/LoginNudge";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ManageProjectMembers from "../../src/components/project/ManageProjectMembers";
-import getEnvVar from "../../public/lib/getEnvVar";
+
 
 const useStyles = makeStyles(theme => {
   return {
@@ -92,7 +92,7 @@ manageProjectMembers.getInitialProps = async ctx => {
 async function getProjectByUrlIfExists(projectUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/projects/" + projectUrl + "/",
+      process.env.API_URL + "/api/projects/" + projectUrl + "/",
       tokenConfig(token)
     );
     return parseProject(resp.data);
@@ -106,7 +106,7 @@ async function getProjectByUrlIfExists(projectUrl, token) {
 async function getMembersByProject(projectUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/projects/" + projectUrl + "/members/",
+      process.env.API_URL + "/api/projects/" + projectUrl + "/members/",
       tokenConfig(token)
     );
     if (!resp.data) return null;
@@ -127,7 +127,7 @@ function parseProjectMembers(members) {
       ...member,
       member_id: m.id,
       id: member.id,
-      image: getEnvVar("API_URL") + member.image,
+      image: process.env.API_URL + member.image,
       name: member.first_name + " " + member.last_name,
       role: m.role,
       availability: m.availability,
@@ -166,7 +166,7 @@ function parseProject(project) {
 }
 const getRolesOptions = async token => {
   try {
-    const resp = await axios.get(getEnvVar("API_URL") + "/roles/", tokenConfig(token));
+    const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -180,7 +180,7 @@ const getRolesOptions = async token => {
 
 const getAvailabilityOptions = async token => {
   try {
-    const resp = await axios.get(getEnvVar("API_URL") + "/availability/", tokenConfig(token));
+    const resp = await axios.get(process.env.API_URL + "/availability/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;

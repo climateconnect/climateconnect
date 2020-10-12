@@ -4,7 +4,7 @@ import AddInfo from "./../src/components/signup/AddInfo";
 import axios from "axios";
 import Router from "next/router";
 import Layout from "../src/components/layouts/layout";
-import getEnvVar from "../public/lib/getEnvVar";
+
 
 export default function Signup() {
   const [userInfo, setUserInfo] = React.useState({
@@ -70,7 +70,7 @@ export default function Signup() {
     };
     setIsLoading(true);
     axios
-      .post(getEnvVar("API_URL") + "/signup/", payload, config)
+      .post(process.env.API_URL + "/signup/", payload, config)
       .then(function(resp) {
         console.log(resp);
         Router.push({

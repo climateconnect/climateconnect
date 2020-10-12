@@ -14,8 +14,6 @@ import { removeUnnecesaryCookies } from "./../public/lib/cookieOperations";
 import "react-multi-carousel/lib/styles.css";
 import tokenConfig from "../public/config/tokenConfig";
 import WebSocketService from "../public/lib/webSockets";
-import getEnvVar from "../public/lib/getEnvVar";
-const DEVELOPMENT = ["development", "develop", "test"].includes(getEnvVar("ENVIRONMENT"));
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
@@ -23,12 +21,13 @@ export default class MyApp extends App {
   constructor(props) {
     super(props);
     this.cookies = new Cookies();
-
+    console.log(process.env)
     this.createInstanceIfAllowed = () => {
       const instance = createInstance({
         urlBase: "https://matomostats.climateconnect.earth/"
       });
       if (!this.cookies.cookies) return false;
+      const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT);
       if (!DEVELOPMENT && this.cookies.get("acceptedStatistics")) {
         return instance;
       } else {
@@ -48,7 +47,7 @@ export default class MyApp extends App {
     this.signOut = async () => {
       try {
         const token = this.cookies.get("token");
-        await axios.post(getEnvVar("API_URL") + "/logout/", null, tokenConfig(token));
+        await axios.post(process.env.API_URL + "/logout/", null, tokenConfig(token));
         this.cookies.remove("token", { path: "/" });
         this.setState({
           user: null
@@ -71,6 +70,7 @@ export default class MyApp extends App {
     };
 
     this.signIn = async (token, expiry) => {
+      console.log(!["develop", "development", "test"].includes(process.env.ENVIRONMENT))
       //TODO: set httpOnly=true to make cookie only accessible by server
       this.cookies.set("token", token, { path: "/", sameSite: true, expires: new Date(expiry), secure: !["develop", "development", "test"].includes(process.env.ENVIRONMENT) });
       const user = await getLoggedInUser(this.cookies);
@@ -155,10 +155,10 @@ async function getLoggedInUser(cookies) {
   console.log("getting logged in user")
   const token = cookies.get("token");
   console.log(token)
-  console.log(getEnvVar("API_URL") + "/api/my_profile/")
+  console.log(process.env.API_URL + "/api/my_profile/")
   if (token) {
     try {
-      const resp = await axios.get(getEnvVar("API_URL") + "/api/my_profile/", tokenConfig(token));
+      const resp = await axios.get(process.env.API_URL + "/api/my_profile/", tokenConfig(token));
       console.log(resp)
       return resp.data;
     } catch (err) {
@@ -176,7 +176,7 @@ async function getNotifications(cookies) {
   const token = cookies.get("token");
   if (token) {
     try {
-      const resp = await axios.get(getEnvVar("API_URL") + "/api/notifications/", tokenConfig(token));
+      const resp = await axios.get(process.env.API_URL + "/api/notifications/", tokenConfig(token));
       return resp.data.results;
     } catch (err) {
       if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);

@@ -16,7 +16,7 @@ import tokenConfig from "../../public/config/tokenConfig";
 import axios from "axios";
 import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
 import UserContext from "../../src/components/context/UserContext";
-import getEnvVar from "../../public/lib/getEnvVar";
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -187,7 +187,7 @@ function ProjectLayout({
   const toggleFollowProject = () => {
     axios
       .post(
-        getEnvVar("API_URL") + "/api/projects/" + project.url_slug + "/set_follow/",
+        process.env.API_URL + "/api/projects/" + project.url_slug + "/set_follow/",
         { following: !isUserFollowing },
         tokenConfig(token)
       )
@@ -282,7 +282,7 @@ function NoProjectFoundLayout() {
 async function getProjectByIdIfExists(projectUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/projects/" + projectUrl + "/",
+      process.env.API_URL + "/api/projects/" + projectUrl + "/",
       tokenConfig(token)
     );
     if (resp.data.length === 0) return null;
@@ -299,7 +299,7 @@ async function getProjectByIdIfExists(projectUrl, token) {
 async function getIsUserFollowing(projectUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/projects/" + projectUrl + "/am_i_following/",
+      process.env.API_URL + "/api/projects/" + projectUrl + "/am_i_following/",
       tokenConfig(token)
     );
     if (resp.data.length === 0) return null;
@@ -316,7 +316,7 @@ async function getIsUserFollowing(projectUrl, token) {
 async function getPostsByProject(projectUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/projects/" + projectUrl + "/posts/",
+      process.env.API_URL + "/api/projects/" + projectUrl + "/posts/",
       tokenConfig(token)
     );
     if (resp.data.length === 0) return null;
@@ -332,7 +332,7 @@ async function getPostsByProject(projectUrl, token) {
 async function getCommentsByProject(projectUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/projects/" + projectUrl + "/comments/",
+      process.env.API_URL + "/api/projects/" + projectUrl + "/comments/",
       tokenConfig(token)
     );
     if (resp.data.length === 0) return null;
@@ -348,7 +348,7 @@ async function getCommentsByProject(projectUrl, token) {
 async function getProjectMembersByIdIfExists(projectUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/projects/" + projectUrl + "/members/",
+      process.env.API_URL + "/api/projects/" + projectUrl + "/members/",
       tokenConfig(token)
     );
     if (resp.data.results.length === 0) return null;

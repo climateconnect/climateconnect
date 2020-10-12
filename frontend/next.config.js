@@ -4,9 +4,21 @@ if (!process.env.IS_BUILDING_ON_AZURE) {
   require("dotenv").config();
 }
 
-const environmentVariableSource = process.env;
+const fallback_values = {
+  API_URL: "https://api.cc-test-domain.com",
+  SOCKET_URL: "wss://climateconnect-backend.azurewebsites.net",
+  ENVIRONMENT: "production"
+}
 
-console.log(environmentVariableSource)
+
+const environmentVariableSource = process.env;
+console.log("env before")
+console.log(pick(environmentVariableSource, ["PRE_LAUNCH", "API_URL", "ENVIRONMENT", "SOCKET_URL"]))
+for(const key of Object.keys(fallback_values)) {
+  if(fallback_values[key] === undefined)
+    environmentVariableSource[key] = fallback_values[key]
+}
+console.log("env after")
 console.log(pick(environmentVariableSource, ["PRE_LAUNCH", "API_URL", "ENVIRONMENT", "SOCKET_URL"]))
 module.exports = {
   env: pick(environmentVariableSource, ["PRE_LAUNCH", "API_URL", "ENVIRONMENT", "SOCKET_URL"]),

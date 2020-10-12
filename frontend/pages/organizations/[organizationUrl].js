@@ -23,7 +23,7 @@ import { parseOrganization } from "../../public/lib/organizationOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 import Router from "next/router";
 import Cookies from "universal-cookie";
-import getEnvVar from "../../public/lib/getEnvVar";
+
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -218,7 +218,7 @@ function NoOrganizationFoundLayout() {
 async function getOrganizationByUrlIfExists(organizationUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/organizations/" + organizationUrl + "/",
+      process.env.API_URL + "/api/organizations/" + organizationUrl + "/",
       tokenConfig(token)
     );
     return parseOrganization(resp.data);
@@ -232,7 +232,7 @@ async function getOrganizationByUrlIfExists(organizationUrl, token) {
 async function getProjectsByOrganization(organizationUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/organizations/" + organizationUrl + "/projects/",
+      process.env.API_URL + "/api/organizations/" + organizationUrl + "/projects/",
       tokenConfig(token)
     );
     if (!resp.data) return null;
@@ -249,7 +249,7 @@ async function getProjectsByOrganization(organizationUrl, token) {
 async function getMembersByOrganization(organizationUrl, token) {
   try {
     const resp = await axios.get(
-      getEnvVar("API_URL") + "/api/organizations/" + organizationUrl + "/members/",
+      process.env.API_URL + "/api/organizations/" + organizationUrl + "/members/",
       tokenConfig(token)
     );
     if (!resp.data) return null;
