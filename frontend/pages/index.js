@@ -24,7 +24,7 @@ import MainHeadingContainer from "../src/components/indexPage/MainHeadingContain
 import WideLayout from "../src/components/layouts/WideLayout";
 import FilterSection from "../src/components/indexPage/FilterSection";
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
-
+import getEnvVar from "../public/lib/getEnvVar";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -435,20 +435,28 @@ function TabContent({ value, index, children }) {
 
 Index.getInitialProps = async ctx => {
   const { token, hideInfo } = NextCookies(ctx);
-  const filterChoices = {
-    project_categories: await getProjectTagsOptions(),
-    organization_types: await getOrganizationTagsOptions(),
-    skills: await getSkillsOptions(),
-    project_statuses: await getStatusOptions()
-  };
+  const [projectsObject, organizationsObject, membersObject, project_categories, organization_types, skills, project_statuses] = await Promise.all([
+    getProjects(1, token),
+    getOrganizations(1, token),
+    getMembers(1, token),
+    getProjectTagsOptions(),
+    getOrganizationTagsOptions(),
+    getSkillsOptions(),
+    getStatusOptions()
+  ])
   return {
-    projectsObject: await getProjects(1, token),
-    organizationsObject: await getOrganizations(1, token),
-    membersObject: await getMembers(1, token),
+    projectsObject: projectsObject,
+    organizationsObject: organizationsObject,
+    membersObject: membersObject,
     token: token,
-    filterChoices: filterChoices,
+    filterChoices: {
+      project_categories: project_categories,
+      organization_types: organization_types,
+      skills: skills,
+      project_statuses: project_statuses
+    },
     hideInfo: hideInfo === "true"
-  };
+  }
 };
 
 async function getProjects(page, token, urlEnding) {
