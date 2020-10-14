@@ -25,6 +25,10 @@ jobs:
         cd frontend
         yarn
         yarn build
+      env:
+        API_URL: ${{ secrets.API_URL }}
+        ENVIRONMENT: 'production'
+        SOCKET_URL: ${{ secrets.SOCKET_URL }}
 
     - name: 'Deploy to Azure Web App'
       uses: azure/webapps-deploy@v2
