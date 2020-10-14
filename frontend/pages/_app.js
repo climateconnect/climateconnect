@@ -72,8 +72,8 @@ export default class MyApp extends App {
 
     this.signIn = async (token, expiry) => {
       console.log(!["develop", "development", "test"].includes(process.env.ENVIRONMENT))
-      //TODO: set httpOnly=true to make cookie only accessible by server
-      this.cookies.set("token", token, { path: "/", sameSite: true, expires: new Date(expiry), secure: !["develop", "development", "test"].includes(process.env.ENVIRONMENT) });
+      //TODO: set httpOnly=true to make cookie only accessible by server and sameSite=true
+      this.cookies.set("token", token, { path: "/", expires: new Date(expiry), secure: !["develop", "development", "test"].includes(process.env.ENVIRONMENT) });
       const user = await getLoggedInUser(this.cookies);
       this.setState({
         user: user
