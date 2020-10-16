@@ -2,7 +2,6 @@ import axios from "axios";
 import tokenConfig from "../config/tokenConfig";
 import Router from "next/router";
 
-
 export async function apiRequest(method, url, token, payload, throwError) {
   if (payload) {
     axios[method](process.env.API_URL + url, payload, tokenConfig(token))

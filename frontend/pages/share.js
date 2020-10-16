@@ -8,7 +8,6 @@ import UserContext from "../src/components/context/UserContext";
 import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
 
-
 export default function Share({
   availabilityOptions,
   userOrganizations,

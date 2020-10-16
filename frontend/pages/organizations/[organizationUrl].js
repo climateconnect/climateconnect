@@ -24,7 +24,6 @@ import { startPrivateChat } from "../../public/lib/messagingOperations";
 import Router from "next/router";
 import Cookies from "universal-cookie";
 
-
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
 const useStyles = makeStyles(theme => ({

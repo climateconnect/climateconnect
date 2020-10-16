@@ -9,7 +9,6 @@ import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 
-
 const useStyles = makeStyles(theme => {
   return {
     divider: {

@@ -5,7 +5,6 @@ import axios from "axios";
 import Router from "next/router";
 import Layout from "../src/components/layouts/layout";
 
-
 export default function Signup() {
   const [userInfo, setUserInfo] = React.useState({
     email: "",

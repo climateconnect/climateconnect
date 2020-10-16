@@ -10,7 +10,6 @@ import tokenConfig from "../public/config/tokenConfig";
 import UnfilteredFaqContent from "../src/components/faq/UnfilteredFaqContent";
 import FilteredFaqContent from "../src/components/faq/FilteredFaqContent";
 
-
 const useStyles = makeStyles(theme => {
   return {
     headerImageContainer: {

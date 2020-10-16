@@ -7,7 +7,6 @@ import BottomNavigation from "../general/BottomNavigation";
 import AddProjectMembersContainer from "./AddProjectMembersContainer";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 
-
 const useStyles = makeStyles(theme => {
   return {
     searchBarContainer: {

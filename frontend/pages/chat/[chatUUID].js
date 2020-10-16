@@ -13,7 +13,6 @@ import { getMessageFromServer } from "../../public/lib/messagingOperations";
 import UserContext from "../../src/components/context/UserContext";
 import ChatTitle from "../../src/components/communication/chat/ChatTitle";
 
-
 const useStyles = makeStyles(theme => {
   return {
     backIcon: {

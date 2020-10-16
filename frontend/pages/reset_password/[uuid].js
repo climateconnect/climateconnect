@@ -4,7 +4,6 @@ import Form from "../../src/components/general/Form";
 import axios from "axios";
 import { redirect } from "../../public/lib/apiOperations";
 
-
 ResetPassword.getInitialProps = async ctx => {
   const uuid = encodeURI(ctx.query.uuid);
   return {

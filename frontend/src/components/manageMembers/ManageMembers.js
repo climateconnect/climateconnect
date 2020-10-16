@@ -4,7 +4,6 @@ import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import MiniProfileInput from "../profile/MiniProfileInput";
 
-
 const useStyles = makeStyles(theme => ({
   searchBarContainer: {
     marginTop: theme.spacing(4),

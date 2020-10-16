@@ -434,8 +434,17 @@ function TabContent({ value, index, children }) {
 }
 
 Index.getInitialProps = async ctx => {
+  console.log("getting initial prosp in index!")
   const { token, hideInfo } = NextCookies(ctx);
-  const [projectsObject, organizationsObject, membersObject, project_categories, organization_types, skills, project_statuses] = await Promise.all([
+  const [
+    projectsObject,
+    organizationsObject,
+    membersObject,
+    project_categories,
+    organization_types,
+    skills,
+    project_statuses
+  ] = await Promise.all([
     getProjects(1, token),
     getOrganizations(1, token),
     getMembers(1, token),
@@ -443,7 +452,7 @@ Index.getInitialProps = async ctx => {
     getOrganizationTagsOptions(),
     getSkillsOptions(),
     getStatusOptions()
-  ])
+  ]);
   return {
     projectsObject: projectsObject,
     organizationsObject: organizationsObject,
@@ -456,7 +465,7 @@ Index.getInitialProps = async ctx => {
       project_statuses: project_statuses
     },
     hideInfo: hideInfo === "true"
-  }
+  };
 };
 
 async function getProjects(page, token, urlEnding) {

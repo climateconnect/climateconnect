@@ -7,7 +7,6 @@ import Cookies from "next-cookies";
 import Axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
 
-
 export default function Settings({ settings, token }) {
   const { user } = useContext(UserContext);
   const [message, setMessage] = React.useState("");

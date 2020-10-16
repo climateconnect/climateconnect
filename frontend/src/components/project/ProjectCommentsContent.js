@@ -6,7 +6,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import tokenConfig from "../../../public/config/tokenConfig.js";
 import axios from "axios";
 
-
 const useStyles = makeStyles(theme => {
   return {
     divider: {

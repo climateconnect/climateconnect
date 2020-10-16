@@ -27,7 +27,6 @@ import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import Alert from "@material-ui/lab/Alert";
 
-
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";

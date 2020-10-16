@@ -16,7 +16,6 @@ import { redirect } from "../../../public/lib/apiOperations";
 import Cookies from "universal-cookie";
 import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations";
 
-
 const useStyles = makeStyles(theme => ({
   blockElement: {
     display: "block",

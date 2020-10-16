@@ -10,7 +10,6 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import GroupIcon from "@material-ui/icons/Group";
 
-
 const useStyles = makeStyles(theme => {
   return {
     messageSender: {

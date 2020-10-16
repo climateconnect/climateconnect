@@ -10,7 +10,6 @@ import LoginNudge from "../src/components/general/LoginNudge";
 import UserContext from "../src/components/context/UserContext";
 import Router from "next/router";
 
-
 export default function CreateOrganization({ tagOptions, token, rolesOptions }) {
   const [errorMessages, setErrorMessages] = React.useState({
     basicOrganizationInfo: "",

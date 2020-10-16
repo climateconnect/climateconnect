@@ -4,7 +4,6 @@ import { IconButton } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import countries from "./../../../public/data/countries.json";
 
-
 const renderSearchOption = option => {
   return (
     <React.Fragment>

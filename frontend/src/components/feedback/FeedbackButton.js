@@ -7,7 +7,6 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import Alert from "@material-ui/lab/Alert";
 
-
 const useStyles = makeStyles(theme => ({
   root: {
     position: "fixed",

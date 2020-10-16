@@ -16,7 +16,6 @@ import {
   getProjectTagsOptions
 } from "../../public/lib/getOptions";
 
-
 const useStyles = makeStyles(theme => ({
   root: {
     textAlign: "center"

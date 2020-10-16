@@ -12,7 +12,6 @@ import tokenConfig from "../../public/config/tokenConfig";
 import { getImageUrl } from "./../../public/lib/imageOperations";
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
 
-
 const useStyles = makeStyles(theme => ({
   subtitle: {
     color: `${theme.palette.secondary.main}`

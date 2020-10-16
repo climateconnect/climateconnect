@@ -8,7 +8,6 @@ import UserContext from "../../src/components/context/UserContext";
 import LoginNudge from "../../src/components/general/LoginNudge";
 import { redirect } from "../../public/lib/apiOperations";
 
-
 ProfileVerified.getInitialProps = async ctx => {
   const uuid = encodeURI(ctx.query.uuid);
   return {

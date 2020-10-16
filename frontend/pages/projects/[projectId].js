@@ -17,7 +17,6 @@ import axios from "axios";
 import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
 import UserContext from "../../src/components/context/UserContext";
 
-
 const useStyles = makeStyles(theme => ({
   root: {
     textAlign: "center",

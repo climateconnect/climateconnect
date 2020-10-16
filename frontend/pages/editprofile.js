@@ -18,7 +18,6 @@ import axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
 import { getParams } from "./../public/lib/generalOperations";
 
-
 const useStyles = makeStyles(theme => {
   return {
     noprofile: {

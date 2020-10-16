@@ -11,7 +11,6 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ManageOrganizationMembers from "../../src/components/organization/ManageOrganizationMembers";
 
-
 const useStyles = makeStyles(theme => {
   return {
     headline: {

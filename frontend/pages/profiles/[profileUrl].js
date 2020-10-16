@@ -21,7 +21,6 @@ import { parseProfile } from "./../../public/lib/profileOperations";
 import { getParams } from "./../../public/lib/generalOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 
-
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_user.jpg";
 
 const useStyles = makeStyles(theme => {

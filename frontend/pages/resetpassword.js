@@ -5,7 +5,6 @@ import axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
 import { redirect } from "../public/lib/apiOperations";
 
-
 const fields = [
   {
     required: true,

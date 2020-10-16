@@ -3,7 +3,6 @@ import { Typography, Link } from "@material-ui/core";
 import Layout from "../../src/components/layouts/layout";
 import axios from "axios";
 
-
 ProfileVerified.getInitialProps = async ctx => {
   const uuid = encodeURI(ctx.query.uuid);
   const messages = await profileVerification(uuid);

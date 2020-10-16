@@ -1,7 +1,6 @@
 import axios from "axios";
 import { parseOptions } from "./selectOptionsOperations";
 
-
 export async function getSkillsOptions() {
   try {
     const resp = await axios.get(process.env.API_URL + "/skills/");

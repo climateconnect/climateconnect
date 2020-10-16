@@ -14,7 +14,6 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import MiniProfilePreview from "../src/components/profile/MiniProfilePreview";
 import Router from "next/router";
 
-
 const useStyles = makeStyles(theme => {
   return {
     root: {

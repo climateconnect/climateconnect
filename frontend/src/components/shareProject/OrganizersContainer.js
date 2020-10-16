@@ -6,7 +6,6 @@ import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 
-
 const useStyles = makeStyles(theme => {
   return {
     header: {

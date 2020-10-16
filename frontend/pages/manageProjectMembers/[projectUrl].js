@@ -11,7 +11,6 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ManageProjectMembers from "../../src/components/project/ManageProjectMembers";
 
-
 const useStyles = makeStyles(theme => {
   return {
     headline: {
