@@ -591,29 +591,24 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout }) => {
             <MenuList>
               {getLoggedInLinks({ loggedInUser })
                 .filter(link => !link.showOnMobileOnly)
-                .map((link, index) => (
-                  <React.Fragment key={index}>
-                    {link.isLogoutButton ? (
-                      <MenuItem
-                        key={index}
-                        component="button"
-                        onClick={handleLogout}
-                        className={classes.loggedInLink}
-                      >
-                        {link.text}
-                      </MenuItem>
-                    ) : (
-                      <MenuItem
-                        key={index}
-                        component="button"
-                        href={link.href}
-                        className={classes.loggedInLink}
-                      >
-                        {link.text}
-                      </MenuItem>
-                    )}
-                  </React.Fragment>
-                ))}
+                .map((link, index) => {
+                  const menuItemProps = {
+                    component: "button",
+                    className: classes.loggedInLink
+                  }
+                  if(link.isLogoutButton)
+                    menuItemProps.onClick = handleLogout
+                  else
+                    menuItemProps.href = link.href
+                  return (
+                    <MenuItem
+                      key={index}
+                      menuItemProps
+                    >
+                      {link.text}
+                    </MenuItem>
+                  )
+                  })}
             </MenuList>
           </Paper>
         </ClickAwayListener>
