@@ -40,25 +40,14 @@ export default function Signin() {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const { user, signIn, API_URL, API_HOST } = useContext(UserContext);
-  console.log("logging env!");
-  console.log(process.env);
-  console.log(process.env.ENVIRONMENT);
-  console.log(API_URL);
-  console.log(process.env.API_HOST)
-  console.log(API_HOST)
   //TODO: remove router
   if (user) {
-    console.log("there is a user now!");
     redirectOnLogin(user);
   }
   const handleSubmit = async (event, values) => {
     //don't redirect to the post url
     event.preventDefault();
     setIsLoading(true);
-    console.log(API_URL);
-    console.log("making a request to this url:");
-    console.log(API_URL);
-    console.log(API_URL + "/login/");
     axios
       .post(API_URL + "/login/", {
         username: values.username.toLowerCase(),

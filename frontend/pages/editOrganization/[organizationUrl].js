@@ -38,7 +38,6 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
       handleSetErrorMessage(error);
     } else {
       const org = parseForRequest(getChanges(editedOrg, organization));
-      console.log(org);
       axios
         .patch(
           process.env.API_URL + "/api/organizations/" + encodeURI(organization.url_slug) + "/",
@@ -204,11 +203,8 @@ const verifyChanges = newOrg => {
     city: "Please specify your city",
     country: "Please specify your country"
   };
-  console.log(newOrg);
   for (const prop of Object.keys(requiredPropErrors)) {
     if (!newOrg[prop] || (Array.isArray(newOrg[prop]) && newOrg[prop].length <= 0)) {
-      console.log(newOrg[prop]);
-      console.log(prop);
       return {
         error: requiredPropErrors[prop]
       };
@@ -216,8 +212,6 @@ const verifyChanges = newOrg => {
   }
   for (const prop of Object.keys(requiredInfoPropErrors)) {
     if (!newOrg.info[prop] || (Array.isArray(newOrg.info[prop]) && newOrg.info[prop].length <= 0)) {
-      console.log(newOrg[prop]);
-      console.log(prop);
       return {
         error: requiredInfoPropErrors[prop]
       };

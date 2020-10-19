@@ -183,7 +183,6 @@ async function getTags(token) {
     );
     if (resp.data.results.length === 0) return null;
     else {
-      console.log(resp.data.results);
       return resp.data.results.map(t => {
         return { ...t, key: t.id, additionalInfo: t.additional_info ? t.additional_info : [] };
       });

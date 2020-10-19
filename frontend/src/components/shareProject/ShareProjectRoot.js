@@ -123,7 +123,6 @@ export default function ShareProjectRoot({
 
   const saveAsDraft = async event => {
     event.preventDefault();
-    console.log(project);
     axios
       .post(
         process.env.API_URL + "/api/create_project/",

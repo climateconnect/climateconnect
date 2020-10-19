@@ -124,7 +124,6 @@ export default function Index({
   });
 
   const applyNewFilters = async (type, newFilters, closeFilters) => {
-    console.log("applying new filters!");
     if (filters !== newFilters) {
       setFilters({ ...filters, [type]: newFilters });
       const newUrlEnding = buildUrlEndingFromFilters(newFilters);
@@ -138,7 +137,7 @@ export default function Index({
           else if (type === "members") {
             filteredItemsObject = await getMembers(1, token, newUrlEnding);
             filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
-          } else console.log("cannot find type!");
+          }
           setState({
             ...state,
             items: { ...state.items, [type]: filteredItemsObject[type] },

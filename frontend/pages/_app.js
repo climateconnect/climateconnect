@@ -24,7 +24,6 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
   };
   const API_URL = process.env.API_URL;
   const API_HOST = process.env.API_HOST;
-  console.log(API_HOST)
   const ENVIRONMENT = process.env.ENVIRONMENT;
   const SOCKET_URL = process.env.SOCKET_URL;
   const [state, setState] = React.useState({
@@ -72,17 +71,8 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
       expires: new Date(expiry),
       secure: !develop
     }
-    console.log(process.env.API_HOST)
-    console.log(API_HOST)
-    console.log(process.env.API_URL)
-    console.log(API_URL)
-    if (!develop){
-      console.log("we are in develop")
+    if (!develop)
       cookieProps.domain = "."+API_HOST
-    } else
-      console.log("we are not in develop")
-    console.log(process.env)
-    console.log(cookieProps)
     cookies.set("token", token, cookieProps);
     const user = await getLoggedInUser(cookies.get("token"));
     setState({
@@ -157,7 +147,6 @@ MyApp.getInitialProps = async ctx => {
   let pageProps = {}
   if(ctx.Component && ctx.Component.getInitialProps){
     pageProps = await ctx.Component.getInitialProps(ctx.ctx)
-    console.log(pageProps)
   }
   const { token } = NextCookies(ctx.ctx);
   const [user, notifications] = await Promise.all([

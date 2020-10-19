@@ -30,7 +30,6 @@ export default function ResetPassword() {
           { email: values.email },
           tokenConfig
         );
-        console.log(response);
         redirect("/", {
           message: response.data.message
         });

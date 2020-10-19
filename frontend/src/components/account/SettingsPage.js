@@ -134,7 +134,6 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       setPasswordInputs({ ...passwordInputs, newpassword: "", confirmnewpassword: "" });
     } else {
       setErrors({ ...errors, passworderror: "" });
-      console.log(passwordInputs.newpassword);
       Axios.post(
         process.env.API_URL + "/api/account_settings/",
         {
@@ -145,7 +144,6 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         tokenConfig(token)
       )
         .then(function(response) {
-          console.log(response);
           setMessage(response.data.message);
           setErrors({
             ...errors,
@@ -160,8 +158,6 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           window.scrollTo(0, 0);
         })
         .catch(function(error) {
-          console.log(error.response.data);
-          console.log();
           if (error.response && error.response.data)
             setErrors({
               ...errors,

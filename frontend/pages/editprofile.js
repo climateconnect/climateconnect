@@ -43,7 +43,6 @@ export default function EditProfilePage({
   const profile = user ? parseProfile(user, true, true) : null;
   const saveChanges = (event, editedAccount) => {
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
-    console.log(getProfileWithoutRedundantOptions(user, parsedProfile));
     axios
       .post(
         process.env.API_URL + "/api/edit_profile/",
