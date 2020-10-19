@@ -1,11 +1,11 @@
-import React from "react";
-import App from "next/app";
+import React, { useEffect } from "react";
 import Head from "next/head";
 import { ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import theme from "../src/themes/theme";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import NextCookies from "next-cookies";
 import UserContext from "../src/components/context/UserContext";
 import { MatomoProvider, createInstance } from "@datapunt/matomo-tracker-react";
 import { removeUnnecesaryCookies } from "./../public/lib/cookieOperations";
@@ -17,152 +17,165 @@ import WebSocketService from "../public/lib/webSockets";
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
-export default class MyApp extends App {
-  constructor(props) {
-    super(props);
-    this.cookies = new Cookies();
-    this.createInstanceIfAllowed = () => {
-      const instance = createInstance({
-        urlBase: "https://matomostats.climateconnect.earth/"
+export default function MyApp({ Component, pageProps, user, notifications }) {
+  const [stateInitialized, setStateInitialized] = React.useState(false)
+  const cookies = new Cookies();
+  const createInstanceIfAllowed = () => {
+    const instance = createInstance({
+      urlBase: "https://matomostats.climateconnect.earth/"
+    });
+    if (!cookies.cookies) return false;
+    const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT);
+    if (!DEVELOPMENT && this.cookies.get("acceptedStatistics")) {
+      return instance;
+    } else {
+      removeUnnecesaryCookies();
+      return false;
+    }
+  };
+  const API_URL = process.env.API_URL;
+  const ENVIRONMENT = process.env.ENVIRONMENT;
+  const SOCKET_URL = process.env.SOCKET_URL;
+  const [state, setState] = React.useState({
+    user: null,
+    matomoInstance: createInstanceIfAllowed(),
+    notifications: [],
+    chatSocket: null
+  });
+
+  //TODO: reload current path or main page while being logged out
+  const signOut = async () => {
+    try {
+      const token = cookies.get("token");
+      await axios.post(process.env.API_URL + "/logout/", null, tokenConfig(token));
+      cookies.remove("token", { path: "/" });
+      setState({
+        ...state,
+        user: null
       });
-      if (!this.cookies.cookies) return false;
-      const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT);
-      if (!DEVELOPMENT && this.cookies.get("acceptedStatistics")) {
-        return instance;
-      } else {
-        removeUnnecesaryCookies();
-        return false;
-      }
-    };
-    this.API_URL = process.env.API_URL
-    this.ENVIRONMENT = process.env.ENVIRONMENT
-    this.SOCKET_URL = process.env.SOCKET_URL
-    this.state = {
-      user: null,
-      matomoInstance: this.createInstanceIfAllowed(),
-      notifications: [],
-      chatSocket: null
-    };
-
-    //TODO: reload current path or main page while being logged out
-    this.signOut = async () => {
-      try {
-        const token = this.cookies.get("token");
-        await axios.post(process.env.API_URL + "/logout/", null, tokenConfig(token));
-        this.cookies.remove("token", { path: "/" });
-        this.setState({
-          user: null
-        });
-      } catch (err) {
-        console.log(err);
-        this.cookies.remove("token", { path: "/" });
-        this.setState({
-          user: null
-        });
-        return null;
-      }
-    };
-
-    this.refreshNotifications = async () => {
-      const notifications = await getNotifications(this.cookies);
-      this.setState({
-        notifications: notifications
+    } catch (err) {
+      console.log(err);
+      cookies.remove("token", { path: "/" });
+      setState({
+        ...state,
+        user: null
       });
-    };
+      return null;
+    }
+  };
 
-    this.signIn = async (token, expiry) => {
-      console.log()
-      console.log(!["develop", "development", "test"].includes(process.env.ENVIRONMENT))
-      //TODO: set httpOnly=true to make cookie only accessible by server and sameSite=true
-      this.cookies.set("token", token, { path: "/", domain:".cc-test-domain.com", sameSite: /*DANGER! JUST A TEST*/"lax", expires: new Date(expiry), secure: !["develop", "development", "test"].includes(process.env.ENVIRONMENT) });
-      const user = await getLoggedInUser(this.cookies);
-      this.setState({
-        user: user
-      });
-    };
-  }
+  const refreshNotifications = async () => {
+    const notifications = await getNotifications(cookies.get("token"));
+    setState({
+      ...state,
+      notifications: notifications
+    });
+  };
 
-  async componentDidMount() {
+  const signIn = async (token, expiry) => {
+    const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT);
+    //TODO: set httpOnly=true to make cookie only accessible by server and sameSite=true
+    const cookieProps = {
+      path: "/",
+      sameSite: develop ? false : "strict",
+      expires: new Date(expiry),
+      secure: !develop
+    }
+    if (!develop)
+      cookieProps.domain = "."+process.env.API_HOST
+    cookies.set("token", token, cookieProps);
+    const user = await getLoggedInUser(cookies.get("token"));
+    setState({
+      user: user
+    });
+  };
+
+  useEffect(() => {
     const client = WebSocketService("/ws/chat/");
     client.onopen = () => {
       console.log("connected");
     };
     client.onmessage = async () => {
-      await this.refreshNotifications();
+      await refreshNotifications();
     };
-    const user = await getLoggedInUser(this.cookies);
-    const notifications = await getNotifications(this.cookies);
-    if (user) {
-      this.setState({
+    if (user && !stateInitialized) {
+      setState({
         user: user,
         chatSocket: client,
         notifications: notifications
       });
+      setStateInitialized(true)
     }
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
-  }
+  })
 
-  render() {
-    const { Component, pageProps } = this.props;
-    const contextValues = {
-        user: this.state.user,
-        signOut: this.signOut,
-        signIn: this.signIn,
-        chatSocket: this.state.chatSocket,
-        notifications: this.state.notifications,
-        refreshNotifications: this.refreshNotifications,
-        API_URL: this.API_URL,
-        ENVIRONMENT: this.ENVIRONMENT,
-        SOCKET_URL: this.SOCKET_URL
-    }
-    return (
-      <React.Fragment>
-        <Head>
-          <title>Climate Connect</title>
-          <link rel="icon" href="/icons/favicon.ico" />
-        </Head>
-        <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
-          {this.state.matomoInstance ? (
-            <MatomoProvider value={this.state.matomoInstance}>
-              <UserContext.Provider
-                value={contextValues}
-              >
-                <Component {...pageProps} />
-              </UserContext.Provider>
-            </MatomoProvider>
-          ) : (
-            <UserContext.Provider
-              value={contextValues}
-            >
+  const contextValues = {
+    user: state.user,
+    signOut: signOut,
+    signIn: signIn,
+    chatSocket: state.chatSocket,
+    notifications: state.notifications,
+    refreshNotifications: refreshNotifications,
+    API_URL: API_URL,
+    ENVIRONMENT: ENVIRONMENT,
+    SOCKET_URL: SOCKET_URL
+  };
+  return (
+    <React.Fragment>
+      <Head>
+        <title>Climate Connect</title>
+        <link rel="icon" href="/icons/favicon.ico" />
+      </Head>
+      <ThemeProvider theme={theme}>
+        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+        <CssBaseline />
+        {state.matomoInstance ? (
+          <MatomoProvider value={state.matomoInstance}>
+            <UserContext.Provider value={contextValues}>
               <Component {...pageProps} />
             </UserContext.Provider>
-          )}
-        </ThemeProvider>
-      </React.Fragment>
-    );
+          </MatomoProvider>
+        ) : (
+          <UserContext.Provider value={contextValues}>
+            <Component {...pageProps} />
+          </UserContext.Provider>
+        )}
+      </ThemeProvider>
+    </React.Fragment>
+  );
+  
+}
+
+MyApp.getInitialProps = async ctx => {
+  let pageProps = {}
+  if(ctx.Component && ctx.Component.getInitialProps)
+    pageProps = await ctx.Component.getInitialProps(ctx)
+  const { token } = NextCookies(ctx.ctx);
+  const [user, notifications] = await Promise.all([
+    getLoggedInUser(token),
+    getNotifications(token)
+  ])
+  return {
+    pageProps: pageProps,
+    user: user,
+    notifications: notifications
   }
 }
 
-async function getLoggedInUser(cookies) {
-  console.log("getting logged in user")
-  const token = cookies.get("token");
-  console.log(token)
-  console.log(process.env.API_URL + "/api/my_profile/")
+async function getLoggedInUser(token) {
   if (token) {
     try {
       const resp = await axios.get(process.env.API_URL + "/api/my_profile/", tokenConfig(token));
-      console.log(resp)
       return resp.data;
     } catch (err) {
       console.log(err);
       if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-      if (err.response && err.response.data.detail === "Invalid token.") cookies.remove("token");
+      if (err.response && err.response.data.detail === "Invalid token.") 
+        console.log("invalid token! token:"+token)
       return null;
     }
   } else {
@@ -170,8 +183,7 @@ async function getLoggedInUser(cookies) {
   }
 }
 
-async function getNotifications(cookies) {
-  const token = cookies.get("token");
+async function getNotifications(token) {
   if (token) {
     try {
       const resp = await axios.get(process.env.API_URL + "/api/notifications/", tokenConfig(token));
