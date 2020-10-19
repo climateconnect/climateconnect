@@ -39,11 +39,13 @@ export default function Signin() {
   const [errorMessage, setErrorMessage] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const { user, signIn, API_URL } = useContext(UserContext);
+  const { user, signIn, API_URL, API_HOST } = useContext(UserContext);
   console.log("logging env!");
   console.log(process.env);
   console.log(process.env.ENVIRONMENT);
   console.log(API_URL);
+  console.log(process.env.API_HOST)
+  console.log(API_HOST)
   //TODO: remove router
   if (user) {
     console.log("there is a user now!");

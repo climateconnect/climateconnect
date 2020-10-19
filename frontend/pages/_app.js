@@ -23,6 +23,8 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
     return false;
   };
   const API_URL = process.env.API_URL;
+  const API_HOST = process.env.API_HOST;
+  console.log(API_HOST)
   const ENVIRONMENT = process.env.ENVIRONMENT;
   const SOCKET_URL = process.env.SOCKET_URL;
   const [state, setState] = React.useState({
@@ -70,8 +72,16 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
       expires: new Date(expiry),
       secure: !develop
     }
-    if (!develop)
-      cookieProps.domain = "."+process.env.API_HOST
+    console.log(process.env.API_HOST)
+    console.log(API_HOST)
+    console.log(process.env.API_URL)
+    console.log(API_URL)
+    if (!develop){
+      console.log("we are in develop")
+      cookieProps.domain = "."+API_HOST
+    } else
+      console.log("we are not in develop")
+    console.log(process.env)
     console.log(cookieProps)
     cookies.set("token", token, cookieProps);
     const user = await getLoggedInUser(cookies.get("token"));
@@ -112,7 +122,8 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
     refreshNotifications: refreshNotifications,
     API_URL: API_URL,
     ENVIRONMENT: ENVIRONMENT,
-    SOCKET_URL: SOCKET_URL
+    SOCKET_URL: SOCKET_URL,
+    API_HOST: API_HOST
   };
   return (
     <React.Fragment>
