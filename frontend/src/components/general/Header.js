@@ -81,7 +81,8 @@ const useStyles = makeStyles(theme => {
       margin: "0 auto"
     },
     loggedInLink: {
-      color: theme.palette.primary.main
+      color: theme.palette.primary.main,
+      width: "100%"
     },
     menuLink: {
       color: theme.palette.primary.main,
@@ -603,7 +604,10 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout }) => {
                   return (
                     <MenuItem
                       key={index}
-                      menuItemProps
+                      component="button"
+                      className={classes.loggedInLink}
+                      onClick={link.isLogoutButton && handleLogout}
+                      href={!link.isLogoutButton && link.href}
                     >
                       {link.text}
                     </MenuItem>
