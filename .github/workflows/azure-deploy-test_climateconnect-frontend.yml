@@ -29,6 +29,7 @@ jobs:
         API_URL: ${{ secrets.API_URL }}
         ENVIRONMENT: 'production'
         SOCKET_URL: ${{ secrets.SOCKET_URL }}
+        API_HOST: ${{ secrets.API_HOST }} 
 
     - name: 'Deploy to Azure Web App'
       uses: azure/webapps-deploy@v2
