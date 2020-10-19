@@ -50,7 +50,6 @@ class LoginView(KnowLoginView):
         
         user = authenticate(username=request.data['username'], password=request.data['password'])
         if user:            
-            logger.error("authenticating "+request.data['username'])
             user_profile = UserProfile.objects.filter(user = user)[0]
             if not user_profile.is_profile_verified:
                 message = "You first have to activate your account by clicking the link we sent to your E-Mail."
@@ -226,13 +225,10 @@ class EditUserProfile(APIView):
         user_profile.name = user.first_name + ' ' + user.last_name
         user_profile.url_slug = (user.first_name + user.last_name).lower() + str(user.id)
         user.save()
-        logger.error("starting to save image")
         if 'image' in request.data:
             user_profile.image = get_image_from_data_url(request.data['image'])[0]
-        logger.error("done with image")
         if 'background_image' in request.data:
             user_profile.background_image = get_image_from_data_url(request.data['background_image'], True, 1280)[0]
-        logger.error("done with background image")
         if 'country' in request.data:
             user_profile.country = request.data['country']
 
@@ -256,7 +252,6 @@ class EditUserProfile(APIView):
         if 'skills' in request.data:
             for skill in user_profile.skills.all():
                 if not skill.id in request.data['skills']:
-                    logger.error("this skill needs to be deleted: "+skill.name)
                     user_profile.skills.remove(skill)
             for skill_id in request.data['skills']:
                 try:
@@ -341,7 +336,6 @@ class SetNewPassword(APIView):
         try:
             user_profile = UserProfile.objects.get(password_reset_key=password_reset_key)
         except UserProfile.DoesNotExist:
-            logger.error(password_reset_key)
             return Response({'message': 'Profile not found.', 'type': 'not_found'}, status=status.HTTP_400_BAD_REQUEST)
         if user_profile.password_reset_timeout > datetime.now(timezone.utc):
             user_profile.user.set_password(request.data['new_password'])

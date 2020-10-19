@@ -54,7 +54,6 @@ class CreateOrganizationView(APIView):
         required_params = ['name', 'team_members', 'city', 'country', 'image', 'organization_tags']
         for param in required_params:
             if param not in request.data:
-                logger.error('Required parameter missing: {}'.format(param))
                 return Response({
                     'message': 'Required parameter missing: {}'.format(param)
                 }, status=status.HTTP_400_BAD_REQUEST)
@@ -208,9 +207,7 @@ class UpdateOrganizationMemberView(RetrieveUpdateDestroyAPIView):
     serializer_class = OrganizationMemberSerializer
 
     def get_queryset(self):
-        logger.error("updating organization members")
         organization = Organization.objects.get(url_slug=str(self.kwargs['url_slug']))
-        logger.error(OrganizationMember.objects.filter(id=int(self.kwargs['pk']), organization=organization))
         return OrganizationMember.objects.filter(id=int(self.kwargs['pk']), organization=organization)
 
     def perform_destroy(self, instance):
@@ -218,7 +215,6 @@ class UpdateOrganizationMemberView(RetrieveUpdateDestroyAPIView):
         return "Organization Member successfully deleted."
 
     def perform_update(self, serializer):
-        logger.error("performing update!")
         serializer.save()
         return serializer.data
 
@@ -275,7 +271,6 @@ class ChangeOrganizationCreator(APIView):
         roles = Role.objects.all()     
         if OrganizationMember.objects.filter(user=new_creator_user, organization = organization).exists():
             # update old creator profile and new creator profile
-            logger.error('updating new creator')
             new_creator = OrganizationMember.objects.filter(user=request.data['user'], organization = organization, id = request.data['id'])[0]
             new_creator.role = roles.filter(role_type=Role.ALL_TYPE)[0]
             if('role_in_organization' in request.data):
@@ -283,7 +278,6 @@ class ChangeOrganizationCreator(APIView):
             new_creator.save()
         else:
             # create new creator profile and update old creator profile
-            logger.error('adding new creator')
             new_creator = OrganizationMember.objects.create(
                 role = roles.filter(role_type=Role.ALL_TYPE)[0],
                 organization = organization,

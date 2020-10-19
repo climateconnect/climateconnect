@@ -220,7 +220,6 @@ class ProjectAPIView(APIView):
             order = len(request.data['project_tags'])
             for tag in old_project_tags:
                 if not tag['project_tag'] in request.data['project_tags']:
-                    logger.error("this tag needs to be deleted: "+str(tag['project_tag']))
                     tag_to_delete = ProjectTags.objects.get(id=tag['project_tag'])
                     ProjectTagging.objects.filter(project=project, project_tag=tag_to_delete).delete()
             for tag_id in request.data['project_tags']:
@@ -235,12 +234,8 @@ class ProjectAPIView(APIView):
                         logger.error("Passed proj tag id {} does not exists")
                 else:
                     old_tagging = old_taggings[0]
-                    logger.error(order)
-                    logger.error(old_tagging.order)
-                    logger.error(old_tagging)
                     if not old_tagging.order == order:
                         old_tagging.order = int(order)
-                        logger.error(old_tagging.order)
                         old_tagging.save()
                 order = order - 1
         if 'image' in request.data:
@@ -405,7 +400,6 @@ class ChangeProjectCreator(APIView):
 
         if ProjectMember.objects.filter(user=new_creator_user, project = project).exists():
             # update old creator profile and new creator profile
-            logger.error('updating new creator')
             new_creator = ProjectMember.objects.filter(user=request.data['user'], project = project, id = request.data['id'])[0]
             new_creator.role = roles.filter(role_type=Role.ALL_TYPE)[0]
             if('role_in_project' in request.data):
@@ -419,7 +413,6 @@ class ChangeProjectCreator(APIView):
             new_creator.save()
         else:
             # create new creator profile and update old creator profile
-            logger.error('adding new creator')
             new_creator = ProjectMember.objects.create(
                 role = roles.filter(role_type=Role.ALL_TYPE)[0],
                 project = project,
