@@ -91,25 +91,27 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
   };
 
   useEffect(() => {
-    const client = WebSocketService("/ws/chat/");
-    client.onopen = () => {
-      console.log("connected");
-    };
-    client.onmessage = async () => {
-      await refreshNotifications();
-    };
-    if (user && !stateInitialized) {
-      setState({
-        user: user,
-        chatSocket: client,
-        notifications: notifications
-      });
+    if(!stateInitialized){
+      const client = WebSocketService("/ws/chat/");
+      client.onopen = () => {
+        console.log("connected");
+      };
+      client.onmessage = async () => {
+        await refreshNotifications();
+      };
+      if (user) {
+        setState({
+          user: user,
+          chatSocket: client,
+          notifications: notifications
+        });        
+      }
+      // Remove the server-side injected CSS.
+      const jssStyles = document.querySelector("#jss-server-side");
+      if (jssStyles) {
+        jssStyles.parentElement.removeChild(jssStyles);
+      }
       setStateInitialized(true)
-    }
-    // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector("#jss-server-side");
-    if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
     }
   })
 
