@@ -152,8 +152,10 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
 
 MyApp.getInitialProps = async ctx => {
   let pageProps = {}
-  if(ctx.Component && ctx.Component.getInitialProps)
-    pageProps = await ctx.Component.getInitialProps(ctx)
+  if(ctx.Component && ctx.Component.getInitialProps){
+    pageProps = await ctx.Component.getInitialProps(ctx.ctx)
+    console.log(pageProps)
+  }
   const { token } = NextCookies(ctx.ctx);
   const [user, notifications] = await Promise.all([
     getLoggedInUser(token),
@@ -173,7 +175,7 @@ async function getLoggedInUser(token) {
       return resp.data;
     } catch (err) {
       console.log(err);
-      if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+      if (err.response && err.response.data) console.log("Error in getLoggedInUser: " + err.response.data.detail);
       if (err.response && err.response.data.detail === "Invalid token.") 
         console.log("invalid token! token:"+token)
       return null;
@@ -189,8 +191,9 @@ async function getNotifications(token) {
       const resp = await axios.get(process.env.API_URL + "/api/notifications/", tokenConfig(token));
       return resp.data.results;
     } catch (err) {
-      if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-      if (err.response && err.response.data.detail === "Invalid token.") cookies.remove("token");
+      if (err.response && err.response.data) console.log("Error in getNotifications: " + err.response.data.detail);
+      if (err.response && err.response.data.detail === "Invalid token.") 
+       console.log("invalid token! token:"+token)
       return null;
     }
   } else {
