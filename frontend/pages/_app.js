@@ -7,8 +7,7 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import NextCookies from "next-cookies";
 import UserContext from "../src/components/context/UserContext";
-import { MatomoProvider, createInstance } from "@datapunt/matomo-tracker-react";
-import { removeUnnecesaryCookies } from "./../public/lib/cookieOperations";
+import { MatomoProvider } from "@datapunt/matomo-tracker-react";
 
 //add global styles
 import "react-multi-carousel/lib/styles.css";
@@ -21,17 +20,7 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
   const [stateInitialized, setStateInitialized] = React.useState(false)
   const cookies = new Cookies();
   const createInstanceIfAllowed = () => {
-    const instance = createInstance({
-      urlBase: "https://matomostats.climateconnect.earth/"
-    });
-    if (!cookies.cookies) return false;
-    const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT);
-    if (!DEVELOPMENT && this.cookies.get("acceptedStatistics")) {
-      return instance;
-    } else {
-      removeUnnecesaryCookies();
-      return false;
-    }
+    return false;
   };
   const API_URL = process.env.API_URL;
   const ENVIRONMENT = process.env.ENVIRONMENT;
