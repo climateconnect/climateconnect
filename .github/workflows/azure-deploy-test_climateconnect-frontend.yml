@@ -23,7 +23,7 @@ jobs:
     - name: npm install, build, and test
       run: |
         cd frontend
-        yarn
+        yarn --production
         yarn build
       env:
         API_URL: ${{ secrets.API_URL }}
