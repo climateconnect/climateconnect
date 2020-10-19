@@ -1,7 +1,6 @@
 const pick = require("lodash/pick");
 
-if (!process.env.IS_BUILDING_ON_AZURE)
-  require("dotenv").config();
+require("dotenv").config();
 module.exports = {
   env: pick(process.env, ["PRE_LAUNCH", "API_URL", "ENVIRONMENT", "SOCKET_URL", "API_HOST"]),
   exportPathMap: async function(defaultPathMap) {

@@ -72,6 +72,7 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
     }
     if (!develop)
       cookieProps.domain = "."+process.env.API_HOST
+    console.log(cookieProps)
     cookies.set("token", token, cookieProps);
     const user = await getLoggedInUser(cookies.get("token"));
     setState({
