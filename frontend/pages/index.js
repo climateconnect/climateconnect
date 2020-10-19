@@ -434,7 +434,6 @@ function TabContent({ value, index, children }) {
 }
 
 Index.getInitialProps = async ctx => {
-  console.log("getting initial prosp in index!")
   const { token, hideInfo } = NextCookies(ctx);
   const [
     projectsObject,
