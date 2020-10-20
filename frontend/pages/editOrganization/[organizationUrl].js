@@ -112,9 +112,13 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
 EditOrganizationPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   const url = encodeURI(ctx.query.organizationUrl);
+  const [organization, tagOptions] = await Promise.all([
+    getOrganizationByUrlIfExists(url, token),
+    getOrganizationTagsOptions()
+  ])
   return {
-    organization: await getOrganizationByUrlIfExists(url, token),
-    tagOptions: await getOrganizationTagsOptions(),
+    organization: organization,
+    tagOptions: tagOptions,
     token: token
   };
 };

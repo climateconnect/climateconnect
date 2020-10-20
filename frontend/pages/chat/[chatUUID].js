@@ -172,8 +172,10 @@ export default function Chat({
 
 Chat.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
-  const chat = await getChat(ctx.query.chatUUID, token);
-  const messages_object = await getChatMessagesByUUID(ctx.query.chatUUID, token, 1);
+  const [chat, messages_object] = await Promise.all([
+    getChat(ctx.query.chatUUID, token),
+    getChatMessagesByUUID(ctx.query.chatUUID, token, 1)
+  ])
   return {
     token: token,
     chat_uuid: chat.chat_uuid,

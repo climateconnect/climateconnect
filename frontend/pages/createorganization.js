@@ -154,10 +154,14 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
 
 CreateOrganization.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  const [tagOptions, rolesOptions] = await Promise.all([
+    await getTags(token),
+    await getRolesOptions(token)
+  ])
   return {
-    tagOptions: await getTags(token),
+    tagOptions: tagOptions,
     token: token,
-    rolesOptions: await getRolesOptions(token)
+    rolesOptions: rolesOptions
   };
 };
 

@@ -92,10 +92,15 @@ export default function EditProfilePage({
 
 EditProfilePage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  const [skillsOptions, infoMetadata, availabilityOptions] = await Promise.all([
+    getSkillsOptions(token),
+    getProfileInfoMetadata(token),
+    getAvailabilityOptions(token)
+  ])
   return {
-    skillsOptions: await getSkillsOptions(token),
-    infoMetadata: await getProfileInfoMetadata(token),
-    availabilityOptions: await getAvailabilityOptions(token),
+    skillsOptions: skillsOptions,
+    infoMetadata: infoMetadata,
+    availabilityOptions: availabilityOptions,
     token: token
   };
 };
