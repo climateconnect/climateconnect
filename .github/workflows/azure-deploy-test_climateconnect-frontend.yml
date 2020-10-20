@@ -6,7 +6,7 @@ name: Build and deploy Node.js app to Azure Web App - climateconnect-frontend
 on:
   push:
     branches:
-      - azure-deploy-test
+      - master
 
 jobs:
   build-and-deploy:
