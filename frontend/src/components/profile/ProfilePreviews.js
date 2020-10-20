@@ -36,7 +36,6 @@ export default function ProfilePreviews({
       setIsLoading(true);
       const newProfiles = await loadFunc(page);
       if (!parentHandlesGridItems) {
-        console.log("parent doesn't handle grid items");
         const newGridItems = newProfiles.map(p => (
           <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
         ));

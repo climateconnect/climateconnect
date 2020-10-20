@@ -39,18 +39,17 @@ export default function Signin() {
   const [errorMessage, setErrorMessage] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const { user, signIn } = useContext(UserContext);
+  const { user, signIn, API_URL, API_HOST } = useContext(UserContext);
   //TODO: remove router
   if (user) {
     redirectOnLogin(user);
   }
-
   const handleSubmit = async (event, values) => {
     //don't redirect to the post url
     event.preventDefault();
     setIsLoading(true);
     axios
-      .post(process.env.API_URL + "/login/", {
+      .post(API_URL + "/login/", {
         username: values.username.toLowerCase(),
         password: values.password
       })

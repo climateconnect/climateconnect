@@ -43,7 +43,6 @@ export default function EditProfilePage({
   const profile = user ? parseProfile(user, true, true) : null;
   const saveChanges = (event, editedAccount) => {
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
-    console.log(getProfileWithoutRedundantOptions(user, parsedProfile));
     axios
       .post(
         process.env.API_URL + "/api/edit_profile/",
@@ -93,10 +92,15 @@ export default function EditProfilePage({
 
 EditProfilePage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  const [skillsOptions, infoMetadata, availabilityOptions] = await Promise.all([
+    getSkillsOptions(token),
+    getProfileInfoMetadata(token),
+    getAvailabilityOptions(token)
+  ])
   return {
-    skillsOptions: await getSkillsOptions(token),
-    infoMetadata: await getProfileInfoMetadata(token),
-    availabilityOptions: await getAvailabilityOptions(token),
+    skillsOptions: skillsOptions,
+    infoMetadata: infoMetadata,
+    availabilityOptions: availabilityOptions,
     token: token
   };
 };

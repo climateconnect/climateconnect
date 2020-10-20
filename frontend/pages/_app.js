@@ -1,15 +1,13 @@
-import React from "react";
-import App from "next/app";
+import React, { useEffect } from "react";
 import Head from "next/head";
 import { ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import theme from "../src/themes/theme";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import NextCookies from "next-cookies";
 import UserContext from "../src/components/context/UserContext";
-const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT);
-import { MatomoProvider, createInstance } from "@datapunt/matomo-tracker-react";
-import { removeUnnecesaryCookies } from "./../public/lib/cookieOperations";
+import { MatomoProvider } from "@datapunt/matomo-tracker-react";
 
 //add global styles
 import "react-multi-carousel/lib/styles.css";
@@ -18,149 +16,160 @@ import WebSocketService from "../public/lib/webSockets";
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
-export default class MyApp extends App {
-  constructor(props) {
-    super(props);
-    this.cookies = new Cookies();
+export default function MyApp({ Component, pageProps, user, notifications }) {
+  const [stateInitialized, setStateInitialized] = React.useState(false)
+  const cookies = new Cookies();
+  const createInstanceIfAllowed = () => {
+    return false;
+  };
+  const API_URL = process.env.API_URL;
+  const API_HOST = process.env.API_HOST;
+  const ENVIRONMENT = process.env.ENVIRONMENT;
+  const SOCKET_URL = process.env.SOCKET_URL;
+  const [state, setState] = React.useState({
+    user: user,
+    matomoInstance: createInstanceIfAllowed(),
+    notifications: [],
+    chatSocket: null
+  });
 
-    this.createInstanceIfAllowed = () => {
-      const instance = createInstance({
-        urlBase: "https://matomostats.climateconnect.earth/"
+  //TODO: reload current path or main page while being logged out
+  const signOut = async () => {
+    try {
+      const token = cookies.get("token");
+      await axios.post(process.env.API_URL + "/logout/", null, tokenConfig(token));
+      cookies.remove("token", { path: "/" });
+      setState({
+        ...state,
+        user: null
       });
-      if (!this.cookies.cookies) return false;
-      if (!DEVELOPMENT && this.cookies.get("acceptedStatistics")) {
-        return instance;
-      } else {
-        removeUnnecesaryCookies();
-        return false;
-      }
-    };
-
-    this.state = {
-      user: null,
-      matomoInstance: this.createInstanceIfAllowed(),
-      notifications: [],
-      chatSocket: null
-    };
-
-    //TODO: reload current path or main page while being logged out
-    this.signOut = async () => {
-      try {
-        const token = this.cookies.get("token");
-        await axios.post(process.env.API_URL + "/logout/", null, tokenConfig(token));
-        this.cookies.remove("token", { path: "/" });
-        this.setState({
-          user: null
-        });
-      } catch (err) {
-        console.log(err);
-        this.cookies.remove("token", { path: "/" });
-        this.setState({
-          user: null
-        });
-        return null;
-      }
-    };
-
-    this.refreshNotifications = async () => {
-      const notifications = await getNotifications(this.cookies);
-      this.setState({
-        notifications: notifications
+    } catch (err) {
+      console.log(err);
+      cookies.remove("token", { path: "/" });
+      setState({
+        ...state,
+        user: null
       });
-    };
-
-    this.signIn = async (token, expiry) => {
-      //TODO: set httpOnly=true to make cookie only accessible by server
-      //TODO: set secure=true to make cookie only accessible through HTTPS
-      this.cookies.set("token", token, { path: "/", expires: new Date(expiry), sameSite: true });
-      const user = await getLoggedInUser(this.cookies);
-      this.setState({
-        user: user
-      });
-    };
-  }
-
-  async componentDidMount() {
-    const client = WebSocketService("/ws/chat/");
-    client.onopen = () => {
-      console.log("connected");
-    };
-    client.onmessage = async () => {
-      await this.refreshNotifications();
-    };
-    const user = await getLoggedInUser(this.cookies);
-    const notifications = await getNotifications(this.cookies);
-    if (user) {
-      this.setState({
-        user: user,
-        chatSocket: client,
-        notifications: notifications
-      });
+      return null;
     }
-    // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector("#jss-server-side");
-    if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
+  };
+
+  const refreshNotifications = async () => {
+    const notifications = await getNotifications(cookies.get("token"));
+    setState({
+      ...state,
+      notifications: notifications
+    });
+  };
+
+  const signIn = async (token, expiry) => {
+    const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT);
+    //TODO: set httpOnly=true to make cookie only accessible by server and sameSite=true
+    const cookieProps = {
+      path: "/",
+      sameSite: develop ? false : "strict",
+      expires: new Date(expiry),
+      secure: !develop
     }
-  }
+    if (!develop)
+      cookieProps.domain = "."+API_HOST
+    cookies.set("token", token, cookieProps);
+    const user = await getLoggedInUser(cookies.get("token") ? cookies.get("token") : token);
+    setState({
+      user: user
+    });
+  };
 
-  render() {
-    const { Component, pageProps } = this.props;
+  useEffect(() => {
+    if(!stateInitialized){
+      const client = WebSocketService("/ws/chat/");
+      client.onopen = () => {
+        console.log("connected");
+      };
+      client.onmessage = async () => {
+        await refreshNotifications();
+      };
+      if (user) {
+        setState({
+          user: user,
+          chatSocket: client,
+          notifications: notifications
+        });        
+      }
+      // Remove the server-side injected CSS.
+      const jssStyles = document.querySelector("#jss-server-side");
+      if (jssStyles) {
+        jssStyles.parentElement.removeChild(jssStyles);
+      }
+      setStateInitialized(true)
+    }
+  })
 
-    return (
-      <React.Fragment>
-        <Head>
-          <title>Climate Connect</title>
-          <link rel="icon" href="/icons/favicon.ico" />
-        </Head>
-        <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
-          {this.state.matomoInstance ? (
-            <MatomoProvider value={this.state.matomoInstance}>
-              <UserContext.Provider
-                value={{
-                  user: this.state.user,
-                  signOut: this.signOut,
-                  signIn: this.signIn,
-                  chatSocket: this.state.chatSocket,
-                  notifications: this.state.notifications,
-                  refreshNotifications: this.refreshNotifications
-                }}
-              >
-                <Component {...pageProps} />
-              </UserContext.Provider>
-            </MatomoProvider>
-          ) : (
-            <UserContext.Provider
-              value={{
-                user: this.state.user,
-                signOut: this.signOut,
-                signIn: this.signIn,
-                chatSocket: this.state.chatSocket,
-                notifications: this.state.notifications,
-                refreshNotifications: this.refreshNotifications
-              }}
-            >
+  const contextValues = {
+    user: state.user,
+    signOut: signOut,
+    signIn: signIn,
+    chatSocket: state.chatSocket,
+    notifications: state.notifications,
+    refreshNotifications: refreshNotifications,
+    API_URL: API_URL,
+    ENVIRONMENT: ENVIRONMENT,
+    SOCKET_URL: SOCKET_URL,
+    API_HOST: API_HOST
+  };
+  return (
+    <React.Fragment>
+      <Head>
+        <title>Climate Connect</title>
+        <link rel="icon" href="/icons/favicon.ico" />
+      </Head>
+      <ThemeProvider theme={theme}>
+        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+        <CssBaseline />
+        {state.matomoInstance ? (
+          <MatomoProvider value={state.matomoInstance}>
+            <UserContext.Provider value={contextValues}>
               <Component {...pageProps} />
             </UserContext.Provider>
-          )}
-        </ThemeProvider>
-      </React.Fragment>
-    );
+          </MatomoProvider>
+        ) : (
+          <UserContext.Provider value={contextValues}>
+            <Component {...pageProps} />
+          </UserContext.Provider>
+        )}
+      </ThemeProvider>
+    </React.Fragment>
+  );
+  
+}
+
+MyApp.getInitialProps = async ctx => {
+  const { token } = NextCookies(ctx.ctx);
+  const [user, notifications, pageProps] = await Promise.all([
+    getLoggedInUser(token),
+    getNotifications(token),
+    (ctx.Component && ctx.Component.getInitialProps) ? ctx.Component.getInitialProps(ctx.ctx) : {}
+  ])
+  console.log(token)
+  console.log(user)
+  console.log(notifications)
+  return {
+    pageProps: pageProps,
+    user: user,
+    notifications: notifications ? notifications : []
   }
 }
 
-async function getLoggedInUser(cookies) {
-  const token = cookies.get("token");
+async function getLoggedInUser(token) {
   if (token) {
     try {
       const resp = await axios.get(process.env.API_URL + "/api/my_profile/", tokenConfig(token));
       return resp.data;
     } catch (err) {
       console.log(err);
-      if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-      if (err.response && err.response.data.detail === "Invalid token.") cookies.remove("token");
+      if (err.response && err.response.data) console.log("Error in getLoggedInUser: " + err.response.data.detail);
+      if (err.response && err.response.data.detail === "Invalid token.") 
+        console.log("invalid token! token:"+token)
       return null;
     }
   } else {
@@ -168,15 +177,15 @@ async function getLoggedInUser(cookies) {
   }
 }
 
-async function getNotifications(cookies) {
-  const token = cookies.get("token");
+async function getNotifications(token) {
   if (token) {
     try {
       const resp = await axios.get(process.env.API_URL + "/api/notifications/", tokenConfig(token));
       return resp.data.results;
     } catch (err) {
-      if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-      if (err.response && err.response.data.detail === "Invalid token.") cookies.remove("token");
+      if (err.response && err.response.data) console.log("Error in getNotifications: " + err.response.data.detail);
+      if (err.response && err.response.data.detail === "Invalid token.") 
+       console.log("invalid token! token:"+token)
       return null;
     }
   } else {

@@ -70,8 +70,7 @@ export default function Signup() {
     setIsLoading(true);
     axios
       .post(process.env.API_URL + "/signup/", payload, config)
-      .then(function(resp) {
-        console.log(resp);
+      .then(function() {
         Router.push({
           pathname: "/accountcreated/"
         });

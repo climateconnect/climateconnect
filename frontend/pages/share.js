@@ -44,13 +44,28 @@ export default function Share({
 
 Share.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  const [
+    availabilityOptions,
+    userOrganizations,
+    categoryOptions,
+    skillsOptions,
+    rolesOptions,
+    statusOptions
+  ] = await Promise.all([
+    getAvailabilityOptions(token),
+    getUserOrganizations(token),
+    getCategoryOptions(token),
+    getSkillsOptions(token),
+    getRolesOptions(token),
+    getStatusOptions(token)
+  ]);
   return {
-    availabilityOptions: await getAvailabilityOptions(token),
-    userOrganizations: await getUserOrganizations(token),
-    categoryOptions: await getCategoryOptions(token),
-    skillsOptions: await getSkillsOptions(token),
-    rolesOptions: await getRolesOptions(token),
-    statusOptions: await getStatusOptions(token),
+    availabilityOptions: availabilityOptions,
+    userOrganizations: userOrganizations,
+    categoryOptions: categoryOptions,
+    skillsOptions: skillsOptions,
+    rolesOptions: rolesOptions,
+    statusOptions: statusOptions,
     token: token
   };
 };

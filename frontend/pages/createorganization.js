@@ -154,10 +154,14 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
 
 CreateOrganization.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  const [tagOptions, rolesOptions] = await Promise.all([
+    await getTags(token),
+    await getRolesOptions(token)
+  ])
   return {
-    tagOptions: await getTags(token),
+    tagOptions: tagOptions,
     token: token,
-    rolesOptions: await getRolesOptions(token)
+    rolesOptions: rolesOptions
   };
 };
 
@@ -183,7 +187,6 @@ async function getTags(token) {
     );
     if (resp.data.results.length === 0) return null;
     else {
-      console.log(resp.data.results);
       return resp.data.results.map(t => {
         return { ...t, key: t.id, additionalInfo: t.additional_info ? t.additional_info : [] };
       });

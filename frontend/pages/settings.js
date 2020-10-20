@@ -32,7 +32,6 @@ export default function Settings({ settings, token }) {
 
 Settings.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
-  console.log(token);
   return {
     settings: await getSettings(token),
     token: token

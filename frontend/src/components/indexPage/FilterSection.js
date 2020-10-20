@@ -95,9 +95,7 @@ export default function FilterSection({
         else if (type === "organizations")
           filteredItemsObject = await getOrganizations(1, token, newUrlEnding);
         else if (type === "members") {
-          console.log("type is members!");
           filteredItemsObject = await getMembers(1, token, newUrlEnding);
-          console.log(filteredItemsObject);
           filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
         } else {
           console.log("cannot find type!");

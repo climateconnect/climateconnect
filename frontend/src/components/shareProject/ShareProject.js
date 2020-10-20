@@ -124,7 +124,6 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
   };
 
   const onSubmit = (event, values) => {
-    console.log(values);
     event.preventDefault();
     Object.keys(values).map(
       k => (values[k] = values[k] && values[k] != true ? values[k].trim() : values[k])

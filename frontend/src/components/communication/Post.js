@@ -70,7 +70,6 @@ export default function Post({
   const [open, setOpen] = React.useState(false);
   const [displayReplies, setDisplayReplies] = React.useState(false);
   const [replyInterfaceExpanded, setInterfaceExpanded] = React.useState(false);
-  console.log(post);
   const expandReplyInterface = () => setInterfaceExpanded(true);
 
   const unexpandReplyInterface = () => setInterfaceExpanded(false);

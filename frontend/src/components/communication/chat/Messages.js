@@ -81,6 +81,7 @@ class Messages extends React.Component {
         });
       }
     };
+    const sortByNewestFirst = (a, b) => new Date(a.sent_at) - new Date(b.sent_at)
     return (
       <InfiniteScroll
         pageStart={0}
@@ -98,22 +99,30 @@ class Messages extends React.Component {
         ref={this.myRef}
       >
         {this.props.messages && this.props.messages.length > 0 ? (
-          this.props.messages.map((message, index) => {
+          this.props.messages.sort(sortByNewestFirst).map((message, index) => {
             return (
               <Message
                 message={message}
                 key={index}
                 classes={this.props.classes}
                 chatting_partner={this.props.chatting_partner}
+                isPrivateChat={this.props.isPrivateChat}
               />
             );
           })
-        ) : (
+        ) : this.props.isPrivateChat ? (
           <div className={this.props.classes.noHistoryText}>
             <p>
               This is the very beginning of your conversation with{" "}
               {this.props.chatting_partner.first_name + " " + this.props.chatting_partner.last_name}
               .
+            </p>
+            <p>Write a message to get the conversation started!</p>
+          </div>
+        ) : (
+          <div className={this.props.classes.noHistoryText}>
+            <p>
+              This is the very beginning of your conversation in {this.props.title}
             </p>
             <p>Write a message to get the conversation started!</p>
           </div>
@@ -129,7 +138,9 @@ Messages.propTypes = {
   chatting_partner: PropTypes.object.isRequired,
   className: PropTypes.string.isRequired,
   loadFunc: PropTypes.func.isRequired,
-  hasMore: PropTypes.bool.isRequired
+  hasMore: PropTypes.bool.isRequired,
+  title: PropTypes.string,
+  isPrivateChat: PropTypes.bool.isRequired
 };
 
 export default withStyles(styles)(Messages);

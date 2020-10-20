@@ -64,9 +64,6 @@ export default function FilterContent({
       ...currentFilters,
       [filterKey]: currentFilters[filterKey].filter(f => f !== filterName)
     });
-    console.log(selectedItems);
-    console.log(filterName);
-    console.log(filterKey);
     if (selectedItems[filterKey])
       setSelectedItems({
         ...selectedItems,

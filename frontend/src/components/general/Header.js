@@ -81,7 +81,8 @@ const useStyles = makeStyles(theme => {
       margin: "0 auto"
     },
     loggedInLink: {
-      color: theme.palette.primary.main
+      color: theme.palette.primary.main,
+      width: "100%"
     },
     menuLink: {
       color: theme.palette.primary.main,
@@ -356,7 +357,7 @@ function NormalScreenLinks({
               {link.onlyShowIconOnNormalScreen ? (
                 <>
                   <IconButton color="primary" {...buttonProps} className={classes.link}>
-                    {link.hasBadge && notifications.length > 0 ? (
+                    {link.hasBadge && notifications && notifications.length > 0 ? (
                       <Badge badgeContent={notifications.length} color="error">
                         <Icon />
                       </Badge>
@@ -379,7 +380,7 @@ function NormalScreenLinks({
                         Notifications
                       </Typography>
                       <Divider />
-                      {notifications.length > 0 ? (
+                      {notifications && notifications.length > 0 ? (
                         notifications.map((n, index) => (
                           <Notification key={index} notification={n} />
                         ))
@@ -443,7 +444,7 @@ function NarrowScreenLinks({
               {link.onlyShowIconOnMobile ? (
                 <>
                   <IconButton color="primary" className={classes.marginRight} {...buttonProps}>
-                    {link.hasBadge && notifications.length > 0 > 0 ? (
+                    {link.hasBadge && notifications && notifications.length > 0 ? (
                       <Badge badgeContent={notifications.length} color="error">
                         <Icon />
                       </Badge>
@@ -466,7 +467,7 @@ function NarrowScreenLinks({
                         Notifications
                       </Typography>
                       <Divider />
-                      {notifications.length > 0 ? (
+                      {notifications && notifications.length > 0 ? (
                         notifications.map((n, index) => (
                           <Notification key={index} notification={n} />
                         ))
@@ -591,29 +592,27 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout }) => {
             <MenuList>
               {getLoggedInLinks({ loggedInUser })
                 .filter(link => !link.showOnMobileOnly)
-                .map((link, index) => (
-                  <React.Fragment key={index}>
-                    {link.isLogoutButton ? (
-                      <MenuItem
-                        key={index}
-                        component="button"
-                        onClick={handleLogout}
-                        className={classes.loggedInLink}
-                      >
-                        {link.text}
-                      </MenuItem>
-                    ) : (
-                      <MenuItem
-                        key={index}
-                        component="button"
-                        href={link.href}
-                        className={classes.loggedInLink}
-                      >
-                        {link.text}
-                      </MenuItem>
-                    )}
-                  </React.Fragment>
-                ))}
+                .map((link, index) => {
+                  const menuItemProps = {
+                    component: "button",
+                    className: classes.loggedInLink
+                  }
+                  if(link.isLogoutButton)
+                    menuItemProps.onClick = handleLogout
+                  else
+                    menuItemProps.href = link.href
+                  return (
+                    <MenuItem
+                      key={index}
+                      component="button"
+                      className={classes.loggedInLink}
+                      onClick={link.isLogoutButton && handleLogout}
+                      href={!link.isLogoutButton && link.href}
+                    >
+                      {link.text}
+                    </MenuItem>
+                  )
+                  })}
             </MenuList>
           </Paper>
         </ClickAwayListener>

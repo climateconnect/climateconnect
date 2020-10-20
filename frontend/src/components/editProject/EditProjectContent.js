@@ -122,7 +122,6 @@ export default function EditProjectContent({
   };
 
   const handleClickDeleteProjectPopup = () => {
-    console.log("oh no, we gotta delete the project!");
     setOpen({ ...open, delete: true });
   };
 

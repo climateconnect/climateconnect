@@ -28,9 +28,6 @@ export function parseOrganization(organization, reduceTypes) {
     additional_info.map(infoEl => {
       org.info[infoEl] = organization[infoEl];
     });
-  } else {
-    console.log(organization.types);
-    console.log(additional_info);
   }
   //Add parent org late so it's the lowest entry on the page
   org.info.parent_organization = organization.parent_organization;

@@ -23,13 +23,18 @@ jobs:
     - name: npm install, build, and test
       run: |
         cd frontend
-        yarn
+        yarn --production
         yarn build
+      env:
+        API_URL: ${{ secrets.API_URL }}
+        ENVIRONMENT: 'production'
+        SOCKET_URL: ${{ secrets.SOCKET_URL }}
+        API_HOST: ${{ secrets.API_HOST }} 
 
     - name: 'Deploy to Azure Web App'
       uses: azure/webapps-deploy@v2
       with:
         app-name: 'climateconnect-frontend'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_afd1120bcb684a47b7ab6429fdf211ff }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_d01b150ede564328835db5763fdd8208 }}
         package: .

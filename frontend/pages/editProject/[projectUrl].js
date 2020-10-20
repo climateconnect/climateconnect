@@ -109,13 +109,28 @@ export default function EditProjectPage({
 EditProjectPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectUrl);
+  const [
+    project, 
+    members,
+    skillsOptions,
+    userOrganizations,
+    statusOptions,
+    tagsOptions
+  ] = await Promise.all([
+    getProjectByIdIfExists(projectUrl, token),
+    getMembersByProject(projectUrl, token),
+    getSkillsOptions(),
+    getUserOrganizations(token),
+    getStatusOptions(),
+    getProjectTagsOptions()
+  ])
   return {
-    project: await getProjectByIdIfExists(projectUrl, token),
-    members: await getMembersByProject(projectUrl, token),
-    skillsOptions: await getSkillsOptions(),
-    userOrganizations: await getUserOrganizations(token),
-    statusOptions: await getStatusOptions(),
-    tagsOptions: await getProjectTagsOptions(),
+    project: project,
+    members: members,
+    skillsOptions: skillsOptions,
+    userOrganizations: userOrganizations,
+    statusOptions: statusOptions,
+    tagsOptions: tagsOptions,
     token: token
   };
 };

@@ -87,12 +87,25 @@ export default function OrganizationPage({
 OrganizationPage.getInitialProps = async ctx => {
   const { token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
+  const [
+    organization, 
+    projects,
+    members,
+    organizationTypes,
+    infoMetadata
+  ] = await Promise.all([
+    getOrganizationByUrlIfExists(organizationUrl, token),
+    getProjectsByOrganization(organizationUrl, token),
+    getMembersByOrganization(organizationUrl, token),
+    getOrganizationTypes(),
+    getOrganizationInfoMetadata()
+  ])
   return {
-    organization: await getOrganizationByUrlIfExists(organizationUrl, token),
-    projects: await getProjectsByOrganization(organizationUrl, token),
-    members: await getMembersByOrganization(organizationUrl, token),
-    organizationTypes: await getOrganizationTypes(),
-    infoMetadata: await getOrganizationInfoMetadata()
+    organization: organization,
+    projects: projects,
+    members: members,
+    organizationTypes: organizationTypes,
+    infoMetadata: infoMetadata
   };
 };
 

@@ -65,7 +65,9 @@ const useStyles = makeStyles(theme => {
       paddingBottom: theme.spacing(1),
       display: "flex",
       justifyContent: "center",
-      flexWrap: "wrap"
+      flexWrap: "wrap",
+      maxWidth: 960,
+      margin: "0 auto"
     },
     chatParticipantsPreview: {
       padding: theme.spacing(1)
@@ -73,7 +75,7 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function MessageUser({
+export default function Chat({
   participants,
   title,
   token,
@@ -144,9 +146,9 @@ export default function MessageUser({
   return (
     <FixedHeightLayout
       title={
-        chatting_partner
+        isPrivateChat
           ? "Message " + chatting_partner.first_name + " " + chatting_partner.last_name
-          : "Not found"
+          : title
       }
     >
       {chatting_partner ? (
@@ -168,10 +170,12 @@ export default function MessageUser({
   );
 }
 
-MessageUser.getInitialProps = async ctx => {
+Chat.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
-  const chat = await getChat(ctx.query.chatUUID, token);
-  const messages_object = await getChatMessagesByUUID(ctx.query.chatUUID, token, 1);
+  const [chat, messages_object] = await Promise.all([
+    getChat(ctx.query.chatUUID, token),
+    getChatMessagesByUUID(ctx.query.chatUUID, token, 1)
+  ])
   return {
     token: token,
     chat_uuid: chat.chat_uuid,
@@ -262,6 +266,8 @@ function MessagingLayout({
           className={`${classes.content} ${classes.maxWidth}`}
           hasMore={hasMore}
           loadFunc={loadMoreMessages}
+          isPrivateChat={isPrivateChat}
+          title={title}
         />
       )}
       <div className={`${classes.bottomBar} ${classes.maxWidth}`}>

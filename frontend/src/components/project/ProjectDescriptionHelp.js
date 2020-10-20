@@ -45,7 +45,6 @@ export default function ProjectDescriptionHelp({ status }) {
       Recurring: "Could this project be replicated?"
     }
   ];
-  console.log(status.name);
   return (
     <>
       <Typography>Please touch on the following points in your project description:</Typography>
