@@ -144,14 +144,11 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
 }
 
 MyApp.getInitialProps = async ctx => {
-  let pageProps = {}
-  if(ctx.Component && ctx.Component.getInitialProps){
-    pageProps = await ctx.Component.getInitialProps(ctx.ctx)
-  }
   const { token } = NextCookies(ctx.ctx);
-  const [user, notifications] = await Promise.all([
+  const [user, notifications, pageProps] = await Promise.all([
     getLoggedInUser(token),
-    getNotifications(token)
+    getNotifications(token),
+    (ctx.Component && ctx.Component.getInitialProps) ? ctx.Component.getInitialProps(ctx.ctx) : {}
   ])
   return {
     pageProps: pageProps,
