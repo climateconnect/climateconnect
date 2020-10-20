@@ -357,7 +357,7 @@ function NormalScreenLinks({
               {link.onlyShowIconOnNormalScreen ? (
                 <>
                   <IconButton color="primary" {...buttonProps} className={classes.link}>
-                    {link.hasBadge && notifications.length > 0 ? (
+                    {link.hasBadge && notifications && notifications.length > 0 ? (
                       <Badge badgeContent={notifications.length} color="error">
                         <Icon />
                       </Badge>
@@ -380,7 +380,7 @@ function NormalScreenLinks({
                         Notifications
                       </Typography>
                       <Divider />
-                      {notifications.length > 0 ? (
+                      {notifications && notifications.length > 0 ? (
                         notifications.map((n, index) => (
                           <Notification key={index} notification={n} />
                         ))
@@ -444,7 +444,7 @@ function NarrowScreenLinks({
               {link.onlyShowIconOnMobile ? (
                 <>
                   <IconButton color="primary" className={classes.marginRight} {...buttonProps}>
-                    {link.hasBadge && notifications.length > 0 > 0 ? (
+                    {link.hasBadge && notifications && notifications.length > 0 ? (
                       <Badge badgeContent={notifications.length} color="error">
                         <Icon />
                       </Badge>
@@ -467,7 +467,7 @@ function NarrowScreenLinks({
                         Notifications
                       </Typography>
                       <Divider />
-                      {notifications.length > 0 ? (
+                      {notifications && notifications.length > 0 ? (
                         notifications.map((n, index) => (
                           <Notification key={index} notification={n} />
                         ))

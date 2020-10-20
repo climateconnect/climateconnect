@@ -27,7 +27,7 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
   const ENVIRONMENT = process.env.ENVIRONMENT;
   const SOCKET_URL = process.env.SOCKET_URL;
   const [state, setState] = React.useState({
-    user: null,
+    user: user,
     matomoInstance: createInstanceIfAllowed(),
     notifications: [],
     chatSocket: null
@@ -74,7 +74,7 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
     if (!develop)
       cookieProps.domain = "."+API_HOST
     cookies.set("token", token, cookieProps);
-    const user = await getLoggedInUser(cookies.get("token"));
+    const user = await getLoggedInUser(cookies.get("token") ? cookies.get("token") : token);
     setState({
       user: user
     });
@@ -150,10 +150,13 @@ MyApp.getInitialProps = async ctx => {
     getNotifications(token),
     (ctx.Component && ctx.Component.getInitialProps) ? ctx.Component.getInitialProps(ctx.ctx) : {}
   ])
+  console.log(token)
+  console.log(user)
+  console.log(notifications)
   return {
     pageProps: pageProps,
     user: user,
-    notifications: notifications
+    notifications: notifications ? notifications : []
   }
 }
 
