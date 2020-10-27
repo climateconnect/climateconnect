@@ -336,3 +336,10 @@ class ListOrganizationTags(ListAPIView):
 
     def get_queryset(self):
         return OrganizationTags.objects.all()
+
+class ListFeaturedOrganizations(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = OrganizationCardSerializer
+
+    def get_queryset(self):
+        return Organization.objects.filter(rating__lte=99)[0:4]

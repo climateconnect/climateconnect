@@ -1,9 +1,9 @@
 import React from "react";
-import Truncate from "react-truncate";
 import { Typography, Card, CardMedia, CardContent, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ProjectMetaData from "./ProjectMetaData";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import Truncate from "react-truncate";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -16,10 +16,18 @@ const useStyles = makeStyles(theme => {
       "-ms-user-select": "none",
       userSelect: "none",
       backgroundColor: "inherit",
-      borderRadius: 0
+      borderRadius: 0,
+      height: 330
     },
-    bold: {
-      fontWeight: "bold"
+    projectNameWrapper: {
+      display: "block",
+      marginBottom: theme.spacing(0.75)
+    },
+    projectName: {
+      fontWeight: "bold",
+      overflow: "hidden",
+      lineHeight: 1.5,
+      fontSize: 15
     },
     button: {
       marginTop: theme.spacing(1),
@@ -50,6 +58,10 @@ const useStyles = makeStyles(theme => {
       marginLeft: "10px",
       fontSize: "20px",
       color: "white"
+    },
+    cardContent: {
+      background: "white",
+      height: "100%"
     }
   };
 });
@@ -74,12 +86,14 @@ export default function ProjectPreview({ project }) {
             </div>
           )}
         </CardMedia>
-        <CardContent>
-          <Typography variant="subtitle1" component="h2" className={classes.bold}>
-            <Truncate lines={1} ellipsis="...">
-              {project.name}
-            </Truncate>
-          </Typography>
+        <CardContent className={classes.cardContent}>
+          <div className={classes.projectNameWrapper}>
+            <Typography component="h2">
+              <Truncate lines={2} className={classes.projectName}>
+                {project.name}
+              </Truncate>
+            </Typography>
+          </div>
           <ProjectMetaData project={project} />
         </CardContent>
       </Card>

@@ -7,15 +7,17 @@ import { getImageUrl } from "./../../../public/lib/imageOperations";
 const useStyles = makeStyles(theme => ({
   orgImage: {
     height: 35,
-    marginRight: theme.spacing(1),
-    marginBottom: -7.5
+    marginRight: theme.spacing(1)
   },
   smallOrgImage: {
-    height: 20,
-    marginBottom: -5
+    height: 20
   },
   orgName: {
     display: "inline-block"
+  },
+  wrapper: {
+    display: "inline-flex",
+    alignItems: "center"
   }
 }));
 
@@ -43,7 +45,7 @@ export default function MiniOrganizationPreview({
 function Content({ organization, size, onDelete }) {
   const classes = useStyles();
   return (
-    <>
+    <span className={classes.wrapper}>
       <img
         src={getImageUrl(organization.image)}
         className={`${classes.orgImage} ${size === "small" && classes.smallOrgImage}`}
@@ -60,6 +62,6 @@ function Content({ organization, size, onDelete }) {
           <CloseIcon />
         </IconButton>
       )}
-    </>
+    </span>
   );
 }

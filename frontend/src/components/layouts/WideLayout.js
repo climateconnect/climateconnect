@@ -9,11 +9,11 @@ import Alert from "@material-ui/lab/Alert";
 import LoadingContainer from "../general/LoadingContainer";
 
 const useStyles = makeStyles(theme => ({
-  main: {
+  main: props => ({
     padding: 0,
     marginTop: -16,
-    marginBottom: theme.spacing(6)
-  },
+    marginBottom: props.noSpaceBottom ? 0 : theme.spacing(6)
+  }),
   alert: {
     textAlign: "center",
     maxWidth: 1280,
@@ -27,14 +27,28 @@ export default function WideLayout({
   message,
   messageType,
   isLoading,
-  isStaticPage
+  fixedHeader,
+  transparentHeader,
+  isStaticPage,
+  noFeedbackButton, //don't display the fixed feedback button on the right border of the screen. Can be useful on mobile
+  noSpaceBottom, //display the footer directly under the content without any margin
+  largeFooter
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ noSpaceBottom: noSpaceBottom });
   const [alertOpen, setAlertOpen] = React.useState(true);
 
   return (
-    <LayoutWrapper theme={aboutTheme} title={title}>
-      <Header isStaticPage={isStaticPage} />
+    <LayoutWrapper
+      theme={aboutTheme}
+      title={title}
+      noFeedbackButton={noFeedbackButton}
+      noSpaceForFooter={noSpaceBottom}
+    >
+      <Header
+        isStaticPage={isStaticPage}
+        fixedHeader={fixedHeader}
+        transparentHeader={transparentHeader}
+      />
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />
       ) : (
@@ -47,13 +61,13 @@ export default function WideLayout({
                 setAlertOpen(false);
               }}
             >
-              {message}
+              {decodeURIComponent(message).replaceAll("+", " ")}
             </Alert>
           )}
           {children}
         </Container>
       )}
-      <Footer />
+      <Footer noSpacingTop={noSpaceBottom} noAbsolutePosition={noSpaceBottom} large={largeFooter} />
     </LayoutWrapper>
   );
 }

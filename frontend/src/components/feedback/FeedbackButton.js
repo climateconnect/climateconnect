@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "@material-ui/core";
+import { Button, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import FeedbackDialog from "./FeedbackDialog";
 import tokenConfig from "../../../public/config/tokenConfig";
@@ -22,10 +22,13 @@ const useStyles = makeStyles(theme => ({
     top: 98,
     width: "100%",
     maxWidth: 1280
+  },
+  link: {
+    cursor: "pointer"
   }
 }));
 
-export default function FeedbackButton() {
+export default function FeedbackButton({ justLink, children }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const cookies = new Cookies();
@@ -62,17 +65,23 @@ export default function FeedbackButton() {
           {message}
         </Alert>
       )}
-      <Button
-        variant="contained"
-        size="small"
-        classes={{
-          root: classes.root,
-          label: classes.buttonText
-        }}
-        onClick={handleOpenDialog}
-      >
-        Feedback
-      </Button>
+      {justLink ? (
+        <Link underline="none" onClick={handleOpenDialog} className={classes.link}>
+          {children}
+        </Link>
+      ) : (
+        <Button
+          variant="contained"
+          size="small"
+          classes={{
+            root: classes.root,
+            label: classes.buttonText
+          }}
+          onClick={handleOpenDialog}
+        >
+          Feedback
+        </Button>
+      )}
       <FeedbackDialog
         open={open}
         onClose={onFeedbackDialogClose}

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 from dotenv import find_dotenv, load_dotenv
+from datetime import timedelta
 load_dotenv(find_dotenv('.backend_env'))
 env = os.environ.get
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -168,6 +169,9 @@ STATIC_ROOT = env('STATIC_ROOT') if env('ENVIRONMENT') in ('development', 'test'
 MEDIA_ROOT = env('MEDIA_ROOT')
 MEDIA_URL = '/media/'
 
+REST_KNOX = {
+    'TOKEN_TTL': timedelta(days=120)
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [

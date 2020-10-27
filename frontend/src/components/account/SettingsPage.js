@@ -184,7 +184,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         tokenConfig(token)
       )
         .then(function() {
-          redirect("/", {
+          redirect("/browse", {
             message:
               "An E-Mail to confirm this E-Mail address change has been sent to your old E-Mail address."
           });

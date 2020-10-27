@@ -55,12 +55,14 @@ urlpatterns = [
         organization_views.PersonalOrganizationsView.as_view(),
         name='get-personal-organizations-view'
     ),
+    path('featured_organizations/', organization_views.ListFeaturedOrganizations.as_view(), name="featured-organizations-api-view"),
     # Project URLs
     path('projects/', project_views.ListProjectsView.as_view(), name='list-projects'),
     path('projects/<str:url_slug>/', project_views.ProjectAPIView.as_view(), name='project-api-view'),
     path('projects/<str:url_slug>/members/', project_views.ListProjectMembersView.as_view(), name='project-members-api'),
     path('projects/<str:url_slug>/posts/', project_views.ListProjectPostsView.as_view(), name="project-posts-api"),
     path('projects/<str:url_slug>/comments/', project_views.ListProjectCommentsView.as_view(), name="project-comments-api"),
+    path('featured_projects/', project_views.ListFeaturedProjects.as_view(), name="featured-projects-api-view"),
     path('create_project/', project_views.CreateProjectView.as_view(), name='create-project-api'),
     path(
         'projects/<str:url_slug>/add_members/',

@@ -28,7 +28,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function LayoutWrapper({ title, children, theme, fixedHeight }) {
+export default function LayoutWrapper({
+  title,
+  children,
+  theme,
+  fixedHeight,
+  noFeedbackButton,
+  noSpaceForFooter
+}) {
   const classes = useStyles();
   const isSmallerThanMediumScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
   const cookies = new Cookies();
@@ -72,10 +79,10 @@ export default function LayoutWrapper({ title, children, theme, fixedHeight }) {
           />
         </Head>
         <ThemeProvider theme={theme}>
-          <div className={`${!fixedHeight && classes.leaveSpaceForFooter}`}>
+          <div className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}>
             {children}
             {!acceptedNecessary && bannerOpen && <CookieBanner closeBanner={closeBanner} />}
-            {!isSmallerThanMediumScreen && <FeedbackButton />}
+            {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
           </div>
         </ThemeProvider>
       </>

@@ -70,7 +70,7 @@ async function requestSetPassword(uuid, new_password, setErrorMessage) {
       payload,
       config
     );
-    redirect("/", {
+    redirect("/browse", {
       message: response.data.message
     });
   } catch (error) {

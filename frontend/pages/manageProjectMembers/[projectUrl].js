@@ -79,17 +79,12 @@ export default function manageProjectMembers({
 manageProjectMembers.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectUrl);
-  const [
-    project, 
-    members,
-    rolesOptions,
-    availabilityOptions,
-  ] = await Promise.all([
+  const [project, members, rolesOptions, availabilityOptions] = await Promise.all([
     getProjectByUrlIfExists(projectUrl, token),
     getMembersByProject(projectUrl, token),
     getRolesOptions(token),
     getAvailabilityOptions(token)
-  ])
+  ]);
   return {
     project: project,
     members: members,

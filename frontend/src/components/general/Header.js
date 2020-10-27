@@ -41,17 +41,31 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import NotificationsBox from "../communication/notifications/NotificationsBox";
 import Notification from "../communication/notifications/Notification";
 import HomeIcon from "@material-ui/icons/Home";
+import theme from "../../themes/theme";
 
 const useStyles = makeStyles(theme => {
   return {
-    root: {
-      borderBottom: `1px solid ${theme.palette.grey[300]}`
+    root: props => {
+      return {
+        zIndex: props.fixedHeader ? 20 : "auto",
+        borderBottom: props.transparentHeader ? 0 : `1px solid ${theme.palette.grey[300]}`,
+        position: props.fixedHeader ? "fixed" : "auto",
+        width: props.fixedHeader ? "100%" : "auto",
+        height: props.fixedHeader ? 97 : "auto",
+        top: props.fixedHeader ? 0 : "auto",
+        background: !props.transparentHeader && props.fixedHeader && "#F8F8F8"
+      };
     },
     spacingBottom: {
       marginBottom: theme.spacing(2)
     },
     container: {
       padding: theme.spacing(2),
+      paddingRight: "auto",
+      paddingLeft: "auto",
+      [theme.breakpoints.down("md")]: {
+        padding: theme.spacing(2)
+      },
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center"
@@ -84,10 +98,19 @@ const useStyles = makeStyles(theme => {
       color: theme.palette.primary.main,
       width: "100%"
     },
-    menuLink: {
-      color: theme.palette.primary.main,
-      textDecoration: "inherit"
+    linkContainer: {
+      display: "flex",
+      alignItems: "center",
+      maxWidth: "calc(100% - 200px)",
+      [theme.breakpoints.down("md")]: {
+        maxWidth: "calc(100% - 150px)"
+      },
+      justifyContent: "space-around"
     },
+    menuLink: props => ({
+      color: props.transparentHeader ? "white" : theme.palette.primary.main,
+      textDecoration: "inherit"
+    }),
     shareProjectButton: {
       height: 36,
       marginLeft: theme.spacing(1),
@@ -131,13 +154,16 @@ const useStyles = makeStyles(theme => {
     notificationsHeadline: {
       padding: theme.spacing(2),
       textAlign: "center"
+    },
+    loggedInLinksFixedHeader: {
+      zIndex: 30
     }
   };
 });
 
 const LINKS = [
   {
-    href: "/",
+    href: "/browse",
     text: "Home",
     iconForDrawer: HomeIcon,
     onlyShowIconOnNormalScreen: true,
@@ -149,7 +175,7 @@ const LINKS = [
     iconForDrawer: InfoIcon
   },
   {
-    href: "/support",
+    href: "/donate",
     text: "Donate",
     iconForDrawer: FavoriteBorderIcon,
     isOutlinedInHeader: true,
@@ -159,6 +185,7 @@ const LINKS = [
   {
     href: "/share",
     text: "Share a project",
+    mediumScreenText: "Share",
     iconForDrawer: AddCircleIcon,
     isFilledInHeader: true,
     className: "shareProjectButton",
@@ -199,7 +226,7 @@ const STATIC_PAGE_LINKS = [
     text: "About Us"
   },
   {
-    href: "/support",
+    href: "/donate",
     text: "Donate"
   },
   {
@@ -245,8 +272,14 @@ const getLoggedInLinks = ({ loggedInUser }) => {
   ];
 };
 
-export default function Header({ className, noSpacingBottom, isStaticPage }) {
-  const classes = useStyles();
+export default function Header({
+  className,
+  noSpacingBottom,
+  isStaticPage,
+  fixedHeader,
+  transparentHeader
+}) {
+  const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const { user, signOut, notifications } = useContext(UserContext);
   const [anchorEl, setAnchorEl] = React.useState(false);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
@@ -265,9 +298,11 @@ export default function Header({ className, noSpacingBottom, isStaticPage }) {
     >
       <Container className={classes.container}>
         <Link href="/">
-          <a>
-            <img src="/images/logo.png" alt="Climate Connect" className={classes.logo} />
-          </a>
+          <img
+            src={transparentHeader ? "/images/logo_white_beta.svg" : "/images/logo.png"}
+            alt="Climate Connect"
+            className={classes.logo}
+          />
         </Link>
         {process.env.PRE_LAUNCH === "true" ? (
           <></>
@@ -281,6 +316,8 @@ export default function Header({ className, noSpacingBottom, isStaticPage }) {
                 toggleShowNotifications={toggleShowNotifications}
                 onNotificationsClose={onNotificationsClose}
                 notifications={notifications}
+                transparentHeader={transparentHeader}
+                fixedHeader={fixedHeader}
               />
             ) : (
               <NormalScreenLinks
@@ -290,6 +327,8 @@ export default function Header({ className, noSpacingBottom, isStaticPage }) {
                 toggleShowNotifications={toggleShowNotifications}
                 onNotificationsClose={onNotificationsClose}
                 notifications={notifications}
+                transparentHeader={transparentHeader}
+                fixedHeader={fixedHeader}
               />
             )}
           </>
@@ -323,84 +362,84 @@ function NormalScreenLinks({
   anchorEl,
   toggleShowNotifications,
   onNotificationsClose,
-  notifications
+  notifications,
+  transparentHeader,
+  fixedHeader
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
+  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
   return (
-    <Box>
+    <Box className={classes.linkContainer}>
       {LINKS.filter(
         link =>
           !(loggedInUser && link.onlyShowLoggedOut) &&
           !(!loggedInUser && link.onlyShowLoggedIn) &&
           !link.showOnMobileOnly
       ).map((link, index) => {
-        const buttonProps = {};
-        if (index !== 0) {
-          if (link.className) buttonProps.className = classes[link.className];
-          else buttonProps.className = classes.buttonMarginLeft;
-        }
-        if ((loggedInUser || !link.vanillaIfLoggedOut) && link.isOutlinedInHeader) {
-          buttonProps.variant = "outlined";
-        }
-        if ((loggedInUser || !link.vanillaIfLoggedOut) && link.isFilledInHeader) {
-          buttonProps.variant = "contained";
-        }
-        if ((loggedInUser || !link.vanillaIfLoggedOut) && link.icon) {
-          buttonProps.startIcon = <link.icon />;
-        }
-        if (link.type === "notificationsButton") buttonProps.onClick = toggleShowNotifications;
-        if (link.href) buttonProps.href = link.href;
-        const Icon = link.icon;
-        return (
-          <React.Fragment key={index}>
-            <span className={classes.menuLink}>
-              {link.onlyShowIconOnNormalScreen ? (
-                <>
-                  <IconButton color="primary" {...buttonProps} className={classes.link}>
-                    {link.hasBadge && notifications && notifications.length > 0 ? (
-                      <Badge badgeContent={notifications.length} color="error">
-                        <Icon />
-                      </Badge>
-                    ) : (
-                      <Icon />
-                    )}
-                  </IconButton>
-                  {link.type === "notificationsButton" && anchorEl && (
-                    <NotificationsBox
-                      anchorEl={anchorEl}
-                      keepMounted
-                      open={Boolean(anchorEl)}
-                      onClose={onNotificationsClose}
-                    >
-                      <Typography
-                        className={classes.notificationsHeadline}
-                        component="h1"
-                        variant="h5"
-                      >
-                        Notifications
-                      </Typography>
-                      <Divider />
-                      {notifications && notifications.length > 0 ? (
-                        notifications.map((n, index) => (
-                          <Notification key={index} notification={n} />
-                        ))
-                      ) : (
-                        <Notification key={index} isPlaceholder />
-                      )}
-                    </NotificationsBox>
-                  )}
-                </>
-              ) : (
-                <Button color="primary" {...buttonProps}>
-                  {link.text}
-                </Button>
-              )}
-            </span>
-          </React.Fragment>
+        const buttonProps = getLinkButtonProps(
+          link,
+          index,
+          loggedInUser,
+          classes,
+          transparentHeader,
+          toggleShowNotifications
         );
+        const Icon = link.icon;
+        if (!(isMediumScreen && link.hideOnMediumScreen))
+          return (
+            <React.Fragment key={index}>
+              <span className={classes.menuLink}>
+                {link.onlyShowIconOnNormalScreen ? (
+                  <>
+                    <IconButton {...buttonProps} className={classes.link}>
+                      {link.hasBadge && notifications && notifications.length > 0 ? (
+                        <Badge badgeContent={notifications.length} color="error">
+                          <Icon />
+                        </Badge>
+                      ) : (
+                        <Icon />
+                      )}
+                    </IconButton>
+                    {link.type === "notificationsButton" && anchorEl && (
+                      <NotificationsBox
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={Boolean(anchorEl)}
+                        onClose={onNotificationsClose}
+                      >
+                        <Typography
+                          className={classes.notificationsHeadline}
+                          component="h1"
+                          variant="h5"
+                        >
+                          Notifications
+                        </Typography>
+                        <Divider />
+                        {notifications && notifications.length > 0 ? (
+                          notifications.map((n, index) => (
+                            <Notification key={index} notification={n} />
+                          ))
+                        ) : (
+                          <Notification key={index} isPlaceholder />
+                        )}
+                      </NotificationsBox>
+                    )}
+                  </>
+                ) : (
+                  <Button color="primary" {...buttonProps}>
+                    {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
+                  </Button>
+                )}
+              </span>
+            </React.Fragment>
+          );
       })}
       {loggedInUser && (
-        <LoggedInNormalScreen loggedInUser={loggedInUser} handleLogout={handleLogout} />
+        <LoggedInNormalScreen
+          loggedInUser={loggedInUser}
+          handleLogout={handleLogout}
+          fixedHeader={fixedHeader}
+        />
       )}
     </Box>
   );
@@ -412,13 +451,15 @@ function NarrowScreenLinks({
   anchorEl,
   toggleShowNotifications,
   onNotificationsClose,
-  notifications
+  notifications,
+  transparentHeader,
+  fixedHeader
 }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const openDrawer = setIsDrawerOpen.bind(null, true);
   const closeDrawer = setIsDrawerOpen.bind(null, false);
-  const classes = useStyles();
+  const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const linksOutsideDrawer = LINKS.filter(
     link =>
       link.alwaysDisplayDirectly &&
@@ -430,15 +471,19 @@ function NarrowScreenLinks({
       <Box>
         {linksOutsideDrawer.map((link, index) => {
           const Icon = link.iconForDrawer;
-          const buttonProps = {};
-          if (link.isOutlinedInHeader) {
-            buttonProps.variant = "outlined";
-          }
+          const buttonProps = getLinkButtonProps(
+            link,
+            index,
+            loggedInUser,
+            classes,
+            transparentHeader,
+            toggleShowNotifications,
+            true,
+            linksOutsideDrawer
+          );
           if (index === linksOutsideDrawer.length - 1) {
             buttonProps.className = classes.marginRight;
           }
-          if (link.type === "notificationsButton") buttonProps.onClick = toggleShowNotifications;
-          if (link.href) buttonProps.href = link.href;
           return (
             <React.Fragment key={index}>
               {link.onlyShowIconOnMobile ? (
@@ -478,16 +523,20 @@ function NarrowScreenLinks({
                   )}
                 </>
               ) : (
-                <Button color="primary" {...buttonProps} key={index}>
-                  {link.text}
-                </Button>
+                <span className={classes.menuLink}>
+                  <Button color="primary" {...buttonProps} key={index}>
+                    {link.text}
+                  </Button>
+                </span>
               )}
             </React.Fragment>
           );
         })}
-        <IconButton edge="start" color="inherit" aria-label="menu" onClick={openDrawer}>
-          <MenuIcon />
-        </IconButton>
+        <span className={classes.menuLink}>
+          <IconButton edge="start" color="inherit" aria-label="menu" onClick={openDrawer}>
+            <MenuIcon />
+          </IconButton>
+        </span>
         <SwipeableDrawer
           anchor="right"
           open={isDrawerOpen}
@@ -556,7 +605,7 @@ function NarrowScreenLinks({
   );
 }
 
-const LoggedInNormalScreen = ({ loggedInUser, handleLogout }) => {
+const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader }) => {
   const classes = useStyles();
   const [menuOpen, setMenuOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -586,7 +635,11 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout }) => {
         />
         <ArrowDropDownIcon />
       </Button>
-      <Popper open={menuOpen} anchorEl={anchorRef.current}>
+      <Popper
+        open={menuOpen}
+        anchorEl={anchorRef.current}
+        className={fixedHeader && classes.loggedInLinksFixedHeader}
+      >
         <ClickAwayListener onClickAway={handleCloseMenu}>
           <Paper>
             <MenuList>
@@ -596,11 +649,9 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout }) => {
                   const menuItemProps = {
                     component: "button",
                     className: classes.loggedInLink
-                  }
-                  if(link.isLogoutButton)
-                    menuItemProps.onClick = handleLogout
-                  else
-                    menuItemProps.href = link.href
+                  };
+                  if (link.isLogoutButton) menuItemProps.onClick = handleLogout;
+                  else menuItemProps.href = link.href;
                   return (
                     <MenuItem
                       key={index}
@@ -611,12 +662,48 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout }) => {
                     >
                       {link.text}
                     </MenuItem>
-                  )
-                  })}
+                  );
+                })}
             </MenuList>
           </Paper>
         </ClickAwayListener>
       </Popper>
     </Box>
   );
+};
+
+const getLinkButtonProps = (
+  link,
+  index,
+  loggedInUser,
+  classes,
+  transparentHeader,
+  toggleShowNotifications,
+  isNarrowScreen,
+  linksOutsideDrawer
+) => {
+  const buttonProps = {};
+  if (!isNarrowScreen && index !== 0) {
+    if (link.className) buttonProps.className = classes[link.className];
+    else buttonProps.className = classes.buttonMarginLeft;
+  }
+  if ((isNarrowScreen || loggedInUser || !link.vanillaIfLoggedOut) && link.isOutlinedInHeader) {
+    buttonProps.variant = "outlined";
+  }
+  const contained =
+    !isNarrowScreen && (loggedInUser || !link.vanillaIfLoggedOut) && link.isFilledInHeader;
+  if (contained) {
+    buttonProps.variant = "contained";
+  }
+  if (!isNarrowScreen && (loggedInUser || !link.vanillaIfLoggedOut) && link.icon) {
+    buttonProps.startIcon = <link.icon />;
+  }
+  if (!transparentHeader) buttonProps.color = "primary";
+  else if (!contained && link.type !== "notificationsButton") buttonProps.color = "inherit";
+  if (link.type === "notificationsButton") buttonProps.onClick = toggleShowNotifications;
+  if (link.href) buttonProps.href = link.href;
+  if (isNarrowScreen && index === linksOutsideDrawer.length - 1) {
+    buttonProps.className = classes.marginRight;
+  }
+  return buttonProps;
 };

@@ -16,7 +16,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter
 
 from rest_framework.exceptions import ValidationError
-from knox.views import LoginView as KnowLoginView
+from knox.views import LoginView as KnoxLoginView
 from climateconnect_api.pagination import MembersPagination
 
 # Database imports
@@ -40,7 +40,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class LoginView(KnowLoginView):
+class LoginView(KnoxLoginView):
     permission_classes = [AllowAny]
 
     def post(self, request, format=None):

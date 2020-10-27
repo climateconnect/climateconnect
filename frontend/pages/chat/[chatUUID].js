@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Typography, IconButton, TextField, Link } from "@material-ui/core";
+import { IconButton, TextField, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import FixedHeightLayout from "../../src/components/layouts/FixedHeightLayout";
 import MiniProfilePreview from "../../src/components/profile/MiniProfilePreview";
@@ -12,6 +12,7 @@ import tokenConfig from "../../public/config/tokenConfig";
 import { getMessageFromServer } from "../../public/lib/messagingOperations";
 import UserContext from "../../src/components/context/UserContext";
 import ChatTitle from "../../src/components/communication/chat/ChatTitle";
+import PageNotFound from "../../src/components/general/PageNotFound";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -164,7 +165,7 @@ export default function Chat({
           participants={participants}
         />
       ) : (
-        <NoChatFoundLayout />
+        <PageNotFound itemName="Chat" />
       )}
     </FixedHeightLayout>
   );
@@ -175,7 +176,7 @@ Chat.getInitialProps = async ctx => {
   const [chat, messages_object] = await Promise.all([
     getChat(ctx.query.chatUUID, token),
     getChatMessagesByUUID(ctx.query.chatUUID, token, 1)
-  ])
+  ]);
   return {
     token: token,
     chat_uuid: chat.chat_uuid,
@@ -296,20 +297,6 @@ function MessagingLayout({
         </form>
       </div>
     </>
-  );
-}
-
-function NoChatFoundLayout() {
-  const classes = useStyles();
-  return (
-    <div className={classes.noprofile}>
-      <Typography variant="h1">Chat not found.</Typography>
-      <p>
-        <Link href="/">
-          <a>Click here to return to the homepage.</a>
-        </Link>
-      </p>
-    </div>
   );
 }
 

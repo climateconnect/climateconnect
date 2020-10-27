@@ -34,7 +34,7 @@ export default function EnterDetailledOrganizationInfo({
   const classes = useStyles();
 
   const handleCancel = () => {
-    Router.push("/");
+    Router.push("/browse");
   };
   return (
     <div>
