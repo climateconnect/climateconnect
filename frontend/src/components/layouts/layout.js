@@ -45,7 +45,7 @@ export default function Layout({
                 setHideAlertMessage(message);
               }}
             >
-              {message}
+              {decodeURIComponent(message).replaceAll("+", " ")}
             </Alert>
           )}
           <Container maxWidth="sm">
