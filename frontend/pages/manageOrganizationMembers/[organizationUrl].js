@@ -86,17 +86,12 @@ export default function manageOrganizationMembers({
 manageOrganizationMembers.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [
-    organization, 
-    members,
-    rolesOptions,
-    availabilityOptions,
-  ] = await Promise.all([
+  const [organization, members, rolesOptions, availabilityOptions] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, token),
     getMembersByOrganization(organizationUrl, token),
     getRolesOptions(token),
     getAvailabilityOptions(token)
-  ])
+  ]);
   return {
     organization: organization,
     members: members,

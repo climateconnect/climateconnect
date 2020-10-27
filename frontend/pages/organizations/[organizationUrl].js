@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import Link from "next/link";
 import { Typography, Container, Button, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import NextCookies from "next-cookies";
@@ -23,6 +22,7 @@ import { parseOrganization } from "../../public/lib/organizationOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 import Router from "next/router";
 import Cookies from "universal-cookie";
+import PageNotFound from "../../src/components/general/PageNotFound";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -78,7 +78,7 @@ export default function OrganizationPage({
           user={user}
         />
       ) : (
-        <NoOrganizationFoundLayout />
+        <PageNotFound itemName="Organization" />
       )}
     </WideLayout>
   );
@@ -87,19 +87,13 @@ export default function OrganizationPage({
 OrganizationPage.getInitialProps = async ctx => {
   const { token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [
-    organization, 
-    projects,
-    members,
-    organizationTypes,
-    infoMetadata
-  ] = await Promise.all([
+  const [organization, projects, members, organizationTypes, infoMetadata] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, token),
     getProjectsByOrganization(organizationUrl, token),
     getMembersByOrganization(organizationUrl, token),
     getOrganizationTypes(),
     getOrganizationInfoMetadata()
-  ])
+  ]);
   return {
     organization: organization,
     projects: projects,
@@ -209,20 +203,6 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
         )}
       </Container>
     </AccountPage>
-  );
-}
-
-function NoOrganizationFoundLayout() {
-  const classes = useStyles();
-  return (
-    <div className={classes.noprofile}>
-      <Typography variant="h1">Organization profile not found.</Typography>
-      <p>
-        <Link href="/">
-          <a>Click here to return to the homepage.</a>
-        </Link>
-      </p>
-    </div>
   );
 }
 

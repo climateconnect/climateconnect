@@ -157,7 +157,7 @@ CreateOrganization.getInitialProps = async ctx => {
   const [tagOptions, rolesOptions] = await Promise.all([
     await getTags(token),
     await getRolesOptions(token)
-  ])
+  ]);
   return {
     tagOptions: tagOptions,
     token: token,
