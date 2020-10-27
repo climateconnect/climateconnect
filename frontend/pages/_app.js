@@ -147,13 +147,13 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
 
 MyApp.getInitialProps = async ctx => {
   const { token } = NextCookies(ctx.ctx);
-  if(ctx.router.route === "/" && token){
+  if (ctx.router.route === "/" && token) {
     ctx.ctx.res.writeHead(302, {
       Location: "/browse",
-      'Content-Type': 'text/html; charset=utf-8',
-    })
-    ctx.ctx.res.end()
-    return
+      "Content-Type": "text/html; charset=utf-8"
+    });
+    ctx.ctx.res.end();
+    return;
   }
   const [user, notifications, pageProps] = await Promise.all([
     getLoggedInUser(token),

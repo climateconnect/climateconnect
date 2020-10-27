@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   project: {
-    minWidth: 265,
+    width: 268,
     display: "inline-block",
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),

@@ -25,7 +25,7 @@ export default class MyDocument extends Document {
             gtag('config', '${process.env.GOOGLE_ANALYTICS_CODE}', {
               page_path: window.location.pathname,
             });
-          `,
+          `
             }}
           />
         </Head>
