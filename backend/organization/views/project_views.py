@@ -538,3 +538,10 @@ class ProjectCommentView(APIView):
             )
         comment.delete()
         return Response(status=status.HTTP_200_OK)
+
+class ListFeaturedProjects(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = ProjectStubSerializer
+
+    def get_queryset(self):
+        return Project.objects.filter(rating__lte=99, is_draft=False)[0:4]
