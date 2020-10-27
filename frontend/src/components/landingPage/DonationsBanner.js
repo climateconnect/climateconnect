@@ -58,11 +58,11 @@ export default function DonationsBanner({ h1ClassName }) {
   return (
     <div className={classes.root}>
       <div className={classes.content}>
-        {!isMediumScreen &&
+        {!isMediumScreen && (
           <div className={classes.heartIconContainer}>
             <FavoriteBorderIcon color="inherit" className={classes.heartIcon} />
           </div>
-        }
+        )}
         <div>
           <Typography className={`${classes.headline} ${h1ClassName}`}>
             We rely on your donation to <span className={classes.yellow}>stay independent!</span>

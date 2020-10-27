@@ -90,15 +90,17 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function OurTeamBox({h1ClassName}) {
+export default function OurTeamBox({ h1ClassName }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"))
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   return (
     <Container className={classes.root}>
       <SmallCloud type={2} reverse className={classes.smallCloud2} />
-      <Typography color="primary" component="h1" className={h1ClassName}>Our Team</Typography>
-      <div className={classes.content}>        
-        <img src="/images/team.jpg" className={classes.teamImage}/>
+      <Typography color="primary" component="h1" className={h1ClassName}>
+        Our Team
+      </Typography>
+      <div className={classes.content}>
+        <img src="/images/team.jpg" className={classes.teamImage} />
         <div className={classes.infoLinkBoxes}>
           <div className={classes.infoLinkBox}>
             <img src="/icons/group-icon.svg" className={classes.icon} />
@@ -107,9 +109,10 @@ export default function OurTeamBox({h1ClassName}) {
                 Who we are
               </Typography>
               <Typography color="secondary" className={classes.text}>
-                Find out about our team {!isNarrowScreen && "and why we are doing what we are doing"}
+                Find out about our team{" "}
+                {!isNarrowScreen && "and why we are doing what we are doing"}
               </Typography>
-              <SmallCloud type={1} className={classes.smallCloud1}/>
+              <SmallCloud type={1} className={classes.smallCloud1} />
             </div>
           </div>
           <div className={classes.infoLinkBox}>
@@ -119,8 +122,9 @@ export default function OurTeamBox({h1ClassName}) {
                 Our Mission
               </Typography>
               <Typography color="secondary" className={classes.text}>
-                Learn about our goals and values 
-                {!isNarrowScreen && " and what we want to achieve with creating a climate community"}
+                Learn about our goals and values
+                {!isNarrowScreen &&
+                  " and what we want to achieve with creating a climate community"}
               </Typography>
             </div>
           </div>

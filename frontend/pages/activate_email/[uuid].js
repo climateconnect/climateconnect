@@ -30,7 +30,8 @@ async function newEmailVerification(uuid, token) {
     });
   } catch (error) {
     if (error.response && error.response.data) {
-      if (error.response.data.detail) redirect("/browse", { errorMessage: error.response.data.detail });
+      if (error.response.data.detail)
+        redirect("/browse", { errorMessage: error.response.data.detail });
       else redirect("/browse", { errorMessage: error.response.data.message });
     } else if (error.request) {
       redirect("/browse", {

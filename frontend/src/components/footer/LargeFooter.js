@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "space-between",
     [theme.breakpoints.down("sm")]: {
       flexWrap: "wrap",
-      justifyContent: "space-around",
+      justifyContent: "space-around"
     },
     ["@media (max-width: 400px)"]: {
       flexDirection: "column",

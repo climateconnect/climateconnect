@@ -10,7 +10,6 @@ import { getImageUrl } from "./../../public/lib/imageOperations";
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
 import PageNotFound from "../../src/components/general/PageNotFound";
 
-
 //This route should only be accessible to admins of the organization
 
 export default function EditOrganizationPage({ organization, tagOptions, token }) {

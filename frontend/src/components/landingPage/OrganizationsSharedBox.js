@@ -51,7 +51,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function OrganizationsSharedBox({ organizations }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"))
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   return (
     <div className={classes.root}>
       <SmallCloud type={2} className={classes.smallCloud1} />
@@ -62,13 +62,13 @@ export default function OrganizationsSharedBox({ organizations }) {
       <Typography className={classes.explainerText}>
         Find nonprofits, associations, companies, institutes, NGOs, local governments and other
         types of organizations taking climate action!
-        {!isNarrowScreen &&
+        {!isNarrowScreen && (
           <>
             <br />
-            You can directly contact the {"organization's"} representative to exchange knowledge, find
-            volunteering opportunities or job opportunites.
+            You can directly contact the {"organization's"} representative to exchange knowledge,
+            find volunteering opportunities or job opportunites.
           </>
-        }
+        )}
       </Typography>
       <OrganizationPreviewsFixed organizations={organizations} showOrganizationType />
       <div className={classes.showProjectsButtonContainer}>

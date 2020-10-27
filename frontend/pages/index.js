@@ -96,7 +96,7 @@ export default function Index({ projects, organizations }) {
       <div className={classes.root}>
         <LandingTopBox scrollToContent={scrollToContent} />
         <div className={classes.lowerPart}>
-          <div id="info" ref={contentRef} className={classes.contentRef}/>
+          <div id="info" ref={contentRef} className={classes.contentRef} />
           <ExplainerBox h1ClassName={classes.h1ClassName} className={classes.explainerBox} />
           <PitchBox h1ClassName={classes.h1ClassName} />
           <div className={classes.signUpButtonContainer}>
@@ -114,7 +114,7 @@ export default function Index({ projects, organizations }) {
           <JoinCommunityBox h1ClassName={classes.h1ClassName} />
           <OrganizationsSharedBox organizations={organizations} />
           <DonationsBanner h1ClassName={classes.h1ClassName} />
-          <OurTeamBox h1ClassName={classes.h1ClassName}/>
+          <OurTeamBox h1ClassName={classes.h1ClassName} />
           <StartNowBanner h1ClassName={classes.h1ClassName} />
         </div>
       </div>

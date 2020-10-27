@@ -272,7 +272,7 @@ export default function Index({
           hideHeadline
           message={errorMessage ? errorMessage : message}
           messageType={errorMessage ? "error" : "success"}
-        >          
+        >
           <MainHeadingContainerMobile />
           <Container maxWidth="lg">
             <FilterSection

@@ -52,7 +52,10 @@ export default function OrganizationPreviewsFixed({ organizations, showOrganizat
         {organizations.map((organization, index) => {
           console.log(organization);
           return (
-            <span className={`${classes.organization} ${index === 0 && classes.first}`} key={organization.url_slug}>
+            <span
+              className={`${classes.organization} ${index === 0 && classes.first}`}
+              key={organization.url_slug}
+            >
               <OrganizationPreview
                 organization={organization}
                 showOrganizationType={showOrganizationType}
