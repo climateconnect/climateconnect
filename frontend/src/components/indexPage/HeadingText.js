@@ -2,6 +2,7 @@ import React from "react";
 import { Typography, makeStyles, IconButton } from "@material-ui/core";
 import TextLoop from "react-text-loop";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
+import AlternatingText from "../general/AlternatingText";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -66,26 +67,7 @@ export default function HeadingText({ mobile, showInfoText, toggleShowInfoText }
         className={`${classes.mainHeadingText} ${!showInfoText &&
           classes.mainHeadingTextInfoHidden}`}
       >
-        <TextLoop mask={true} interval={5000}>
-          <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-            Share
-          </Typography>
-          <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-            Find
-          </Typography>
-          <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-            Work on
-          </Typography>
-          <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-            Get inspired by
-          </Typography>
-          <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-            Replicate
-          </Typography>
-          <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-            {mobile ? "Join" : "Collaborate with"}
-          </Typography>
-        </TextLoop>
+        <AlternatingText mobile={mobile} classes={classes} />
         <Typography
           component="h1"
           variant="h5"

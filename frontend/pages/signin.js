@@ -39,7 +39,7 @@ export default function Signin() {
   const [errorMessage, setErrorMessage] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const { user, signIn, API_URL, API_HOST } = useContext(UserContext);
+  const { user, signIn, API_URL } = useContext(UserContext);
   //TODO: remove router
   if (user) {
     redirectOnLogin(user);
@@ -54,7 +54,7 @@ export default function Signin() {
         password: values.password
       })
       .then(async function(response) {
-        await signIn(response.data.token, response.data.expiry, "/");
+        await signIn(response.data.token, response.data.expiry);
       })
       .catch(function(error) {
         console.log(error);

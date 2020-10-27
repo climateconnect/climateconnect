@@ -1,10 +1,7 @@
 import React, { useContext, useEffect } from "react";
-import Link from "next/link";
 import Router from "next/router";
 import WideLayout from "../src/components/layouts/WideLayout";
 import EditAccountPage from "./../src/components/account/EditAccountPage";
-import { Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import { parseProfile } from "./../public/lib/profileOperations";
 import Cookies from "next-cookies";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
@@ -17,15 +14,7 @@ import LoginNudge from "../src/components/general/LoginNudge";
 import axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
 import { getParams } from "./../public/lib/generalOperations";
-
-const useStyles = makeStyles(theme => {
-  return {
-    noprofile: {
-      textAlign: "center",
-      padding: theme.spacing(5)
-    }
-  };
-});
+import PageNotFound from "../src/components/general/PageNotFound";
 
 export default function EditProfilePage({
   skillsOptions,
@@ -84,7 +73,7 @@ export default function EditProfilePage({
             skillsOptions={skillsOptions}
           />
         ) : (
-          <NoProfileFoundLayout />
+          <PageNotFound itemName="Profile" />
         )}
       </WideLayout>
     );
@@ -96,7 +85,7 @@ EditProfilePage.getInitialProps = async ctx => {
     getSkillsOptions(token),
     getProfileInfoMetadata(token),
     getAvailabilityOptions(token)
-  ])
+  ]);
   return {
     skillsOptions: skillsOptions,
     infoMetadata: infoMetadata,
@@ -127,20 +116,6 @@ function ProfileLayout({
       splitName
       deleteEmail="support@climateconnect.earth"
     />
-  );
-}
-
-function NoProfileFoundLayout() {
-  const classes = useStyles();
-  return (
-    <div className={classes.noprofile}>
-      <Typography variant="h1">Profile not found.</Typography>
-      <p>
-        <Link href="/">
-          <a>Click here to return to the homepage.</a>
-        </Link>
-      </p>
-    </div>
   );
 }
 

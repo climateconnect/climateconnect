@@ -25,19 +25,20 @@ async function newEmailVerification(uuid, token) {
       payload,
       tokenConfig(token)
     );
-    redirect("/", {
+    redirect("/browse", {
       message: response.data.message
     });
   } catch (error) {
     if (error.response && error.response.data) {
-      if (error.response.data.detail) redirect("/", { errorMessage: error.response.data.detail });
-      else redirect("/", { errorMessage: error.response.data.message });
+      if (error.response.data.detail)
+        redirect("/browse", { errorMessage: error.response.data.detail });
+      else redirect("/browse", { errorMessage: error.response.data.message });
     } else if (error.request) {
-      redirect("/", {
+      redirect("/browse", {
         errorMessage: "Something went wrong. Please contact our support team."
       });
     } else {
-      redirect("/", {
+      redirect("/browse", {
         errorMessage: "Something went wrong. Please contact our support team."
       });
     }

@@ -17,7 +17,7 @@ import WebSocketService from "../public/lib/webSockets";
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
 export default function MyApp({ Component, pageProps, user, notifications }) {
-  const [stateInitialized, setStateInitialized] = React.useState(false)
+  const [stateInitialized, setStateInitialized] = React.useState(false);
   const cookies = new Cookies();
   const createInstanceIfAllowed = () => {
     return false;
@@ -70,9 +70,8 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
       sameSite: develop ? false : "strict",
       expires: new Date(expiry),
       secure: !develop
-    }
-    if (!develop)
-      cookieProps.domain = "."+API_HOST
+    };
+    if (!develop) cookieProps.domain = "." + API_HOST;
     cookies.set("token", token, cookieProps);
     const user = await getLoggedInUser(cookies.get("token") ? cookies.get("token") : token);
     setState({
@@ -81,7 +80,7 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
   };
 
   useEffect(() => {
-    if(!stateInitialized){
+    if (!stateInitialized) {
       const client = WebSocketService("/ws/chat/");
       client.onopen = () => {
         console.log("connected");
@@ -94,16 +93,16 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
           user: user,
           chatSocket: client,
           notifications: notifications
-        });        
+        });
       }
       // Remove the server-side injected CSS.
       const jssStyles = document.querySelector("#jss-server-side");
       if (jssStyles) {
         jssStyles.parentElement.removeChild(jssStyles);
       }
-      setStateInitialized(true)
+      setStateInitialized(true);
     }
-  })
+  });
 
   const contextValues = {
     user: state.user,
@@ -122,6 +121,10 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
       <Head>
         <title>Climate Connect</title>
         <link rel="icon" href="/icons/favicon.ico" />
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
+        />
       </Head>
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
@@ -140,7 +143,6 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
       </ThemeProvider>
     </React.Fragment>
   );
-  
 }
 
 MyApp.getInitialProps = async ctx => {
@@ -156,17 +158,14 @@ MyApp.getInitialProps = async ctx => {
   const [user, notifications, pageProps] = await Promise.all([
     getLoggedInUser(token),
     getNotifications(token),
-    (ctx.Component && ctx.Component.getInitialProps) ? ctx.Component.getInitialProps(ctx.ctx) : {}
-  ])
-  console.log(token)
-  console.log(user)
-  console.log(notifications)
+    ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps(ctx.ctx) : {}
+  ]);
   return {
     pageProps: pageProps,
     user: user,
     notifications: notifications ? notifications : []
-  }
-}
+  };
+};
 
 async function getLoggedInUser(token) {
   if (token) {
@@ -175,9 +174,10 @@ async function getLoggedInUser(token) {
       return resp.data;
     } catch (err) {
       console.log(err);
-      if (err.response && err.response.data) console.log("Error in getLoggedInUser: " + err.response.data.detail);
-      if (err.response && err.response.data.detail === "Invalid token.") 
-        console.log("invalid token! token:"+token)
+      if (err.response && err.response.data)
+        console.log("Error in getLoggedInUser: " + err.response.data.detail);
+      if (err.response && err.response.data.detail === "Invalid token.")
+        console.log("invalid token! token:" + token);
       return null;
     }
   } else {
@@ -191,9 +191,10 @@ async function getNotifications(token) {
       const resp = await axios.get(process.env.API_URL + "/api/notifications/", tokenConfig(token));
       return resp.data.results;
     } catch (err) {
-      if (err.response && err.response.data) console.log("Error in getNotifications: " + err.response.data.detail);
-      if (err.response && err.response.data.detail === "Invalid token.") 
-       console.log("invalid token! token:"+token)
+      if (err.response && err.response.data)
+        console.log("Error in getNotifications: " + err.response.data.detail);
+      if (err.response && err.response.data.detail === "Invalid token.")
+        console.log("invalid token! token:" + token);
       return null;
     }
   } else {

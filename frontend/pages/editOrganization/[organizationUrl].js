@@ -1,26 +1,14 @@
 import React from "react";
-import Link from "next/link";
 import Router from "next/router";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import EditAccountPage from "../../src/components/account/EditAccountPage";
-import { Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import organization_info_metadata from "../../public/data/organization_info_metadata.js";
 import Cookies from "next-cookies";
 import axios from "axios";
 import tokenConfig from "../../public/config/tokenConfig";
 import { getImageUrl } from "./../../public/lib/imageOperations";
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
-
-const useStyles = makeStyles(theme => ({
-  subtitle: {
-    color: `${theme.palette.secondary.main}`
-  },
-  noprofile: {
-    textAlign: "center",
-    paddingTop: theme.spacing(5)
-  }
-}));
+import PageNotFound from "../../src/components/general/PageNotFound";
 
 //This route should only be accessible to admins of the organization
 
@@ -103,7 +91,7 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
           errorMessage={errorMessage}
         />
       ) : (
-        <NoOrganizationFoundLayout />
+        <PageNotFound itemName="Organization" />
       )}
     </WideLayout>
   );
@@ -115,27 +103,13 @@ EditOrganizationPage.getInitialProps = async ctx => {
   const [organization, tagOptions] = await Promise.all([
     getOrganizationByUrlIfExists(url, token),
     getOrganizationTagsOptions()
-  ])
+  ]);
   return {
     organization: organization,
     tagOptions: tagOptions,
     token: token
   };
 };
-
-function NoOrganizationFoundLayout() {
-  const classes = useStyles();
-  return (
-    <div className={classes.noprofile}>
-      <Typography variant="h1">Organization profile not found.</Typography>
-      <p>
-        <Link href="/">
-          <a>Click here to return to the homepage.</a>
-        </Link>
-      </p>
-    </div>
-  );
-}
 
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getOrganizationByUrlIfExists(organizationUrl, token) {

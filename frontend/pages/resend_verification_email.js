@@ -26,7 +26,7 @@ export default function ResendVerificationEmail() {
   };
 
   const onSuccess = resp => {
-    redirect("/", {
+    redirect("/browse", {
       message: resp.data.message
     });
   };

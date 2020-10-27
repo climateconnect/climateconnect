@@ -9,7 +9,7 @@ module.exports = {
         "/": { page: "/" },
         "/zoom": { page: "/zoom" },
         "/stream": { page: "/stream" },
-        "/support": { page: "/support" }
+        "/donate": { page: "/donate" }
       };
     else return defaultPathMap;
   }

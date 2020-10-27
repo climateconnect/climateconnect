@@ -3,8 +3,14 @@ import { createMuiTheme } from "@material-ui/core/styles";
 //Create core theme so we can access spacing etc. when customizing components
 const coreTheme = createMuiTheme({
   palette: {
-    primary: { main: "#387077" },
+    primary: {
+      main: "#207178",
+      light: "#66BCB5"
+    },
     secondary: { main: "#484848" },
+    yellow: {
+      main: "#FFDE0A"
+    },
     background: { default: "#fff" },
     action: {
       selected: "#387077"

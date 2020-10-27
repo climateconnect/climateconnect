@@ -7,6 +7,8 @@ const useStyles = makeStyles(theme => {
   return {
     outerContainer: {
       paddingTop: theme.spacing(2),
+      maxWidth: 1280,
+      margin: "0 auto",
       [theme.breakpoints.down("xs")]: {
         paddingTop: theme.spacing(1)
       }
@@ -16,7 +18,10 @@ const useStyles = makeStyles(theme => {
       height: 150,
       overflow: "hidden",
       backgroundRepeat: "no-repeat",
-      backgroundSize: "150px 150px"
+      backgroundSize: "150px 150px",
+      [theme.breakpoints.up("lg")]: {
+        flex: "0 0 150px"
+      }
     },
     storyIconBoxLeft: {
       backgroundPosition: "right"

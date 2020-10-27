@@ -81,7 +81,7 @@ class Messages extends React.Component {
         });
       }
     };
-    const sortByNewestFirst = (a, b) => new Date(a.sent_at) - new Date(b.sent_at)
+    const sortByNewestFirst = (a, b) => new Date(a.sent_at) - new Date(b.sent_at);
     return (
       <InfiniteScroll
         pageStart={0}
@@ -121,9 +121,7 @@ class Messages extends React.Component {
           </div>
         ) : (
           <div className={this.props.classes.noHistoryText}>
-            <p>
-              This is the very beginning of your conversation in {this.props.title}
-            </p>
+            <p>This is the very beginning of your conversation in {this.props.title}</p>
             <p>Write a message to get the conversation started!</p>
           </div>
         )}

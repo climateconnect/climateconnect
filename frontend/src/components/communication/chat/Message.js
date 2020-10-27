@@ -39,14 +39,13 @@ export default function Message({ message, classes, isPrivateChat }) {
         color={received ? "default" : "primary"}
         className={`${received ? classes.receivedMessage : classes.sentMessage} ${classes.message}`}
       >
-        {
-          received && !isPrivateChat && 
-          <Link href={"/profiles/"+message.sender.url_slug} target="_blank">
+        {received && !isPrivateChat && (
+          <Link href={"/profiles/" + message.sender.url_slug} target="_blank">
             <Typography className={ownClasses.senderName} color="primary" component="span">
               {message.sender.first_name + " " + message.sender.last_name}
             </Typography>
           </Link>
-        }
+        )}
         <MessageContent content={message.content} />
         <div className={ownClasses.timeContainer}>
           <div className={`${ownClasses.time} ${!received && ownClasses.sentTime}`}>

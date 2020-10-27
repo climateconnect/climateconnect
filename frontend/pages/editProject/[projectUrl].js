@@ -110,7 +110,7 @@ EditProjectPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectUrl);
   const [
-    project, 
+    project,
     members,
     skillsOptions,
     userOrganizations,
@@ -123,7 +123,7 @@ EditProjectPage.getInitialProps = async ctx => {
     getUserOrganizations(token),
     getStatusOptions(),
     getProjectTagsOptions()
-  ])
+  ]);
   return {
     project: project,
     members: members,

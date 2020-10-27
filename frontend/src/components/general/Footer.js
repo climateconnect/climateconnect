@@ -1,6 +1,5 @@
 import React from "react";
-import Link from "next/link";
-import { Box, useMediaQuery } from "@material-ui/core";
+import { Box, useMediaQuery, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import TwitterIcon from "@material-ui/icons/Twitter";
@@ -8,6 +7,7 @@ import InstagramIcon from "@material-ui/icons/Instagram";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import FavoriteIcon from "@material-ui/icons/Favorite";
+import LargeFooter from "../footer/LargeFooter";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -66,7 +66,19 @@ const useStyles = makeStyles(theme => ({
 }));
 
 //TODO: make footer stay on bottom on normal layout again
-export default function Footer({ className, noSpacingTop, noAbsolutePosition }) {
+export default function Footer({ className, noSpacingTop, noAbsolutePosition, large }) {
+  if (!large)
+    return (
+      <SmallFooter
+        className={className}
+        noSpacingTop={noSpacingTop}
+        noAbsolutePosition={noAbsolutePosition}
+      />
+    );
+  else return <LargeFooter className={className} />;
+}
+
+const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition }) => {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
 
@@ -78,13 +90,13 @@ export default function Footer({ className, noSpacingTop, noAbsolutePosition }) 
     >
       <Box className={classes.flexContainer}>
         <Box className={classes.leftBox}>
-          <Link href="/imprint">
+          <Link href="/imprint" color="inherit">
             <a className={`${classes.inheritColor} ${classes.link}`}>Imprint</a>
           </Link>
-          <Link href="/privacy">
+          <Link href="/privacy" color="inherit">
             <a className={`${classes.inheritColor} ${classes.link}`}>Privacy</a>
           </Link>
-          <Link href="/terms">
+          <Link href="/terms" color="inherit">
             <a className={classes.inheritColor}>Terms</a>
           </Link>
         </Box>
@@ -139,4 +151,4 @@ export default function Footer({ className, noSpacingTop, noAbsolutePosition }) 
       </Box>
     </Box>
   );
-}
+};

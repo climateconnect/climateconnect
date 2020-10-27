@@ -40,5 +40,5 @@ export function redirectOnLogin(user) {
         message: SIGN_UP_MESSAGE
       }
     });
-  } else Router.push("/");
+  } else Router.push("/browse");
 }

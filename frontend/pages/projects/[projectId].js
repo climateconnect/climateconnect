@@ -1,5 +1,4 @@
 import React, { useEffect, useContext } from "react";
-import Link from "next/link";
 import { Container, Tabs, Tab } from "@material-ui/core";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
@@ -16,6 +15,7 @@ import tokenConfig from "../../public/config/tokenConfig";
 import axios from "axios";
 import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
 import UserContext from "../../src/components/context/UserContext";
+import PageNotFound from "../../src/components/general/PageNotFound";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -89,7 +89,7 @@ export default function ProjectPage({ project, members, posts, comments, token, 
           setCurComments={setCurComments}
         />
       ) : (
-        <NoProjectFoundLayout />
+        <PageNotFound itemName="Project" />
       )}
     </WideLayout>
   );
@@ -98,19 +98,13 @@ export default function ProjectPage({ project, members, posts, comments, token, 
 ProjectPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectId);
-  const [
-    project, 
-    members,
-    posts,
-    comments,
-    following
-  ] = await Promise.all([
+  const [project, members, posts, comments, following] = await Promise.all([
     getProjectByIdIfExists(projectUrl, token),
     token ? getProjectMembersByIdIfExists(projectUrl, token) : [],
     getPostsByProject(projectUrl, token),
     getCommentsByProject(projectUrl, token),
     getIsUserFollowing(projectUrl, token)
-  ])
+  ]);
   return {
     project: project,
     members: members,
@@ -276,19 +270,6 @@ function ProjectLayout({
 
 function TabContent({ value, index, children }) {
   return <div hidden={value !== index}>{children}</div>;
-}
-
-function NoProjectFoundLayout() {
-  return (
-    <>
-      <p>Project not found.</p>
-      <p>
-        <Link href="/">
-          <a>Click here to return to the homepage.</a>
-        </Link>
-      </p>
-    </>
-  );
 }
 
 async function getProjectByIdIfExists(projectUrl, token) {

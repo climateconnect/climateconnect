@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import Link from "next/link";
 import { Container, Typography, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
@@ -20,6 +19,7 @@ import LoginNudge from "../../src/components/general/LoginNudge";
 import { parseProfile } from "./../../public/lib/profileOperations";
 import { getParams } from "./../../public/lib/generalOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
+import PageNotFound from "../../src/components/general/PageNotFound";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_user.jpg";
 
@@ -111,7 +111,7 @@ export default function ProfilePage({
           token={token}
         />
       ) : (
-        <NoProfileFoundLayout />
+        <PageNotFound itemName="Profile" />
       )}
     </WideLayout>
   );
@@ -120,19 +120,13 @@ export default function ProfilePage({
 ProfilePage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   const profileUrl = encodeURI(ctx.query.profileUrl);
-  const [
-    profile, 
-    organizations,
-    projects,
-    profileTypes,
-    infoMetadata
-  ] = await Promise.all([
+  const [profile, organizations, projects, profileTypes, infoMetadata] = await Promise.all([
     getProfileByUrlIfExists(profileUrl, token),
     getOrganizationsByUser(profileUrl, token),
     getProjectsByUser(profileUrl, token),
     getProfileTypes(),
     getProfileInfoMetadata()
-  ])
+  ]);
   return {
     profile: profile,
     organizations: organizations,
@@ -219,20 +213,6 @@ function ProfileLayout({
         )}
       </Container>
     </AccountPage>
-  );
-}
-
-function NoProfileFoundLayout() {
-  const classes = useStyles();
-  return (
-    <div className={classes.noprofile}>
-      <Typography variant="h1">Profile not found.</Typography>
-      <p>
-        <Link href="/">
-          <a>Click here to return to the homepage.</a>
-        </Link>
-      </p>
-    </div>
   );
 }
 

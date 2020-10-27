@@ -118,8 +118,10 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     def get_image(self, obj):
         if obj.thumbnail_image:
             return obj.thumbnail_image.url
-        else:            
+        if obj.image:            
             return obj.image.url
+        else:
+            return None
 
 
 class ProjectMemberSerializer(serializers.ModelSerializer):

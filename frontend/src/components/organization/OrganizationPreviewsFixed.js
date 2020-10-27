@@ -1,0 +1,69 @@
+import React from "react";
+import { makeStyles } from "@material-ui/core";
+import OrganizationPreview from "./OrganizationPreview";
+//This component is to display a fixed amount of projects without  the option to load more
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: "flex"
+  },
+  container: {
+    whiteSpace: "nowrap",
+    overflow: "auto",
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      ["&::-webkit-scrollbar"]: {
+        display: "block",
+        height: 10
+      },
+      "&::-webkit-scrollbar-track": {
+        backgroundColor: "#F8F8F8",
+        borderRadius: 20
+      },
+      "&::-webkit-scrollbar-thumb": {
+        backgroundColor: "rgba(0,0,0,0.8)",
+        borderRadius: 20
+      }
+    }
+  },
+  organization: {
+    minWidth: 265,
+    display: "inline-block",
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.down("lg")]: {
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1)
+    }
+  },
+  first: {
+    marginLeft: 0
+  }
+}));
+
+export default function OrganizationPreviewsFixed({ organizations, showOrganizationType }) {
+  const classes = useStyles();
+  console.log(organizations);
+  return (
+    <div className={classes.root}>
+      <div className={classes.container}>
+        {organizations.map((organization, index) => {
+          console.log(organization);
+          return (
+            <span
+              className={`${classes.organization} ${index === 0 && classes.first}`}
+              key={organization.url_slug}
+            >
+              <OrganizationPreview
+                organization={organization}
+                showOrganizationType={showOrganizationType}
+              />
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
