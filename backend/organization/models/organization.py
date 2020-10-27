@@ -122,6 +122,12 @@ class Organization(models.Model):
         blank=True
     )
 
+    rating = models.PositiveSmallIntegerField(
+        help_text="organizations with a rating of 99 are being shown as featured. Could later be used to sort organizations.",
+        verbose_name="Rating (1-100)",
+        default=100
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Organization"
