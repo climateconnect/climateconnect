@@ -26,6 +26,10 @@ const useStyles = makeStyles(theme => {
     wrapper: {
       display: "inline-flex",
       alignItems: "center"
+    },
+    contentWrapper: {
+      display: "inline-flex",
+      alignItems: "center"
     }
   };
 });
@@ -67,7 +71,7 @@ export default function MiniProfilePreview({
 function Content({ profile, avatarClassName, size }) {
   const classes = useStyles();
   return (
-    <>
+    <span className={classes.contentWrapper}>
       <div className={classes.avatarWrapper}>
         <Avatar
           src={getImageUrl(profile.image)}
@@ -81,6 +85,6 @@ function Content({ profile, avatarClassName, size }) {
       >
         {profile.first_name + " " + profile.last_name}
       </Typography>
-    </>
+    </span>
   );
 }

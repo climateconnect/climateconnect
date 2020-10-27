@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Tooltip } from "@material-ui/core";
+import { Box, Tooltip, Typography } from "@material-ui/core";
 import PlaceIcon from "@material-ui/icons/Place";
 import { makeStyles } from "@material-ui/core/styles";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
@@ -18,9 +18,6 @@ const useStyles = makeStyles(theme => ({
     marginTop: 2,
     marginRight: theme.spacing(0.5)
   },
-  creator: {
-    marginBottom: 5
-  },
   status: {
     marginTop: theme.spacing(1)
   },
@@ -30,12 +27,17 @@ const useStyles = makeStyles(theme => ({
   },
   categoryText: {
     marginTop: theme.spacing(0.5)
+  },
+  metadataText: {
+    display: "inline",
+    fontSize: 14
   }
 }));
 
 export default function ProjectMetaData({ project }) {
   const classes = useStyles();
   const project_parent = project.project_parents[0];
+  const main_project_tag = project.tags.map(t => t.project_tag.name)[0];
   return (
     <Box>
       {project_parent && project_parent.parent_organization && (
@@ -58,14 +60,14 @@ export default function ProjectMetaData({ project }) {
         <Tooltip title="Location">
           <PlaceIcon className={classes.cardIcon} />
         </Tooltip>
-        {project.location}
+        <Typography className={classes.metadataText}>{project.location}</Typography>
         <div className={classes.infoItem}>
           <Tooltip title="Categories">
             <ExploreIcon className={classes.cardIcon} />
           </Tooltip>{" "}
-          <span className={classes.categoryText}>
-            {project.tags.map(t => t.project_tag.name)[0]}
-          </span>
+          <Typography className={`${classes.categoryText} ${classes.metadataText}`}>
+            {main_project_tag}
+          </Typography>
         </div>
       </Box>
     </Box>
