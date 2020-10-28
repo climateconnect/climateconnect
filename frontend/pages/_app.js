@@ -35,17 +35,22 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
 
   //TODO: reload current path or main page while being logged out
   const signOut = async () => {
+    const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT);
+    const cookieProps = {
+      path: "/",
+    };
+    if (!develop) cookieProps.domain = "." + API_HOST;
     try {
       const token = cookies.get("token");
       await axios.post(process.env.API_URL + "/logout/", null, tokenConfig(token));
-      cookies.remove("token", { path: "/" });
+      cookies.remove("token", cookieProps);
       setState({
         ...state,
         user: null
       });
     } catch (err) {
       console.log(err);
-      cookies.remove("token", { path: "/" });
+      cookies.remove("token", cookieProps);
       setState({
         ...state,
         user: null
