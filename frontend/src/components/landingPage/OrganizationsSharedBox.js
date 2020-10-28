@@ -26,7 +26,6 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(3)
   },
   showProjectsButtonContainer: {
-    marginLeft: theme.spacing(3),
     marginTop: theme.spacing(3)
   },
   showProjectsArrow: {
@@ -64,7 +63,6 @@ export default function OrganizationsSharedBox({ organizations }) {
         types of organizations taking climate action!
         {!isNarrowScreen && (
           <>
-            <br />
             You can directly contact the {"organization's"} representative to exchange knowledge,
             find volunteering opportunities or job opportunites.
           </>
@@ -72,7 +70,7 @@ export default function OrganizationsSharedBox({ organizations }) {
       </Typography>
       <OrganizationPreviewsFixed organizations={organizations} showOrganizationType />
       <div className={classes.showProjectsButtonContainer}>
-        <Button color="inherit" href="/browse">
+        <Button color="inherit" href="/browse#organizations">
           <span className={classes.showProjectsText}>Explore all organizations</span>
           <KeyboardArrowRightIcon className={classes.showProjectsArrow} />
         </Button>

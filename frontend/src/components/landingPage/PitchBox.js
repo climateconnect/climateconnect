@@ -22,6 +22,7 @@ const useStyles = makeStyles(theme => ({
     margin: "0 auto",
     display: "flex",
     alignItems: "center",
+    justifyContent: "center",
     textAlign: "center",
     marginBottom: theme.spacing(3),
     position: "relative",
@@ -176,7 +177,7 @@ export default function PitchBox({ h1ClassName }) {
           alternate={!isMediumScreen}
           image={"/images/creativity_story.svg"}
           headline="Get inspired"
-          text="Find inspiring climate change solutions. Replicate succesful projects and benefit from the experience of others. Find solutions that actually make a difference! Contact the project owners directly to ask about their lessons learned and knowledge on any specific project."
+          text="Find inspiring solutions to global warming. Replicate succesful projects and benefit from the experience of others. Find solutions that actually make a difference! Contact the project owners directly to ask about their lessons learned and knowledge on any specific project."
         >
           {!isMediumScreen ? (
             <>
@@ -193,7 +194,7 @@ export default function PitchBox({ h1ClassName }) {
         <PitchElement
           image={"/images/team_story.svg"}
           headline="Worldwide collaboration"
-          text="Worldwide collaboration in climate action is the main goal of Climate Connect. We want everyone involved in fighting climate change to work together! Filter projects by what skills they are looking for to find out where you can make the biggest difference with your individual skillet!"
+          text="Worldwide collaboration in climate action is the main goal of Climate Connect. We want everyone involved in fighting climate change to work together! Filter projects by what skills they are looking for to find out where you can make the biggest difference with your individual skillset!"
         >
           {!isMediumScreen ? (
             <>

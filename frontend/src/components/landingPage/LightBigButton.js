@@ -6,8 +6,8 @@ const useStyles = makeStyles(theme => ({
     background: "#D7F7F5",
     color: theme.palette.primary.main,
     height: 55,
-    paddingLeft: theme.spacing(6),
-    paddingRight: theme.spacing(6),
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
     fontSize: 18,
     "&:hover": {
       background: "#fff"

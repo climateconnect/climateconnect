@@ -73,7 +73,8 @@ const useStyles = makeStyles(theme => ({
   },
   headline: {
     marginBottom: theme.spacing(3),
-    position: "relative"
+    position: "relative",
+    textAlign: "left"
   },
   textContainer: {
     color: "white",

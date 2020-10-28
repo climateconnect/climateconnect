@@ -30,6 +30,7 @@ const useStyles = makeStyles(theme => ({
   },
   organization: {
     minWidth: 265,
+    flex: "1 1 0px",
     display: "inline-block",
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),

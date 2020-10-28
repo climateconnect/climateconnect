@@ -16,7 +16,8 @@ const useStyles = makeStyles(theme => {
       userSelect: "none",
       backgroundColor: "inherit",
       borderRadius: 0,
-      textAlign: "center"
+      textAlign: "center",
+      height: 250
     },
     bold: {
       fontWeight: "bold"

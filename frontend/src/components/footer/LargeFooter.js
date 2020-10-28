@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   li: {
-    color: theme.palette.secondary.main,
+    color: "white",
     fontWeight: 600,
     [theme.breakpoints.down("md")]: {
       fontSize: 14
@@ -156,10 +156,10 @@ const SocialLinks = () => {
       <Link target="_blank" href="https://twitter.com/ConnectClimate">
         <TwitterIcon color="primary" className={classes.socialIcon} />
       </Link>
-      <Link target="_blank" href="https://twitter.com/ConnectClimate">
+      <Link target="_blank" href="https://www.linkedin.com/company/climateconnect">
         <LinkedInIcon color="primary" className={classes.socialIcon} />
       </Link>
-      <Link target="_blank" href="https://www.linkedin.com/company/climateconnect">
+      <Link target="_blank" href="https://www.facebook.com/climateconnect.earth">
         <FacebookIcon color="primary" className={classes.socialIcon} />
       </Link>
       <Link target="_blank" href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw">

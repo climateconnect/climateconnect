@@ -11,6 +11,9 @@ const useStyles = makeStyles(theme => ({
   container: {
     whiteSpace: "nowrap",
     overflow: "auto",
+    display: "flex",
+    justifyContent: "space-between",
+    minWidth: "100%",
     [theme.breakpoints.up("sm")]: {
       ["&::-webkit-scrollbar"]: {
         display: "block",
@@ -24,17 +27,30 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: "rgba(0,0,0,0.8)",
         borderRadius: 20
       }
+    },
+    [theme.breakpoints.down("md")]: {
+      display: "block",
+      minWidth: 0
     }
   },
   project: {
-    width: 268,
+    width: 300,
     display: "inline-block",
-    marginLeft: theme.spacing(2),
-    marginRight: theme.spacing(2),
     [theme.breakpoints.down("lg")]: {
       marginLeft: theme.spacing(1),
       marginRight: theme.spacing(1)
+    },
+    [theme.breakpoints.down("md")]: {
+      width: 268,
+      marginLeft: theme.spacing(2),
+      marginRight: theme.spacing(2),
     }
+  },
+  firstProject: {
+    marginLeft: 0
+  },
+  lastProject: {
+    marginRight: 0
   }
 }));
 
@@ -43,8 +59,8 @@ export default function ProjectPreviewsFixed({ projects }) {
   return (
     <div className={classes.root}>
       <div className={classes.container}>
-        {projects.map(project => (
-          <span className={classes.project} key={project.url_slug}>
+        {projects.map((project, index) => (
+          <span className={`${classes.project} ${index === 0 && classes.firstProject} ${index === projects.length-1 && classes.lastProject}`} key={project.url_slug}>
             <ProjectPreview project={project} />
           </span>
         ))}

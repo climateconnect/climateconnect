@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Tooltip } from "@material-ui/core";
+import { Box, Tooltip, Typography } from "@material-ui/core";
 import PlaceIcon from "@material-ui/icons/Place";
 import ExploreIcon from "@material-ui/icons/Explore";
 import { makeStyles } from "@material-ui/core/styles";
@@ -8,8 +8,11 @@ import organization_info_metadata from "../../../public/data/organization_info_m
 const useStyles = makeStyles(theme => {
   return {
     root: {
-      textAlign: "left",
-      paddingLeft: theme.spacing(3)
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      textAlign: "left"
     },
     orgLogo: {
       height: "0.9rem",
@@ -17,18 +20,19 @@ const useStyles = makeStyles(theme => {
     },
     cardIconBox: {
       width: 40,
+      flex: "0 0 40px",
       display: "inline-block",
       [theme.breakpoints.down("xs")]: {
         display: "none"
       }
     },
-    cardIcon: {
-      verticalAlign: "bottom",
-      marginBottom: -2,
-      marginTop: 2
+    infoLink: {
+      display: "flex",
+      marginBottom: theme.spacing(0.5)
     },
     textContent: {
-      textOverflow: "hidden"
+      fontSize: 14,
+      whiteSpace: "normal"
     }
   };
 });
@@ -51,48 +55,52 @@ export default function OrganizationMetaData({ organization, showOrganizationTyp
   }, []);
   return (
     <Box className={classes.root}>
-      <Box className={classes.textContent}>
-        <span className={classes.cardIconBox}>
-          <Tooltip title="location">
-            <PlaceIcon className={classes.cardIcon} />
-          </Tooltip>
-        </span>
-        {organization.info.location}
-      </Box>
-      {showOrganizationType && (
-        <>
-          <Box>
-            <span className={classes.cardIconBox}>
-              <Tooltip title="organization types">
-                <ExploreIcon className={classes.cardIcon} />
-              </Tooltip>
-            </span>
-            <span className={classes.textContent}>
-              {organization.types.map((type, index) => {
+      <div className={classes.infoLinks}>
+        <Box className={classes.infoLink}>
+          <span className={classes.cardIconBox}>
+            <Tooltip title="location">
+              <PlaceIcon className={classes.cardIcon} />
+            </Tooltip>
+          </span>
+          <div>
+            <Typography className={classes.textContent}>{organization.info.location}</Typography>
+          </div>
+        </Box>
+        {showOrganizationType && (
+          <>
+            <Box className={classes.infoLink}>
+              <span className={classes.cardIconBox}>
+                <Tooltip title="organization types">
+                  <ExploreIcon className={classes.cardIcon} />
+                </Tooltip>
+              </span>
+              <span className={classes.textContent}>
+                {organization.types.map((type, index) => {
+                  return (
+                    <React.Fragment key={type.id}>
+                      {type.name}
+                      {index !== organization.types.length - 1 && ", "}
+                    </React.Fragment>
+                  );
+                })}
+              </span>
+            </Box>
+            {additionalInfo.map((i, index) => {
+              if (i.value)
                 return (
-                  <React.Fragment key={type.id}>
-                    {type.name}
-                    {index !== organization.types.length - 1 && ", "}
-                  </React.Fragment>
+                  <Box key={index}>
+                    <span className={classes.cardIconBox}>
+                      <Tooltip title={i.name}>
+                        <i.icon className={classes.cardIcon} />
+                      </Tooltip>
+                    </span>
+                    <Typography className={classes.textContent}>{i.value}</Typography>
+                  </Box>
                 );
-              })}
-            </span>
-          </Box>
-          {additionalInfo.map((i, index) => {
-            if (i.value)
-              return (
-                <Box key={index}>
-                  <span className={classes.cardIconBox}>
-                    <Tooltip title={i.name}>
-                      <i.icon className={classes.cardIcon} />
-                    </Tooltip>
-                  </span>
-                  <span className={classes.textContent}>{i.value}</span>
-                </Box>
-              );
-          })}
-        </>
-      )}
+            })}
+          </>
+        )}
+      </div>
     </Box>
   );
 }

@@ -23,7 +23,6 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(3)
   },
   showProjectsButtonContainer: {
-    marginLeft: theme.spacing(3),
     marginTop: theme.spacing(3),
     color: theme.palette.yellow.main
   },
@@ -43,7 +42,7 @@ export default function ProjectsSharedBox({ projects }) {
         Make an impact nearby or anywhere on earth
       </Typography>
       <Typography color="secondary" className={classes.explainerText}>
-        Find the best climate change solutions from around the world and share your own solutions
+        Find the best climate change solutions from around the world. Share your own solutions
         and projects for others to replicate.
       </Typography>
       <ProjectPreviewsFixed projects={projects} />
