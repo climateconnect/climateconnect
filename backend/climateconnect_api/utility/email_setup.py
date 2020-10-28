@@ -1,4 +1,4 @@
-import sendgrid
+from mailjet_rest import Client
 from datetime import timedelta
 from django.utils import timezone
 from django.conf import settings
@@ -6,9 +6,7 @@ from django.conf import settings
 import logging
 logger = logging.getLogger(__name__)
 
-sg = sendgrid.SendGridAPIClient(
-    api_key=settings.SENDGRID_API_KEY
-)
+mailjet = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE), version='v3.1')
 
 
 def get_user_verification_url(verification_key):
@@ -41,143 +39,141 @@ def get_reset_password_url(verification_key):
 
 def send_user_verification_email(user, verification_key):
     url = get_user_verification_url(verification_key)
+
     data = {
-        "personalizations": [
+        'Messages': [
             {
-                "to": [
+                "From": {
+                    "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
+                    "Name": "Climate Connect"
+                },
+                "To": [
                     {
-                        "email": user.email
+                        "Email": user.email,
+                        "Name": user.first_name + " " + user.last_name
                     }
                 ],
-                "dynamic_template_data": {
+                "TemplateID": int(settings.EMAIL_VERIFICATION_TEMPLATE_ID),
+                "TemplateLanguage": True,
+                "Subject": "Welcome to Climate Connect!  Verify your email address",
+                "Variables": {
                     "FirstName": user.first_name,
-                    "URL": url
-                },
-            },
-        ],
-        "from": {
-            "email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL
-        },
-        "content": [
-            {
-                "type": "text/html",
-                "value": " "
+                    "url": url
+                }
             }
-        ],
-        "template_id": settings.SENDGRID_EMAIL_VERIFICATION_TEMPLATE_ID
+	    ]
     }
 
     try:
-        mail = sg.client.mail.send.post(request_body=data)
+        mail = mailjet.send.create(data=data)
     except Exception as ex:
         logger.error("%s: Error sending email: %s" % (
             send_user_verification_email.__name__, ex
         ))
+        logger.error(mail)
 
 def send_new_email_verification(user, new_email, verification_key):
     url = get_new_email_verification_url(verification_key)
     data = {
-        "personalizations": [
+        'Messages': [
             {
-                "to": [
+                "From": {
+                    "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
+                    "Name": "Climate Connect"
+                },
+                "To": [
                     {
-                        "email": user.email
+                        "Email": user.email,
+                        "Name": user.first_name + " " + user.last_name
                     }
                 ],
-                "dynamic_template_data": {
+                "TemplateID": int(settings.NEW_EMAIL_VERIFICATION_TEMPLATE_ID),
+                "TemplateLanguage": True,
+                "Subject": "Verify your new email address",
+                "Variables": {
                     "FirstName": user.first_name,
-                    "URL": url,
+                    "url": url,
                     "NewMail": new_email
-                },
-            },
-        ],
-        "from": {
-            "email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL
-        },
-        "content": [
-            {
-                "type": "text/html",
-                "value": " "
+                }
             }
-        ],
-        "template_id": settings.SENDGRID_NEW_EMAIL_VERIFICATION_TEMPLATE_ID
+	    ]
     }
 
     try:
-        sg.client.mail.send.post(request_body=data)
+        mail = mailjet.send.create(data=data)
     except Exception as ex:
         logger.error("%s: Error sending email: %s" % (
             send_user_verification_email.__name__, ex
         ))
+        logger.error(mail)
 
 def send_password_link(user, password_reset_key):
     url = get_reset_password_url(password_reset_key)
+    
     data = {
-        "personalizations": [
+        'Messages': [
             {
-                "to": [
+                "From": {
+                    "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
+                    "Name": "Climate Connect"
+                },
+                "To": [
                     {
-                        "email": user.email
+                        "Email": user.email,
+                        "Name": user.first_name + " " + user.last_name
                     }
                 ],
-                "dynamic_template_data": {
+                "TemplateID": int(settings.RESET_PASSWORD_TEMPLATE_ID),
+                "TemplateLanguage": True,
+                "Subject": "Reset your password",
+                "Variables": {
                     "FirstName": user.first_name,
-                    "URL": url
+                    "url": url
                 }
-            },
-        ],
-        "from": {
-            "email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL
-        },
-        "content": [
-            {
-                "type": "text/html",
-                "value": " "
             }
-        ],
-        "template_id": settings.SENDGRID_RESET_PASSWORD_TEMPLATE_ID
+	    ]
     }
 
     try:
-        sg.client.mail.send.post(request_body=data)
+        mail = mailjet.send.create(data=data)
     except Exception as ex:
         logger.error("looking at the errors!")
         logger.error(ex.body)
         logger.error("%s: Error sending email: %s" % (
             send_user_verification_email.__name__, ex
         ))
+        logger.error(mail)
 
 def send_feedback_email(email, message, send_response):
+
     data = {
-        "personalizations": [
+        'Messages': [
             {
-                "to": [
+                "From": {
+                    "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
+                    "Name": "Climate Connect"
+                },
+                "To": [
                     {
-                        "email": "feedback@climateconnect.earth"
+                        "Email": "feedback@climateconnect.earth",
+                        "Name": "Climate Connect"
                     }
                 ],
-                "dynamic_template_data": {
+                "TemplateID": int(settings.FEEDBACK_TEMPLATE_ID),
+                "TemplateLanguage": True,
+                "Subject": "Climate Connect User Feedback",
+                "Variables": {
                     "text": message,
                     "sendReply": send_response,
                     "email": email
                 }
-            },
-        ],
-        "from": {
-            "email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL
-        },
-        "content": [
-            {
-                "type": "text/html",
-                "value": " "
             }
-        ],
-        "template_id": settings.SENDGRID_FEEDBACK_TEMPLATE_ID
+	    ]
     }
     try:
-        sg.client.mail.send.post(request_body=data)
+        mail = mailjet.send.create(data=data)
     except Exception as ex:
         logger.error("%s: Error sending email: %s" % (
-            send_feedback_email.__name__, ex
+            send_user_verification_email.__name__, ex
         ))
-        logger.error(ex.body)
+        logger.error(mail)
