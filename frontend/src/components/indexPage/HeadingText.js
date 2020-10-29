@@ -1,6 +1,5 @@
 import React from "react";
 import { Typography, makeStyles, IconButton } from "@material-ui/core";
-import TextLoop from "react-text-loop";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import AlternatingText from "../general/AlternatingText";
 

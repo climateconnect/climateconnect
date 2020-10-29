@@ -42,8 +42,8 @@ export default function ProjectsSharedBox({ projects }) {
         Make an impact nearby or anywhere on earth
       </Typography>
       <Typography color="secondary" className={classes.explainerText}>
-        Find the best climate change solutions from around the world. Share your own solutions
-        and projects for others to replicate.
+        Find the best climate change solutions from around the world. Share your own solutions and
+        projects for others to replicate.
       </Typography>
       <ProjectPreviewsFixed projects={projects} />
       <div className={classes.showProjectsButtonContainer}>

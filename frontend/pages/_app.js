@@ -37,7 +37,7 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
   const signOut = async () => {
     const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT);
     const cookieProps = {
-      path: "/",
+      path: "/"
     };
     if (!develop) cookieProps.domain = "." + API_HOST;
     try {
