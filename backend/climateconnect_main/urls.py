@@ -77,6 +77,7 @@ urlpatterns = [
         'api/notifications/',
         notifications_views.ListNotificationsView.as_view(), name='list-notifications'
     ),
+    path('api/sitemap/members/', user_views.ListMembersForSitemap.as_view(), name='list-members-for-sitemap'),
     # Organization views
     path('api/', include('organization.urls')),
     # Common views

@@ -26,7 +26,8 @@ from climateconnect_api.models import UserProfile, Availability, Skill
 
 # Serializer imports
 from climateconnect_api.serializers.user import (
-    UserProfileSerializer, PersonalProfileSerializer, UserProfileStubSerializer, UserProfileMinimalSerializer
+    UserProfileSerializer, PersonalProfileSerializer, UserProfileStubSerializer, 
+    UserProfileMinimalSerializer, UserProfileSitemapEntrySerializer
 )
 from organization.serializers.project import ProjectFromProjectMemberSerializer
 from organization.serializers.organization import OrganizationsFromProjectMember
@@ -347,3 +348,10 @@ class SetNewPassword(APIView):
             return Response({"message": "This link has expired. Please reset your password again.", "type": "link_timed_out"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"message": "You have successfully set a new password. You may now log in with your new password."}, status=status.HTTP_200_OK)
+
+class ListMembersForSitemap(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = UserProfileSitemapEntrySerializer
+
+    def get_queryset(self):
+        return UserProfile.objects.all()

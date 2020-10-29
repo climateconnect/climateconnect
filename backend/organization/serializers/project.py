@@ -176,3 +176,8 @@ class ProjectFromProjectMemberSerializer(serializers.ModelSerializer):
     def get_project(self, obj):
         serializer = ProjectStubSerializer(obj.project)
         return serializer.data
+
+class ProjectSitemapEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ('url_slug', 'updated_at')

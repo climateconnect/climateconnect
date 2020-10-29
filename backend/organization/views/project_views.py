@@ -15,7 +15,7 @@ from organization.models import (
 )
 from organization.serializers.project import (
     ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer, 
-    InsertProjectMemberSerializer
+    InsertProjectMemberSerializer, ProjectSitemapEntrySerializer
 )
 from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
@@ -545,3 +545,10 @@ class ListFeaturedProjects(ListAPIView):
 
     def get_queryset(self):
         return Project.objects.filter(rating__lte=99, is_draft=False)[0:4]
+
+class ListProjectsForSitemap(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = ProjectSitemapEntrySerializer
+
+    def get_queryset(self):
+        return Project.objects.all()
