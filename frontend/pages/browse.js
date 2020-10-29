@@ -55,8 +55,7 @@ export default function Index({
   organizationsObject,
   membersObject,
   token,
-  filterChoices,
-  hideInfo
+  filterChoices
 }) {
   const membersWithAdditionalInfo = members => {
     return members.map(p => {
@@ -97,7 +96,6 @@ export default function Index({
   };
   const [state, setState] = React.useState(initialState);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
-  const isLargeScreen = useMediaQuery("(min-width:1000px");
   const classes = useStyles();
   //Django starts counting at page 1 and we always catch the first page on load.
   const [hash, setHash] = React.useState(null);

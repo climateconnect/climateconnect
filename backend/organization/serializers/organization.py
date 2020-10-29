@@ -81,3 +81,8 @@ class OrganizationsFromProjectMember(serializers.ModelSerializer):
     
     def get_organization(self, obj):
         return OrganizationCardSerializer(obj.organization).data
+
+class OrganizationSitemapEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Organization
+        fields = ('url_slug', 'updated_at')

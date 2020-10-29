@@ -115,3 +115,8 @@ class UserAccountSettingsSerializer(serializers.ModelSerializer):
 
     def get_email(self, obj):
         return obj.user.email
+
+class UserProfileSitemapEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('url_slug', 'updated_at')

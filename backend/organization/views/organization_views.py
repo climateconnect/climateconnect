@@ -10,7 +10,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from django.contrib.auth.models import User
 from organization.serializers.organization import (
-    OrganizationSerializer, OrganizationMinimalSerializer, OrganizationMemberSerializer, UserOrganizationSerializer, OrganizationCardSerializer
+    OrganizationSerializer, OrganizationMinimalSerializer, OrganizationMemberSerializer, 
+    UserOrganizationSerializer, OrganizationCardSerializer, OrganizationSitemapEntrySerializer
 )
 from organization.serializers.project import (ProjectFromProjectParentsSerializer,)
 from organization.serializers.tags import (OrganizationTagsSerializer)
@@ -343,3 +344,10 @@ class ListFeaturedOrganizations(ListAPIView):
 
     def get_queryset(self):
         return Organization.objects.filter(rating__lte=99)[0:4]
+
+class ListOrganizationsForSitemap(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = OrganizationSitemapEntrySerializer
+
+    def get_queryset(self):
+        return Organization.objects.all()

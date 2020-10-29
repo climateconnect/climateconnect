@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("md")]: {
       width: 268,
       marginLeft: theme.spacing(2),
-      marginRight: theme.spacing(2),
+      marginRight: theme.spacing(2)
     }
   },
   firstProject: {
@@ -60,7 +60,11 @@ export default function ProjectPreviewsFixed({ projects }) {
     <div className={classes.root}>
       <div className={classes.container}>
         {projects.map((project, index) => (
-          <span className={`${classes.project} ${index === 0 && classes.firstProject} ${index === projects.length-1 && classes.lastProject}`} key={project.url_slug}>
+          <span
+            className={`${classes.project} ${index === 0 && classes.firstProject} ${index ===
+              projects.length - 1 && classes.lastProject}`}
+            key={project.url_slug}
+          >
             <ProjectPreview project={project} />
           </span>
         ))}
