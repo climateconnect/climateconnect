@@ -91,13 +91,13 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition }) => {
       <Box className={classes.flexContainer}>
         <Box className={classes.leftBox}>
           <Link href="/imprint" color="inherit">
-            <a className={`${classes.inheritColor} ${classes.link}`}>Imprint</a>
+            <span className={`${classes.inheritColor} ${classes.link}`}>Imprint</span>
           </Link>
           <Link href="/privacy" color="inherit">
-            <a className={`${classes.inheritColor} ${classes.link}`}>Privacy</a>
+            <span className={`${classes.inheritColor} ${classes.link}`}>Privacy</span>
           </Link>
           <Link href="/terms" color="inherit">
-            <a className={classes.inheritColor}>Terms</a>
+            <span className={classes.inheritColor}>Terms</span>
           </Link>
         </Box>
         {!isNarrowScreen && (

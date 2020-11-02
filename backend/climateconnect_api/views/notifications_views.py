@@ -1,10 +1,15 @@
 from rest_framework.generics import ListAPIView
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from climateconnect_api.pagination import NotificationsPagination
 from climateconnect_api.serializers.notification import (
     NotificationSerializer
 )
 from climateconnect_api.models.notification import UserNotification, Notification
+from rest_framework.exceptions import ValidationError
+from datetime import datetime
+from rest_framework.response import Response
+from rest_framework import status
 
 class ListNotificationsView(ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -22,3 +27,23 @@ class ListNotificationsView(ListAPIView):
             return notifications
         else:
             return []
+
+class SetUserNotificationsRead(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if 'notifications' not in request.data:
+            raise ValidationError('Required parameter mission: notifications')
+        unread_notifications =  UserNotification.objects.filter(
+            notification__in = request.data['notifications'], 
+            user = request.user,
+            read_at = None
+        )
+        for notification in unread_notifications:
+            notification.read_at = datetime.now()
+            notification.save()
+        all_unread_user_notifications = UserNotification.objects.filter(
+            user = request.user, read_at = None
+        )
+        serializer = NotificationSerializer(all_unread_user_notifications, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

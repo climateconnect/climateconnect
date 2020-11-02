@@ -2,6 +2,7 @@ from django.db import models
 from chat_messages.models.message import MessageParticipants, MessageReceiver
 from organization.models.content import (ProjectComment, PostComment, Post)
 from organization.models.followers import ProjectFollower
+from organization.models.project import Project
 from django.contrib.auth.models import User
 
 class Notification(models.Model):
@@ -91,3 +92,22 @@ class UserNotification(models.Model):
         help_text="Time when the user has read the notification",
         verbose_name='Read at', null=True, blank=True
     )
+
+class EmailNotification(models.Model):
+    user = models.ForeignKey(
+        User, related_name="email_notification_user",
+        verbose_name="User", on_delete=models.CASCADE
+    )
+
+    notification = models.ForeignKey(
+        Notification, related_name="email_notification_notification",
+        verbose_name="Notification", on_delete=models.CASCADE
+    )
+
+    created_at = models.DateTimeField(
+        help_text="Time when the email was sent",
+        verbose_name="Created at", auto_now_add=True
+    )
+
+    class Meta:
+        verbose_name_plural = "Email Notifications"

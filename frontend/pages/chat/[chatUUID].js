@@ -85,13 +85,30 @@ export default function Chat({
   nextLink,
   hasMore
 }) {
-  const { chatSocket } = useContext(UserContext);
+  const { chatSocket, user } = useContext(UserContext);
   const [socketClosed, setSocketClosed] = useState(false);
   const [state, setState] = React.useState({
     nextPage: 2,
     messages: [...messages],
     nextLink: nextLink,
     hasMore: hasMore
+  });
+
+  const handleWindowClose = (e) => {
+    if (state.messages.filter(m=>m.unconfirmed).length > 0) {
+      e.preventDefault();
+      return e.returnValue = 'Changes you made might not be saved.';
+    }
+
+  };
+
+  React.useEffect(() => {
+    window.addEventListener('beforeunload', handleWindowClose);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleWindowClose);
+    };
+
   });
 
   const chatting_partner = participants[0];
@@ -102,12 +119,15 @@ export default function Chat({
       const data = JSON.parse(rawData.data);
       if (data.chat_uuid === chatUUID) {
         const message = await getMessageFromServer(data.message_id, token);
-        setState({ ...state, messages: [...state.messages, message] });
+        setState({ 
+          ...state, 
+          messages: [
+            ...state.messages.filter(m=>!(m.content === message.content && m.unconfirmed)), 
+            message
+          ] 
+        });
       }
-    };
-    chatSocket.onclose = () => {
-      setSocketClosed(true);
-    };
+    };    
   }
 
   const loadMoreMessages = async () => {
@@ -141,7 +161,15 @@ export default function Chat({
   };
 
   const sendMessage = async message => {
-    chatSocket.send(JSON.stringify({ message: message, chat_uuid: chatUUID }));
+    if(message.length > 0){
+      chatSocket.send(JSON.stringify({ message: message, chat_uuid: chatUUID }));
+      setState({ ...state, messages: [...state.messages, {
+        content: message, 
+        sender: user, 
+        unconfirmed: true,
+        sent_at: new Date()
+      }] });
+    }
   };
 
   return (

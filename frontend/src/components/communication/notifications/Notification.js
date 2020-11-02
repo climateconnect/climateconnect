@@ -5,15 +5,18 @@ import {
   ListItemAvatar,
   Avatar,
   ListItemText,
-  Link
+  Link,
+  ListItemIcon
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GroupIcon from "@material-ui/icons/Group";
+import CommentIcon from '@material-ui/icons/Comment';
 
 const useStyles = makeStyles(theme => {
   return {
     messageSender: {
-      fontWeight: "bold"
+      fontWeight: 600,
+      whiteSpace: "normal"
     },
     listItemText: {
       whiteSpace: "normal"
@@ -61,6 +64,10 @@ export default function Notification({ notification, isPlaceholder }) {
       return <PrivateMessageNotification notification={notification} />;
     else if (type === "group_message")
       return <GroupMessageNotification notification={notification} />;
+    else if (type === "project_comment")
+      return <ProjectCommentNotification notification={notification} />;
+    else if (type === "reply_to_project_comment")
+      return <ProjectCommentReplyNotification notification={notification} />;
     else return <></>;
   }
 }
@@ -134,6 +141,64 @@ const PlaceholderNotification = () => {
             <Link className={classes.goToInboxText}>Go to Inbox</Link>
           </div>
         </ListItemText>
+      </StyledMenuItem>
+    </Link>
+  );
+};
+
+const ProjectCommentNotification = ({ notification }) => {
+  const classes = useStyles();
+  console.log(notification);
+  return (
+    <Link
+      href={
+        "/projects/" +
+        notification.project.url_slug +
+        "/#comments"
+      }
+      underline="none"
+    >
+      <StyledMenuItem>
+        <ListItemIcon>
+          <CommentIcon />
+        </ListItemIcon>
+        <ListItemText
+          primary={'Comment on "' + notification.project.name + '"'}
+          secondary={notification.project_comment.content}
+          primaryTypographyProps={{
+            className: classes.messageSender
+          }}
+          secondaryTypographyProps={{
+            className: classes.notificationText
+          }}
+        />
+      </StyledMenuItem>
+    </Link>
+  );
+};
+
+const ProjectCommentReplyNotification = ({ notification }) => {
+  const classes = useStyles();
+  console.log(notification);
+  return (
+    <Link
+      href= {"/projects/"+notification.project.url_slug +"/#comments"}
+      underline="none"
+    >
+      <StyledMenuItem>
+        <ListItemIcon>
+          <CommentIcon />
+        </ListItemIcon>
+        <ListItemText
+          primary={'Reply to your comment on "' + notification.project.name + '"'}
+          secondary={notification.project_comment.content}
+          primaryTypographyProps={{
+            className: classes.messageSender
+          }}
+          secondaryTypographyProps={{
+            className: classes.notificationText
+          }}
+        />
       </StyledMenuItem>
     </Link>
   );

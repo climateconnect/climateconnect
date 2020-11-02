@@ -4,7 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from chat_messages.models import Message, MessageParticipants, MessageReceiver
 from django.contrib.auth.models import User
 from chat_messages.utility.notification import create_chat_message_notification
-from climateconnect_api.utility.notification import create_user_notification
+from climateconnect_api.utility.notification import create_user_notification, create_email_notification
 
 
 class DirectMessageConsumer(AsyncWebsocketConsumer):
@@ -63,6 +63,7 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
                 receiver=receiver,
                 message=message
             )
+            create_email_notification(receiver, message_participant, message_content, user, notification)
             create_user_notification(receiver, notification)
         return message          
 

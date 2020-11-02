@@ -165,12 +165,55 @@ MyApp.getInitialProps = async ctx => {
     getNotifications(token),
     ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps(ctx.ctx) : {}
   ]);
+  if(token) {
+    const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
+    if (notificationsToSetRead.length > 0) {
+      const updatedNotifications = await setNotificationsUnread(token, notificationsToSetRead);
+      return {
+        pageProps: pageProps,
+        user: user,
+        notifications: updatedNotifications ? updatedNotifications : []
+      };
+    }
+  }
   return {
     pageProps: pageProps,
     user: user,
     notifications: notifications ? notifications : []
   };
 };
+
+const getNotificationsToSetRead = (notifications, pageProps) => {
+  if (pageProps.comments) {
+    const comment_ids = pageProps.comments.map(p => p.id);
+    const comment_notifications_to_set_unread = notifications.filter(
+      n =>{
+        if(n.project_comment){
+          if(comment_ids.includes(n.project_comment.id) || comment_ids.includes(n.project_comment.parent_comment_id)){
+            return true
+          }
+        }
+      }
+    );
+    return comment_notifications_to_set_unread
+  }
+  return [];
+};
+
+const setNotificationsUnread = async (token, notifications) => {
+  if(token) {
+    try{
+      await axios.post(
+        process.env.API_URL + "/api/set_user_notifications_read", 
+        {notifications: notifications.map(n=>n.id)}, 
+        tokenConfig(token)
+      )
+    } catch (e){
+      console.log(e)
+    }
+  } else 
+    return null
+}
 
 async function getLoggedInUser(token) {
   if (token) {
