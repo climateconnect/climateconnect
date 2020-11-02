@@ -28,6 +28,9 @@ from organization.pagination import (
 from organization.utility.organization import (
     check_organization,
 )
+from organization.utility.notification import (
+    create_project_comment_reply_notification, create_project_comment_notification
+)
 from rest_framework.exceptions import ValidationError, NotFound
 from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.models import Role, Skill, Availability
@@ -522,6 +525,10 @@ class ProjectCommentView(APIView):
                 raise NotFound(detail="Parent comment not found:"+request.data['parent_comment'], code=status.HTTP_404_NOT_FOUND)
             comment.parent_comment = parent_comment
         comment.save()
+        if comment.parent_comment:
+            create_project_comment_reply_notification(project, comment, request.user)
+        else:
+            create_project_comment_notification(project, comment, request.user)
         return Response({'comment': ProjectCommentSerializer(comment).data}, status=status.HTTP_200_OK)
 
     def delete(self, request, url_slug, comment_id):
