@@ -119,7 +119,8 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
     API_URL: API_URL,
     ENVIRONMENT: ENVIRONMENT,
     SOCKET_URL: SOCKET_URL,
-    API_HOST: API_HOST
+    API_HOST: API_HOST,
+    setNotificationsRead: setNotificationsRead
   };
   return (
     <React.Fragment>
@@ -165,10 +166,10 @@ MyApp.getInitialProps = async ctx => {
     getNotifications(token),
     ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps(ctx.ctx) : {}
   ]);
-  if(token) {
+  if (token) {
     const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
     if (notificationsToSetRead.length > 0) {
-      const updatedNotifications = await setNotificationsUnread(token, notificationsToSetRead);
+      const updatedNotifications = await setNotificationsRead(token, notificationsToSetRead);
       return {
         pageProps: pageProps,
         user: user,
@@ -184,36 +185,41 @@ MyApp.getInitialProps = async ctx => {
 };
 
 const getNotificationsToSetRead = (notifications, pageProps) => {
+  let notifications_to_set_unread = [];
   if (pageProps.comments) {
     const comment_ids = pageProps.comments.map(p => p.id);
-    const comment_notifications_to_set_unread = notifications.filter(
-      n =>{
-        if(n.project_comment){
-          if(comment_ids.includes(n.project_comment.id) || comment_ids.includes(n.project_comment.parent_comment_id)){
-            return true
-          }
+    const comment_notifications_to_set_unread = notifications.filter(n => {
+      if (n.project_comment) {
+        if (
+          comment_ids.includes(n.project_comment.id) ||
+          comment_ids.includes(n.project_comment.parent_comment_id)
+        ) {
+          return true;
         }
       }
-    );
-    return comment_notifications_to_set_unread
+    });
+    notifications_to_set_unread = [
+      ...notifications_to_set_unread,
+      ...comment_notifications_to_set_unread
+    ];
   }
-  return [];
+  return notifications_to_set_unread;
 };
 
-const setNotificationsUnread = async (token, notifications) => {
-  if(token) {
-    try{
-      await axios.post(
-        process.env.API_URL + "/api/set_user_notifications_read", 
-        {notifications: notifications.map(n=>n.id)}, 
+const setNotificationsRead = async (token, notifications) => {
+  if (token) {
+    try {
+      const resp = await axios.post(
+        process.env.API_URL + "/api/set_user_notifications_read",
+        { notifications: notifications.map(n => n.id) },
         tokenConfig(token)
-      )
-    } catch (e){
-      console.log(e)
+      );
+      return resp.data
+    } catch (e) {
+      console.log(e);
     }
-  } else 
-    return null
-}
+  } else return null;
+};
 
 async function getLoggedInUser(token) {
   if (token) {

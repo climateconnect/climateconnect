@@ -41,6 +41,7 @@ def send_project_comment_reply_email(user, project, comment, sender):
         logger.error("%s: Error sending email: %s" % (
             send_project_comment_reply_email.__name__, ex
         ))
+
 def send_project_comment_email(user, project, comment, sender):
     data = {
         'Messages': [
@@ -55,7 +56,7 @@ def send_project_comment_email(user, project, comment, sender):
                         "Name": user.first_name + " " + user.last_name
                     }
                 ],
-                "TemplateID": 1836766,
+                "TemplateID": int(settings.PROJECT_COMMENT_TEMPLATE_ID),
                 "TemplateLanguage": True,
                 "Subject": "Somebody left a comment on your project '"+project.name+"' on Climate Connect",
                 "Variables": {
@@ -64,6 +65,42 @@ def send_project_comment_email(user, project, comment, sender):
                     "CommenterName": sender.first_name + " " + sender.last_name,
                     "ProjectName": project.name,
                     "url": settings.FRONTEND_URL+"/projects/"+project.url_slug+"#comments"
+                }
+            }
+        ]
+    }
+
+    try:
+        mail = mailjet.send.create(data=data)
+        return mail
+    except Exception as ex:
+        logger.error("%s: Error sending email: %s" % (
+            send_project_comment_email.__name__, ex
+        ))
+
+def send_project_follower_email(user, project_follower):
+    follower_name = project_follower.user.first_name + " " + project_follower.user.last_name
+    data = {
+        'Messages': [
+            {
+                "From": {
+                    "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
+                    "Name": "Climate Connect Team"
+                },
+                "To": [
+                    {
+                        "Email": user.email,
+                        "Name": user.first_name + " " + user.last_name
+                    }
+                ],
+                "TemplateID": int(settings.PROJECT_FOLLOWER_TEMPLATE_ID),
+                "TemplateLanguage": True,
+                "Subject": follower_name + " now follows your project on Climate Connect",
+                "Variables": {
+                    "FollowerName": follower_name,
+                    "FirstName": user.first_name,
+                    "ProjectName": project_follower.project.name,
+                    "url": settings.FRONTEND_URL + "/projects/" + project_follower.project.url_slug + "?show_followers=true"
                 }
             }
         ]

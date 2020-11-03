@@ -94,21 +94,19 @@ export default function Chat({
     hasMore: hasMore
   });
 
-  const handleWindowClose = (e) => {
-    if (state.messages.filter(m=>m.unconfirmed).length > 0) {
+  const handleWindowClose = e => {
+    if (state.messages.filter(m => m.unconfirmed).length > 0) {
       e.preventDefault();
-      return e.returnValue = 'Changes you made might not be saved.';
+      return (e.returnValue = "Changes you made might not be saved.");
     }
-
   };
 
   React.useEffect(() => {
-    window.addEventListener('beforeunload', handleWindowClose);
+    window.addEventListener("beforeunload", handleWindowClose);
 
     return () => {
-      window.removeEventListener('beforeunload', handleWindowClose);
+      window.removeEventListener("beforeunload", handleWindowClose);
     };
-
   });
 
   const chatting_partner = participants[0];
@@ -119,15 +117,15 @@ export default function Chat({
       const data = JSON.parse(rawData.data);
       if (data.chat_uuid === chatUUID) {
         const message = await getMessageFromServer(data.message_id, token);
-        setState({ 
-          ...state, 
+        setState({
+          ...state,
           messages: [
-            ...state.messages.filter(m=>!(m.content === message.content && m.unconfirmed)), 
+            ...state.messages.filter(m => !(m.content === message.content && m.unconfirmed)),
             message
-          ] 
+          ]
         });
       }
-    };    
+    };
   }
 
   const loadMoreMessages = async () => {
@@ -161,14 +159,20 @@ export default function Chat({
   };
 
   const sendMessage = async message => {
-    if(message.length > 0){
+    if (message.length > 0) {
       chatSocket.send(JSON.stringify({ message: message, chat_uuid: chatUUID }));
-      setState({ ...state, messages: [...state.messages, {
-        content: message, 
-        sender: user, 
-        unconfirmed: true,
-        sent_at: new Date()
-      }] });
+      setState({
+        ...state,
+        messages: [
+          ...state.messages,
+          {
+            content: message,
+            sender: user,
+            unconfirmed: true,
+            sent_at: new Date()
+          }
+        ]
+      });
     }
   };
 

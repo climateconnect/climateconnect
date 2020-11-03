@@ -51,7 +51,7 @@ export default function Message({ message, classes, isPrivateChat }) {
           <div className={`${ownClasses.time} ${!received && ownClasses.sentTime}`}>
             {message.unconfirmed && (
               <Tooltip title="sending message...">
-                <CircularProgress size={10} color="inherit" className={classes.loader}/>
+                <CircularProgress size={10} color="inherit" className={classes.loader} />
               </Tooltip>
             )}
             {sent_date}

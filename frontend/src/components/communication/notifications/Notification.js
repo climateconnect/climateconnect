@@ -10,7 +10,8 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GroupIcon from "@material-ui/icons/Group";
-import CommentIcon from '@material-ui/icons/Comment';
+import CommentIcon from "@material-ui/icons/Comment";
+import { getImageUrl } from "../../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -68,6 +69,8 @@ export default function Notification({ notification, isPlaceholder }) {
       return <ProjectCommentNotification notification={notification} />;
     else if (type === "reply_to_project_comment")
       return <ProjectCommentReplyNotification notification={notification} />;
+    else if (type === "project_follower")
+      return <ProjectFollowerNotification notification={notification} />
     else return <></>;
   }
 }
@@ -82,7 +85,7 @@ const PrivateMessageNotification = ({ notification }) => {
         <ListItemAvatar>
           <Avatar
             alt={sender.first_name + " " + sender.last_name}
-            src={process.env.API_URL + sender.image}
+            src={getImageUrl(sender.image)}
           />
         </ListItemAvatar>
         <ListItemText
@@ -148,16 +151,8 @@ const PlaceholderNotification = () => {
 
 const ProjectCommentNotification = ({ notification }) => {
   const classes = useStyles();
-  console.log(notification);
   return (
-    <Link
-      href={
-        "/projects/" +
-        notification.project.url_slug +
-        "/#comments"
-      }
-      underline="none"
-    >
+    <Link href={"/projects/" + notification.project.url_slug + "/#comments"} underline="none">
       <StyledMenuItem>
         <ListItemIcon>
           <CommentIcon />
@@ -179,12 +174,8 @@ const ProjectCommentNotification = ({ notification }) => {
 
 const ProjectCommentReplyNotification = ({ notification }) => {
   const classes = useStyles();
-  console.log(notification);
   return (
-    <Link
-      href= {"/projects/"+notification.project.url_slug +"/#comments"}
-      underline="none"
-    >
+    <Link href={"/projects/" + notification.project.url_slug + "/#comments"} underline="none">
       <StyledMenuItem>
         <ListItemIcon>
           <CommentIcon />
@@ -203,3 +194,29 @@ const ProjectCommentReplyNotification = ({ notification }) => {
     </Link>
   );
 };
+
+const ProjectFollowerNotification = ({notification}) => {
+  const classes = useStyles()
+  return (
+    <Link href={"/projects/" + notification.project.url_slug + "?show_followers=true"} underline="none">
+      <StyledMenuItem>
+          <ListItemAvatar>
+            <Avatar
+              alt={notification.project_follower.first_name + " " + notification.project_follower.last_name}
+              src={getImageUrl(notification.project_follower.image)}
+            />
+          </ListItemAvatar>
+          <ListItemText
+            primary={notification.project_follower.first_name + " " + notification.project_follower.last_name + " now follows your project \"" + notification.project.name+"\""}
+            secondary={"Congratulations!"}
+            primaryTypographyProps={{
+              className: classes.messageSender
+            }}
+            secondaryTypographyProps={{
+              className: classes.notificationText
+            }}
+          />
+        </StyledMenuItem>
+    </Link>
+  )
+}

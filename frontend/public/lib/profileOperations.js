@@ -32,8 +32,9 @@ export function parseProfile(profile, detailledSkills, keepOldProps) {
 const SIGN_UP_MESSAGE =
   "You are now a Climate Connect member. On this page you can customize your profile.";
 
-export function redirectOnLogin(user) {
-  if (user.has_logged_in < 2) {
+export function redirectOnLogin(user, redirectUrl) {
+  if (redirectUrl) Router.push("/" + redirectUrl);
+  else if (user.has_logged_in < 2) {
     Router.push({
       pathname: "/editprofile",
       query: {

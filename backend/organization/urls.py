@@ -86,11 +86,15 @@ urlpatterns = [
     ),
     path(
         'projects/<str:url_slug>/comment/',
-        project_views.ProjectCommentView.as_view(), name='am-i-following-view'
+        project_views.ProjectCommentView.as_view(), name='project-comments-view'
     ),
     path(
         'projects/<str:url_slug>/comment/<int:comment_id>/',
-        project_views.ProjectCommentView.as_view(), name='am-i-following-view'
+        project_views.ProjectCommentView.as_view(), name='project-comment-view'
+    ),
+    path(
+        'projects/<str:url_slug>/followers/',
+        project_views.ListProjectFollowersView.as_view(), name='list-followers-view'
     ),
     path('projecttags/', project_views.ListProjectTags.as_view(), name='list-project-tags'),
     path('projectstatus/', project_views.ListProjectStatus.as_view(), name='list-project-status'),

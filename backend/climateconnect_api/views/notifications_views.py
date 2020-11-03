@@ -44,6 +44,12 @@ class SetUserNotificationsRead(APIView):
             notification.save()
         all_unread_user_notifications = UserNotification.objects.filter(
             user = request.user, read_at = None
+        ).values_list('notification')
+        notifications = Notification.objects.filter(
+            id__in = all_unread_user_notifications
         )
-        serializer = NotificationSerializer(all_unread_user_notifications, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        if notifications.exists():
+            serializer = NotificationSerializer(notifications, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response([], status=status.HTTP_200_OK)

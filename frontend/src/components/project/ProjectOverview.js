@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { Container, Typography, Button, Tooltip, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
@@ -11,17 +11,37 @@ import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import Router from "next/router";
+import UserContext from "../context/UserContext";
+import tokenConfig from "../../../public/config/tokenConfig";
+import Axios from "axios";
+import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
+import { getParams } from "../../../public/lib/generalOperations";
 
 const useStyles = makeStyles(theme => ({
   ...projectOverviewStyles(theme),
   contactProjectButton: {
     marginLeft: theme.spacing(1)
   },
-  followButtonContainer: {
+  followButtonContainer: props => ({
     display: "inline-flex",
-    flexDirection: "column",
+    flexDirection: props.hasAdminPermissions ? "auto" : "column",
     justifyContent: "center",
+    alignItems: "center",
     textAlign: "center"
+  }),
+  followersLink: props => ({
+    cursor: "pointer",
+    textDecoration: "none",
+    marginLeft: props.hasAdminPermissions ? theme.spacing(1) : 0
+  }),
+  followerNumber: {
+    fontWeight: 700,
+    color: theme.palette.secondary.main
+  },
+  followersText: {
+    fontWeight: 500,
+    fontSize: 18,
+    color: theme.palette.secondary.light
   }
 }));
 
@@ -46,12 +66,46 @@ export default function ProjectOverview({
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
+  const { user, notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
+  const token = cookies.get("token");
   const handleClickContact = async event => {
     event.preventDefault();
     const creator = project.team.filter(m => m.permission === "Creator")[0];
-    const chat = await startPrivateChat(creator, cookies.get("token"));
+    const chat = await startPrivateChat(creator, token);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
+  const user_permission =
+    user && project.team && project.team.find(m => m.id === user.id)
+      ? project.team.find(m => m.id === user.id).permission
+      : null;
+  const hasAdminPermissions =
+    user_permission && ["Creator", "Administrator"].includes(user_permission);
+
+  const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
+  const [followers, setFollowers] = React.useState([]);
+  const [showFollowers, setShowFollowers] = React.useState(false);
+  const toggleShowFollowers = async () => {
+    setShowFollowers(!showFollowers);
+    if (!initiallyCaughtFollowers) {
+      const retrievedFollowers = await getFollowers(project, token);
+      const notification_to_set_read = notifications.filter(
+        n => n.notification_type === 4 && n.project.url_slug === project.url_slug
+      );
+      await setNotificationsRead(token, notification_to_set_read)
+      await refreshNotifications()
+      setFollowers(retrievedFollowers);
+      setInitiallyCaughtFollowers(true);
+    }
+  };
+  const [gotParams, setGotParams] = React.useState(false);
+  useEffect(() => {
+    if (!gotParams) {
+      const params = getParams(window.location.href);
+      if (params.show_followers && !showFollowers) toggleShowFollowers();
+      setGotParams(true);
+    }
+  });
+
   return (
     <Container className={classes.projectOverview}>
       {smallScreen ? (
@@ -60,6 +114,8 @@ export default function ProjectOverview({
           handleToggleFollowProject={handleToggleFollowProject}
           isUserFollowing={isUserFollowing}
           handleClickContact={handleClickContact}
+          hasAdminPermissions={hasAdminPermissions}
+          toggleShowFollowers={toggleShowFollowers}
         />
       ) : (
         <LargeScreenOverview
@@ -67,8 +123,20 @@ export default function ProjectOverview({
           handleToggleFollowProject={handleToggleFollowProject}
           isUserFollowing={isUserFollowing}
           handleClickContact={handleClickContact}
+          hasAdminPermissions={hasAdminPermissions}
+          toggleShowFollowers={toggleShowFollowers}
         />
       )}
+      <ProjectFollowersDialog
+        open={showFollowers}
+        loading={!initiallyCaughtFollowers}
+        followers={followers}
+        project={project}
+        onClose={toggleShowFollowers}
+        user={user}
+        hasAdminPermissions={hasAdminPermissions}
+        url={"projects/" + project.url_slug + "?show_followers=true"}
+      />
     </Container>
   );
 }
@@ -77,7 +145,9 @@ function SmallScreenOverview({
   project,
   handleToggleFollowProject,
   isUserFollowing,
-  handleClickContact
+  handleClickContact,
+  hasAdminPermissions,
+  toggleShowFollowers
 }) {
   const classes = useStyles();
   return (
@@ -120,15 +190,19 @@ function SmallScreenOverview({
             isUserFollowing={isUserFollowing}
             handleToggleFollowProject={handleToggleFollowProject}
             project={project}
+            hasAdminPermissions={hasAdminPermissions}
+            toggleShowFollowers={toggleShowFollowers}
           />
-          <Button
-            className={classes.contactProjectButton}
-            variant="contained"
-            color="primary"
-            onClick={handleClickContact}
-          >
-            Contact
-          </Button>
+          {!hasAdminPermissions && (
+            <Button
+              className={classes.contactProjectButton}
+              variant="contained"
+              color="primary"
+              onClick={handleClickContact}
+            >
+              Contact
+            </Button>
+          )}
         </div>
       </div>
     </>
@@ -139,7 +213,9 @@ function LargeScreenOverview({
   project,
   handleToggleFollowProject,
   isUserFollowing,
-  handleClickContact
+  handleClickContact,
+  hasAdminPermissions,
+  toggleShowFollowers
 }) {
   const classes = useStyles();
   return (
@@ -187,15 +263,19 @@ function LargeScreenOverview({
               isUserFollowing={isUserFollowing}
               handleToggleFollowProject={handleToggleFollowProject}
               project={project}
+              hasAdminPermissions={hasAdminPermissions}
+              toggleShowFollowers={toggleShowFollowers}
             />
-            <Button
-              className={classes.contactProjectButton}
-              variant="contained"
-              color="primary"
-              onClick={handleClickContact}
-            >
-              Contact organizer
-            </Button>
+            {!hasAdminPermissions && (
+              <Button
+                className={classes.contactProjectButton}
+                variant="contained"
+                color="primary"
+                onClick={handleClickContact}
+              >
+                Contact organizer
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -203,8 +283,14 @@ function LargeScreenOverview({
   );
 }
 
-function FollowButton({ project, isUserFollowing, handleToggleFollowProject }) {
-  const classes = useStyles();
+function FollowButton({
+  project,
+  isUserFollowing,
+  handleToggleFollowProject,
+  hasAdminPermissions,
+  toggleShowFollowers
+}) {
+  const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   return (
     <span className={classes.followButtonContainer}>
       <Button
@@ -215,10 +301,39 @@ function FollowButton({ project, isUserFollowing, handleToggleFollowProject }) {
         {isUserFollowing ? "Following" : "Follow"}
       </Button>
       {project.number_of_followers > 0 && (
-        <Typography>
-          {project.number_of_followers} follower{project.number_of_followers > 1 && "s"}
-        </Typography>
+        <>
+          {!hasAdminPermissions ? (
+            <Typography>
+              {project.number_of_followers} Follower{project.number_of_followers > 1 && "s"}
+            </Typography>
+          ) : (
+            <Link
+              color="secondary"
+              underline="always"
+              className={classes.followersLink}
+              onClick={toggleShowFollowers}
+            >
+              <Typography className={classes.followersText}>
+                <span className={classes.followerNumber}>{project.number_of_followers}</span>{" "}
+                Follower{project.number_of_followers > 1 && "s"}
+              </Typography>
+            </Link>
+          )}
+        </>
       )}
     </span>
   );
 }
+
+const getFollowers = async (project, token) => {
+  try {
+    const resp = await Axios.get(
+      process.env.API_URL + "/api/projects/" + project.url_slug + "/followers/",
+      tokenConfig(token)
+    );
+    return resp.data.results;
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+  }
+};
