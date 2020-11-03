@@ -4,7 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from chat_messages.models import Message, MessageParticipants, MessageReceiver
 from django.contrib.auth.models import User
 from chat_messages.utility.notification import create_chat_message_notification
-from climateconnect_api.utility.notification import create_user_notification
+from climateconnect_api.utility.notification import create_user_notification, create_email_notification
 
 
 class DirectMessageConsumer(AsyncWebsocketConsumer):
@@ -12,15 +12,16 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
         self.user = self.scope['user']
         if not self.user.is_anonymous:
             await self.channel_layer.group_add(
-                'direct_message', self.channel_name
+                'user-'+str(self.user.id), self.channel_name
             )
             await self.accept()
         else:
             await self.close()
 
     async def disconnect(self, close_code):
+        self.user = self.scope['user']
         await self.channel_layer.group_discard(
-            'direct_message',
+            'user-'+str(self.user.id),
             self.channel_name
         )
 
@@ -32,15 +33,16 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
         self.user = self.scope['user']
         # Send message to room group
         message_object = await self.new_message(chat_uuid, self.user, message)
-        await self.channel_layer.group_send(
-            'direct_message',
-            {
-                'type': 'chat_message',
-                'message': message,
-                'chat_uuid': chat_uuid,
-                'message_id': message_object.id
-            }
-        )
+        for receiver in message_object['receivers']:
+            await self.channel_layer.group_send(
+                'user-'+str(receiver.id),
+                {
+                    'type': 'chat_message',
+                    'message': message,
+                    'chat_uuid': chat_uuid,
+                    'message_id': message_object['message'].id
+                }
+            )
 
     async def new_message(self, chat_uuid, user, message_content):
         try:
@@ -49,7 +51,7 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
             )
         except MessageParticipants.DoesNotExist:
             message_participant = None
-        receivers = message_participant.participants.all().exclude(id=user.id)
+        receivers = message_participant.participants.all()
         message = Message.objects.create(
             content=message_content, sender=user,
             message_participant=message_participant,
@@ -59,12 +61,17 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
         message_participant.save()
         notification = create_chat_message_notification(message_participant)
         for receiver in receivers: 
-            MessageReceiver.objects.create(
-                receiver=receiver,
-                message=message
-            )
-            create_user_notification(receiver, notification)
-        return message          
+            if not receiver.id == user.id:
+                MessageReceiver.objects.create(
+                    receiver=receiver,
+                    message=message
+                )
+                create_email_notification(receiver, message_participant, message_content, user, notification)
+                create_user_notification(receiver, notification)
+        return {
+            "message": message,
+            "receivers": receivers
+        }          
 
     # Receive message from room group
     async def chat_message(self, event):
@@ -76,4 +83,10 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
                 'type': event['type'],
                 'chat_uuid': event['chat_uuid'],
                 'message_id': event['message_id']
+            }))
+
+    async def notification(self, event):
+        if not self.user.is_anonymous:
+            await self.send(text_data=json.dumps({
+                'type': event['type']
             }))

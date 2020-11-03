@@ -35,6 +35,10 @@ const styles = theme => {
       display: "inline-block",
       borderRadius: theme.spacing(1)
     },
+    loader: {
+      display: "inline-block",
+      marginRight: theme.spacing(0.25)
+    },
     noHistoryText: {
       textAlign: "center",
       fontStyle: "italic"

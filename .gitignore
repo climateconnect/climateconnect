@@ -22,3 +22,6 @@ __pycache__
 /.vscode
 backend/.vscode
 frontend/.vscode
+
+#azure
+backend/.azure

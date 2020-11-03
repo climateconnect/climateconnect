@@ -42,9 +42,26 @@ class UserAccountSettingsView(APIView):
             send_new_email_verification(user, request.data['email'], new_verification_key)
             user.user_profile.save()
 
-        if 'email_updates_on_projects' in request.data and 'email_project_suggestions' in request.data:
+        email_preference_values = [
+            'email_updates_on_projects',
+            'email_project_suggestions',
+            'email_on_private_chat_message',
+            'email_on_group_chat_message',
+            'email_on_comment_on_your_project',
+            'email_on_reply_to_your_comment',
+            'email_on_new_project_follower'
+        ]
+        if 'email_updates_on_projects' in request.data:
+            for value in email_preference_values:
+                if not value in request.data:
+                    return Response({'message': 'Required parameter missing'}, status=status.HTTP_400_BAD_REQUEST)
             user.user_profile.email_updates_on_projects = request.data['email_updates_on_projects']
             user.user_profile.email_project_suggestions = request.data['email_project_suggestions']
+            user.user_profile.email_on_private_chat_message = request.data['email_on_private_chat_message']
+            user.user_profile.email_on_group_chat_message = request.data['email_on_group_chat_message']
+            user.user_profile.email_on_comment_on_your_project = request.data['email_on_comment_on_your_project']
+            user.user_profile.email_on_reply_to_your_comment = request.data['email_on_reply_to_your_comment']
+            user.user_profile.email_on_new_project_follower = request.data['email_on_new_project_follower']
             user.user_profile.save()
 
         return Response({'message': 'Account successfully updated'}, status=status.HTTP_200_OK)

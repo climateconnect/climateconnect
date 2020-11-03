@@ -69,7 +69,6 @@ async function createSitemap(projectEntries, organizationEntries, memberEntries)
   const staticPages = (await globby(["pages/*.js"]))
     .map(pageUrl => pageUrl.replace("pages", ""))
     .filter(pageUrl => !NOT_LISTED.includes(pageUrl));
-  console.log(projectEntries);
   const BASE_URL = process.env.BASE_URL ? process.env.BASE_URL : "https://climateconnect.earth";
   return `<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -128,7 +127,6 @@ const getEntries = async entryTypePlural => {
     const resp = await axios.get(process.env.API_URL + "/api/sitemap/" + entryTypePlural + "/");
     if (resp.data.length === 0) return null;
     else {
-      console.log(resp.data.results[0]);
       return parseEntries(entryTypePlural, resp.data.results);
     }
   } catch (err) {

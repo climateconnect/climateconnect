@@ -58,6 +58,26 @@ const possibleEmailPreferences = [
   {
     key: "email_project_suggestions",
     text: "Receive suggestions for projects you might like"
+  },
+  {
+    key: "email_on_private_chat_message",
+    text: "Get notified when somebody sends you a personal chat message"
+  },
+  {
+    key: "email_on_group_chat_message",
+    text: "Get notified when somebody sends you a chat message in a group"
+  },
+  {
+    key: "email_on_comment_on_your_project",
+    text: "Get notified when somebody leaves a comment on a project you're part of"
+  },
+  {
+    key: "email_on_reply_to_your_comment",
+    text: "Get notified when somebody replies to your comment on a project"
+  },
+  {
+    key: "email_on_new_project_follower",
+    text: "Get notified when somebody follows a project you're part of"
   }
 ];
 
@@ -204,8 +224,8 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     if (
       hasChanges(
         settings,
-        ["email_updates_on_projects", "email_project_suggestions"],
-        [emailPreferences.email_updates_on_projects, emailPreferences.email_project_suggestions]
+        possibleEmailPreferences.map(p => p.key),
+        Object.keys(possibleEmailPreferences).map(k => possibleEmailPreferences[k])
       )
     ) {
       Axios.post(
@@ -217,8 +237,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           setMessage(response.data.message);
           setSettings({
             ...settings,
-            email_updates_on_projects: emailPreferences.email_updates_on_projects,
-            email_project_suggestions: emailPreferences.email_project_suggestions
+            ...emailPreferences
           });
           setErrors({
             ...errors,
@@ -374,7 +393,13 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           E-Mail that your E-Mails are delivered to.
         </Typography>
       </form>
-      <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
+      <Typography
+        className={classes.lowerHeaders}
+        color="primary"
+        variant="h5"
+        component="h2"
+        id="emailPreferences"
+      >
         Change email preferences
       </Typography>
       <Divider />

@@ -26,7 +26,15 @@ export default function CommentsContent({ user, project, token, setCurComments }
         { ...parent_comment, replies: [...parent_comment.replies, c] }
       ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setCurComments(newCurComments);
-    } else setCurComments([c, ...project.comments]);
+    } else {
+      setCurComments([
+        c,
+        ...project.comments.filter(
+          oc =>
+            !(oc.content === c.content && oc.author_user.id === c.author_user.id && oc.unconfirmed)
+        )
+      ]);
+    }
   };
 
   const handleRemoveComment = c => {
@@ -36,6 +44,15 @@ export default function CommentsContent({ user, project, token, setCurComments }
   const onSendComment = async (curComment, parent_comment, clearInput, setDisplayReplies) => {
     const comment = curComment;
     const payload = { content: comment, project: project.id };
+    handleAddComment({
+      parent_comment_id: parent_comment,
+      id: null,
+      author_user: user,
+      content: comment,
+      created_at: new Date(),
+      replies: [],
+      unconfirmed: true
+    });
     if (parent_comment) payload.parent_comment = parent_comment;
     try {
       const resp = await axios.post(

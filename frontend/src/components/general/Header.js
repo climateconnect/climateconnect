@@ -42,6 +42,7 @@ import NotificationsBox from "../communication/notifications/NotificationsBox";
 import Notification from "../communication/notifications/Notification";
 import HomeIcon from "@material-ui/icons/Home";
 import theme from "../../themes/theme";
+import { getParams, getPath } from "../../../public/lib/generalOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -161,7 +162,7 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-const LINKS = [
+const getLinks = (path_to_redirect) => [
   {
     href: "/browse",
     text: "Home",
@@ -204,7 +205,7 @@ const LINKS = [
     onlyShowLoggedIn: true
   },
   {
-    href: "/signin",
+    href: "/signin?redirect="+path_to_redirect,
     text: "Log in",
     iconForDrawer: AccountCircleIcon,
     isOutlinedInHeader: true,
@@ -283,7 +284,8 @@ export default function Header({
   const { user, signOut, notifications } = useContext(UserContext);
   const [anchorEl, setAnchorEl] = React.useState(false);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
-
+  const path = getPath(window.location.href)
+  const LINKS = getLinks(path)
   const toggleShowNotifications = event => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
     else setAnchorEl(null);
@@ -318,6 +320,7 @@ export default function Header({
                 notifications={notifications}
                 transparentHeader={transparentHeader}
                 fixedHeader={fixedHeader}
+                LINKS={LINKS}
               />
             ) : (
               <NormalScreenLinks
@@ -329,6 +332,7 @@ export default function Header({
                 notifications={notifications}
                 transparentHeader={transparentHeader}
                 fixedHeader={fixedHeader}
+                LINKS={LINKS}
               />
             )}
           </>
@@ -364,7 +368,8 @@ function NormalScreenLinks({
   onNotificationsClose,
   notifications,
   transparentHeader,
-  fixedHeader
+  fixedHeader,
+  LINKS
 }) {
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -453,7 +458,8 @@ function NarrowScreenLinks({
   onNotificationsClose,
   notifications,
   transparentHeader,
-  fixedHeader
+  fixedHeader,
+  LINKS
 }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 

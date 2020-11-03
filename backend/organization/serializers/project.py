@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from climateconnect_api.models import UserProfile
-from organization.models import (Project, ProjectMember, ProjectParents, ProjectCollaborators)
+from organization.models import (Project, ProjectFollower, ProjectMember, ProjectParents, ProjectCollaborators)
 from climateconnect_api.serializers.common import (SkillSerializer, AvailabilitySerializer)
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.serializers.role import RoleSerializer
@@ -181,3 +181,14 @@ class ProjectSitemapEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ('url_slug', 'updated_at')
+
+class ProjectFollowerSerializer(serializers.ModelSerializer):
+    user_profile = serializers.SerializerMethodField()
+    class Meta:
+        model = ProjectFollower
+        fields = ('user_profile', 'created_at')
+    
+    def get_user_profile(self, obj):
+        user_profile = UserProfile.objects.get(user=obj.user)
+        serializer = UserProfileStubSerializer(user_profile)
+        return serializer.data

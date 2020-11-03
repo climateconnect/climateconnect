@@ -40,6 +40,17 @@ class ProjectReadWritePermission(BasePermission):
 
         return False
 
+class ReadSensibleProjectDataPermission(BasePermission):
+    def has_permission(self, request, view):
+        try:
+            project = Project.objects.get(url_slug=str(view.kwargs.get('url_slug')))
+        except Project.DoesNotExist:
+            return False
+
+        if ProjectMember.objects.filter(user=request.user, role__role_type=Role.ALL_TYPE, project=project).exists():
+            return True
+        return False
+
 class OrganizationReadWritePermission(BasePermission):
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:

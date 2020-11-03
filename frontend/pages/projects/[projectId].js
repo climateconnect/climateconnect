@@ -65,12 +65,26 @@ export default function ProjectPage({ project, members, posts, comments, token, 
   const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
   const [isUserFollowing, setIsUserFollowing] = React.useState(following);
+  const [followingChangePending, setFollowingChangePending] = React.useState(false);
   const { user } = useContext(UserContext);
+
+  const handleWindowClose = e => {
+    if (curComments.filter(c => c.unconfirmed).length > 0 || followingChangePending) {
+      e.preventDefault();
+      return (e.returnValue = "Changes you made might not be saved.");
+    }
+  };
+
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message && encodeURI(message.message) != params.message) {
       setMessage({ message: decodeURI(params.message) });
     }
+    window.addEventListener("beforeunload", handleWindowClose);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleWindowClose);
+    };
   });
   return (
     <WideLayout
@@ -87,6 +101,8 @@ export default function ProjectPage({ project, members, posts, comments, token, 
           setIsUserFollowing={setIsUserFollowing}
           user={user}
           setCurComments={setCurComments}
+          followingChangePending={followingChangePending}
+          setFollowingChangePending={setFollowingChangePending}
         />
       ) : (
         <PageNotFound itemName="Project" />
@@ -122,7 +138,9 @@ function ProjectLayout({
   isUserFollowing,
   setIsUserFollowing,
   user,
-  setCurComments
+  setCurComments,
+  followingChangePending,
+  setFollowingChangePending
 }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
@@ -191,14 +209,18 @@ function ProjectLayout({
   };
 
   const toggleFollowProject = () => {
+    const new_value = !isUserFollowing;
+    setIsUserFollowing(new_value);
+    setFollowingChangePending(true);
     axios
       .post(
         process.env.API_URL + "/api/projects/" + project.url_slug + "/set_follow/",
-        { following: !isUserFollowing },
+        { following: new_value },
         tokenConfig(token)
       )
       .then(function(response) {
         setIsUserFollowing(response.data.following);
+        setFollowingChangePending(false);
         setMessage({
           message: response.data.message,
           messageType: "success"
@@ -217,6 +239,7 @@ function ProjectLayout({
         smallScreen={isNarrowScreen}
         handleToggleFollowProject={handleToggleFollowProject}
         isUserFollowing={isUserFollowing}
+        followingChangePending={followingChangePending}
       />
 
       <Container className={classes.noPadding}>

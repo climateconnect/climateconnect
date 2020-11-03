@@ -3,7 +3,7 @@ import MessageContent from "./../MessageContent";
 import { makeStyles } from "@material-ui/core/styles";
 import { getDateTime } from "../../../../public/lib/dateOperations";
 import UserContext from "../../context/UserContext";
-import { Typography, Link } from "@material-ui/core";
+import { Typography, Link, CircularProgress, Tooltip } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   time: {
@@ -49,6 +49,11 @@ export default function Message({ message, classes, isPrivateChat }) {
         <MessageContent content={message.content} />
         <div className={ownClasses.timeContainer}>
           <div className={`${ownClasses.time} ${!received && ownClasses.sentTime}`}>
+            {message.unconfirmed && (
+              <Tooltip title="sending message...">
+                <CircularProgress size={10} color="inherit" className={classes.loader} />
+              </Tooltip>
+            )}
             {sent_date}
           </div>
         </div>

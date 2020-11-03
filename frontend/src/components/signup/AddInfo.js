@@ -48,18 +48,6 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
       value: values["city"]
     },
     {
-      required: false,
-      label: (
-        <span className={classes.checkboxLabels}>
-          I would like to receive E-mail updates on the projects I follow, new features and
-          suggestions
-        </span>
-      ),
-      type: "checkbox",
-      key: "emails",
-      value: false
-    },
-    {
       required: true,
       label: (
         <span className={classes.checkboxLabels}>

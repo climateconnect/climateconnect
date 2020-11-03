@@ -138,6 +138,31 @@ class UserProfile(models.Model):
         verbose_name="Email project suggestions", null=True, blank=True, default=True
     )
 
+    email_on_private_chat_message = models.BooleanField(
+        help_text="Check if user wants to receive emails when they receive a private chat message",
+        verbose_name="Email project suggestions", null=True, blank=True, default=True
+    )
+
+    email_on_group_chat_message = models.BooleanField(
+        help_text="Check if user wants to receive emails when they receive a group chat message",
+        verbose_name="Email project suggestions", null=True, blank=True, default=True
+    )
+
+    email_on_comment_on_your_project = models.BooleanField(
+        help_text="Check if user wants to receive emails when they receive a comment on a project they're a member of",
+        verbose_name="Email on project comment", null=True, blank=True, default=True
+    )
+
+    email_on_reply_to_your_comment = models.BooleanField(
+        help_text="Check if user wants to receive emails when somebody answers to their comment on a project",
+        verbose_name="Email on comment reply", null=True, blank=True, default=True
+    )
+
+    email_on_new_project_follower = models.BooleanField(
+        help_text="Check if user wants to receive emails when somebody follows their project",
+        verbose_name="Email on new project follower", null=True, blank=True, default=True
+    )
+
     has_logged_in = models.PositiveSmallIntegerField(
         help_text="Check if the user should be redirected to the edit profile page. Shows the number of logins up to 2",
         verbose_name="Number of logins up to 2",
