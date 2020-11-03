@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Layout from "../src/components/layouts/layout";
 import Form from "./../src/components/general/Form";
 import axios from "axios";
 import { useContext } from "react";
 import UserContext from "./../src/components/context/UserContext";
 import { redirectOnLogin } from "../public/lib/profileOperations";
+import { getParams } from "../public/lib/generalOperations";
 
 export default function Signin() {
   const fields = [
@@ -40,10 +41,21 @@ export default function Signin() {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const { user, signIn, API_URL } = useContext(UserContext);
-  //TODO: remove router
-  if (user) {
-    redirectOnLogin(user);
-  }
+
+  const [initialized, setInitialized] = React.useState(false);
+  const [redirectUrl, setRedirectUrl] = React.useState();
+  useEffect(function() {
+    if (!initialized) {
+      const params = getParams(window.location.href);
+      if (params.redirect) setRedirectUrl(decodeURIComponent(params.redirect));
+      setInitialized(true);
+    }
+    //TODO: remove router
+    if (user) {
+      redirectOnLogin(user, redirectUrl);
+    }
+  });
+
   const handleSubmit = async (event, values) => {
     //don't redirect to the post url
     event.preventDefault();
@@ -54,7 +66,7 @@ export default function Signin() {
         password: values.password
       })
       .then(async function(response) {
-        await signIn(response.data.token, response.data.expiry);
+        await signIn(response.data.token, response.data.expiry, redirectUrl);
       })
       .catch(function(error) {
         console.log(error);
