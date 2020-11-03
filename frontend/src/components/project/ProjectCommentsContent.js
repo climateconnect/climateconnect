@@ -27,10 +27,13 @@ export default function CommentsContent({ user, project, token, setCurComments }
       ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setCurComments(newCurComments);
     } else {
-        setCurComments([
-          c, 
-          ...project.comments.filter(oc => !(oc.content === c.content && oc.author_user.id === c.author_user.id && oc.unconfirmed))
-        ]);
+      setCurComments([
+        c,
+        ...project.comments.filter(
+          oc =>
+            !(oc.content === c.content && oc.author_user.id === c.author_user.id && oc.unconfirmed)
+        )
+      ]);
     }
   };
 
@@ -49,7 +52,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
       created_at: new Date(),
       replies: [],
       unconfirmed: true
-    })
+    });
     if (parent_comment) payload.parent_comment = parent_comment;
     try {
       const resp = await axios.post(

@@ -204,14 +204,13 @@ const getNotificationsToSetRead = (notifications, pageProps) => {
     ];
   }
   if (pageProps.chatUUID && pageProps.messages) {
-    const chat_notifications_to_set_unread = notifications.filter(n=>{
-      if(n.chat_uuid)
-        return n.chat_uuid === pageProps.chatUUID
-    })
+    const chat_notifications_to_set_unread = notifications.filter(n => {
+      if (n.chat_uuid) return n.chat_uuid === pageProps.chatUUID;
+    });
     notifications_to_set_unread = [
       ...notifications_to_set_unread,
       ...chat_notifications_to_set_unread
-    ]
+    ];
   }
   return notifications_to_set_unread;
 };
@@ -224,7 +223,7 @@ const setNotificationsRead = async (token, notifications) => {
         { notifications: notifications.map(n => n.id) },
         tokenConfig(token)
       );
-      return resp.data
+      return resp.data;
     } catch (e) {
       console.log(e);
     }

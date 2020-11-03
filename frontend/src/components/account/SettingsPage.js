@@ -224,8 +224,8 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     if (
       hasChanges(
         settings,
-        possibleEmailPreferences.map(p=>p.key),
-        Object.keys(possibleEmailPreferences).map(k=>possibleEmailPreferences[k])
+        possibleEmailPreferences.map(p => p.key),
+        Object.keys(possibleEmailPreferences).map(k => possibleEmailPreferences[k])
       )
     ) {
       Axios.post(
@@ -393,7 +393,13 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           E-Mail that your E-Mails are delivered to.
         </Typography>
       </form>
-      <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2" id="emailPreferences">
+      <Typography
+        className={classes.lowerHeaders}
+        color="primary"
+        variant="h5"
+        component="h2"
+        id="emailPreferences"
+      >
         Change email preferences
       </Typography>
       <Divider />

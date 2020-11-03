@@ -70,7 +70,7 @@ export default function Notification({ notification, isPlaceholder }) {
     else if (type === "reply_to_project_comment")
       return <ProjectCommentReplyNotification notification={notification} />;
     else if (type === "project_follower")
-      return <ProjectFollowerNotification notification={notification} />
+      return <ProjectFollowerNotification notification={notification} />;
     else return <></>;
   }
 }
@@ -195,28 +195,42 @@ const ProjectCommentReplyNotification = ({ notification }) => {
   );
 };
 
-const ProjectFollowerNotification = ({notification}) => {
-  const classes = useStyles()
+const ProjectFollowerNotification = ({ notification }) => {
+  const classes = useStyles();
   return (
-    <Link href={"/projects/" + notification.project.url_slug + "?show_followers=true"} underline="none">
+    <Link
+      href={"/projects/" + notification.project.url_slug + "?show_followers=true"}
+      underline="none"
+    >
       <StyledMenuItem>
-          <ListItemAvatar>
-            <Avatar
-              alt={notification.project_follower.first_name + " " + notification.project_follower.last_name}
-              src={getImageUrl(notification.project_follower.image)}
-            />
-          </ListItemAvatar>
-          <ListItemText
-            primary={notification.project_follower.first_name + " " + notification.project_follower.last_name + " now follows your project \"" + notification.project.name+"\""}
-            secondary={"Congratulations!"}
-            primaryTypographyProps={{
-              className: classes.messageSender
-            }}
-            secondaryTypographyProps={{
-              className: classes.notificationText
-            }}
+        <ListItemAvatar>
+          <Avatar
+            alt={
+              notification.project_follower.first_name +
+              " " +
+              notification.project_follower.last_name
+            }
+            src={getImageUrl(notification.project_follower.image)}
           />
-        </StyledMenuItem>
+        </ListItemAvatar>
+        <ListItemText
+          primary={
+            notification.project_follower.first_name +
+            " " +
+            notification.project_follower.last_name +
+            ' now follows your project "' +
+            notification.project.name +
+            '"'
+          }
+          secondary={"Congratulations!"}
+          primaryTypographyProps={{
+            className: classes.messageSender
+          }}
+          secondaryTypographyProps={{
+            className: classes.notificationText
+          }}
+        />
+      </StyledMenuItem>
     </Link>
-  )
-}
+  );
+};

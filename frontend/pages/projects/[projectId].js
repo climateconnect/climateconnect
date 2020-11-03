@@ -65,7 +65,7 @@ export default function ProjectPage({ project, members, posts, comments, token, 
   const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
   const [isUserFollowing, setIsUserFollowing] = React.useState(following);
-  const [followingChangePending, setFollowingChangePending] = React.useState(false)
+  const [followingChangePending, setFollowingChangePending] = React.useState(false);
   const { user } = useContext(UserContext);
 
   const handleWindowClose = e => {
@@ -209,9 +209,9 @@ function ProjectLayout({
   };
 
   const toggleFollowProject = () => {
-    const new_value = !isUserFollowing
-    setIsUserFollowing(new_value)
-    setFollowingChangePending(true)
+    const new_value = !isUserFollowing;
+    setIsUserFollowing(new_value);
+    setFollowingChangePending(true);
     axios
       .post(
         process.env.API_URL + "/api/projects/" + project.url_slug + "/set_follow/",
@@ -220,7 +220,7 @@ function ProjectLayout({
       )
       .then(function(response) {
         setIsUserFollowing(response.data.following);
-        setFollowingChangePending(false)
+        setFollowingChangePending(false);
         setMessage({
           message: response.data.message,
           messageType: "success"

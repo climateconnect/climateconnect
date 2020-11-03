@@ -67,7 +67,9 @@ export default function ProjectOverview({
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
-  const { user, notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
+  const { user, notifications, setNotificationsRead, refreshNotifications } = useContext(
+    UserContext
+  );
   const token = cookies.get("token");
   const handleClickContact = async event => {
     event.preventDefault();
@@ -92,8 +94,8 @@ export default function ProjectOverview({
       const notification_to_set_read = notifications.filter(
         n => n.notification_type === 4 && n.project.url_slug === project.url_slug
       );
-      await setNotificationsRead(token, notification_to_set_read)
-      await refreshNotifications()
+      await setNotificationsRead(token, notification_to_set_read);
+      await refreshNotifications();
       setFollowers(retrievedFollowers);
       setInitiallyCaughtFollowers(true);
     }
@@ -305,7 +307,7 @@ function FollowButton({
         onClick={handleToggleFollowProject}
         variant="contained"
         color={isUserFollowing ? "secondary" : "primary"}
-        disabled= {followingChangePending}
+        disabled={followingChangePending}
       >
         {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
         {isUserFollowing ? "Following" : "Follow"}
