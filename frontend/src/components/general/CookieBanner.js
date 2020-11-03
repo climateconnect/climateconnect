@@ -78,18 +78,18 @@ export default function CookieBanner({ closeBanner }) {
   const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 1));
 
   const confirmSelection = () => {
-    cookies.set("acceptedNecessary", true, { path: "/", sameSite: true, expires: oneYearFromNow });
+    cookies.set("acceptedNecessary", true, { path: "/", sameSite: "lax", expires: oneYearFromNow });
     cookies.set("acceptedStatistics", checked.statistics, {
       path: "/",
-      sameSite: true,
+      sameSite: "lax",
       expires: oneYearFromNow
     });
     closeBanner();
   };
 
   const enableAll = () => {
-    cookies.set("acceptedNecessary", true, { path: "/", sameSite: true, expires: oneYearFromNow });
-    cookies.set("acceptedStatistics", true, { path: "/", sameSite: true, expires: oneYearFromNow });
+    cookies.set("acceptedNecessary", true, { path: "/", sameSite: "lax", expires: oneYearFromNow });
+    cookies.set("acceptedStatistics", true, { path: "/", sameSite: "lax", expires: oneYearFromNow });
     closeBanner();
   };
 

@@ -271,7 +271,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         hasChanges = true;
       }
       if (cookies.get(p) !== "true" && cookiePreferences[p] === true) {
-        cookies.set(p, true, { path: "/", expires: oneYearFromNow, sameSite: true });
+        cookies.set(p, true, { path: "/", expires: oneYearFromNow, sameSite: "lax" });
         hasChanges = true;
       }
     });

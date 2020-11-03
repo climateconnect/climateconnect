@@ -72,7 +72,7 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
     //TODO: set httpOnly=true to make cookie only accessible by server and sameSite=true
     const cookieProps = {
       path: "/",
-      sameSite: develop ? false : "strict",
+      sameSite: develop ? false : "lax",
       expires: new Date(expiry),
       secure: !develop
     };

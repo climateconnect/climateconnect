@@ -111,10 +111,10 @@ export default function MainHeadingContainer({ hideInfo }) {
     const now = new Date();
     const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 1));
     if (showInfoText) {
-      cookies.set("hideInfo", true, { path: "/", expires: oneYearFromNow, sameSite: true });
+      cookies.set("hideInfo", true, { path: "/", expires: oneYearFromNow, sameSite: "lax" });
       setShowInfoText(false);
     } else {
-      cookies.set("hideInfo", false, { path: "/", expires: oneYearFromNow, sameSite: true });
+      cookies.set("hideInfo", false, { path: "/", expires: oneYearFromNow, sameSite: "lax" });
       setShowInfoText(true);
     }
   };
