@@ -354,4 +354,4 @@ class ListMembersForSitemap(ListAPIView):
     serializer_class = UserProfileSitemapEntrySerializer
 
     def get_queryset(self):
-        return UserProfile.objects.all()
+        return UserProfile.objects.filter(is_profile_verified=True)

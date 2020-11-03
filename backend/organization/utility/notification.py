@@ -4,8 +4,11 @@ from organization.models import Comment, ProjectMember
 from django.db.models import Q
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
-from organization.utility.email import (send_project_comment_email, send_project_comment_reply_email)
+from organization.utility.email import (send_project_comment_email, send_project_comment_reply_email, send_project_follower_email)
 from organization.serializers.content import ProjectCommentSerializer
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+channel_layer = get_channel_layer()
 
 def create_project_comment_reply_notification(project, comment, sender):
     notification = Notification.objects.create(
@@ -21,6 +24,7 @@ def create_project_comment_reply_notification(project, comment, sender):
         if not thread_comment['author_user'] == sender.id:
             user = User.objects.filter(id=thread_comment['author_user'])[0]
             create_user_notification(user, notification)
+            send_out_live_notification(user.id)
             send_email_notification(user, "project_comment_reply", project, comment, sender, notification)
             users_notification_sent.append(user.id)
     
@@ -28,7 +32,8 @@ def create_project_comment_reply_notification(project, comment, sender):
     for member in project_team:
         if not member['user'] == sender.id and not member['user'] in users_notification_sent:
             user = User.objects.filter(id=member['user'])[0]
-            create_user_notification(user, notification)            
+            create_user_notification(user, notification)      
+            send_out_live_notification(user.id)      
             send_email_notification(user, "project_comment_reply", project, comment, sender, notification)
     return notification
     
@@ -41,6 +46,7 @@ def create_project_comment_notification(project, comment, sender):
         if not member['user'] == sender.id:
             user = User.objects.filter(id=member['user'])[0]
             create_user_notification(user, notification)
+            send_out_live_notification(user.id)
             send_email_notification(user, "project_comment", project, comment, sender, notification)
     return notification
 
@@ -65,3 +71,32 @@ def send_email_notification(user, notification_type, project, comment, sender, n
             created_at=datetime.now(),
             notification=notification
         )
+
+def create_project_follower_notification(project_follower):
+    notification = Notification.objects.create(
+        notification_type = 4, project_follower=project_follower
+    )
+    project_team = ProjectMember.objects.filter(project=project_follower.project).values('user')
+    for member in project_team:
+        if not member['user'] == project_follower.user.id:
+            print("we can go ahead!")
+            user = User.objects.filter(id=member['user'])[0]
+            should_send_email_notification = check_send_email_notification(user)
+            create_user_notification(user, notification)
+            send_out_live_notification(user.id)
+            if should_send_email_notification:
+                send_project_follower_email(user, project_follower)
+                EmailNotification.objects.create(
+                    user=user,
+                    created_at=datetime.now(),
+                    notification=notification
+                )
+
+@async_to_sync
+async def send_out_live_notification(user_id):
+    await channel_layer.group_send(
+        'user-'+str(user_id),
+        {
+            'type': 'notification'
+        }
+    )

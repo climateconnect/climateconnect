@@ -15,13 +15,13 @@ from organization.models import (
 )
 from organization.serializers.project import (
     ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer, 
-    InsertProjectMemberSerializer, ProjectSitemapEntrySerializer
+ InsertProjectMemberSerializer, ProjectSitemapEntrySerializer, ProjectFollowerSerializer
 )
 from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
 from organization.serializers.tags import (ProjectTagsSerializer)
 from organization.utility.project import create_new_project
-from organization.permissions import (OrganizationProjectCreationPermission, ProjectReadWritePermission, AddProjectMemberPermission, ProjectMemberReadWritePermission, ChangeProjectCreatorPermission)
+from organization.permissions import (ReadSensibleProjectDataPermission, ProjectReadWritePermission, AddProjectMemberPermission, ProjectMemberReadWritePermission, ChangeProjectCreatorPermission)
 from organization.pagination import (
     ProjectsPagination, MembersPagination, ProjectPostPagination, ProjectCommentPagination
 )
@@ -29,7 +29,7 @@ from organization.utility.organization import (
     check_organization,
 )
 from organization.utility.notification import (
-    create_project_comment_reply_notification, create_project_comment_notification
+    create_project_comment_reply_notification, create_project_comment_notification, create_project_follower_notification
 )
 from rest_framework.exceptions import ValidationError, NotFound
 from climateconnect_main.utility.general import get_image_from_data_url
@@ -475,7 +475,8 @@ class SetFollowView(APIView):
             if ProjectFollower.objects.filter(user=request.user, project=project).exists():
                 raise ValidationError("You're already following this project.")
             else:
-                ProjectFollower.objects.create(user=request.user, project=project)
+                project_follower = ProjectFollower.objects.create(user=request.user, project=project)
+                create_project_follower_notification(project_follower)
                 return Response({
                     'message': 'You are now following this project. You will be notified when they post an update!',
                     'following': True
@@ -558,4 +559,14 @@ class ListProjectsForSitemap(ListAPIView):
     serializer_class = ProjectSitemapEntrySerializer
 
     def get_queryset(self):
-        return Project.objects.all()
+        return Project.objects.filter(is_draft=False)
+
+class ListProjectFollowersView(ListAPIView):
+    permission_classes = [ReadSensibleProjectDataPermission]
+    serializer_class = ProjectFollowerSerializer
+
+    def get_queryset(self):
+        project = Project.objects.filter(url_slug=self.kwargs['url_slug'])
+        if not project.exists():
+            return None
+        return ProjectFollower.objects.filter(project=project[0])

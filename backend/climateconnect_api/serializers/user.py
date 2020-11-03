@@ -111,7 +111,12 @@ class UserAccountSettingsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('email', 'email_updates_on_projects', 'email_project_suggestions', 'url_slug')
+        fields = (
+            'email', 'email_updates_on_projects', 'email_project_suggestions', 
+            'url_slug', 'email_on_private_chat_message', 'email_on_group_chat_message',
+            'email_on_comment_on_your_project', 'email_on_reply_to_your_comment',
+            'email_on_new_project_follower'
+        )
 
     def get_email(self, obj):
         return obj.user.email
