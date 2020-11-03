@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { Container, Typography, Button, Tooltip, Link } from "@material-ui/core";
+import { Container, Typography, Button, Tooltip, Link, CircularProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
 import ExploreIcon from "@material-ui/icons/Explore";
@@ -62,7 +62,8 @@ export default function ProjectOverview({
   project,
   smallScreen,
   handleToggleFollowProject,
-  isUserFollowing
+  isUserFollowing,
+  followingChangePending
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -116,6 +117,7 @@ export default function ProjectOverview({
           handleClickContact={handleClickContact}
           hasAdminPermissions={hasAdminPermissions}
           toggleShowFollowers={toggleShowFollowers}
+          followingChangePending={followingChangePending}
         />
       ) : (
         <LargeScreenOverview
@@ -125,6 +127,7 @@ export default function ProjectOverview({
           handleClickContact={handleClickContact}
           hasAdminPermissions={hasAdminPermissions}
           toggleShowFollowers={toggleShowFollowers}
+          followingChangePending={followingChangePending}
         />
       )}
       <ProjectFollowersDialog
@@ -147,7 +150,8 @@ function SmallScreenOverview({
   isUserFollowing,
   handleClickContact,
   hasAdminPermissions,
-  toggleShowFollowers
+  toggleShowFollowers,
+  followingChangePending
 }) {
   const classes = useStyles();
   return (
@@ -192,6 +196,7 @@ function SmallScreenOverview({
             project={project}
             hasAdminPermissions={hasAdminPermissions}
             toggleShowFollowers={toggleShowFollowers}
+            followingChangePending={followingChangePending}
           />
           {!hasAdminPermissions && (
             <Button
@@ -215,7 +220,8 @@ function LargeScreenOverview({
   isUserFollowing,
   handleClickContact,
   hasAdminPermissions,
-  toggleShowFollowers
+  toggleShowFollowers,
+  followingChangePending
 }) {
   const classes = useStyles();
   return (
@@ -265,6 +271,7 @@ function LargeScreenOverview({
               project={project}
               hasAdminPermissions={hasAdminPermissions}
               toggleShowFollowers={toggleShowFollowers}
+              followingChangePending={followingChangePending}
             />
             {!hasAdminPermissions && (
               <Button
@@ -288,7 +295,8 @@ function FollowButton({
   isUserFollowing,
   handleToggleFollowProject,
   hasAdminPermissions,
-  toggleShowFollowers
+  toggleShowFollowers,
+  followingChangePending
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   return (
@@ -297,7 +305,9 @@ function FollowButton({
         onClick={handleToggleFollowProject}
         variant="contained"
         color={isUserFollowing ? "secondary" : "primary"}
+        disabled= {followingChangePending}
       >
+        {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
         {isUserFollowing ? "Following" : "Follow"}
       </Button>
       {project.number_of_followers > 0 && (

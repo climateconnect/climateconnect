@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Button, Avatar, Link } from "@material-ui/core";
+import { Typography, Button, Avatar, Link, Tooltip, CircularProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Posts from "./Posts";
 import DateDisplay from "./../general/DateDisplay";
@@ -88,7 +88,6 @@ export default function Post({
     setOpen(false);
     if (confirmed) onDeletePost(post);
   };
-
   return (
     <div className={className}>
       {type === "progresspost" ? (
@@ -108,6 +107,11 @@ export default function Post({
                 </Typography>
               </Link>
               <Typography variant="body2" className={classes.postDate}>
+                {post.unconfirmed && (
+                  <Tooltip title="sending message...">
+                    <CircularProgress size={10} color="inherit" className={classes.loader} />
+                  </Tooltip>
+                )}
                 <DateDisplay date={new Date(post.created_at)} />
               </Typography>
             </div>
