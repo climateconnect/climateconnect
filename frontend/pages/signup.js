@@ -47,9 +47,7 @@ export default function Signup() {
       first_name: values.first_name,
       last_name: values.last_name,
       country: values.country,
-      city: values.city,
-      email_project_suggestions: values.emails,
-      email_updates_on_projects: values.emails
+      city: values.city
     });
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
@@ -57,9 +55,7 @@ export default function Signup() {
       first_name: values.first_name.trim(),
       last_name: values.last_name.trim(),
       country: values.country.trim(),
-      city: values.city.trim(),
-      email_project_suggestions: values.emails,
-      email_updates_on_projects: values.emails
+      city: values.city.trim()
     };
     const config = {
       headers: {
