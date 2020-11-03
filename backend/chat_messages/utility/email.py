@@ -33,7 +33,6 @@ def send_private_chat_message_notification_email(user, message_content, chat_uui
             }
         ]
     }
-
     try:
         mail = mailjet.send.create(data=data)
         return mail

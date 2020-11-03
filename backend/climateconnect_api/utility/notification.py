@@ -25,15 +25,28 @@ def create_email_notification(receiver, chat, message_content, sender, notificat
         user=receiver,
         created_at__gte=three_hours_ago
     )
+    email_settings = UserProfile.objects.filter(user=receiver).values(
+        'email_on_private_chat_message',
+        'email_on_group_chat_message'
+    )[0]
     if not email_notification_object.exists():
         is_group_chat = chat.participants.count() > 2
         if is_group_chat:
-            send_group_chat_message_notification_email(receiver, message_content, chat.chat_uuid, sender_name, chat.name)
+            if email_settings['email_on_group_chat_message'] == True:
+                send_group_chat_message_notification_email(receiver, message_content, chat.chat_uuid, sender_name, chat.name)
+                email_notification = EmailNotification.objects.create(
+                    user=receiver, 
+                    created_at=datetime.now(),
+                    notification=notification
+                )
         else:
-            send_private_chat_message_notification_email(receiver, message_content, chat.chat_uuid, sender_name)
-        email_notification = EmailNotification.objects.create(
-            user=receiver, 
-            created_at=datetime.now(),
-            notification=notification
-        )
+            if email_settings['email_on_private_chat_message'] == True:
+                send_private_chat_message_notification_email(receiver, message_content, chat.chat_uuid, sender_name)
+                email_notification = EmailNotification.objects.create(
+                    user=receiver, 
+                    created_at=datetime.now(),
+                    notification=notification
+                )
         return email_notification
+    else:
+        print("can't send because we recently sent a notification")
