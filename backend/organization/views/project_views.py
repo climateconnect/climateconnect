@@ -562,7 +562,7 @@ class ListProjectsForSitemap(ListAPIView):
         return Project.objects.filter(is_draft=False)
 
 class ListProjectFollowersView(ListAPIView):
-    permission_classes = [ReadSensibleProjectDataPermission]
+    permission_classes = [IsAuthenticated]
     serializer_class = ProjectFollowerSerializer
 
     def get_queryset(self):

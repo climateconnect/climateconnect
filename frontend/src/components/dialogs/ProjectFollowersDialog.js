@@ -48,7 +48,6 @@ export default function ProjectFollowersDialog({
   followers,
   loading,
   user,
-  hasAdminPermissions,
   url
 }) {
   const classes = useStyles();
@@ -74,17 +73,13 @@ export default function ProjectFollowersDialog({
               </Button>
             </Container>
           </>
-        ) : hasAdminPermissions ? (
+        ) :
           followers && followers.length > 0 ? (
             <ProjectFollowers followers={followers} />
           ) : (
             <Typography>This project does not have any followers yet.</Typography>
           )
-        ) : (
-          <Typography color="error">
-            {"You don't have permissions to view this project's followers"}
-          </Typography>
-        )}
+        }
       </div>
     </GenericDialog>
   );

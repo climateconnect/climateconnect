@@ -139,7 +139,6 @@ export default function ProjectOverview({
         project={project}
         onClose={toggleShowFollowers}
         user={user}
-        hasAdminPermissions={hasAdminPermissions}
         url={"projects/" + project.url_slug + "?show_followers=true"}
       />
     </Container>
@@ -313,25 +312,17 @@ function FollowButton({
         {isUserFollowing ? "Following" : "Follow"}
       </Button>
       {project.number_of_followers > 0 && (
-        <>
-          {!hasAdminPermissions ? (
-            <Typography>
-              {project.number_of_followers} Follower{project.number_of_followers > 1 && "s"}
-            </Typography>
-          ) : (
-            <Link
-              color="secondary"
-              underline="always"
-              className={classes.followersLink}
-              onClick={toggleShowFollowers}
-            >
-              <Typography className={classes.followersText}>
-                <span className={classes.followerNumber}>{project.number_of_followers}</span>{" "}
-                Follower{project.number_of_followers > 1 && "s"}
-              </Typography>
-            </Link>
-          )}
-        </>
+        <Link
+          color="secondary"
+          underline="always"
+          className={classes.followersLink}
+          onClick={toggleShowFollowers}
+        >
+          <Typography className={classes.followersText}>
+            <span className={classes.followerNumber}>{project.number_of_followers}</span>{" "}
+            Follower{project.number_of_followers > 1 && "s"}
+          </Typography>
+        </Link>
       )}
     </span>
   );
