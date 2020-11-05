@@ -102,7 +102,7 @@ EditOrganizationPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   if (ctx.req && !token) {
     const message = "You have to log in to edit an organization.";
-    return sendToLogin(ctx, message)
+    return sendToLogin(ctx, message);
   }
   const url = encodeURI(ctx.query.organizationUrl);
   const [organization, tagOptions] = await Promise.all([

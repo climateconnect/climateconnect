@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Checkbox, Container, Button, useMediaQuery } from "@material-ui/core";
 import Cookies from "universal-cookie";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -66,10 +67,10 @@ const useStyles = makeStyles(theme => {
 
 export default function CookieBanner({ closeBanner }) {
   const classes = useStyles();
+  const { updateCookies } = useContext(UserContext)
   const [checked, setChecked] = React.useState({ necessary: true, statistics: false });
   const cookies = new Cookies();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
-
   const onStatisticsChange = () => {
     setChecked({ ...checked, statistics: !checked.statistics });
   };
@@ -84,6 +85,7 @@ export default function CookieBanner({ closeBanner }) {
       sameSite: "lax",
       expires: oneYearFromNow
     });
+    updateCookies()
     closeBanner();
   };
 
@@ -94,6 +96,7 @@ export default function CookieBanner({ closeBanner }) {
       sameSite: "lax",
       expires: oneYearFromNow
     });
+    updateCookies()
     closeBanner();
   };
 
@@ -119,7 +122,7 @@ export default function CookieBanner({ closeBanner }) {
             terms of use
           </a>
         </Typography>
-        <Checkbox defaultChecked checked={checked.necessary} disabled color="primary" />
+        <Checkbox checked={checked.necessary} disabled color="primary" />
         Necessary
         <Checkbox color="primary" checked={checked.statistics} onChange={onStatisticsChange} />
         Statistics

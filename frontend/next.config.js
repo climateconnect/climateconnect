@@ -2,7 +2,15 @@ const pick = require("lodash/pick");
 
 require("dotenv").config();
 module.exports = {
-  env: pick(process.env, ["PRE_LAUNCH", "API_URL", "ENVIRONMENT", "SOCKET_URL", "API_HOST"]),
+  env: pick(process.env, [
+    "PRE_LAUNCH",
+    "API_URL",
+    "ENVIRONMENT",
+    "SOCKET_URL",
+    "API_HOST",
+    "GOOGLE_ANALYTICS_CODE",
+    "BASE_URL_HOST"
+  ]),
   exportPathMap: async function(defaultPathMap) {
     if (process.env.PRE_LAUNCH)
       return {

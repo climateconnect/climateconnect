@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
 import axios from "axios";
 import Router from "next/router";
 import Layout from "../src/components/layouts/layout";
+import UserContext from "../src/components/context/UserContext";
 
 export default function Signup() {
+  const { ReactGA } = useContext(UserContext);
+
   const [userInfo, setUserInfo] = React.useState({
     email: "",
     password: "",
@@ -67,6 +70,10 @@ export default function Signup() {
     axios
       .post(process.env.API_URL + "/signup/", payload, config)
       .then(function() {
+        ReactGA.event({
+          category: "User",
+          action: "Created an Account"
+        });
         Router.push({
           pathname: "/accountcreated/"
         });

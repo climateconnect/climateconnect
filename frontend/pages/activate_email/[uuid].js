@@ -8,10 +8,10 @@ import cookies from "next-cookies";
 
 ActivateEmail.getInitialProps = async ctx => {
   const uuid = encodeURI(ctx.query.uuid);
-  const { token } = cookies(ctx)
+  const { token } = cookies(ctx);
   if (ctx.req && !token) {
     const message = "You have to log in to verify your new email.";
-    return sendToLogin(ctx, message)
+    return sendToLogin(ctx, message);
   }
   return {
     uuid: uuid,
@@ -50,14 +50,14 @@ async function newEmailVerification(uuid, token) {
 }
 
 export default function ActivateEmail({ uuid, token }) {
-  const [sentRequest, setSentRequest] = React.useState(false)
-  useEffect(function(){
-    if(!sentRequest){
-      console.log("sending new email verification request!")
+  const [sentRequest, setSentRequest] = React.useState(false);
+  useEffect(function() {
+    if (!sentRequest) {
+      console.log("sending new email verification request!");
       newEmailVerification(uuid, token);
-      setSentRequest(true)
+      setSentRequest(true);
     }
-  })
+  });
   return (
     <Layout title="New Email Verification">
       <Typography>Verifying your new E-Mail address...</Typography>

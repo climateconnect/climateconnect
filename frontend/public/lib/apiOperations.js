@@ -55,5 +55,5 @@ export async function sendToLogin(ctx, message) {
   const url = "/signin?redirect=" + pathName + "&message=" + message;
   ctx.res.writeHead(302, { Location: url });
   ctx.res.end();
-  return
+  return;
 }

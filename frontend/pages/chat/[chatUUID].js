@@ -208,7 +208,7 @@ Chat.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   if (ctx.req && !token) {
     const message = "You have to log in to see your chats.";
-    return sendToLogin(ctx, message)
+    return sendToLogin(ctx, message);
   }
   const [chat, messages_object] = await Promise.all([
     getChat(ctx.query.chatUUID, token),

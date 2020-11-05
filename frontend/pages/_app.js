@@ -8,6 +8,7 @@ import Cookies from "universal-cookie";
 import NextCookies from "next-cookies";
 import UserContext from "../src/components/context/UserContext";
 import { MatomoProvider } from "@datapunt/matomo-tracker-react";
+import ReactGA from "react-ga";
 
 //add global styles
 import "react-multi-carousel/lib/styles.css";
@@ -16,12 +17,31 @@ import WebSocketService from "../public/lib/webSockets";
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
-export default function MyApp({ Component, pageProps, user, notifications, acceptedStatistics, pathName }) {
+export default function MyApp({
+  Component,
+  pageProps,
+  user,
+  notifications,
+  pathName
+}) {
   const [stateInitialized, setStateInitialized] = React.useState(false);
+  const [gaInitialized, setGaInitialized] = React.useState(false);
   const cookies = new Cookies();
+  const [acceptedStatistics, setAcceptedStatistics] = React.useState(cookies.get("acceptedStatistics"))
   const createInstanceIfAllowed = () => {
     return false;
   };
+  const updateCookies = () => setAcceptedStatistics(cookies.get("acceptedStatistics"))
+  if (acceptedStatistics && !gaInitialized) {
+    ReactGA.initialize(process.env.GOOGLE_ANALYTICS_CODE, {
+      debug: ["develop", "development", "test"].includes(process.env.ENVIRONMENT),
+      gaOptions: {
+        cookieDomain: process.env.BASE_URL_HOST
+      }
+    });
+    ReactGA.pageview(pathName);
+    setGaInitialized(true);
+  }
   const API_URL = process.env.API_URL;
   const API_HOST = process.env.API_HOST;
   const ENVIRONMENT = process.env.ENVIRONMENT;
@@ -93,7 +113,7 @@ export default function MyApp({ Component, pageProps, user, notifications, accep
         };
         client.onmessage = async () => {
           await refreshNotifications();
-        };      
+        };
         setState({
           user: user,
           chatSocket: client,
@@ -121,7 +141,9 @@ export default function MyApp({ Component, pageProps, user, notifications, accep
     SOCKET_URL: SOCKET_URL,
     API_HOST: API_HOST,
     setNotificationsRead: setNotificationsRead,
-    pathName: pathName
+    pathName: pathName,
+    ReactGA: ReactGA,
+    updateCookies: updateCookies
   };
   return (
     <React.Fragment>
@@ -167,7 +189,7 @@ MyApp.getInitialProps = async ctx => {
     getNotifications(token),
     ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps(ctx.ctx) : {}
   ]);
-  const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length)
+  const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
   if (token) {
     const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
     if (notificationsToSetRead.length > 0) {
@@ -185,7 +207,6 @@ MyApp.getInitialProps = async ctx => {
     pageProps: pageProps,
     user: user,
     notifications: notifications ? notifications : [],
-    acceptedStatistics: acceptedStatistics,
     pathName: pathName
   };
 };

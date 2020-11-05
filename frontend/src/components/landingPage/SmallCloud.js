@@ -15,6 +15,5 @@ const useStyles = makeStyles(() => ({
 
 export default function SmallCloud({ className, type, reverse, light }) {
   const classes = useStyles({ type: type, reverse: reverse, light: light });
-  console.log("url(/icons/small-cloud-" + type + (light ? "-light" : "") + ".svg))");
   return <span className={`${className} ${classes.root}`} />;
 }

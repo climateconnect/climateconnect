@@ -236,7 +236,7 @@ Inbox.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   if (ctx.req && !token) {
     const message = "You have to log in to see your inbox.";
-    return sendToLogin(ctx, message)
+    return sendToLogin(ctx, message);
   }
   return {
     chatData: await getChatsOfLoggedInUser(token),
