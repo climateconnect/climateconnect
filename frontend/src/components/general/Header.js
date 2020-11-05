@@ -42,7 +42,6 @@ import NotificationsBox from "../communication/notifications/NotificationsBox";
 import Notification from "../communication/notifications/Notification";
 import HomeIcon from "@material-ui/icons/Home";
 import theme from "../../themes/theme";
-import { getParams, getPath } from "../../../public/lib/generalOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -162,7 +161,7 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-const getLinks = (path_to_redirect) => [
+const getLinks = path_to_redirect => [
   {
     href: "/browse",
     text: "Home",
@@ -205,7 +204,7 @@ const getLinks = (path_to_redirect) => [
     onlyShowLoggedIn: true
   },
   {
-    href: "/signin?redirect="+path_to_redirect,
+    href: "/signin?redirect=" + path_to_redirect,
     text: "Log in",
     iconForDrawer: AccountCircleIcon,
     isOutlinedInHeader: true,
@@ -281,11 +280,10 @@ export default function Header({
   transparentHeader
 }) {
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
-  const { user, signOut, notifications } = useContext(UserContext);
+  const { user, signOut, notifications, pathName } = useContext(UserContext);
   const [anchorEl, setAnchorEl] = React.useState(false);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
-  const path = getPath(window.location.href)
-  const LINKS = getLinks(path)
+  const LINKS = getLinks(pathName);
   const toggleShowNotifications = event => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
     else setAnchorEl(null);

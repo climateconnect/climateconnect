@@ -15,6 +15,7 @@ import {
   getStatusOptions,
   getProjectTagsOptions
 } from "../../public/lib/getOptions";
+import { sendToLogin } from "../../public/lib/apiOperations";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -108,6 +109,10 @@ export default function EditProjectPage({
 
 EditProjectPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  if (ctx.req && !token) {
+    const message = "You have to log in to edit a project.";
+    return sendToLogin(ctx, message)
+  }
   const projectUrl = encodeURI(ctx.query.projectUrl);
   const [
     project,

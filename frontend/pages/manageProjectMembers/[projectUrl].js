@@ -10,6 +10,7 @@ import LoginNudge from "../../src/components/general/LoginNudge";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ManageProjectMembers from "../../src/components/project/ManageProjectMembers";
+import { sendToLogin } from "../../public/lib/apiOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -78,6 +79,10 @@ export default function manageProjectMembers({
 
 manageProjectMembers.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  if (ctx.req && !token) {
+    const message = "You have to log in to manage a project's members.";
+    return sendToLogin(ctx, message)
+  }
   const projectUrl = encodeURI(ctx.query.projectUrl);
   const [project, members, rolesOptions, availabilityOptions] = await Promise.all([
     getProjectByUrlIfExists(projectUrl, token),

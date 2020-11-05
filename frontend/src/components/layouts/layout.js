@@ -30,6 +30,7 @@ export default function Layout({
 }) {
   const classes = useStyles();
   const [hideAlertMessage, setHideAlertMessage] = React.useState(false);
+
   return (
     <LayoutWrapper theme={theme} title={title}>
       <Header noSpacingBottom={noSpacingBottom} isStaticPage={isStaticPage} />
@@ -37,7 +38,7 @@ export default function Layout({
         <LoadingContainer headerHeight={113} footerHeight={80} />
       ) : (
         <Container maxWidth="lg" component="main">
-          {message && !hideAlertMessage === message && (
+          {message && !(hideAlertMessage === message) && (
             <Alert
               className={classes.alert}
               severity={messageType ? messageType : "success"}

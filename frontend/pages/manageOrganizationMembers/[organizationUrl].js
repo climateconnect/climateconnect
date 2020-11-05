@@ -10,6 +10,7 @@ import LoginNudge from "../../src/components/general/LoginNudge";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ManageOrganizationMembers from "../../src/components/organization/ManageOrganizationMembers";
+import { sendToLogin } from "../../public/lib/apiOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -85,6 +86,10 @@ export default function manageOrganizationMembers({
 
 manageOrganizationMembers.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  if (ctx.req && !token) {
+    const message = "You have to log in to manage an organization's members.";
+    return sendToLogin(ctx, message)
+  }
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
   const [organization, members, rolesOptions, availabilityOptions] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, token),

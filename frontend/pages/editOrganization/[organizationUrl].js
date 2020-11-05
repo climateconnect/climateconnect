@@ -9,6 +9,7 @@ import tokenConfig from "../../public/config/tokenConfig";
 import { getImageUrl } from "./../../public/lib/imageOperations";
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
 import PageNotFound from "../../src/components/general/PageNotFound";
+import { sendToLogin } from "../../public/lib/apiOperations";
 
 //This route should only be accessible to admins of the organization
 
@@ -99,6 +100,10 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
 
 EditOrganizationPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  if (ctx.req && !token) {
+    const message = "You have to log in to edit an organization.";
+    return sendToLogin(ctx, message)
+  }
   const url = encodeURI(ctx.query.organizationUrl);
   const [organization, tagOptions] = await Promise.all([
     getOrganizationByUrlIfExists(url, token),

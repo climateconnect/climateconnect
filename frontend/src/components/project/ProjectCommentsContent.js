@@ -53,6 +53,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
       replies: [],
       unconfirmed: true
     });
+    clearInput();
     if (parent_comment) payload.parent_comment = parent_comment;
     try {
       const resp = await axios.post(
@@ -62,7 +63,6 @@ export default function CommentsContent({ user, project, token, setCurComments }
       );
       handleAddComment(resp.data.comment);
       if (setDisplayReplies) setDisplayReplies(true);
-      clearInput();
     } catch (err) {
       console.log(err);
       if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
