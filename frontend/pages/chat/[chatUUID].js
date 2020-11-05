@@ -13,6 +13,7 @@ import { getMessageFromServer } from "../../public/lib/messagingOperations";
 import UserContext from "../../src/components/context/UserContext";
 import ChatTitle from "../../src/components/communication/chat/ChatTitle";
 import PageNotFound from "../../src/components/general/PageNotFound";
+import { sendToLogin } from "../../public/lib/apiOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -205,6 +206,10 @@ export default function Chat({
 
 Chat.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  if (ctx.req && !token) {
+    const message = "You have to log in to see your chats.";
+    return sendToLogin(ctx, message)
+  }
   const [chat, messages_object] = await Promise.all([
     getChat(ctx.query.chatUUID, token),
     getChatMessagesByUUID(ctx.query.chatUUID, token, 1)

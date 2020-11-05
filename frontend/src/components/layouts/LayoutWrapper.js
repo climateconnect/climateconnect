@@ -39,52 +39,26 @@ export default function LayoutWrapper({
   const classes = useStyles();
   const isSmallerThanMediumScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
   const cookies = new Cookies();
-  const [loading, setLoading] = React.useState(true);
   const [bannerOpen, setBannerOpen] = React.useState(true);
   const { trackPageView } = useMatomo();
   const acceptedNecessary = cookies.get("acceptedNecessary");
-  useEffect(() => {
-    if (loading) setLoading(false);
-    trackPageView();
-  });
   const closeBanner = () => setBannerOpen(false);
-  if (loading)
-    return (
-      <>
-        <Head>
-          <title>Climate Connect</title>
-          <link
-            href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800"
-            rel="stylesheet"
-          />
-        </Head>
-        <ThemeProvider theme={theme}>
-          <div className={classes.spinnerContainer}>
-            <div>
-              <img className={classes.spinner} src="/images/logo.png" />
-            </div>
-            <Typography component="div">Loading...</Typography>
-          </div>
-        </ThemeProvider>
-      </>
-    );
-  else
-    return (
-      <>
-        <Head>
-          <title>{title}</title>
-          <link
-            href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800"
-            rel="stylesheet"
-          />
-        </Head>
-        <ThemeProvider theme={theme}>
-          <div className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}>
-            {children}
-            {!acceptedNecessary && bannerOpen && <CookieBanner closeBanner={closeBanner} />}
-            {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
-          </div>
-        </ThemeProvider>
-      </>
-    );
+  return (
+    <>
+      <Head>
+        <title>{title}</title>
+        <link
+          href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800"
+          rel="stylesheet"
+        />
+      </Head>
+      <ThemeProvider theme={theme}>
+        <div className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}>
+          {children}
+          {!acceptedNecessary && bannerOpen && <CookieBanner closeBanner={closeBanner} />}
+          {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
+        </div>
+      </ThemeProvider>
+    </>
+  );
 }

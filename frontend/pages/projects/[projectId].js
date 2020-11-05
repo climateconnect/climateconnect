@@ -119,7 +119,7 @@ ProjectPage.getInitialProps = async ctx => {
     token ? getProjectMembersByIdIfExists(projectUrl, token) : [],
     getPostsByProject(projectUrl, token),
     getCommentsByProject(projectUrl, token),
-    getIsUserFollowing(projectUrl, token)
+    token ? getIsUserFollowing(projectUrl, token) : false
   ]);
   return {
     project: project,

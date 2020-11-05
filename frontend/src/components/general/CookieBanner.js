@@ -89,7 +89,11 @@ export default function CookieBanner({ closeBanner }) {
 
   const enableAll = () => {
     cookies.set("acceptedNecessary", true, { path: "/", sameSite: "lax", expires: oneYearFromNow });
-    cookies.set("acceptedStatistics", true, { path: "/", sameSite: "lax", expires: oneYearFromNow });
+    cookies.set("acceptedStatistics", true, {
+      path: "/",
+      sameSite: "lax",
+      expires: oneYearFromNow
+    });
     closeBanner();
   };
 

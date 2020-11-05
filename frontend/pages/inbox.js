@@ -13,6 +13,7 @@ import AutoCompleteSearchBar from "../src/components/general/AutoCompleteSearchB
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import MiniProfilePreview from "../src/components/profile/MiniProfilePreview";
 import Router from "next/router";
+import { sendToLogin } from "../public/lib/apiOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -233,6 +234,10 @@ const parseChats = (chats, user) =>
 
 Inbox.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  if (ctx.req && !token) {
+    const message = "You have to log in to see your inbox.";
+    return sendToLogin(ctx, message)
+  }
   return {
     chatData: await getChatsOfLoggedInUser(token),
     token: token

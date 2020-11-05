@@ -49,3 +49,11 @@ export async function redirect(url, messages) {
     query: messages
   });
 }
+
+export async function sendToLogin(ctx, message) {
+  const pathName = ctx.asPath.substr(1, ctx.asPath.length);
+  const url = "/signin?redirect=" + pathName + "&message=" + message;
+  ctx.res.writeHead(302, { Location: url });
+  ctx.res.end();
+  return
+}

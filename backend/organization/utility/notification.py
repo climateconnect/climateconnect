@@ -1,5 +1,6 @@
 from climateconnect_api.models.notification import Notification, EmailNotification, UserNotification
 from climateconnect_api.utility.notification import create_user_notification, create_email_notification
+from climateconnect_api.models import UserProfile
 from organization.models import Comment, ProjectMember
 from django.db.models import Q
 from datetime import datetime, timedelta
@@ -61,16 +62,27 @@ def check_send_email_notification(user):
 def send_email_notification(user, notification_type, project, comment, sender, notification):
     should_send_email_notification = check_send_email_notification(user)
     comment_serializer = ProjectCommentSerializer(comment)
+    email_settings = UserProfile.objects.filter(user=user).values(
+        'email_on_comment_on_your_project',
+        'email_on_reply_to_your_comment',
+    )[0]
     if should_send_email_notification:
         if notification_type == "project_comment":
-            send_project_comment_email(user, project, comment_serializer.data["content"], sender)
+            if email_settings['email_on_comment_on_your_project'] == True:
+                send_project_comment_email(user, project, comment_serializer.data["content"], sender)
+                EmailNotification.objects.create(
+                    user=user,
+                    created_at=datetime.now(),
+                    notification=notification
+                )
         if notification_type == "project_comment_reply":
-            send_project_comment_reply_email(user, project, comment_serializer.data["content"], sender)
-        EmailNotification.objects.create(
-            user=user,
-            created_at=datetime.now(),
-            notification=notification
-        )
+            if email_settings['email_on_reply_to_your_comment'] == True:
+                send_project_comment_reply_email(user, project, comment_serializer.data["content"], sender)
+                EmailNotification.objects.create(
+                    user=user,
+                    created_at=datetime.now(),
+                    notification=notification
+                )
 
 def create_project_follower_notification(project_follower):
     notification = Notification.objects.create(
@@ -79,18 +91,21 @@ def create_project_follower_notification(project_follower):
     project_team = ProjectMember.objects.filter(project=project_follower.project).values('user')
     for member in project_team:
         if not member['user'] == project_follower.user.id:
-            print("we can go ahead!")
             user = User.objects.filter(id=member['user'])[0]
             should_send_email_notification = check_send_email_notification(user)
             create_user_notification(user, notification)
             send_out_live_notification(user.id)
+            email_settings = UserProfile.objects.filter(user=user).values(
+                'email_on_new_project_follower'
+            )[0]
             if should_send_email_notification:
-                send_project_follower_email(user, project_follower)
-                EmailNotification.objects.create(
-                    user=user,
-                    created_at=datetime.now(),
-                    notification=notification
-                )
+                if email_settings['email_on_reply_to_your_comment'] == True:
+                    send_project_follower_email(user, project_follower)
+                    EmailNotification.objects.create(
+                        user=user,
+                        created_at=datetime.now(),
+                        notification=notification
+                    )
 
 @async_to_sync
 async def send_out_live_notification(user_id):

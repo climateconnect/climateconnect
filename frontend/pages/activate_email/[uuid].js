@@ -1,17 +1,21 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Typography } from "@material-ui/core";
 import Layout from "../../src/components/layouts/layout";
 import axios from "axios";
 import tokenConfig from "../../public/config/tokenConfig";
-import Cookies from "universal-cookie";
-import UserContext from "../../src/components/context/UserContext";
-import LoginNudge from "../../src/components/general/LoginNudge";
-import { redirect } from "../../public/lib/apiOperations";
+import { redirect, sendToLogin } from "../../public/lib/apiOperations";
+import cookies from "next-cookies";
 
-ProfileVerified.getInitialProps = async ctx => {
+ActivateEmail.getInitialProps = async ctx => {
   const uuid = encodeURI(ctx.query.uuid);
+  const { token } = cookies(ctx)
+  if (ctx.req && !token) {
+    const message = "You have to log in to verify your new email.";
+    return sendToLogin(ctx, message)
+  }
   return {
-    uuid: uuid
+    uuid: uuid,
+    token: token
   };
 };
 
@@ -45,22 +49,18 @@ async function newEmailVerification(uuid, token) {
   }
 }
 
-export default function ProfileVerified({ uuid }) {
-  const { user } = useContext(UserContext);
-  if (user) {
-    const cookies = new Cookies();
-    const token = cookies.get("token");
-    newEmailVerification(uuid, token);
-    return (
-      <Layout title="New Email Verification">
-        <Typography>Verifying your new E-Mail address...</Typography>
-      </Layout>
-    );
-  } else {
-    return (
-      <Layout title="New Email Verification">
-        <LoginNudge whatTodo=" verify your new E-Mail address" />
-      </Layout>
-    );
-  }
+export default function ActivateEmail({ uuid, token }) {
+  const [sentRequest, setSentRequest] = React.useState(false)
+  useEffect(function(){
+    if(!sentRequest){
+      console.log("sending new email verification request!")
+      newEmailVerification(uuid, token);
+      setSentRequest(true)
+    }
+  })
+  return (
+    <Layout title="New Email Verification">
+      <Typography>Verifying your new E-Mail address...</Typography>
+    </Layout>
+  );
 }

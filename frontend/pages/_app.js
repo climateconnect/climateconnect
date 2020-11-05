@@ -16,7 +16,7 @@ import WebSocketService from "../public/lib/webSockets";
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
-export default function MyApp({ Component, pageProps, user, notifications }) {
+export default function MyApp({ Component, pageProps, user, notifications, acceptedStatistics, pathName }) {
   const [stateInitialized, setStateInitialized] = React.useState(false);
   const cookies = new Cookies();
   const createInstanceIfAllowed = () => {
@@ -86,14 +86,14 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
 
   useEffect(() => {
     if (!stateInitialized) {
-      const client = WebSocketService("/ws/chat/");
-      client.onopen = () => {
-        console.log("connected");
-      };
-      client.onmessage = async () => {
-        await refreshNotifications();
-      };
       if (user) {
+        const client = WebSocketService("/ws/chat/");
+        client.onopen = () => {
+          console.log("connected");
+        };
+        client.onmessage = async () => {
+          await refreshNotifications();
+        };      
         setState({
           user: user,
           chatSocket: client,
@@ -120,7 +120,8 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
     ENVIRONMENT: ENVIRONMENT,
     SOCKET_URL: SOCKET_URL,
     API_HOST: API_HOST,
-    setNotificationsRead: setNotificationsRead
+    setNotificationsRead: setNotificationsRead,
+    pathName: pathName
   };
   return (
     <React.Fragment>
@@ -152,7 +153,7 @@ export default function MyApp({ Component, pageProps, user, notifications }) {
 }
 
 MyApp.getInitialProps = async ctx => {
-  const { token } = NextCookies(ctx.ctx);
+  const { token, acceptedStatistics } = NextCookies(ctx.ctx);
   if (ctx.router.route === "/" && token) {
     ctx.ctx.res.writeHead(302, {
       Location: "/browse",
@@ -166,6 +167,7 @@ MyApp.getInitialProps = async ctx => {
     getNotifications(token),
     ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps(ctx.ctx) : {}
   ]);
+  const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length)
   if (token) {
     const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
     if (notificationsToSetRead.length > 0) {
@@ -173,14 +175,18 @@ MyApp.getInitialProps = async ctx => {
       return {
         pageProps: pageProps,
         user: user,
-        notifications: updatedNotifications ? updatedNotifications : []
+        notifications: updatedNotifications ? updatedNotifications : [],
+        acceptedStatistics: acceptedStatistics,
+        pathName: pathName
       };
     }
   }
   return {
     pageProps: pageProps,
     user: user,
-    notifications: notifications ? notifications : []
+    notifications: notifications ? notifications : [],
+    acceptedStatistics: acceptedStatistics,
+    pathName: pathName
   };
 };
 

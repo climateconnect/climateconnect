@@ -60,10 +60,10 @@ def send_project_comment_email(user, project, comment, sender):
                 "TemplateLanguage": True,
                 "Subject": "Somebody left a comment on your project '"+project.name+"' on Climate Connect",
                 "Variables": {
+                    "ProjectName": project.name,
                     "CommentText": comment,
                     "FirstName": user.first_name,
                     "CommenterName": sender.first_name + " " + sender.last_name,
-                    "ProjectName": project.name,
                     "url": settings.FRONTEND_URL+"/projects/"+project.url_slug+"#comments"
                 }
             }
