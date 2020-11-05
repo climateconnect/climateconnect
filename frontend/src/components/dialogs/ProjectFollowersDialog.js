@@ -73,13 +73,11 @@ export default function ProjectFollowersDialog({
               </Button>
             </Container>
           </>
-        ) :
-          followers && followers.length > 0 ? (
-            <ProjectFollowers followers={followers} />
-          ) : (
-            <Typography>This project does not have any followers yet.</Typography>
-          )
-        }
+        ) : followers && followers.length > 0 ? (
+          <ProjectFollowers followers={followers} />
+        ) : (
+          <Typography>This project does not have any followers yet.</Typography>
+        )}
       </div>
     </GenericDialog>
   );
