@@ -1,6 +1,5 @@
 import React from "react";
-import Link from "next/link";
-import { Typography } from "@material-ui/core";
+import { Typography, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => {
@@ -33,11 +32,9 @@ export default function InfoLink({ data }) {
   return (
     <Typography variant="h4" color="primary" className={classes.root}>
       {data.internal ? (
-        <Link href={data.href}>
-          <a className={classes.link}>
+        <Link href={data.href} className={classes.link}>
             <data.icon className={classes.icon} name={data.iconName} />
             <div className={classes.linkText}>{data.text}</div>
-          </a>
         </Link>
       ) : (
         <a href={data.href} className={classes.link} target="_blank" rel="noopener noreferrer">

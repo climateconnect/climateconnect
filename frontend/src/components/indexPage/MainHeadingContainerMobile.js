@@ -63,6 +63,10 @@ const useStyles = makeStyles(theme => {
       marginTop: theme.spacing(1),
       display: "flex",
       justifyContent: "center"
+    },
+    shareLink: {
+      textDecoration: "none",
+      color: "white"
     }
   };
 });
@@ -203,7 +207,7 @@ export default function MainHeadingContainerMobile() {
                   <div className={classes.signUpButtonBox}>
                     <Button component="div" href="signup" variant="contained" color="primary">
                       <a className={classes.shareLink} href="/signup">
-                        <b>Join Now</b>
+                        Join Now
                       </a>
                     </Button>
                   </div>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Typography } from "@material-ui/core";
 import Layout from "../../src/components/layouts/layout";
 import axios from "axios";
