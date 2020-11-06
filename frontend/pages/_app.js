@@ -27,11 +27,8 @@ export default function MyApp({
   const [gaInitialized, setGaInitialized] = React.useState(false);
   const cookies = new Cookies();
   const [acceptedStatistics, setAcceptedStatistics] = React.useState(cookies.get("acceptedStatistics"))
-  const createInstanceIfAllowed = () => {
-    return false;
-  };
   const updateCookies = () => setAcceptedStatistics(cookies.get("acceptedStatistics"))
-  if (acceptedStatistics && !gaInitialized) {
+  if (acceptedStatistics && !gaInitialized && !["develop", "development", "test"].includes(process.env.ENVIRONMENT)) {
     ReactGA.initialize(process.env.GOOGLE_ANALYTICS_CODE, {
       debug: ["develop", "development", "test"].includes(process.env.ENVIRONMENT),
       gaOptions: {
@@ -146,14 +143,6 @@ export default function MyApp({
   };
   return (
     <React.Fragment>
-      <Head>
-        <title>Climate Connect</title>
-        <link rel="icon" href="/icons/favicon.ico" />
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
-        />
-      </Head>
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
