@@ -52,7 +52,7 @@ export default function Signin() {
       if (params.message) setMessage(params.message);
       setInitialized(true);
       //TODO: remove router
-    } 
+    }
     if (user) {
       redirectOnLogin(user, redirectUrl);
     }   

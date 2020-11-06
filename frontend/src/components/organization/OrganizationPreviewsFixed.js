@@ -46,12 +46,10 @@ const useStyles = makeStyles(theme => ({
 
 export default function OrganizationPreviewsFixed({ organizations, showOrganizationType }) {
   const classes = useStyles();
-  console.log(organizations);
   return (
     <div className={classes.root}>
       <div className={classes.container}>
         {organizations.map((organization, index) => {
-          console.log(organization);
           return (
             <span
               className={`${classes.organization} ${index === 0 && classes.first}`}

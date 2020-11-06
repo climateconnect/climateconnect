@@ -81,7 +81,7 @@ manageProjectMembers.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   if (ctx.req && !token) {
     const message = "You have to log in to manage a project's members.";
-    return sendToLogin(ctx, message)
+    return sendToLogin(ctx, message);
   }
   const projectUrl = encodeURI(ctx.query.projectUrl);
   const [project, members, rolesOptions, availabilityOptions] = await Promise.all([

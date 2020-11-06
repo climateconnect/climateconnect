@@ -88,7 +88,7 @@ manageOrganizationMembers.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   if (ctx.req && !token) {
     const message = "You have to log in to manage an organization's members.";
-    return sendToLogin(ctx, message)
+    return sendToLogin(ctx, message);
   }
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
   const [organization, members, rolesOptions, availabilityOptions] = await Promise.all([

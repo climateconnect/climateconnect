@@ -433,7 +433,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       >
         Change preferences
       </Button>
-      <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
+      <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2" id="cookiesettings">
         Change cookie settings
       </Typography>
       <Divider />

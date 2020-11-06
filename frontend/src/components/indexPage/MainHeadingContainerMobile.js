@@ -202,7 +202,7 @@ export default function MainHeadingContainerMobile() {
                 {!user && (
                   <div className={classes.signUpButtonBox}>
                     <Button component="div" href="signup" variant="contained" color="primary">
-                      <a className={classes.shareLink}>
+                      <a className={classes.shareLink} href="/signup">
                         <b>Join Now</b>
                       </a>
                     </Button>

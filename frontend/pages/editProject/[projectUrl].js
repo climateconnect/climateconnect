@@ -111,7 +111,7 @@ EditProjectPage.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
   if (ctx.req && !token) {
     const message = "You have to log in to edit a project.";
-    return sendToLogin(ctx, message)
+    return sendToLogin(ctx, message);
   }
   const projectUrl = encodeURI(ctx.query.projectUrl);
   const [
