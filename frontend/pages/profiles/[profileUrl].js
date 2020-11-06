@@ -99,7 +99,11 @@ export default function ProfilePage({
     if (params.message) setMessage(decodeURI(params.message));
   });
   return (
-    <WideLayout message={message} title={profile ? profile.name + "'s profile" : "Not found"}>
+    <WideLayout 
+      message={message} 
+      title={profile ? profile.name + "'s profile" : "Not found"}
+      description={profile.name + " | " + profile.info.location + (profile.info.bio ? (" | " + profile.info.bio) : "")}
+    >
       {profile ? (
         <ProfileLayout
           profile={profile}

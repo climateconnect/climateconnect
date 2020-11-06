@@ -32,17 +32,18 @@ export default function WideLayout({
   isStaticPage,
   noFeedbackButton, //don't display the fixed feedback button on the right border of the screen. Can be useful on mobile
   noSpaceBottom, //display the footer directly under the content without any margin
-  largeFooter
+  largeFooter,
+  description
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom });
   const [alertOpen, setAlertOpen] = React.useState(true);
-
   return (
     <LayoutWrapper
       theme={aboutTheme}
       title={title}
       noFeedbackButton={noFeedbackButton}
       noSpaceForFooter={noSpaceBottom}
+      description={description}
     >
       <Header
         isStaticPage={isStaticPage}

@@ -33,7 +33,8 @@ export default function LayoutWrapper({
   theme,
   fixedHeight,
   noFeedbackButton,
-  noSpaceForFooter
+  noSpaceForFooter,
+  description
 }) {
   const classes = useStyles();
   const [initialized, setInitialized] = React.useState(false)
@@ -46,6 +47,7 @@ export default function LayoutWrapper({
     if(!initialized)
       setInitialized(true)
   })
+  const defaultDescription = "Free and non-profit climate action platform. Share, find and work on impactful, innovative and inspiring solutions to reduce and stop global warming. Join #teamclimate now!"
   return (
     <>
       <Head>
@@ -54,6 +56,7 @@ export default function LayoutWrapper({
           href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800"
           rel="stylesheet"
         />
+        <meta name="description" content={description ? description : defaultDescription} />
       </Head>
       <ThemeProvider theme={theme}>
         <div className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}>
