@@ -7,7 +7,6 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import NextCookies from "next-cookies";
 import UserContext from "../src/components/context/UserContext";
-import { MatomoProvider } from "@datapunt/matomo-tracker-react";
 import ReactGA from "react-ga";
 
 //add global styles
@@ -49,7 +48,6 @@ export default function MyApp({
   const SOCKET_URL = process.env.SOCKET_URL;
   const [state, setState] = React.useState({
     user: user,
-    matomoInstance: createInstanceIfAllowed(),
     notifications: [],
     chatSocket: null
   });
@@ -159,17 +157,9 @@ export default function MyApp({
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        {state.matomoInstance ? (
-          <MatomoProvider value={state.matomoInstance}>
-            <UserContext.Provider value={contextValues}>
-              <Component {...pageProps} />
-            </UserContext.Provider>
-          </MatomoProvider>
-        ) : (
-          <UserContext.Provider value={contextValues}>
-            <Component {...pageProps} />
-          </UserContext.Provider>
-        )}
+        <UserContext.Provider value={contextValues}>
+          <Component {...pageProps} />
+        </UserContext.Provider>
       </ThemeProvider>
     </React.Fragment>
   );
