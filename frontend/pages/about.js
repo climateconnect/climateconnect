@@ -18,6 +18,11 @@ import QuoteSlideShow from "../src/components/about/QuoteSlideShow";
 
 const useStyles = makeStyles(theme => {
   return {
+    headline: {
+      textAlign: "center",
+      fontWeight: "bold",
+      fontSize: 40
+    },
     headerImageContainer: {
       marginBottom: theme.spacing(5)
     },
@@ -38,7 +43,8 @@ const useStyles = makeStyles(theme => {
       display: "block",
       marginBottom: theme.spacing(6),
       marginTop: theme.spacing(8),
-      fontWeight: "bold"
+      fontWeight: "bold",
+      fontSize: 40
     },
     bubbleGrid: {
       padding: 0,
@@ -76,6 +82,13 @@ const useStyles = makeStyles(theme => {
     },
     bold: {
       fontWeight: "bold"
+    },
+    textBlockTop: {
+      textAlign: "center",
+      fontSize: 28,
+      maxWidth: 1000,
+      margin: "0 auto",
+      marginTop: theme.spacing(2)
     }
   };
 });
@@ -106,128 +119,122 @@ export default function About() {
     <>
       <WideLayout title="About Climate Connect" isStaticPage>
         <HeaderImage className={classes.headerImageContainer} src={"images/about_background.jpg"} />
-        <Typography
-          component="h1"
-          variant="h4"
-          color="secondary"
-          className={`${classes.centeredText} ${classes.textBlock}`}
-        >
-          <Typography component="h2" variant="h4" className={classes.bold}>
-            Climate Connect is a non-profit climate action platform.
+        <Container>
+          <Typography color="primary" component="h1" variant="h4" className={classes.headline}>
+            Climate Connect is a non-profit climate action platform
           </Typography>
-          <div>
+          <Typography component="h3" className={classes.textBlockTop}>
             Our goal is to connect climate protectors worldwide by giving them a platform to share
             their projects or ideas to receive feedback, find specific help on a project and get
             inspired for climate actions.
-          </div>
-        </Typography>
-        <Typography
-          component="h2"
-          variant="h3"
-          color="primary"
-          className={`${classes.centeredText} ${classes.textBlock} ${classes.sectionHeadline}`}
-        >
-          Our Vision
-        </Typography>
-        <Container maxWidth="lg" className={classes.bubbleGrid}>
-          {about_page_info.map((info, index) => (
-            <InfoBubble data={info} key={index} />
-          ))}
-        </Container>
-        <QuoteSlideShow
-          image={quotes_with_images[0].image_path}
-          className={classes.quoteSlideShow}
-        />
-        <Typography
-          component="h2"
-          variant="h3"
-          color="primary"
-          className={`${classes.centeredText}  ${classes.sectionHeadline}`}
-        >
-          Find out more
-        </Typography>
-        <Container maxWidth="lg" className={classes.linksContainer}>
-          {links.map((link, index) => (
-            <InfoLink data={link} key={index} />
-          ))}
-        </Container>
-        <QuoteSlideShow
-          image={quotes_with_images[1].image_path}
-          className={classes.quoteSlideShow}
-        />
-        <Container maxWidth="lg">
+          </Typography>
+          <Typography
+            component="h1"
+            color="primary"
+            className={`${classes.centeredText} ${classes.textBlock} ${classes.sectionHeadline}`}
+          >
+            Our vision
+          </Typography>
+          <Container maxWidth="lg" className={classes.bubbleGrid}>
+            {about_page_info.map((info, index) => (
+              <InfoBubble data={info} key={index} />
+            ))}
+          </Container>
+          <QuoteSlideShow
+            image={quotes_with_images[0].image_path}
+            className={classes.quoteSlideShow}
+          />
           <Typography
             component="h2"
             variant="h3"
             color="primary"
             className={`${classes.centeredText}  ${classes.sectionHeadline}`}
           >
-            Our Team
+            Find out more
           </Typography>
-          <MemberCarousel members={shuffle(members)} className={classes.memberGrid} />
-        </Container>
-        <QuoteSlideShow
-          image={quotes_with_images[2].image_path}
-          className={classes.quoteSlideShow}
-        />
-        <Typography
-          component="h2"
-          variant="h3"
-          color="primary"
-          className={`${classes.centeredText}  ${classes.sectionHeadline}`}
-        >
-          Get involved by joining our Team of volunteers!
-        </Typography>
-        <Container maxWidth="lg" className={classes.bubbleGrid}>
+          <Container maxWidth="lg" className={classes.linksContainer}>
+            {links.map((link, index) => (
+              <InfoLink data={link} key={index} />
+            ))}
+          </Container>
+          <QuoteSlideShow
+            image={quotes_with_images[1].image_path}
+            className={classes.quoteSlideShow}
+          />
+          <Container maxWidth="lg">
+            <Typography
+              component="h2"
+              variant="h3"
+              color="primary"
+              className={`${classes.centeredText}  ${classes.sectionHeadline}`}
+            >
+              Our Team
+            </Typography>
+            <MemberCarousel members={shuffle(members)} className={classes.memberGrid} />
+          </Container>
+          <QuoteSlideShow
+            image={quotes_with_images[2].image_path}
+            className={classes.quoteSlideShow}
+          />
+          <Typography
+            component="h2"
+            variant="h3"
+            color="primary"
+            className={`${classes.centeredText}  ${classes.sectionHeadline}`}
+          >
+            Get involved by joining our Team of volunteers!
+          </Typography>
+          <Container maxWidth="lg" className={classes.bubbleGrid}>
+            <Typography
+              component="h2"
+              variant="h4"
+              color="primary"
+              className={classes.openPositionsHeadline}
+            >
+              Open positions:
+            </Typography>
+            {open_positions.map((info, index) => {
+              return (
+                <InfoBubble
+                  data={info}
+                  key={index}
+                  iconColor="secondary"
+                  textColor="primary"
+                  bold={true}
+                  maxWidth={330}
+                />
+              );
+            })}
+            <Typography
+              component="h5"
+              variant="h4"
+              color="secondary"
+              className={`${classes.centeredText} ${classes.textBlock}`}
+            >
+              Send your application to contact@climateconnect.earth
+            </Typography>
+          </Container>
           <Typography
             component="h2"
             variant="h4"
             color="primary"
-            className={classes.openPositionsHeadline}
+            className={`${classes.centeredText}  ${classes.sectionHeadline}`}
           >
-            Open positions:
+            Support us financially
           </Typography>
-          {open_positions.map((info, index) => {
-            return (
-              <InfoBubble
-                data={info}
-                key={index}
-                iconColor="secondary"
-                textColor="primary"
-                bold={true}
-                maxWidth={330}
-              />
-            );
-          })}
           <Typography
             component="h5"
             variant="h4"
             color="secondary"
             className={`${classes.centeredText} ${classes.textBlock}`}
           >
-            Send your application to contact@climateconnect.earth
+            Climate Connect gUG (haftungsbeschränkt)
+            <br />
+            IBAN: <span className={classes.bold}>DE02430609671072519500</span>
+            <br />
+            BIC: <span className={classes.bold}>GENODEM1GLS</span>
           </Typography>
         </Container>
-        <Typography
-          component="h2"
-          variant="h4"
-          color="primary"
-          className={`${classes.centeredText}  ${classes.sectionHeadline}`}
-        >
-          Support us financially
-        </Typography>
-        <Typography
-          component="h5"
-          variant="h4"
-          color="secondary"
-          className={`${classes.centeredText} ${classes.textBlock}`}
-        >
-          Climate Connect gUG (haftungsbeschränkt)
-          <br />
-          IBAN: <span className={classes.bold}>DE02430609671072519500</span>
-          <br />
-          BIC: <span className={classes.bold}>GENODEM1GLS</span>
-        </Typography>
       </WideLayout>
     </>
   );
