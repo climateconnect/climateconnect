@@ -53,10 +53,8 @@ const useStyles = makeStyles(theme => ({
     position: "relative"
   },
   contentRef: {
-    [theme.breakpoints.down("sm")]: {
-      position: "absolute",
-      top: -100
-    }
+    position: "absolute",
+    top: -100
   }
 }));
 
