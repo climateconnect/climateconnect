@@ -36,7 +36,7 @@ export default function MyApp({
         anonymizeIp: true
       }
     });
-    ReactGA.pageview(pathName);
+    ReactGA.pageview(!!pathName ? pathName : "/");
     setGaInitialized(true);
   }
   const API_URL = process.env.API_URL;
