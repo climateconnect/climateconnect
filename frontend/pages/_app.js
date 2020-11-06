@@ -36,7 +36,8 @@ export default function MyApp({
     ReactGA.initialize(process.env.GOOGLE_ANALYTICS_CODE, {
       debug: ["develop", "development", "test"].includes(process.env.ENVIRONMENT),
       gaOptions: {
-        cookieDomain: process.env.BASE_URL_HOST
+        cookieDomain: process.env.BASE_URL_HOST,
+        anonymizeIp: true
       }
     });
     ReactGA.pageview(pathName);
