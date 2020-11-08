@@ -33,8 +33,8 @@ export default function InfoLink({ data }) {
     <Typography variant="h4" color="primary" className={classes.root}>
       {data.internal ? (
         <Link href={data.href} className={classes.link}>
-            <data.icon className={classes.icon} name={data.iconName} />
-            <div className={classes.linkText}>{data.text}</div>
+          <data.icon className={classes.icon} name={data.iconName} />
+          <div className={classes.linkText}>{data.text}</div>
         </Link>
       ) : (
         <a href={data.href} className={classes.link} target="_blank" rel="noopener noreferrer">

@@ -67,7 +67,7 @@ export default function OrganizationPage({
       errorMessage={errorMessage}
       message={message}
       title={organization ? organization.name : "Not found"}
-      description={organization.name+" | "+organization.info.shortdescription}
+      description={organization.name + " | " + organization.info.shortdescription}
     >
       {organization ? (
         <OrganizationLayout

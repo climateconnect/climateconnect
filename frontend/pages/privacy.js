@@ -119,11 +119,14 @@ export default function Privacy() {
       <div>(5) company name</div>
       <br />
       <h3>Which data do we process when you reister for your newsletter?</h3>
-      If you register for our newsletter, we may process further information from you in addition to your 
-      e-mail address that you have provided us with in connection with the registration. In particular, we 
-      process all information required to prove that you have registered for the newsletter. 
-      We distribute our newsletter via <a href="https://www.mailjet.com/" target="_blank">Mailjet</a>.
-      <h2>4. From whom do we collect your personal data?</h2>
+      If you register for our newsletter, we may process further information from you in addition to
+      your e-mail address that you have provided us with in connection with the registration. In
+      particular, we process all information required to prove that you have registered for the
+      newsletter. We distribute our newsletter via{" "}
+      <a href="https://www.mailjet.com/" target="_blank">
+        Mailjet
+      </a>
+      .<h2>4. From whom do we collect your personal data?</h2>
       Personal data is only collected directly from you, e.g., by visiting our websites or using the
       services offered, such as the possibility of registration, using our newsletter and contacting
       us by e-mail.
@@ -174,40 +177,39 @@ export default function Privacy() {
         <li>
           <b>Service providers and advisors</b>: third party service providers that perform services
           for us, on our behalf, which may include payments processing, providing analytic services
-          (e.g. Google analytics; privacy policy is available 
-          <a href="https://support.google.com/analytics/answer/6004245?hl=en" target="_blank">here</a>)
-          providing automatic email notification (e.g. Mailjet; Mailjet privacy policy is available 
+          (e.g. Google analytics; privacy policy is available
+          <a href="https://support.google.com/analytics/answer/6004245?hl=en" target="_blank">
+            here
+          </a>
+          ) providing automatic email notification (e.g. Mailjet; Mailjet privacy policy is
+          available
           <a href="https://www.mailjet.com/security-privacy/">here</a>)
         </li>
         <li>
           <b>Transfer to processors</b>
           We use external service providers for the operation of the website and sending E-Mail as
-          well as for the handling of donation payments. We use external server providers such as 
-          Mailjet for email communications and for the handling
-          of payments within the context of the donations such as Paypal and twingle [Matomo]. If we
-          pass on your personal data, it is contractually assured that third parties only process
-          the data on our behalf. For example processors are contractually obliged, to either delete
-          or return the data when the contract is terminated.
-          <br/>
-          All PayPal transactions are subject to
-          PayPal’s Policy, which is available at
-          https://www.paypal.com/uk/webapps/mpp/ua/privacy-full. 
+          well as for the handling of donation payments. We use external server providers such as
+          Mailjet for email communications and for the handling of payments within the context of
+          the donations such as Paypal and twingle [Matomo]. If we pass on your personal data, it is
+          contractually assured that third parties only process the data on our behalf. For example
+          processors are contractually obliged, to either delete or return the data when the
+          contract is terminated.
           <br />
-          All twingle transactions are
-          subject to twingle’s Policy, which is available at 
+          All PayPal transactions are subject to PayPal’s Policy, which is available at
+          https://www.paypal.com/uk/webapps/mpp/ua/privacy-full.
+          <br />
+          All twingle transactions are subject to twingle’s Policy, which is available at
           <a href="https://www.twingle.de/datenschutz/">https://www.twingle.de/datenschutz/</a>. We
           will share your payment and transaction information, including your name, address, company
           name, email address and details of your chosen payment method and information about your
-          transaction. 
-          For example, our website uses the donation form of twingle GmbH, Prinzenallee
+          transaction. For example, our website uses the donation form of twingle GmbH, Prinzenallee
           74, 13357 Berlin. The twingle GmbH provides the technical platform for the donation
           process for this donation form. The data you enter during the donation process (e.g.
           address, bank details, etc.) will be stored by twingle on servers in Germany for the sole
           purpose of processing the donation. We have concluded a contract with twingle for order
           data processing and fully implement the requirements of the EU Data Protection Basic
           Regulation and the German data protection authorities when using the twingle donation
-          form. 
-          The transmission of your data is based on your consent and the processing for the
+          form. The transmission of your data is based on your consent and the processing for the
           fulfilment of a contract. You have the possibility to revoke your consent to data
           processing at any time. A revocation does not affect the effectiveness of data processing
           operations carried out in the past. In the case of a donation, we collect and use your
@@ -408,88 +410,97 @@ export default function Privacy() {
       For the provision of our website we use the services of the third-party providers listed
       below. These third-party tools belong to the categories of the cookies described above and
       help us provide our services on our website or to promote our products and services over the
-      internet. We share or allow YouTube, Google Fonts, and Google Analytics to collect information about
-      your use of our website over time. The information we share is only provided through cookies
-      or similar web tracking technologies that recognize the device you are using to collect
-      information, including click stream information, browser type, time and date you visited the
-      site, whether you logged into your account for our services, or otherwise worked with us. The
-      following provides additional information about these third parties: 
-
+      internet. We share or allow YouTube, Google Fonts, and Google Analytics to collect information
+      about your use of our website over time. The information we share is only provided through
+      cookies or similar web tracking technologies that recognize the device you are using to
+      collect information, including click stream information, browser type, time and date you
+      visited the site, whether you logged into your account for our services, or otherwise worked
+      with us. The following provides additional information about these third parties:
       <h5>12.5.1 Google Analytics</h5>
-
-      If you have given your consent to allow statistical cookies, this website uses Google Analytics, a web analysis service of Google LLC. 
-      The responsible service provider in the EU is Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland ("Google").
+      If you have given your consent to allow statistical cookies, this website uses Google
+      Analytics, a web analysis service of Google LLC. The responsible service provider in the EU is
+      Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland ("Google").
       <h6>Scope of processing</h6>
-      Google Analytics uses cookies that enable an analysis of your use of our website. The information collected 
-      by means of the cookies about your use of this website is usually transferred to a Google server in the USA and stored there.
+      Google Analytics uses cookies that enable an analysis of your use of our website. The
+      information collected by means of the cookies about your use of this website is usually
+      transferred to a Google server in the USA and stored there.
       <br />
-      We use the function User-ID. The User ID allows us to assign a unique, permanent ID to one or more sessions 
-      (and the activities within these sessions) and to analyze user behavior across devices.
+      We use the function User-ID. The User ID allows us to assign a unique, permanent ID to one or
+      more sessions (and the activities within these sessions) and to analyze user behavior across
+      devices.
       <br />
-      We use the function 'anonymizeIP' (so-called IP-Masking): Due to the activation of IP-anonymization on this website, your IP-address 
-      will be shortened by Google within member states of the European Union or in other signatory states of the Agreement on the European 
-      Economic Area. Only in exceptional cases will the full IP address be transferred to a Google server in the USA and shortened there. 
-      The IP address transmitted by your browser within the framework of Google Analytics is not merged with other data from Google.
-      <br /> 
+      We use the function {"'anonymizeIP'"} (so-called IP-Masking): Due to the activation of
+      IP-anonymization on this website, your IP-address will be shortened by Google within member
+      states of the European Union or in other signatory states of the Agreement on the European
+      Economic Area. Only in exceptional cases will the full IP address be transferred to a Google
+      server in the USA and shortened there. The IP address transmitted by your browser within the
+      framework of Google Analytics is not merged with other data from Google.
+      <br />
       During your website visit the following data is recorded:
       <ul>
         <li>the pages you call up, your "click path</li>
-        <li>Achievement of "website goals" (conversions, e.g. newsletter registrations, downloads, purchases)</li>
+        <li>
+          Achievement of "website goals" (conversions, e.g. newsletter registrations, downloads,
+          purchases)
+        </li>
         <li>Your user behavior (for example clicks, dwell time, bounce rates)</li>
         <li>Your approximate location (region)</li>
         <li>Your IP address (in abbreviated form)</li>
-        <li>technical information about your browser and the end devices you use (e.g. language settings, screen resolution)</li>
+        <li>
+          technical information about your browser and the end devices you use (e.g. language
+          settings, screen resolution)
+        </li>
         <li>Your internet provider</li>
         <li>the referrer URL (via which website/advertising medium you came to this website)</li>
       </ul>
       <h6>Purposes of processing</h6>
       On behalf of the operator of this website, Google will use this information to evaluate your
-      use of the website and to compile reports on website activity. The reports provided by Google Analytics serve to 
-      analyze the performance of our website and the success of our marketing campaigns.
+      use of the website and to compile reports on website activity. The reports provided by Google
+      Analytics serve to analyze the performance of our website and the success of our marketing
+      campaigns.
       <h6>Recipient</h6>
       The recipient of the data is
       <li>Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland</li>
-      as a contract processor. For this purpose we have concluded a contract with Google. Google LLC, 
-      headquartered in California, USA, and, if applicable, US authorities can access the data stored at Google.
-      <h6>Transfer to third countries</h6>
-      A transfer of data to the USA cannot be excluded.
+      as a contract processor. For this purpose we have concluded a contract with Google. Google
+      LLC, headquartered in California, USA, and, if applicable, US authorities can access the data
+      stored at Google.
+      <h6>Transfer to third countries</h6>A transfer of data to the USA cannot be excluded.
       <h6>Storage period</h6>
-      The data sent by us and linked to cookies are automatically deleted after 14 months. Data whose retention period has been reached is 
-      automatically deleted once a month. You can also prevent the collection of data generated by the cookie and related to your use of the 
-      website (including your IP address) to Google and the processing of this data by Google by
-      a. do not give your consent to the setting of the cookie or
-      b. Download and install the browser add-on to disable Google Analytics HERE.
-      You can also prevent the storage of cookies by setting your browser software accordingly. 
-      However, if you configure your browser to refuse all cookies, this may limit the functionality of this and other websites.
+      The data sent by us and linked to cookies are automatically deleted after 14 months. Data
+      whose retention period has been reached is automatically deleted once a month. You can also
+      prevent the collection of data generated by the cookie and related to your use of the website
+      (including your IP address) to Google and the processing of this data by Google by a. do not
+      give your consent to the setting of the cookie or b. Download and install the browser add-on
+      to disable Google Analytics HERE. You can also prevent the storage of cookies by setting your
+      browser software accordingly. However, if you configure your browser to refuse all cookies,
+      this may limit the functionality of this and other websites.
       <h6>Legal basis and possibility of revocation</h6>
-      for this data processing is your consent, Art.6 para.1 S.1 lit.a DSGVO. You can withdraw your consent at any time with 
-      future effect by accessing the cookie settings climateconnect.earth/settings#cookiesettings and changing your selection there.
-      For more information about Google Analytics terms of use and Google's privacy policy, please visit 
-      https://marketingplatform.google.com/about/analytics/terms/de/ and https://policies.google.com/?hl=en.
-
+      for this data processing is your consent, Art.6 para.1 S.1 lit.a DSGVO. You can withdraw your
+      consent at any time with future effect by accessing the cookie settings
+      climateconnect.earth/settings#cookiesettings and changing your selection there. For more
+      information about Google Analytics terms of use and {"Google's"} privacy policy, please visit
+      https://marketingplatform.google.com/about/analytics/terms/de/ and
+      https://policies.google.com/?hl=en.
       <h5>12.5.2 Twingle Matomo</h5>
-      In the
-      donation form of twingle, data is collected and stored using the web analysis service software
-      Matomo (www.matomo.org) , a service of the provider InnoCraft Ltd, 150 Willis St, 6011
-      Wellingtion, New Zealand based on twingle’s legitimate interest in statistical analysis of
-      user behaviour for optimisation purposes. This data can be used to create and evaluate
+      In the donation form of twingle, data is collected and stored using the web analysis service
+      software Matomo (www.matomo.org) , a service of the provider InnoCraft Ltd, 150 Willis St,
+      6011 Wellingtion, New Zealand based on twingle’s legitimate interest in statistical analysis
+      of user behaviour for optimisation purposes. This data can be used to create and evaluate
       pseudonyms, user profiles for the same purpose. Cookies may be used for this purpose. Among
       other things, the cookies enable the recognition of the internet browser. The data collected
       with Matomo Technology (including your pseudonymized IP address) is processed on twingle
       servers. The information generated by the Cookie in the pseudonymous user profile is not used
       to personally identify the visitor of the website an is not merged with personal data about
-      the bearer of the pseudonym. 
-      If you do not agree with the storage and evaluation of these data
+      the bearer of the pseudonym. If you do not agree with the storage and evaluation of these data
       from your visit, you can object to the storage and use of these data at any time by using the
-      banner that that appears when twingle is used. 
-
+      banner that that appears when twingle is used.
       <h5>12.5.3 Google Fonts</h5>
-      On our internet pages we use external provided
-      fonts, Google fonts. Google Fonts is a service of Google Inc. (“Google”). The integration of
-      these fonts is done by a server call, usually a Google server in the USA. This transfers to
-      the server which of our internet pages you have visited. The IP address of the browser of the
-      end device of the visitor is also stored by Google. You will find more detailed information in
-      the Google data protection information, which you can access here:
+      On our internet pages we use external provided fonts, Google fonts. Google Fonts is a service
+      of Google Inc. (“Google”). The integration of these fonts is done by a server call, usually a
+      Google server in the USA. This transfers to the server which of our internet pages you have
+      visited. The IP address of the browser of the end device of the visitor is also stored by
+      Google. You will find more detailed information in the Google data protection information,
+      which you can access here:
       <div>https://fonts.google.com/about</div>
       <div>https://policies.google.com/privacy</div>
       <h5>12.5.4 YouTube</h5>
@@ -510,11 +521,13 @@ export default function Privacy() {
       cookies by adjusting your internet browser settings. You will find more information on this in
       the section “Cookies” listed above. Further information on the collection and use of data and
       your rights and protection options in this regard is provided by Google in the data protection
-      information available <a href="https://policies.google.com/privacy" target="_blank">here</a>.
-      <h5>Mailjet SAS</h5>
-      On our internet pages we use the services of the cloud
-      communications platform Twilio Inc., 375 Beale Street, Suite 300, San Francisco, CA 94105 for
-      sending automatic emails. Link
+      information available{" "}
+      <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">
+        here
+      </a>
+      .<h5>Mailjet SAS</h5>
+      On our internet pages we use the services of the cloud communications platform Twilio Inc.,
+      375 Beale Street, Suite 300, San Francisco, CA 94105 for sending automatic emails. Link
       <h2>13. Technical security measures</h2>
       For security reasons and to protect the transmission of confidential information that you send
       to us as the website provider, we use SSL or TLS encryption. You can recognize an encrypted

@@ -67,7 +67,7 @@ const useStyles = makeStyles(theme => {
 
 export default function CookieBanner({ closeBanner }) {
   const classes = useStyles();
-  const { updateCookies } = useContext(UserContext)
+  const { updateCookies } = useContext(UserContext);
   const [checked, setChecked] = React.useState({ necessary: true, statistics: false });
   const cookies = new Cookies();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
@@ -85,7 +85,7 @@ export default function CookieBanner({ closeBanner }) {
       sameSite: "lax",
       expires: oneYearFromNow
     });
-    updateCookies()
+    updateCookies();
     closeBanner();
   };
 
@@ -96,7 +96,7 @@ export default function CookieBanner({ closeBanner }) {
       sameSite: "lax",
       expires: oneYearFromNow
     });
-    updateCookies()
+    updateCookies();
     closeBanner();
   };
 

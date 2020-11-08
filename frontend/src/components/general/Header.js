@@ -349,10 +349,14 @@ function StaticPageLinks() {
         <div className={classes.staticPageLinks}>
           {STATIC_PAGE_LINKS.map((link, index) => {
             return (
-              <Link href={link.href} key={index + "-" + link.text} className={classes.staticPageLink}>
+              <Link
+                href={link.href}
+                key={index + "-" + link.text}
+                className={classes.staticPageLink}
+              >
                 {link.text}
               </Link>
-            )
+            );
           })}
         </div>
       </Container>

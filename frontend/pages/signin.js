@@ -55,7 +55,7 @@ export default function Signin() {
     }
     if (user) {
       redirectOnLogin(user, redirectUrl);
-    }   
+    }
   });
   const handleSubmit = async (event, values) => {
     //don't redirect to the post url

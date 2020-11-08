@@ -16,19 +16,19 @@ import WebSocketService from "../public/lib/webSockets";
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
-export default function MyApp({
-  Component,
-  pageProps,
-  user,
-  notifications,
-  pathName
-}) {
+export default function MyApp({ Component, pageProps, user, notifications, pathName }) {
   const [stateInitialized, setStateInitialized] = React.useState(false);
   const [gaInitialized, setGaInitialized] = React.useState(false);
   const cookies = new Cookies();
-  const [acceptedStatistics, setAcceptedStatistics] = React.useState(cookies.get("acceptedStatistics"))
-  const updateCookies = () => setAcceptedStatistics(cookies.get("acceptedStatistics"))
-  if (acceptedStatistics && !gaInitialized && !["develop", "development", "test"].includes(process.env.ENVIRONMENT)) {
+  const [acceptedStatistics, setAcceptedStatistics] = React.useState(
+    cookies.get("acceptedStatistics")
+  );
+  const updateCookies = () => setAcceptedStatistics(cookies.get("acceptedStatistics"));
+  if (
+    acceptedStatistics &&
+    !gaInitialized &&
+    !["develop", "development", "test"].includes(process.env.ENVIRONMENT)
+  ) {
     ReactGA.initialize(process.env.GOOGLE_ANALYTICS_CODE, {
       debug: ["develop", "development", "test"].includes(process.env.ENVIRONMENT),
       gaOptions: {

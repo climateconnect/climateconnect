@@ -104,7 +104,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             'image', 'country', 
             'city', 'status',
             'project_parents', 'tags',
-            'is_draft'
+            'is_draft', 'short_description'
         )
     
     def get_project_parents(self, obj):        

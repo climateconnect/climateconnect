@@ -37,17 +37,17 @@ export default function LayoutWrapper({
   description
 }) {
   const classes = useStyles();
-  const [initialized, setInitialized] = React.useState(false)
+  const [initialized, setInitialized] = React.useState(false);
   const isSmallerThanMediumScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
   const cookies = new Cookies();
   const [bannerOpen, setBannerOpen] = React.useState(true);
   const acceptedNecessary = cookies.get("acceptedNecessary");
   const closeBanner = () => setBannerOpen(false);
-  useEffect(function(){
-    if(!initialized)
-      setInitialized(true)
-  })
-  const defaultDescription = "Free and non-profit climate action platform. Share, find and work on impactful, innovative and inspiring solutions to reduce and stop global warming. Join #teamclimate now!"
+  useEffect(function() {
+    if (!initialized) setInitialized(true);
+  });
+  const defaultDescription =
+    "Free and non-profit climate action platform. Share, find and work on impactful, innovative and inspiring solutions to reduce and stop global warming. Join #teamclimate now!";
   return (
     <>
       <Head>
@@ -61,7 +61,9 @@ export default function LayoutWrapper({
       <ThemeProvider theme={theme}>
         <div className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}>
           {children}
-          {!acceptedNecessary && bannerOpen && initialized && <CookieBanner closeBanner={closeBanner} />}
+          {!acceptedNecessary && bannerOpen && initialized && (
+            <CookieBanner closeBanner={closeBanner} />
+          )}
           {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
         </div>
       </ThemeProvider>
