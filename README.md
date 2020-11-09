@@ -41,11 +41,27 @@ Once you clone the repository start backend server.
 ### Frontend
 
 1. `cd frontend`
-1. Run `yarn install` to download all npm packages
-2. Add `.env` file for frontend environment variables.
-3. Run `yarn dev` to start developing
+2. Run `yarn install` to download all npm packages
+3. Add `.env` file for frontend environment variables. You can find which env variables you have to set in `/frontend/next.config.js/`
+4. Run `yarn dev` to start developing
 
-### To Deploy
+## To Deploy
 
-1. Run `yarn build` to build our the website
-2. ??? Rest of deploy procedure is work in progress. Backend deploy coming soon!
+###  Frontend
+
+#### Option 1: Github Actions
+
+1. Use Github actions to push to a server. A deploy file can be found in `.github/workflows`
+
+#### Option 2: Manually
+
+1. `cd frontend
+2. `yarn --production`
+3. `yarn build
+4. `node server.js` OR `next start` 
+
+### Backend
+
+1. Make sure your `ENVIRONMENT` env variable is set to `production`
+2. Follow steps 1-5 of the "Getting started locally - backend" (above in this file)
+
