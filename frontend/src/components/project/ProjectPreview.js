@@ -87,11 +87,11 @@ export default function ProjectPreview({ project }) {
   const classes = useStyles({ hovering: hovering });
   const cardRef = React.useRef(null);
   const handleMouseEnter = () => {
-    setHovering(true)
+    setHovering(true);
   };
   const handleMouseLeave = () => {
-    setHovering(false)
-  }
+    setHovering(false);
+  };
   return (
     <Link
       href={project.is_draft ? `/editProject/${project.url_slug}` : `/projects/${project.url_slug}`}
@@ -113,26 +113,19 @@ export default function ProjectPreview({ project }) {
             <div className={classes.draftTriangle}>
               <div className={classes.draftText}>Draft</div>
             </div>
-          ) :
-          (
-            <img src={getImageUrl(project.image)} className={classes.placeholderImg}/>
+          ) : (
+            <img src={getImageUrl(project.image)} className={classes.placeholderImg} />
           )}
         </CardMedia>
-        <CardContentWithDescription 
-          project={project}
-          hovering={hovering}
-        />
-        <CardContentWithoutDescription 
-          project={project}
-          hovering={hovering}
-        />
+        <CardContentWithDescription project={project} hovering={hovering} />
+        <CardContentWithoutDescription project={project} hovering={hovering} />
       </Card>
     </Link>
   );
 }
 
 const CardContentWithoutDescription = ({ project, hovering }) => {
-  const classes = useStyles()
+  const classes = useStyles();
   return (
     <CardContent className={classes.cardContent}>
       <div className={classes.projectNameWrapper}>
@@ -144,11 +137,11 @@ const CardContentWithoutDescription = ({ project, hovering }) => {
       </div>
       <ProjectMetaData project={project} hovering={hovering} />
     </CardContent>
-  )
-}
+  );
+};
 
 const CardContentWithDescription = ({ project, hovering }) => {
-  const classes = useStyles({hovering: hovering})
+  const classes = useStyles({ hovering: hovering });
   return (
     <CardContent className={`${classes.cardContentWithDescription} ${classes.cardContent}`}>
       <div className={classes.projectNameWrapper}>
@@ -158,7 +151,7 @@ const CardContentWithDescription = ({ project, hovering }) => {
           </Truncate>
         </Typography>
       </div>
-      <ProjectMetaData project={project} hovering={hovering} withDescription/>
+      <ProjectMetaData project={project} hovering={hovering} withDescription />
     </CardContent>
-  )
-}
+  );
+};

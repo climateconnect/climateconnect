@@ -135,7 +135,7 @@ const getEntries = async entryTypePlural => {
 };
 
 const parseEntries = (entryTypePlural, entries) => {
-  const firstLevelPath = entryTypePlural === "members" ? "profiles" : entryTypePlural
+  const firstLevelPath = entryTypePlural === "members" ? "profiles" : entryTypePlural;
   return entries.map(e => {
     return {
       url_slug: "/" + firstLevelPath + "/" + encodeURIComponent(e.url_slug),

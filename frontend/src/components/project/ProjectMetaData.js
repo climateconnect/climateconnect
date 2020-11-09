@@ -54,7 +54,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }) 
   const main_project_tag = project.tags.map(t => t.project_tag.name)[0];
   return (
     <div>
-      {withDescription ?
+      {withDescription ? (
         <WithDescription
           className={classes.WithDescription}
           project_parent={project_parent}
@@ -62,20 +62,20 @@ export default function ProjectMetaData({ project, hovering, withDescription }) 
           hovering={hovering}
           main_project_tag={main_project_tag}
         />
-      :
-        <WithOutDescription 
+      ) : (
+        <WithOutDescription
           className={classes.WithDescription}
           project_parent={project_parent}
           project={project}
           main_project_tag={main_project_tag}
         />
-      }
+      )}
     </div>
   );
 }
 
-const WithDescription = ({ className, project_parent, hovering, project, main_project_tag}) => {
-  const classes = useStyles()
+const WithDescription = ({ className, project_parent, hovering, project, main_project_tag }) => {
+  const classes = useStyles();
   return (
     <Box className={className}>
       <Container className={classes.wrapper}>
@@ -110,11 +110,11 @@ const WithDescription = ({ className, project_parent, hovering, project, main_pr
       </Container>
       {hovering && <Categories main_project_tag={main_project_tag} hovering={hovering} />}
     </Box>
-  )
-}
+  );
+};
 
-const WithOutDescription = ({ className, project_parent, project, main_project_tag}) => {
-  const classes = useStyles()
+const WithOutDescription = ({ className, project_parent, project, main_project_tag }) => {
+  const classes = useStyles();
   return (
     <Box className={className}>
       <Container className={classes.wrapper}>
@@ -143,8 +143,8 @@ const WithOutDescription = ({ className, project_parent, project, main_project_t
         </Box>
       </Container>
     </Box>
-  )
-}
+  );
+};
 
 const Categories = ({ main_project_tag, hovering }) => {
   const classes = useStyles({ hovering: hovering });

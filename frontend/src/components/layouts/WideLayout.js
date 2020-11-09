@@ -62,7 +62,9 @@ export default function WideLayout({
                 setAlertOpen(false);
               }}
             >
-              {decodeURIComponent(message).replaceAll("+", " ")}
+              {typeof message === "object"
+                ? message
+                : decodeURIComponent(message).replaceAll("+", " ")}
             </Alert>
           )}
           {children}
