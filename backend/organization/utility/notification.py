@@ -94,12 +94,11 @@ def create_project_follower_notification(project_follower):
             user = User.objects.filter(id=member['user'])[0]
             should_send_email_notification = check_send_email_notification(user)
             create_user_notification(user, notification)
-            send_out_live_notification(user.id)
             email_settings = UserProfile.objects.filter(user=user).values(
                 'email_on_new_project_follower'
             )[0]
             if should_send_email_notification:
-                if email_settings['email_on_reply_to_your_comment'] == True:
+                if email_settings['email_on_new_project_follower'] == True:
                     send_project_follower_email(user, project_follower)
                     EmailNotification.objects.create(
                         user=user,
