@@ -1,8 +1,10 @@
 # Climate Connect
 
+The code for https://climateconnect.earth. 
+
 ## Pre-steps
 
-1.  Create a local postgres database with your own username and password. You will connect to this for your local backend project.
+1.  Create a local Postgres database with your own username and password. You will connect to this for your local backend project.
 2.  Create 32 char random secret key for your local setup. Run `openssl rand -base64 32`. Copy the
     value you will be using this to add as SECRET_KEY for django settings.
 
@@ -16,13 +18,16 @@ We are using Python/Django for backend and Next.js for frontend.
        cd climateconnect_env
        source bin/activate
     ```
-3.  Clone github repository `git clone <URL>`
+3.  Clone GitHub repository `git clone <URL>`
 
 ### Run docker compose
-Currently, we use docker to run redis server locally. If you do not have docker installed locally follow this official documentation from docker: https://docs.docker.com/get-docker/
+
+Currently, we use docker to run Redis server locally. 
+
+If you do not have docker installed locally, follow the official steps: https://docs.docker.com/get-docker/
 
 1. Go to backend directory `cd backend`
-2. Run `docker-compose up`. This will start redis server on docker
+2. Run `docker-compose up`. This will start Redis server on docker
 
 ### Backend
 
@@ -49,15 +54,15 @@ Once you clone the repository start backend server.
 
 ###  Frontend
 
-#### Option 1: Github Actions
+#### Option 1: GitHub Actions
 
-1. Use Github actions to push to a server. A deploy file can be found in `.github/workflows`
+1. Use GitHub actions to push to a server. A deploy file can be found in `.github/workflows`
 
 #### Option 2: Manually
 
-1. `cd frontend
+1. `cd frontend`
 2. `yarn --production`
-3. `yarn build
+3. `yarn build`
 4. `node server.js` OR `next start` 
 
 ### Backend
