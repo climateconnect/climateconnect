@@ -52,8 +52,6 @@ export default function ProjectMetaData({ project, hovering, withDescription }) 
   const classes = useStyles({ hovering: hovering });
   const project_parent = project.project_parents[0];
   const main_project_tag = project.tags.map(t => t.project_tag.name)[0];
-  console.log("hovering:" + hovering);
-  console.log(project);
   return (
     <div>
       {withDescription ?

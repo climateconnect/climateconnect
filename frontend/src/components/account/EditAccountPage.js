@@ -259,13 +259,13 @@ export default function EditAccountPage({
   const handleAddTypeClose = (type, additionalInfo) => {
     setOpen({ ...open, addTypeDialog: false });
     const tempAccount = editedAccount;
-    if (additionalInfo) {
+    if (additionalInfo && additionalInfo !== undefined) {
       for (const info of additionalInfo) {
         tempAccount.info[info.key] = info.value;
       }
+      tempAccount.types = [...tempAccount.types, type];
+      setEditedAccount(tempAccount);
     }
-    tempAccount.types = [...tempAccount.types, type];
-    setEditedAccount(tempAccount);
   };
 
   const handleConfirmExitClose = exit => {
