@@ -52,26 +52,25 @@ export default function ProjectMetaData({ project, hovering, withDescription }) 
   const classes = useStyles({ hovering: hovering });
   const project_parent = project.project_parents[0];
   const main_project_tag = project.tags.map(t => t.project_tag.name)[0];
-  return (
-    <div>
-      {withDescription ? (
-        <WithDescription
-          className={classes.WithDescription}
-          project_parent={project_parent}
-          project={project}
-          hovering={hovering}
-          main_project_tag={main_project_tag}
-        />
-      ) : (
-        <WithOutDescription
-          className={classes.WithDescription}
-          project_parent={project_parent}
-          project={project}
-          main_project_tag={main_project_tag}
-        />
-      )}
-    </div>
-  );
+  if (withDescription)
+    return (
+      <WithDescription
+        className={classes.WithDescription}
+        project_parent={project_parent}
+        project={project}
+        hovering={hovering}
+        main_project_tag={main_project_tag}
+      />
+    );
+  else
+    return (
+      <WithOutDescription
+        className={classes.WithDescription}
+        project_parent={project_parent}
+        project={project}
+        main_project_tag={main_project_tag}
+      />
+    );
 }
 
 const WithDescription = ({ className, project_parent, hovering, project, main_project_tag }) => {

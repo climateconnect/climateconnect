@@ -18,7 +18,9 @@ const useStyles = makeStyles(theme => {
       backgroundColor: theme.palette.background.default,
       borderRadius: 0,
       position: "relative",
-      height: "100%"
+      height: "100%",
+      display: "flex",
+      flexDirection: "column"
     },
     placeholderImg: {
       visibility: "hidden",
@@ -34,7 +36,10 @@ const useStyles = makeStyles(theme => {
       fontWeight: "bold",
       overflow: "hidden",
       lineHeight: 1.5,
-      fontSize: 15
+      fontSize: 15,
+      ["&span"]: {
+        whiteSpace: "nowrap"
+      }
     },
     button: {
       marginTop: theme.spacing(1),
@@ -73,12 +78,17 @@ const useStyles = makeStyles(theme => {
         padding: 0
       }
     },
-    cardContentWithDescription: props => ({
+    cardContentWithDescription: {
       position: "absolute",
       visibility: "visible",
       background: "white",
-      bottom: props.hovering ? 0 : "auto"
-    })
+      bottom: 0,
+      minHeight: "100%"
+    },
+    cardContentWrapper: {
+      position: "relative",
+      flex: 1
+    }
   };
 });
 
@@ -117,8 +127,10 @@ export default function ProjectPreview({ project }) {
             <img src={getImageUrl(project.image)} className={classes.placeholderImg} />
           )}
         </CardMedia>
-        <CardContentWithDescription project={project} hovering={hovering} />
-        <CardContentWithoutDescription project={project} hovering={hovering} />
+        <div className={classes.cardContentWrapper}>
+          <CardContentWithDescription project={project} hovering={hovering} />
+          <CardContentWithoutDescription project={project} hovering={hovering} />
+        </div>
       </Card>
     </Link>
   );
