@@ -12,6 +12,7 @@ import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
 import Router from "next/router";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
+import countries from "./../../../public/data/countries.json";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -217,6 +218,7 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
     skills: [],
     helpful_connections: [],
     collaborating_organizations: [],
+    country: countries[0],
     parent_organization: userOrganizations ? userOrganizations[0] : null,
     isPersonalProject: !(userOrganizations && userOrganizations.length > 0),
     is_organization_project: userOrganizations && userOrganizations.length > 0,
