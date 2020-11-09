@@ -36,6 +36,7 @@ const useStyles = makeStyles(theme => ({
   project: {
     width: 300,
     display: "inline-block",
+    whiteSpace: "normal",
     [theme.breakpoints.down("lg")]: {
       marginLeft: theme.spacing(1),
       marginRight: theme.spacing(1)
