@@ -100,10 +100,14 @@ export default function OurTeamBox({ h1ClassName }) {
         Our Team
       </Typography>
       <div className={classes.content}>
-        <img src="/images/team.jpg" className={classes.teamImage} />
+        <img
+          src="/images/team.jpg"
+          className={classes.teamImage}
+          alt="Climate Connect's core team: A group of 9 people wearing Climate Connect T-Shirts"
+        />
         <div className={classes.infoLinkBoxes}>
           <div className={classes.infoLinkBox}>
-            <img src="/icons/group-icon.svg" className={classes.icon} />
+            <img src="/icons/group-icon.svg" className={classes.icon} alt="Icon display 2 people" />
             <div>
               <Typography color="primary" component="h2" className={classes.headline}>
                 Who we are
@@ -116,7 +120,11 @@ export default function OurTeamBox({ h1ClassName }) {
             </div>
           </div>
           <div className={classes.infoLinkBox}>
-            <img src="/icons/donate-icon.svg" className={classes.icon} />
+            <img
+              src="/icons/donate-icon.svg"
+              className={classes.icon}
+              alt="Open hand offering a seedling with a heart instead of leaves"
+            />
             <div>
               <Typography color="primary" component="h2" className={classes.headline}>
                 Our Mission

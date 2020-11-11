@@ -171,7 +171,7 @@ export default function Support() {
             Also: <b>receive an awesome badge</b> (as below) on Climate Connect to show your
             support! (Will be implemented soon!)
           </Typography>
-          <img src="/images/badge.png" className={classes.badgeImage} />
+          <img src="/images/badge.png" className={classes.badgeImage} alt="Donators reward badge" />
           <Typography
             variant="h5"
             id="banktransfer"

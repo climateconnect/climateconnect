@@ -123,6 +123,7 @@ export default function ExplainerBox({ h1ClassName, className }) {
             </>
           }
           icon="/icons/floating_sign_heart.svg"
+          alt="Heart Icon"
         >
           {isMediumScreen && <SmallCloud type={1} className={classes.mobileCloud1} />}
         </ExplainerElement>
@@ -137,6 +138,7 @@ export default function ExplainerBox({ h1ClassName, className }) {
             </>
           }
           icon="/icons/floating_sign_group.svg"
+          alt="Group of People icon"
         >
           {isMediumScreen && <SmallCloud type={2} className={classes.mobileCloud2} />}
           {isMediumScreen && <SmallCloud type={2} className={classes.mobileCloud3} reverse />}
@@ -153,6 +155,7 @@ export default function ExplainerBox({ h1ClassName, className }) {
             </>
           }
           icon="/icons/floating_sign_lightbulb.svg"
+          alt="Idea lightbulb"
         >
           {isMediumScreen && <SmallCloud type={2} className={classes.mobileCloud5} />}
         </ExplainerElement>
@@ -161,12 +164,12 @@ export default function ExplainerBox({ h1ClassName, className }) {
   );
 }
 
-const ExplainerElement = ({ icon, text, children }) => {
+const ExplainerElement = ({ icon, text, children, alt }) => {
   const classes = useStyles();
   return (
     <div className={classes.explainerElementWrapper}>
       {children}
-      <img src={icon} className={classes.explainerIcon} />
+      <img src={icon} className={classes.explainerIcon} alt={alt} />
       <Typography>{text}</Typography>
     </div>
   );

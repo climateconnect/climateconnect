@@ -221,14 +221,27 @@ const PitchElement = ({ image, headline, text, alternate, children }) => {
       {children}
       {!alternate && (
         <div className={classes.pitchElementImageContainer}>
-          <img src={image} className={classes.pitchElementImage} />
+          <img
+            src={image}
+            className={classes.pitchElementImage}
+            alt="5 people positioned around a globe connected through lines"
+          />
         </div>
       )}
       <div>
-        <Typography component="h1" className={classes.pitchElementHeadline} color="primary">
+        <Typography
+          component="h1"
+          className={classes.pitchElementHeadline}
+          color="primary"
+          alt="Man floating in the air with a lightbulb, a book, a pen, a notebook, a baloon and Saturn floating around him"
+        >
           {headline}
         </Typography>
-        <Typography color="secondary" className={classes.pitchElementText}>
+        <Typography
+          color="secondary"
+          className={classes.pitchElementText}
+          alt="4 people at a table working together and giving each other a high 5"
+        >
           {text}
         </Typography>
       </div>

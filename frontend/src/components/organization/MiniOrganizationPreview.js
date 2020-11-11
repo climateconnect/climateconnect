@@ -49,6 +49,7 @@ function Content({ organization, size, onDelete }) {
       <img
         src={getImageUrl(organization.image)}
         className={`${classes.orgImage} ${size === "small" && classes.smallOrgImage}`}
+        alt={organization.name + "'s logo"}
       />
       {size === "small" ? (
         <>{organization.name}</>

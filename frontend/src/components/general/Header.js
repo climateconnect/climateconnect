@@ -300,7 +300,7 @@ export default function Header({
         <Link href="/">
           <img
             src={transparentHeader ? "/images/logo_white_beta.svg" : "/images/logo.png"}
-            alt="Climate Connect"
+            alt="Climate Connect logo"
             className={classes.logo}
           />
         </Link>

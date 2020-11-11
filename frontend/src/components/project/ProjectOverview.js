@@ -157,7 +157,11 @@ function SmallScreenOverview({
   const classes = useStyles();
   return (
     <>
-      <img className={classes.fullWidthImage} src={getImageUrl(project.image)} />
+      <img
+        className={classes.fullWidthImage}
+        src={getImageUrl(project.image)}
+        alt={project.name + "'s project image"}
+      />
       <div className={classes.blockProjectInfo}>
         <Typography component="h1" variant="h3" className={classes.smallScreenHeader}>
           {project.name}
@@ -231,7 +235,11 @@ function LargeScreenOverview({
         {project.name}
       </Typography>
       <div className={classes.flexContainer}>
-        <img className={classes.inlineImage} src={getImageUrl(project.image)} />
+        <img
+          className={classes.inlineImage}
+          src={getImageUrl(project.image)}
+          alt={project.name + "'s project image"}
+        />
         <div className={classes.inlineProjectInfo}>
           <Typography component="h2" variant="h5" className={classes.subHeader}>
             Summary

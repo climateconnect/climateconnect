@@ -37,7 +37,11 @@ export default function Member({ member }) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <img className={classes.image} src={"images/" + member.image} />
+      <img
+        className={classes.image}
+        src={"images/" + member.image}
+        alt={member.name + "'s profile image"}
+      />
       <Typography variant="h4" color="primary" className={classes.name}>
         {member.name}
       </Typography>

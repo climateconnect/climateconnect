@@ -138,7 +138,7 @@ const MadeWithLoveForEarth = () => {
   return (
     <div className={classes.madeWith}>
       Made with <FavoriteIcon className={classes.heart} /> for{" "}
-      <img className={classes.earth} src="/images/earth.svg" />
+      <img className={classes.earth} src="/images/earth.svg" alt="Picture of our earth" />
     </div>
   );
 };

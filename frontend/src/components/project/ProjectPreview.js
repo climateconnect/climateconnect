@@ -124,7 +124,11 @@ export default function ProjectPreview({ project }) {
               <div className={classes.draftText}>Draft</div>
             </div>
           ) : (
-            <img src={getImageUrl(project.image)} className={classes.placeholderImg} />
+            <img
+              src={getImageUrl(project.image)}
+              className={classes.placeholderImg}
+              alt={project.name + "'s project image"}
+            />
           )}
         </CardMedia>
         <div className={classes.cardContentWrapper}>

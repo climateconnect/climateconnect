@@ -103,7 +103,7 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition }) => {
         {!isNarrowScreen && (
           <Box component="span" className={classes.centerText}>
             Made with <FavoriteIcon className={classes.heart} /> for{" "}
-            <img className={classes.earth} src="/images/earth.svg" />
+            <img className={classes.earth} src="/images/earth.svg" alt="Picture of our earth" />
           </Box>
         )}
         <Box component="span" className={classes.rightBox}>
