@@ -4327,11 +4327,6 @@ he@1.2.0:
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
-hide-virtual-keyboard@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/hide-virtual-keyboard/-/hide-virtual-keyboard-1.0.1.tgz#88ade91319d1602ff4931012a2e22357698a2394"
-  integrity sha512-LhXIR5C8028et39q8LGWzUkKPMZrngMrQNSrN3GwLQCguyftWFapMrD6nQtR9Xm1voe5pTGYgvVgIu8cmJ6Y+g==
-
 hmac-drbg@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/hmac-drbg/-/hmac-drbg-1.0.1.tgz#d2745701025a6c775a6c545793ed502fc0c649a1"

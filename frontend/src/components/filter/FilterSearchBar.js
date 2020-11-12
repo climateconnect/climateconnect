@@ -15,7 +15,7 @@ export default function FilterSearchBar({
   const handleKeyDown = event => {
     if (event.key === "Enter") {
       onSubmit(type);
-      hideVirtualKeyboard();
+      event.target.blur();
     }
   };
   const handleChange = event => {
