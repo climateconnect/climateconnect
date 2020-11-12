@@ -1,4 +1,5 @@
 import React from "react";
+import hideVirtualKeyboard from "hide-virtual-keyboard";
 import { TextField, InputAdornment } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 
@@ -14,6 +15,7 @@ export default function FilterSearchBar({
   const handleKeyDown = event => {
     if (event.key === "Enter") {
       onSubmit(type);
+      hideVirtualKeyboard();
     }
   };
   const handleChange = event => {
