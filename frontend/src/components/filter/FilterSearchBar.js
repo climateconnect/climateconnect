@@ -1,5 +1,4 @@
 import React from "react";
-import hideVirtualKeyboard from "hide-virtual-keyboard";
 import { TextField, InputAdornment } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 
