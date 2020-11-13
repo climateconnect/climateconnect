@@ -109,7 +109,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         tokenConfig(token)
       )
       .then(function(response) {
-        Router.push({
+        .push({
           pathname: "/organizations/" + response.data.url_slug,
           query: {
             message:

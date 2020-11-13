@@ -13,6 +13,7 @@ import OrganizationsSharedBox from "../src/components/landingPage/OrganizationsS
 import DonationsBanner from "../src/components/landingPage/DonationsBanner";
 import OurTeamBox from "../src/components/landingPage/OurTeamBox";
 import StartNowBanner from "../src/components/landingPage/StartNowBanner";
+import ScrollToTop from "../src/components/scrolltotop/ScrollToTop";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -91,7 +92,7 @@ export default function Index({ projects, organizations }) {
       noSpaceBottom
       largeFooter
     >
-      <div className={classes.root}>
+      <div className={classes.root} id="top">
         <LandingTopBox scrollToContent={scrollToContent} />
         <div className={classes.lowerPart}>
           <div id="info" ref={contentRef} className={classes.contentRef} />
@@ -107,6 +108,7 @@ export default function Index({ projects, organizations }) {
             >
               {"Sign up & make a change"}
             </Button>
+            <ScrollToTop />
           </div>
           <ProjectsSharedBox projects={projects} />
           <JoinCommunityBox h1ClassName={classes.h1ClassName} />
