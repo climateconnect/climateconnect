@@ -23,6 +23,7 @@ import { getParams } from "../public/lib/generalOperations";
 import WideLayout from "../src/components/layouts/WideLayout";
 import FilterSection from "../src/components/indexPage/FilterSection";
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
+import BackToTop from "../src/components/backToTop/BackToTop";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -397,6 +398,7 @@ export default function Index({
                 </Typography>
               )}
             </TabContent>
+            <BackToTop />
           </Container>
         </WideLayout>
       )}

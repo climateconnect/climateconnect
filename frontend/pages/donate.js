@@ -5,6 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Container, Link, Divider } from "@material-ui/core";
 import QuoteSlideShow from "../src/components/about/QuoteSlideShow";
 import quotes_with_images from "../public/data/quotes_with_images.js";
+import BackToTop from "../src/components/backTotop/BackToTop";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -215,6 +216,7 @@ export default function Support() {
             important for us we will start issueing monthly financial reports starting from
             September 2020.
           </Typography>
+          <BackToTop />
         </Container>
       </WideLayout>
     </>

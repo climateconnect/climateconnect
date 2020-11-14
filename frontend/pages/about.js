@@ -15,7 +15,7 @@ import InfoBubble from "../src/components/about/InfoBubble";
 import InfoLink from "../src/components/about/InfoLink";
 import MemberCarousel from "../src/components/about/MemberCarousel";
 import QuoteSlideShow from "../src/components/about/QuoteSlideShow";
-import ScrollToTop from "../src/components/scrolltotop/ScrollToTop";
+import BackToTop from "../src/components/backToTop/BackToTop";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -236,7 +236,7 @@ export default function About() {
             BIC: <span className={classes.bold}>GENODEM1GLS</span>
           </Typography>
         </Container>
-        <ScrollToTop />
+        <BackToTop />
       </WideLayout>
     </>
   );
