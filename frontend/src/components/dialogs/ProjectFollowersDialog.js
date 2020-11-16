@@ -10,7 +10,8 @@ import {
   Divider,
   LinearProgress,
   Button,
-  Container
+  Container,
+  TableBody
 } from "@material-ui/core";
 import GenericDialog from "./GenericDialog";
 import ReactTimeago from "react-timeago";
@@ -90,30 +91,31 @@ const ProjectFollowers = ({ followers }) => {
     <>
       <Divider />
       <Table>
-        {followers.map((f, index) => {
-          console.log(getImageUrl(f.user_profile.image));
-          return (
-            <TableRow key={index} className={classes.follower}>
-              <TableCell>
-                <Link className={classes.user} href={"/profiles/" + f.user_profile.url_slug}>
-                  <Avatar
-                    className={classes.avatar}
-                    src={getImageUrl(f.user_profile.image)}
-                    alt={f.user_profile.first_name + " " + f.user_profile.last_name}
-                  />
-                  <Typography component="span" color="secondary" className={classes.username}>
-                    {f.user_profile.first_name + " " + f.user_profile.last_name}
+        <TableBody>
+          {followers.map((f, index) => {
+            return (
+              <TableRow key={index} className={classes.follower}>
+                <TableCell>
+                  <Link className={classes.user} href={"/profiles/" + f.user_profile.url_slug}>
+                    <Avatar
+                      className={classes.avatar}
+                      src={getImageUrl(f.user_profile.image)}
+                      alt={f.user_profile.first_name + " " + f.user_profile.last_name}
+                    />
+                    <Typography component="span" color="secondary" className={classes.username}>
+                      {f.user_profile.first_name + " " + f.user_profile.last_name}
+                    </Typography>
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Typography className={classes.followedText}>
+                    Followed <ReactTimeago date={f.created_at} />
                   </Typography>
-                </Link>
-              </TableCell>
-              <TableCell>
-                <Typography className={classes.followedText}>
-                  Followed <ReactTimeago date={f.created_at} />
-                </Typography>
-              </TableCell>
-            </TableRow>
-          );
-        })}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
       </Table>
     </>
   );

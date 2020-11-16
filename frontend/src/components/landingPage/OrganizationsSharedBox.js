@@ -60,7 +60,7 @@ export default function OrganizationsSharedBox({ organizations }) {
       </Typography>
       <Typography className={classes.explainerText}>
         Find nonprofits, associations, companies, institutes, NGOs, local governments and other
-        types of organizations taking climate action!
+        types of organizations taking climate action!{" "}
         {!isNarrowScreen && (
           <>
             You can directly contact the {"organization's"} representative to exchange knowledge,

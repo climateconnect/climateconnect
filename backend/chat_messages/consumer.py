@@ -1,7 +1,7 @@
 import json
 from django.utils import timezone
 from channels.generic.websocket import AsyncWebsocketConsumer
-from chat_messages.models import Message, MessageParticipants, MessageReceiver
+from chat_messages.models import Message, MessageParticipants, Participant, MessageReceiver
 from django.contrib.auth.models import User
 from chat_messages.utility.notification import create_chat_message_notification
 from climateconnect_api.utility.notification import create_user_notification, create_email_notification
@@ -46,31 +46,32 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
 
     async def new_message(self, chat_uuid, user, message_content):
         try:
-            message_participant = MessageParticipants.objects.get(
+            chat = MessageParticipants.objects.get(
                 chat_uuid=chat_uuid
             )
         except MessageParticipants.DoesNotExist:
-            message_participant = None
-        receivers = message_participant.participants.all()
+            chat = None
+        receiver_user_ids = Participant.objects.filter(chat=chat).values_list('user', flat=True)
+        receiver_users = User.objects.filter(id__in=receiver_user_ids)
         message = Message.objects.create(
             content=message_content, sender=user,
-            message_participant=message_participant,
+            message_participant=chat,
             sent_at=timezone.now()
         ) 
-        message_participant.last_message_at = timezone.now()
-        message_participant.save()
-        notification = create_chat_message_notification(message_participant)
-        for receiver in receivers: 
+        chat.last_message_at = timezone.now()
+        chat.save()
+        notification = create_chat_message_notification(chat)
+        for receiver in receiver_users: 
             if not receiver.id == user.id:
                 MessageReceiver.objects.create(
                     receiver=receiver,
                     message=message
                 )
-                create_email_notification(receiver, message_participant, message_content, user, notification)
+                create_email_notification(receiver, chat, message_content, user, notification)
                 create_user_notification(receiver, notification)
         return {
             "message": message,
-            "receivers": receivers
+            "receivers": receiver_users
         }          
 
     # Receive message from room group

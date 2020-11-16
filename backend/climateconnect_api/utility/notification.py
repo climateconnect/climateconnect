@@ -1,5 +1,6 @@
 from climateconnect_api.models.user import UserProfile
 from climateconnect_api.models.notification import UserNotification, EmailNotification
+from chat_messages.models import Participant
 from chat_messages.utility.email import send_group_chat_message_notification_email, send_private_chat_message_notification_email
 from datetime import datetime, timedelta
 
@@ -30,7 +31,8 @@ def create_email_notification(receiver, chat, message_content, sender, notificat
         'email_on_group_chat_message'
     )[0]
     if not email_notification_object.exists():
-        is_group_chat = chat.participants.count() > 2
+        number_of_participants = Participant.objects.filter(chat=chat).count()
+        is_group_chat = number_of_participants > 2
         if is_group_chat:
             if email_settings['email_on_group_chat_message'] == True:
                 send_group_chat_message_notification_email(receiver, message_content, chat.chat_uuid, sender_name, chat.name)
@@ -39,6 +41,8 @@ def create_email_notification(receiver, chat, message_content, sender, notificat
                     created_at=datetime.now(),
                     notification=notification
                 )
+            else:
+                return
         else:
             if email_settings['email_on_private_chat_message'] == True:
                 send_private_chat_message_notification_email(receiver, message_content, chat.chat_uuid, sender_name)
@@ -47,6 +51,8 @@ def create_email_notification(receiver, chat, message_content, sender, notificat
                     created_at=datetime.now(),
                     notification=notification
                 )
+            else:
+                return
         return email_notification
     else:
         print("can't send because we recently sent a notification")

@@ -10,6 +10,21 @@ urlpatterns = [
         name='connect-participants-api'
     ),
     path(
+        'chat/<str:chat_uuid>/update_member/<int:pk>/',
+        message_views.UpdateChatMemberView.as_view(),
+        name='connect-participants-api'
+    ),
+    path(
+        'chat/<str:chat_uuid>/add_members/',
+        message_views.AddChatMembersView.as_view(),
+        name='connect-participants-api'
+    ),
+    path(
+        'chat/<str:chat_uuid>/change_creator/',
+        message_views.ChangeChatCreatorView.as_view(),
+        name='connect-participants-api'
+    ),
+    path(
         'start_group_chat/',
         message_views.StartGroupChatView.as_view(),
         name='start-group-chat-api'

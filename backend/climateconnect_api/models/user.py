@@ -140,12 +140,12 @@ class UserProfile(models.Model):
 
     email_on_private_chat_message = models.BooleanField(
         help_text="Check if user wants to receive emails when they receive a private chat message",
-        verbose_name="Email project suggestions", null=True, blank=True, default=True
+        verbose_name="Email on private chat message", null=True, blank=True, default=True
     )
 
     email_on_group_chat_message = models.BooleanField(
         help_text="Check if user wants to receive emails when they receive a group chat message",
-        verbose_name="Email project suggestions", null=True, blank=True, default=True
+        verbose_name="Email on group chat message", null=True, blank=True, default=True
     )
 
     email_on_comment_on_your_project = models.BooleanField(

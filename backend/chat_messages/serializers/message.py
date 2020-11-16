@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from chat_messages.models import Message, MessageParticipants, MessageReceiver
-from climateconnect_api.models import UserProfile
+from chat_messages.models import Message, MessageParticipants, MessageReceiver, Participant
+from climateconnect_api.models import UserProfile, Role
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.utils import timezone
 
@@ -36,7 +36,7 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
         model = MessageParticipants
         # Could use user profile serializer for participant_one and participant_two
         fields = (
-            'chat_uuid', 'participants', 'is_active', 'last_message', 
+            'id', 'chat_uuid', 'participants', 'is_active', 'last_message', 
             'unread_count', 'user', 'created_at', 'name'
         )
 
@@ -51,8 +51,8 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
             return None
 
     def get_participants(self, obj):
-        user_profiles = UserProfile.objects.filter(user__in=obj.participants.all())
-        return UserProfileStubSerializer(user_profiles, many=True).data
+        participants = Participant.objects.filter(chat=obj)
+        return ParticipantSerializer(participants, many=True).data
 
     def get_unread_count(self, obj):
         user = self.context.get('request', None).user
@@ -64,3 +64,30 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
         user = self.context.get('request', None).user
         user_profile = UserProfile.objects.filter(user=user)[0]
         return UserProfileStubSerializer(user_profile).data
+
+class ParticipantSerializer(serializers.ModelSerializer):
+    user_profile = serializers.SerializerMethodField()
+    role = serializers.SerializerMethodField()
+    participant_id = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Participant
+        # Could use user profile serializer for participant_one and participant_two
+        fields = (
+            'participant_id', 'user_profile', 'role', 'created_at'
+        )
+
+    def get_user_profile(self, obj):
+        user_profile = UserProfile.objects.get(user=obj.user)
+        return UserProfileStubSerializer(user_profile).data
+
+    def get_role(self, obj):
+        return obj.role.name
+    
+    def get_participant_id(self, obj):
+        return obj.id
+
+class UpdateParticipateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Participant
+        fields = ('id', 'chat', 'user', 'role')

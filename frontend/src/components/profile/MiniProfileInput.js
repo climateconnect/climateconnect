@@ -5,6 +5,7 @@ import SelectField from "../general/SelectField";
 import { makeStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -19,7 +20,7 @@ const useStyles = makeStyles(theme => {
       fontSize: 50
     },
     field: {
-      width: theme.spacing(40),
+      width: theme.spacing(34),
       marginBottom: theme.spacing(1)
     },
     fieldLabel: {
@@ -39,6 +40,10 @@ const useStyles = makeStyles(theme => {
     },
     dialogText: {
       textAlign: "center"
+    },
+    cantEdit: {
+      color: "red",
+      fontSize: 14
     }
   };
 });
@@ -55,7 +60,8 @@ export default function MiniProfileInput({
   isOrganization,
   allowAppointingCreator,
   creatorRole,
-  fullRolesOptions
+  fullRolesOptions,
+  dontPickRole
 }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -108,7 +114,12 @@ export default function MiniProfileInput({
   };
   return (
     <div className={className}>
-      <Avatar alt={profile.name} size="large" src={profile.image} className={classes.avatar} />
+      <Avatar
+        alt={profile.name}
+        size="large"
+        src={getImageUrl(profile.image)}
+        className={classes.avatar}
+      />
       <Typography variant="h6" className={classes.name} color="secondary">
         {profile.first_name + " " + profile.last_name}
       </Typography>
@@ -138,23 +149,27 @@ export default function MiniProfileInput({
       {allowAppointingCreator && (
         <Button onClick={handleOpenConfirmCreatorDialog}>Make this user the Creator</Button>
       )}
-      <Typography color="primary" className={classes.fieldLabel}>
-        Role in project
-        <Tooltip title={"Pick or describe what the user's role in the project is."}>
-          <IconButton>
-            <HelpOutlineIcon className={classes.tooltip} />
-          </IconButton>
-        </Tooltip>
-      </Typography>
-      <TextField
-        size="small"
-        variant="outlined"
-        className={classes.field}
-        label="Pick or type user's role"
-        onChange={isOrganization ? handleChangeRoleInOrganization : handleChangeRoleInProject}
-        value={isOrganization ? profile.role_in_organization : profile.role_in_project}
-        disabled={profile.added ? false : editDisabled}
-      />
+      {!dontPickRole && (
+        <>
+          <Typography color="primary" className={classes.fieldLabel}>
+            Role in project
+            <Tooltip title={"Pick or describe what the user's role in the project is."}>
+              <IconButton>
+                <HelpOutlineIcon className={classes.tooltip} />
+              </IconButton>
+            </Tooltip>
+          </Typography>
+          <TextField
+            size="small"
+            variant="outlined"
+            className={classes.field}
+            label="Pick or type user's role"
+            onChange={isOrganization ? handleChangeRoleInOrganization : handleChangeRoleInProject}
+            value={isOrganization ? profile.role_in_organization : profile.role_in_project}
+            disabled={profile.added ? false : editDisabled}
+          />
+        </>
+      )}
       {!hideHoursPerWeek && (
         <>
           <Typography className={classes.fieldLabel} color="primary">
@@ -181,7 +196,9 @@ export default function MiniProfileInput({
         </>
       )}
       {editDisabled && !profile.added && (
-        <Typography color="secondary">You can not edit or remove this member</Typography>
+        <Typography color="secondary" className={classes.cantEdit}>
+          You {"can't"} edit/remove this member
+        </Typography>
       )}
       {onDelete && (
         <Button

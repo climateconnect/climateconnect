@@ -247,7 +247,7 @@ Inbox.getInitialProps = async ctx => {
 async function getChatsOfLoggedInUser(token) {
   try {
     const resp = await axios.get(process.env.API_URL + "/api/chats/", tokenConfig(token));
-    return resp.data.results;
+    return parseChatData(resp.data.results);
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     console.log("error!");
@@ -255,3 +255,14 @@ async function getChatsOfLoggedInUser(token) {
     return null;
   }
 }
+
+const parseChatData = chats => {
+  return chats.map(c => ({
+    ...c,
+    participants: c.participants.map(p => ({
+      ...p.user_profile,
+      role: p.role,
+      created_at: p.created_at
+    }))
+  }));
+};

@@ -1,18 +1,13 @@
 from django.db import models
 
 from django.contrib.auth.models import User
+from climateconnect_api.models import Role
 
 
 class MessageParticipants(models.Model):
     chat_uuid = models.UUIDField(
         help_text="Unique ID for each message connection",
         verbose_name="Chat UUID", unique=True, null=True, blank=True
-    )
-
-    participants = models.ManyToManyField(
-        User, related_name="participant_users",
-        help_text="Points to list users in a group",
-        verbose_name="Participants"
     )
 
     name = models.CharField(
@@ -46,12 +41,12 @@ class MessageParticipants(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = "Message Participants"
+        verbose_name_plural = "Chats"
         ordering = ["-last_message_at", "-created_at"]
 
     def __str__(self):
-        return "Participants: %s" % (
-            self.participants.all()
+        return "Chat: %d" % (
+            self.chat_uuid
         )
 
 
@@ -120,3 +115,43 @@ class MessageReceiver(models.Model):
 
     def __str__(self):
         return "Message to %s %s" % (self.receiver.first_name, self.receiver.last_name)
+
+class Participant(models.Model):
+    user = models.ForeignKey(
+        User, related_name="participant_user",
+        help_text="Points to the user that is part of the chat",
+        verbose_name="User", null=False, blank=False,
+        on_delete=models.CASCADE
+    )
+
+    chat = models.ForeignKey(
+        MessageParticipants, related_name="participant_participants",
+        help_text="Points to the chat that this user is a part of",
+        verbose_name="Chat", null=False, blank="False",
+        on_delete=models.CASCADE
+    )
+
+    role = models.ForeignKey(
+        Role, related_name="participant_role",
+        verbose_name="Role(permissions)", help_text="Points to the user's role (creator, admin, member)",
+        on_delete=models.PROTECT
+    )
+    
+    created_at = models.DateTimeField(
+        help_text="Time when the user joined the chat created", verbose_name="Created At",
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        help_text="Time when the user's role in the chat updated", verbose_name="Updated At",
+        auto_now=True
+    )
+
+    class Meta:
+        verbose_name = "Chat Participant"
+        verbose_name_plural = "Chat Participants"
+        ordering = ['id']
+        unique_together =('user', 'chat')
+
+    def __str__(self):
+        return "User %s is part of chat %s" % (self.user.first_name+" "+self.user.last_name, self.chat.chat_uuid)

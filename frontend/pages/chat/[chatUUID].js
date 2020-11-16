@@ -1,92 +1,27 @@
 import React, { useState, useContext } from "react";
-import { IconButton, TextField, Link } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import FixedHeightLayout from "../../src/components/layouts/FixedHeightLayout";
-import MiniProfilePreview from "../../src/components/profile/MiniProfilePreview";
-import Messages from "../../src/components/communication/chat/Messages";
-import SendIcon from "@material-ui/icons/Send";
-import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import Cookies from "next-cookies";
 import axios from "axios";
 import tokenConfig from "../../public/config/tokenConfig";
 import { getMessageFromServer } from "../../public/lib/messagingOperations";
 import UserContext from "../../src/components/context/UserContext";
-import ChatTitle from "../../src/components/communication/chat/ChatTitle";
 import PageNotFound from "../../src/components/general/PageNotFound";
 import { sendToLogin } from "../../public/lib/apiOperations";
-
-const useStyles = makeStyles(theme => {
-  return {
-    backIcon: {
-      float: "left",
-      left: theme.spacing(1)
-    },
-    topBar: {
-      textAlign: "center",
-      padding: theme.spacing(1),
-      background: theme.palette.grey[200],
-      width: "100%",
-      flex: "none"
-    },
-    content: {
-      flex: "auto",
-      overflowY: "auto",
-      width: "100%"
-    },
-    bottomBar: {
-      background: theme.palette.grey[200],
-      flex: "none",
-      width: "100%"
-    },
-    maxWidth: {
-      maxWidth: theme.breakpoints.values["md"],
-      margin: "0 auto"
-    },
-    sendMessageBarContent: {
-      padding: theme.spacing(1)
-    },
-    messageInput: {
-      width: "calc(100% - 60px)",
-      border: 0
-    },
-    sendButton: {
-      height: 40,
-      width: 40,
-      marginLeft: theme.spacing(2)
-    },
-    sendButtonIcon: {
-      height: 35,
-      width: 35
-    },
-    showParticipantsButton: {
-      cursor: "pointer"
-    },
-    chatParticipantsContainer: {
-      background: theme.palette.grey[200],
-      width: "100%",
-      paddingBottom: theme.spacing(1),
-      display: "flex",
-      justifyContent: "center",
-      flexWrap: "wrap",
-      maxWidth: 960,
-      margin: "0 auto"
-    },
-    chatParticipantsPreview: {
-      padding: theme.spacing(1)
-    }
-  };
-});
+import MessagingLayout from "../../src/components/communication/chat/MessagingLayout";
 
 export default function Chat({
-  participants,
+  chatParticipants,
   title,
   token,
   chatUUID,
   messages,
   nextLink,
-  hasMore
+  hasMore,
+  rolesOptions,
+  chat_id
 }) {
   const { chatSocket, user } = useContext(UserContext);
+  const [participants, setParticipants] = React.useState(chatParticipants)
   const [socketClosed, setSocketClosed] = useState(false);
   const [state, setState] = React.useState({
     nextPage: 2,
@@ -110,8 +45,8 @@ export default function Chat({
     };
   });
 
-  const chatting_partner = participants[0];
-  const isPrivateChat = participants.length === 1;
+  const chatting_partner = participants.filter(p => p.id !== user.id)[0];
+  const isPrivateChat = !title || title.length === 0;
 
   if (chatSocket) {
     chatSocket.onmessage = async rawData => {
@@ -196,6 +131,11 @@ export default function Chat({
           loadMoreMessages={loadMoreMessages}
           hasMore={state.hasMore}
           participants={participants}
+          rolesOptions={rolesOptions}
+          token={token}
+          chat_uuid={chatUUID}
+          chat_id={chat_id}
+          setParticipants={setParticipants}
         />
       ) : (
         <PageNotFound itemName="Chat" />
@@ -210,132 +150,31 @@ Chat.getInitialProps = async ctx => {
     const message = "You have to log in to see your chats.";
     return sendToLogin(ctx, message);
   }
-  const [chat, messages_object] = await Promise.all([
+  const [chat, messages_object, rolesOptions] = await Promise.all([
     getChat(ctx.query.chatUUID, token),
-    getChatMessagesByUUID(ctx.query.chatUUID, token, 1)
+    getChatMessagesByUUID(ctx.query.chatUUID, token, 1),
+    getRolesOptions()
   ]);
   return {
     token: token,
     chat_uuid: chat.chat_uuid,
-    participants: chat.participants,
+    chatParticipants: parseParticipantsWithRole(chat.participants, rolesOptions),
     title: chat.title,
     messages: messages_object.messages,
     nextLink: messages_object.nextLink,
     hasMore: messages_object.hasMore,
-    chatUUID: ctx.query.chatUUID
+    chatUUID: ctx.query.chatUUID,
+    rolesOptions: rolesOptions,
+    chat_id: chat.id
   };
 };
 
-function MessagingLayout({
-  chatting_partner,
-  messages,
-  loading,
-  sendMessage,
-  /*socketClosed,*/
-  loadMoreMessages,
-  hasMore,
-  title,
-  isPrivateChat,
-  participants
-}) {
-  const classes = useStyles();
-  const [curMessage, setCurMessage] = React.useState("");
-  const [showChatParticipants, setShowChatParticipants] = React.useState(false);
-  //TODO show user when socket has closed
-
-  const onSendMessage = event => {
-    sendMessage(curMessage);
-    setCurMessage("");
-    if (event) event.preventDefault();
-  };
-
-  const handleMessageKeydown = event => {
-    if (event.key === "Enter" && event.ctrlKey) onSendMessage();
-  };
-
-  const onCurMessageChange = event => {
-    setCurMessage(event.target.value);
-  };
-
-  const toggleShowChatParticipants = () => setShowChatParticipants(!showChatParticipants);
-
-  return (
-    <>
-      <div className={`${classes.topBar} ${classes.maxWidth}`}>
-        <IconButton className={classes.backIcon} href="/inbox">
-          <KeyboardArrowLeftIcon />
-        </IconButton>
-        {isPrivateChat ? (
-          <MiniProfilePreview profile={chatting_partner} />
-        ) : (
-          <div>
-            <ChatTitle chat={{ name: title }} />
-            <div>
-              <Link
-                underline="always"
-                onClick={toggleShowChatParticipants}
-                className={classes.showParticipantsButton}
-              >
-                {showChatParticipants ? "Hide chat participants" : "Show chat participants"}
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-      {showChatParticipants && (
-        <div className={classes.chatParticipantsContainer}>
-          {participants.map((p, index) => {
-            return (
-              <MiniProfilePreview
-                key={index}
-                profile={p}
-                className={classes.chatParticipantsPreview}
-              />
-            );
-          })}
-        </div>
-      )}
-      {loading ? (
-        <div>Loading</div>
-      ) : (
-        <Messages
-          messages={messages}
-          chatting_partner={chatting_partner}
-          className={`${classes.content} ${classes.maxWidth}`}
-          hasMore={hasMore}
-          loadFunc={loadMoreMessages}
-          isPrivateChat={isPrivateChat}
-          title={title}
-        />
-      )}
-      <div className={`${classes.bottomBar} ${classes.maxWidth}`}>
-        <form className={classes.sendMessageBarContent} onSubmit={onSendMessage}>
-          <TextField
-            variant="outlined"
-            size="small"
-            autoFocus
-            multiline
-            placeholder="Message"
-            className={classes.messageInput}
-            value={curMessage}
-            onChange={onCurMessageChange}
-            onKeyDown={handleMessageKeydown}
-          />
-          <IconButton
-            disableRipple
-            disableFocusRipple
-            size="small"
-            type="submit"
-            className={classes.sendButton}
-            style={{ backgroundColor: "transparent" }}
-          >
-            <SendIcon className={classes.sendButtonIcon} />
-          </IconButton>
-        </form>
-      </div>
-    </>
-  );
-}
+const parseParticipantsWithRole = (participants, rolesOptions) => {
+  return participants.map(p => ({
+    ...p,
+    role: rolesOptions.find(o => o.name === p.role)
+  }));
+};
 
 async function getChat(chat_uuid, token) {
   const resp = await axios.get(
@@ -343,10 +182,21 @@ async function getChat(chat_uuid, token) {
     tokenConfig(token)
   );
   return {
-    participants: resp.data.participants.filter(p => p.id !== resp.data.user.id),
-    title: resp.data.name
+    participants: parseParticipants(resp.data.participants, resp.data.user),
+    title: resp.data.name,
+    id: resp.data.id
   };
 }
+
+const parseParticipants = (participants, user) => {
+  return participants.map(p => ({
+    ...p.user_profile,
+    role: p.role,
+    created_at: p.created_at,
+    is_self: user.id === p.user_profile.id,
+    participant_id: p.participant_id
+  }));
+};
 
 async function getChatMessagesByUUID(chat_uuid, token, page, link) {
   try {
@@ -366,3 +216,17 @@ async function getChatMessagesByUUID(chat_uuid, token, page, link) {
     return null;
   }
 }
+
+const getRolesOptions = async () => {
+  try {
+    const resp = await axios.get(process.env.API_URL + "/roles/");
+    if (resp.data.results.length === 0) return null;
+    else {
+      return resp.data.results;
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+};

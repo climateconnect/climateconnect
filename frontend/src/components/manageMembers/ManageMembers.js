@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(2)
   },
   member: {
-    width: theme.spacing(40),
+    width: theme.spacing(34),
     textAlign: "center",
     marginRight: theme.spacing(4),
     marginTop: theme.spacing(2)
@@ -43,7 +43,9 @@ export default function ManageMembers({
   role_property_name,
   setUserRole,
   hideHoursPerWeek,
-  isOrganization
+  isOrganization,
+  label,
+  dontPickRole
 }) {
   const classes = useStyles();
   const renderSearchOption = option => {
@@ -102,7 +104,7 @@ export default function ManageMembers({
     <div>
       <div className={classes.searchBarContainer}>
         <AutoCompleteSearchBar
-          label="Search for your organization's members"
+          label={label ? label : "Search for your organization's members"}
           className={`${classes.searchBar} ${classes.block}`}
           baseUrl={process.env.API_URL + "/api/members/?search="}
           clearOnSelect
@@ -141,6 +143,7 @@ export default function ManageMembers({
                 editDisabled={!canEdit(m)}
                 isOrganization={isOrganization}
                 allowAppointingCreator={m.id !== user.id && user_role.name === "Creator"}
+                dontPickRole={dontPickRole}
               />
             );
           })}
