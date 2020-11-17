@@ -35,7 +35,7 @@ Once you clone the repository start backend server.
 
 1.  Go to backend directory `cd backend`
 2.  Run `pip install -r requirements.txt` to install all backend libararies.
-3.  Create `.backend_env` to include backend environment variables. You can find upto date sample env variables in `backend/local-env-setup.md` file.
+3.  Create `.backend_env` to include backend environment variables. You can find upto date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md) file.
 4.  Run `python manage.py migrate` to run django migrations. Note: This command is used for
     when you first start or whenever you are adding or updating database models.
 5.  Run server using `python manage.py runserver`.
@@ -68,5 +68,6 @@ Once you clone the repository start backend server.
 ### Backend
 
 1. Make sure your `ENVIRONMENT` env variable is set to `production`
-2. Follow steps 1-5 of the "Getting started locally - backend" (above in this file)
+2. Follow steps 1-5 of the "Getting started 
+locally - backend" (above in this file)
 
