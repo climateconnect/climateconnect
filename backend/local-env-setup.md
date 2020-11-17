@@ -7,7 +7,7 @@ locally.
 Basic env variables which you will need for initial setup:
 (use double quotes for all values)
 ```
-FRONTEND_URL=<YOUR FRONTEND URL. eg: http://localhost:3001
+FRONTEND_URL=<YOUR FRONTEND URL. eg: http://localhost:3001>
 
 
 SECRET_KEY=<Django secret key>
