@@ -1,7 +1,9 @@
 from climateconnect_api.models.notification import Notification
+from chat_messages.models import Participant
 
 def create_chat_message_notification(chat):
-    is_group_chat = chat.participants.count() > 2
+    number_of_participants = Participant.objects.filter(chat=chat).count()
+    is_group_chat = number_of_participants > 2
     old_notification = Notification.objects.filter(
         notification_type = 8 if is_group_chat else 1, 
         chat=chat

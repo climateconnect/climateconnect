@@ -3,7 +3,7 @@ import Head from "next/head";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import CookieBanner from "../general/CookieBanner";
 import Cookies from "universal-cookie";
-import { useMediaQuery } from "@material-ui/core";
+import { useMediaQuery, Typography } from "@material-ui/core";
 import FeedbackButton from "../feedback/FeedbackButton";
 
 const useStyles = makeStyles(theme => ({
@@ -39,33 +39,50 @@ export default function LayoutWrapper({
   const classes = useStyles();
   const [initialized, setInitialized] = React.useState(false);
   const isSmallerThanMediumScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
+  const [loading, setLoading] = React.useState(true);
   const cookies = new Cookies();
   const [bannerOpen, setBannerOpen] = React.useState(true);
   const acceptedNecessary = cookies.get("acceptedNecessary");
   const closeBanner = () => setBannerOpen(false);
   useEffect(function() {
     if (!initialized) setInitialized(true);
+    if (loading) {
+      setLoading(false);
+    }
   });
   const defaultDescription =
     "Free and non-profit climate action platform. Share, find and work on impactful, innovative and inspiring solutions to reduce and stop global warming. Join #teamclimate now!";
   return (
     <>
       <Head>
-        <title>{title}</title>
+        <title>{title ? title : "Climate Connect"}</title>
         <link
           href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800"
           rel="stylesheet"
         />
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
+        />
         <meta name="description" content={description ? description : defaultDescription} />
       </Head>
       <ThemeProvider theme={theme}>
-        <div className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}>
-          {children}
-          {!acceptedNecessary && bannerOpen && initialized && (
-            <CookieBanner closeBanner={closeBanner} />
-          )}
-          {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
-        </div>
+        {loading ? (
+          <div className={classes.spinnerContainer}>
+            <div>
+              <img className={classes.spinner} src="/images/logo.png" />
+            </div>
+            <Typography component="div">Loading...</Typography>
+          </div>
+        ) : (
+          <div className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}>
+            {children}
+            {!acceptedNecessary && bannerOpen && initialized && (
+              <CookieBanner closeBanner={closeBanner} />
+            )}
+            {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
+          </div>
+        )}
       </ThemeProvider>
     </>
   );

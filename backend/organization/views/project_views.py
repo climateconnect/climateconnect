@@ -569,4 +569,5 @@ class ListProjectFollowersView(ListAPIView):
         project = Project.objects.filter(url_slug=self.kwargs['url_slug'])
         if not project.exists():
             return None
-        return ProjectFollower.objects.filter(project=project[0])
+        followers = ProjectFollower.objects.filter(project=project[0])
+        return followers

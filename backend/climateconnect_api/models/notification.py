@@ -93,6 +93,11 @@ class UserNotification(models.Model):
         verbose_name='Read at', null=True, blank=True
     )
 
+    created_at = models.DateTimeField(
+        help_text="Time when the notification was sent to the user",
+        verbose_name="Created at", auto_now_add=True
+    )
+
 class EmailNotification(models.Model):
     user = models.ForeignKey(
         User, related_name="email_notification_user",

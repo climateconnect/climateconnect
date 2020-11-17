@@ -10,12 +10,7 @@ export default class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          <title>Climate Connect</title>
           <link rel="icon" href="/icons/favicon.ico" />
-          <meta
-            name="viewport"
-            content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
-          />
           <meta charSet="utf-8" />
           <meta name="theme-color" content={theme.palette.primary.main} />
         </Head>

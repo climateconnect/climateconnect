@@ -3,6 +3,7 @@ import { Typography, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ManageMembers from "../manageMembers/ManageMembers";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
+import { getAllChangedMembers } from "../../../public/lib/manageMembers";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -59,7 +60,7 @@ export default function ManageOrganizationMembers({
 
   const onSubmit = async () => {
     if (!verifyInput()) return false;
-    const allChangedMembers = getAllChangedMembers();
+    const allChangedMembers = getAllChangedMembers(members, currentMembers, "organization_members");
     return Promise.all(
       allChangedMembers.map(m => {
         if (m.operation === "delete") deleteMember(m);
@@ -72,38 +73,6 @@ export default function ManageOrganizationMembers({
         }
       })
     );
-  };
-
-  const getAllChangedMembers = () => {
-    const oldCreatorId = members.filter(m => m.role.name === "Creator")[0].id;
-    const newCreatorId = currentMembers.filter(m => m.role.name === "Creator")[0].id;
-    const deletedMembers = members.filter(m => !currentMembers.find(cm => cm.id === m.id));
-    const creatorChange =
-      oldCreatorId != newCreatorId ? currentMembers.filter(cm => cm.id === newCreatorId) : [];
-    const createdMembers = currentMembers.filter(
-      cm =>
-        !members.find(m => m.id === cm.id) &&
-        !creatorChange.find(m => m.id === cm.id) &&
-        !(oldCreatorId != newCreatorId && cm.id === oldCreatorId)
-    );
-    const updatedMembers = currentMembers.filter(
-      cm =>
-        !members.includes(cm) &&
-        !createdMembers.includes(cm) &&
-        !creatorChange.find(m => m.id === cm.id) &&
-        !(oldCreatorId != newCreatorId && cm.id === oldCreatorId)
-    );
-    const allChangedMembers = [
-      ...deletedMembers.map(m => ({ ...m, operation: "delete" })),
-      ...updatedMembers.map(m => ({ ...m, operation: "update" }))
-    ];
-    if (createdMembers.length > 0)
-      allChangedMembers.push({ organization_members: [...createdMembers], operation: "create" });
-
-    if (creatorChange.length > 0)
-      allChangedMembers.push({ new_creator: creatorChange[0], operation: "creator_change" });
-
-    return allChangedMembers;
   };
 
   const verifyInput = () => {
