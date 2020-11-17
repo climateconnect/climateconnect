@@ -127,15 +127,10 @@ class UserProfile(models.Model):
         blank=True
     )
 
-    email_updates_on_projects = models.BooleanField(
-        help_text="Check if user wants to receive emails for projects they follow",
-        verbose_name="Email updates on Project", null=True, blank=True,
+    send_newsletter = models.BooleanField(
+        help_text="Check if user wants to receive our newsletter",
+        verbose_name="Send newsletter", null=True, blank=True,
         default=True
-    )
-
-    email_project_suggestions = models.BooleanField(
-        help_text="Check if user wants to receive emails for projects they might like",
-        verbose_name="Email project suggestions", null=True, blank=True, default=True
     )
 
     email_on_private_chat_message = models.BooleanField(
