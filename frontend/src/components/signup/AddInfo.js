@@ -51,7 +51,7 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
       required: false,
       label: (
         <span className={classes.checkboxLabels}>
-          I would like to receive emails about updates, news and interesting projects every now and then
+          I would like to receive emails about updates, news and interesting projects
         </span>
       ),
       type: "checkbox",

@@ -61,7 +61,7 @@ export default function Signup() {
       last_name: values.last_name.trim(),
       country: values.country.trim(),
       city: values.city.trim(),
-      sendNewsletter: values.sendNewsletter
+      send_newsletter: values.sendNewsletter
     };
     const config = {
       headers: {
