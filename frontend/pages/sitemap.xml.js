@@ -3,19 +3,19 @@ import globby from "globby";
 import axios from "axios";
 
 const NOT_LISTED = [
-  "/_app.js",
-  "/_document.js",
-  "/inbox.js",
-  "/accountcreated.js",
-  "/editprofile.js",
-  "/inbox.js",
-  "/createorganization.js",
-  "/resend_verification_email.js",
-  "/resetpassword.js",
-  "/settings.js",
-  "/share.js",
-  "/sitemap.xml.js",
-  "/stream.js"
+  "/_app",
+  "/_document",
+  "/inbox",
+  "/accountcreated",
+  "/editprofile",
+  "/inbox",
+  "/createorganization",
+  "/resend_verification_email",
+  "/resetpassword",
+  "/settings",
+  "/share",
+  "/sitemap.xml",
+  "/stream"
 ];
 
 const STATIC_PAGE_PROPS = {
@@ -23,43 +23,43 @@ const STATIC_PAGE_PROPS = {
     priority: 1,
     changefreq: "hourly"
   },
-  "/about.js": {
+  "/about": {
     priority: 0.9,
     changefreq: "daily"
   },
-  "/browse.js": {
+  "/browse": {
     priority: 1,
     changefreq: "hourly"
   },
-  "/donate.js": {
+  "/donate": {
     priority: 0.9,
     changefreq: "daily"
   },
-  "/faq.js": {
+  "/faq": {
     priority: 0.9,
     changefreq: "daily"
   },
-  "/imprint.js": {
+  "/imprint": {
     priority: 0.5,
     changefreq: "monthly"
   },
-  "/privacy.js": {
+  "/privacy": {
     priority: 0.5,
     changefreq: "weekly"
   },
-  "/signin.js": {
+  "/signin": {
     priority: 0.8,
     changefreq: "weekly"
   },
-  "/signup.js": {
+  "/signup": {
     priority: 1,
     changefreq: "weekly"
   },
-  "/terms.js": {
+  "/terms": {
     priority: 0.5,
     changefreq: "weekly"
   },
-  "/zoom.js": {
+  "/zoom": {
     priority: 0.5,
     changefreq: "monthly"
   }
@@ -67,7 +67,7 @@ const STATIC_PAGE_PROPS = {
 
 async function createSitemap(projectEntries, organizationEntries, memberEntries) {
   const staticPages = (await globby(["pages/*.js"]))
-    .map(pageUrl => pageUrl.replace("pages", ""))
+    .map(pageUrl => pageUrl.replace("pages", "").replace(".js", ""))
     .filter(pageUrl => !NOT_LISTED.includes(pageUrl));
   const BASE_URL = process.env.BASE_URL ? process.env.BASE_URL : "https://climateconnect.earth";
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -88,7 +88,7 @@ async function createSitemap(projectEntries, organizationEntries, memberEntries)
 const getStaticPageEntries = staticPages => {
   return staticPages.map(p => {
     const entry = {
-      url: p === "/index.js" ? "/" : p
+      url: p === "/index" ? "/" : p
     };
     if (STATIC_PAGE_PROPS[p]) return { ...entry, ...STATIC_PAGE_PROPS[p] };
     return entry;
