@@ -49,7 +49,7 @@ export default function MessagingLayout({
     setCurMessage("");
     if (event) event.preventDefault();
   };
-  const canEditMembers = user_role.name === "Creator" || user_role.name === "Administrator"
+  const canEditMembers = user_role.name === "Creator" || user_role.name === "Administrator";
 
   const handleMessageKeydown = event => {
     if (event.key === "Enter" && event.ctrlKey) onSendMessage();

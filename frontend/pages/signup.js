@@ -16,7 +16,8 @@ export default function Signup() {
     first_name: "",
     last_name: "",
     country: "",
-    city: ""
+    city: "",
+    newsletter: ""
   });
 
   const steps = ["basicinfo", "personalinfo"];
@@ -50,7 +51,8 @@ export default function Signup() {
       first_name: values.first_name,
       last_name: values.last_name,
       country: values.country,
-      city: values.city
+      city: values.city,
+      sendNewsletter: values.sendNewsletter
     });
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
@@ -58,7 +60,8 @@ export default function Signup() {
       first_name: values.first_name.trim(),
       last_name: values.last_name.trim(),
       country: values.country.trim(),
-      city: values.city.trim()
+      city: values.city.trim(),
+      send_newsletter: values.sendNewsletter
     };
     const config = {
       headers: {

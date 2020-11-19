@@ -21,7 +21,7 @@ export default function Chat({
   chat_id
 }) {
   const { chatSocket, user } = useContext(UserContext);
-  const [participants, setParticipants] = React.useState(chatParticipants)
+  const [participants, setParticipants] = React.useState(chatParticipants);
   const [socketClosed, setSocketClosed] = useState(false);
   const [state, setState] = React.useState({
     nextPage: 2,

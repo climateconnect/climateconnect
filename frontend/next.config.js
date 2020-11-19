@@ -9,7 +9,8 @@ module.exports = {
     "SOCKET_URL",
     "API_HOST",
     "GOOGLE_ANALYTICS_CODE",
-    "BASE_URL_HOST"
+    "BASE_URL_HOST",
+    "LATEST_NEWSLETTER_LINK"
   ]),
   exportPathMap: async function(defaultPathMap) {
     if (process.env.PRE_LAUNCH)

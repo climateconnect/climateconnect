@@ -9,7 +9,11 @@ from django.contrib.auth.models import User
 from climateconnect_api.models import UserProfile
 from climateconnect_api.permissions import UserPermission
 from climateconnect_api.serializers.user import UserAccountSettingsSerializer
-from climateconnect_api.utility.email_setup import send_new_email_verification
+from climateconnect_api.utility.email_setup import (
+    send_new_email_verification, 
+    register_newsletter_contact, 
+    unregister_newsletter_contact
+)
 
 class UserAccountSettingsView(APIView):
     permission_classes = [UserPermission]
@@ -43,20 +47,22 @@ class UserAccountSettingsView(APIView):
             user.user_profile.save()
 
         email_preference_values = [
-            'email_updates_on_projects',
-            'email_project_suggestions',
+            'send_newsletter',
             'email_on_private_chat_message',
             'email_on_group_chat_message',
             'email_on_comment_on_your_project',
             'email_on_reply_to_your_comment',
             'email_on_new_project_follower'
         ]
-        if 'email_updates_on_projects' in request.data:
+        if 'send_newsletter' in request.data:
             for value in email_preference_values:
                 if not value in request.data:
                     return Response({'message': 'Required parameter missing'}, status=status.HTTP_400_BAD_REQUEST)
-            user.user_profile.email_updates_on_projects = request.data['email_updates_on_projects']
-            user.user_profile.email_project_suggestions = request.data['email_project_suggestions']
+            if user.user_profile.send_newsletter == False and request.data['send_newsletter'] == True:
+                register_newsletter_contact(user.email)
+            if user.user_profile.send_newsletter == True and request.data['send_newsletter'] == False:
+                unregister_newsletter_contact(user.email)
+            user.user_profile.send_newsletter = request.data['send_newsletter']
             user.user_profile.email_on_private_chat_message = request.data['email_on_private_chat_message']
             user.user_profile.email_on_group_chat_message = request.data['email_on_group_chat_message']
             user.user_profile.email_on_comment_on_your_project = request.data['email_on_comment_on_your_project']

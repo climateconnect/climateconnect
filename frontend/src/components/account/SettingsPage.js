@@ -6,7 +6,8 @@ import {
   Button,
   TextField,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  CircularProgress
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import tokenConfig from "../../../public/config/tokenConfig";
@@ -52,12 +53,8 @@ const useStyles = makeStyles(theme => ({
 
 const possibleEmailPreferences = [
   {
-    key: "email_updates_on_projects",
-    text: "Receive updates on the projects you follow"
-  },
-  {
-    key: "email_project_suggestions",
-    text: "Receive suggestions for projects you might like"
+    key: "send_newsletter",
+    text: "Receive emails about updates, news and interesting projects (~once per month)"
   },
   {
     key: "email_on_private_chat_message",
@@ -219,7 +216,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         });
     }
   };
-
+  const [emailPreferencesLoading, setEmailPreferencesLoading] = React.useState(false)
   const changeEmailPreferences = async () => {
     if (
       hasChanges(
@@ -228,12 +225,14 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         Object.keys(possibleEmailPreferences).map(k => possibleEmailPreferences[k])
       )
     ) {
+      setEmailPreferencesLoading(true)
       Axios.post(
         process.env.API_URL + "/api/account_settings/",
         emailPreferences,
         tokenConfig(token)
       )
         .then(function(response) {
+          setEmailPreferencesLoading(false)
           setMessage(response.data.message);
           setSettings({
             ...settings,
@@ -430,7 +429,9 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         variant="contained"
         color="primary"
         onClick={changeEmailPreferences}
+        disabled={emailPreferencesLoading}
       >
+        {emailPreferencesLoading && <CircularProgress size={13} />}
         Change preferences
       </Button>
       <Typography

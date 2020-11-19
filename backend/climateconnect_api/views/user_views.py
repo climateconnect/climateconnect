@@ -76,7 +76,7 @@ class SignUpView(APIView):
     def post(self, request):
         required_params = [
             'email', 'password', 'first_name', 'last_name',
-            'country', 'city'
+            'country', 'city', 'send_newsletter'
         ]
         for param in required_params:
             if param not in request.data:
@@ -100,7 +100,7 @@ class SignUpView(APIView):
             user=user, country=request.data['country'],
             city=request.data['city'],
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
-            verification_key=uuid.uuid4()
+            verification_key=uuid.uuid4(), send_newsletter=request.data['send_newsletter']
         )
 
         if settings.AUTO_VERIFY == True:

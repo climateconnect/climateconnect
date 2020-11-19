@@ -41,12 +41,12 @@ export default function ChatHeader({
   const classes = useStyles();
   return (
     <div className={`${classes.topBar} ${className}`}>
-      {!memberManagementExpanded &&
+      {!memberManagementExpanded && (
         <IconButton className={classes.backIcon} href="/inbox">
           <KeyboardArrowLeftIcon />
         </IconButton>
-      }
-      {!isPrivateChat && !showChatParticipants && canEditMembers && !memberManagementExpanded &&(
+      )}
+      {!isPrivateChat && !showChatParticipants && canEditMembers && !memberManagementExpanded && (
         <IconButton
           className={classes.manageMembersButton}
           onClick={handleToggleMemberManagementExpanded}
