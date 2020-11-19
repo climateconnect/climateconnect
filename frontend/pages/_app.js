@@ -225,7 +225,7 @@ const setNotificationsRead = async (token, notifications) => {
   if (token) {
     try {
       const resp = await axios.post(
-        process.env.API_URL + "/api/set_user_notifications_read",
+        process.env.API_URL + "/api/set_user_notifications_read/",
         { notifications: notifications.map(n => n.id) },
         tokenConfig(token)
       );

@@ -54,7 +54,7 @@ export default function ChatMemberManagementOverlay({
     event.preventDefault();
     onSubmit()
       .then(() => {
-        setParticipants(state.curParticipants)
+        setParticipants(state.curParticipants);
         toggleMemberManagementExpanded(
           "You have successfully updated this chat's participants!",
           "success"

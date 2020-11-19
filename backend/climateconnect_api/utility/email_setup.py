@@ -6,8 +6,8 @@ from django.conf import settings
 import logging
 logger = logging.getLogger(__name__)
 
-mailjet = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE), version='v3.1')
-
+mailjet_send_api = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE), version='v3.1')
+mailjet_api = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE))
 
 def get_user_verification_url(verification_key):
     # TODO: Set expire time for user verification
@@ -65,7 +65,7 @@ def send_user_verification_email(user, verification_key):
     }
 
     try:
-        mail = mailjet.send.create(data=data)
+        mail = mailjet_send_api.send.create(data=data)
     except Exception as ex:
         logger.error("%s: Error sending email: %s" % (
             send_user_verification_email.__name__, ex
@@ -100,7 +100,7 @@ def send_new_email_verification(user, new_email, verification_key):
     }
 
     try:
-        mail = mailjet.send.create(data=data)
+        mail = mailjet_send_api.send.create(data=data)
     except Exception as ex:
         logger.error("%s: Error sending email: %s" % (
             send_user_verification_email.__name__, ex
@@ -135,7 +135,7 @@ def send_password_link(user, password_reset_key):
     }
 
     try:
-        mail = mailjet.send.create(data=data)
+        mail = mailjet_send_api.send.create(data=data)
     except Exception as ex:
         logger.error("looking at the errors!")
         logger.error(ex.body)
@@ -171,9 +171,59 @@ def send_feedback_email(email, message, send_response):
 	    ]
     }
     try:
-        mail = mailjet.send.create(data=data)
+        mail = mailjet_send_api.send.create(data=data)
     except Exception as ex:
         logger.error("%s: Error sending email: %s" % (
             send_user_verification_email.__name__, ex
         ))
         logger.error(mail)
+
+def register_newsletter_contact(email_address):
+    old_contact = mailjet_api.contact.get(email_address)
+    if old_contact.status_code == 404:
+        contact_id = create_contact(email_address)
+    if old_contact.status_code == 200:
+        result = old_contact.json()
+        contact_id = result['Data'][0]['ID']
+    add_contact_to_list(contact_id, settings.MAILJET_NEWSLETTER_LIST_ID)
+
+def create_contact(email_address):
+    data = {
+        'IsExcludedFromCampaigns': "true",
+        'Email': email_address
+    }
+    new_contact = mailjet_api.contact.create(data=data)
+    result = new_contact.json()
+    return result['Data'][0]['ID']
+
+def add_contact_to_list(contact_id, list_id):
+    data = {
+        'ContactID': contact_id,
+        'ListID': list_id
+    }
+    result = mailjet_api.listrecipient.create(data=data)
+    if not result.status_code == 201:
+        logger.error(result.status_code)
+        logger.error("Could not add contact "+str(contact_id)+" to list "+str(list_id))
+    return True
+
+def unregister_newsletter_contact(email_address):
+    contact = mailjet_api.contact.get(email_address)
+    if contact.status_code == 200:
+        result = contact.json()
+        contact_id = result['Data'][0]['ID']
+        remove_contact_from_list(contact_id, settings.MAILJET_NEWSLETTER_LIST_ID)
+    else:
+        print(contact.status_code)
+
+
+def remove_contact_from_list(contact_id, list_id):
+    data = {
+        'ContactsLists': [
+            {
+                'Action': "remove",
+                'ListID': list_id
+            }
+        ]
+    }
+    result = mailjet_api.contact_managecontactslists.create(id=contact_id, data=data)

@@ -78,7 +78,7 @@ urlpatterns = [
         notifications_views.ListNotificationsView.as_view(), name='list-notifications'
     ),
     path('api/sitemap/members/', user_views.ListMembersForSitemap.as_view(), name='list-members-for-sitemap'),
-    path('api/set_user_notifications_read', notifications_views.SetUserNotificationsRead.as_view(), name='set-user-notifications-unread'),
+    path('api/set_user_notifications_read/', notifications_views.SetUserNotificationsRead.as_view(), name='set-user-notifications-unread'),
     # Organization views
     path('api/', include('organization.urls')),
     # Common views

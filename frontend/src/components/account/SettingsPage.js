@@ -52,12 +52,8 @@ const useStyles = makeStyles(theme => ({
 
 const possibleEmailPreferences = [
   {
-    key: "email_updates_on_projects",
-    text: "Receive updates on the projects you follow"
-  },
-  {
-    key: "email_project_suggestions",
-    text: "Receive suggestions for projects you might like"
+    key: "send_newsletter",
+    text: "Receive emails about updates, news and interesting projects (~once per month)"
   },
   {
     key: "email_on_private_chat_message",
