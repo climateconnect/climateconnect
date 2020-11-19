@@ -51,7 +51,8 @@ export default function GenericDialog({
   applyText,
   children,
   topBarFixed,
-  fullScreen
+  fullScreen,
+  maxWidth
 }) {
   const classes = useStyles({ useApplyButton: useApplyButton });
 
@@ -63,7 +64,7 @@ export default function GenericDialog({
       className={`${classes.dialog} ${topBarFixed && classes.noScrollDialog}`}
       onClose={handleCancel}
       open={open}
-      maxWidth="md"
+      maxWidth={maxWidth ? maxWidth : "md"}
       fullScreen={fullScreen}
     >
       <DialogTitle>
