@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "gcp-build": "IS_BUILDING_ON_GOOGLE_CLOUD=1 yarn build",
-    "pretest": "yarn run lint",
-    "format": "prettier --write '**/*.{js,jsx,json,md}'",
-    "lint": "eslint .",
-    "dev": "next dev",
     "build": "next build",
-    "start": "NODE_ENV=production node server.js",
+    "deploy": "yarn build && yarn export",
+    "dev": "next dev",
     "export": "next export",
-    "deploy": "yarn build && yarn export"
+    "format": "prettier --write '**/*.{js,jsx,json,md}'",
+    "gcp-build": "IS_BUILDING_ON_GOOGLE_CLOUD=1 yarn build",
+    "lint": "eslint .",
+    "pretest": "yarn run lint",
+    "start": "NODE_ENV=production node server.js"
   },
   "jest": {
     "setupFiles": [
