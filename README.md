@@ -5,9 +5,8 @@ The code for https://climateconnect.earth.
 ## Pre-steps
 
 ### Postgres
-1.  Create a local Postgres database with your own username and password. You will connect to this for your local backend project.
-2.  Create a 32 char random secret key for your local setup. Run `openssl rand -base64 32`. Copy the
-    value you will be using this to add as `SECRET_KEY` for Django settings.
+
+Create a local Postgres database with your own username and password. You will connect to this for your local backend project.
 
 ### Docker
 
@@ -42,6 +41,7 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
 1.  Run `pip install -r requirements.txt` to install all backend libararies.
 1.  Create `.backend_env` to set environment variables.
     - You can find up to date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md).
+    - For the Django `SECRET_KEY`, run `openssl rand -base64 32` to create a 32 char random secret.
     - Note that you'll also need a [Django `SECRET_KEY`](https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-SECRET_KEY).
 1.  Run `python manage.py migrate` to run Django migrations.
     - Note: This command is used for when you first start, or whenever you are adding or updating database models.
