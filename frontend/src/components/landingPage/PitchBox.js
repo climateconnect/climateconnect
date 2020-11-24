@@ -1,7 +1,8 @@
 import React from "react";
 import { Typography, makeStyles, useMediaQuery } from "@material-ui/core";
-import SmallCloud from "./SmallCloud";
 import theme from "../../themes/theme";
+import SmallCloud from "../staticpages/SmallCloud";
+import pitch_elements from "../../../public/data/pitch_elements.json";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -163,9 +164,9 @@ export default function PitchBox({ h1ClassName }) {
       </Typography>
       <div className={classes.pitchElementsWrapper}>
         <PitchElement
-          image={"/images/online_world_story.svg"}
-          headline="Spread your solution globally"
-          text="Share your climate change solutions with the climate action community and find people who can use your experience to replicate your solutions somewhere else. Receive help and feedback on what you are doing to combat global warming and increase your impact!"
+          image={pitch_elements[0].img}
+          headline={pitch_elements[0].headline}
+          text={pitch_elements[0].text}
         >
           {!isMediumScreen ? (
             <SmallCloud type={1} className={classes.smallCloud7} reverse />
@@ -175,9 +176,9 @@ export default function PitchBox({ h1ClassName }) {
         </PitchElement>
         <PitchElement
           alternate={!isMediumScreen}
-          image={"/images/creativity_story.svg"}
-          headline="Get inspired"
-          text="Find inspiring solutions to global warming. Replicate succesful projects and benefit from the experience of others. Find solutions that actually make a difference! Contact the project owners directly to ask about their lessons learned and knowledge on any specific project."
+          image={pitch_elements[1].img}
+          headline={pitch_elements[1].headline}
+          text={pitch_elements[1].text}
         >
           {!isMediumScreen ? (
             <>
@@ -192,9 +193,9 @@ export default function PitchBox({ h1ClassName }) {
           )}
         </PitchElement>
         <PitchElement
-          image={"/images/team_story.svg"}
-          headline="Worldwide collaboration"
-          text="Worldwide collaboration in climate action is the main goal of Climate Connect. We want everyone involved in fighting climate change to work together! Filter projects by what skills they are looking for to find out where you can make the biggest difference with your individual skillset!"
+          image={pitch_elements[2].img}
+          headline={pitch_elements[2].headline}
+          text={pitch_elements[2].text}
         >
           {!isMediumScreen ? (
             <>

@@ -48,7 +48,10 @@ const useStyles = makeStyles(theme => {
     root: props => {
       return {
         zIndex: props.fixedHeader ? 20 : "auto",
-        borderBottom: props.transparentHeader ? 0 : `1px solid ${theme.palette.grey[300]}`,
+        borderBottom:
+          props.transparentHeader || props.isStaticPage
+            ? 0
+            : `1px solid ${theme.palette.grey[300]}`,
         position: props.fixedHeader ? "fixed" : "auto",
         width: props.fixedHeader ? "100%" : "auto",
         height: props.fixedHeader ? 97 : "auto",
@@ -121,7 +124,7 @@ const useStyles = makeStyles(theme => {
     staticPageLinksWrapper: {
       width: "100%",
       height: 50,
-      background: "#E5E5E5"
+      background: theme.palette.primary.main
     },
     staticPageLinksContainer: {
       width: "100%",
@@ -144,9 +147,9 @@ const useStyles = makeStyles(theme => {
       paddingRight: theme.spacing(2),
       marginRight: theme.spacing(2),
       fontSize: 16,
-      fontWeight: "bold",
+      fontWeight: 600,
       textDecoration: "inherit",
-      color: theme.palette.primary.main,
+      color: "white",
       [theme.breakpoints.down("xs")]: {
         padding: 0
       }
@@ -279,7 +282,11 @@ export default function Header({
   fixedHeader,
   transparentHeader
 }) {
-  const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
+  const classes = useStyles({
+    fixedHeader: fixedHeader,
+    transparentHeader: transparentHeader,
+    isStaticPage: isStaticPage
+  });
   const { user, signOut, notifications, pathName } = useContext(UserContext);
   const [anchorEl, setAnchorEl] = React.useState(false);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
