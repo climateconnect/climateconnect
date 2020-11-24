@@ -32,6 +32,7 @@ export default function WideLayout({
   isStaticPage,
   noFeedbackButton, //don't display the fixed feedback button on the right border of the screen. Can be useful on mobile
   noSpaceBottom, //display the footer directly under the content without any margin
+  showOnScrollUp, //display the footer when scrolling up, used for "inifinite scroll" pages
   largeFooter,
   description
 }) {
@@ -70,7 +71,7 @@ export default function WideLayout({
           {children}
         </Container>
       )}
-      <Footer noSpacingTop={noSpaceBottom} noAbsolutePosition={noSpaceBottom} large={largeFooter} />
+      <Footer noSpacingTop={noSpaceBottom} noAbsolutePosition={noSpaceBottom} showOnScrollUp={showOnScrollUp} large={largeFooter} />
     </LayoutWrapper>
   );
 }
