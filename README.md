@@ -37,24 +37,23 @@ After you've cloned the repository, we can set up the local Redis server and bac
 Note: we use Python 3, so for all instructions we insume `python` means `python3`.
 
 #### First Time Setup
+
 1.  Go to backend directory: `cd backend`
-1.  Run `pip install -r requirements.txt` to install all backend libararies.
+1.  Run `pip install -r requirements.txt` to install all backend libraries.
 1.  Create `.backend_env` to set environment variables.
     - You can find up to date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md).
-    - For the Django `SECRET_KEY`, run `openssl rand -base64 32` to create a 32 char random secret.
-    - Note that you'll also need a [Django `SECRET_KEY`](https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-SECRET_KEY).
+    - For the [Django `SECRET_KEY`](https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-SECRET_KEY), run `openssl rand -base64 32` to create a 32 char random secret.
 1.  Run `python manage.py migrate` to run Django migrations.
     - Note: This command is used for when you first start, or whenever you are adding or updating database models.
-
 
 #### Continual Development
 
 1.  Run `docker-compose up`. This will start a Redis server on Docker.
 1.  Run `python manage.py migrate` to run Django migrations whenever you are adding or updating database model.s
-1. Run server using `python manage.py runserver`.
-
+1.  Run server using `python manage.py runserver`.
 
 #### Testing
+
 If you want to run the test suite, use:
 
 ```sh
@@ -62,6 +61,7 @@ python manage.py test
 ```
 
 Run a specific test file or test class:
+
 ```sh
 python manage.py test <file_path> or <file_path + class_name>
 ```
@@ -69,13 +69,13 @@ python manage.py test <file_path> or <file_path + class_name>
 ### Frontend
 
 1. `cd frontend`
-2. Run `yarn install` to download all npm packages
-3. Add a `.env` file for frontend environment variables. You can find which env variables you have to set in `/frontend/next.config.js/`
-4. Run `yarn dev` to start developing
+2. `yarn install` to download all npm packages
+3. Add a `.env` file for frontend environment variables. You can find variables you need to set in [`/frontend/next.config.js/`](https://github.com/climateconnect/climateconnect/blob/master/frontend/next.config.js)
+4. `yarn dev` to start developing
 
 ## To Deploy
 
-###  Frontend
+### Frontend
 
 #### Option 1: GitHub Actions
 
@@ -92,5 +92,4 @@ python manage.py test <file_path> or <file_path + class_name>
 
 1. Make sure your `ENVIRONMENT` env variable is set to `production`
 2. Follow steps 1-5 of the "Getting started
-locally - backend" (above in this file)
-
+   locally - backend" (above in this file)
