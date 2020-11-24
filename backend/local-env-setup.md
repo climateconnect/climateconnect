@@ -2,7 +2,6 @@
 
 The following is a list of `.backend_env` variables required to run the server locally.
 
-
 Basic env variables which you will need for initial setup:
 (use double quotes for all values)
 
