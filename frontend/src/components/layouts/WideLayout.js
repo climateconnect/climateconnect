@@ -31,8 +31,9 @@ export default function WideLayout({
   isStaticPage,
   noFeedbackButton, //don't display the fixed feedback button on the right border of the screen. Can be useful on mobile
   noSpaceBottom, //display the footer directly under the content without any margin
-  description,
-  largeFooter
+  showOnScrollUp, //display the footer when scrolling up, used for "inifinite scroll" pages
+  largeFooter,
+  description
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -69,7 +70,7 @@ export default function WideLayout({
           {children}
         </Container>
       )}
-      <Footer noSpacingTop={noSpaceBottom} noAbsolutePosition={noSpaceBottom} large={isStaticPage || largeFooter} />
+      <Footer noSpacingTop={noSpaceBottom} noAbsolutePosition={noSpaceBottom} showOnScrollUp={showOnScrollUp} large={isStaticPage || largeFooter} />
     </LayoutWrapper>
   );
 }

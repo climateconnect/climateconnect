@@ -3,6 +3,7 @@ import ProfilePreview from "./ProfilePreview";
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfiniteScroll from "react-infinite-scroller";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles({
   reset: {
@@ -11,8 +12,8 @@ const useStyles = makeStyles({
     listStyleType: "none",
     width: "100%"
   },
-  loader: {
-    clear: "both"
+  spinner: {
+    marginTop: '48px'
   }
 });
 
@@ -24,26 +25,33 @@ export default function ProfilePreviews({
   parentHandlesGridItems
 }) {
   const classes = useStyles();
+  const toProfilePreviews = (profiles) => profiles
+      .map(p => <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [gridItems, setGridItems] = React.useState(
-    profiles.map(p => (
-      <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
-    ))
-  );
+  const [gridItems, setGridItems] = React.useState(toProfilePreviews(profiles));
+
   if (!loadFunc) hasMore = false;
   const loadMore = async page => {
     if (!isLoading) {
       setIsLoading(true);
       const newProfiles = await loadFunc(page);
       if (!parentHandlesGridItems) {
-        const newGridItems = newProfiles.map(p => (
-          <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
-        ));
-        setGridItems([...gridItems, ...newGridItems]);
+        setGridItems([...gridItems, ...toProfilePreviews(newProfiles)]);
       }
       setIsLoading(false);
     }
   };
+
+  const loadingSpinner = () => {
+    return (
+        isLoading ? (
+            <Grid container justify="center">
+              <CircularProgress className={classes.spinner} />
+            </Grid>
+        ) : null
+    )
+  };
+
 
   // TODO: use `profile.id` instead of index when using real profiles
   return (
@@ -51,11 +59,6 @@ export default function ProfilePreviews({
       pageStart={0}
       loadMore={loadMore}
       hasMore={hasMore && !isLoading}
-      loader={
-        <div className={classes.loader} key={1000}>
-          Loading ...
-        </div>
-      }
       element={Grid}
       container
       component="ul"
@@ -64,11 +67,10 @@ export default function ProfilePreviews({
     >
       {parentHandlesGridItems
         ? profiles && profiles.length > 0
-          ? profiles.map(p => (
-              <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
-            ))
+          ? toProfilePreviews(profiles)
           : "No Results"
         : gridItems}
+      {loadingSpinner()}
     </InfiniteScroll>
   );
 }
