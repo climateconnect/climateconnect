@@ -89,7 +89,7 @@ export default function Index({ projects, organizations }) {
       transparentHeader={pos === "top"}
       noFeedbackButton
       noSpaceBottom
-      isStaticPage
+      largeFooter
     >
       <div className={classes.root}>
         <LandingTopBox scrollToContent={scrollToContent} />
