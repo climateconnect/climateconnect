@@ -23,5 +23,8 @@ __pycache__
 backend/.vscode
 frontend/.vscode
 
+# intellij
+*.iml
+
 #azure
 backend/.azure
