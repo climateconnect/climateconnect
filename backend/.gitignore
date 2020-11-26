@@ -1,3 +1,5 @@
 # app.yaml, which is needed for deployment to Google Cloud, can be found in our shared password manager, Bitwarden.
 /app.yaml
 /gcloud-storage-credentials.json
+
+static/
