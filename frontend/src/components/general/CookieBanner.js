@@ -12,6 +12,7 @@ const useStyles = makeStyles(theme => {
       left: 0,
       width: "100%",
       height: 150,
+      zIndex: 100,
       background: "white",
       borderTop: `1px solid ${theme.palette.secondary.main}`,
       paddingTop: theme.spacing(1),
