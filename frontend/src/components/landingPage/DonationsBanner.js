@@ -1,7 +1,7 @@
 import React from "react";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import { Typography, makeStyles, useMediaQuery } from "@material-ui/core";
-import LightBigButton from "./LightBigButton";
+import LightBigButton from "../staticpages/LightBigButton";
 import theme from "../../themes/theme";
 
 const useStyles = makeStyles(theme => ({

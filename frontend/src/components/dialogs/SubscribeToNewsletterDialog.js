@@ -46,22 +46,22 @@ export default function SubscribeToNewsletterDialog({ onClose, open }) {
   const [emailAddress, setEmailAddress] = React.useState("");
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [loading, setLoading] = React.useState(false)
+  const [loading, setLoading] = React.useState(false);
   const handleSubscribe = async e => {
-    e.preventDefault()
-    console.log("subscribing!")
+    e.preventDefault();
+    console.log("subscribing!");
     try {
-      setLoading(true)
-      const resp = await subscribeToNewsletter(emailAddress)
-      console.log(resp)
-      setLoading(false)
-    } catch(e) {
-      console.log(e)
+      setLoading(true);
+      const resp = await subscribeToNewsletter(emailAddress);
+      console.log(resp);
+      setLoading(false);
+    } catch (e) {
+      console.log(e);
     }
   };
   const handleEmailTextChange = e => {
-    setEmailAddress(e.target.value)
-  }
+    setEmailAddress(e.target.value);
+  };
   return (
     <GenericDialog
       maxWidth="sm"
@@ -100,20 +100,21 @@ export default function SubscribeToNewsletterDialog({ onClose, open }) {
   );
 }
 
-const subscribeToNewsletter = (emailAddress) => {
-  const url = process.env.API_URL + "/api/subscribe_to_newsletter/"
-    const payload = {email: emailAddress}
-    const config = {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      }
-    };
-    axios.post(url, payload, config)
-      .then(function(response) {
-        return response
-      })
-      .catch(function(error) {
-        throw error
-      })
-}
+const subscribeToNewsletter = emailAddress => {
+  const url = process.env.API_URL + "/api/subscribe_to_newsletter/";
+  const payload = { email: emailAddress };
+  const config = {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    }
+  };
+  axios
+    .post(url, payload, config)
+    .then(function(response) {
+      return response;
+    })
+    .catch(function(error) {
+      throw error;
+    });
+};
