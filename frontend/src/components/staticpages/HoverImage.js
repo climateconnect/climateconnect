@@ -1,7 +1,6 @@
 import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import MosaicImage from "./MosaicImage";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -58,13 +57,6 @@ const useStyles = makeStyles(theme => ({
     fontSize: 22,
     color: props.background === "primary" ? "white" : theme.palette.primary.main
   }),
-  innerMosaicImage: {
-    position: "absolute",
-    top: 20,
-    right: 20,
-    bottom: -20,
-    left: -20
-  }
 }));
 
 export default function HoverImage({
@@ -72,9 +64,6 @@ export default function HoverImage({
   text,
   className,
   background,
-  innerMosaicImage,
-  itemsPerLine,
-  itemsPerRow
 }) {
   const classes = useStyles({ image: src, background });
   return (
@@ -86,7 +75,7 @@ export default function HoverImage({
         <div className={classes.backgroundDiv}>
         <div className={classes.textDivInnerWrapper}>
           <ArrowBackIcon className={classes.arrowIcon} />
-          {text ? <Text /> : innerMosaicImage && <InnerMosaicImage mosaicImage={innerMosaicImage} itemsPerLine={itemsPerLine} itemsPerRow={itemsPerRow}/>}
+          {<Text text={text}/>}
           </div>
         </div>
       </div>
@@ -99,13 +88,4 @@ function Text({ text }) {
   return (        
     <Typography className={classes.text}>{text}</Typography>
   );
-}
-
-function InnerMosaicImage({mosaicImage, itemsPerLine, itemsPerRow}) {
-  const classes = useStyles()
-  return (
-    <div className={classes.innerMosaicImage}>
-      <MosaicImage items={mosaicImage} itemsPerLine={itemsPerLine} itemsPerRow={itemsPerRow}/>
-    </div>
-  )
 }

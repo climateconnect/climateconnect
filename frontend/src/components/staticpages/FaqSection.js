@@ -16,7 +16,8 @@ const useStyles = makeStyles(theme => ({
   explanationWrapper: {
     display: "flex",
     maxWidth: 800,
-    margin: "0 auto"
+    margin: "0 auto",
+    marginBottom: theme.spacing(2)
   },
   icon: {
     color: theme.palette.yellow.main,
@@ -30,13 +31,19 @@ const useStyles = makeStyles(theme => ({
     cursor: "pointer"
   },
   explanationText: {
-    color: "white"
+    color: "white",
+    zIndex: 1
   },
   headline: {
-    color: "white"
+    color: "white",
+    textAlign: "left"
   },
   iconWrapper: {
-    marginRight: theme.spacing(4)
+    marginRight: theme.spacing(4),
+    [theme.breakpoints.down("xs")]: {
+      position: "absolute",
+      opacity: 0
+    }
   },
   textBody: {
     fontSize: 18
@@ -52,6 +59,12 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     justifyContent: "center",
     marginTop: theme.spacing(2)
+  },
+  questionText: {
+    color: theme.palette.secondary.main,
+    [theme.breakpoints.down("xs")]: {
+      fontWeight: "bold"
+    }
   }
 }));
 
@@ -92,6 +105,7 @@ export default function FaqSection({ headlineClass, questions }) {
                     key={index}
                     className={classes.faqQuestion}
                     answerClassName={classes.faqAnswer}
+                    questionTextClassName={classes.questionText}
                   />
                 )
             )}

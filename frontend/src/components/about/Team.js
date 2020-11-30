@@ -1,13 +1,18 @@
 import { Container, makeStyles, Typography, Link } from "@material-ui/core";
 
 import React from "react";
-import HoverImage from "../staticpages/HoverImage";
 import InfoLinkBox from "../staticpages/InfoLinkBox";
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
     display: "flex",
-    marginTop: theme.spacing(6)
+    marginTop: theme.spacing(6),
+    [theme.breakpoints.down("sm")]: {
+      flexDirection: "column",
+      alignItems: "center",
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1)
+    }
   },
   textContainer: {
     marginLeft: theme.spacing(6),
@@ -17,7 +22,13 @@ const useStyles = makeStyles(theme => ({
     maxWidth: 550,
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    [theme.breakpoints.down("sm")]: {
+      maxWidth: 600,
+      padding: 0,
+      margin: 0,
+      marginTop: theme.spacing(3)
+    }
   },
   textBody: {
     fontWeight: 600,
@@ -26,6 +37,20 @@ const useStyles = makeStyles(theme => ({
   infoLinkBox: {
     width: "100% !important",
     marginLeft: 0
+  },
+  image: {
+    visibility: "hidden",
+    width: "100%",
+    maxWidth: 600
+  },
+  imageWrapper: {
+    background: `url('/images/team.jpg')`,
+    backgroundSize: "contain",
+    backgroundRepeat: "no-repeat"
+  },
+  imageContainer: {
+    display: "flex",
+    alignItems: "center"
   }
 }));
 
@@ -37,46 +62,11 @@ export default function Team({ headlineClass, className }) {
         Our Team
       </Typography>
       <div className={classes.contentWrapper}>
-        <HoverImage
-          src="/images/team.jpg"
-          background="primary"
-          itemsPerLine={3}
-          itemsPerRow={3}
-          innerMosaicImage={[
-            {
-              src: "/images/ann-kathrin-strike.jpg",
-              alt: "Ann-Kathrin Bernauer global climate strike Wuppertal"
-            },
-            {
-              src: "/images/tobias-strike.jpg",
-              alt: "Tobias Rehm global climate strike Erlangen"
-            },
-            {
-              src: "/images/fabi-strike.jpg",
-              alt: "Fabian Schiller global climate strike Erlangen"
-            },
-            {
-              src: "/images/michi-strike.jpg",
-              alt: "Michael Fischer global climate strike Aresing"
-            },
-            {
-              src: "/images/nadine-strike.jpg",
-              alt: "Nadine Schneider global climate strike Erlangen"
-            },
-            {
-              src: "/images/chris-strike.jpg",
-              alt: "Christoph Stoll global climate strike Erlangen"
-            },
-            {
-              src: "/images/thomas-strike.jpg",
-              alt: "Thomas Bove global climate strike Paris"
-            },
-            {
-              src: "/images/julius-strike.jpg",
-              alt: "Julius butze global climate strike Augsburg"
-            }
-          ]}
-        />
+        <div className={classes.imageContainer}>
+          <div className={classes.imageWrapper}>
+            <img src="/images/team.jpg"  className={classes.image}/>
+          </div>
+        </div>
         <div className={classes.textContainer}>
           <Typography color="secondary" className={classes.textBody}>
             We are an international Team of 3 people running Climate Connect full-time and around 15 volunteers dedicating their free-time to creating collaboration between climate actors. Contact us if {"you're"} interested in joining the team!<br/>

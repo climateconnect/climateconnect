@@ -154,6 +154,9 @@ const useStyles = makeStyles(theme => {
         padding: 0
       }
     },
+    currentStaticPageLink: {
+      textDecoration: "underline"
+    },
     notificationsHeadline: {
       padding: theme.spacing(2),
       textAlign: "center"
@@ -226,7 +229,7 @@ const getLinks = path_to_redirect => [
 const STATIC_PAGE_LINKS = [
   {
     href: "/about",
-    text: "About Us"
+    text: "About"
   },
   {
     href: "/donate",
@@ -359,7 +362,7 @@ function StaticPageLinks() {
               <Link
                 href={link.href}
                 key={index + "-" + link.text}
-                className={classes.staticPageLink}
+                className={`${classes.staticPageLink} ${window.location.href.includes(link.href) && classes.currentStaticPageLink}`}
               >
                 {link.text}
               </Link>

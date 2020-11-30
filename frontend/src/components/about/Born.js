@@ -8,26 +8,53 @@ const useStyles = makeStyles(theme => ({
   },
   wrapper: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
+    [theme.breakpoints.down("sm")]: {
+      flexDirection: "column"
+    }
   },
   textBlock: {
     color: "white",
-    fontWeight: 600
+    fontWeight: 600,
+    [theme.breakpoints.down("sm")]: {
+      textAlign: "center",
+      fontWeight: 500,
+      fontSize: 18,
+      marginTop: theme.spacing(3),
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2)
+    }
   },
   textWrapper: {
     marginRight: theme.spacing(3),
-    maxWidth: 630
+    [theme.breakpoints.down("sm")]: {
+      marginRight: 0,
+      marginTop: theme.spacing(3)
+    }
   },
   imageWrapper: {
     display: "flex",
     justifyContent: "flex-end",
     flexGrow: 1,
     padding: theme.spacing(6),
-    maxHeight: 300
+    maxHeight: 300,
+    [theme.breakpoints.down("sm")]: {
+      maxHeight: 400,
+      padding: 0,
+      marginTop: theme.spacing(7),
+      marginBottom: theme.spacing(7),
+      paddingRight: theme.spacing(3),
+      width: "80%",
+      maxWidth: 630,
+    }
   },
   hoverImage: {
     width: 300,
-    height: 200
+    height: 200,
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+      height: "auto"
+    }
   }
 }));
 

@@ -1,5 +1,8 @@
 import React from "react";
-import { makeStyles, Container, Typography, Divider } from "@material-ui/core";
+import { makeStyles, Container, Typography, Divider, useMediaQuery } from "@material-ui/core";
+import theme from "../../themes/theme";
+import Carousel from "react-multi-carousel";
+import CustomDot from "../general/CustomDot";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -17,6 +20,8 @@ const useStyles = makeStyles(theme => ({
   },
   timelineElement: {
     maxWidth: 250,
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
     textAlign: "center"
   },
   date: {
@@ -35,46 +40,88 @@ const useStyles = makeStyles(theme => ({
     fontSize: 25,
     fontWeight: 600,
     marginBottom: theme.spacing(2)
+  },
+  carouselElement: {
+    margin: "0 auto"
+  },
+  carousel: {
+    paddingBottom: theme.spacing(5),
+    marginTop: theme.spacing(6)
   }
 }));
 
 export default function Timeline({ headlineClass }) {
   const classes = useStyles();
-
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMediumScreen = useMediaQuery(theme.breakpoints.only("md"))
+  const useCarousel = useMediaQuery(theme.breakpoints.down("sm"))
+  const responsive = {
+    all: {
+      breakpoint: { max: 10000, min: 0 },
+      items: 1
+    }
+  };
+  
   return (
     <Container className={classes.root}>
-      <Typography color="primary" component="h1" className={`${headlineClass} ${classes.headline}`}>
-        After realizing the need for global collaboration, Climate Connect was launched in July 2020
-      </Typography>
-      <div className={classes.timelineElementsWrapper}>
-        {timelineData.map((d, index) => (
-          <TimelineElement
-            key={index}
-            className={classes.timelineElement}
-            date={d.date}
-            headline={d.headline}
-            content={d.content}
-          />
-        ))}
-      </div>
+      {!isNarrowScreen &&
+        <Typography color="primary" component="h1" className={`${headlineClass} ${classes.headline}`}>
+          After realizing the need for global collaboration, Climate Connect was launched in July 2020
+        </Typography>
+      }
+      {!useCarousel ?
+        <div className={classes.timelineElementsWrapper}>
+          {getTimelineData(isMediumScreen).map((d, index) => (
+            <TimelineElement
+              key={index}
+              className={classes.timelineElement}
+              date={d.date}
+              headline={d.headline}
+              content={d.content}
+            />
+          ))}
+        </div>
+      :
+        <Carousel
+          responsive={responsive}
+          infinite
+          autoPlay
+          autoPlaySpeed={5000}
+          showDots
+          arrows={false}
+          className={classes.carousel}
+          customDot={<CustomDot />}
+        >
+          {getTimelineData(isMediumScreen).map((d, index) => (
+            <TimelineElement
+              key={index}
+              className={`${classes.timelineElement} ${classes.carouselElement}`}
+              date={d.date}
+              headline={d.headline}
+              content={d.content}
+            />
+          ))}
+        </Carousel>
+
+      }
     </Container>
   );
 }
 
-const timelineData = [
+const getTimelineData = isMediumScreen => [
   {
     date: "July 2019",
     headline: "The Idea Is Born",
     content: `After the networking event, we started working on a way for climate actors to work together to spread good climate solutions worldwide. The idea of Climate Connect was born.`
   },
   {
-    date: "November 2019",
+    date: isMediumScreen ? "Nov. 2019" : "November 2019",
     headline: "First Prototype",
     content: `We create our first interactive design prototype and create concepts for how to create collaboration between climate actors. Our team of volunteers starts growing.`
   },
   {
     date: "July 2020",
-    headline: "Open Beta launch",
+    headline: "Beta launch",
     content: `We finally launched Climate Connect in Open Beta. New functionality is added every week and we constantly improve the platform based on your feedback.`
   },
   {

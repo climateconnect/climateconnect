@@ -1,7 +1,6 @@
 import { Container, makeStyles, Typography } from "@material-ui/core";
 
 import React from "react";
-import LightBigButton from "../staticpages/LightBigButton";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import GroupWorkOutlinedIcon from "@material-ui/icons/GroupWorkOutlined";
 import Value from "./Value";
@@ -11,25 +10,44 @@ const useStyles = makeStyles(theme => ({
     background: theme.palette.primary.main,
     marginTop: theme.spacing(5),
     paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(2)
+    paddingBottom: theme.spacing(2),
+    [theme.breakpoints.down("sm")]: {
+      paddingTop: theme.spacing(4)
+    }
   },
   wrapper: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
+    [theme.breakpoints.down("sm")]: {
+      flexDirection: "column",
+      alignItems: "center"
+    }
   },
   textBody: {
     color: "white",
     fontWeight: 600,
     maxWidth: 700,
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
+    [theme.breakpoints.down("sm")]: {
+      textAlign: "center"
+    },
+    [theme.breakpoints.down("xs")]: {
+      marginBottom: 0,
+    }
   },
   yellow: {
     color: theme.palette.yellow.main
   },
   valuesListWrapper: {
     display: "flex",
-    paddingLeft: theme.spacing(8),
-    position: "relative"
+    paddingLeft: theme.spacing(16),
+    position: "relative",
+    [theme.breakpoints.down("sm")]: {
+      paddingLeft: 0,
+      paddingTop: 40,
+      width: "100%",
+      justifyContent: "center"
+    }
   },
   leftValuesWrapper: {
     marginRight: theme.spacing(3),
@@ -42,10 +60,23 @@ const useStyles = makeStyles(theme => ({
   bigCloudContainer: {
     background: "url('/images/about-values-cloud.svg')",
     position: "absolute",
-    top: -0,
-    left: 0,
+    top: -40,
+    left: -15,
     backgroundSize: "contain",
-    backgroundRepeat: "no-repeat"
+    backgroundRepeat: "no-repeat",
+    width: 550,
+    [theme.breakpoints.down("sm")]: {
+      left: 0,
+      right: 0,
+      marginLeft: "auto",
+      marginRight: "auto",
+      width: 550,
+      top: 0
+    },
+    [theme.breakpoints.down("xs")]: {
+      left: -30,
+      top: 5
+    }
   },
   bigCloudImg: {
     visibility: "hidden",
@@ -63,13 +94,12 @@ export default function Values({ headlineClass }) {
           <Typography className={classes.textBody}>
             Climate Connect is a <span className={classes.yellow}>donation based</span> NGO - we
             dedicate all our work to make an impact on climate change. Being an independent
-            organisation allows us to <span className={classes.yellow}>work with everyone</span>{" "}
-            involved in fighting climate change. This is also why we include our community as much
+            organisation allows us to work with <span className={classes.yellow}>everyone{" "}
+            involved in fighting climate change.</span> This is also why we include our community as much
             as possible. Our code-base is <span className={classes.yellow}>open source</span>, we
             organize regular network events and let our users help us decide what steps to take
             next.
           </Typography>
-          <LightBigButton>Get involved</LightBigButton>
         </div>
         <div className={classes.valuesListWrapper}>
           <div className={classes.leftValuesWrapper}>

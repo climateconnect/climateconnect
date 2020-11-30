@@ -14,9 +14,8 @@ const useStyles = makeStyles(theme => ({
   explainerWrapper: {
     display: "flex",
     justifyContent: "space-between",
-    width: "80%",
+    width: "100%",
     maxWidth: 1000,
-    minWidth: 900,
     marginTop: theme.spacing(2),
     [theme.breakpoints.down("sm")]: {
       flexDirection: "column",

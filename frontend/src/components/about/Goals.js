@@ -4,16 +4,30 @@ import ExplainerElement from "../staticpages/ExplainerElement";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    marginTop: theme.spacing(10)
+    marginTop: theme.spacing(6)
   },
   wrapper: {
     display: "flex",
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(3),
+    position: "relative",
+    [theme.breakpoints.down("sm")]: {
+      justifyContent: "center",
+      height: 300
+    }
   },
   imageOuterWrapper: {
     width: "50%",
     paddingLeft: theme.spacing(15),
-    paddingRight: theme.spacing(5)
+    paddingRight: theme.spacing(5),
+    [theme.breakpoints.down("sm")]: {
+      position: "absolute",
+      width: 325,
+      height: 300,
+      padding: 0,
+      marginLeft: "auto",
+      marginRight: "auto",
+      background: "white"
+    }
   },
   imageWrapper: {
     maxWidth: "100%",
@@ -32,7 +46,14 @@ const useStyles = makeStyles(theme => ({
     flexDirection: "column",
     justifyContent: "space-around",
     paddingRight: theme.spacing(15),
-    paddingLeft: theme.spacing(5)
+    paddingLeft: theme.spacing(5),
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(2),
+      justifyContent: "space-between",
+      height: "100%",
+      background: "rgba(255,255,255,0.9)",
+      zIndex: 1
+    }
   }
 }));
 

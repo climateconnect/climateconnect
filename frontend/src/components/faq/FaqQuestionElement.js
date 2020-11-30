@@ -45,13 +45,13 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function FaqQuestionElement({ questionObject, className }) {
+export default function FaqQuestionElement({ questionObject, className, questionTextClassName }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   return (
     <div className={`${classes.root} ${className}`}>
       <div className={classes.questionWrapper} onClick={() => setOpen(!open)}>
-        <Typography component="h3" className={classes.questionText}>
+        <Typography component="h3" className={`${classes.questionText} ${questionTextClassName}`}>
           {questionObject.question}
         </Typography>
         {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}

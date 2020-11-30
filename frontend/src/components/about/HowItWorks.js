@@ -1,9 +1,11 @@
 import React from "react";
-import { makeStyles, Container, Typography, Button } from "@material-ui/core";
+import { makeStyles, Container, Typography, Button, useMediaQuery } from "@material-ui/core";
 import Carousel from "react-multi-carousel";
 import pitch_elements from "../../../public/data/pitch_elements.json";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
+import theme from "../../themes/theme";
+import CustomDot from "../general/CustomDot";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -12,19 +14,39 @@ const useStyles = makeStyles(theme => ({
   elementRoot: {
     display: "flex",
     paddingRight: theme.spacing(14),
-    paddingLeft: theme.spacing(14)
+    paddingLeft: theme.spacing(14),
+    [theme.breakpoints.down("md")]: {
+      flexDirection: "column",
+      maxWidth: 440,
+      justifyContent: "center",
+      margin: "0 auto",
+      paddingLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1)
+    }
   },
-  imageWrapper: {
+  imageBackground: {
     background: theme.palette.primary.light,
-    flexBasis: 450,
     flexShrink: 0,
-    height: 300,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: theme.spacing(4)
+    [theme.breakpoints.up("md")]: {
+      padding: theme.spacing(2)
+    }, 
+    [theme.breakpoints.down("md")]: {
+      background: "transparent",
+      flexBasis: 0,
+    }
   },
-  image: {},
+  imageWrapper: props => ({
+    background: `url('${props.img}')`,
+    backgroundSize: "contain"
+  }),
+  image: {
+    visibility: "hidden",
+    width: "100%",
+    height: "100%"
+  },
   textSection: {
     textAlign: "center",
     display: "flex",
@@ -32,11 +54,15 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "space-between"
   },
   carousel: {
-    marginTop: theme.spacing(6)
+    marginTop: theme.spacing(6),
+    paddingBottom: theme.spacing(5)
   },
   elementHeadline: {
     fontSize: 23,
-    fontWeight: 600
+    fontWeight: 600,
+    [theme.breakpoints.down("md")]: {
+      marginBottom: theme.spacing(3)
+    }
   },
   arrowContainer: {
     position: "absolute",
@@ -66,6 +92,8 @@ const responsive = {
 
 export default function HowItWorks({ headlineClass }) {
   const classes = useStyles();
+  const isSmallerScreen = useMediaQuery(theme.breakpoints.down("md"))
+  console.log(isSmallerScreen)
   return (
     <Container className={classes.root}>
       <Typography color="primary" className={headlineClass}>
@@ -74,12 +102,13 @@ export default function HowItWorks({ headlineClass }) {
       <Carousel
         responsive={responsive}
         infinite
-        arrows
-        autoPlay
+        arrows={!isSmallerScreen}
         autoPlaySpeed={7000}
+        showDots={isSmallerScreen}
         className={classes.carousel}
         customRightArrow={<CustomArrow direction="right" />}
         customLeftArrow={<CustomArrow direction="left" />}
+        customDot={<CustomDot />}
       >
         {pitch_elements.map((e, index) => (
           <Element
@@ -89,6 +118,7 @@ export default function HowItWorks({ headlineClass }) {
             img={e.img}
             key={index}
             linkText={e.linkText}
+            mobile={isSmallerScreen}
           />
         ))}
       </Carousel>
@@ -96,23 +126,27 @@ export default function HowItWorks({ headlineClass }) {
   );
 }
 
-const Element = ({ headline, text, link, img, linkText }) => {
-  const classes = useStyles();
+const Element = ({ headline, text, link, img, linkText, mobile }) => {
+  const classes = useStyles({img: img});
   return (
     <div className={classes.elementRoot}>
-      <div className={classes.imageWrapper}>
-        <img src={img} className={classes.image} />
+      <div className={classes.imageBackground}>
+        <div className={classes.imageWrapper}>
+          <img src={img} className={classes.image} />
+        </div>
       </div>
       <div className={classes.textSection}>
         <Typography color="primary" component="h2" className={classes.elementHeadline}>
           {headline}
         </Typography>
         <Typography>{text}</Typography>
-        <div className={classes.buttonWrapper}>
-          <Button variant="contained" color="primary" href={link}>
-            {linkText}
-          </Button>
-        </div>
+        {!mobile &&
+          <div className={classes.buttonWrapper}>
+            <Button variant="contained" color="primary" href={link}>
+              {linkText}
+            </Button>
+          </div>
+        }
       </div>
     </div>
   );

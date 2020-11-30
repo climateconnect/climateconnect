@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 //local components
 import TopSection from "../src/components/staticpages/TopSection";
 import Challenge from "../src/components/about/Challenge";
-import { useScrollTrigger, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import Goals from "../src/components/about/Goals";
 import Values from "../src/components/about/Values";
 import ExplainerBox from "../src/components/staticpages/ExplainerBox";
@@ -18,9 +18,13 @@ import axios from "axios";
 import Team from "../src/components/about/Team";
 import StartNowBanner from "../src/components/staticpages/StartNowBanner";
 import UserContext from "../src/components/context/UserContext";
+import TopOfPage from "../src/components/general/TopOfPage";
 
 const useStyles = makeStyles(theme => {
   return {
+    root: {
+      overflowX: "hidden"
+    },
     headlineClass: {
       fontSize: 28,
       fontWeight: 600,
@@ -31,7 +35,11 @@ const useStyles = makeStyles(theme => {
       color: theme.palette.yellow.main,
       textAlign: "left",
       fontWeight: "bold",
-      marginBottom: theme.spacing(2)
+      marginBottom: theme.spacing(2),
+      [theme.breakpoints.down("sm")]: {
+        textAlign: "center",
+        fontSize: 25
+      }
     },
     solutionHeadline: {
       marginTop: theme.spacing(12),
@@ -46,6 +54,9 @@ const useStyles = makeStyles(theme => {
     },
     team: {
       marginBottom: theme.spacing(6)
+    },
+    challenege: {
+      marginTop: theme.spacing(6)
     }
   };
 });
@@ -53,10 +64,7 @@ const useStyles = makeStyles(theme => {
 export default function About({ faqQuestions }) {
   console.log(faqQuestions.by_section);
   const classes = useStyles();
-  const trigger = useScrollTrigger({
-    disableHysteresis: false,
-    threshold: 50
-  });
+  const trigger = !TopOfPage({initTopOfPage:true});
   const { user } = useContext(UserContext)
 
   const quoteText = `
@@ -69,35 +77,33 @@ export default function About({ faqQuestions }) {
   return (
     <>
       <WideLayout title="About Climate Connect" isStaticPage noSpaceBottom>
-        <TopSection
-          headline="About Us"
-          subHeader="Everything you need to know about Climate Connect"
-          img={"/images/top_image_about.svg"}
-        />
-        <Challenge headlineClass={classes.headlineClass} showContent={trigger} />
-        <Goals headlineClass={classes.headlineClass} />
-        <Values headlineClass={classes.boxHeadlineClass} />
-        <Typography
-          component="h1"
-          color="primary"
-          className={`${classes.headlineClass} ${classes.solutionHeadline}`}
-        >
-          Our Solution
-        </Typography>
-        <ExplainerBox hideHeadline />
-        <Quote className={classes.quote} text={quoteText} />
-        <Born className={classes.born} headlineClass={classes.boxHeadlineClass} />
-        <Timeline headlineClass={classes.headlineClass} />
-        <HowItWorks headlineClass={classes.headlineClass} />
-        <FaqSection
-          headlineClass={classes.boxHeadlineClass}
-          questions={faqQuestions.by_section["Basics"]}
-        />
-        <Team headlineClass={classes.headlineClass} className={classes.team} />
-        {
-          !user &&
-          <StartNowBanner h1ClassName={classes.headlineClass} />
-        }
+        <div className={classes.root}>
+          <TopSection headline="About" subHeader="A new way to fight climate change. Together. Nonprofit. Independent." img="/icons/donate-icon.svg"/>
+          <Challenge className={classes.challenege} headlineClass={classes.headlineClass} showContent={trigger} />
+          <Goals headlineClass={classes.headlineClass} />
+          <Values headlineClass={classes.boxHeadlineClass} />
+          <Typography
+            component="h1"
+            color="primary"
+            className={`${classes.headlineClass} ${classes.solutionHeadline}`}
+          >
+            Our Solution
+          </Typography>
+          <ExplainerBox hideHeadline />
+          <Quote className={classes.quote} text={quoteText} />
+          <Born className={classes.born} headlineClass={classes.boxHeadlineClass} />
+          <Timeline headlineClass={classes.headlineClass} />
+          <HowItWorks headlineClass={classes.headlineClass} />
+          <FaqSection
+            headlineClass={classes.boxHeadlineClass}
+            questions={faqQuestions.by_section["Basics"]}
+          />
+          <Team headlineClass={classes.headlineClass} className={classes.team} />
+          {
+            !user &&
+            <StartNowBanner h1ClassName={classes.headlineClass} />
+          }
+        </div>
       </WideLayout>
     </>
   );
