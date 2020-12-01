@@ -81,7 +81,6 @@ export default function About({ faqQuestions }) {
           <TopSection
             headline="About"
             subHeader="A new way to fight climate change. Together. Nonprofit. Independent."
-            img="/icons/donate-icon.svg"
           />
           <Challenge
             className={classes.challenege}
