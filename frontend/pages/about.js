@@ -1,241 +1,144 @@
 //global imports
-import React from "react";
+import React, { useContext } from "react";
 import WideLayout from "../src/components/layouts/WideLayout";
-import { Typography, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-//data
-import about_page_info from "../public/data/about_page_info";
-import members from "../public/data/members.json";
-import links from "../public/data/links.js";
-import quotes_with_images from "../public/data/quotes_with_images.js";
-import open_positions from "../public/data/open_positions";
 //local components
-import HeaderImage from "../src/components/staticpages/HeaderImage";
-import InfoBubble from "../src/components/about/InfoBubble";
-import InfoLink from "../src/components/about/InfoLink";
-import MemberCarousel from "../src/components/about/MemberCarousel";
-import QuoteSlideShow from "../src/components/about/QuoteSlideShow";
+import TopSection from "../src/components/staticpages/TopSection";
+import Challenge from "../src/components/about/Challenge";
+import { Typography } from "@material-ui/core";
+import Goals from "../src/components/about/Goals";
+import Values from "../src/components/about/Values";
+import ExplainerBox from "../src/components/staticpages/ExplainerBox";
+import Quote from "../src/components/staticpages/Quote";
+import Born from "../src/components/about/Born";
+import Timeline from "../src/components/about/Timeline";
+import HowItWorks from "../src/components/about/HowItWorks";
+import FaqSection from "../src/components/staticpages/FaqSection";
+import axios from "axios";
+import Team from "../src/components/about/Team";
+import StartNowBanner from "../src/components/staticpages/StartNowBanner";
+import UserContext from "../src/components/context/UserContext";
+import TopOfPage from "../src/components/general/TopOfPage";
 
 const useStyles = makeStyles(theme => {
   return {
-    headline: {
-      textAlign: "center",
-      fontWeight: "bold",
-      fontSize: 40
+    root: {
+      overflowX: "hidden"
     },
-    headerImageContainer: {
-      marginBottom: theme.spacing(5)
-    },
-    centeredText: {
+    headlineClass: {
+      fontSize: 28,
+      fontWeight: 600,
       textAlign: "center"
     },
-    textBlock: {
-      margin: "0 auto",
-      display: "block",
-      maxWidth: 1200,
-      paddingTop: theme.spacing(2),
-      paddingBottom: theme.spacing(1),
-      paddingLeft: theme.spacing(1),
-      paddingRight: theme.spacing(1)
-    },
-    sectionHeadline: {
-      margin: "0 auto",
-      display: "block",
-      marginBottom: theme.spacing(6),
-      marginTop: theme.spacing(8),
-      fontWeight: "bold",
-      fontSize: 40
-    },
-    bubbleGrid: {
-      padding: 0,
-      width: "100%",
-      maxWidth: 1390,
-      margin: "0 auto",
-      display: "flex",
-      justifyContent: "space-around",
-      flexFlow: "wrap"
-    },
-    memberGrid: {
-      width: "100%",
-      maxWidth: 1390,
-      margin: "0 auto"
-    },
-    mainFocuses: {
-      width: 800,
-      margin: "0 auto"
-    },
-    quoteSlideShow: {
-      marginTop: theme.spacing(7)
-    },
-    linksContainer: {
-      display: "flex",
-      justifyContent: "space-around",
-      flexFlow: "wrap",
-      maxWidth: 1000
-    },
-    openPositionsHeadline: {
-      display: "block",
-      width: "100%",
-      marginBottom: theme.spacing(4),
-      fontWeight: "bold",
-      paddingLeft: theme.spacing(4)
-    },
-    bold: {
-      fontWeight: "bold"
-    },
-    textBlockTop: {
-      textAlign: "center",
+    boxHeadlineClass: {
       fontSize: 28,
-      maxWidth: 1000,
-      margin: "0 auto",
-      marginTop: theme.spacing(2)
+      color: theme.palette.yellow.main,
+      textAlign: "left",
+      fontWeight: "bold",
+      marginBottom: theme.spacing(2),
+      [theme.breakpoints.down("sm")]: {
+        textAlign: "center",
+        fontSize: 25
+      }
+    },
+    solutionHeadline: {
+      marginTop: theme.spacing(12),
+      marginBottom: theme.spacing(5)
+    },
+    quote: {
+      maxWidth: 800,
+      marginTop: theme.spacing(10)
+    },
+    born: {
+      marginTop: theme.spacing(6)
+    },
+    team: {
+      marginBottom: theme.spacing(6)
+    },
+    challenege: {
+      marginTop: theme.spacing(6)
     }
   };
 });
 
-function shuffle(array) {
-  var currentIndex = array.length,
-    temporaryValue,
-    randomIndex;
-
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-
-    // And swap it with the current element.
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-
-  return array;
-}
-
-export default function About() {
+export default function About({ faqQuestions }) {
+  console.log(faqQuestions.by_section);
   const classes = useStyles();
+  const trigger = !TopOfPage({initTopOfPage:true});
+  const { user } = useContext(UserContext)
+
+  const quoteText = `
+    We want to connect everyone that is fighting against climate change from 
+    Greta Thunberg and Greenpeace to the local sustainable startup, local 
+    and national governments, and your friend who just recently realized that 
+    biking to work instead of driving can already make a difference.
+  `;
+
   return (
     <>
-      <WideLayout title="About Climate Connect" isStaticPage>
-        <HeaderImage className={classes.headerImageContainer} src={"images/about_background.jpg"} />
-        <Container>
-          <Typography color="primary" component="h1" variant="h4" className={classes.headline}>
-            Climate Connect is a non-profit climate action platform
-          </Typography>
-          <Typography component="h3" className={classes.textBlockTop}>
-            Our goal is to connect climate protectors worldwide by giving them a platform to share
-            their projects or ideas to receive feedback, find specific help on a project and get
-            inspired for climate actions.
-          </Typography>
+      <WideLayout title="About Climate Connect" isStaticPage noSpaceBottom>
+        <div className={classes.root}>
+          <TopSection headline="About" subHeader="A new way to fight climate change. Together. Nonprofit. Independent." img="/icons/donate-icon.svg"/>
+          <Challenge className={classes.challenege} headlineClass={classes.headlineClass} showContent={trigger} />
+          <Goals headlineClass={classes.headlineClass} />
+          <Values headlineClass={classes.boxHeadlineClass} />
           <Typography
             component="h1"
             color="primary"
-            className={`${classes.centeredText} ${classes.textBlock} ${classes.sectionHeadline}`}
+            className={`${classes.headlineClass} ${classes.solutionHeadline}`}
           >
-            Our vision
+            Our Solution
           </Typography>
-          <Container maxWidth="lg" className={classes.bubbleGrid}>
-            {about_page_info.map((info, index) => (
-              <InfoBubble data={info} key={index} />
-            ))}
-          </Container>
-          <QuoteSlideShow
-            image={quotes_with_images[0].image_path}
-            className={classes.quoteSlideShow}
+          <ExplainerBox hideHeadline />
+          <Quote className={classes.quote} text={quoteText} />
+          <Born className={classes.born} headlineClass={classes.boxHeadlineClass} />
+          <Timeline headlineClass={classes.headlineClass} />
+          <HowItWorks headlineClass={classes.headlineClass} />
+          <FaqSection
+            headlineClass={classes.boxHeadlineClass}
+            questions={faqQuestions.by_section["Basics"]}
           />
-          <Typography
-            component="h2"
-            variant="h3"
-            color="primary"
-            className={`${classes.centeredText}  ${classes.sectionHeadline}`}
-          >
-            Find out more
-          </Typography>
-          <Container maxWidth="lg" className={classes.linksContainer}>
-            {links.map((link, index) => (
-              <InfoLink data={link} key={index} />
-            ))}
-          </Container>
-          <QuoteSlideShow
-            image={quotes_with_images[1].image_path}
-            className={classes.quoteSlideShow}
-          />
-          <Container maxWidth="lg">
-            <Typography
-              component="h2"
-              variant="h3"
-              color="primary"
-              className={`${classes.centeredText}  ${classes.sectionHeadline}`}
-            >
-              Our Team
-            </Typography>
-            <MemberCarousel members={shuffle(members)} className={classes.memberGrid} />
-          </Container>
-          <QuoteSlideShow
-            image={quotes_with_images[2].image_path}
-            className={classes.quoteSlideShow}
-          />
-          <Typography
-            component="h2"
-            variant="h3"
-            color="primary"
-            className={`${classes.centeredText}  ${classes.sectionHeadline}`}
-          >
-            Get involved by joining our Team of volunteers!
-          </Typography>
-          <Container maxWidth="lg" className={classes.bubbleGrid}>
-            <Typography
-              component="h2"
-              variant="h4"
-              color="primary"
-              className={classes.openPositionsHeadline}
-            >
-              Open positions:
-            </Typography>
-            {open_positions.map((info, index) => {
-              return (
-                <InfoBubble
-                  data={info}
-                  key={index}
-                  iconColor="secondary"
-                  textColor="primary"
-                  bold={true}
-                  maxWidth={330}
-                />
-              );
-            })}
-            <Typography
-              component="h5"
-              variant="h4"
-              color="secondary"
-              className={`${classes.centeredText} ${classes.textBlock}`}
-            >
-              Send your application to contact@climateconnect.earth
-            </Typography>
-          </Container>
-          <Typography
-            component="h2"
-            variant="h4"
-            color="primary"
-            className={`${classes.centeredText}  ${classes.sectionHeadline}`}
-          >
-            Support us financially
-          </Typography>
-          <Typography
-            component="h5"
-            variant="h4"
-            color="secondary"
-            className={`${classes.centeredText} ${classes.textBlock}`}
-          >
-            Climate Connect gUG (haftungsbeschränkt)
-            <br />
-            IBAN: <span className={classes.bold}>DE02430609671072519500</span>
-            <br />
-            BIC: <span className={classes.bold}>GENODEM1GLS</span>
-          </Typography>
-        </Container>
+          <Team headlineClass={classes.headlineClass} className={classes.team} />
+          {
+            !user &&
+            <StartNowBanner h1ClassName={classes.headlineClass} />
+          }
+        </div>
       </WideLayout>
     </>
   );
 }
+
+About.getInitialProps = async () => {
+  const questions = await getQuestionsWithAnswers();
+  return {
+    faqQuestions: questions
+  };
+};
+
+const getQuestionsWithAnswers = async () => {
+  try {
+    const resp = await axios.get(process.env.API_URL + "/api/list_faq/");
+    if (resp.data.length === 0) return null;
+    else {
+      console.log(resp.data.results);
+      return {
+        by_section: sortBySection(resp.data.results),
+        all: resp.data.results
+      };
+    }
+  } catch (err) {
+    if (err.response && err.response.data) {
+      console.log(err.response.data);
+    } else console.log(err);
+    return null;
+  }
+};
+
+const sortBySection = questions => {
+  return questions.reduce((obj, question) => {
+    if (!obj[question.section]) obj[question.section] = [question];
+    else obj[question.section].push(question);
+    return obj;
+  }, {});
+};

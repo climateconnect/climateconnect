@@ -27,10 +27,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function StartNowBanner({ h1ClassName }) {
+export default function StartNowBanner({ h1ClassName, className }) {
   const classes = useStyles();
   return (
-    <div className={classes.root}>
+    <div className={`${classes.root} ${className}`}>
       <Container>
         <div>
           <Typography className={`${classes.headline} ${h1ClassName}`} component="h1">

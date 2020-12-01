@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles, Typography, Container, useMediaQuery } from "@material-ui/core";
-import LightBigButton from "./LightBigButton";
-import SmallCloud from "./SmallCloud";
+import LightBigButton from "../staticpages/LightBigButton";
+import SmallCloud from "../staticpages/SmallCloud";
 import theme from "../../themes/theme";
 
 const useStyles = makeStyles(theme => ({

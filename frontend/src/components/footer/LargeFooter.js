@@ -242,9 +242,16 @@ const SiteLinks = () => {
           Newsletter
         </Typography>
         <Typography className={classes.li}>
-          Sign up to get updates about Climate Connect and a summary of highlight projects every month!
+          Sign up to get updates about Climate Connect and a summary of highlight projects every
+          month!
         </Typography>
-        <Button className={classes.newsletterSubscribeButton} color="primary" variant="contained" target="_blank" href={process.env.LATEST_NEWSLETTER_LINK}>
+        <Button
+          className={classes.newsletterSubscribeButton}
+          color="primary"
+          variant="contained"
+          target="_blank"
+          href={process.env.LATEST_NEWSLETTER_LINK}
+        >
           latest newsletter
         </Button>
       </div>

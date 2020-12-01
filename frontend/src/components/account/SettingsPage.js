@@ -216,7 +216,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         });
     }
   };
-  const [emailPreferencesLoading, setEmailPreferencesLoading] = React.useState(false)
+  const [emailPreferencesLoading, setEmailPreferencesLoading] = React.useState(false);
   const changeEmailPreferences = async () => {
     if (
       hasChanges(
@@ -225,14 +225,14 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         Object.keys(possibleEmailPreferences).map(k => possibleEmailPreferences[k])
       )
     ) {
-      setEmailPreferencesLoading(true)
+      setEmailPreferencesLoading(true);
       Axios.post(
         process.env.API_URL + "/api/account_settings/",
         emailPreferences,
         tokenConfig(token)
       )
         .then(function(response) {
-          setEmailPreferencesLoading(false)
+          setEmailPreferencesLoading(false);
           setMessage(response.data.message);
           setSettings({
             ...settings,

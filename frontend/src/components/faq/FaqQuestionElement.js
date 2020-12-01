@@ -6,14 +6,14 @@ import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 const useStyles = makeStyles(theme => {
   return {
     root: {
-      marginBottom: theme.spacing(1.5)
+      marginBottom: theme.spacing(1.5),
+      borderLeft: `5px solid ${theme.palette.primary.main}`
     },
     questionWrapper: {
       width: "100%",
       backgroundColor: "#2071781A",
       paddingTop: theme.spacing(3),
       paddingBottom: theme.spacing(3),
-      borderLeft: "5px solid #207178",
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(3),
       display: "flex",
@@ -34,7 +34,6 @@ const useStyles = makeStyles(theme => {
       backgroundColor: "#F2F2F2",
       paddingTop: theme.spacing(3),
       paddingBottom: theme.spacing(3),
-      borderLeft: "5px solid #484848",
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(3),
       fontSize: 17,
@@ -46,13 +45,13 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function FaqQuestionElement({ questionObject }) {
+export default function FaqQuestionElement({ questionObject, className, questionTextClassName }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   return (
-    <div className={classes.root}>
+    <div className={`${classes.root} ${className}`}>
       <div className={classes.questionWrapper} onClick={() => setOpen(!open)}>
-        <Typography component="span" className={classes.questionText}>
+        <Typography component="h3" className={`${classes.questionText} ${questionTextClassName}`}>
           {questionObject.question}
         </Typography>
         {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
