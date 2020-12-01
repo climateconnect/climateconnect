@@ -362,7 +362,8 @@ function StaticPageLinks() {
               <Link
                 href={link.href}
                 key={index + "-" + link.text}
-                className={`${classes.staticPageLink} ${window.location.href.includes(link.href) && classes.currentStaticPageLink}`}
+                className={`${classes.staticPageLink} ${window.location.href.includes(link.href) &&
+                  classes.currentStaticPageLink}`}
               >
                 {link.text}
               </Link>

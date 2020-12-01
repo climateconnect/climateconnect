@@ -64,8 +64,8 @@ const useStyles = makeStyles(theme => {
 export default function About({ faqQuestions }) {
   console.log(faqQuestions.by_section);
   const classes = useStyles();
-  const trigger = !TopOfPage({initTopOfPage:true});
-  const { user } = useContext(UserContext)
+  const trigger = !TopOfPage({ initTopOfPage: true });
+  const { user } = useContext(UserContext);
 
   const quoteText = `
     We want to connect everyone that is fighting against climate change from 
@@ -78,8 +78,16 @@ export default function About({ faqQuestions }) {
     <>
       <WideLayout title="About Climate Connect" isStaticPage noSpaceBottom>
         <div className={classes.root}>
-          <TopSection headline="About" subHeader="A new way to fight climate change. Together. Nonprofit. Independent." img="/icons/donate-icon.svg"/>
-          <Challenge className={classes.challenege} headlineClass={classes.headlineClass} showContent={trigger} />
+          <TopSection
+            headline="About"
+            subHeader="A new way to fight climate change. Together. Nonprofit. Independent."
+            img="/icons/donate-icon.svg"
+          />
+          <Challenge
+            className={classes.challenege}
+            headlineClass={classes.headlineClass}
+            showContent={trigger}
+          />
           <Goals headlineClass={classes.headlineClass} />
           <Values headlineClass={classes.boxHeadlineClass} />
           <Typography
@@ -99,10 +107,7 @@ export default function About({ faqQuestions }) {
             questions={faqQuestions.by_section["Basics"]}
           />
           <Team headlineClass={classes.headlineClass} className={classes.team} />
-          {
-            !user &&
-            <StartNowBanner h1ClassName={classes.headlineClass} />
-          }
+          {!user && <StartNowBanner h1ClassName={classes.headlineClass} />}
         </div>
       </WideLayout>
     </>

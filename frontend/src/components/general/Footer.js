@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   relativePosition: {
     position: "fixed",
     bottom: 0,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF"
   },
   spacingTop: {
     marginTop: theme.spacing(2)
@@ -71,7 +71,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 //TODO: make footer stay on bottom on normal layout again
-export default function Footer({ className, noSpacingTop, noAbsolutePosition, showOnScrollUp, large }) {
+export default function Footer({
+  className,
+  noSpacingTop,
+  noAbsolutePosition,
+  showOnScrollUp,
+  large
+}) {
   if (!large)
     return (
       <SmallFooter
@@ -93,7 +99,7 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
       component="footer"
       className={`${className} ${classes.root} ${!noSpacingTop &&
         classes.spacingTop} ${!noAbsolutePosition &&
-        (showOnScrollUp === true ? classes.relativePosition : classes.absolutePosition) }`}
+        (showOnScrollUp === true ? classes.relativePosition : classes.absolutePosition)}`}
     >
       <Box className={classes.flexContainer}>
         <Box className={classes.leftBox}>

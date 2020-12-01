@@ -1,7 +1,6 @@
 import React from "react";
-import { Typography, makeStyles, Container, useMediaQuery } from "@material-ui/core";
+import { Typography, makeStyles, Container } from "@material-ui/core";
 import SmallCloud from "./SmallCloud";
-import theme from "../../themes/theme";
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -14,7 +13,7 @@ const useStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(3),
     maxWidth: theme.breakpoints.md,
-    margin: "0 auto",
+    margin: "0 auto"
   },
   headersContainer: {
     marginLeft: theme.spacing(3),
@@ -23,7 +22,7 @@ const useStyles = makeStyles(theme => ({
   headline: {
     color: theme.palette.primary.main,
     fontSize: 40,
-    fontWeight: "bold",
+    fontWeight: "bold"
   },
   subHeader: {
     fontSize: 19,
@@ -48,7 +47,7 @@ const useStyles = makeStyles(theme => ({
     width: 120,
     height: 90,
     top: -20,
-    right: -60,
+    right: -60
   },
   image: {
     maxWidth: 70

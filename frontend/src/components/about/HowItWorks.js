@@ -32,10 +32,10 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "center",
     [theme.breakpoints.up("md")]: {
       padding: theme.spacing(2)
-    }, 
+    },
     [theme.breakpoints.down("md")]: {
       background: "transparent",
-      flexBasis: 0,
+      flexBasis: 0
     }
   },
   imageWrapper: props => ({
@@ -92,8 +92,8 @@ const responsive = {
 
 export default function HowItWorks({ headlineClass }) {
   const classes = useStyles();
-  const isSmallerScreen = useMediaQuery(theme.breakpoints.down("md"))
-  console.log(isSmallerScreen)
+  const isSmallerScreen = useMediaQuery(theme.breakpoints.down("md"));
+  console.log(isSmallerScreen);
   return (
     <Container className={classes.root}>
       <Typography color="primary" className={headlineClass}>
@@ -127,7 +127,7 @@ export default function HowItWorks({ headlineClass }) {
 }
 
 const Element = ({ headline, text, link, img, linkText, mobile }) => {
-  const classes = useStyles({img: img});
+  const classes = useStyles({ img: img });
   return (
     <div className={classes.elementRoot}>
       <div className={classes.imageBackground}>
@@ -140,13 +140,13 @@ const Element = ({ headline, text, link, img, linkText, mobile }) => {
           {headline}
         </Typography>
         <Typography>{text}</Typography>
-        {!mobile &&
+        {!mobile && (
           <div className={classes.buttonWrapper}>
             <Button variant="contained" color="primary" href={link}>
               {linkText}
             </Button>
           </div>
-        }
+        )}
       </div>
     </div>
   );

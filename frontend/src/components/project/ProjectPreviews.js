@@ -13,14 +13,15 @@ const useStyles = makeStyles({
     width: "100%"
   },
   spinner: {
-    marginTop: '48px'
+    marginTop: "48px"
   }
 });
 
 //This component is for display projects with the option to infinitely scroll to get more projects
 export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHandlesGridItems }) {
   const classes = useStyles();
-  const toProjectPreviews = (projects) => projects.map(p => <GridItem key={p.url_slug} project={p} />);
+  const toProjectPreviews = projects =>
+    projects.map(p => <GridItem key={p.url_slug} project={p} />);
   const [isLoading, setIsLoading] = React.useState(false);
   const [gridItems, setGridItems] = React.useState(toProjectPreviews(projects));
 
@@ -38,13 +39,11 @@ export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHan
   };
 
   const loadingSpinner = () => {
-    return (
-        isLoading ? (
-            <Grid container justify="center">
-                <CircularProgress className={classes.spinner} />
-            </Grid>
-        ) : null
-    )
+    return isLoading ? (
+      <Grid container justify="center">
+        <CircularProgress className={classes.spinner} />
+      </Grid>
+    ) : null;
   };
 
   // TODO: use `project.id` instead of index when using real projects

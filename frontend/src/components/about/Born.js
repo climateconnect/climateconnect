@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
       marginBottom: theme.spacing(7),
       paddingRight: theme.spacing(3),
       width: "80%",
-      maxWidth: 630,
+      maxWidth: 630
     }
   },
   hoverImage: {
