@@ -275,7 +275,7 @@ export default function Index({
         <About />
       ) : (
         <WideLayout
-          title="Climate Connect - global climate action platform"
+          title="Climate Connect - global platform form climate change solutions"
           hideHeadline
           message={errorMessage ? errorMessage : message}
           messageType={errorMessage ? "error" : "success"}
