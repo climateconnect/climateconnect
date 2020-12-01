@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import { makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
@@ -13,19 +13,14 @@ const useStyles = makeStyles(theme => ({
   active: {
     background: theme.palette.secondary.main
   }
-}))
+}));
 
-export default function CustomDot({ onClick, ...rest }){
-  const classes = useStyles()
-  const {
-    active,
-  } = rest;
+export default function CustomDot({ onClick, ...rest }) {
+  const classes = useStyles();
+  const { active } = rest;
   // onMove means if dragging or swiping in progress.
   // active is provided by this lib for checking if the item is active or not.
   return (
-    <span
-      className={`${classes.dot} ${active && classes.active}`}
-      onClick={() => onClick()}
-    />
+    <span className={`${classes.dot} ${active && classes.active}`} onClick={() => onClick()} />
   );
-};
+}

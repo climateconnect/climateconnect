@@ -13,7 +13,7 @@ const useStyles = makeStyles({
     width: "100%"
   },
   spinner: {
-    marginTop: '48px'
+    marginTop: "48px"
   }
 });
 
@@ -24,13 +24,10 @@ export default function OrganizationPreviews({
   showOrganizationType,
   parentHandlesGridItems
 }) {
-  const toOrganizationPreviews = (organizations) => organizations.map(o => (
-      <GridItem
-          key={o.url_slug}
-          organization={o}
-          showOrganizationType={showOrganizationType}
-      />
-  ));
+  const toOrganizationPreviews = organizations =>
+    organizations.map(o => (
+      <GridItem key={o.url_slug} organization={o} showOrganizationType={showOrganizationType} />
+    ));
   const [isLoading, setIsLoading] = React.useState(false);
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(toOrganizationPreviews(organizations));
@@ -48,13 +45,11 @@ export default function OrganizationPreviews({
   };
 
   const loadingSpinner = () => {
-    return (
-        isLoading ? (
-            <Grid container justify="center">
-              <CircularProgress className={classes.spinner} />
-            </Grid>
-        ) : null
-    )
+    return isLoading ? (
+      <Grid container justify="center">
+        <CircularProgress className={classes.spinner} />
+      </Grid>
+    ) : null;
   };
 
   // TODO: use `organization.id` instead of index when using real organizations

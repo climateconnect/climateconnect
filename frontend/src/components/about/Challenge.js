@@ -107,7 +107,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Challenge({ headlineClass, showContent, className }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"))
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   return (
     <Container className={`${classes.root} ${className}`}>
       <Typography color="primary" component="h1" className={headlineClass}>
@@ -116,45 +116,46 @@ export default function Challenge({ headlineClass, showContent, className }) {
       <div>
         <div className={classes.imageContainer}>
           <img src="/images/wildfire.jpg" className={classes.img} />
-        </div>        
-          <div className={classes.contentWrapper}>
-            <Container>
-              <div className={classes.subHeaderWrapper}>
-                {!isNarrowScreen &&
-                  <Typography component="h1" className={classes.subHeader}>
-                    We can only solve the climate crisis through worldwide collaboration
-                  </Typography>
-                }
-                {!showContent && <ExpandMoreIcon className={classes.expandMoreIcon} />}
-              </div>
-              <Collapse in={showContent} timeout={1000}>
-                <div className={classes.challengesWrapper}>
-                  <Typography className={classes.challenge}>
-                    The climate crisis is <span className={classes.marked}>the biggest challenge</span> humanity has ever faced - and we can
-                    only solve it together
-                  </Typography>
-                  <Typography className={classes.challenge}>
-                    Many people are working on very effective climate solutions. We need to <span className={classes.marked}>spread
-                    effective solutions</span> globally.
-                  </Typography>
-                  <Typography className={classes.challenge}>
-                    NGOs, companies, governments, public institutions and individuals need to <span className={classes.marked}>work
-                    together</span> to solve this crisis.
-                  </Typography>
-                </div>
-                {showContent && (
-                  <div className={classes.expandLessIconWrapper}>
-                    <ExpandLessIcon className={classes.expandMoreIcon} />
-                  </div>
-                )}                
-              </Collapse>              
-            </Container>            
-          </div>
+        </div>
+        <div className={classes.contentWrapper}>
           <Container>
-            <Typography color="primary" className={classes.thisisWhy}>
-              This is why we created Climate Connect
-            </Typography>
+            <div className={classes.subHeaderWrapper}>
+              {!isNarrowScreen && (
+                <Typography component="h1" className={classes.subHeader}>
+                  We can only solve the climate crisis through worldwide collaboration
+                </Typography>
+              )}
+              {!showContent && <ExpandMoreIcon className={classes.expandMoreIcon} />}
+            </div>
+            <Collapse in={showContent} timeout={1000}>
+              <div className={classes.challengesWrapper}>
+                <Typography className={classes.challenge}>
+                  The climate crisis is{" "}
+                  <span className={classes.marked}>the biggest challenge</span> humanity has ever
+                  faced - and we can only solve it together
+                </Typography>
+                <Typography className={classes.challenge}>
+                  Many people are working on very effective climate solutions. We need to{" "}
+                  <span className={classes.marked}>spread effective solutions</span> globally.
+                </Typography>
+                <Typography className={classes.challenge}>
+                  NGOs, companies, governments, public institutions and individuals need to{" "}
+                  <span className={classes.marked}>work together</span> to solve this crisis.
+                </Typography>
+              </div>
+              {showContent && (
+                <div className={classes.expandLessIconWrapper}>
+                  <ExpandLessIcon className={classes.expandMoreIcon} />
+                </div>
+              )}
+            </Collapse>
           </Container>
+        </div>
+        <Container>
+          <Typography color="primary" className={classes.thisisWhy}>
+            This is why we created Climate Connect
+          </Typography>
+        </Container>
       </div>
     </Container>
   );

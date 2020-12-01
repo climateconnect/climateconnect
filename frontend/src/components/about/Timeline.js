@@ -52,24 +52,29 @@ const useStyles = makeStyles(theme => ({
 
 export default function Timeline({ headlineClass }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"))
-  const isMediumScreen = useMediaQuery(theme.breakpoints.only("md"))
-  const useCarousel = useMediaQuery(theme.breakpoints.down("sm"))
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isMediumScreen = useMediaQuery(theme.breakpoints.only("md"));
+  const useCarousel = useMediaQuery(theme.breakpoints.down("sm"));
   const responsive = {
     all: {
       breakpoint: { max: 10000, min: 0 },
       items: 1
     }
   };
-  
+
   return (
     <Container className={classes.root}>
-      {!isNarrowScreen &&
-        <Typography color="primary" component="h1" className={`${headlineClass} ${classes.headline}`}>
-          After realizing the need for global collaboration, Climate Connect was launched in July 2020
+      {!isNarrowScreen && (
+        <Typography
+          color="primary"
+          component="h1"
+          className={`${headlineClass} ${classes.headline}`}
+        >
+          After realizing the need for global collaboration, Climate Connect was launched in July
+          2020
         </Typography>
-      }
-      {!useCarousel ?
+      )}
+      {!useCarousel ? (
         <div className={classes.timelineElementsWrapper}>
           {getTimelineData(isMediumScreen).map((d, index) => (
             <TimelineElement
@@ -81,7 +86,7 @@ export default function Timeline({ headlineClass }) {
             />
           ))}
         </div>
-      :
+      ) : (
         <Carousel
           responsive={responsive}
           infinite
@@ -102,8 +107,7 @@ export default function Timeline({ headlineClass }) {
             />
           ))}
         </Carousel>
-
-      }
+      )}
     </Container>
   );
 }

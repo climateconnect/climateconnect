@@ -79,7 +79,11 @@ export default function OurTeamBox({ h1ClassName }) {
             iconSrc="/icons/group-icon.svg"
             iconAlt="Icon display 2 people"
             headline="Who we are"
-            text={"Find out about our team" + !isNarrowScreen ? " and why we are doing what we are doing" : ""}
+            text={
+              "Find out about our team" + !isNarrowScreen
+                ? " and why we are doing what we are doing"
+                : ""
+            }
           >
             <SmallCloud type={1} className={classes.smallCloud1} />
           </InfoLinkBox>
@@ -87,7 +91,11 @@ export default function OurTeamBox({ h1ClassName }) {
             iconSrc="/icons/donate-icon.svg"
             iconAlt="Open hand offering a seedling with a heart instead of leaves"
             headline="Our Mission"
-            text={"Learn about our goals and values" + !isNarrowScreen ? " and what we want to achieve with creating a climate community" : ""}
+            text={
+              "Learn about our goals and values" + !isNarrowScreen
+                ? " and what we want to achieve with creating a climate community"
+                : ""
+            }
           />
         </div>
       </div>

@@ -13,7 +13,7 @@ const useStyles = makeStyles({
     width: "100%"
   },
   spinner: {
-    marginTop: '48px'
+    marginTop: "48px"
   }
 });
 
@@ -25,8 +25,10 @@ export default function ProfilePreviews({
   parentHandlesGridItems
 }) {
   const classes = useStyles();
-  const toProfilePreviews = (profiles) => profiles
-      .map(p => <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />);
+  const toProfilePreviews = profiles =>
+    profiles.map(p => (
+      <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
+    ));
   const [isLoading, setIsLoading] = React.useState(false);
   const [gridItems, setGridItems] = React.useState(toProfilePreviews(profiles));
 
@@ -43,15 +45,12 @@ export default function ProfilePreviews({
   };
 
   const loadingSpinner = () => {
-    return (
-        isLoading ? (
-            <Grid container justify="center">
-              <CircularProgress className={classes.spinner} />
-            </Grid>
-        ) : null
-    )
+    return isLoading ? (
+      <Grid container justify="center">
+        <CircularProgress className={classes.spinner} />
+      </Grid>
+    ) : null;
   };
-
 
   // TODO: use `profile.id` instead of index when using real profiles
   return (

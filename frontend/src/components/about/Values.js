@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
       textAlign: "center"
     },
     [theme.breakpoints.down("xs")]: {
-      marginBottom: 0,
+      marginBottom: 0
     }
   },
   yellow: {
@@ -94,11 +94,11 @@ export default function Values({ headlineClass }) {
           <Typography className={classes.textBody}>
             Climate Connect is a <span className={classes.yellow}>donation based</span> NGO - we
             dedicate all our work to make an impact on climate change. Being an independent
-            organisation allows us to work with <span className={classes.yellow}>everyone{" "}
-            involved in fighting climate change.</span> This is also why we include our community as much
-            as possible. Our code-base is <span className={classes.yellow}>open source</span>, we
-            organize regular network events and let our users help us decide what steps to take
-            next.
+            organisation allows us to work with{" "}
+            <span className={classes.yellow}>everyone involved in fighting climate change.</span>{" "}
+            This is also why we include our community as much as possible. Our code-base is{" "}
+            <span className={classes.yellow}>open source</span>, we organize regular network events
+            and let our users help us decide what steps to take next.
           </Typography>
         </div>
         <div className={classes.valuesListWrapper}>

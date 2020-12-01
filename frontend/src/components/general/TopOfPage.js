@@ -1,9 +1,7 @@
 //global imports
-import {useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-export default function TopOfPage ({
-  initTopOfPage
-}) {
+export default function TopOfPage({ initTopOfPage }) {
   const [topOfPage, setTopOfPage] = useState(initTopOfPage);
 
   useEffect(() => {
@@ -22,10 +20,10 @@ export default function TopOfPage ({
       }
     };
 
-    window.addEventListener("scroll", onScroll)
+    window.addEventListener("scroll", onScroll);
 
     return () => window.removeEventListener("scroll", onScroll);
   }, [initTopOfPage]);
 
   return topOfPage;
-};
+}

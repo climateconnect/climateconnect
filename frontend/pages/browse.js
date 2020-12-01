@@ -265,8 +265,8 @@ export default function Index({
   const isScrollingUp = !useScrollTrigger({
     disableHysteresis: false,
     threshold: 0
-   });
-  const atTopOfPage = TopOfPage({initTopOfPage:true});
+  });
+  const atTopOfPage = TopOfPage({ initTopOfPage: true });
   const showOnScrollUp = isScrollingUp && !atTopOfPage;
 
   return (

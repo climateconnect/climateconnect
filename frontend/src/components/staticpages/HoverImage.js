@@ -56,15 +56,10 @@ const useStyles = makeStyles(theme => ({
     transform: "rotate(-45deg)",
     fontSize: 22,
     color: props.background === "primary" ? "white" : theme.palette.primary.main
-  }),
+  })
 }));
 
-export default function HoverImage({
-  src,
-  text,
-  className,
-  background,
-}) {
+export default function HoverImage({ src, text, className, background }) {
   const classes = useStyles({ image: src, background });
   return (
     <div className={className}>
@@ -73,9 +68,9 @@ export default function HoverImage({
           <img src={src} className={classes.image} />
         </div>
         <div className={classes.backgroundDiv}>
-        <div className={classes.textDivInnerWrapper}>
-          <ArrowBackIcon className={classes.arrowIcon} />
-          {<Text text={text}/>}
+          <div className={classes.textDivInnerWrapper}>
+            <ArrowBackIcon className={classes.arrowIcon} />
+            {<Text text={text} />}
           </div>
         </div>
       </div>
@@ -85,7 +80,5 @@ export default function HoverImage({
 
 function Text({ text }) {
   const classes = useStyles();
-  return (        
-    <Typography className={classes.text}>{text}</Typography>
-  );
+  return <Typography className={classes.text}>{text}</Typography>;
 }

@@ -64,15 +64,20 @@ export default function Team({ headlineClass, className }) {
       <div className={classes.contentWrapper}>
         <div className={classes.imageContainer}>
           <div className={classes.imageWrapper}>
-            <img src="/images/team.jpg"  className={classes.image}/>
+            <img src="/images/team.jpg" className={classes.image} />
           </div>
         </div>
         <div className={classes.textContainer}>
           <Typography color="secondary" className={classes.textBody}>
-            We are an international Team of 3 people running Climate Connect full-time and around 15 volunteers dedicating their free-time to creating collaboration between climate actors. Contact us if {"you're"} interested in joining the team!<br/>
-            <Link underline="always" href="mailto:contact@climateconnect.earth">Get in contact</Link>
+            We are an international Team of 3 people running Climate Connect full-time and around 15
+            volunteers dedicating their free-time to creating collaboration between climate actors.
+            Contact us if {"you're"} interested in joining the team!
+            <br />
+            <Link underline="always" href="mailto:contact@climateconnect.earth">
+              Get in contact
+            </Link>
           </Typography>
-          <InfoLinkBox 
+          <InfoLinkBox
             className={classes.infoLinkBox}
             iconSrc="/icons/group-icon.svg"
             iconAlt="Icon display 2 people"

@@ -1,7 +1,7 @@
-import React from "react"
-import { makeStyles, Typography } from "@material-ui/core"
+import React from "react";
+import { makeStyles, Typography } from "@material-ui/core";
 
-const useStyles = makeStyles(theme=>({
+const useStyles = makeStyles(theme => ({
   infoLinkBox: {
     display: "flex",
     alignItems: "center",
@@ -33,11 +33,11 @@ const useStyles = makeStyles(theme=>({
   },
   text: {
     fontWeight: 600
-  },
-}))
+  }
+}));
 
-export default function InfoLinkBox({className, iconSrc, iconAlt, text, headline, children}) {
-  const classes = useStyles()
+export default function InfoLinkBox({ className, iconSrc, iconAlt, text, headline, children }) {
+  const classes = useStyles();
   return (
     <div className={`${classes.infoLinkBox} ${className}`}>
       <img src={iconSrc} className={classes.icon} alt={iconAlt} />
@@ -51,5 +51,5 @@ export default function InfoLinkBox({className, iconSrc, iconAlt, text, headline
         {children}
       </div>
     </div>
-  )
+  );
 }

@@ -70,7 +70,12 @@ export default function WideLayout({
           {children}
         </Container>
       )}
-      <Footer noSpacingTop={noSpaceBottom} noAbsolutePosition={noSpaceBottom} showOnScrollUp={showOnScrollUp} large={isStaticPage || largeFooter} />
+      <Footer
+        noSpacingTop={noSpaceBottom}
+        noAbsolutePosition={noSpaceBottom}
+        showOnScrollUp={showOnScrollUp}
+        large={isStaticPage || largeFooter}
+      />
     </LayoutWrapper>
   );
 }
