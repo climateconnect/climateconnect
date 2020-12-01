@@ -17,8 +17,8 @@ export default function Terms() {
       </p>
       <h3>Participation</h3>
       <p>
-        In order to participate in the raffle, a donation in any height to the Climate Connect gUG
-        (limited liability) is necessary. Participation is only possible within the participation
+        In order to participate in the raffle, a donation of any amount to the Climate Connect gUG
+        (limited liability company) is necessary. Participation is only possible within the participation
         period. Donations received after the closing date will not be considered in the draw.
       </p>
       <p>
