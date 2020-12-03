@@ -54,7 +54,7 @@ def create_roles_test_data():
         print("Creator role is successfully created.")
     else:
         print("Creator role already exists.")
-    
+
     if not Role.objects.filter(name='Member').exists():
         Role.objects.create(
             name='Member', role_type=Role.READ_ONLY_TYPE
@@ -62,7 +62,7 @@ def create_roles_test_data():
         print("Member role successfully created.")
     else:
         print("Member role already exists.")
-    
+
     if not Role.objects.filter(name='Administrator').exists():
         Role.objects.create(
             name='Administrator', role_type=Role.READ_WRITE_TYPE
@@ -80,7 +80,7 @@ def create_project_status_test_data():
         print("In Progress status created.")
     else:
         print("In Progress project status already exists.")
-    
+
     if not ProjectStatus.objects.filter(name='Recurring').exists():
         ProjectStatus.objects.create(name='Recurring', has_end_date=False, has_start_date=True)
         print("Recurring project status created.")
@@ -106,17 +106,21 @@ def create_organization_test_data(number_of_rows: int):
 
 def create_project_test_data(number_of_rows: int):
     print("Creating project data...")
+
     for i in range(number_of_rows):
         name = "Test project {}".format(i)
         url_slug = name.replace(" ", "")
+
         if not Project.objects.filter(name=name).exists():
             Project.objects.create(
-                name=name, url_slug=url_slug,
-                status=ProjectStatus.objects.get(name="In Progress"),
-                start_date=timezone.now(),
+                name=name,
+                city="Test {}".format(i),
+                collaborators_welcome=True,
+                country="Germany",
                 short_description="This is a test project.",
-                country="Germany", collaborators_welcome=True,
-                city="Test {}".format(i)
+                start_date=timezone.now(),
+                status=ProjectStatus.objects.get(name="In Progress"),
+                url_slug=url_slug,
             )
             print("{} project created.".format(name))
         else:
