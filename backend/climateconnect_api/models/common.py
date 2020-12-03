@@ -3,6 +3,7 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 
+
 class Feedback(models.Model):
     user = models.ForeignKey(
         User,
@@ -55,6 +56,7 @@ class Feedback(models.Model):
         return "Feedback: %d" % (
             self.id
         )
+
 
 class Availability(models.Model):
     name = models.CharField(
