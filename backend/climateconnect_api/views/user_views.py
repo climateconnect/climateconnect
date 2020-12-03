@@ -1,6 +1,8 @@
 import uuid
 from django.contrib.auth import (authenticate, login)
 import datetime
+
+from django.db.models import Count
 from django.utils import timezone
 from datetime import datetime, timedelta
 
@@ -10,9 +12,8 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.exceptions import NotFound
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter
 
 from rest_framework.exceptions import ValidationError
@@ -140,7 +141,10 @@ class ListMemberProfilesView(ListAPIView):
         return UserProfileStubSerializer
 
     def get_queryset(self):
-        user_profiles = UserProfile.objects.filter(is_profile_verified=True)
+        user_profiles = UserProfile.objects\
+            .filter(is_profile_verified=True)\
+            .annotate(image_is_null=Count("image"))\
+            .order_by("-image_is_null", "-id")
         if 'skills' in self.request.query_params:
             skill_names = self.request.query_params.get('skills').split(',')
             skills = Skill.objects.filter(name__in=skill_names)
