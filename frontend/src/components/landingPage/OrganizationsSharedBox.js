@@ -1,7 +1,7 @@
 import React from "react";
 import { Typography, makeStyles, Button, useMediaQuery } from "@material-ui/core";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import SmallCloud from "./SmallCloud";
+import SmallCloud from "../staticpages/SmallCloud";
 import OrganizationPreviewsFixed from "../organization/OrganizationPreviewsFixed";
 import theme from "../../themes/theme";
 

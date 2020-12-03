@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import WideLayout from "../src/components/layouts/WideLayout";
 import LandingTopBox from "../src/components/landingPage/LandingTopBox";
-import ExplainerBox from "../src/components/landingPage/ExplainerBox";
+import ExplainerBox from "../src/components/staticpages/ExplainerBox";
 import PitchBox from "../src/components/landingPage/PitchBox";
 import ProjectsSharedBox from "../src/components/landingPage/ProjectsSharedBox";
 
@@ -15,7 +15,7 @@ import JoinCommunityBox from "../src/components/landingPage/JoinCommunityBox";
 import OrganizationsSharedBox from "../src/components/landingPage/OrganizationsSharedBox";
 import DonationsBanner from "../src/components/landingPage/DonationsBanner";
 import OurTeamBox from "../src/components/landingPage/OurTeamBox";
-import StartNowBanner from "../src/components/landingPage/StartNowBanner";
+import StartNowBanner from "../src/components/staticpages/StartNowBanner";
 
 const useStyles = makeStyles(theme => ({
   root: {

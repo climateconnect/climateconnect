@@ -123,7 +123,7 @@ export default function Privacy() {
       your e-mail address that you have provided us with in connection with the registration. In
       particular, we process all information required to prove that you have registered for the
       newsletter. We distribute our newsletter via{" "}
-      <a href="https://www.mailjet.com/" target="_blank">
+      <a href="https://www.mailjet.com/" target="_blank" rel="noreferrer">
         Mailjet
       </a>
       .<h2>4. From whom do we collect your personal data?</h2>
@@ -178,7 +178,7 @@ export default function Privacy() {
           <b>Service providers and advisors</b>: third party service providers that perform services
           for us, on our behalf, which may include payments processing, providing analytic services
           (e.g. Google analytics; privacy policy is available
-          <a href="https://support.google.com/analytics/answer/6004245?hl=en" target="_blank">
+          <a href="https://support.google.com/analytics/answer/6004245?hl=en" target="_blank" rel="noreferrer">
             here
           </a>
           ) providing automatic email notification (e.g. Mailjet; Mailjet privacy policy is
@@ -419,7 +419,7 @@ export default function Privacy() {
       <h4>12.5.1 Google Analytics</h4>
       If you have given your consent to allow statistical cookies, this website uses Google
       Analytics, a web analysis service of Google LLC. The responsible service provider in the EU is
-      Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland ("Google").
+      Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland ({'"Google"'}).
       <h5>Scope of processing</h5>
       Google Analytics uses cookies that enable an analysis of your use of our website. The
       information collected by means of the cookies about your use of this website is usually
@@ -440,7 +440,7 @@ export default function Privacy() {
       <ul>
         <li>the pages you call up, your click path</li>
         <li>
-          Achievement of "website goals" (conversions, e.g. newsletter registrations, downloads,
+          Achievement of {'"website goals"'} (conversions, e.g. newsletter registrations, downloads,
           purchases)
         </li>
         <li>Your user behavior (for example clicks, dwell time, bounce rates)</li>

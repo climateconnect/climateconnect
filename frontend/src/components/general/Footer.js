@@ -20,6 +20,11 @@ const useStyles = makeStyles(theme => ({
     position: "absolute",
     bottom: 0
   },
+  relativePosition: {
+    position: "fixed",
+    bottom: 0,
+    backgroundColor: "#FFFFFF"
+  },
   spacingTop: {
     marginTop: theme.spacing(2)
   },
@@ -66,19 +71,26 @@ const useStyles = makeStyles(theme => ({
 }));
 
 //TODO: make footer stay on bottom on normal layout again
-export default function Footer({ className, noSpacingTop, noAbsolutePosition, large }) {
+export default function Footer({
+  className,
+  noSpacingTop,
+  noAbsolutePosition,
+  showOnScrollUp,
+  large
+}) {
   if (!large)
     return (
       <SmallFooter
         className={className}
         noSpacingTop={noSpacingTop}
         noAbsolutePosition={noAbsolutePosition}
+        showOnScrollUp={showOnScrollUp}
       />
     );
   else return <LargeFooter className={className} />;
 }
 
-const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition }) => {
+const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScrollUp }) => {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
 
@@ -86,7 +98,8 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition }) => {
     <Box
       component="footer"
       className={`${className} ${classes.root} ${!noSpacingTop &&
-        classes.spacingTop} ${!noAbsolutePosition && classes.absolutePosition}`}
+        classes.spacingTop} ${!noAbsolutePosition &&
+        (showOnScrollUp === true ? classes.relativePosition : classes.absolutePosition)}`}
     >
       <Box className={classes.flexContainer}>
         <Box className={classes.leftBox}>

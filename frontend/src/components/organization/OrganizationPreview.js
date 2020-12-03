@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function OrganizationPreview({ organization, showMembers, showOrganizationType }) {
+export default function OrganizationPreview({ organization, showOrganizationType }) {
   const classes = useStyles();
   return (
     <Link href={`/organizations/${organization.url_slug}`} className={classes.noUnderline}>
@@ -61,7 +61,6 @@ export default function OrganizationPreview({ organization, showMembers, showOrg
           </Typography>
           <OrganizationMetaData
             organization={organization}
-            showMembers={showMembers}
             showOrganizationType={showOrganizationType}
           />
         </CardContent>

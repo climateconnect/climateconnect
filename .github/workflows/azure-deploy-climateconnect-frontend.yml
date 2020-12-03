@@ -32,6 +32,8 @@ jobs:
         API_HOST: ${{ secrets.API_HOST }} 
         GOOGLE_ANALYTICS_CODE: ${{ secrets.GOOGLE_ANALYTICS_CODE }}
         BASE_URL_HOST: ${{ secrets.BASE_URL_HOST }}
+        LATEST_NEWSLETTER_LINK: ${{ secrets.LATEST_NEWSLETTER_LINK }}
+
 
     - name: 'Deploy to Azure Web App'
       uses: azure/webapps-deploy@v2

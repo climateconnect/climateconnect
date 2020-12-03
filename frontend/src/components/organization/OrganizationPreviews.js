@@ -3,6 +3,7 @@ import OrganizationPreview from "./OrganizationPreview";
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfiniteScroll from "react-infinite-scroller";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles({
   reset: {
@@ -11,8 +12,8 @@ const useStyles = makeStyles({
     listStyleType: "none",
     width: "100%"
   },
-  loader: {
-    clear: "both"
+  spinner: {
+    marginTop: "48px"
   }
 });
 
@@ -20,40 +21,35 @@ export default function OrganizationPreviews({
   organizations,
   loadFunc,
   hasMore,
-  showMembers,
   showOrganizationType,
   parentHandlesGridItems
 }) {
+  const toOrganizationPreviews = organizations =>
+    organizations.map(o => (
+      <GridItem key={o.url_slug} organization={o} showOrganizationType={showOrganizationType} />
+    ));
   const [isLoading, setIsLoading] = React.useState(false);
   const classes = useStyles();
-  const [gridItems, setGridItems] = React.useState(
-    organizations.map((o, index) => (
-      <GridItem
-        key={index}
-        organization={o}
-        showMembers={showMembers}
-        showOrganizationType={showOrganizationType}
-      />
-    ))
-  );
+  const [gridItems, setGridItems] = React.useState(toOrganizationPreviews(organizations));
+
   if (!loadFunc) hasMore = false;
   const loadMore = async page => {
     if (!isLoading) {
       setIsLoading(true);
       const newOrganizations = await loadFunc(page);
       if (!parentHandlesGridItems) {
-        const newGridItems = newOrganizations.map((o, index) => (
-          <GridItem
-            key={(index + 1) * page}
-            organization={o}
-            showMembers={showMembers}
-            showOrganizationType={showOrganizationType}
-          />
-        ));
-        setGridItems([...gridItems, ...newGridItems]);
+        setGridItems([...gridItems, ...toOrganizationPreviews(newOrganizations)]);
       }
       setIsLoading(false);
     }
+  };
+
+  const loadingSpinner = () => {
+    return isLoading ? (
+      <Grid container justify="center">
+        <CircularProgress className={classes.spinner} />
+      </Grid>
+    ) : null;
   };
 
   // TODO: use `organization.id` instead of index when using real organizations
@@ -62,11 +58,6 @@ export default function OrganizationPreviews({
       pageStart={0}
       loadMore={loadMore}
       hasMore={hasMore && !isLoading}
-      loader={
-        <div className={classes.loader} key={0}>
-          Loading ...
-        </div>
-      }
       element={Grid}
       container
       component="ul"
@@ -75,26 +66,19 @@ export default function OrganizationPreviews({
     >
       {parentHandlesGridItems
         ? organizations && organizations.length > 0
-          ? organizations.map(o => (
-              <GridItem
-                key={o.url_slug}
-                organization={o}
-                showMembers={showMembers}
-                showOrganizationType={showOrganizationType}
-              />
-            ))
+          ? toOrganizationPreviews(organizations)
           : "No Results"
         : gridItems}
+      {loadingSpinner()}
     </InfiniteScroll>
   );
 }
 
-function GridItem({ organization, showMembers, showOrganizationType }) {
+function GridItem({ organization, showOrganizationType }) {
   return (
     <Grid key={organization.url_slug} item xs={12} sm={6} md={4} lg={3} component="li">
       <OrganizationPreview
         organization={organization}
-        showMembers={showMembers}
         showOrganizationType={showOrganizationType}
       />
     </Grid>

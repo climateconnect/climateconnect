@@ -31,6 +31,8 @@ import { getParams } from "../public/lib/generalOperations";
 import WideLayout from "../src/components/layouts/WideLayout";
 import FilterSection from "../src/components/indexPage/FilterSection";
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
+import useScrollTrigger from "@material-ui/core/useScrollTrigger";
+import TopOfPage from "../src/components/general/TopOfPage";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -270,6 +272,13 @@ export default function Index({
     }
   };
 
+  const isScrollingUp = !useScrollTrigger({
+    disableHysteresis: false,
+    threshold: 0
+  });
+  const atTopOfPage = TopOfPage({ initTopOfPage: true });
+  const showOnScrollUp = isScrollingUp && !atTopOfPage;
+
   return (
     <>
       {process.env.PRE_LAUNCH === "true" ? (
@@ -280,6 +289,7 @@ export default function Index({
           hideHeadline
           message={errorMessage ? errorMessage : message}
           messageType={errorMessage ? "error" : "success"}
+          showOnScrollUp={showOnScrollUp}
         >
           <MainHeadingContainerMobile />
           <Container maxWidth="lg">

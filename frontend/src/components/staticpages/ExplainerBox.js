@@ -2,6 +2,7 @@ import React from "react";
 import { Typography, makeStyles, Container, useMediaQuery } from "@material-ui/core";
 import SmallCloud from "./SmallCloud";
 import theme from "../../themes/theme";
+import ExplainerElement from "./ExplainerElement";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -13,9 +14,8 @@ const useStyles = makeStyles(theme => ({
   explainerWrapper: {
     display: "flex",
     justifyContent: "space-between",
-    width: "80%",
+    width: "100%",
     maxWidth: 1000,
-    minWidth: 900,
     marginTop: theme.spacing(2),
     [theme.breakpoints.down("sm")]: {
       flexDirection: "column",
@@ -23,18 +23,6 @@ const useStyles = makeStyles(theme => ({
       alignItems: "center",
       height: 580
     }
-  },
-  explainerElementWrapper: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    textAlign: "center",
-    maxWidth: 300,
-    position: "relative"
-  },
-  explainerIcon: {
-    maxWidth: 50,
-    marginBottom: theme.spacing(2)
   },
   cloud1: {
     position: "absolute",
@@ -96,7 +84,7 @@ const useStyles = makeStyles(theme => ({
     width: 120
   }
 }));
-export default function ExplainerBox({ h1ClassName, className }) {
+export default function ExplainerBox({ h1ClassName, className, hideHeadline }) {
   const classes = useStyles();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -110,9 +98,11 @@ export default function ExplainerBox({ h1ClassName, className }) {
           <SmallCloud type={1} className={classes.cloud4} />
         </>
       )}
-      <Typography color="primary" component="h1" className={h1ClassName}>
-        This is Climate Connect
-      </Typography>
+      {!hideHeadline && (
+        <Typography color="primary" component="h1" className={h1ClassName}>
+          This is Climate Connect
+        </Typography>
+      )}
       <div className={classes.explainerWrapper}>
         <ExplainerElement
           text={
@@ -163,14 +153,3 @@ export default function ExplainerBox({ h1ClassName, className }) {
     </Container>
   );
 }
-
-const ExplainerElement = ({ icon, text, children, alt }) => {
-  const classes = useStyles();
-  return (
-    <div className={classes.explainerElementWrapper}>
-      {children}
-      <img src={icon} className={classes.explainerIcon} alt={alt} />
-      <Typography>{text}</Typography>
-    </div>
-  );
-};
