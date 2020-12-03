@@ -1,17 +1,22 @@
 const pick = require("lodash/pick");
 
 require("dotenv").config();
+
+console.log("TEST 🗻")
+
 module.exports = {
+  // Read set variables from `.env` file
   env: pick(process.env, [
-    "PRE_LAUNCH",
-    "API_URL",
-    "ENVIRONMENT",
-    "SOCKET_URL",
     "API_HOST",
-    "GOOGLE_ANALYTICS_CODE",
+    "API_URL",
     "BASE_URL_HOST",
-    "LATEST_NEWSLETTER_LINK"
+    "ENVIRONMENT",
+    "GOOGLE_ANALYTICS_CODE",
+    "LATEST_NEWSLETTER_LINK",
+    "SOCKET_URL",
+    "PRE_LAUNCH",
   ]),
+
   exportPathMap: async function(defaultPathMap) {
     if (process.env.PRE_LAUNCH)
       return {

@@ -91,7 +91,8 @@ const getProjectsFilters = filterChoices => [
   {
     icon: GroupIcon,
     iconName: "GroupIcon",
-    title: "Organization type",
+    // A hack: need an extra space character to create some horizontal space between the icon and text
+    title: " Organization type",
     type: "multiselect",
     options: filterChoices.organization_types.map(t => ({ ...t, key: t.id })),
     key: "organization_type"

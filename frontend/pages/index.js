@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
+
 import WideLayout from "../src/components/layouts/WideLayout";
 import LandingTopBox from "../src/components/landingPage/LandingTopBox";
 import ExplainerBox from "../src/components/landingPage/ExplainerBox";
 import PitchBox from "../src/components/landingPage/PitchBox";
 import ProjectsSharedBox from "../src/components/landingPage/ProjectsSharedBox";
+
 import { makeStyles, Button } from "@material-ui/core";
 import Cookies from "next-cookies";
 import axios from "axios";
+
 import tokenConfig from "../public/config/tokenConfig";
 import JoinCommunityBox from "../src/components/landingPage/JoinCommunityBox";
 import OrganizationsSharedBox from "../src/components/landingPage/OrganizationsSharedBox";
@@ -122,6 +125,10 @@ export default function Index({ projects, organizations }) {
 
 Index.getInitialProps = async ctx => {
   const { token } = Cookies(ctx);
+  if (!token) {
+    console.log(`Error: Token was ${token}...`)
+  }
+
   return {
     projects: await getProjects(token),
     organizations: await getOrganizations(token)
@@ -129,14 +136,29 @@ Index.getInitialProps = async ctx => {
 };
 
 const getProjects = async token => {
+  // console.log("In getProjects...")
   try {
+    // Read local API URL. This should hit the Django endpoint?
+    // That's the featured projects endpoint?
+
+    const featuredProjectsEndpoint = `${process.env.API_URL}/api/featured_projects/`;
+
+    console.log(`Hitting featured projects endpoint: ${featuredProjectsEndpoint}`);
+
+
     const resp = await axios.get(
-      process.env.API_URL + "/api/featured_projects/",
+      featuredProjectsEndpoint,
       tokenConfig(token)
     );
-    if (resp.data.length === 0) return null;
-    else return parseProjects(resp.data.results);
+
+    if (resp.data.length === 0) {
+      // console.log("Null 🗻")
+      return null;
+    }
+
+    return parseProjects(resp.data.results);
   } catch (err) {
+    console.log("🔴");
     if (err.response && err.response.data) {
       console.log("Error: ");
       console.log(err.response.data);
@@ -163,6 +185,7 @@ const getOrganizations = async token => {
 };
 
 const parseProjects = projects => {
+  console.log("Parsing projects...");
   return projects.map(project => ({
     ...project,
     location: project.city + ", " + project.country

@@ -13,11 +13,13 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 from dotenv import find_dotenv, load_dotenv
 from datetime import timedelta
+
 load_dotenv(find_dotenv('.backend_env'))
+
 env = os.environ.get
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -26,8 +28,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
-# DEBUG = True
+# DEBUG = env('DEBUG')
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -112,6 +114,9 @@ WSGI_APPLICATION = 'climateconnect_main.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 
+print("WHOA")
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -122,6 +127,8 @@ DATABASES = {
         'PORT': env('DATABASE_PORT', '5432')
     }
 }
+
+print(DATABASES)
 
 
 # Password validation
@@ -147,23 +154,20 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-if(env('ENVIRONMENT') not in('development', 'test')):
+if env('ENVIRONMENT') not in('development', 'test'):
     DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
     STATICFILES_STORAGE = 'storages.backends.azure_storage.AzureStorage'
     AZURE_ACCOUNT_NAME = env('AZURE_ACCOUNT_NAME')
     AZURE_ACCOUNT_KEY = env('AZURE_ACCOUNT_KEY')
     AZURE_CONTAINER = env('AZURE_CONTAINER')
+
 STATIC_URL = '/static/' if env('ENVIRONMENT') in ('development', 'test') else 'https://'+env('AZURE_ACCOUNT_NAME')+'.'+env('AZURE_HOST')+'/{}/'.format(env('AZURE_CONTAINER'))
 STATIC_ROOT = env('STATIC_ROOT') if env('ENVIRONMENT') in ('development', 'test') else "static/"
 MEDIA_ROOT = env('MEDIA_ROOT')

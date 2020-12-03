@@ -38,6 +38,7 @@ export default function MyApp({ Component, pageProps, user, notifications, pathN
     ReactGA.pageview(!!pathName ? pathName : "/");
     setGaInitialized(true);
   }
+
   const API_URL = process.env.API_URL;
   const API_HOST = process.env.API_HOST;
   const ENVIRONMENT = process.env.ENVIRONMENT;
@@ -155,6 +156,7 @@ export default function MyApp({ Component, pageProps, user, notifications, pathN
 
 MyApp.getInitialProps = async ctx => {
   const { token, acceptedStatistics } = NextCookies(ctx.ctx);
+
   if (ctx.router.route === "/" && token) {
     ctx.ctx.res.writeHead(302, {
       Location: "/browse",
@@ -163,12 +165,14 @@ MyApp.getInitialProps = async ctx => {
     ctx.ctx.res.end();
     return;
   }
+
   const [user, notifications, pageProps] = await Promise.all([
     getLoggedInUser(token),
     getNotifications(token),
     ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps(ctx.ctx) : {}
   ]);
   const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
+
   if (token) {
     const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
     if (notificationsToSetRead.length > 0) {

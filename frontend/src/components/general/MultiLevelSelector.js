@@ -1,91 +1,91 @@
 import React from "react";
-import { List, ListItem, ListItemText, ListItemIcon, Typography, Divider } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import CloseIcon from "@material-ui/icons/Close";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-
-import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-const useStyles = makeStyles(theme => {
+import { List, ListItem, ListItemText, ListItemIcon, Typography, Divider } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import CloseIcon from "@material-ui/icons/Close";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+
+const useStyles = makeStyles((theme) => {
   return {
-    wrapper: props => ({
+    wrapper: (props) => ({
       margin: "0 auto",
       display: props.flexWrapper ? "flex" : "block",
       marginTop: props.marginTop ? theme.spacing(8) : 0,
       [theme.breakpoints.down("sm")]: {
         marginTop: theme.spacing(4),
-        display: "block"
-      }
+        display: "block",
+      },
     }),
     list: {
       display: "inline-block",
       maxWidth: "50%",
       [theme.breakpoints.down("md")]: {
-        marginLeft: theme.spacing(0)
-      }
+        marginLeft: theme.spacing(0),
+      },
     },
-    subList: props => {
+    subList: (props) => {
       return {
         display: "inline-block",
         marginTop: theme.spacing(props.offset * 8),
         verticalAlign: "top",
-        maxWidth: "50%"
+        maxWidth: "50%",
       };
     },
     narrowScreenSubList: {
       display: "block",
       padding: 0,
       width: "90%",
-      marginLeft: "10%"
+      marginLeft: "10%",
     },
     listItem: {
       border: "1px solid black",
       borderTop: 0,
       height: theme.spacing(8),
       paddingLeft: theme.spacing(3),
-      paddingRight: theme.spacing(1)
+      paddingRight: theme.spacing(1),
     },
     subListItem: {
-      borderLeft: 0
+      borderLeft: 0,
     },
     firstItem: {
-      borderTop: "1px solid black"
+      borderTop: "1px solid black",
     },
     narrowScreenSubListItem: {
       borderLeft: "1px solid black",
-      borderTop: 0
+      borderTop: 0,
     },
     borderLeft: {
-      borderLeft: "1px solid black"
+      borderLeft: "1px solid black",
     },
     icon: {
-      margin: "0 auto"
+      margin: "0 auto",
     },
     expanded: {
-      color: "white"
+      color: "white",
     },
     hidden: {
-      display: "none"
+      display: "none",
     },
     selectedWrapper: {
       display: "inline-block",
       verticalAlign: "top",
       marginLeft: theme.spacing(16),
       [theme.breakpoints.down("md")]: {
-        marginLeft: theme.spacing(2)
-      }
+        marginLeft: theme.spacing(2),
+      },
     },
     narrowScreenSelectedWrapper: {
       marginLeft: theme.spacing(2),
       display: "block",
       margin: "0 auto",
-      textAlign: "center"
+      textAlign: "center",
     },
     selectedItemsHeader: {
-      fontWeight: "bold"
+      fontWeight: "bold",
     },
     selectedItem: {
       background: theme.palette.primary.main,
@@ -94,48 +94,53 @@ const useStyles = makeStyles(theme => {
       borderTop: "1px solid black",
       "&:hover": {
         backgroundColor: theme.palette.primary.main,
-        color: "white"
-      }
+        color: "white",
+      },
     },
     firstSelectedItem: {
-      border: "5px solid black"
+      border: "5px solid black",
     },
     selectedItemIcon: {
       paddingLeft: theme.spacing(2),
-      color: "red"
+      color: "red",
     },
     listWrapper: {
       display: "inline-block",
       width: 700,
       [theme.breakpoints.down("md")]: {
         width: 650 - theme.spacing(8),
-        margin: "0 auto"
+        margin: "0 auto",
       },
       [theme.breakpoints.down("xs")]: {
         width: "auto",
-        margin: "0 auto"
-      }
+        margin: "0 auto",
+      },
     },
     narrowScreenListWrapper: {
       maxWidth: 650 - theme.spacing(8),
       width: "auto",
       display: "block",
-      margin: "0 auto"
+      margin: "0 auto",
     },
+
     selectedList: {
       maxWidth: 350,
-      margin: "0 auto"
+      margin: "0 auto",
     },
+
     divider: {
       backgroundColor: "black",
-      marginBottom: theme.spacing(1)
+      marginBottom: theme.spacing(1),
     },
+
     subListLastItem: {
-      borderBottom: 0
+      // TODO: here...?
+      borderBottom: 0,
     },
+
     itemUnderExpandedSubList: {
-      borderTop: "1px solid black"
-    }
+      borderTop: "1px solid black",
+    },
   };
 });
 
@@ -146,29 +151,29 @@ export default function MultiLevelSelector({
   maxSelections,
   itemNamePlural,
   isInPopup,
-  dragAble
+  dragAble,
 }) {
   const [expanded, setExpanded] = React.useState(null);
 
   const useStylesProps = {
     marginTop: !isInPopup,
-    flexWrapper: !isInPopup
+    flexWrapper: !isInPopup,
   };
 
   const classes = useStyles(useStylesProps);
 
-  const onClickExpand = key => {
+  const onClickExpand = (key) => {
     if (expanded === key) setExpanded(null);
     else setExpanded(key);
   };
 
-  const onClickSelect = item => {
+  const onClickSelect = (item) => {
     if (selected.length >= maxSelections)
       alert("You can only choose up to " + maxSelections + " " + itemNamePlural);
     else setSelected([...selected, item]);
   };
 
-  const onClickUnselect = item => {
+  const onClickUnselect = (item) => {
     setSelected(
       selected
         .slice(0, selected.indexOf(item))
@@ -183,7 +188,7 @@ export default function MultiLevelSelector({
     setSelected(ret);
   };
 
-  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   return (
     <>
       <div className={classes.wrapper}>
@@ -194,8 +199,9 @@ export default function MultiLevelSelector({
               itemNamePlural={itemNamePlural}
               maxSelections={maxSelections}
               onClickUnselect={onClickUnselect}
-              className={`${classes.selectedWrapper} ${(isNarrowScreen || isInPopup) &&
-                classes.narrowScreenSelectedWrapper}`}
+              className={`${classes.selectedWrapper} ${
+                (isNarrowScreen || isInPopup) && classes.narrowScreenSelectedWrapper
+              }`}
               dragAble={dragAble}
               moveItem={moveItem}
             />
@@ -236,7 +242,7 @@ function ListToChooseWrapper({
   selected,
   className,
   isInPopup,
-  isNarrowScreen
+  isNarrowScreen,
 }) {
   const classes = useStyles();
   return (
@@ -262,11 +268,11 @@ function SelectedList({
   className,
   onClickUnselect,
   dragAble,
-  moveItem
+  moveItem,
 }) {
   const classes = useStyles({});
 
-  const onDragEnd = result => {
+  const onDragEnd = (result) => {
     // dropped outside the list
     if (!result.destination) return;
 
@@ -277,7 +283,7 @@ function SelectedList({
     return (
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
-          {provided => (
+          {(provided) => (
             <List
               {...provided.droppableProps}
               ref={provided.innerRef}
@@ -286,7 +292,7 @@ function SelectedList({
               {selected.map((item, index) => {
                 return (
                   <Draggable key={item.id} draggableId={"draggable" + item.id} index={index}>
-                    {provided => {
+                    {(provided) => {
                       return (
                         <ListItem
                           ref={provided.innerRef}
@@ -295,8 +301,8 @@ function SelectedList({
                           key={index}
                           button
                           className={`
-                            ${classes.listItem} 
-                            ${index == 0 && classes.firstItem} 
+                            ${classes.listItem}
+                            ${index == 0 && classes.firstItem}
                             ${classes.selectedItem}
                             ${index == 0 && classes.firstSelectedItem}
                           `}
@@ -360,7 +366,7 @@ function ListToChooseFrom({
   onClickSelect,
   selected,
   isNarrowScreen,
-  isInPopup
+  isInPopup,
 }) {
   const index = isSubList ? parentList.indexOf(parentEl) : 0;
   const subListHeightCorrection = isSubList
@@ -371,38 +377,47 @@ function ListToChooseFrom({
   return (
     <>
       <List
-        className={`${!isSubList && classes.list} 
-                    ${isSubList &&
+        className={`${!isSubList && classes.list}
+                    ${
+                      isSubList &&
                       (expanded === parentEl.key
                         ? isNarrowScreen || isInPopup
                           ? classes.narrowScreenSubList
                           : classes.subList
-                        : classes.hidden)} 
+                        : classes.hidden)
+                    }
                     ${className}`}
       >
         {itemsToSelectFrom.map((item, index) => (
           <React.Fragment key={item.key}>
+            {/* TODO: maybe here... */}
             <ListItem
               button
-              disabled={selected.filter(s => s.key === item.key).length === 1}
+              disabled={selected.filter((s) => s.key === item.key).length === 1}
               classes={{
-                root: `${classes.listItem} 
-                        ${index == 0 && classes.firstItem} 
-                        ${isSubList && classes.subListItem} 
-                        ${isSubList &&
+                root: `${classes.listItem}
+                        ${index == 0 && classes.firstItem}
+                        ${isSubList && classes.subListItem}
+                        ${
+                          isSubList &&
                           (isNarrowScreen || isInPopup) &&
-                          classes.narrowScreenSubListItem}
-                        ${isSubList &&
+                          classes.narrowScreenSubListItem
+                        }
+                        ${
+                          isSubList &&
                           index === itemsToSelectFrom.length - 1 &&
                           (isNarrowScreen || isInPopup) &&
-                          classes.subListLastItem}
-                        ${!isSubList &&
+                          classes.subListLastItem
+                        }
+                        ${
+                          !isSubList &&
                           itemsToSelectFrom[index - 1] &&
                           expanded === itemsToSelectFrom[index - 1].key &&
                           (isNarrowScreen || isInPopup) &&
-                          classes.itemUnderExpandedSubList}
+                          classes.itemUnderExpandedSubList
+                        }
                         ${isSubList && index >= parentList.length && classes.borderLeft}`,
-                selected: classes.expanded
+                selected: classes.expanded,
               }}
               selected={expanded === item.key}
               onClick={() => {
@@ -455,7 +470,7 @@ function ListToChooseFrom({
         ))}
       </List>
       {!(isNarrowScreen || isInPopup) &&
-        itemsToSelectFrom.map(item => {
+        itemsToSelectFrom.map((item) => {
           return item.subcategories && item.subcategories.length ? (
             <ListToChooseFrom
               isSubList

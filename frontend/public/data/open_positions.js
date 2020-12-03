@@ -17,7 +17,7 @@ export default [
   {
     icon: ImportantDevicesIcon,
     iconName: "ImportantDevicesIcon",
-    title: "Frontend developer (React, nextjs)"
+    title: "Frontend developer (React, Next.js)"
   },
   {
     icon: CodeIcon,
