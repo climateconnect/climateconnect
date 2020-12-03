@@ -143,8 +143,8 @@ class ListMemberProfilesView(ListAPIView):
     def get_queryset(self):
         user_profiles = UserProfile.objects\
             .filter(is_profile_verified=True)\
-            .annotate(image_is_null=Count("image"))\
-            .order_by("-image_is_null", "-id")
+            .annotate(is_image_null=Count("image"))\
+            .order_by("-is_image_null", "-id")
         if 'skills' in self.request.query_params:
             skill_names = self.request.query_params.get('skills').split(',')
             skills = Skill.objects.filter(name__in=skill_names)
