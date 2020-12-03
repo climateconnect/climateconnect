@@ -1,11 +1,34 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from django.contrib.auth.models import User
+
 from climateconnect_api.models import (
-    Availability, Role
+    Availability, Role, UserProfile
 )
 from organization.models import (
     ProjectStatus, Project, Organization
 )
+
+
+def create_test_user_data(number_of_rows: int):
+    print("Creating users...")
+    for i in range(number_of_rows):
+        username = "test{}@test.com".format(i)
+        name = "test {}".format(i)
+        url_slug = name.replace(" ", "")
+        if not User.objects.filter(email=username).exists():
+            user = User.objects.create(
+                username=username, email=username,
+                first_name="Test", last_name=str(i)
+            )
+            UserProfile.objects.create(
+                user=user, name=name, url_slug=url_slug,
+                country="Germany", is_profile_verified=True,
+                city="Test {}".format(i)
+            )
+            print("{} User created".format(username))
+        else:
+            print("{} User already exists".format(username))
 
 
 def create_availability_test_data(number_of_rows: int):
@@ -39,6 +62,14 @@ def create_roles_test_data():
         print("Member role successfully created.")
     else:
         print("Member role already exists.")
+    
+    if not Role.objects.filter(name='Administrator').exists():
+        Role.objects.create(
+            name='Administrator', role_type=Role.READ_WRITE_TYPE
+        )
+        print("Administrator role successfully created.")
+    else:
+        print("Administrator role already exists.")
 
 
 def create_project_status_test_data():
@@ -65,7 +96,8 @@ def create_organization_test_data(number_of_rows: int):
         if not Organization.objects.filter(name=name).exists():
             Organization.objects.create(
                 name=name, url_slug=url_slug,
-                country="Germany", short_description="This is a test organization"
+                country="Germany", short_description="This is a test organization",
+                city="Test {}".format(i)
             )
             print("{} organization created.".format(name))
         else:
@@ -83,7 +115,8 @@ def create_project_test_data(number_of_rows: int):
                 status=ProjectStatus.objects.get(name="In Progress"),
                 start_date=timezone.now(),
                 short_description="This is a test project.",
-                country="Germany", collaborators_welcome=True
+                country="Germany", collaborators_welcome=True,
+                city="Test {}".format(i)
             )
             print("{} project created.".format(name))
         else:
@@ -99,6 +132,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options) -> str:
         number_of_rows = options['number_of_rows']
+        create_test_user_data(number_of_rows=number_of_rows)
         create_availability_test_data(number_of_rows=number_of_rows)
         create_roles_test_data()
         create_project_status_test_data()
