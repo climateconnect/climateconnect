@@ -18,7 +18,7 @@ from django.urls import path, include
 from climateconnect_api.views import (
     status_views, user_views, common_views,
     settings_views, common_views, role_views, 
-    faq_views, notifications_views
+    faq_views, notifications_views, donation_views
 )
 from knox import views as knox_views
 from django.conf import settings
@@ -79,6 +79,7 @@ urlpatterns = [
     ),
     path('api/sitemap/members/', user_views.ListMembersForSitemap.as_view(), name='list-members-for-sitemap'),
     path('api/set_user_notifications_read/', notifications_views.SetUserNotificationsRead.as_view(), name='set-user-notifications-unread'),
+    path('api/donation_goal_progress/', donation_views.GetDonationGoalProgress.as_view(), name='get-donations-this-month'),
     # Organization views
     path('api/', include('organization.urls')),
     # Common views
