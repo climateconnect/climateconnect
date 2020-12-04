@@ -18,8 +18,9 @@ export default function Terms() {
       <h3>Participation</h3>
       <p>
         In order to participate in the raffle, a donation of any amount to the Climate Connect gUG
-        (limited liability company) is necessary. Participation is only possible within the participation
-        period. Donations received after the closing date will not be considered in the draw.
+        (limited liability company) is necessary. Participation is only possible within the
+        participation period. Donations received after the closing date will not be considered in
+        the draw.
       </p>
       <p>
         For each participant, each donated Euro corresponds to a chance to win. For donations in a
@@ -107,8 +108,8 @@ export default function Terms() {
         Contact details can be found in the imprint area of the competition app.
       </p>
       <p>
-        The {"operator's"} raffle is exclusively subject to the laws of the Federal Republic of Germany.
-        Legal action is excluded.
+        The {"operator's"} raffle is exclusively subject to the laws of the Federal Republic of
+        Germany. Legal action is excluded.
       </p>
       <h3>Good luck and success wishes the team of Climate Connect</h3>
       <p />

@@ -2,7 +2,7 @@ import React from "react";
 import { Typography, Container, makeStyles, Collapse, useMediaQuery } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import theme from "../../themes/theme";
+import theme from "../../../themes/theme";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -139,7 +139,7 @@ export default function Challenge({ headlineClass, showContent, className }) {
                   <span className={classes.marked}>spread effective solutions</span> globally.
                 </Typography>
                 <Typography className={classes.challenge}>
-                  NGOs, companies, governments, public institutions and individuals need to{" "}
+                  NGOs, companies, governments, public institutions and citizens need to{" "}
                   <span className={classes.marked}>work together</span> to solve this crisis.
                 </Typography>
               </div>
