@@ -38,8 +38,9 @@ Once you clone the repository start backend server.
 3.  Create `.backend_env` to include backend environment variables. You can find upto date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md) file.
 4.  Run `python manage.py migrate` to run django migrations. Note: This command is used for
     when you first start or whenever you are adding or updating database models.
-5.  Run server using `python manage.py runserver`.
-6.  If you want to run tests suite use this command: `python manage.py test`. If you want to run a
+5.  Run this command to create test data: `python manage.py create_test_data --number_of_rows 4`
+6.  Run server using `python manage.py runserver`.
+7.  If you want to run tests suite use this command: `python manage.py test`. If you want to run a
     specific test file or test class run this command:
     `python manage.py test <file_path> or <file_path + class_name>`
 
