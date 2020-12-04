@@ -7,7 +7,7 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: theme.spacing(1.5),
     background: "#DFDFDF",
     position: "absolute",
-    top: -30,
+    top: -90,
     zIndex: 3,
     left: 0,
     width: "100%",
