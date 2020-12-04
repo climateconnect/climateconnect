@@ -48,8 +48,9 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
 
 #### Continual Development
 
-1.  Run `docker-compose up`. This will start a Redis server on Docker.
-1.  Run `python manage.py migrate` to run Django migrations whenever you are adding or updating database model.s
+1.  Ensure Docker is running and then run `docker-compose up`. This will start a Redis server on Docker.
+1.  Ensure the Postgres server is running.
+1.  Run `python manage.py migrate` to run Django migrations whenever you are adding or updating database models.
 1.  Run server using `python manage.py runserver`.
 
 #### Testing
