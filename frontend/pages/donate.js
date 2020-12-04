@@ -1,222 +1,303 @@
 import React from "react";
-import HeaderImage from "../src/components/staticpages/HeaderImage";
 import WideLayout from "../src/components/layouts/WideLayout";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography, Container, Link, Divider } from "@material-ui/core";
-import QuoteSlideShow from "../src/components/about/QuoteSlideShow";
-import quotes_with_images from "../public/data/quotes_with_images.js";
+import TopSection from "../src/components/staticpages/TopSection";
+import { Container, Typography, useMediaQuery } from "@material-ui/core";
+import QuoteBox from "../src/components/staticpages/QuoteBox";
+import TextBox from "../src/components/staticpages/donate/TextBox";
+import WhoWeAreContent from "../src/components/staticpages/donate/WhoWeAreContent";
+import FloatingWidget from "../src/components/staticpages/donate/FloatingWidget";
+import theme from "../src/themes/theme";
+import ToggleWidgetButton from "../src/components/staticpages/donate/ToggleWidgetButton";
+import axios from "axios";
 
 const useStyles = makeStyles(theme => {
   return {
-    headerImageContainer: {
-      marginBottom: theme.spacing(5)
+    root: {
+      position: "relative"
     },
-    headerTextContainer: {
+    topImageContainer: {
+      width: "100%",
+      height: 450,
+      background: "url('/images/drought.jpg')",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "100% auto",
+      backgroundPosition: "0px 50%",
+      [theme.breakpoints.down("md")]: {
+        height: 350,
+        backgroundPosition: "0px 70%"
+      },
+      [theme.breakpoints.down("sm")]: {
+        height: 260,
+        backgroundPosition: "0px 85%"
+      },
+      [theme.breakpoints.down("xs")]: {
+        height: 160,
+        display: "none"
+      }
+    },
+    imageTextContainer: {
+      position: "relative",
+      height: "100%",
+      width: "100%"
+    },
+    headlineClass: {
+      fontSize: 25,
+      fontWeight: 700,
+      marginBottom: theme.spacing(1.5),
+      color: theme.palette.primary.main,
+      [theme.breakpoints.down("xs")]: {
+        fontSize: 20
+      }
+    },
+    imageText: {
       position: "absolute",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      background: "rgba(255, 255, 255, 0.6)",
-      width: "100%",
-      height: "100%",
+      bottom: theme.spacing(4),
+      color: theme.palette.yellow.main,
+      paddingRight: `max(24px, 472px - ((100% - 1280px) / 2))`,
+      marginBottom: 0,
       [theme.breakpoints.down("md")]: {
-        background: "rgba(255, 255, 255, 0.8)"
-      }
-    },
-    headerTextInnerContainer: {
-      height: "100%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: theme.spacing(4)
-    },
-    headerTextBig: {
-      fontWeight: "bold",
-      fontSize: 80,
-      [theme.breakpoints.down("md")]: {
-        fontSize: 60
+        paddingRight: 472
+      },
+      [theme.breakpoints.down("sm")]: {
+        padding: 0
       },
       [theme.breakpoints.down("xs")]: {
-        fontSize: 40
-      },
-      textAlign: "left"
-    },
-    headerTextSmall: {
-      color: "white",
-      fontWeight: "bold",
-      textAlign: "left",
-      [theme.breakpoints.down("md")]: {
-        fontSize: 40
-      },
-      [theme.breakpoints.down("xs")]: {
-        fontSize: 25
-      },
-      textShadow: "3px 3px 3px #484848C2"
-    },
-    content: {
-      textAlign: "center",
-      fontWeight: "bold"
-    },
-    boldText: {
-      fontSize: 30,
-      fontWeight: 600,
-      lineHeight: 1.5,
-      [theme.breakpoints.down("md")]: {
-        fontSize: 23
+        display: "none"
       }
     },
-    twingle: {
-      width: "100%",
-      border: "none",
-      overflow: "visible",
-      display: "block",
-      marginBottom: theme.spacing(5),
-      marginTop: theme.spacing(2),
-      height: 550
+    textBodyClass: {
+      color: theme.palette.secondary.main
     },
-    block: {
-      display: "block",
-      marginBottom: theme.spacing(3)
-    },
-    mediumSizeText: {
-      fontSize: 22,
-      [theme.breakpoints.down("md")]: {
-        fontSize: 18
-      }
-    },
-    badgeImage: {
-      marginTop: theme.spacing(3),
-      marginBottom: theme.spacing(3)
-    },
-    divider: {
+    textSection: {
       marginTop: theme.spacing(5),
-      marginBottom: theme.spacing(5)
+      marginBottom: theme.spacing(5),
+      paddingRight: `max(24px, 472px - ((100% - 1280px) / 2))`,
+      [theme.breakpoints.down("md")]: {
+        paddingRight: 472
+      },
+      [theme.breakpoints.down("sm")]: {
+        padding: theme.spacing(4)
+      },
+      [theme.breakpoints.down("xs")]: {
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+        paddingTop: theme.spacing(3),
+        paddingBottom: theme.spacing(3)
+      }
     },
-    smallWidthText: {
-      maxWidth: 800,
-      margin: "0 auto"
-    },
-    paypalLink: {
-      marginBottom: theme.spacing(7),
-      display: "block"
-    },
-    quoteSlideShow: {
-      marginBottom: theme.spacing(5)
+    subHeadline: {
+      color: theme.palette.primary.main,
+      marginTop: theme.spacing(3),
+      marginBottom: theme.spacing(1),
+      fontWeight: 700,
+      fontSize: 20,
+      [theme.breakpoints.down("xs")]: {
+        fontSize: 16
+      }
     }
   };
 });
 
-export default function Support() {
+export default function Donate({ goal_name, goal_amount, current_amount }) {
   const classes = useStyles();
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
+  const [overlayOpen, setOverlayOpen] = React.useState(false);
   return (
-    <>
-      <WideLayout title="Support us" isStaticPage noSpaceBottom>
-        <HeaderImage src={"images/supportusheader.jpg"} className={classes.headerImageContainer}>
-          <div className={classes.headerTextContainer}>
-            <div className={classes.headerTextInnerContainer}>
-              <div>
-                <Typography color="primary" variant="h1" className={classes.headerTextBig}>
-                  Support us
-                </Typography>
-                <Typography variant="h1" className={classes.headerTextSmall}>
-                  Help us to stay free and independent
-                </Typography>
-              </div>
-            </div>
-          </div>
-        </HeaderImage>
-        <Container size="lg" className={classes.content}>
-          <div className={classes.block}>
-            <Typography variant="h5" className={classes.boldText} color="secondary">
-              We rely on your contributions to keep Climate Connect up and running!
-            </Typography>
-            <Typography variant="h5" className={classes.boldText} color="secondary">
-              {" "}
-              Support us with a donation to enable us to bring the global climate action community
-              together in a strong network of worldwide collaboration.
-            </Typography>
-          </div>
-          <Typography variant="h5" color="secondary" className={classes.mediumSizeText}>
-            If you{" "}
-            <Link href="#banktransfer" color="primary" underline="always">
-              donate directly to our donations account
-            </Link>
-            , we {"won't"} need to pay any fees.
-          </Typography>
-          <iframe
-            className={classes.twingle}
-            src="https://spenden.twingle.de/climate-connect-gug-haftungsbeschrankt/climate-connect/tw5ee1f393e9a58/widget"
+    <WideLayout title="Your donation counts" isStaticPage noSpaceBottom noFeedbackButton>
+      <div className={classes.root}>
+        {isLargeScreen ? (
+          <FloatingWidget
+            goal_name={goal_name}
+            current_amount={current_amount}
+            goal_amount={goal_amount}
           />
-          <script src="https://spenden.twingle.de/embed/generic" />
-          <Typography
-            variant="h5"
-            className={`${classes.boldText} ${classes.mediumSizeText}`}
-            color="secondary"
-          >
-            A one time donation is awesome. <br /> <b>Continuous support</b> will give us the
-            freedoom to plan our actions with foresight.
-          </Typography>
-          <Typography
-            variant="h5"
-            className={`${classes.boldText} ${classes.mediumSizeText}`}
-            color="secondary"
-          >
-            Donate <b>directly to our bank account below </b>to make the biggest impact.{" "}
-          </Typography>
-          <Typography
-            variant="h5"
-            className={`${classes.boldText} ${classes.mediumSizeText}`}
-            color="secondary"
-          >
-            Also: <b>receive an awesome badge</b> (as below) on Climate Connect to show your
-            support! (Will be implemented soon!)
-          </Typography>
-          <img src="/images/badge.png" className={classes.badgeImage} alt="Donators reward badge" />
-          <Typography
-            variant="h5"
-            id="banktransfer"
-            className={`${classes.boldText} ${classes.mediumSizeText} ${classes.block}`}
-          >
-            <div>
-              Donate directly to our donations account. This way we {"don't"} need to pay any fees
-              on your donation.
-            </div>
-            <div>
-              <b>Recurring donations help us plan our actions with foresight.</b>
-            </div>
-          </Typography>
-          <Typography color="primary" className={classes.boldText}>
-            <div>Climate Connect gUG (haftungsbeschränkt)</div>
-            <div>IBAN: DE02430609671072519500</div>
-            <div>BIC: GENODEM1GLS</div>
-          </Typography>
-          <Typography className={classes.boldText}>Bank: GLS Gemeinschaftsbank eG</Typography>
-          <Divider className={classes.divider} />
-          <Link
-            href="https://paypal.me/climateconnect"
-            color="primary"
-            variant="h4"
-            className={`${classes.boldText} ${classes.paypalLink}`}
-            target="_blank"
-          >
-            Donate directly with PayPal
-          </Link>
-        </Container>
-        <QuoteSlideShow
-          image={quotes_with_images[1].image_path}
-          className={classes.quoteSlideShow}
+        ) : (
+          <ToggleWidgetButton
+            overlayOpen={overlayOpen}
+            setOverlayOpen={setOverlayOpen}
+            goal_name={goal_name}
+            current_amount={current_amount}
+            goal_amount={goal_amount}
+          />
+        )}
+        <TopSection
+          headline="Donate"
+          subHeader="Support growing a global network of climate actors."
         />
-        <Container maxWidth="lg" className={classes.content}>
-          <Typography
-            className={`${classes.boldText} ${classes.mediumSizeText} ${classes.smallWidthText} ${classes.block}`}
-          >
-            Donations pay for server cost, marketing and mainly for the salaries of our employees
-            who make sure that Climate Connect is working and expanding. Since transparency is very
-            important for us we will start issueing monthly financial reports starting from
-            September 2020.
-          </Typography>
-        </Container>
-      </WideLayout>
-    </>
+        <div className={classes.topImageContainer}>
+          <Container className={classes.imageTextContainer}>
+            <Typography className={`${classes.imageText} ${classes.headlineClass}`} component="h1">
+              A new way to fight climate change. Donate today.
+            </Typography>
+          </Container>
+        </div>
+        <TextBox
+          className={classes.textSection}
+          headlineClass={classes.headlineClass}
+          textBodyClass={classes.textBodyClass}
+          headline="Why donate?"
+          text={`
+              Great that you want to support us! 
+
+              We believe that the possibility to connect and get active in the climate movement should be free and include everyone.
+
+              With a donation you enable us to stay independent. Our full-time team is working hard every day to multiply the impact of climate actors around the globe.
+
+          
+            `}
+          subPoints={[
+            {
+              headline: "Your donation helps scale up effective climate solutions",
+              text: `
+                There are many climate solutions, that have a huge impact in one place. Many of them could also be implemented in other places, but never get scaled up.
+                With your donation we can reach even more people and enable them to work with the creators of these solutions to spread the most effective climate solutions around the world
+
+              `
+            },
+            {
+              headline: "Your donation multiplies the impact of climate actors",
+              text: (
+                <>
+                  There is currently many people around the world working on similar solutions to
+                  climate change without even knowing about each other. Climate Connect allows them
+                  to connect, exchange knowledge and join forces to achieve much more together. We
+                  will not be able to solve this crisis by working alone or in silos and with your
+                  donation Climate Connect can multiply the impact of even more climate actors
+                  worldwide.
+                </>
+              )
+            },
+            {
+              headline: "Your support keeps Climate Connect independent and free for everyone",
+              text:
+                "We strongly believe that a platform connecting all climate actors needs to be independent, non-profit and free for everyone. This is only possible with your financial support."
+            }
+          ]}
+          subHeadlineClass={classes.subHeadline}
+          icon="/icons/floating_sign_heart.svg"
+        />
+        <TextBox
+          className={classes.textSection}
+          headlineClass={classes.headlineClass}
+          textBodyClass={classes.textBodyClass}
+          headline="Donate as a gift"
+          text="Give your loved ones a gift that helps save our planet. By donating you support a global effort of move towards a carbon-neutral future. You will recieve a personalized christmas themed donation certificate."
+          icon="/icons/floating_sign_gift.svg"
+        />
+        <QuoteBox
+          className={classes.textSection}
+          text="We can only prevent a global climate catastrophe if everyone working in climate action coordinates their efforts and the most effective solutions get spread globally - if you believe that too you should donate"
+        />
+        <TextBox
+          className={classes.textSection}
+          headlineClass={classes.headlineClass}
+          textBodyClass={classes.textBodyClass}
+          headline="What we need to pay for"
+          text="Next to our volunteers from around the world Climate Connect has 3 full-time employees working hard every day to bring climate actors together to multiply their positive impact on our planet. We can only do this in a sustainable way with your financial support."
+          subPoints={[
+            {
+              headline: "Improving and updating Climate Connect",
+              text: (
+                <>
+                  We are still in Beta and a big chunk of our work goes into designing and
+                  developing new features (see our{" "}
+                  <a href="https://github.com/climateconnect/climateconnect">
+                    open source codebase
+                  </a>
+                  ). For the next few months, we will create hubs for each important topic in
+                  climate action, vastly improve user experience on Climate connect and try to
+                  optimize project pages even more so we can be most effective at sparking
+                  collaboration and knowledge sharing between users. We also constantly improve
+                  existing parts of the websites based on user feedback.
+                </>
+              )
+            },
+            {
+              headline: "Growing the community and sparking collaboration",
+              text: (
+                <>
+                  Just putting a platform out there is not enough. Our volunteers and full-time
+                  employees spend countless hours spreading the word about Climate Connect to work
+                  towards our vision of connecting all climate actors worldwide. We are also
+                  constantly in contact with our community and connect users between which we see
+                  synergies to spark collaboration between Climate Connect users.
+                </>
+              )
+            },
+            {
+              headline: "Ongoing expenses",
+              text:
+                "Our ongoing expenses include server costs, fees for bookkeeping and legal advice."
+            }
+          ]}
+          subHeadlineClass={classes.subHeadline}
+          icon="/icons/floating_sign_expenses.svg"
+        />
+        <TextBox
+          className={classes.textSection}
+          headlineClass={classes.headlineClass}
+          textBodyClass={classes.textBodyClass}
+          headline="Long term sustainability"
+          text={
+            <>
+              To make Climate Connect sustainable in the long run, we rely on people supporting us
+              continuously. This is why we much prefer smaller recurring donations over one-time
+              bigger donations. To pay our current full-time employees a wage that they can live on,
+              we would need around 5,000€ in donations per month.
+            </>
+          }
+          icon="/icons/floating_sign_infinity.svg"
+        />
+        <TextBox
+          className={classes.textSection}
+          headlineClass={classes.headlineClass}
+          textBodyClass={classes.textBodyClass}
+          headline="Who we are"
+          text={
+            <>
+              <Typography>
+                This is the European part of our team on the day we launched our Beta. In total we
+                are a team of 3 full-time employees and 15 active volunteers from all around the
+                world. Together we work on developing and designing the platform, spreading the word
+                through marketing and trying the best to serve our community. We have all decided to
+                dedicate our time towards trying to make the biggest difference in the fight against
+                climate change.
+              </Typography>
+            </>
+          }
+          icon="/icons/floating_sign_group.svg"
+        >
+          <WhoWeAreContent />
+        </TextBox>
+      </div>
+    </WideLayout>
   );
 }
+
+Donate.getInitialProps = async () => {
+  const { goal_name, goal_amount, current_amount } = await getDonations();
+  return {
+    goal_name: goal_name,
+    goal_amount: goal_amount,
+    current_amount: current_amount
+  };
+};
+
+const getDonations = async () => {
+  try {
+    const resp = await axios.get(process.env.API_URL + "/api/donation_goal_progress/");
+    return {
+      goal_name: resp.data.name,
+      goal_start: resp.data.start_date,
+      goal_end: resp.data.end_date,
+      goal_amount: resp.data.amount,
+      current_amount: resp.data.current_amount
+    };
+  } catch (err) {
+    if (err.response && err.response.data) {
+      console.log(err.response.data);
+    } else console.log(err);
+    return null;
+  }
+};

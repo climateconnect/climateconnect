@@ -1,7 +1,7 @@
 import { Container, makeStyles, Typography, Link } from "@material-ui/core";
 
 import React from "react";
-import InfoLinkBox from "../staticpages/InfoLinkBox";
+import InfoLinkBox from "../InfoLinkBox";
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {

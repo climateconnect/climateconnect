@@ -24,23 +24,23 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
     justifyContent: "center"
   },
-  closeQuoteIconContainer: {
+  closeQuoteIconContainer: props => ({
     alignItems: "flex-end",
-    paddingLeft: theme.spacing(3),
+    paddingLeft: props.noPadding ? 0 : theme.spacing(3),
     [theme.breakpoints.down("xs")]: {
       marginLeft: "auto",
       display: "flex",
       justifyContent: "flex-end"
     }
-  },
-  openQuoteIconContainer: {
+  }),
+  openQuoteIconContainer: props => ({
     alignItems: "flex-start",
-    paddingRight: theme.spacing(3),
+    paddingRight: props.noPadding ? 0 : theme.spacing(3),
     [theme.breakpoints.down("xs")]: {
       display: "flex",
       justifyContent: "flex-start"
     }
-  },
+  }),
   quoteIcon: {
     fontSize: 80
   },
@@ -52,21 +52,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Quote({ text, className }) {
-  const classes = useStyles();
+export default function Quote({ text, className, textClassName, quoteIconClassName, noPadding }) {
+  const classes = useStyles({ noPadding: noPadding });
   return (
     <Container className={`${className} ${classes.root}`}>
       <div className={`${classes.quoteIconContainer} ${classes.openQuoteIconContainer}`}>
         <FormatQuoteIcon
           color="primary"
-          className={`${classes.openQuoteIcon} ${classes.quoteIcon}`}
+          className={`${classes.openQuoteIcon} ${classes.quoteIcon} ${quoteIconClassName}`}
         />
       </div>
-      <Typography className={classes.textBody}>{text}</Typography>
+      <Typography className={`${classes.textBody} ${textClassName}`}>{text}</Typography>
       <div className={`${classes.quoteIconContainer} ${classes.closeQuoteIconContainer}`}>
         <FormatQuoteIcon
           color="primary"
-          className={`${classes.closingQuoteIcon} ${classes.quoteIcon}`}
+          className={`${classes.closingQuoteIcon} ${classes.quoteIcon} ${quoteIconClassName}`}
         />
       </div>
     </Container>

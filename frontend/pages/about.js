@@ -4,21 +4,21 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import { makeStyles } from "@material-ui/core/styles";
 //local components
 import TopSection from "../src/components/staticpages/TopSection";
-import Challenge from "../src/components/about/Challenge";
+import Challenge from "../src/components/staticpages/about/Challenge";
 import { Typography } from "@material-ui/core";
-import Goals from "../src/components/about/Goals";
-import Values from "../src/components/about/Values";
+import Goals from "../src/components/staticpages/about/Goals";
+import Values from "../src/components/staticpages/about/Values";
 import ExplainerBox from "../src/components/staticpages/ExplainerBox";
 import Quote from "../src/components/staticpages/Quote";
-import Born from "../src/components/about/Born";
-import Timeline from "../src/components/about/Timeline";
-import HowItWorks from "../src/components/about/HowItWorks";
+import Born from "../src/components/staticpages/about/Born";
+import Timeline from "../src/components/staticpages/about/Timeline";
+import HowItWorks from "../src/components/staticpages/about/HowItWorks";
 import FaqSection from "../src/components/staticpages/FaqSection";
 import axios from "axios";
-import Team from "../src/components/about/Team";
+import Team from "../src/components/staticpages/about/Team";
 import StartNowBanner from "../src/components/staticpages/StartNowBanner";
 import UserContext from "../src/components/context/UserContext";
-import TopOfPage from "../src/components/general/TopOfPage";
+import TopOfPage from "../src/components/hooks/TopOfPage";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -81,7 +81,6 @@ export default function About({ faqQuestions }) {
           <TopSection
             headline="About"
             subHeader="A new way to fight climate change. Together. Nonprofit. Independent."
-            img="/icons/donate-icon.svg"
           />
           <Challenge
             className={classes.challenege}

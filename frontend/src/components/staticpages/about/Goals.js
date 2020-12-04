@@ -1,6 +1,6 @@
 import React from "react";
 import { Typography, Container, makeStyles } from "@material-ui/core";
-import ExplainerElement from "../staticpages/ExplainerElement";
+import ExplainerElement from "../ExplainerElement";
 
 const useStyles = makeStyles(theme => ({
   root: {

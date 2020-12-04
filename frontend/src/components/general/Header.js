@@ -170,10 +170,8 @@ const useStyles = makeStyles(theme => {
 const getLinks = path_to_redirect => [
   {
     href: "/browse",
-    text: "Home",
-    iconForDrawer: HomeIcon,
-    onlyShowIconOnNormalScreen: true,
-    icon: HomeIcon
+    text: "Browse",
+    iconForDrawer: HomeIcon
   },
   {
     href: "/about",
