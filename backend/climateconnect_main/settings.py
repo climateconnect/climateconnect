@@ -114,8 +114,6 @@ WSGI_APPLICATION = 'climateconnect_main.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 
-print("WHOA")
-
 
 DATABASES = {
     'default': {

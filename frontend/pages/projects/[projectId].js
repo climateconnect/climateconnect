@@ -17,46 +17,46 @@ import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
 import UserContext from "../../src/components/context/UserContext";
 import PageNotFound from "../../src/components/general/PageNotFound";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     textAlign: "center",
-    color: theme.palette.grey[800]
+    color: theme.palette.grey[800],
   },
   tabsWrapper: {
-    borderBottom: `1px solid ${theme.palette.grey[500]}`
+    borderBottom: `1px solid ${theme.palette.grey[500]}`,
   },
   noPadding: {
-    padding: 0
+    padding: 0,
   },
   tabContent: {
     padding: theme.spacing(2),
-    textAlign: "left"
+    textAlign: "left",
   },
   dialogText: {
     textAlign: "center",
     margin: "0 auto",
-    display: "block"
+    display: "block",
   },
   tab: {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
-    width: 145
-  }
+    width: 145,
+  },
 }));
 
-const parseComments = comments => {
+const parseComments = (comments) => {
   return comments
-    .filter(c => {
+    .filter((c) => {
       return !c.parent_comment_id;
     })
-    .map(c => {
+    .map((c) => {
       return {
         ...c,
         replies: comments
-          .filter(r => r.parent_comment_id === c.id)
+          .filter((r) => r.parent_comment_id === c.id)
           .sort((a, b) => {
             return new Date(a.created_at) - new Date(b.created_at);
-          })
+          }),
       };
     });
 };
@@ -68,8 +68,8 @@ export default function ProjectPage({ project, members, posts, comments, token, 
   const [followingChangePending, setFollowingChangePending] = React.useState(false);
   const { user } = useContext(UserContext);
 
-  const handleWindowClose = e => {
-    if (curComments.filter(c => c.unconfirmed).length > 0 || followingChangePending) {
+  const handleWindowClose = (e) => {
+    if (curComments.filter((c) => c.unconfirmed).length > 0 || followingChangePending) {
       e.preventDefault();
       return (e.returnValue = "Changes you made might not be saved.");
     }
@@ -88,10 +88,10 @@ export default function ProjectPage({ project, members, posts, comments, token, 
   });
   return (
     <WideLayout
+      description={project ? project.shortdescription : "Project not found"}
       message={message.message}
       messageType={message.messageType}
       title={project ? project.name : "Project not found"}
-      description={project.shortdescription}
     >
       {project ? (
         <ProjectLayout
@@ -112,7 +112,7 @@ export default function ProjectPage({ project, members, posts, comments, token, 
   );
 }
 
-ProjectPage.getInitialProps = async ctx => {
+ProjectPage.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectId);
   const [project, members, posts, comments, following] = await Promise.all([
@@ -120,7 +120,7 @@ ProjectPage.getInitialProps = async ctx => {
     token ? getProjectMembersByIdIfExists(projectUrl, token) : [],
     getPostsByProject(projectUrl, token),
     getCommentsByProject(projectUrl, token),
-    token ? getIsUserFollowing(projectUrl, token) : false
+    token ? getIsUserFollowing(projectUrl, token) : false,
   ]);
   return {
     project: project,
@@ -128,7 +128,7 @@ ProjectPage.getInitialProps = async ctx => {
     posts: posts,
     comments: comments,
     token: token,
-    following: following
+    following: following,
   };
 };
 
@@ -141,10 +141,10 @@ function ProjectLayout({
   user,
   setCurComments,
   followingChangePending,
-  setFollowingChangePending
+  setFollowingChangePending,
 }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const [hash, setHash] = React.useState(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = React.useState(false);
   const typesByTabValue = ["project", "team", "comments"];
@@ -190,7 +190,7 @@ function ProjectLayout({
     setTabValue(newValue);
   };
 
-  const onConfirmDialogClose = confirmed => {
+  const onConfirmDialogClose = (confirmed) => {
     if (confirmed) toggleFollowProject();
     setConfirmDialogOpen(false);
   };
@@ -203,7 +203,7 @@ function ProjectLayout({
             Please <a href="/signin">log in</a> to follow a project.
           </span>
         ),
-        messageType: "error"
+        messageType: "error",
       });
     else if (isUserFollowing) setConfirmDialogOpen(true);
     else toggleFollowProject();
@@ -219,15 +219,15 @@ function ProjectLayout({
         { following: new_value },
         tokenConfig(token)
       )
-      .then(function(response) {
+      .then(function (response) {
         setIsUserFollowing(response.data.following);
         setFollowingChangePending(false);
         setMessage({
           message: response.data.message,
-          messageType: "success"
+          messageType: "success",
         });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
         if (error && error.reponse) console.log(error.response);
       });
@@ -399,17 +399,17 @@ function parseProject(project) {
       : project.project_parents[0].parent_user,
     isPersonalProject: !project.project_parents[0].parent_organization,
     is_draft: project.is_draft,
-    tags: project.tags.map(t => t.project_tag.name),
+    tags: project.tags.map((t) => t.project_tag.name),
     collaborating_organizations: project.collaborating_organizations.map(
-      o => o.collaborating_organization
+      (o) => o.collaborating_organization
     ),
     website: project.website,
-    number_of_followers: project.number_of_followers
+    number_of_followers: project.number_of_followers,
   };
 }
 
 function parseProjectMembers(projectMembers) {
-  return projectMembers.map(m => {
+  return projectMembers.map((m) => {
     return {
       ...m.user,
       url_slug: m.user.url_slug,
@@ -417,7 +417,7 @@ function parseProjectMembers(projectMembers) {
       permission: m.role.name,
       availability: m.availability,
       name: m.user.first_name + " " + m.user.last_name,
-      location: m.user.city ? m.user.city + ", " + m.user.country : m.user.country
+      location: m.user.city ? m.user.city + ", " + m.user.country : m.user.country,
     };
   });
 }
