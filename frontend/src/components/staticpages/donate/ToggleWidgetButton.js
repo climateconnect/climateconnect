@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles, Button } from "@material-ui/core";
 import DonationWigetDialog from "../../dialogs/DonationWigetDialog";
-import DonationGoal from "./DonationGoals";
+import DonationGoal from "./DonationGoal";
 
 const useStyles = makeStyles(theme => ({
   root: {

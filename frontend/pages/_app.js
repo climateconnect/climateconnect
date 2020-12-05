@@ -12,10 +12,18 @@ import ReactGA from "react-ga";
 import "react-multi-carousel/lib/styles.css";
 import tokenConfig from "../public/config/tokenConfig";
 import WebSocketService from "../public/lib/webSockets";
+import { getCookieProps } from "../public/lib/cookieOperations";
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
-export default function MyApp({ Component, pageProps, user, notifications, pathName }) {
+export default function MyApp({
+  Component,
+  pageProps,
+  user,
+  notifications,
+  pathName,
+  donationGoal
+}) {
   const [stateInitialized, setStateInitialized] = React.useState(false);
   const [gaInitialized, setGaInitialized] = React.useState(false);
   const cookies = new Cookies();
@@ -83,15 +91,8 @@ export default function MyApp({ Component, pageProps, user, notifications, pathN
   };
 
   const signIn = async (token, expiry) => {
-    const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT);
-    //TODO: set httpOnly=true to make cookie only accessible by server and sameSite=true
-    const cookieProps = {
-      path: "/",
-      sameSite: develop ? false : "lax",
-      expires: new Date(expiry),
-      secure: !develop
-    };
-    if (!develop) cookieProps.domain = "." + API_HOST;
+    const cookieProps = getCookieProps(expiry);
+
     cookies.set("token", token, cookieProps);
     const user = await getLoggedInUser(cookies.get("token") ? cookies.get("token") : token);
     setState({
@@ -138,7 +139,8 @@ export default function MyApp({ Component, pageProps, user, notifications, pathN
     setNotificationsRead: setNotificationsRead,
     pathName: pathName,
     ReactGA: ReactGA,
-    updateCookies: updateCookies
+    updateCookies: updateCookies,
+    donationGoal: donationGoal
   };
   return (
     <React.Fragment>
@@ -163,11 +165,13 @@ MyApp.getInitialProps = async ctx => {
     ctx.ctx.res.end();
     return;
   }
-  const [user, notifications, pageProps] = await Promise.all([
+  const [user, notifications, donationGoal, pageProps] = await Promise.all([
     getLoggedInUser(token),
     getNotifications(token),
+    process.env.DONATION_CAMPAIGN_RUNNING ? getDonationGoalData() : null,
     ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps(ctx.ctx) : {}
   ]);
+  console.log(donationGoal)
   const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
   if (token) {
     const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
@@ -178,7 +182,8 @@ MyApp.getInitialProps = async ctx => {
         user: user,
         notifications: updatedNotifications ? updatedNotifications : [],
         acceptedStatistics: acceptedStatistics,
-        pathName: pathName
+        pathName: pathName,
+        donationGoal: donationGoal
       };
     }
   }
@@ -186,7 +191,8 @@ MyApp.getInitialProps = async ctx => {
     pageProps: pageProps,
     user: user,
     notifications: notifications ? notifications : [],
-    pathName: pathName
+    pathName: pathName,
+    donationGoal: donationGoal
   };
 };
 
@@ -268,5 +274,23 @@ async function getNotifications(token) {
     }
   } else {
     return [];
+  }
+}
+
+async function getDonationGoalData() {
+  try {
+    const resp = await axios.get(process.env.API_URL + "/api/donation_goal_progress/");
+    return {
+      goal_name: resp.data.name,
+      goal_start: resp.data.start_date,
+      goal_end: resp.data.end_date,
+      goal_amount: resp.data.amount,
+      current_amount: resp.data.current_amount
+    };
+  } catch (err) {
+    if (err.response && err.response.data) {
+      console.log(err.response.data);
+    } else console.log(err);
+    return null;
   }
 }
