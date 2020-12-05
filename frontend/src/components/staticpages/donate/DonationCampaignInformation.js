@@ -114,7 +114,7 @@ export default function DonationCampaignInformation() {
                   {" "}CO2-footprint kindly sponsored by <Link underline="always" className={classes.link} href="https://ecologi.com/" target="_blank" rel="noreferrer">Ecologi</Link>!
                 </Typography>              
                 <Typography>
-                  You can find the terms of the raffle <Link underline="always" className={classes.link} href="https://ecologi.com/" target="_blank" rel="noreferrer">here</Link>
+                  You can find the terms of the raffle <Link underline="always" className={classes.link} href="/raffleterms" target="_blank" rel="noreferrer">here</Link>
                 </Typography>
                 {!isNarrowScreen &&
                   <Button href="/donate" variant="contained" className={classes.donateButton}>Donate now</Button>              
