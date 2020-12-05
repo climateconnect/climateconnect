@@ -7,6 +7,7 @@ import LayoutWrapper from "./LayoutWrapper";
 import theme from "../../themes/theme";
 import Alert from "@material-ui/lab/Alert";
 import LoadingContainer from "../general/LoadingContainer";
+import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 
 const useStyles = makeStyles(theme => ({
   mainHeading: {
@@ -34,6 +35,7 @@ export default function Layout({
   return (
     <LayoutWrapper theme={theme} title={title}>
       <Header noSpacingBottom={noSpacingBottom} isStaticPage={isStaticPage} />
+      {process.env.DONATION_CAMPAIGN_RUNNING && <DonationCampaignInformation />}
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />
       ) : (

@@ -1,9 +1,9 @@
 import React from "react";
 import { Container, makeStyles } from "@material-ui/core";
-import ElementOnScreen from "../../general/ElementOnScreen";
-import TopOfPage from "../../hooks/TopOfPage";
+import ElementOnScreen from "../../hooks/ElementOnScreen";
 import BottomOfPage from "../../hooks/BottomOfPage";
-import DonationGoal from "./DonationGoals";
+import DonationGoal from "./DonationGoal";
+import ElementSpaceToTop from "../../hooks/ElementSpaceToTop";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -46,10 +46,10 @@ export default function FloatingWidget({ goal_name, current_amount, goal_amount 
   const [isFixed, setIsFixed] = React.useState(false);
   const [isAtBottom, setIsAtBottom] = React.useState(false);
   const trigger = ElementOnScreen({ el: el });
-  const atTopOfPage = TopOfPage({ initTopOfPage: false, marginToTrigger: 200 });
+  const spaceToTop = ElementSpaceToTop({ initTopOfPage: true, el: el });
   const atBottomOfPage = BottomOfPage({ initBottomOfPage: false, marginToTrigger: 363 });
-  if (trigger && !isFixed) setIsFixed(true);
-  if (atTopOfPage && !trigger && isFixed) setIsFixed(false);
+  if (!isFixed && trigger && spaceToTop.page != null && spaceToTop.page > 215) setIsFixed(true);
+  if (isFixed && spaceToTop.page != null && spaceToTop.page < 215) setIsFixed(false);
   if (atBottomOfPage && !isAtBottom) setIsAtBottom(true);
   if (!atBottomOfPage && isAtBottom) setIsAtBottom(false);
   return (
