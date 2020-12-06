@@ -58,7 +58,6 @@ export default function FilterContent({
   };
 
   const handleApplyFilters = () => {
-    // TODO(piper): apply spinner here?
     applyFilters(type, currentFilters, isSmallScreen);
   };
 
