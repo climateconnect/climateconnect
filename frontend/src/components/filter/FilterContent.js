@@ -17,6 +17,7 @@ export default function FilterContent({
 }) {
   const isMediumScreen = useMediaQuery(theme.breakpoints.between("xs", "md"));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
+
   const possibleFiltersFirstHalf = possibleFilters.slice(0, Math.ceil(possibleFilters.length / 2));
   const possibleFiltersSecondHalf = possibleFilters.slice(
     Math.ceil(possibleFilters.length / 2),
@@ -59,7 +60,6 @@ export default function FilterContent({
 
   const handleApplyFilters = () => {
     // TODO(piper): apply spinner here?
-    // <CircularProgress size={10} color="inherit" className={classes.loader} />
     applyFilters(type, currentFilters, isSmallScreen);
   };
 
