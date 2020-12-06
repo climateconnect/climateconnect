@@ -1,5 +1,7 @@
 import React from "react";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { CircularProgress } from "@material-ui/core";
+
 import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
@@ -11,7 +13,7 @@ export default function FilterContent({
   applyFilters,
   possibleFilters,
   filtersExpanded,
-  unexpandFilters
+  unexpandFilters,
 }) {
   const isMediumScreen = useMediaQuery(theme.breakpoints.between("xs", "md"));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
@@ -38,7 +40,7 @@ export default function FilterContent({
     }, {})
   );
 
-  const handleClickDialogOpen = prop => {
+  const handleClickDialogOpen = (prop) => {
     if (!open.prop) {
       setOpen({ ...open, [prop]: true });
     } else setOpen({ ...open, [prop]: !open[prop] });
@@ -46,7 +48,7 @@ export default function FilterContent({
 
   const handleClickDialogClose = (prop, results) => {
     if (results) {
-      setCurrentFilters({ ...currentFilters, [prop]: results.map(x => x.name) });
+      setCurrentFilters({ ...currentFilters, [prop]: results.map((x) => x.name) });
     }
     setOpen({ ...open, [prop]: false });
   };
@@ -56,18 +58,20 @@ export default function FilterContent({
   };
 
   const handleApplyFilters = () => {
+    // TODO(piper): apply spinner here?
+    // <CircularProgress size={10} color="inherit" className={classes.loader} />
     applyFilters(type, currentFilters, isSmallScreen);
   };
 
   const handleUnselectFilter = (filterName, filterKey) => {
     setCurrentFilters({
       ...currentFilters,
-      [filterKey]: currentFilters[filterKey].filter(f => f !== filterName)
+      [filterKey]: currentFilters[filterKey].filter((f) => f !== filterName),
     });
     if (selectedItems[filterKey])
       setSelectedItems({
         ...selectedItems,
-        [filterKey]: selectedItems[filterKey].filter(i => i.name !== filterName)
+        [filterKey]: selectedItems[filterKey].filter((i) => i.name !== filterName),
       });
   };
   return (
