@@ -274,7 +274,7 @@ export default function Index({
 
   const isScrollingUp = !useScrollTrigger({
     disableHysteresis: false,
-    threshold: 0
+    threshold: 0,
   });
   const atTopOfPage = TopOfPage({ initTopOfPage: true });
   const showOnScrollUp = isScrollingUp && !atTopOfPage;
@@ -341,23 +341,6 @@ export default function Index({
                   className={classes.itemsContainer}
                 />
               ) : (
-                // TODO(piper): test
-                //   <MultiLevelSelectDialog
-                //   open={true}
-                //   // onClose={handleSkillsDialogClose}
-                //   type="skills"
-                //   itemsToChooseFrom={[
-                //     {
-                //       test: 'test'
-                //     }
-                //   ]}
-                //   items={[{
-                //     test: 'test'
-                //   }]}
-                //   selectedItems={[]}
-                //   setSelectedItems={() => { console.log('Setting selected up... ')}}
-                // />
-
                 <Typography component="h4" variant="h5" className={classes.infoMessage}>
                   We could not fetch any projects or connect to the API. If this happens repeatedly,
                   contact support@climateconnect.earth.

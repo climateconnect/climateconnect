@@ -2,8 +2,6 @@ const pick = require("lodash/pick");
 
 require("dotenv").config();
 
-console.log("TEST 🗻")
-
 module.exports = {
   // Read set variables from `.env` file
   env: pick(process.env, [
@@ -17,14 +15,14 @@ module.exports = {
     "PRE_LAUNCH",
   ]),
 
-  exportPathMap: async function(defaultPathMap) {
+  exportPathMap: async function (defaultPathMap) {
     if (process.env.PRE_LAUNCH)
       return {
         "/": { page: "/" },
         "/zoom": { page: "/zoom" },
         "/stream": { page: "/stream" },
-        "/donate": { page: "/donate" }
+        "/donate": { page: "/donate" },
       };
     else return defaultPathMap;
-  }
+  },
 };
