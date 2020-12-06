@@ -5,21 +5,22 @@ import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
-  dialog: {
+  dialog: props => ({
     [theme.breakpoints.up("sm")]: {
-      padding: theme.spacing(8)
+      padding: props.fullScreen ? 0 : theme.spacing(8)
     }
-  },
+  }),
   noScrollDialog: {
     overflow: "hidden"
   },
-  dialogContent: {
+  dialogContent: props => ({
     padding: theme.spacing(2),
+    height: props.fullScreen ? "100%" : "auto",
     [theme.breakpoints.down("md")]: {
       padding: theme.spacing(2),
       paddingTop: 0
     }
-  },
+  }),
   scrollDialogContent: {
     height: "auto",
     overflow: "auto"
@@ -54,7 +55,7 @@ export default function GenericDialog({
   fullScreen,
   maxWidth
 }) {
-  const classes = useStyles({ useApplyButton: useApplyButton });
+  const classes = useStyles({ useApplyButton: useApplyButton, fullScreen: fullScreen });
 
   const handleCancel = () => {
     onClose(false);

@@ -1,8 +1,8 @@
 import React from "react";
 import { makeStyles, Container, Typography, Divider, useMediaQuery } from "@material-ui/core";
-import theme from "../../themes/theme";
+import theme from "../../../themes/theme";
 import Carousel from "react-multi-carousel";
-import CustomDot from "../general/CustomDot";
+import CustomDot from "../../general/CustomDot";
 
 const useStyles = makeStyles(theme => ({
   root: {

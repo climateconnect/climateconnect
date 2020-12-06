@@ -93,6 +93,7 @@ export default function Index({ projects, organizations }) {
       noFeedbackButton
       noSpaceBottom
       largeFooter
+      landingPage
     >
       <div className={classes.root}>
         <LandingTopBox scrollToContent={scrollToContent} />

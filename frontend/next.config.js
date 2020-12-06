@@ -10,9 +10,9 @@ module.exports = {
     "BASE_URL_HOST",
     "ENVIRONMENT",
     "GOOGLE_ANALYTICS_CODE",
+    "BASE_URL_HOST",
     "LATEST_NEWSLETTER_LINK",
-    "SOCKET_URL",
-    "PRE_LAUNCH",
+    "DONATION_CAMPAIGN_RUNNING"
   ]),
 
   exportPathMap: async function (defaultPathMap) {

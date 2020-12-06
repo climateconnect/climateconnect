@@ -12,3 +12,6 @@ from climateconnect_api.models.faq import (
 from climateconnect_api.models.notification import (
     Notification, UserNotification
 )
+from climateconnect_api.models.donation import (
+    Donation, DonationGoal
+)

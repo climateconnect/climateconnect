@@ -178,7 +178,11 @@ export default function Privacy() {
           <b>Service providers and advisors</b>: third party service providers that perform services
           for us, on our behalf, which may include payments processing, providing analytic services
           (e.g. Google analytics; privacy policy is available
-          <a href="https://support.google.com/analytics/answer/6004245?hl=en" target="_blank" rel="noreferrer">
+          <a
+            href="https://support.google.com/analytics/answer/6004245?hl=en"
+            target="_blank"
+            rel="noreferrer"
+          >
             here
           </a>
           ) providing automatic email notification (e.g. Mailjet; Mailjet privacy policy is
