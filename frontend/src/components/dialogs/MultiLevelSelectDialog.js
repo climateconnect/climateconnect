@@ -15,7 +15,7 @@ export default function MultiLevelSelectDialog({
   open,
   selectedItems,
   setSelectedItems,
-  type
+  type,
 }) {
   const handleClose = () => {
     setSelectedItems(items ? items : []);
@@ -34,7 +34,6 @@ export default function MultiLevelSelectDialog({
     ? skillsToChooseFrom
     : type === "project categories" && categoriesToChooseFrom;
 
-    // TODO(piper): possibly here...
   return (
     <GenericDialog
       applyText={"Save"}
@@ -45,7 +44,6 @@ export default function MultiLevelSelectDialog({
       topBarFixed
       useApplyButton={true}
     >
-
       <MultiLevelSelector
         dragAble={dragAble}
         isInPopup
@@ -60,5 +58,5 @@ export default function MultiLevelSelectDialog({
 }
 
 MultiLevelSelectDialog.propTypes = {
-  open: PropTypes.bool.isRequired
+  open: PropTypes.bool.isRequired,
 };

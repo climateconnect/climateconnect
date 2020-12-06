@@ -143,10 +143,9 @@ const useStyles = makeStyles((theme) => {
       borderBottom: 0,
     },
 
-    // Paint the border on the last sublist item,
-    // on the last list item
+    // Ensure there's border on the last sublist item,
+    // on the last parent list item. See GitHub issue #312
     finalListItem: {
-      // Ensure there's a border on the last sublist item
       borderBottom: "1px solid black",
     },
 
