@@ -202,12 +202,6 @@ export default function MultiLevelSelector({
 
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
-  // const numOuterListItems = itemsToSelectFrom?.length;
-  // const lastItemInOuterList = itemsToSelectFrom[numOuterListItems - 1];
-  // const numLastItemInnerList = lastItemInOuterList?.subcategories.length;
-  // const lastItemInnerList = lastItemInOuterList?.subcategories[numLastItemInnerList - 1];
-  // console.log(lastItemInnerList);
-
   return (
     <>
       <div className={classes.wrapper}>
