@@ -79,7 +79,6 @@ python manage.py test <file_path> or <file_path + class_name>
 7.  If you want to run tests suite use this command: `python manage.py test`. If you want to run a
     specific test file or test class run this command:
     `python manage.py test <file_path> or <file_path + class_name>`
-    > > > > > > > master
 
 ### Frontend
 
