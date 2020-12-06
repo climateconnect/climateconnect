@@ -1,6 +1,5 @@
 import React from "react";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { CircularProgress } from "@material-ui/core";
 
 import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
