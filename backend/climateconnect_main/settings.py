@@ -28,8 +28,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = env('DEBUG')
-DEBUG = True
+DEBUG = env('DEBUG')
+# DEBUG = True
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -125,9 +125,6 @@ DATABASES = {
         'PORT': env('DATABASE_PORT', '5432')
     }
 }
-
-print(DATABASES)
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

@@ -8,11 +8,11 @@ module.exports = {
     "API_HOST",
     "API_URL",
     "BASE_URL_HOST",
+    "BASE_URL_HOST",
+    "DONATION_CAMPAIGN_RUNNING",
     "ENVIRONMENT",
     "GOOGLE_ANALYTICS_CODE",
-    "BASE_URL_HOST",
     "LATEST_NEWSLETTER_LINK",
-    "DONATION_CAMPAIGN_RUNNING"
   ]),
 
   exportPathMap: async function (defaultPathMap) {
