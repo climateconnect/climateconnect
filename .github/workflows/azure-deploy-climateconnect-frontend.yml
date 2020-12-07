@@ -33,6 +33,7 @@ jobs:
         GOOGLE_ANALYTICS_CODE: ${{ secrets.GOOGLE_ANALYTICS_CODE }}
         BASE_URL_HOST: ${{ secrets.BASE_URL_HOST }}
         LATEST_NEWSLETTER_LINK: ${{ secrets.LATEST_NEWSLETTER_LINK }}
+        DONATION_CAMPAIGN_RUNNING: ${{ secrets.DONATION_CAMPAIGN_RUNNING }}
 
 
     - name: 'Deploy to Azure Web App'

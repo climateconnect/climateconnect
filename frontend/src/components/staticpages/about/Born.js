@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles, Typography, Container } from "@material-ui/core";
-import HoverImage from "../staticpages/HoverImage";
+import HoverImage from "../HoverImage";
 
 const useStyles = makeStyles(theme => ({
   root: {

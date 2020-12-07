@@ -24,7 +24,7 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import FilterSection from "../src/components/indexPage/FilterSection";
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
-import TopOfPage from "../src/components/general/TopOfPage";
+import TopOfPage from "../src/components/hooks/TopOfPage";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -275,7 +275,7 @@ export default function Index({
         <About />
       ) : (
         <WideLayout
-          title="Climate Connect - global climate action platform"
+          title="Climate Connect - global platform form climate change solutions"
           hideHeadline
           message={errorMessage ? errorMessage : message}
           messageType={errorMessage ? "error" : "success"}

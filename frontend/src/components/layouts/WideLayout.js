@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import LayoutWrapper from "./LayoutWrapper";
 import Alert from "@material-ui/lab/Alert";
 import LoadingContainer from "../general/LoadingContainer";
+import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 
 const useStyles = makeStyles(theme => ({
   main: props => ({
@@ -33,7 +34,8 @@ export default function WideLayout({
   noSpaceBottom, //display the footer directly under the content without any margin
   showOnScrollUp, //display the footer when scrolling up, used for "inifinite scroll" pages
   largeFooter,
-  description
+  description,
+  landingPage
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -67,6 +69,7 @@ export default function WideLayout({
                 : decodeURIComponent(message).replaceAll("+", " ")}
             </Alert>
           )}
+          {process.env.DONATION_CAMPAIGN_RUNNING && !landingPage && <DonationCampaignInformation />}
           {children}
         </Container>
       )}
