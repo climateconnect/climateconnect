@@ -110,6 +110,30 @@ class Project(models.Model):
         blank=True
     )
 
+    location = models.CharField(
+        help_text="Project location",
+        verbose_name="Location",
+        max_length=2048,
+        null=True,
+        blank=True
+    )
+
+    latitude = models.CharField(
+        help_text="Latitude of project's location",
+        verbose_name="Latitude",
+        max_length=512,
+        null=True,
+        blank=True
+    )
+
+    longitude = models.CharField(
+        help_text="Longitude of project's location",
+        verbose_name="Longitude",
+        max_length=512,
+        null=True,
+        blank=True
+    )
+
     collaborators_welcome = models.BooleanField(
         help_text="If collaborators are welcome or not for the project",
         verbose_name="Collaborators welcome",

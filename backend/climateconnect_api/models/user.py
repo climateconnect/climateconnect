@@ -79,6 +79,30 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    location = models.CharField(
+        help_text='Location of user',
+        verbose_name='Location',
+        max_length=2048,
+        null=True,
+        blank=True
+    )
+
+    latitude = models.CharField(
+        help_text="Latitude of user's location",
+        verbose_name="Latitude",
+        max_length=512,
+        null=True,
+        blank=True
+    )
+
+    longitude = models.CharField(
+        help_text="Longitude of user's location",
+        verbose_name="Longitude",
+        max_length=512,
+        null=True,
+        blank=True
+    )
+
     biography = models.TextField(
         help_text="Points to user's bio",
         verbose_name="bio",
