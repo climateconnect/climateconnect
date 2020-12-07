@@ -3,6 +3,7 @@ from django.contrib.auth import (authenticate, login)
 import datetime
 from django.utils import timezone
 from datetime import datetime, timedelta
+from django.conf import settings
 
 # Rest imports
 from django_filters.rest_framework import DjangoFilterBackend
@@ -36,7 +37,8 @@ from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.permissions import UserPermission
 from climateconnect_api.utility.email_setup import send_user_verification_email
 from climateconnect_api.utility.email_setup import send_password_link
-from django.conf import settings
+
+# Logging
 import logging
 logger = logging.getLogger(__name__)
 
