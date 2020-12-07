@@ -43,6 +43,7 @@ Once you clone the repository start backend server.
 7.  If you want to run tests suite use this command: `python manage.py test`. If you want to run a
     specific test file or test class run this command:
     `python manage.py test <file_path> or <file_path + class_name>`
+8.  To access Django's admin panel you need to create a superuser using this command: `python manage.py createsuperuser`
 
 ### Frontend
 
