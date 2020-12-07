@@ -1,7 +1,7 @@
 //global imports
 import { useState, useEffect } from "react";
 
-export default function TopOfPage({ initTopOfPage }) {
+export default function TopOfPage({ initTopOfPage, marginToTrigger }) {
   const [topOfPage, setTopOfPage] = useState(initTopOfPage);
 
   useEffect(() => {
@@ -9,7 +9,7 @@ export default function TopOfPage({ initTopOfPage }) {
 
     const updateTopOfPage = () => {
       const scrollY = window.pageYOffset;
-      setTopOfPage(scrollY === 0.0);
+      setTopOfPage(marginToTrigger ? scrollY < marginToTrigger : scrollY === 0.0);
       ticking = false;
     };
 

@@ -1,11 +1,11 @@
 import React from "react";
 import { makeStyles, Container, Typography, Button, useMediaQuery } from "@material-ui/core";
 import Carousel from "react-multi-carousel";
-import pitch_elements from "../../../public/data/pitch_elements.json";
+import pitch_elements from "../../../../public/data/pitch_elements.json";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
-import theme from "../../themes/theme";
-import CustomDot from "../general/CustomDot";
+import theme from "../../../themes/theme";
+import CustomDot from "../../general/CustomDot";
 
 const useStyles = makeStyles(theme => ({
   root: {

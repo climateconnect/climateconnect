@@ -2,11 +2,11 @@ import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
-  infoLinkBox: {
+  infoLinkBox: props => ({
     display: "flex",
     alignItems: "center",
     maxWidth: 600,
-    marginLeft: theme.spacing(5),
+    marginLeft: props.centerContent ? theme.spacing(5) : 0,
     background: "#E6E5E5",
     padding: theme.spacing(3),
     [theme.breakpoints.down("sm")]: {
@@ -15,16 +15,16 @@ const useStyles = makeStyles(theme => ({
       margin: "0 auto",
       marginTop: theme.spacing(3)
     }
-  },
-  icon: {
-    marginRight: theme.spacing(3),
+  }),
+  icon: props => ({
+    marginRight: props.centerContent ? 0 : theme.spacing(3),
     width: 80,
     ["@media (max-width: 400px)"]: {
       width: 45
     }
-  },
+  }),
   headline: {
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: 700,
     marginBottom: theme.spacing(1),
     ["@media (max-width: 400px)"]: {
@@ -36,8 +36,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function InfoLinkBox({ className, iconSrc, iconAlt, text, headline, children }) {
-  const classes = useStyles();
+export default function InfoLinkBox({
+  className,
+  iconSrc,
+  iconAlt,
+  text,
+  headline,
+  children,
+  centerContent
+}) {
+  const classes = useStyles({ centerContent: centerContent });
   return (
     <div className={`${classes.infoLinkBox} ${className}`}>
       <img src={iconSrc} className={classes.icon} alt={iconAlt} />
