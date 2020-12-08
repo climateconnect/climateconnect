@@ -1,3 +1,7 @@
+from chat_messages.utility.notification import create_chat_message_notification
+from climateconnect_api.utility.notification import create_email_notification, create_user_notification
+from chat_messages.models.message import MessageReceiver
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -265,3 +269,38 @@ class ChangeChatCreatorView(APIView):
         old_creator.save()
 
         return Response({'message': 'Changed chat creator'}, status=status.HTTP_200_OK)
+
+class SendChatMessage(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, chat_uuid):
+        if 'message_content' not in request.data or not chat_uuid:
+            return NotFound('Required parameter missing')
+        user = request.user
+        try:
+            chat = MessageParticipants.objects.get(           
+                chat_uuid=chat_uuid
+            )
+            Participant.objects.get(user=user, chat=chat)
+        except Participant.DoesNotExist:
+            raise NotFound('You are not a participant of this chat.')
+        if chat:
+            receiver_user_ids = Participant.objects.filter(chat=chat).values_list('user', flat=True)
+            receiver_users = User.objects.filter(id__in=receiver_user_ids)
+            message = Message.objects.create(
+                content=request.data['message_content'], sender=user,
+                message_participant=chat,
+                sent_at=timezone.now()
+            ) 
+            chat.last_message_at = timezone.now()
+            chat.save()
+            notification = create_chat_message_notification(chat)
+            for receiver in receiver_users: 
+                if not receiver.id == user.id:
+                    MessageReceiver.objects.create(
+                        receiver=receiver,
+                        message=message
+                    )
+                    create_email_notification(receiver, chat, request.data['message_content'], user, notification)
+                    create_user_notification(receiver, notification)
+        return Response({'message': 'Message sent'}, status=status.HTTP_201_CREATED)

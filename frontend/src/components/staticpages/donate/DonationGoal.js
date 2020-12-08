@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles, withStyles, LinearProgress, Container, Typography } from "@material-ui/core";
+import { makeStyles, LinearProgress, Container, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   root: props => ({
@@ -29,7 +29,9 @@ const useStyles = makeStyles(theme => ({
     textAlign: "center",
     fontWeight: 600,
     color: props.embedded ? "white" : theme.palette.secondary.main,
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
+    background: props.textBackground ? props.textBackground : "auto",
+    position: props.textBackground ? "relative" : "auto"
   }),
   amount: props => ({
     fontSize: props.embedded ? "auto" : 22,
@@ -46,21 +48,7 @@ const useStyles = makeStyles(theme => ({
   })
 }));
 
-const BorderLinearProgress = withStyles(theme => ({
-  root: {
-    height: 10,
-    borderRadius: 5
-  },
-  colorPrimary: {
-    backgroundColor: theme.palette.grey[theme.palette.type === "light" ? 200 : 700]
-  },
-  bar: {
-    borderRadius: 5,
-    backgroundColor: theme.palette.primary.main
-  }
-}))(LinearProgress);
-
-export default function DonationGoal({ className, current, goal, name, embedded, barColor }) {
+export default function DonationGoal({ className, current, goal, name, embedded, barColor, textBackground }) {
   //const atTopOfPage = TopOfPage({ initTopOfPage: true, marginToTrigger: 95 });
   const classes = useStyles({embedded: embedded, barColor: barColor});
   return (

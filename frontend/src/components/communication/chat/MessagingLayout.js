@@ -23,7 +23,6 @@ export default function MessagingLayout({
   messages,
   loading,
   sendMessage,
-  /*socketClosed,*/
   loadMoreMessages,
   hasMore,
   title,

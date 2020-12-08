@@ -50,11 +50,13 @@ export default function MyApp({
   const API_HOST = process.env.API_HOST;
   const ENVIRONMENT = process.env.ENVIRONMENT;
   const SOCKET_URL = process.env.SOCKET_URL;
+  //possible socket connection states: "disconnected", "connecting", "connected"
   const [state, setState] = React.useState({
     user: user,
     notifications: [],
-    chatSocket: null
+    chatSocket: null    
   });
+  const [socketConnectionState, setSocketConnectionState] = React.useState("connecting")
 
   //TODO: reload current path or main page while being logged out
   const signOut = async () => {
@@ -96,6 +98,7 @@ export default function MyApp({
     cookies.set("token", token, cookieProps);
     const user = await getLoggedInUser(cookies.get("token") ? cookies.get("token") : token);
     setState({
+      ...state,
       user: user
     });
   };
@@ -103,18 +106,14 @@ export default function MyApp({
   useEffect(() => {
     if (!stateInitialized) {
       if (user) {
-        const client = WebSocketService("/ws/chat/");
-        client.onopen = () => {
-          console.log("connected");
-        };
-        client.onmessage = async () => {
-          await refreshNotifications();
-        };
+        const client = WebSocketService("/ws/chat/")     
         setState({
+          ...state,
           user: user,
           chatSocket: client,
           notifications: notifications
-        });
+        }); 
+        connect(client)       
       }
       // Remove the server-side injected CSS.
       const jssStyles = document.querySelector("#jss-server-side");
@@ -124,6 +123,32 @@ export default function MyApp({
       setStateInitialized(true);
     }
   });
+
+  useEffect(() => {
+
+  },[state.socketConnectionState])
+
+  const connect = initialClient => {
+    const client = initialClient ? initialClient : WebSocketService("/ws/chat/");
+    client.onopen = () => {
+      setSocketConnectionState("connected")
+    };
+    client.onmessage = async () => {
+      await refreshNotifications();
+    };
+    client.onclose = () => {
+      setSocketConnectionState("closed")
+      setTimeout(function() {
+        connect();
+      }, 1000);
+    }   
+    if(!initialClient) {
+      setState({
+        ...state,
+        chatSocket: client
+      })
+    }
+  }
 
   const contextValues = {
     user: state.user,
@@ -140,6 +165,7 @@ export default function MyApp({
     pathName: pathName,
     ReactGA: ReactGA,
     updateCookies: updateCookies,
+    socketConnectionState: socketConnectionState,
     donationGoal: donationGoal
   };
   return (

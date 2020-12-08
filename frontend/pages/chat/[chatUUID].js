@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import FixedHeightLayout from "../../src/components/layouts/FixedHeightLayout";
 import Cookies from "next-cookies";
 import axios from "axios";
@@ -20,9 +20,8 @@ export default function Chat({
   rolesOptions,
   chat_id
 }) {
-  const { chatSocket, user } = useContext(UserContext);
+  const { chatSocket, user, socketConnectionState } = useContext(UserContext);
   const [participants, setParticipants] = React.useState(chatParticipants);
-  const [socketClosed, setSocketClosed] = useState(false);
   const [state, setState] = React.useState({
     nextPage: 2,
     messages: [...messages],
@@ -37,7 +36,7 @@ export default function Chat({
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.addEventListener("beforeunload", handleWindowClose);
 
     return () => {
@@ -45,24 +44,29 @@ export default function Chat({
     };
   });
 
+  useEffect(() => {
+    if (chatSocket){
+      chatSocket.onmessage = async rawData => {
+        const data = JSON.parse(rawData.data);
+        if (data.chat_uuid === chatUUID) {
+          const message = await getMessageFromServer(data.message_id, token);
+          setState({
+            ...state,
+            messages: [
+              ...state.messages.filter(m => !(m.content === message.content && m.unconfirmed)),
+              message
+            ]
+          });
+        }
+      };
+    }else
+      console.log("now there is no chat socket")
+  }, [chatSocket])
+
   const chatting_partner = participants.filter(p => p.id !== user.id)[0];
   const isPrivateChat = !title || title.length === 0;
 
-  if (chatSocket) {
-    chatSocket.onmessage = async rawData => {
-      const data = JSON.parse(rawData.data);
-      if (data.chat_uuid === chatUUID) {
-        const message = await getMessageFromServer(data.message_id, token);
-        setState({
-          ...state,
-          messages: [
-            ...state.messages.filter(m => !(m.content === message.content && m.unconfirmed)),
-            message
-          ]
-        });
-      }
-    };
-  }
+  
 
   const loadMoreMessages = async () => {
     try {
@@ -96,6 +100,15 @@ export default function Chat({
 
   const sendMessage = async message => {
     if (message.length > 0) {
+      if(socketConnectionState === "connected")
+        await sendChatMessageThroughSocket(message)
+      else
+        await sendChatMessageThroughPostRequest(message)
+    }
+  };
+
+  const sendChatMessageThroughSocket = async message => {
+    try{
       chatSocket.send(JSON.stringify({ message: message, chat_uuid: chatUUID }));
       setState({
         ...state,
@@ -109,8 +122,40 @@ export default function Chat({
           }
         ]
       });
+    } catch(e) {
+      console.log("couldn't send because the socket was closed. Falling back to post request")
+      console.log(e)
+      await sendChatMessageThroughPostRequest(message, chatUUID, token)
     }
-  };
+  }
+
+  const sendChatMessageThroughPostRequest = async (message, chat_uuid, token) => {
+    try {
+      const resp = await axios.post(
+        process.env.API_URL + "/api/chat/"+chat_uuid+"/send_message/", 
+        {message_content: message},
+        tokenConfig(token));
+      console.log(resp.data)
+      setState({
+        ...state,
+        messages: [
+          ...state.messages,
+          {
+            content: message,
+            sender: user,
+            sent_at: new Date()
+          }
+        ]
+      });
+    } catch (err) {
+      if (err.response && err.response.data)
+        console.log("Error in sendChatMessageThroughPostRequest: " + err.response.data.detail);
+      if (err.response && err.response.data.detail === "Invalid token.")
+        console.log("invalid token! token:" + token);
+      console.log(err)
+      return null;
+    }
+  }
 
   return (
     <FixedHeightLayout
@@ -127,7 +172,7 @@ export default function Chat({
           isPrivateChat={isPrivateChat}
           title={title}
           sendMessage={sendMessage}
-          socketClosed={socketClosed}
+          socketConnectionState={socketConnectionState}
           loadMoreMessages={loadMoreMessages}
           hasMore={state.hasMore}
           participants={participants}
