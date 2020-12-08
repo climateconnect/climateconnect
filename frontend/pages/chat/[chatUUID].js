@@ -6,7 +6,7 @@ import tokenConfig from "../../public/config/tokenConfig";
 import { getMessageFromServer } from "../../public/lib/messagingOperations";
 import UserContext from "../../src/components/context/UserContext";
 import PageNotFound from "../../src/components/general/PageNotFound";
-import { sendToLogin } from "../../public/lib/apiOperations";
+import { sendToLogin, redirect } from "../../public/lib/apiOperations";
 import MessagingLayout from "../../src/components/communication/chat/MessagingLayout";
 
 export default function Chat({
@@ -63,7 +63,15 @@ export default function Chat({
       console.log("now there is no chat socket")
   }, [chatSocket])
 
-  const chatting_partner = participants.filter(p => p.id !== user.id)[0];
+  useEffect(() => {
+    if(!user)
+      redirect("/signin", {
+        redirect: window.location.pathname + window.location.search,
+        message: "You need to be logged in to see your chats"
+      })
+  }, [user])
+
+  const chatting_partner = user && participants.filter(p => p.id !== user.id)[0];
   const isPrivateChat = !title || title.length === 0;
 
   
@@ -160,7 +168,7 @@ export default function Chat({
   return (
     <FixedHeightLayout
       title={
-        isPrivateChat
+        (isPrivateChat && chatting_partner)
           ? "Message " + chatting_partner.first_name + " " + chatting_partner.last_name
           : title
       }

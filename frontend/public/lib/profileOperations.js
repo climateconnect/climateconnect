@@ -40,6 +40,10 @@ export function redirectOnLogin(user, redirectUrl) {
         message: SIGN_UP_MESSAGE
       }
     });
-  } else if (redirectUrl) Router.push("/" + redirectUrl);
+  } else if (redirectUrl) {
+    if(redirectUrl[0] === "/")
+      redirectUrl = redirectUrl.substring(1, redirectUrl.length)
+    window.location.replace(window.location.origin + "/" + redirectUrl);
+  }
   else Router.push("/browse");
 }
