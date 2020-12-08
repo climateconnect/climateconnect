@@ -45,7 +45,7 @@ export default function Chat({
   });
 
   useEffect(() => {
-    if (chatSocket){
+    if (chatSocket) {
       chatSocket.onmessage = async rawData => {
         const data = JSON.parse(rawData.data);
         if (data.chat_uuid === chatUUID) {
@@ -59,22 +59,19 @@ export default function Chat({
           });
         }
       };
-    }else
-      console.log("now there is no chat socket")
-  }, [chatSocket])
+    } else console.log("now there is no chat socket");
+  }, [chatSocket]);
 
   useEffect(() => {
-    if(!user)
+    if (!user)
       redirect("/signin", {
         redirect: window.location.pathname + window.location.search,
         message: "You need to be logged in to see your chats"
-      })
-  }, [user])
+      });
+  }, [user]);
 
   const chatting_partner = user && participants.filter(p => p.id !== user.id)[0];
   const isPrivateChat = !title || title.length === 0;
-
-  
 
   const loadMoreMessages = async () => {
     try {
@@ -108,15 +105,13 @@ export default function Chat({
 
   const sendMessage = async message => {
     if (message.length > 0) {
-      if(socketConnectionState === "connected")
-        await sendChatMessageThroughSocket(message)
-      else
-        await sendChatMessageThroughPostRequest(message)
+      if (socketConnectionState === "connected") await sendChatMessageThroughSocket(message);
+      else await sendChatMessageThroughPostRequest(message);
     }
   };
 
   const sendChatMessageThroughSocket = async message => {
-    try{
+    try {
       chatSocket.send(JSON.stringify({ message: message, chat_uuid: chatUUID }));
       setState({
         ...state,
@@ -130,20 +125,21 @@ export default function Chat({
           }
         ]
       });
-    } catch(e) {
-      console.log("couldn't send because the socket was closed. Falling back to post request")
-      console.log(e)
-      await sendChatMessageThroughPostRequest(message, chatUUID, token)
+    } catch (e) {
+      console.log("couldn't send because the socket was closed. Falling back to post request");
+      console.log(e);
+      await sendChatMessageThroughPostRequest(message, chatUUID, token);
     }
-  }
+  };
 
   const sendChatMessageThroughPostRequest = async (message, chat_uuid, token) => {
     try {
       const resp = await axios.post(
-        process.env.API_URL + "/api/chat/"+chat_uuid+"/send_message/", 
-        {message_content: message},
-        tokenConfig(token));
-      console.log(resp.data)
+        process.env.API_URL + "/api/chat/" + chat_uuid + "/send_message/",
+        { message_content: message },
+        tokenConfig(token)
+      );
+      console.log(resp.data);
       setState({
         ...state,
         messages: [
@@ -160,15 +156,15 @@ export default function Chat({
         console.log("Error in sendChatMessageThroughPostRequest: " + err.response.data.detail);
       if (err.response && err.response.data.detail === "Invalid token.")
         console.log("invalid token! token:" + token);
-      console.log(err)
+      console.log(err);
       return null;
     }
-  }
+  };
 
   return (
     <FixedHeightLayout
       title={
-        (isPrivateChat && chatting_partner)
+        isPrivateChat && chatting_partner
           ? "Message " + chatting_partner.first_name + " " + chatting_partner.last_name
           : title
       }

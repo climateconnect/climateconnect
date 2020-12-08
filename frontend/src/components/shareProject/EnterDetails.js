@@ -68,7 +68,7 @@ const helpTexts = {
   short_description:
     "Summarize your project in less than 240 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
   description:
-    "Describe your project in more detail. What are you exactly doing? What are you doing? What is the climate impact of your project?",
+    "Describe your project in more detail. What are you exactly doing? What is the climate impact of your project?",
   collaboration:
     "Select if you are would be open to accept help and work with other climate protectors on your project.",
   addSkills:

@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => {
 
 export default function ChatPreviews({ chats, loadFunc, hasMore }) {
   const classes = useStyles();
-  const [isLoading, setIsLoading] = React.useState(false)
+  const [isLoading, setIsLoading] = React.useState(false);
   const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
   const loadMore = async () => {
     //sometimes InfiniteScroll calls loadMore twice really fast. Therefore we're using isLoading to make sure it doesn't catch 2 pages at once
@@ -87,7 +87,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
         </Typography>
       </>
     );
-  
+
   const loadingSpinner = () => {
     return isLoading ? (
       <Grid container justify="center">
@@ -104,23 +104,26 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
       element={List}
     >
       {chats.map((chat, index) => (
-        <ChatPreview key={index} isFirstChat={index===0} isNarrowScreen={isNarrowScreen} chat={chat}/>
+        <ChatPreview
+          key={index}
+          isFirstChat={index === 0}
+          isNarrowScreen={isNarrowScreen}
+          chat={chat}
+        />
       ))}
       {loadingSpinner()}
     </InfiniteScroll>
   );
 }
 
-const ChatPreview = ({chat, isNarrowScreen, isFirstChat}) => {
+const ChatPreview = ({ chat, isNarrowScreen, isFirstChat }) => {
   const lastAction = chat.last_message ? chat.last_message.sent_at : chat.created_at;
-  if(!lastAction)
-    console.log(chat)
-  const classes = useStyles()
-  if (isNarrowScreen)
-    return <MobileChatPreview chat={chat} isFirstChat={isFirstChat} />;
+  if (!lastAction) console.log(chat);
+  const classes = useStyles();
+  if (isNarrowScreen) return <MobileChatPreview chat={chat} isFirstChat={isFirstChat} />;
   else
     return (
-      <React.Fragment >
+      <React.Fragment>
         {isFirstChat && <Divider component="li" />}
         <ListItem
           button
@@ -130,11 +133,7 @@ const ChatPreview = ({chat, isNarrowScreen, isFirstChat}) => {
           className={classes.listItem}
         >
           {!chat.chatting_partner && chat.name ? (
-            <ChatTitle
-              chat={chat}
-              className={classes.miniProfilePreview}
-              mobile={isNarrowScreen}
-            />
+            <ChatTitle chat={chat} className={classes.miniProfilePreview} mobile={isNarrowScreen} />
           ) : (
             <MiniProfilePreview
               className={classes.miniProfilePreview}
@@ -176,7 +175,7 @@ const ChatPreview = ({chat, isNarrowScreen, isFirstChat}) => {
         <Divider component="li" />
       </React.Fragment>
     );
-}
+};
 
 ChatPreviews.propTypes = {
   chats: PropTypes.array.isRequired

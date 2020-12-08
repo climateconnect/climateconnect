@@ -1,7 +1,16 @@
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import { getCookieProps } from "../../../../public/lib/cookieOperations";
-import { makeStyles, Typography, Button, IconButton, Link, Container, Collapse, useMediaQuery } from "@material-ui/core";
+import {
+  makeStyles,
+  Typography,
+  Button,
+  IconButton,
+  Link,
+  Container,
+  Collapse,
+  useMediaQuery
+} from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import CloseIcon from "@material-ui/icons/Close";
@@ -80,7 +89,7 @@ export default function DonationCampaignInformation() {
   const [open, setOpen] = React.useState(!cookies.get("hideDonationCampaign"));
   const [expanded, setExpanded] = React.useState(false);
   const { donationGoal } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"))
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
 
   const handleClose = () => {
     cookies.set("hideDonationCampaign", true, cookieProps);
@@ -97,45 +106,76 @@ export default function DonationCampaignInformation() {
         <div className={classes.root}>
           <IconButton className={classes.closeButton} onClick={handleClose}>
             <CloseIcon />
-          </IconButton>          
+          </IconButton>
           <Typography className={classes.text}>
-            <img src="/icons/christmas-icon.svg" className={classes.christmasIcon}/>
-            {isNarrowScreen ? 
-              `Win the compensation of your footprint`
-            :
-              `Win the compensation of your 2020 CO2-footprint by donating to Climate Connect during
-              December`
-            }
+            <img src="/icons/christmas-icon.svg" className={classes.christmasIcon} />
+            {isNarrowScreen
+              ? `Win the compensation of your footprint`
+              : `Win the compensation of your 2020 CO2-footprint by donating to Climate Connect during
+              December`}
           </Typography>
           <Collapse in={expanded}>
-            <Container className={classes.expandableContent}>              
+            <Container className={classes.expandableContent}>
               <DonationGoal
-                current= {donationGoal.current_amount}
-                goal= {donationGoal.goal_amount}
-                name= {donationGoal.goal_name}
+                current={donationGoal.current_amount}
+                goal={donationGoal.goal_amount}
+                name={donationGoal.goal_name}
                 embedded
                 className={classes.donationGoal}
                 barColor={theme.palette.primary.light}
               />
-              {isNarrowScreen &&
-                <Button href="/donate" variant="contained" className={classes.donateButton}>Donate now</Button>
-              }
+              {isNarrowScreen && (
+                <Button href="/donate" variant="contained" className={classes.donateButton}>
+                  Donate now
+                </Button>
+              )}
               <Typography className={classes.textBlock}>
-                Your donation will help scale up effective climate solutions, support us in growing a global network of climate actors and allow Climate Connect to stay free and independent.
-                In our December raffle everybody who donates to Climate Connect in the month of December has a chance to win the compensation of their {"year's"} 
-                {" "}CO2-footprint kindly sponsored by <Link underline="always" className={classes.link} href="https://ecologi.com/" target="_blank" rel="noreferrer">Ecologi</Link>!
-              </Typography>              
-              <Typography>
-                You can find the terms of the raffle <Link underline="always" className={classes.link} href="/raffleterms" target="_blank" rel="noreferrer">here</Link>
+                Your donation will help scale up effective climate solutions, support us in growing
+                a global network of climate actors and allow Climate Connect to stay free and
+                independent. In our December raffle everybody who donates to Climate Connect in the
+                month of December has a chance to win the compensation of their {"year's"}{" "}
+                CO2-footprint kindly sponsored by{" "}
+                <Link
+                  underline="always"
+                  className={classes.link}
+                  href="https://ecologi.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Ecologi
+                </Link>
+                !
               </Typography>
-              {!isNarrowScreen &&
-                <Button href="/donate" variant="contained" className={classes.donateButton}>Donate now</Button>              
-              }
+              <Typography>
+                You can find the terms of the raffle{" "}
+                <Link
+                  underline="always"
+                  className={classes.link}
+                  href="/raffleterms"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  here
+                </Link>
+              </Typography>
+              {!isNarrowScreen && (
+                <Button href="/donate" variant="contained" className={classes.donateButton}>
+                  Donate now
+                </Button>
+              )}
             </Container>
           </Collapse>
           <Button className={classes.showMoreButton} onClick={handleToggleExpanded}>
-            {expanded ? <><ExpandLessIcon /> Show less</> : <><ExpandMoreIcon /> Show more</>}
-          </Button>       
+            {expanded ? (
+              <>
+                <ExpandLessIcon /> Show less
+              </>
+            ) : (
+              <>
+                <ExpandMoreIcon /> Show more
+              </>
+            )}
+          </Button>
         </div>
       )}
     </>
