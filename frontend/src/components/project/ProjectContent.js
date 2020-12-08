@@ -240,7 +240,7 @@ export default function ProjectContent({ project }) {
           Progress
         </Typography>
         <Typography variant="body2" fontStyle="italic" fontWeight="bold">
-          Follow the project to be notified when they make an update post
+          Follow the project to be notified when they make an update post.
         </Typography>
         {project.timeline_posts && project.timeline_posts.length > 0 && (
           <div className={classes.progressContent}>

@@ -75,8 +75,7 @@ const getCarouselContent = () => [
   {
     headline: "Climate action platform",
     text: [
-      "Free climate action platform",
-      "bringing everyone involved in climate action together."
+      "Bringing everyone involved in climate action together."
     ],
     images: [
       {

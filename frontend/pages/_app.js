@@ -46,6 +46,7 @@ export default function MyApp({
     ReactGA.pageview(!!pathName ? pathName : "/");
     setGaInitialized(true);
   }
+
   const API_URL = process.env.API_URL;
   const API_HOST = process.env.API_HOST;
   const ENVIRONMENT = process.env.ENVIRONMENT;
@@ -181,6 +182,7 @@ export default function MyApp({
 
 MyApp.getInitialProps = async ctx => {
   const { token, acceptedStatistics } = NextCookies(ctx.ctx);
+
   if (ctx.router.route === "/" && token) {
     ctx.ctx.res.writeHead(302, {
       Location: "/browse",
@@ -196,6 +198,7 @@ MyApp.getInitialProps = async ctx => {
     ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps(ctx.ctx) : {}
   ]);
   const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
+
   if (token) {
     const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
     if (notificationsToSetRead.length > 0) {
