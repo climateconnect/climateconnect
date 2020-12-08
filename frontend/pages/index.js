@@ -178,7 +178,6 @@ const getOrganizations = async (token) => {
 };
 
 const parseProjects = (projects) => {
-  console.log("Parsing projects...");
   return projects.map((project) => ({
     ...project,
     location: project.city + ", " + project.country,
