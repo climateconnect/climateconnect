@@ -48,21 +48,28 @@ const useStyles = makeStyles(theme => ({
   })
 }));
 
-export default function DonationGoal({ className, current, goal, name, embedded, barColor, textBackground }) {
+export default function DonationGoal({
+  className,
+  current,
+  goal,
+  name,
+  embedded,
+  barColor
+}) {
   //const atTopOfPage = TopOfPage({ initTopOfPage: true, marginToTrigger: 95 });
-  const classes = useStyles({embedded: embedded, barColor: barColor});
+  const classes = useStyles({ embedded: embedded, barColor: barColor });
   return (
     <div className={`${className} ${classes.root}`}>
       <Container>
         <Typography className={classes.text}>
-          {name}:{!embedded &&<br />}{" "}
+          {name}:{!embedded && <br />}{" "}
           <Typography className={classes.amount} component="span">
             {current}€
           </Typography>{" "}
           raised out of {goal}€ goal
         </Typography>
-        <LinearProgress 
-          variant="determinate" 
+        <LinearProgress
+          variant="determinate"
           value={(current / goal) * 100}
           classes={{
             root: classes.barContainer,

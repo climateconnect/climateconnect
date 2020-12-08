@@ -41,9 +41,7 @@ export function redirectOnLogin(user, redirectUrl) {
       }
     });
   } else if (redirectUrl) {
-    if(redirectUrl[0] === "/")
-      redirectUrl = redirectUrl.substring(1, redirectUrl.length)
+    if (redirectUrl[0] === "/") redirectUrl = redirectUrl.substring(1, redirectUrl.length);
     window.location.replace(window.location.origin + "/" + redirectUrl);
-  }
-  else Router.push("/browse");
+  } else Router.push("/browse");
 }

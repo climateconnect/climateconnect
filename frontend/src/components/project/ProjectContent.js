@@ -196,10 +196,11 @@ export default function ProjectContent({ project }) {
           {project.description ? (
             showFullDescription ||
             project.description.length <= MAX_DISPLAYED_DESCRIPTION_LENGTH ? (
-              <MessageContent content={project.description} />
+              <MessageContent content={project.description} renderYoutubeVideos={1} />
             ) : (
               <MessageContent
                 content={project.description.substr(0, MAX_DISPLAYED_DESCRIPTION_LENGTH) + "..."}
+                renderYoutubeVideos={1}
               />
             )
           ) : (

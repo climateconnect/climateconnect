@@ -53,6 +53,10 @@ export default function ProjectDescriptionHelp({ status }) {
           <li key={index}>{p[status.name] ? p[status.name] : p["In Progress"]}</li>
         ))}
       </ul>
+      <Typography>
+        If you want to include a video: the first YouTube link will be converted to an embedded
+        video on your project page.
+      </Typography>
     </>
   );
 }

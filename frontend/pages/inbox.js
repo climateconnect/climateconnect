@@ -76,7 +76,7 @@ export default function Inbox({ chatData, token, next }) {
   const [chatsState, setChatsState] = React.useState({
     chats: parseChats(chatData, user),
     next: next
-  })
+  });
 
   const handleGroupNameChange = e => {
     setGroupName(e.target.value);
@@ -128,17 +128,14 @@ export default function Inbox({ chatData, token, next }) {
   };
 
   const loadMoreChats = async () => {
-    const newChatData = await getChatsOfLoggedInUser(token, next)
-    const newChats = newChatData.chats
+    const newChatData = await getChatsOfLoggedInUser(token, next);
+    const newChats = newChatData.chats;
     setChatsState({
       ...chatsState,
       next: newChatData.next,
-      chats: [
-        ...chatsState.chats,
-        ...parseChats(newChats, user)
-      ]
-    })
-  }
+      chats: [...chatsState.chats, ...parseChats(newChats, user)]
+    });
+  };
 
   const handleRemoveMember = member => {
     setNewChatMembers([...newChatMembers.filter(m => m.id !== member.id)]);
@@ -228,7 +225,12 @@ export default function Inbox({ chatData, token, next }) {
             </Button>
           )}
           {user ? (
-            <ChatPreviews loadFunc={loadMoreChats} chats={chatsState.chats} user={user} hasMore={!!chatsState.next}/>
+            <ChatPreviews
+              loadFunc={loadMoreChats}
+              chats={chatsState.chats}
+              user={user}
+              hasMore={!!chatsState.next}
+            />
           ) : (
             <LoadingContainer />
           )}
@@ -255,7 +257,7 @@ Inbox.getInitialProps = async ctx => {
     const message = "You have to log in to see your inbox.";
     return sendToLogin(ctx, message);
   }
-  const chatData = await getChatsOfLoggedInUser(token)
+  const chatData = await getChatsOfLoggedInUser(token);
   return {
     chatData: chatData.chats,
     next: chatData.next,
@@ -265,12 +267,12 @@ Inbox.getInitialProps = async ctx => {
 
 async function getChatsOfLoggedInUser(token, next) {
   try {
-    const url = next ? next : (process.env.API_URL + `/api/chats/?page=1`)
+    const url = next ? next : process.env.API_URL + `/api/chats/?page=1`;
     const resp = await axios.get(url, tokenConfig(token));
     return {
       chats: parseChatData(resp.data.results),
       next: resp.data.next
-    }
+    };
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     console.log("error!");
