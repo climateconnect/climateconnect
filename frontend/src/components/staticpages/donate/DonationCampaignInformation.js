@@ -21,7 +21,10 @@ const useStyles = makeStyles(theme => ({
   },
   text: {
     fontWeight: 600,
-    paddingRight: theme.spacing(4)
+    paddingRight: theme.spacing(4),
+    paddingLeft: theme.spacing(6),
+    position: "relative",
+    display: "inline-block"
   },
   showMoreButton: {
     color: "white",
@@ -57,6 +60,15 @@ const useStyles = makeStyles(theme => ({
       marginTop: theme.spacing(-2),
       marginBottom: theme.spacing(1)
     }
+  },
+  flexWrapper: {
+    display: "flex",
+    justifyContent: "center"
+  },
+  christmasIcon: {
+    height: 50,
+    position: "absolute",
+    left: 5
   }
 }));
 
@@ -85,8 +97,9 @@ export default function DonationCampaignInformation() {
         <div className={classes.root}>
           <IconButton className={classes.closeButton} onClick={handleClose}>
             <CloseIcon />
-          </IconButton>
+          </IconButton>          
           <Typography className={classes.text}>
+            <img src="/icons/christmas-icon.svg" className={classes.christmasIcon}/>
             {isNarrowScreen ? 
               `Win the compensation of your footprint`
             :
@@ -95,35 +108,34 @@ export default function DonationCampaignInformation() {
             }
           </Typography>
           <Collapse in={expanded}>
-            <Container className={classes.expandableContent}>
-              
-                <DonationGoal
-                  current= {donationGoal.current_amount}
-                  goal= {donationGoal.goal_amount}
-                  name= {donationGoal.goal_name}
-                  embedded
-                  className={classes.donationGoal}
-                  barColor={theme.palette.primary.light}
-                />
-                {isNarrowScreen &&
-                  <Button href="/donate" variant="contained" className={classes.donateButton}>Donate now</Button>
-                }
-                <Typography className={classes.textBlock}>
-                  Your donation will help scale up effective climate solutions, support us in growing a global network of climate actors and allows Climate Connect to stay free and independent.
-                  In our December raffle everybody who donates to Climate Connect in the month of December has a chance to win the compensation of their {"year's"} 
-                  {" "}CO2-footprint kindly sponsored by <Link underline="always" className={classes.link} href="https://ecologi.com/" target="_blank" rel="noreferrer">Ecologi</Link>!
-                </Typography>              
-                <Typography>
-                  You can find the terms of the raffle <Link underline="always" className={classes.link} href="/raffleterms" target="_blank" rel="noreferrer">here</Link>
-                </Typography>
-                {!isNarrowScreen &&
-                  <Button href="/donate" variant="contained" className={classes.donateButton}>Donate now</Button>              
-                }
-              </Container>
+            <Container className={classes.expandableContent}>              
+              <DonationGoal
+                current= {donationGoal.current_amount}
+                goal= {donationGoal.goal_amount}
+                name= {donationGoal.goal_name}
+                embedded
+                className={classes.donationGoal}
+                barColor={theme.palette.primary.light}
+              />
+              {isNarrowScreen &&
+                <Button href="/donate" variant="contained" className={classes.donateButton}>Donate now</Button>
+              }
+              <Typography className={classes.textBlock}>
+                Your donation will help scale up effective climate solutions, support us in growing a global network of climate actors and allow Climate Connect to stay free and independent.
+                In our December raffle everybody who donates to Climate Connect in the month of December has a chance to win the compensation of their {"year's"} 
+                {" "}CO2-footprint kindly sponsored by <Link underline="always" className={classes.link} href="https://ecologi.com/" target="_blank" rel="noreferrer">Ecologi</Link>!
+              </Typography>              
+              <Typography>
+                You can find the terms of the raffle <Link underline="always" className={classes.link} href="/raffleterms" target="_blank" rel="noreferrer">here</Link>
+              </Typography>
+              {!isNarrowScreen &&
+                <Button href="/donate" variant="contained" className={classes.donateButton}>Donate now</Button>              
+              }
+            </Container>
           </Collapse>
           <Button className={classes.showMoreButton} onClick={handleToggleExpanded}>
             {expanded ? <><ExpandLessIcon /> Show less</> : <><ExpandMoreIcon /> Show more</>}
-          </Button>          
+          </Button>       
         </div>
       )}
     </>
