@@ -15,3 +15,16 @@ export function removeUnnecesaryCookies() {
     cookies.remove(k, { path: "/" });
   });
 }
+
+export function getCookieProps(expiry) {
+  const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT);
+  //TODO: set httpOnly=true to make cookie only accessible by server and sameSite=true
+  const cookieProps = {
+    path: "/",
+    sameSite: develop ? false : "lax",
+    expires: new Date(expiry),
+    secure: !develop
+  };
+  if (!develop) cookieProps.domain = "." + process.env.API_HOST;
+  return cookieProps;
+}
