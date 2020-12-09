@@ -137,7 +137,6 @@ Index.getInitialProps = async (ctx) => {
 };
 
 const getProjects = async (token) => {
-  // console.log("In getProjects...")
   try {
     // Read local API URL. This should hit the Django endpoint?
     // That's the featured projects endpoint?
