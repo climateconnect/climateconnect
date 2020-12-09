@@ -74,6 +74,9 @@ export default function FilterSection({
     organizations: "",
   });
 
+  // We render the circular spinner when a user is filtering options.
+  const [isLoading, setIsLoading] = useState(false);
+
   const InputLabelClasses = {
     root: classes.inputLabel,
     notchedOutline: classes.inputLabel,
@@ -91,18 +94,24 @@ export default function FilterSection({
    * Asynchonously get new projects, orgs or members. We render
    * a loading spinner until the request is done.
    */
-  const onSearchSubmit = async (type) => {
+  const handleSearchSubmit = async (type) => {
     const newUrlEnding = buildUrlEndingFromSearch(searchFilters[type]);
     if (state.urlEnding[type] != newUrlEnding) {
       try {
         let filteredItemsObject;
         if (type === "projects") {
+          setIsLoading(true);
           filteredItemsObject = await getProjects(1, token, newUrlEnding);
+          setIsLoading(false);
         } else if (type === "organizations") {
+          setIsLoading(true);
           filteredItemsObject = await getOrganizations(1, token, newUrlEnding);
+          setIsLoading(false);
         } else if (type === "members") {
+          setIsLoading(true);
           filteredItemsObject = await getMembers(1, token, newUrlEnding);
           filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
+          setIsLoading(false);
         } else {
           console.log("cannot find type!");
         }
@@ -128,7 +137,7 @@ export default function FilterSection({
             type={typesByTabValue[tabValue]}
             label={searchBarLabels[typesByTabValue[tabValue]]}
             className={classes.filterSearchbar}
-            onSubmit={onSearchSubmit}
+            onSubmit={handleSearchSubmit}
             onChange={onSearchValueChange}
             value={searchFilters[typesByTabValue[tabValue]]}
             InputLabelClasses={InputLabelClasses}

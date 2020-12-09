@@ -116,9 +116,8 @@ export default function Index({
   const [errorMessage, setErrorMessage] = React.useState("");
   const typesByTabValue = ["projects", "organizations", "members"];
 
-  // We render the circular spinner when a user is filtering
-  // options.
-  const [isLoading, setLoading] = React.useState(false);
+  // We render the circular spinner when a user is filtering options.
+  const [isLoading, setIsLoading] = React.useState(false);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -155,18 +154,18 @@ export default function Index({
         try {
           let filteredItemsObject;
           if (type === "projects") {
-            setLoading(true);
+            setIsLoading(true);
             filteredItemsObject = await getProjects(1, token, newUrlEnding);
-            setLoading(false);
+            setIsLoading(false);
           } else if (type === "organizations") {
-            setLoading(true);
+            setIsLoading(true);
             filteredItemsObject = await getOrganizations(1, token, newUrlEnding);
-            setLoading(false);
+            setIsLoading(false);
           } else if (type === "members") {
-            setLoading(true);
+            setIsLoading(true);
             filteredItemsObject = await getMembers(1, token, newUrlEnding);
             filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
-            setLoading(false);
+            setIsLoading(false);
           }
 
           setState({
@@ -221,11 +220,10 @@ export default function Index({
         },
       });
 
-      setLoading(false);
+      setIsLoading(false);
 
       return [...newProjects];
     } catch (e) {
-      console.log("error");
       console.log(e);
 
       setState({
@@ -258,7 +256,7 @@ export default function Index({
         },
       });
 
-      setLoading(false);
+      setIsLoading(false);
 
       return [...newOrganizations];
     } catch (e) {
@@ -328,6 +326,7 @@ export default function Index({
           <MainHeadingContainerMobile />
 
           <Container maxWidth="lg">
+            {/* This is the search bar container. */}
             <FilterSection
               filtersExpanded={filtersExpanded}
               setFiltersExpanded={setFiltersExpanded}
