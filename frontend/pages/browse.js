@@ -517,7 +517,6 @@ async function getProjects(page, token, urlEnding) {
   if (urlEnding) url += urlEnding;
 
   try {
-    console.log(`Getting projects at ${url}`);
     const resp = await axios.get(url, tokenConfig(token));
 
     if (resp.data.length === 0) {
