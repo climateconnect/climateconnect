@@ -318,6 +318,7 @@ export default function Index({
           showOnScrollUp={showOnScrollUp}
         >
           <MainHeadingContainerMobile />
+
           <Container maxWidth="lg">
             <FilterSection
               filtersExpanded={filtersExpanded}
@@ -332,6 +333,8 @@ export default function Index({
               state={state}
               setState={setState}
             />
+
+            {/* Tabs to select projects, orgs, members... */}
             <Tabs
               variant={isNarrowScreen ? "fullWidth" : "standard"}
               value={tabValue}
@@ -344,7 +347,6 @@ export default function Index({
               <Tab label={capitalizeFirstLetter(typesByTabValue[1])} className={classes.tab} />
               <Tab label={capitalizeFirstLetter(typesByTabValue[2])} className={classes.tab} />
             </Tabs>
-
             <Divider className={classes.mainContentDivider} />
 
             <TabContent value={tabValue} index={0}>
@@ -373,6 +375,7 @@ export default function Index({
                 </Typography>
               )}
             </TabContent>
+
             <TabContent value={tabValue} index={1} className={classes.tabContent}>
               {filtersExpanded && tabValue === 1 && (
                 <FilterContent
@@ -411,6 +414,7 @@ export default function Index({
                 </Typography>
               )}
             </TabContent>
+
             <TabContent value={tabValue} index={2} className={classes.tabContent}>
               {filtersExpanded && tabValue === 2 && (
                 <FilterContent
@@ -422,6 +426,7 @@ export default function Index({
                   possibleFilters={possibleFilters(typesByTabValue[2], filterChoices)}
                 />
               )}
+
               {membersObject && membersObject.members && membersObject.members.length ? (
                 <ProfilePreviews
                   profiles={state.items.members}
@@ -442,10 +447,10 @@ export default function Index({
                     >
                       Create a profile to be the first one!
                     </Typography>
-                  )}
-                </TabContent>
-              </>
-            )}
+                  </Link>
+                </Typography>
+              )}
+            </TabContent>
           </Container>
         </WideLayout>
       )}
