@@ -11,30 +11,30 @@ export default function Privacy() {
       <h2>Table of Contents</h2>
       <b>
         <ol start="1">
-          <li>Scope of application.</li>
-          <li>Who is responsible and to whom can I reach out?.</li>
-          <li>Which data do we process from you?.</li>
-          <li>From whom do we collect your personal data?.</li>
-          <li>For what purposes and on what legal basis do we process your data?.</li>
-          <li>To whom do we transfer your data?.</li>
-          <li>Do we transfer your data to third countries?.</li>
-          <li>How long do we store your personal data?.</li>
-          <li>Your rights.</li>
-          <li>Is there any obligation on your side to provide personal data?.</li>
-          <li>Is the processing based on automated decision-making or profiling?.</li>
-          <li>What kind of cookies and tracking technology do we use?.</li>
-          <li>Technical security measures.</li>
-          <li>CHANGES TO OUR PRIVACY POLICY.</li>
+          <li><a href="#scope">Scope of application</a></li>
+          <li><a href="#responsible">Who is responsible and to whom can I reach out?</a></li>
+          <li><a href="#which-data-do-we-process">Which data do we process from you?</a></li>
+          <li><a href="#from-whom-do-we-collect-your-personal-data">From whom do we collect your personal data?</a></li>
+          <li><a href="#purposes">For what purposes and on what legal basis do we process your data?</a></li>
+          <li><a href="#to-whom-do-we-transfer-your-data">To whom do we transfer your data?</a></li>
+          <li><a href="#do-we-transfer-data-to-third-countries">Do we transfer your data to third countries?</a></li>
+          <li><a href="#how-long-do-we-store-your-personal-data">How long do we store your personal data?</a></li>
+          <li><a href="#your-rights">Your rights</a></li>
+          <li><a href="#obligation">Is there any obligation on your side to provide personal data?.</a></li>
+          <li><a href="#profiling">Is the processing based on automated decision-making or profiling?.</a></li>
+          <li><a href="#cookies">What kind of cookies and tracking technology do we use?.</a></li>
+          <li><a href="#security-measures">Technical security measures.</a></li>
+          <li><a href="#changes">CHANGES TO OUR PRIVACY POLICY.</a></li>
         </ol>
       </b>
-      <h2>1.Scope of application</h2>
+      <h2 id="scope">1.Scope of application</h2>
       Climate Connect gUG (haftungsbeschränkt) (herewith {"Climate Connect"} or {"we"}) is committed
       to protecting your privacy and personal data. With this privacy policy we would like to inform
       you in detail about how we use your personal data. This privacy policy applies to the use of
       your personal data when you visit our websites available at [www.climateconnect.earth] and
       when you contact us by e-mail, telephone, if you maintain a business relationship with us or
       use our services.
-      <h2>2.Who is responsible and to whom can I reach out?</h2>
+      <h2 id="responsible">2.Who is responsible and to whom can I reach out?</h2>
       Climate Connect gUG (haftungsbeschränkt), Böttigersteig 20, 91054 Erlangen, Germany, entered
       in the Commercial Register of the District Court of Fürth under the registration number HRB
       18097, represented by Christoph Stoll, Tobias Wilhelm Rehm and Thomas Bove, is responsible for
@@ -59,7 +59,7 @@ export default function Privacy() {
       <div>Tel. +49 157/30101056</div>
       <div>E-mail: tobias.rehm@climateconnect.earth</div>
       <br />
-      <h2>3. Which data do we process from you?</h2>
+      <h2 id="which-data-do-we-process">3. Which data do we process from you?</h2>
       We collect and process various personal data from you depending on the specific processing
       situation. Below you will find a list of the data related to the respective processing
       situations.
@@ -126,11 +126,11 @@ export default function Privacy() {
       <a href="https://www.mailjet.com/" target="_blank" rel="noreferrer">
         Mailjet
       </a>
-      .<h2>4. From whom do we collect your personal data?</h2>
+      <h2 id="from-whom-do-we-collect-your-personal-data">4. From whom do we collect your personal data?</h2>
       Personal data is only collected directly from you, e.g., by visiting our websites or using the
       services offered, such as the possibility of registration, using our newsletter and contacting
       us by e-mail.
-      <h2>5. For what purposes and on what legal basis do we process your data?</h2>
+      <h2 id="purposes">5. For what purposes and on what legal basis do we process your data?</h2>
       We process your personal data exclusively in accordance with the provisions of the General
       Data Protection Regulation ({"GDPR"}), and the Federal Data Protection Act
       (Bundesdatenschutzgesetz) ({"BDSG"}). In certain situations, we also process your personal
@@ -164,7 +164,7 @@ export default function Privacy() {
       processing of his data is obtained. User registration is required for the provision of certain
       contents and services on our website. The registration serves the networking of the users
       among themselves and the possibility of posting projects and interacting within this context.
-      <h2>6. To whom do we transfer your data?</h2>
+      <h2 id="to-whom-do-we-transfer-your-data">6. To whom do we transfer your data?</h2>
       We transfer your personal data to the extent necessary for the formation, execution or
       termination of an agreement or quasi-contractual legal relationship, in principle, within the
       scope of the processing described below. We will share your personal information with the
@@ -242,14 +242,14 @@ export default function Privacy() {
       addition, no personal data will be transferred on to third parties unless, in individual
       cases, there is a specific legal justification for the transfer, and your interests or
       fundamental rights and freedoms do not prevail.
-      <h2>7. Do we transfer your data to third countries?</h2>
+      <h2 id="do-we-transfer-data-to-third-countries">7. Do we transfer your data to third countries?</h2>
       For some types of processing, we may transfer your personal data to countries outside the
       European Union or the European Economic Area, to so-called third countries. In the course of a
       transfer of personal data to a third country, we will regularly provide appropriate
       guarantees, for example, by concluding the Standard Contractual Clauses of the European
       Commission to ensure that the transfer of data takes place with the same level of data
       protection that corresponds to the GDPR.
-      <h2>8. How long do we store your personal data?</h2>
+      <h2 id="how-long-do-we-store-your-personal-data">8. How long do we store your personal data?</h2>
       We process and store your personal data only as long as necessary for our processing purposes.
       Upon request, we will regularly delete the data collected and stored for our websites’ usage
       at any time. We will do this ourselves and within a few days, unless we have a particular
@@ -273,7 +273,7 @@ export default function Privacy() {
       retention and documentation obligation periods expire, which are between two and ten years and
       result, inter alia, from the Fiscal Code of Germany (Abgabenordnung) or German Commercial Code
       (Handelsgesetzbuch).
-      <h2>9. Your rights</h2>
+      <h2 id="your-rights">9. Your rights</h2>
       In the following, you will find a summary of your rights regarding the processing of your
       personal data:
       <h3>
@@ -346,18 +346,18 @@ export default function Privacy() {
       <div>Deutschland</div>
       <div>TEL. + 49 (0) 157/30101056</div>
       <div>E-MAIL contact@climateconnect.earth</div>
-      <h2>10.Is there any obligation on your side to provide personal data?</h2>
+      <h2 id="obligation">10.Is there any obligation on your side to provide personal data?</h2>
       There is neither a contractual nor a legal obligation to provide us with your personal data
       for the use of our websites, however, in case of a donation, we may be obliged to issue
       donation conformations and use your personal data in this context. Also, if you wish to
       contact us, certain information may be required to enable us to process your request.
-      <h2>11. Is the processing based on automated decision-making or profiling?</h2>
+      <h2 id="profiling">11. Is the processing based on automated decision-making or profiling?</h2>
       You have a right not to be subject to a decision based solely on automated processing,
       including profiling, if the decision is not necessary for the conclusion or performance of a
       contract, is not required by mandatory law, or is not based on your explicit consent. Climate
       Connect does not use automated decision-making procedures, including profiling, unless we have
       explicitly informed you of them.
-      <h2>12. What kind of cookies and tracking technology do we use?</h2>
+      <h2 id="cookies">12. What kind of cookies and tracking technology do we use?</h2>
       For the provision, maintenance, and analysis of our websites and their usage, we use various
       software tools from third parties and ourselves, which are regularly based on the use of
       cookies, Flash cookies (also called Flash Local Shared Objects), web beacons or similar
@@ -532,13 +532,13 @@ export default function Privacy() {
       .<h4>Mailjet SAS</h4>
       On our internet pages we use the services of the cloud communications platform Twilio Inc.,
       375 Beale Street, Suite 300, San Francisco, CA 94105 for sending automatic emails. Link
-      <h2>13. Technical security measures</h2>
+      <h2 id="security-measures">13. Technical security measures</h2>
       For security reasons and to protect the transmission of confidential information that you send
       to us as the website provider, we use SSL or TLS encryption. You can recognize an encrypted
       connection by the fact that the address line of the browser changes from {"http://"} to{" "}
       {"https://"} and by the lock symbol in your browser line. If SSL or TLS encryption is
       activated, the data you transmit to us cannot be read by third parties.
-      <h2>14. CHANGES TO OUR PRIVACY POLICY</h2>
+      <h2 id="changes">14. CHANGES TO OUR PRIVACY POLICY</h2>
       We may modify or update this Privacy Policy from time to time to reflect the changes in our
       business and practices, and you should review this page periodically. We will update the ‘last
       modified’ date at the bottom of this page when we post changes to this Privacy Policy. If you

@@ -8,7 +8,6 @@ module.exports = {
     "API_HOST",
     "API_URL",
     "BASE_URL_HOST",
-    "BASE_URL_HOST",
     "DONATION_CAMPAIGN_RUNNING",
     "ENVIRONMENT",
     "GOOGLE_ANALYTICS_CODE",

@@ -26,13 +26,14 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
   const opts = {
     height: "390",
     width: "640",
+    host: "https://www.youtube-nocookie.com",
     playerVars: {
       // https://developers.google.com/youtube/player_parameters
-      autoplay: 0
+      autoplay: 0      
     }
   };
 
-  const getFirstYouTubeVideosLines = text => {
+  const getFirstYouTubeVideosLines = (content) => {
     const allLines = content.split("\n");
     const youtubeLines = allLines
       .filter(w => w.length > 0 && youtubeRegex().test(w))
