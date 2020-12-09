@@ -67,7 +67,7 @@ export default function OrganizationPreviews({
       {parentHandlesGridItems
         ? organizations && organizations.length > 0
           ? toOrganizationPreviews(organizations)
-          : "No Results"
+          : "No organizations found."
         : gridItems}
       {loadingSpinner()}
     </InfiniteScroll>

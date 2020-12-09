@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, makeStyles } from "@material-ui/core";
 import TuneIcon from "@material-ui/icons/Tune";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+
 import FilterSearchBar from "../filter/FilterSearchBar";
 
 const useStyles = makeStyles((theme) => {
@@ -67,7 +68,7 @@ export default function FilterSection({
   setState,
 }) {
   const classes = useStyles();
-  const [searchFilters, setSearchFilters] = React.useState({
+  const [searchFilters, setSearchFilters] = useState({
     projects: "",
     members: "",
     organizations: "",
@@ -86,20 +87,26 @@ export default function FilterSection({
     setSearchFilters({ ...searchFilters, [type]: newValue });
   };
 
+  /**
+   * Asynchonously get new projects, orgs or members. We render
+   * a loading spinner until the request is done.
+   */
   const onSearchSubmit = async (type) => {
     const newUrlEnding = buildUrlEndingFromSearch(searchFilters[type]);
     if (state.urlEnding[type] != newUrlEnding) {
       try {
         let filteredItemsObject;
-        if (type === "projects") filteredItemsObject = await getProjects(1, token, newUrlEnding);
-        else if (type === "organizations")
+        if (type === "projects") {
+          filteredItemsObject = await getProjects(1, token, newUrlEnding);
+        } else if (type === "organizations") {
           filteredItemsObject = await getOrganizations(1, token, newUrlEnding);
-        else if (type === "members") {
+        } else if (type === "members") {
           filteredItemsObject = await getMembers(1, token, newUrlEnding);
           filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
         } else {
           console.log("cannot find type!");
         }
+
         setState({
           ...state,
           items: { ...state.items, [type]: filteredItemsObject[type] },

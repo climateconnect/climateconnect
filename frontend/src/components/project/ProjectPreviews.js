@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import ProjectPreview from "./ProjectPreview";
 
@@ -25,10 +25,14 @@ export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHan
   const classes = useStyles();
   const toProjectPreviews = (projects) =>
     projects.map((p) => <GridItem key={p.url_slug} project={p} />);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [gridItems, setGridItems] = React.useState(toProjectPreviews(projects));
 
-  if (!loadFunc) hasMore = false;
+  const [isLoading, setIsLoading] = useState(false);
+  const [gridItems, setGridItems] = useState(toProjectPreviews(projects));
+
+  if (!loadFunc) {
+    hasMore = false;
+  }
+
   const loadMore = async () => {
     //sometimes InfiniteScroll calls loadMore twice really fast. Therefore we're using isLoading to make sure it doesn't catch 2 pages at once
     if (!isLoading) {
@@ -44,6 +48,7 @@ export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHan
   const loadingSpinner = () => {
     return isLoading ? (
       <Grid container justify="center">
+        Test
         <CircularProgress className={classes.spinner} />
       </Grid>
     ) : null;
@@ -61,10 +66,11 @@ export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHan
       className={`${classes.reset} ${classes.root}`}
       spacing={2}
     >
+      {loadingSpinner()}
       {parentHandlesGridItems
         ? projects && projects.length > 0
           ? toProjectPreviews(projects)
-          : "No Results"
+          : "No projects found."
         : gridItems}
       {loadingSpinner()}
     </InfiniteScroll>

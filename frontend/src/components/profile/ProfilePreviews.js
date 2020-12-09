@@ -67,7 +67,7 @@ export default function ProfilePreviews({
       {parentHandlesGridItems
         ? profiles && profiles.length > 0
           ? toProfilePreviews(profiles)
-          : "No Results"
+          : "No members found."
         : gridItems}
       {loadingSpinner()}
     </InfiniteScroll>
