@@ -136,9 +136,11 @@ export default function MyApp({
     };
     client.onclose = () => {
       setSocketConnectionState("closed");
-      setTimeout(function() {
-        connect();
-      }, 1000);
+      if(process.env.SOCKET_URL){
+        setTimeout(function() {
+          connect();
+        }, 1000);
+      }
     };
     if (!initialClient) {
       setState({
