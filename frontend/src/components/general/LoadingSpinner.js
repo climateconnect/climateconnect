@@ -12,17 +12,20 @@ const useStyles = makeStyles({
 
 /**
  * Generalized loading spinner that's centered and to be used
- * for search and filtering use cases. The component is
- * uncontrolled; that is loading state management should be
- * used at its call site.
+ * for search and filtering use cases.
+ *
+ * API includes an optional prop to override loading
+ * state. Defaults to true.
  */
-const LoadingSpinner = ({}) => {
+const LoadingSpinner = ({ isLoading = true }) => {
   const classes = useStyles();
 
   return (
-    <Grid container justify="center">
-      <CircularProgress className={classes.spinner} />
-    </Grid>
+    isLoading && (
+      <Grid container justify="center">
+        <CircularProgress className={classes.spinner} />
+      </Grid>
+    )
   );
 };
 

@@ -48,7 +48,6 @@ export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHan
   const loadingSpinner = () => {
     return isLoading ? (
       <Grid container justify="center">
-        Test
         <CircularProgress className={classes.spinner} />
       </Grid>
     ) : null;
@@ -66,7 +65,6 @@ export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHan
       className={`${classes.reset} ${classes.root}`}
       spacing={2}
     >
-      {loadingSpinner()}
       {parentHandlesGridItems
         ? projects && projects.length > 0
           ? toProjectPreviews(projects)
