@@ -8,84 +8,84 @@ import {
   Typography,
   IconButton,
   Checkbox,
-  Switch
+  Switch,
 } from "@material-ui/core";
 import SelectField from "./SelectField";
 import { makeStyles } from "@material-ui/core/styles";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 import AutoCompleteSearchBar from "./AutoCompleteSearchBar";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(4),
     maxWidth: 700,
-    margin: "0 auto"
+    margin: "0 auto",
   },
   blockElement: {
     display: "block",
     maxWidth: 700,
     height: 56,
     margin: "0 auto",
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   checkbox: {
     display: "block",
     margin: "0 auto",
     marginTop: theme.spacing(1),
-    fontSize: 13
+    fontSize: 13,
   },
   inlineBlockElement: {
-    display: "inline-block"
+    display: "inline-block",
   },
   bottomMessages: {
     textAlign: "center",
-    display: "block"
+    display: "block",
   },
   bottomMessageContainer: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   percentage: {
     textAlign: "center",
     color: `${theme.palette.primary.main}`,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   progressBar: {
     height: 5,
     marginBottom: theme.spacing(3),
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   centerText: {
-    textAlign: "center"
+    textAlign: "center",
   },
   backButton: {
-    float: "left"
+    float: "left",
   },
   inputField: {
     borderRadius: 2,
-    borderWidth: 5
+    borderWidth: 5,
   },
   notchedOutline: {
-    borderWidth: 2
+    borderWidth: 2,
   },
   rightAlignedButton: {
     float: "right",
-    marginTop: theme.spacing(4)
+    marginTop: theme.spacing(4),
   },
   switchText: {
     textAlign: "center",
-    position: "relative"
+    position: "relative",
   },
   bold: {
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   flexBlock: {
     display: "flex",
-    justifyContent: "space-around"
+    justifyContent: "space-around",
   },
   switchTextContainer: {
     display: "flex",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 }));
 
 //TODO throw error if "label" isn't unique
@@ -107,7 +107,7 @@ export default function Form({
   onGoBack,
   alignButtonsRight,
   className,
-  fieldClassName
+  fieldClassName,
 }) {
   const classes = useStyles();
 
@@ -126,8 +126,8 @@ export default function Form({
   function updatePercentage(customValues) {
     const filledFields =
       customValues && typeof customValues === "object"
-        ? fields.filter(field => !!customValues[field.key])
-        : fields.filter(field => !!values[field.key]);
+        ? fields.filter((field) => !!customValues[field.key])
+        : fields.filter((field) => !!values[field.key]);
     if (filledFields.length) {
       const totalValue = filledFields.reduce((accumulator, curField) => {
         return accumulator + curField.progressOnFill;
@@ -139,13 +139,13 @@ export default function Form({
   function handleValueChange(event, key, type, updateInstantly) {
     const newValues = {
       ...values,
-      [key]: type === "checkbox" || type === "switch" ? event.target.checked : event.target.value
+      [key]: type === "checkbox" || type === "switch" ? event.target.checked : event.target.value,
     };
     if (type === "checkbox" || type === "switch") {
       const dependentFields = fields.filter(
-        f => f.onlyShowIfChecked && f.onlyShowIfChecked === key
+        (f) => f.onlyShowIfChecked && f.onlyShowIfChecked === key
       );
-      if (dependentFields.length) dependentFields.map(f => (newValues[f.key] = ""));
+      if (dependentFields.length) dependentFields.map((f) => (newValues[f.key] = ""));
     }
     setValues(newValues);
     //setValues doesn't apply instantly, so we pass the new values to the updatePercentage function
@@ -193,7 +193,7 @@ export default function Form({
             {errorMessage}
           </Typography>
         )}
-        {fields.map(field => {
+        {fields.map((field) => {
           if (
             (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) &&
             field.select
@@ -214,8 +214,8 @@ export default function Form({
                   InputProps={{
                     classes: {
                       root: classes.inputField,
-                      notchedOutline: classes.notchedOutline
-                    }
+                      notchedOutline: classes.notchedOutline,
+                    },
                   }}
                 />
                 {field.bottomLink && field.bottomLink}
@@ -305,8 +305,8 @@ export default function Form({
                   InputProps={{
                     classes: {
                       root: classes.inputField,
-                      notchedOutline: classes.notchedOutline
-                    }
+                      notchedOutline: classes.notchedOutline,
+                    },
                   }}
                 />
                 {field.bottomLink && field.bottomLink}

@@ -9,7 +9,7 @@ import {
   Link,
   Container,
   Collapse,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
@@ -18,7 +18,7 @@ import UserContext from "../../context/UserContext";
 import DonationGoal from "./DonationGoal";
 import theme from "../../../themes/theme";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     background: theme.palette.primary.main,
@@ -26,40 +26,40 @@ const useStyles = makeStyles(theme => ({
     textAlign: "center",
     padding: theme.spacing(1),
     paddingBottom: 0,
-    position: "relative"
+    position: "relative",
   },
   text: {
     fontWeight: 600,
     paddingRight: theme.spacing(4),
     paddingLeft: theme.spacing(6),
     position: "relative",
-    display: "inline-block"
+    display: "inline-block",
   },
   showMoreButton: {
     color: "white",
-    width: "100%"
+    width: "100%",
   },
   closeButton: {
     position: "absolute",
     right: 0,
     top: 0,
-    color: "white"
+    color: "white",
   },
   expandableContent: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   donationGoal: {
-    marginBottom: theme.spacing(4)
+    marginBottom: theme.spacing(4),
   },
   link: {
-    color: "white"
+    color: "white",
   },
   textBlock: {
     marginBottom: theme.spacing(1),
     fontWeight: 600,
     [theme.breakpoints.down("xs")]: {
-      textAlign: "left"
-    }
+      textAlign: "left",
+    },
   },
   donateButton: {
     marginTop: theme.spacing(4),
@@ -67,18 +67,18 @@ const useStyles = makeStyles(theme => ({
     background: "white",
     [theme.breakpoints.down("xs")]: {
       marginTop: theme.spacing(-2),
-      marginBottom: theme.spacing(1)
-    }
+      marginBottom: theme.spacing(1),
+    },
   },
   flexWrapper: {
     display: "flex",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   christmasIcon: {
     height: 50,
     position: "absolute",
-    left: 5
-  }
+    left: 5,
+  },
 }));
 
 export default function DonationCampaignInformation() {
@@ -182,7 +182,7 @@ export default function DonationCampaignInformation() {
   );
 }
 
-const daysInFuture = numberOfDays => {
+const daysInFuture = (numberOfDays) => {
   const now = new Date();
   return new Date(now.getTime() + numberOfDays * 24 * 60 * 60 * 1000);
 };

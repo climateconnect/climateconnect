@@ -4,7 +4,7 @@ import EnterTextDialog from "../dialogs/EnterTextDialog";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import { Typography, Tooltip, IconButton, List, Chip, Button } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     skill: {
       display: "flex",
@@ -15,14 +15,14 @@ const useStyles = makeStyles(theme => {
       marginRight: theme.spacing(1),
       background: "none",
       borderRadius: 0,
-      fontSize: 16
+      fontSize: 16,
     },
     flexContainer: {
       display: "flex",
       flexDirection: "row",
       padding: 0,
-      marginBottom: theme.spacing(3)
-    }
+      marginBottom: theme.spacing(3),
+    },
   };
 });
 
@@ -37,19 +37,19 @@ export default function CollaborateSection({
   open,
   handleSetOpen,
   skillsOptions,
-  collaborationTexts
+  collaborationTexts,
 }) {
   const classes = useStyles();
   const [selectedItems, setSelectedItems] = React.useState(
     projectData.skills ? [...projectData.skills] : []
   );
-  const handleSkillDelete = skill => {
+  const handleSkillDelete = (skill) => {
     handleSetProjectData({
       skills: projectData.skills
         .slice(0, projectData.skills.indexOf(skill))
         .concat(
           projectData.skills.slice(projectData.skills.indexOf(skill) + 1, projectData.skills.length)
-        )
+        ),
     });
     setSelectedItems(
       projectData.skills
@@ -60,7 +60,7 @@ export default function CollaborateSection({
     );
   };
 
-  const handleConnectionDelete = connection => {
+  const handleConnectionDelete = (connection) => {
     handleSetProjectData({
       helpful_connections: projectData.helpful_connections
         .slice(0, projectData.helpful_connections.indexOf(connection))
@@ -69,7 +69,7 @@ export default function CollaborateSection({
             projectData.helpful_connections.indexOf(connection) + 1,
             projectData.helpful_connections.length
           )
-        )
+        ),
     });
   };
 
@@ -81,18 +81,18 @@ export default function CollaborateSection({
     handleSetOpen({ connectionsDialog: true });
   };
 
-  const handleSkillsDialogClose = skills => {
+  const handleSkillsDialogClose = (skills) => {
     if (skills) handleSetProjectData({ skills: skills });
     handleSetOpen({ skillsDialog: false });
   };
 
-  const handleConnectionsDialogClose = connection => {
+  const handleConnectionsDialogClose = (connection) => {
     if (projectData.helpful_connections && projectData.helpful_connections.includes(connection))
       alert("You can not add the same connection twice.");
     else {
       if (connection)
         handleSetProjectData({
-          helpful_connections: [...projectData.helpful_connections, connection]
+          helpful_connections: [...projectData.helpful_connections, connection],
         });
       handleSetOpen({ connectionsDialog: false });
     }
@@ -117,7 +117,7 @@ export default function CollaborateSection({
         <div>
           {projectData.skills && (
             <List className={classes.flexContainer}>
-              {projectData.skills.map(skill => (
+              {projectData.skills.map((skill) => (
                 <Chip
                   key={skill.key}
                   label={skill.name}
@@ -148,7 +148,7 @@ export default function CollaborateSection({
         </Typography>
         {projectData.helpful_connections && (
           <List className={classes.flexContainer}>
-            {projectData.helpful_connections.map(connection => (
+            {projectData.helpful_connections.map((connection) => (
               <Chip
                 key={connection}
                 label={connection}

@@ -9,9 +9,9 @@ import FacebookIcon from "@material-ui/icons/Facebook";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    background: theme.palette.primary.light
+    background: theme.palette.primary.light,
   },
   siteLinks: {
     display: "flex",
@@ -19,33 +19,33 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "space-between",
     [theme.breakpoints.down("sm")]: {
       flexWrap: "wrap",
-      justifyContent: "space-around"
+      justifyContent: "space-around",
     },
     ["@media (max-width: 400px)"]: {
       flexDirection: "column",
-      justifyContent: "center"
-    }
+      justifyContent: "center",
+    },
   },
   li: {
     color: "white",
     fontWeight: 600,
     [theme.breakpoints.down("md")]: {
-      fontSize: 14
-    }
+      fontSize: 14,
+    },
   },
   headline: {
     fontSize: 25,
     marginBottom: theme.spacing(2),
     fontWeight: "bold",
     [theme.breakpoints.down("md")]: {
-      fontSize: 22
-    }
+      fontSize: 22,
+    },
   },
   links: {
     height: 110,
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   newsLetterBox: {
     maxWidth: 250,
@@ -67,7 +67,7 @@ const useStyles = makeStyles(theme => ({
         borderWidth: "40px 0 0 40px",
         borderColor: theme.palette.primary.light + " transparent",
         top: 0,
-        left: -40
+        left: -40,
       },
       "&:before": {
         content: "''",
@@ -78,47 +78,47 @@ const useStyles = makeStyles(theme => ({
         width: 0,
         height: 0,
         top: -6,
-        left: -55
-      }
-    }
+        left: -55,
+      },
+    },
   },
   socialIcon: {
-    fontSize: 30
+    fontSize: 30,
   },
   socialIconsContainer: {
     display: "flex",
     justifyContent: "space-between",
     paddingBottom: theme.spacing(3),
     maxWidth: 280,
-    margin: "0 auto"
+    margin: "0 auto",
   },
   madeWith: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     paddingBottom: theme.spacing(2),
-    color: theme.palette.secondary.main
+    color: theme.palette.secondary.main,
   },
   heart: {
     color: "red",
     marginLeft: theme.spacing(0.5),
-    marginRight: theme.spacing(0.5)
+    marginRight: theme.spacing(0.5),
   },
   earth: {
     color: "blue",
     marginLeft: theme.spacing(1),
-    height: 20
+    height: 20,
   },
   newsletterSubscribeButton: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   linksSection: {
     [theme.breakpoints.down("sm")]: {
       minWidth: 120,
       textAlign: "center",
-      marginBottom: theme.spacing(2)
-    }
-  }
+      marginBottom: theme.spacing(2),
+    },
+  },
 }));
 export default function LargeFooter({ className }) {
   const classes = useStyles();

@@ -10,11 +10,11 @@ const useStyles = makeStyles({
     margin: 0,
     padding: 0,
     listStyleType: "none",
-    width: "100%"
+    width: "100%",
   },
   spinner: {
-    marginTop: "48px"
-  }
+    marginTop: "48px",
+  },
 });
 
 export default function ProfilePreviews({
@@ -22,18 +22,18 @@ export default function ProfilePreviews({
   loadFunc,
   hasMore,
   showAdditionalInfo,
-  parentHandlesGridItems
+  parentHandlesGridItems,
 }) {
   const classes = useStyles();
-  const toProfilePreviews = profiles =>
-    profiles.map(p => (
+  const toProfilePreviews = (profiles) =>
+    profiles.map((p) => (
       <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
     ));
   const [isLoading, setIsLoading] = React.useState(false);
   const [gridItems, setGridItems] = React.useState(toProfilePreviews(profiles));
 
   if (!loadFunc) hasMore = false;
-  const loadMore = async page => {
+  const loadMore = async (page) => {
     if (!isLoading) {
       setIsLoading(true);
       const newProfiles = await loadFunc(page);

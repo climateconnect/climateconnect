@@ -3,15 +3,15 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import LoadingContainer from "../general/LoadingContainer";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     textAlign: "center",
     padding: theme.spacing(5),
-    marginTop: theme.spacing(10)
+    marginTop: theme.spacing(10),
   },
   headline: {
-    marginBottom: theme.spacing(3)
-  }
+    marginBottom: theme.spacing(3),
+  },
 }));
 
 export default function ProjectSubmittedPage({ user, isDraft, url_slug, hasError }) {

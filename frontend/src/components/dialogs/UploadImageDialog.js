@@ -10,12 +10,12 @@ import GenericDialog from "./GenericDialog";
 const useStyles = makeStyles({
   avatarEditor: {
     margin: "0 auto",
-    display: "block"
+    display: "block",
   },
   slider: {
     display: "block",
-    margin: "0 auto"
-  }
+    margin: "0 auto",
+  },
 });
 
 export default function UploadImageDialog({
@@ -26,7 +26,7 @@ export default function UploadImageDialog({
   ratio,
   height,
   mobileHeight,
-  mediumHeight
+  mediumHeight,
 }) {
   const classes = useStyles();
   const theme = useTheme();
@@ -54,7 +54,7 @@ export default function UploadImageDialog({
     setScale(1);
   };
 
-  const setEditorRef = editor => setEditor(editor);
+  const setEditorRef = (editor) => setEditor(editor);
 
   const widthToUse =
     mobileHeight && smallScreen
@@ -119,5 +119,5 @@ UploadImageDialog.propTypes = {
   ratio: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   mobileHeight: PropTypes.number,
-  mediumHeight: PropTypes.number
+  mediumHeight: PropTypes.number,
 };

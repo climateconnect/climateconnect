@@ -13,7 +13,7 @@ app.prepare().then(() => {
     // This tells it to parse the query portion of the URL.
     const parsedUrl = parse(req.url, true);
     handle(req, res, parsedUrl);
-  }).listen(process.env.PORT, err => {
+  }).listen(process.env.PORT, (err) => {
     if (err) throw err;
     console.log("> Ready on http://localhost:" + process.env.PORT);
   });

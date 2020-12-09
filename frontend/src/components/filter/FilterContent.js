@@ -11,7 +11,7 @@ export default function FilterContent({
   applyFilters,
   possibleFilters,
   filtersExpanded,
-  unexpandFilters
+  unexpandFilters,
 }) {
   const isMediumScreen = useMediaQuery(theme.breakpoints.between("xs", "md"));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
@@ -38,7 +38,7 @@ export default function FilterContent({
     }, {})
   );
 
-  const handleClickDialogOpen = prop => {
+  const handleClickDialogOpen = (prop) => {
     if (!open.prop) {
       setOpen({ ...open, [prop]: true });
     } else setOpen({ ...open, [prop]: !open[prop] });
@@ -46,7 +46,7 @@ export default function FilterContent({
 
   const handleClickDialogClose = (prop, results) => {
     if (results) {
-      setCurrentFilters({ ...currentFilters, [prop]: results.map(x => x.name) });
+      setCurrentFilters({ ...currentFilters, [prop]: results.map((x) => x.name) });
     }
     setOpen({ ...open, [prop]: false });
   };
@@ -62,12 +62,12 @@ export default function FilterContent({
   const handleUnselectFilter = (filterName, filterKey) => {
     setCurrentFilters({
       ...currentFilters,
-      [filterKey]: currentFilters[filterKey].filter(f => f !== filterName)
+      [filterKey]: currentFilters[filterKey].filter((f) => f !== filterName),
     });
     if (selectedItems[filterKey])
       setSelectedItems({
         ...selectedItems,
-        [filterKey]: selectedItems[filterKey].filter(i => i.name !== filterName)
+        [filterKey]: selectedItems[filterKey].filter((i) => i.name !== filterName),
       });
   };
   return (

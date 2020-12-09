@@ -9,7 +9,7 @@ import {
   Typography,
   useMediaQuery,
   Grid,
-  CircularProgress
+  CircularProgress,
 } from "@material-ui/core";
 import Truncate from "react-truncate";
 import { makeStyles } from "@material-ui/core/styles";
@@ -19,27 +19,27 @@ import ChatTitle from "./ChatTitle";
 import MobileChatPreview from "./MobileChatPreview";
 import InfiniteScroll from "react-infinite-scroller";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     date: {
-      color: theme.palette.grey[600]
+      color: theme.palette.grey[600],
     },
     unreadBadge: {
       "& span": {
-        backgroundColor: theme.palette.success.main
-      }
+        backgroundColor: theme.palette.success.main,
+      },
     },
     unread: {
-      color: theme.palette.success.main
+      color: theme.palette.success.main,
     },
     miniProfilePreview: {
       display: "flex",
       alignItems: "center",
       flexBasis: 250,
-      flexShrink: 0
+      flexShrink: 0,
     },
     unreadPreview: {
-      fontWeight: "bold"
+      fontWeight: "bold",
     },
     badgeAndTimeContainer: {
       float: "right",
@@ -47,27 +47,27 @@ const useStyles = makeStyles(theme => {
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
-      alignItems: "center"
+      alignItems: "center",
     },
     NoChatsMessage: {
       marginTop: theme.spacing(2),
       textAlign: "center",
       maxWidth: 600,
-      margin: "0 auto"
+      margin: "0 auto",
     },
     listItem: {
-      display: "flex"
+      display: "flex",
     },
     spinner: {
-      marginTop: "48px"
-    }
+      marginTop: "48px",
+    },
   };
 });
 
 export default function ChatPreviews({ chats, loadFunc, hasMore }) {
   const classes = useStyles();
   const [isLoading, setIsLoading] = React.useState(false);
-  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
   const loadMore = async () => {
     //sometimes InfiniteScroll calls loadMore twice really fast. Therefore we're using isLoading to make sure it doesn't catch 2 pages at once
     if (!isLoading) {
@@ -178,5 +178,5 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat }) => {
 };
 
 ChatPreviews.propTypes = {
-  chats: PropTypes.array.isRequired
+  chats: PropTypes.array.isRequired,
 };

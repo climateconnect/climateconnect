@@ -3,9 +3,9 @@ import { makeStyles } from "@material-ui/core";
 import OrganizationPreview from "./OrganizationPreview";
 //This component is to display a fixed amount of projects without  the option to load more
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex"
+    display: "flex",
   },
   container: {
     whiteSpace: "nowrap",
@@ -16,17 +16,17 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up("sm")]: {
       ["&::-webkit-scrollbar"]: {
         display: "block",
-        height: 10
+        height: 10,
       },
       "&::-webkit-scrollbar-track": {
         backgroundColor: "#F8F8F8",
-        borderRadius: 20
+        borderRadius: 20,
       },
       "&::-webkit-scrollbar-thumb": {
         backgroundColor: "rgba(0,0,0,0.8)",
-        borderRadius: 20
-      }
-    }
+        borderRadius: 20,
+      },
+    },
   },
   organization: {
     minWidth: 265,
@@ -36,12 +36,12 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(2),
     [theme.breakpoints.down("lg")]: {
       marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(1)
-    }
+      marginRight: theme.spacing(1),
+    },
   },
   first: {
-    marginLeft: 0
-  }
+    marginLeft: 0,
+  },
 }));
 
 export default function OrganizationPreviewsFixed({ organizations, showOrganizationType }) {

@@ -5,13 +5,13 @@ import theme from "../../../themes/theme";
 
 const useStyles = makeStyles(() => ({
   root: {
-    display: "flex"
+    display: "flex",
   },
   icon: {
     width: 28,
     marginBottom: theme.spacing(-2),
-    marginRight: theme.spacing(2)
-  }
+    marginRight: theme.spacing(2),
+  },
 }));
 
 export default function TextBox({
@@ -23,7 +23,7 @@ export default function TextBox({
   headline,
   children,
   subPoints,
-  subHeadlineClass
+  subHeadlineClass,
 }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));

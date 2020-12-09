@@ -13,18 +13,18 @@ const useStyles = makeStyles({
     margin: 0,
     padding: 0,
     listStyleType: "none",
-    width: "100%"
+    width: "100%",
   },
   spinner: {
-    marginTop: "48px"
-  }
+    marginTop: "48px",
+  },
 });
 
 // This component is for display projects with the option to infinitely scroll to get more projects
 export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHandlesGridItems }) {
   const classes = useStyles();
-  const toProjectPreviews = projects =>
-    projects.map(p => <GridItem key={p.url_slug} project={p} />);
+  const toProjectPreviews = (projects) =>
+    projects.map((p) => <GridItem key={p.url_slug} project={p} />);
   const [isLoading, setIsLoading] = React.useState(false);
   const [gridItems, setGridItems] = React.useState(toProjectPreviews(projects));
 

@@ -9,9 +9,9 @@ const useStyles = makeStyles({
   link: {
     color: "inherit",
     "&:visited": {
-      color: "inherit"
-    }
-  }
+      color: "inherit",
+    },
+  },
 });
 
 export default function MessageContent({ content, renderYoutubeVideos }) {
@@ -29,17 +29,17 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
     host: "https://www.youtube-nocookie.com",
     playerVars: {
       // https://developers.google.com/youtube/player_parameters
-      autoplay: 0      
-    }
+      autoplay: 0,
+    },
   };
 
   const getFirstYouTubeVideosLines = (content) => {
     const allLines = content.split("\n");
     const youtubeLines = allLines
-      .filter(w => w.length > 0 && youtubeRegex().test(w))
-      .map(line => {
+      .filter((w) => w.length > 0 && youtubeRegex().test(w))
+      .map((line) => {
         const words = line.split(" ");
-        const enrichedLine = words.map(w => {
+        const enrichedLine = words.map((w) => {
           if (youtubeRegex().test(w)) {
             let video_id = w.split("v=")[1];
             const ampersandPosition = video_id.indexOf("&");
@@ -51,7 +51,7 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
         });
         return {
           content: enrichedLine,
-          index: allLines.indexOf(line)
+          index: allLines.indexOf(line),
         };
       });
     return youtubeLines.filter((l, index) => index < renderYoutubeVideos);
@@ -63,9 +63,9 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
     <Linkify componentDecorator={componentDecorator}>
       {content.split("\n").map((i, index) => {
         if (!i.length) return <br key={index} />;
-        if(youtubeVideoLines && youtubeVideoLines.find(l => l.index === index)){
-          console.log(youtubeVideoLines.find(l => l.index === index))
-          return <div key={index}>{youtubeVideoLines.find(l => l.index === index).content}</div>
+        if (youtubeVideoLines && youtubeVideoLines.find((l) => l.index === index)) {
+          console.log(youtubeVideoLines.find((l) => l.index === index));
+          return <div key={index}>{youtubeVideoLines.find((l) => l.index === index).content}</div>;
         }
         return <div key={index}>{i ? i : " "}</div>;
       })}
@@ -74,5 +74,5 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
 }
 
 MessageContent.propTypes = {
-  content: PropTypes.string.isRequired
+  content: PropTypes.string.isRequired,
 };

@@ -3,7 +3,7 @@ import { Container, makeStyles, Typography, Link } from "@material-ui/core";
 import React from "react";
 import InfoLinkBox from "../InfoLinkBox";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   contentWrapper: {
     display: "flex",
     marginTop: theme.spacing(6),
@@ -11,8 +11,8 @@ const useStyles = makeStyles(theme => ({
       flexDirection: "column",
       alignItems: "center",
       marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(1)
-    }
+      marginRight: theme.spacing(1),
+    },
   },
   textContainer: {
     marginLeft: theme.spacing(6),
@@ -27,31 +27,31 @@ const useStyles = makeStyles(theme => ({
       maxWidth: 600,
       padding: 0,
       margin: 0,
-      marginTop: theme.spacing(3)
-    }
+      marginTop: theme.spacing(3),
+    },
   },
   textBody: {
     fontWeight: 600,
-    textAlign: "center"
+    textAlign: "center",
   },
   infoLinkBox: {
     width: "100% !important",
-    marginLeft: 0
+    marginLeft: 0,
   },
   image: {
     visibility: "hidden",
     width: "100%",
-    maxWidth: 600
+    maxWidth: 600,
   },
   imageWrapper: {
     background: `url('/images/team.jpg')`,
     backgroundSize: "contain",
-    backgroundRepeat: "no-repeat"
+    backgroundRepeat: "no-repeat",
   },
   imageContainer: {
     display: "flex",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 }));
 
 export default function Team({ headlineClass, className }) {

@@ -2,21 +2,21 @@ import React from "react";
 import Post from "./Post";
 import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   post: {
     marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
   },
   indent: {
-    marginLeft: theme.spacing(4)
+    marginLeft: theme.spacing(4),
   },
   noMargin: {
-    margin: 0
+    margin: 0,
   },
   progressPosts: {
     marginLeft: theme.spacing(4),
     paddingBottom: theme.spacing(6),
-    borderLeft: `2px solid ${theme.palette.primary.main}`
+    borderLeft: `2px solid ${theme.palette.primary.main}`,
   },
   progressPost: {
     paddingLeft: theme.spacing(10),
@@ -31,8 +31,8 @@ const useStyles = makeStyles(theme => ({
       fontSize: 100,
       position: "absolute",
       top: 0,
-      left: -10
-    }
+      left: -10,
+    },
   },
   firstPost: {
     "&::before": {
@@ -43,9 +43,9 @@ const useStyles = makeStyles(theme => ({
       //10.1 margin to prevent visual glitch with line showing over dot
       top: -10.1,
       border: `10px solid #D7E2E4`,
-      zIndex: -1
-    }
-  }
+      zIndex: -1,
+    },
+  },
 }));
 
 //@type: possible values are "openingpost", "reply", "progresspost"
@@ -54,7 +54,7 @@ export default function Posts({ posts, type, maxLines, user, onSendComment, onDe
   const classNames = {
     reply: classes.indent,
     openingpost: classes.noMargin,
-    progresspost: classes.progressPosts
+    progresspost: classes.progressPosts,
   };
   return (
     <div className={classNames[type]}>
@@ -63,8 +63,9 @@ export default function Posts({ posts, type, maxLines, user, onSendComment, onDe
           <Post
             key={index}
             post={post}
-            className={`${classes.post} ${type === "progresspost" &&
-              classes.progressPost} ${index === 0 && type === "progresspost" && classes.firstPost}`}
+            className={`${classes.post} ${type === "progresspost" && classes.progressPost} ${
+              index === 0 && type === "progresspost" && classes.firstPost
+            }`}
             type={type}
             maxLines={maxLines}
             user={user}

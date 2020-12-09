@@ -5,21 +5,21 @@ import { makeStyles } from "@material-ui/core/styles";
 import SelectField from "./../general/SelectField";
 import GenericDialog from "./GenericDialog";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   textField: {
-    width: "100%"
+    width: "100%",
   },
   marginTop: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   applyButton: {
     position: "absolute",
     right: theme.spacing(2),
-    top: theme.spacing(1.5)
+    top: theme.spacing(1.5),
   },
   dialogContent: {
-    width: theme.spacing(50)
-  }
+    width: theme.spacing(50),
+  },
 }));
 
 /*
@@ -34,7 +34,7 @@ export default function SelectDialog({
   label,
   values,
   supportAdditionalInfo,
-  className
+  className,
 }) {
   const classes = useStyles();
   const [element, setElement] = React.useState(null);
@@ -44,18 +44,18 @@ export default function SelectDialog({
     onClose();
   };
 
-  const applyElement = event => {
+  const applyElement = (event) => {
     event.preventDefault();
     onClose(element, additionalInfo);
   };
 
-  const handleSelectChange = event => {
-    setElement(values.filter(x => x.name === event.target.value)[0].key);
+  const handleSelectChange = (event) => {
+    setElement(values.filter((x) => x.name === event.target.value)[0].key);
     if (supportAdditionalInfo) {
-      const value = values.filter(val => val.name === event.target.value)[0];
+      const value = values.filter((val) => val.name === event.target.value)[0];
       if (value.additionalInfo.length > 0) {
         setAdditionalInfo(
-          value.additionalInfo.map(x => {
+          value.additionalInfo.map((x) => {
             return { ...x, value: "" };
           })
         );
@@ -67,7 +67,7 @@ export default function SelectDialog({
 
   const handleAdditionalInfoChange = (key, event) => {
     const tempAdditionalInfo = [...additionalInfo];
-    tempAdditionalInfo.filter(x => x.key === key)[0].value = event.target.value;
+    tempAdditionalInfo.filter((x) => x.key === key)[0].value = event.target.value;
     setAdditionalInfo(tempAdditionalInfo);
   };
 
@@ -91,7 +91,7 @@ export default function SelectDialog({
               key={i}
               placeholder={additionalInfo[i].name}
               className={`${classes.textField} ${classes.marginTop}`}
-              onChange={e => handleAdditionalInfoChange(additionalInfo[i].key, e)}
+              onChange={(e) => handleAdditionalInfoChange(additionalInfo[i].key, e)}
             >
               {additionalInfo[i].value}
             </TextField>
@@ -111,5 +111,5 @@ SelectDialog.propTypes = {
   label: PropTypes.string.isRequired,
   values: PropTypes.array.isRequired,
   supportAdditionalInfo: PropTypes.bool.isRequired,
-  className: PropTypes.string
+  className: PropTypes.string,
 };

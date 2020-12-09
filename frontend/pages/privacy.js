@@ -11,20 +11,60 @@ export default function Privacy() {
       <h2>Table of Contents</h2>
       <b>
         <ol start="1">
-          <li><a href="#scope">Scope of application</a></li>
-          <li><a href="#responsible">Who is responsible and to whom can I reach out?</a></li>
-          <li><a href="#which-data-do-we-process">Which data do we process from you?</a></li>
-          <li><a href="#from-whom-do-we-collect-your-personal-data">From whom do we collect your personal data?</a></li>
-          <li><a href="#purposes">For what purposes and on what legal basis do we process your data?</a></li>
-          <li><a href="#to-whom-do-we-transfer-your-data">To whom do we transfer your data?</a></li>
-          <li><a href="#do-we-transfer-data-to-third-countries">Do we transfer your data to third countries?</a></li>
-          <li><a href="#how-long-do-we-store-your-personal-data">How long do we store your personal data?</a></li>
-          <li><a href="#your-rights">Your rights</a></li>
-          <li><a href="#obligation">Is there any obligation on your side to provide personal data?.</a></li>
-          <li><a href="#profiling">Is the processing based on automated decision-making or profiling?.</a></li>
-          <li><a href="#cookies">What kind of cookies and tracking technology do we use?.</a></li>
-          <li><a href="#security-measures">Technical security measures.</a></li>
-          <li><a href="#changes">CHANGES TO OUR PRIVACY POLICY.</a></li>
+          <li>
+            <a href="#scope">Scope of application</a>
+          </li>
+          <li>
+            <a href="#responsible">Who is responsible and to whom can I reach out?</a>
+          </li>
+          <li>
+            <a href="#which-data-do-we-process">Which data do we process from you?</a>
+          </li>
+          <li>
+            <a href="#from-whom-do-we-collect-your-personal-data">
+              From whom do we collect your personal data?
+            </a>
+          </li>
+          <li>
+            <a href="#purposes">
+              For what purposes and on what legal basis do we process your data?
+            </a>
+          </li>
+          <li>
+            <a href="#to-whom-do-we-transfer-your-data">To whom do we transfer your data?</a>
+          </li>
+          <li>
+            <a href="#do-we-transfer-data-to-third-countries">
+              Do we transfer your data to third countries?
+            </a>
+          </li>
+          <li>
+            <a href="#how-long-do-we-store-your-personal-data">
+              How long do we store your personal data?
+            </a>
+          </li>
+          <li>
+            <a href="#your-rights">Your rights</a>
+          </li>
+          <li>
+            <a href="#obligation">
+              Is there any obligation on your side to provide personal data?.
+            </a>
+          </li>
+          <li>
+            <a href="#profiling">
+              Is the processing based on automated decision-making or profiling?.
+            </a>
+          </li>
+          <li>
+            <a href="#cookies">What kind of cookies and tracking technology do we use?.</a>
+          </li>
+          <li>
+            <a href="#security-measures">Technical security measures.</a>
+          </li>
+          <li>
+            <a href="#changes">CHANGES TO OUR PRIVACY POLICY.</a>
+          </li>
         </ol>
       </b>
       <h2 id="scope">1.Scope of application</h2>
@@ -126,7 +166,9 @@ export default function Privacy() {
       <a href="https://www.mailjet.com/" target="_blank" rel="noreferrer">
         Mailjet
       </a>
-      <h2 id="from-whom-do-we-collect-your-personal-data">4. From whom do we collect your personal data?</h2>
+      <h2 id="from-whom-do-we-collect-your-personal-data">
+        4. From whom do we collect your personal data?
+      </h2>
       Personal data is only collected directly from you, e.g., by visiting our websites or using the
       services offered, such as the possibility of registration, using our newsletter and contacting
       us by e-mail.
@@ -242,14 +284,18 @@ export default function Privacy() {
       addition, no personal data will be transferred on to third parties unless, in individual
       cases, there is a specific legal justification for the transfer, and your interests or
       fundamental rights and freedoms do not prevail.
-      <h2 id="do-we-transfer-data-to-third-countries">7. Do we transfer your data to third countries?</h2>
+      <h2 id="do-we-transfer-data-to-third-countries">
+        7. Do we transfer your data to third countries?
+      </h2>
       For some types of processing, we may transfer your personal data to countries outside the
       European Union or the European Economic Area, to so-called third countries. In the course of a
       transfer of personal data to a third country, we will regularly provide appropriate
       guarantees, for example, by concluding the Standard Contractual Clauses of the European
       Commission to ensure that the transfer of data takes place with the same level of data
       protection that corresponds to the GDPR.
-      <h2 id="how-long-do-we-store-your-personal-data">8. How long do we store your personal data?</h2>
+      <h2 id="how-long-do-we-store-your-personal-data">
+        8. How long do we store your personal data?
+      </h2>
       We process and store your personal data only as long as necessary for our processing purposes.
       Upon request, we will regularly delete the data collected and stored for our websites’ usage
       at any time. We will do this ourselves and within a few days, unless we have a particular

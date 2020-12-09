@@ -8,17 +8,17 @@ import Alert from "@material-ui/lab/Alert";
 import LoadingContainer from "../general/LoadingContainer";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 
-const useStyles = makeStyles(theme => ({
-  main: props => ({
+const useStyles = makeStyles((theme) => ({
+  main: (props) => ({
     padding: 0,
     marginTop: props.isStaticPage ? 0 : -16,
-    marginBottom: props.noSpaceBottom ? 0 : theme.spacing(6)
+    marginBottom: props.noSpaceBottom ? 0 : theme.spacing(6),
   }),
   alert: {
     textAlign: "center",
     maxWidth: 1280,
-    margin: "0 auto"
-  }
+    margin: "0 auto",
+  },
 }));
 
 export default function WideLayout({
@@ -35,7 +35,7 @@ export default function WideLayout({
   showOnScrollUp, //display the footer when scrolling up, used for "inifinite scroll" pages
   largeFooter,
   description,
-  landingPage
+  landingPage,
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);

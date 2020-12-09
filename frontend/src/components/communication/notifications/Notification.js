@@ -6,43 +6,43 @@ import {
   Avatar,
   ListItemText,
   Link,
-  ListItemIcon
+  ListItemIcon,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GroupIcon from "@material-ui/icons/Group";
 import CommentIcon from "@material-ui/icons/Comment";
 import { getImageUrl } from "../../../../public/lib/imageOperations";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     messageSender: {
       fontWeight: 600,
-      whiteSpace: "normal"
+      whiteSpace: "normal",
     },
     listItemText: {
-      whiteSpace: "normal"
+      whiteSpace: "normal",
     },
     goToInboxText: {
       textAlign: "center",
       display: "block",
-      marginTop: theme.spacing(1)
+      marginTop: theme.spacing(1),
     },
     notificationText: {
       overflow: "hidden",
       textOverflow: "ellipsis",
-      whiteSpace: "nowrap"
-    }
+      whiteSpace: "nowrap",
+    },
   };
 });
-const StyledMenuItem = withStyles(theme => ({
+const StyledMenuItem = withStyles((theme) => ({
   root: {
     "&:focus": {
       "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-        color: theme.palette.common.white
-      }
+        color: theme.palette.common.white,
+      },
     },
-    maxWidth: 450
-  }
+    maxWidth: 450,
+  },
 }))(MenuItem);
 
 const NOTIFICATION_TYPES = [
@@ -54,7 +54,7 @@ const NOTIFICATION_TYPES = [
   "project_update_post",
   "post_comment",
   "reply_to_post_comment",
-  "group_message"
+  "group_message",
 ];
 
 export default function Notification({ notification, isPlaceholder }) {
@@ -92,10 +92,10 @@ const PrivateMessageNotification = ({ notification }) => {
           primary={"Message from " + sender.first_name + " " + sender.last_name}
           secondary={notification.last_message.content}
           primaryTypographyProps={{
-            className: classes.messageSender
+            className: classes.messageSender,
           }}
           secondaryTypographyProps={{
-            className: classes.notificationText
+            className: classes.notificationText,
           }}
         />
       </StyledMenuItem>
@@ -121,10 +121,10 @@ const GroupMessageNotification = ({ notification }) => {
             sender.first_name + " " + sender.last_name + ": " + notification.last_message.content
           }
           primaryTypographyProps={{
-            className: classes.messageSender
+            className: classes.messageSender,
           }}
           secondaryTypographyProps={{
-            className: classes.notificationText
+            className: classes.notificationText,
           }}
         />
       </StyledMenuItem>
@@ -161,10 +161,10 @@ const ProjectCommentNotification = ({ notification }) => {
           primary={'Comment on "' + notification.project.name + '"'}
           secondary={notification.project_comment.content}
           primaryTypographyProps={{
-            className: classes.messageSender
+            className: classes.messageSender,
           }}
           secondaryTypographyProps={{
-            className: classes.notificationText
+            className: classes.notificationText,
           }}
         />
       </StyledMenuItem>
@@ -184,10 +184,10 @@ const ProjectCommentReplyNotification = ({ notification }) => {
           primary={'Reply to your comment on "' + notification.project.name + '"'}
           secondary={notification.project_comment.content}
           primaryTypographyProps={{
-            className: classes.messageSender
+            className: classes.messageSender,
           }}
           secondaryTypographyProps={{
-            className: classes.notificationText
+            className: classes.notificationText,
           }}
         />
       </StyledMenuItem>
@@ -224,10 +224,10 @@ const ProjectFollowerNotification = ({ notification }) => {
           }
           secondary={"Congratulations!"}
           primaryTypographyProps={{
-            className: classes.messageSender
+            className: classes.messageSender,
           }}
           secondaryTypographyProps={{
-            className: classes.notificationText
+            className: classes.notificationText,
           }}
         />
       </StyledMenuItem>

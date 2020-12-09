@@ -13,10 +13,10 @@ import Router from "next/router";
 export default function CreateOrganization({ tagOptions, token, rolesOptions }) {
   const [errorMessages, setErrorMessages] = React.useState({
     basicOrganizationInfo: "",
-    detailledOrganizationInfo: ""
+    detailledOrganizationInfo: "",
   });
 
-  const handleSetErrorMessages = newErrorMessages => {
+  const handleSetErrorMessages = (newErrorMessages) => {
     setErrorMessages(newErrorMessages);
     window.scrollTo(0, 0);
   };
@@ -30,7 +30,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     verified: false,
     shortdescription: "",
     website: "",
-    types: []
+    types: [],
   });
   const { user } = useContext(UserContext);
   const steps = ["basicorganizationinfo", "detailledorganizationinfo"];
@@ -44,14 +44,17 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         handleSetErrorMessages({
           errorMessages,
           basicOrganizationInfo:
-            "You have not selected a parent organization. Either untick the sub-organization field or choose/create your parent organization."
+            "You have not selected a parent organization. Either untick the sub-organization field or choose/create your parent organization.",
         });
       else {
         const resp = await axios.get(
           process.env.API_URL + "/api/organizations/?search=" + values.organizationname
         );
-        if (resp.data.results && resp.data.results.find(r => r.name === values.organizationname)) {
-          const org = resp.data.results.find(r => r.name === values.organizationname);
+        if (
+          resp.data.results &&
+          resp.data.results.find((r) => r.name === values.organizationname)
+        ) {
+          const org = resp.data.results.find((r) => r.name === values.organizationname);
           handleSetErrorMessages({
             errorMessages,
             basicOrganizationInfo: (
@@ -59,7 +62,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
                 An organization with this name already exists. Click{" "}
                 <a href={"/organizations/" + org.url_slug}>here</a> to see it.
               </div>
-            )
+            ),
           });
         } else {
           setOrganizationInfo({
@@ -67,7 +70,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
             name: values.organizationname,
             parentorganization: values.parentorganizationname,
             city: values.city,
-            country: values.country
+            country: values.country,
           });
           setCurStep(steps[1]);
         }
@@ -85,7 +88,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       'Please choose at least one organization type by clicking the "Add Type" button under the avatar.',
     name: "Please type your organization name under the avatar image",
     city: "Please specify your city",
-    country: "Please specify your country"
+    country: "Please specify your country",
   };
 
   const handleDetailledInfoSubmit = (event, account) => {
@@ -97,7 +100,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       ) {
         handleSetErrorMessages({
           errorMessages,
-          detailledOrganizationInfo: requiredPropErrors[prop]
+          detailledOrganizationInfo: requiredPropErrors[prop],
         });
         return;
       }
@@ -108,16 +111,16 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         organizationToSubmit,
         tokenConfig(token)
       )
-      .then(function(response) {
+      .then(function (response) {
         Router.push({
           pathname: "/organizations/" + response.data.url_slug,
           query: {
             message:
-              "You have successfully created an organization! You can add members by scrolling down to the members section."
-          }
+              "You have successfully created an organization! You can add members by scrolling down to the members section.",
+          },
         });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
         if (error) console.log(error.response);
       });
@@ -152,20 +155,20 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     );
 }
 
-CreateOrganization.getInitialProps = async ctx => {
+CreateOrganization.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
   const [tagOptions, rolesOptions] = await Promise.all([
     await getTags(token),
-    await getRolesOptions(token)
+    await getRolesOptions(token),
   ]);
   return {
     tagOptions: tagOptions,
     token: token,
-    rolesOptions: rolesOptions
+    rolesOptions: rolesOptions,
   };
 };
 
-const getRolesOptions = async token => {
+const getRolesOptions = async (token) => {
   try {
     const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
@@ -187,7 +190,7 @@ async function getTags(token) {
     );
     if (resp.data.results.length === 0) return null;
     else {
-      return resp.data.results.map(t => {
+      return resp.data.results.map((t) => {
         return { ...t, key: t.id, additionalInfo: t.additional_info ? t.additional_info : [] };
       });
     }
@@ -201,7 +204,7 @@ async function getTags(token) {
 const parseOrganizationForRequest = (o, user, rolesOptions) => {
   const organization = {
     team_members: [
-      { user_id: user.id, permission_type_id: rolesOptions.find(r => r.name === "Creator").id }
+      { user_id: user.id, permission_type_id: rolesOptions.find((r) => r.name === "Creator").id },
     ],
     name: o.name,
     background_image: o.background_image,
@@ -210,7 +213,7 @@ const parseOrganizationForRequest = (o, user, rolesOptions) => {
     country: o.info.country,
     website: o.info.website,
     short_description: o.info.shortdescription,
-    organization_tags: o.types
+    organization_tags: o.types,
   };
   if (o.parentorganization) organization.parent_organization = o.parentorganization;
 

@@ -4,10 +4,10 @@ import Form from "../../src/components/general/Form";
 import axios from "axios";
 import { redirect } from "../../public/lib/apiOperations";
 
-ResetPassword.getInitialProps = async ctx => {
+ResetPassword.getInitialProps = async (ctx) => {
   const uuid = encodeURI(ctx.query.uuid);
   return {
-    uuid: uuid
+    uuid: uuid,
   };
 };
 
@@ -16,18 +16,18 @@ const fields = [
     required: true,
     label: "Enter your new password",
     key: "password",
-    type: "password"
+    type: "password",
   },
   {
     required: true,
     label: "Enter your new password again",
     key: "repeatpassword",
-    type: "password"
-  }
+    type: "password",
+  },
 ];
 
 const messages = {
-  submitMessage: "Set new password"
+  submitMessage: "Set new password",
 };
 
 export default function ResetPassword({ uuid }) {
@@ -56,13 +56,13 @@ export default function ResetPassword({ uuid }) {
 async function requestSetPassword(uuid, new_password, setErrorMessage) {
   const payload = {
     password_reset_key: uuid,
-    new_password: new_password
+    new_password: new_password,
   };
   const config = {
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
-    }
+      "Content-Type": "application/json",
+    },
   };
   try {
     const response = await axios.post(
@@ -71,7 +71,7 @@ async function requestSetPassword(uuid, new_password, setErrorMessage) {
       config
     );
     redirect("/browse", {
-      message: response.data.message
+      message: response.data.message,
     });
   } catch (error) {
     if (error.response && error.response.data) {

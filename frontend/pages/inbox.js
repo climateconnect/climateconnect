@@ -15,36 +15,36 @@ import MiniProfilePreview from "../src/components/profile/MiniProfilePreview";
 import Router from "next/router";
 import { sendToLogin } from "../public/lib/apiOperations";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     root: {
-      padding: 0
+      padding: 0,
     },
     headline: {
       paddingTop: theme.spacing(2),
       paddingBottom: theme.spacing(2),
-      textAlign: "center"
+      textAlign: "center",
     },
     newChatButton: {
       marginBottom: theme.spacing(2),
       [theme.breakpoints.down("md")]: {
-        marginLeft: theme.spacing(1)
-      }
+        marginLeft: theme.spacing(1),
+      },
     },
     searchSectionContainer: {
       marginBottom: theme.spacing(4),
       [theme.breakpoints.down("md")]: {
         marginLeft: theme.spacing(2),
-        marginRight: theme.spacing(2)
-      }
+        marginRight: theme.spacing(2),
+      },
     },
     buttonBar: {
       position: "relative",
-      height: 40
+      height: 40,
     },
     cancelButton: {
       position: "absolute",
-      right: 0
+      right: 0,
     },
     newChatParticipantsContainer: {
       marginTop: theme.spacing(2),
@@ -52,17 +52,17 @@ const useStyles = makeStyles(theme => {
       [theme.breakpoints.down("xs")]: {
         display: "flex",
         flexWrap: "wrap",
-        justifyContent: "center"
-      }
+        justifyContent: "center",
+      },
     },
     miniProfilePreview: {
       padding: theme.spacing(2),
-      display: "inline-flex"
+      display: "inline-flex",
     },
     groupChatName: {
       marginLeft: theme.spacing(2),
-      width: 250
-    }
+      width: 250,
+    },
   };
 });
 
@@ -75,10 +75,10 @@ export default function Inbox({ chatData, token, next }) {
   const [groupName, setGroupName] = React.useState("");
   const [chatsState, setChatsState] = React.useState({
     chats: parseChats(chatData, user),
-    next: next
+    next: next,
   });
 
-  const handleGroupNameChange = e => {
+  const handleGroupNameChange = (e) => {
     setGroupName(e.target.value);
   };
 
@@ -90,11 +90,11 @@ export default function Inbox({ chatData, token, next }) {
     setUserSearchEnabled(false);
   };
 
-  const handleAddNewChatMember = member => {
+  const handleAddNewChatMember = (member) => {
     setNewChatMembers([...newChatMembers, member]);
   };
 
-  const handleStartChat = e => {
+  const handleStartChat = (e) => {
     e.preventDefault();
     const isGroupchat = newChatMembers.length > 1;
     const urlPostfix = isGroupchat ? "/api/start_group_chat/" : "/api/start_private_chat/";
@@ -107,17 +107,17 @@ export default function Inbox({ chatData, token, next }) {
           );
           return;
         }
-        payload.participants = newChatMembers.map(m => m.id);
+        payload.participants = newChatMembers.map((m) => m.id);
         payload.group_chat_name = groupName;
       } else {
         payload.profile_url_slug = newChatMembers[0].url_slug;
       }
       axios
         .post(process.env.API_URL + urlPostfix, payload, tokenConfig(token))
-        .then(async function(response) {
+        .then(async function (response) {
           Router.push("/chat/" + response.data.chat_uuid + "/");
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error.response);
           // TODO: Show error message that user cant connect
         });
@@ -133,17 +133,17 @@ export default function Inbox({ chatData, token, next }) {
     setChatsState({
       ...chatsState,
       next: newChatData.next,
-      chats: [...chatsState.chats, ...parseChats(newChats, user)]
+      chats: [...chatsState.chats, ...parseChats(newChats, user)],
     });
   };
 
-  const handleRemoveMember = member => {
-    setNewChatMembers([...newChatMembers.filter(m => m.id !== member.id)]);
+  const handleRemoveMember = (member) => {
+    setNewChatMembers([...newChatMembers.filter((m) => m.id !== member.id)]);
   };
 
   const getUsersToFilterOut = () => [user, ...newChatMembers];
 
-  const renderSearchOption = option => {
+  const renderSearchOption = (option) => {
     return (
       <React.Fragment>
         <IconButton>
@@ -175,7 +175,7 @@ export default function Inbox({ chatData, token, next }) {
                 filterOut={getUsersToFilterOut()}
                 onSelect={handleAddNewChatMember}
                 renderOption={renderSearchOption}
-                getOptionLabel={option => option.first_name + " " + option.last_name}
+                getOptionLabel={(option) => option.first_name + " " + option.last_name}
                 helperText="Type the name of the user(s) you want to message."
               />
               <form onSubmit={handleStartChat}>
@@ -242,16 +242,16 @@ export default function Inbox({ chatData, token, next }) {
 
 const parseChats = (chats, user) =>
   chats
-    ? chats.map(chat => ({
+    ? chats.map((chat) => ({
         ...chat,
         chatting_partner:
-          chat.participants.length === 2 && chat.participants.filter(p => p.id != user.id)[0],
+          chat.participants.length === 2 && chat.participants.filter((p) => p.id != user.id)[0],
         unread_count: chat.unread_count,
-        content: chat.last_message ? chat.last_message.content : "Chat has been created"
+        content: chat.last_message ? chat.last_message.content : "Chat has been created",
       }))
     : [];
 
-Inbox.getInitialProps = async ctx => {
+Inbox.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
   if (ctx.req && !token) {
     const message = "You have to log in to see your inbox.";
@@ -261,7 +261,7 @@ Inbox.getInitialProps = async ctx => {
   return {
     chatData: chatData.chats,
     next: chatData.next,
-    token: token
+    token: token,
   };
 };
 
@@ -271,7 +271,7 @@ async function getChatsOfLoggedInUser(token, next) {
     const resp = await axios.get(url, tokenConfig(token));
     return {
       chats: parseChatData(resp.data.results),
-      next: resp.data.next
+      next: resp.data.next,
     };
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
@@ -281,13 +281,13 @@ async function getChatsOfLoggedInUser(token, next) {
   }
 }
 
-const parseChatData = chats => {
-  return chats.map(c => ({
+const parseChatData = (chats) => {
+  return chats.map((c) => ({
     ...c,
-    participants: c.participants.map(p => ({
+    participants: c.participants.map((p) => ({
       ...p.user_profile,
       role: p.role,
-      created_at: p.created_at
-    }))
+      created_at: p.created_at,
+    })),
   }));
 };

@@ -17,32 +17,32 @@ import Axios from "axios";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import { getParams } from "../../../public/lib/generalOperations";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
   contactProjectButton: {
-    marginLeft: theme.spacing(1)
+    marginLeft: theme.spacing(1),
   },
-  followButtonContainer: props => ({
+  followButtonContainer: (props) => ({
     display: "inline-flex",
     flexDirection: props.hasAdminPermissions ? "auto" : "column",
     justifyContent: "center",
     alignItems: "center",
-    textAlign: "center"
+    textAlign: "center",
   }),
-  followersLink: props => ({
+  followersLink: (props) => ({
     cursor: "pointer",
     textDecoration: "none",
-    marginLeft: props.hasAdminPermissions ? theme.spacing(1) : 0
+    marginLeft: props.hasAdminPermissions ? theme.spacing(1) : 0,
   }),
   followerNumber: {
     fontWeight: 700,
-    color: theme.palette.secondary.main
+    color: theme.palette.secondary.main,
   },
   followersText: {
     fontWeight: 500,
     fontSize: 18,
-    color: theme.palette.secondary.light
-  }
+    color: theme.palette.secondary.light,
+  },
 }));
 
 const componentDecorator = (href, text, key) => (
@@ -63,7 +63,7 @@ export default function ProjectOverview({
   smallScreen,
   handleToggleFollowProject,
   isUserFollowing,
-  followingChangePending
+  followingChangePending,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -71,15 +71,15 @@ export default function ProjectOverview({
     UserContext
   );
   const token = cookies.get("token");
-  const handleClickContact = async event => {
+  const handleClickContact = async (event) => {
     event.preventDefault();
-    const creator = project.team.filter(m => m.permission === "Creator")[0];
+    const creator = project.team.filter((m) => m.permission === "Creator")[0];
     const chat = await startPrivateChat(creator, token);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
   const user_permission =
-    user && project.team && project.team.find(m => m.id === user.id)
-      ? project.team.find(m => m.id === user.id).permission
+    user && project.team && project.team.find((m) => m.id === user.id)
+      ? project.team.find((m) => m.id === user.id).permission
       : null;
   const hasAdminPermissions =
     user_permission && ["Creator", "Administrator"].includes(user_permission);
@@ -92,7 +92,7 @@ export default function ProjectOverview({
     if (!initiallyCaughtFollowers) {
       const retrievedFollowers = await getFollowers(project, token);
       const notification_to_set_read = notifications.filter(
-        n => n.notification_type === 4 && n.project.url_slug === project.url_slug
+        (n) => n.notification_type === 4 && n.project.url_slug === project.url_slug
       );
       await setNotificationsRead(token, notification_to_set_read);
       await refreshNotifications();
@@ -152,7 +152,7 @@ function SmallScreenOverview({
   handleClickContact,
   hasAdminPermissions,
   toggleShowFollowers,
-  followingChangePending
+  followingChangePending,
 }) {
   const classes = useStyles();
   return (
@@ -226,7 +226,7 @@ function LargeScreenOverview({
   handleClickContact,
   hasAdminPermissions,
   toggleShowFollowers,
-  followingChangePending
+  followingChangePending,
 }) {
   const classes = useStyles();
   return (
@@ -305,7 +305,7 @@ function FollowButton({
   handleToggleFollowProject,
   hasAdminPermissions,
   toggleShowFollowers,
-  followingChangePending
+  followingChangePending,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   return (

@@ -3,15 +3,15 @@ import { Typography, makeStyles, Button } from "@material-ui/core";
 import UserContext from "../context/UserContext";
 import Carousel from "react-multi-carousel";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     outerContainer: {
       paddingTop: theme.spacing(2),
       maxWidth: 1280,
       margin: "0 auto",
       [theme.breakpoints.down("xs")]: {
-        paddingTop: theme.spacing(1)
-      }
+        paddingTop: theme.spacing(1),
+      },
     },
     storyIconBox: {
       flex: "0 0 75px",
@@ -20,14 +20,14 @@ const useStyles = makeStyles(theme => {
       backgroundRepeat: "no-repeat",
       backgroundSize: "150px 150px",
       [theme.breakpoints.up("lg")]: {
-        flex: "0 0 150px"
-      }
+        flex: "0 0 150px",
+      },
     },
     storyIconBoxLeft: {
-      backgroundPosition: "right"
+      backgroundPosition: "right",
     },
     storyIconBoxRight: {
-      backgroundPosition: "left"
+      backgroundPosition: "left",
     },
     headingContainer: {
       display: "flex",
@@ -35,137 +35,135 @@ const useStyles = makeStyles(theme => {
       justifyContent: "space-between",
       marginTop: theme.spacing(1),
       [theme.breakpoints.down("xs")]: {
-        marginBottom: theme.spacing(2)
-      }
+        marginBottom: theme.spacing(2),
+      },
     },
     content: {
-      alignSelf: "center"
+      alignSelf: "center",
     },
     contentHeader: {
       textAlign: "center",
       fontSize: 20,
       fontWeight: "bold",
       marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(-1)
+      marginBottom: theme.spacing(-1),
     },
     contentHeaderLoggedIn: {
-      marginBottom: theme.spacing(-3)
+      marginBottom: theme.spacing(-3),
     },
     textContent: {
       textAlign: "center",
       fontSize: 20,
       color: theme.palette.secondary.main,
       [theme.breakpoints.down("xs")]: {
-        fontSize: 15
-      }
+        fontSize: 15,
+      },
     },
     signUpButtonBox: {
       marginTop: theme.spacing(1),
       display: "flex",
-      justifyContent: "center"
+      justifyContent: "center",
     },
     shareLink: {
       textDecoration: "none",
-      color: "white"
-    }
+      color: "white",
+    },
   };
 });
 
 const getCarouselContent = () => [
   {
     headline: "Climate action platform",
-    text: [
-      "Bringing everyone involved in climate action together."
-    ],
+    text: ["Bringing everyone involved in climate action together."],
     images: [
       {
-        link: "/icons/mainpage-left.svg"
+        link: "/icons/mainpage-left.svg",
       },
       {
-        link: "/icons/mainpage-right.svg"
-      }
-    ]
+        link: "/icons/mainpage-right.svg",
+      },
+    ],
   },
   {
     headline: "Get inspired",
     text: [
-      "Find inspiring climate projects to work on. See where you can make the biggest difference."
+      "Find inspiring climate projects to work on. See where you can make the biggest difference.",
     ],
     images: [
       {
-        link: "/icons/mainpage-right.svg"
+        link: "/icons/mainpage-right.svg",
       },
       {
-        link: "/icons/mainpage-creativity.svg"
-      }
-    ]
+        link: "/icons/mainpage-creativity.svg",
+      },
+    ],
   },
   {
     headline: "Share your solutions",
     text: [
       "Share your projects & ideas with the climate community!",
-      "Find volunteers, partners and customers."
+      "Find volunteers, partners and customers.",
     ],
     images: [
       {
-        link: "/icons/mainpage-creativity.svg"
+        link: "/icons/mainpage-creativity.svg",
       },
       {
-        link: "/icons/mainpage-team.svg"
-      }
-    ]
+        link: "/icons/mainpage-team.svg",
+      },
+    ],
   },
   {
     headline: "Spread solutions globally",
     text: [
       "Many great local solutions would work in many places!",
-      "Share and find solutions to spread them worldwide."
+      "Share and find solutions to spread them worldwide.",
     ],
     images: [
       {
-        link: "/icons/mainpage-team.svg"
+        link: "/icons/mainpage-team.svg",
       },
       {
-        link: "/icons/mainpage-resume.svg"
-      }
-    ]
+        link: "/icons/mainpage-resume.svg",
+      },
+    ],
   },
   {
     headline: "Connect with the right people",
     text: [
-      "Filter for projects and people based on your skills, needs and interests. Maximize your positive impact on our planet."
+      "Filter for projects and people based on your skills, needs and interests. Maximize your positive impact on our planet.",
     ],
     images: [
       {
-        link: "/icons/mainpage-resume.svg"
+        link: "/icons/mainpage-resume.svg",
       },
       {
-        link: "/icons/mainpage-team.svg"
-      }
-    ]
+        link: "/icons/mainpage-team.svg",
+      },
+    ],
   },
   {
     headline: "World wide collaboration",
     text: [
       "We need to all work together to protect our planet.",
-      "Be part of the global climate community!"
+      "Be part of the global climate community!",
     ],
     images: [
       {
-        link: "/icons/mainpage-team.svg"
+        link: "/icons/mainpage-team.svg",
       },
       {
-        link: "/icons/mainpage-left.svg"
-      }
-    ]
-  }
+        link: "/icons/mainpage-left.svg",
+      },
+    ],
+  },
 ];
 
 const responsive = {
   all: {
     breakpoint: { max: 10000, min: 0 },
-    items: 1
-  }
+    items: 1,
+  },
 };
 
 export default function MainHeadingContainerMobile() {

@@ -2,15 +2,15 @@ import React from "react";
 import { Tabs, Tab, Divider, makeStyles } from "@material-ui/core";
 import FaqQuestionElement from "./FaqQuestionElement";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     tabs: {
       width: "100%",
-      marginTop: theme.spacing(2)
+      marginTop: theme.spacing(2),
     },
     divider: {
-      marginBottom: theme.spacing(2)
-    }
+      marginBottom: theme.spacing(2),
+    },
   };
 });
 
@@ -43,7 +43,7 @@ export default function UnfilteredFaqContent({ questionsBySection }) {
       <Divider className={classes.divider} />
       {Object.keys(questionsBySection).map((key, index) => (
         <TabContent value={tabValue} index={index} key={key}>
-          {questionsBySection[key].map(q => (
+          {questionsBySection[key].map((q) => (
             <FaqQuestionElement key={key + "-" + q} questionObject={q} />
           ))}
         </TabContent>

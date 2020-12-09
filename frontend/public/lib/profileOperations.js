@@ -19,13 +19,13 @@ export function parseProfile(profile, detailledSkills, keepOldProps) {
       ...user.info,
       location: profile.city + ", " + profile.country,
       bio: profile.biography,
-      skills: profile.skills && profile.skills.map(s => s.name),
+      skills: profile.skills && profile.skills.map((s) => s.name),
       availability: profile.availability && profile.availability.name,
-      website: profile.website
-    }
+      website: profile.website,
+    },
   };
   if (keepOldProps) delete user.info.location;
-  if (detailledSkills) user.info.skills = profile.skills.map(s => ({ ...s, key: s.id }));
+  if (detailledSkills) user.info.skills = profile.skills.map((s) => ({ ...s, key: s.id }));
   return user;
 }
 
@@ -37,8 +37,8 @@ export function redirectOnLogin(user, redirectUrl) {
     Router.push({
       pathname: "/editprofile",
       query: {
-        message: SIGN_UP_MESSAGE
-      }
+        message: SIGN_UP_MESSAGE,
+      },
     });
   } else if (redirectUrl) {
     if (redirectUrl[0] === "/") redirectUrl = redirectUrl.substring(1, redirectUrl.length);

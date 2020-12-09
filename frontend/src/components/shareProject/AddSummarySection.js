@@ -6,7 +6,7 @@ const useStyles = makeStyles({
   shortDescriptionWrapper: {
     width: "100%",
     paddingTop: "56.25%",
-    position: "relative"
+    position: "relative",
   },
   shortDescription: {
     position: "absolute",
@@ -14,11 +14,11 @@ const useStyles = makeStyles({
     left: 0,
     bottom: 0,
     right: 0,
-    width: "100%"
+    width: "100%",
   },
   fullHeight: {
-    height: "100%"
-  }
+    height: "100%",
+  },
 });
 
 export default function AddSummarySection({
@@ -28,7 +28,7 @@ export default function AddSummarySection({
   subHeaderClassname,
   toolTipClassName,
   helpTexts,
-  ToolTipIcon
+  ToolTipIcon,
 }) {
   const classes = useStyles(projectData);
   const shortDescriptionRef = React.useRef(null);
@@ -54,12 +54,12 @@ export default function AddSummarySection({
           }
           ref={shortDescriptionRef}
           InputLabelProps={{
-            shrink: true
+            shrink: true,
           }}
-          onChange={event => onDescriptionChange(event, "short_description")}
+          onChange={(event) => onDescriptionChange(event, "short_description")}
           className={classes.shortDescription}
           InputProps={{
-            classes: { root: classes.fullHeight, inputMultiline: classes.fullHeight }
+            classes: { root: classes.fullHeight, inputMultiline: classes.fullHeight },
           }}
           placeholder={
             "Briefly summarise what you are doing (up to 240 characters)\n\nPlease only use English!"

@@ -5,47 +5,47 @@ import SmallCloud from "../staticpages/SmallCloud";
 import OrganizationPreviewsFixed from "../organization/OrganizationPreviewsFixed";
 import theme from "../../themes/theme";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: "90%",
     maxWidth: 1280,
     margin: "0 auto",
     marginTop: theme.spacing(15),
-    position: "relative"
+    position: "relative",
   },
   headline: {
     fontSize: 25,
     fontWeight: 700,
     marginBottom: theme.spacing(1),
     [theme.breakpoints.down("sm")]: {
-      fontSize: 21
-    }
+      fontSize: 21,
+    },
   },
   explainerText: {
     maxWidth: 660,
-    marginBottom: theme.spacing(3)
+    marginBottom: theme.spacing(3),
   },
   showProjectsButtonContainer: {
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(3),
   },
   showProjectsArrow: {
-    marginLeft: theme.spacing(2)
+    marginLeft: theme.spacing(2),
   },
   showProjectsText: {
-    textDecoration: "underline"
+    textDecoration: "underline",
   },
   smallCloud1: {
     position: "absolute",
     top: -60,
-    right: "50%"
+    right: "50%",
   },
   smallCloud2: {
     position: "absolute",
     right: "10%",
     top: -100,
     width: 100,
-    height: 80
-  }
+    height: 80,
+  },
 }));
 
 export default function OrganizationsSharedBox({ organizations }) {

@@ -12,40 +12,40 @@ import BottomNavigation from "../general/BottomNavigation";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import collaborationTexts from "../../../public/data/collaborationTexts";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     headline: {
       textAlign: "center",
       marginTop: theme.spacing(8),
-      marginBottom: theme.spacing(8)
+      marginBottom: theme.spacing(8),
     },
     stepsTracker: {
       maxWidth: 600,
-      margin: "0 auto"
+      margin: "0 auto",
     },
     subHeader: {
       marginBottom: theme.spacing(4),
-      fontSize: 20
+      fontSize: 20,
     },
     inlineSubHeader: {
       display: "inline-block",
-      marginRight: theme.spacing(4)
+      marginRight: theme.spacing(4),
     },
     inlineBlock: {
-      display: "inline-block"
+      display: "inline-block",
     },
     block: {
-      marginBottom: theme.spacing(4)
+      marginBottom: theme.spacing(4),
     },
     datePicker: {
       marginTop: 0,
-      marginLeft: theme.spacing(4)
+      marginLeft: theme.spacing(4),
     },
     photoContainer: {
-      paddingRight: theme.spacing(2)
+      paddingRight: theme.spacing(2),
     },
     summaryContainer: {
-      paddingLeft: theme.spacing(2)
+      paddingLeft: theme.spacing(2),
     },
     inlineOnBigScreens: {
       width: "50%",
@@ -53,12 +53,12 @@ const useStyles = makeStyles(theme => {
       verticalAlign: "top",
       [theme.breakpoints.down("sm")]: {
         width: "100%",
-        padding: 0
-      }
+        padding: 0,
+      },
     },
     tooltip: {
-      fontSize: 16
-    }
+      fontSize: 16,
+    },
   };
 });
 
@@ -74,7 +74,7 @@ const helpTexts = {
   addSkills:
     "If you are looking for someone with specific skills to help you with your project, select these here.",
   addConnections:
-    "Add connections that would be helpful for collaborators to have. Specifically this could be connections to organizations that could help accelerate your project."
+    "Add connections that would be helpful for collaborators to have. Specifically this could be connections to organizations that could help accelerate your project.",
 };
 
 export default function EnterDetails({
@@ -83,31 +83,31 @@ export default function EnterDetails({
   goToNextStep,
   goToPreviousStep,
   skillsOptions,
-  statusOptions
+  statusOptions,
 }) {
   const [open, setOpen] = React.useState({
     avatarDialog: false,
     skillsDialog: false,
-    connectionsDialog: false
+    connectionsDialog: false,
   });
   const classes = useStyles(projectData);
 
-  const statusValues = statusOptions.map(s => {
+  const statusValues = statusOptions.map((s) => {
     return {
       ...s,
       label: s.name,
-      key: s.name
+      key: s.name,
     };
   });
 
-  const statusesWithStartDate = statusOptions.filter(s => s.has_start_date).map(s => s.id);
-  const statusesWithEndDate = statusOptions.filter(s => s.has_end_date).map(s => s.id);
+  const statusesWithStartDate = statusOptions.filter((s) => s.has_start_date).map((s) => s.id);
+  const statusesWithEndDate = statusOptions.filter((s) => s.has_end_date).map((s) => s.id);
 
   const onClickPreviousStep = () => {
     goToPreviousStep();
   };
 
-  const onClickNextStep = event => {
+  const onClickNextStep = (event) => {
     event.preventDefault();
     if (isProjectDataValid(projectData)) {
       handleSetProjectData({ ...projectData });
@@ -115,53 +115,53 @@ export default function EnterDetails({
     }
   };
 
-  const handleSetOpen = newOpenObject => {
+  const handleSetOpen = (newOpenObject) => {
     setOpen({ ...open, ...newOpenObject });
   };
 
   const validation = {
     short_description: {
       name: "Short summary",
-      maxLength: 240
+      maxLength: 240,
     },
     description: {
       name: "Description",
-      maxLength: 4000
-    }
+      maxLength: 4000,
+    },
   };
 
   const onDescriptionChange = (event, descriptionType) => {
     handleSetProjectData({
-      [descriptionType]: event.target.value.substring(0, validation[descriptionType].maxLength)
+      [descriptionType]: event.target.value.substring(0, validation[descriptionType].maxLength),
     });
   };
 
-  const onWebsiteChange = event => {
+  const onWebsiteChange = (event) => {
     handleSetProjectData({
-      website: event.target.value
+      website: event.target.value,
     });
   };
 
-  const isProjectDataValid = project => {
+  const isProjectDataValid = (project) => {
     if (!project.image) {
       alert("Please add an image!");
       return false;
     } else return true;
   };
 
-  const onStatusRadioChange = newStatus => {
-    handleSetProjectData({ status: statusOptions.find(s => s.name === newStatus) });
+  const onStatusRadioChange = (newStatus) => {
+    handleSetProjectData({ status: statusOptions.find((s) => s.name === newStatus) });
   };
 
-  const onStartDateChange = newDate => {
+  const onStartDateChange = (newDate) => {
     handleSetProjectData({ start_date: newDate });
   };
 
-  const onEndDateChange = newDate => {
+  const onEndDateChange = (newDate) => {
     handleSetProjectData({ end_date: newDate });
   };
 
-  const onAllowCollaboratorsChange = event => {
+  const onAllowCollaboratorsChange = (event) => {
     handleSetProjectData({ collaborators_welcome: event.target.checked });
   };
 
@@ -257,7 +257,7 @@ export default function EnterDetails({
               fullWidth
               multiline
               rows={9}
-              onChange={event => onDescriptionChange(event, "description")}
+              onChange={(event) => onDescriptionChange(event, "description")}
               helperText={"Describe your project in detail. Please only use English!"}
               placeholder={`Describe your project in more detail.\n\n-What are you trying to achieve?\n-How are you trying to achieve it\n-What were the biggest challenges?\n-What insights have you gained during the implementation?`}
               value={projectData.description}
@@ -274,7 +274,7 @@ export default function EnterDetails({
             </Typography>
             <TextField
               variant="outlined"
-              onChange={event => onWebsiteChange(event)}
+              onChange={(event) => onWebsiteChange(event)}
               placeholder={`Project website`}
               value={projectData.website}
               helperText={"If your project has a website, you can enter it here."}

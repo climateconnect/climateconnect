@@ -7,25 +7,25 @@ import BottomNavigation from "../general/BottomNavigation";
 import AddProjectMembersContainer from "./AddProjectMembersContainer";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     searchBarContainer: {
       marginTop: theme.spacing(4),
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      flexGrow: 100
+      flexGrow: 100,
     },
     searchBar: {
       width: 800,
-      display: "flex"
+      display: "flex",
     },
     block: {
-      marginBottom: theme.spacing(4)
+      marginBottom: theme.spacing(4),
     },
     marginTop: {
-      marginTop: theme.spacing(4)
-    }
+      marginTop: theme.spacing(4),
+    },
   };
 });
 
@@ -36,7 +36,7 @@ export default function AddTeam({
   saveAsDraft,
   goToPreviousStep,
   availabilityOptions,
-  rolesOptions
+  rolesOptions,
 }) {
   const classes = useStyles();
   const onClickPreviousStep = () => {
@@ -44,16 +44,16 @@ export default function AddTeam({
   };
 
   //Prevent double entries
-  const handleAddMember = member => {
+  const handleAddMember = (member) => {
     handleSetProjectData({
       team_members: [
         ...projectData.team_members,
-        { ...member, role: rolesOptions.find(r => r.name === "Member"), role_in_project: "" }
-      ]
+        { ...member, role: rolesOptions.find((r) => r.name === "Member"), role_in_project: "" },
+      ],
     });
   };
 
-  const handleRemoveMember = member => {
+  const handleRemoveMember = (member) => {
     handleSetProjectData({
       team_members: projectData.team_members
         .slice(0, projectData.team_members.indexOf(member))
@@ -62,18 +62,18 @@ export default function AddTeam({
             projectData.team_members.indexOf(member) + 1,
             projectData.team_members.length
           )
-        )
+        ),
     });
   };
 
   //prevent double entries
-  const handleAddOrganization = organization => {
+  const handleAddOrganization = (organization) => {
     handleSetProjectData({
-      collaborating_organizations: [...projectData.collaborating_organizations, organization]
+      collaborating_organizations: [...projectData.collaborating_organizations, organization],
     });
   };
 
-  const handleRemoveOrganization = organization => {
+  const handleRemoveOrganization = (organization) => {
     handleSetProjectData({
       collaborating_organizations: projectData.collaborating_organizations
         .slice(0, projectData.collaborating_organizations.indexOf(organization))
@@ -82,11 +82,11 @@ export default function AddTeam({
             projectData.collaborating_organizations.indexOf(organization) + 1,
             projectData.collaborating_organizations.length
           )
-        )
+        ),
     });
   };
 
-  const renderSearchOption = option => {
+  const renderSearchOption = (option) => {
     return (
       <React.Fragment>
         <IconButton>
@@ -110,7 +110,7 @@ export default function AddTeam({
             filterOut={[...projectData.team_members]}
             onSelect={handleAddMember}
             renderOption={renderSearchOption}
-            getOptionLabel={option => option.first_name + " " + option.last_name}
+            getOptionLabel={(option) => option.first_name + " " + option.last_name}
             helperText="Type the name of the team member you want to add next."
           />
         </div>

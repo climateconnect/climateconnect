@@ -2,8 +2,8 @@ export default function tokenConfig(token) {
   // Headers
   const config = {
     headers: {
-      "Content-Type": "application/json"
-    }
+      "Content-Type": "application/json",
+    },
   };
 
   // If token, add to headers config

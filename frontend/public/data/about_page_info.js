@@ -7,21 +7,21 @@ export default [
   {
     icon: AddIcon,
     iconName: "AddIcon",
-    title: "Share your actions"
+    title: "Share your actions",
   },
   {
     icon: EmojiObjectsIcon,
     iconName: "EmojiObjectsIcon",
-    title: "Get inspired"
+    title: "Get inspired",
   },
   {
     icon: GroupIcon,
     iconName: "GroupIcon",
-    title: "Collaborate globally"
+    title: "Collaborate globally",
   },
   {
     icon: CompareArrowsIcon,
     iconName: "CompareArrowsIcon",
-    title: "Match skills"
-  }
+    title: "Match skills",
+  },
 ];

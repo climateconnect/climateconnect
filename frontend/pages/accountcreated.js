@@ -3,14 +3,14 @@ import Layout from "../src/components/layouts/layout";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Typography } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     textAlign: "center",
-    padding: theme.spacing(5)
+    padding: theme.spacing(5),
   },
   headline: {
-    marginBottom: theme.spacing(3)
-  }
+    marginBottom: theme.spacing(3),
+  },
 }));
 
 const verified = false;

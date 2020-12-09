@@ -7,43 +7,43 @@ const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 import {
   getResizedImage,
   whitenTransparentPixels,
-  getCompressedJPG
+  getCompressedJPG,
 } from "./../../../public/lib/imageOperations";
 import { getImageDialogHeight } from "../../../public/lib/imageOperations";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     imageZoneWrapper: {
       display: "block",
       width: "100%",
-      position: "relative"
+      position: "relative",
     },
-    imageZone: props => ({
+    imageZone: (props) => ({
       cursor: "pointer",
       border: "1px dashed #000",
       width: "100%",
       paddingBottom: "56.25%",
       backgroundImage: `${props.image ? `url(${props.image})` : null}`,
-      backgroundSize: "contain"
+      backgroundSize: "contain",
     }),
     photoIcon: {
       display: "block",
       marginBottom: theme.spacing(1),
       margin: "0 auto",
       cursor: "pointer",
-      fontSize: 40
+      fontSize: 40,
     },
     addPhotoWrapper: {
       position: "absolute",
       left: "calc(50% - 85px)",
-      top: "calc(50% - 44px)"
+      top: "calc(50% - 44px)",
     },
     addPhotoContainer: {
       position: "absolute",
       left: "-50%",
       top: "-50%",
-      width: 170
-    }
+      width: 170,
+    },
   };
 });
 
@@ -56,18 +56,18 @@ export default function AddPhotoSection({
   helpTexts,
   ToolTipIcon,
   open,
-  handleSetOpen
+  handleSetOpen,
 }) {
   const classes = useStyles(projectData);
   const [tempImage, setTempImage] = React.useState(projectData.image);
   const inputFileRef = React.useRef(null);
-  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
-  const handleDialogClickOpen = dialogName => {
+  const handleDialogClickOpen = (dialogName) => {
     handleSetOpen({ [dialogName]: true });
   };
 
-  const onImageChange = async event => {
+  const onImageChange = async (event) => {
     const file = event.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
@@ -76,16 +76,16 @@ export default function AddPhotoSection({
     handleDialogClickOpen("avatarDialog");
   };
 
-  const onUploadImageClick = event => {
+  const onUploadImageClick = (event) => {
     event.preventDefault();
     inputFileRef.current.click();
   };
 
-  const handleAvatarDialogClose = async image => {
+  const handleAvatarDialogClose = async (image) => {
     handleSetOpen({ avatarDialog: false });
     if (image && image instanceof HTMLCanvasElement) {
       whitenTransparentPixels(image);
-      image.toBlob(async function(blob) {
+      image.toBlob(async function (blob) {
         const resizedBlob = URL.createObjectURL(blob);
         const thumbnailBlob = await getResizedImage(
           URL.createObjectURL(blob),
@@ -95,7 +95,7 @@ export default function AddPhotoSection({
         );
         handleSetProjectData({
           image: resizedBlob,
-          thumbnail_image: thumbnailBlob
+          thumbnail_image: thumbnailBlob,
         });
       }, "image/jpeg");
     }

@@ -9,65 +9,65 @@ import YouTubeIcon from "@material-ui/icons/YouTube";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import LargeFooter from "../footer/LargeFooter";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
     height: theme.spacing(8),
     borderTop: `1px solid ${theme.palette.grey[300]}`,
-    width: "100%"
+    width: "100%",
   },
   absolutePosition: {
     position: "absolute",
-    bottom: 0
+    bottom: 0,
   },
   relativePosition: {
     position: "fixed",
     bottom: 0,
-    backgroundColor: "#FFFFFF"
+    backgroundColor: "#FFFFFF",
   },
   spacingTop: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   flexContainer: {
     display: "flex",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   centerText: {
     display: "flex",
     alignItems: "center",
     textAlign: "center",
-    margin: "0 auto"
+    margin: "0 auto",
   },
   rightBox: {
     marginLeft: "auto",
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
   },
   leftBox: {
-    marginRight: "auto"
+    marginRight: "auto",
   },
   socialMediaLink: {
     height: 20,
     marginLeft: theme.spacing(1),
-    color: "inherit"
+    color: "inherit",
   },
   inheritColor: {
-    color: "inherit"
+    color: "inherit",
   },
   heart: {
     color: "red",
     marginLeft: theme.spacing(0.5),
-    marginRight: theme.spacing(0.5)
+    marginRight: theme.spacing(0.5),
   },
   earth: {
     color: "blue",
     marginLeft: theme.spacing(1),
-    height: 20
+    height: 20,
   },
   link: {
-    marginRight: theme.spacing(1)
-  }
+    marginRight: theme.spacing(1),
+  },
 }));
 
 //TODO: make footer stay on bottom on normal layout again
@@ -76,7 +76,7 @@ export default function Footer({
   noSpacingTop,
   noAbsolutePosition,
   showOnScrollUp,
-  large
+  large,
 }) {
   if (!large)
     return (
@@ -92,14 +92,15 @@ export default function Footer({
 
 const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScrollUp }) => {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
 
   return (
     <Box
       component="footer"
-      className={`${className} ${classes.root} ${!noSpacingTop &&
-        classes.spacingTop} ${!noAbsolutePosition &&
-        (showOnScrollUp === true ? classes.relativePosition : classes.absolutePosition)}`}
+      className={`${className} ${classes.root} ${!noSpacingTop && classes.spacingTop} ${
+        !noAbsolutePosition &&
+        (showOnScrollUp === true ? classes.relativePosition : classes.absolutePosition)
+      }`}
     >
       <Box className={classes.flexContainer}>
         <Box className={classes.leftBox}>

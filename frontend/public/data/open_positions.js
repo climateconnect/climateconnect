@@ -7,21 +7,21 @@ export default [
   {
     icon: ShareIcon,
     iconName: "ShareIcon",
-    title: "Junior social media manager"
+    title: "Junior social media manager",
   },
   {
     icon: LocalActivityOutlinedIcon,
     iconName: "LocalActivityOutlinedIcon",
-    title: "Event manager"
+    title: "Event manager",
   },
   {
     icon: ImportantDevicesIcon,
     iconName: "ImportantDevicesIcon",
-    title: "Frontend developer (React, Next.js)"
+    title: "Frontend developer (React, Next.js)",
   },
   {
     icon: CodeIcon,
     iconName: "CodeIcon",
-    title: "Backend developer (Django)"
-  }
+    title: "Backend developer (Django)",
+  },
 ];

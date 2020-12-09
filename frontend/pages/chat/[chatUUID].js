@@ -18,7 +18,7 @@ export default function Chat({
   nextLink,
   hasMore,
   rolesOptions,
-  chat_id
+  chat_id,
 }) {
   const { chatSocket, user, socketConnectionState } = useContext(UserContext);
   const [participants, setParticipants] = React.useState(chatParticipants);
@@ -26,11 +26,11 @@ export default function Chat({
     nextPage: 2,
     messages: [...messages],
     nextLink: nextLink,
-    hasMore: hasMore
+    hasMore: hasMore,
   });
 
-  const handleWindowClose = e => {
-    if (state.messages.filter(m => m.unconfirmed).length > 0) {
+  const handleWindowClose = (e) => {
+    if (state.messages.filter((m) => m.unconfirmed).length > 0) {
       e.preventDefault();
       return (e.returnValue = "Changes you made might not be saved.");
     }
@@ -46,16 +46,16 @@ export default function Chat({
 
   useEffect(() => {
     if (chatSocket) {
-      chatSocket.onmessage = async rawData => {
+      chatSocket.onmessage = async (rawData) => {
         const data = JSON.parse(rawData.data);
         if (data.chat_uuid === chatUUID) {
           const message = await getMessageFromServer(data.message_id, token);
           setState({
             ...state,
             messages: [
-              ...state.messages.filter(m => !(m.content === message.content && m.unconfirmed)),
-              message
-            ]
+              ...state.messages.filter((m) => !(m.content === message.content && m.unconfirmed)),
+              message,
+            ],
           });
         }
       };
@@ -66,11 +66,11 @@ export default function Chat({
     if (!user)
       redirect("/signin", {
         redirect: window.location.pathname + window.location.search,
-        message: "You need to be logged in to see your chats"
+        message: "You need to be logged in to see your chats",
       });
   }, [user]);
 
-  const chatting_partner = user && participants.filter(p => p.id !== user.id)[0];
+  const chatting_partner = user && participants.filter((p) => p.id !== user.id)[0];
   const isPrivateChat = !title || title.length === 0;
 
   const loadMoreMessages = async () => {
@@ -88,7 +88,7 @@ export default function Chat({
         nextPage: state.nextPage + 1,
         nextLink: newMessagesObject.nextLink,
         hasMore: newMessagesObject.hasMore,
-        messages: [...sortedMessages, ...state.messages]
+        messages: [...sortedMessages, ...state.messages],
       });
 
       return [...sortedMessages];
@@ -97,20 +97,20 @@ export default function Chat({
       console.log(e);
       setState({
         ...state,
-        hasMore: false
+        hasMore: false,
       });
       return [];
     }
   };
 
-  const sendMessage = async message => {
+  const sendMessage = async (message) => {
     if (message.length > 0) {
       if (socketConnectionState === "connected") await sendChatMessageThroughSocket(message);
       else await sendChatMessageThroughPostRequest(message);
     }
   };
 
-  const sendChatMessageThroughSocket = async message => {
+  const sendChatMessageThroughSocket = async (message) => {
     try {
       chatSocket.send(JSON.stringify({ message: message, chat_uuid: chatUUID }));
       setState({
@@ -121,9 +121,9 @@ export default function Chat({
             content: message,
             sender: user,
             unconfirmed: true,
-            sent_at: new Date()
-          }
-        ]
+            sent_at: new Date(),
+          },
+        ],
       });
     } catch (e) {
       console.log("couldn't send because the socket was closed. Falling back to post request");
@@ -147,9 +147,9 @@ export default function Chat({
           {
             content: message,
             sender: user,
-            sent_at: new Date()
-          }
-        ]
+            sent_at: new Date(),
+          },
+        ],
       });
     } catch (err) {
       if (err.response && err.response.data)
@@ -193,7 +193,7 @@ export default function Chat({
   );
 }
 
-Chat.getInitialProps = async ctx => {
+Chat.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
   if (ctx.req && !token) {
     const message = "You have to log in to see your chats.";
@@ -202,7 +202,7 @@ Chat.getInitialProps = async ctx => {
   const [chat, messages_object, rolesOptions] = await Promise.all([
     getChat(ctx.query.chatUUID, token),
     getChatMessagesByUUID(ctx.query.chatUUID, token, 1),
-    getRolesOptions()
+    getRolesOptions(),
   ]);
   return {
     token: token,
@@ -214,14 +214,14 @@ Chat.getInitialProps = async ctx => {
     hasMore: messages_object.hasMore,
     chatUUID: ctx.query.chatUUID,
     rolesOptions: rolesOptions,
-    chat_id: chat.id
+    chat_id: chat.id,
   };
 };
 
 const parseParticipantsWithRole = (participants, rolesOptions) => {
-  return participants.map(p => ({
+  return participants.map((p) => ({
     ...p,
-    role: rolesOptions.find(o => o.name === p.role)
+    role: rolesOptions.find((o) => o.name === p.role),
   }));
 };
 
@@ -233,17 +233,17 @@ async function getChat(chat_uuid, token) {
   return {
     participants: parseParticipants(resp.data.participants, resp.data.user),
     title: resp.data.name,
-    id: resp.data.id
+    id: resp.data.id,
   };
 }
 
 const parseParticipants = (participants, user) => {
-  return participants.map(p => ({
+  return participants.map((p) => ({
     ...p.user_profile,
     role: p.role,
     created_at: p.created_at,
     is_self: user.id === p.user_profile.id,
-    participant_id: p.participant_id
+    participant_id: p.participant_id,
   }));
 };
 
@@ -256,7 +256,7 @@ async function getChatMessagesByUUID(chat_uuid, token, page, link) {
     return {
       messages: resp.data.results,
       hasMore: !!resp.data.next && resp.data.next !== link,
-      nextLink: resp.data.next
+      nextLink: resp.data.next,
     };
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);

@@ -26,24 +26,24 @@ import PageNotFound from "../../src/components/general/PageNotFound";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   cardHeadline: {
     marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
   },
   subtitle: {
-    color: `${theme.palette.secondary.main}`
+    color: `${theme.palette.secondary.main}`,
   },
   loginNudge: {
     textAlign: "center",
-    margin: "0 auto"
+    margin: "0 auto",
   },
   editButton: {
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
   },
   divider: {
-    marginTop: theme.spacing(1)
-  }
+    marginTop: theme.spacing(1),
+  },
 }));
 
 export default function OrganizationPage({
@@ -51,7 +51,7 @@ export default function OrganizationPage({
   projects,
   members,
   organizationTypes,
-  infoMetadata
+  infoMetadata,
 }) {
   const [message, setMessage] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState("");
@@ -85,7 +85,7 @@ export default function OrganizationPage({
   );
 }
 
-OrganizationPage.getInitialProps = async ctx => {
+OrganizationPage.getInitialProps = async (ctx) => {
   const { token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
   const [organization, projects, members, organizationTypes, infoMetadata] = await Promise.all([
@@ -93,57 +93,57 @@ OrganizationPage.getInitialProps = async ctx => {
     getProjectsByOrganization(organizationUrl, token),
     getMembersByOrganization(organizationUrl, token),
     getOrganizationTypes(),
-    getOrganizationInfoMetadata()
+    getOrganizationInfoMetadata(),
   ]);
   return {
     organization: organization,
     projects: projects,
     members: members,
     organizationTypes: organizationTypes,
-    infoMetadata: infoMetadata
+    infoMetadata: infoMetadata,
   };
 };
 
 function OrganizationLayout({ organization, projects, members, infoMetadata, user }) {
   const classes = useStyles();
   const cookies = new Cookies();
-  const getMembersWithAdditionalInfo = members => {
-    return members.map(m => ({
+  const getMembersWithAdditionalInfo = (members) => {
+    return members.map((m) => ({
       ...m,
       additionalInfo: [
         {
           text: m.location,
           icon: LocationOnIcon,
           iconName: "LocationOnIcon",
-          importance: "high"
+          importance: "high",
         },
         {
           text: m.role_in_organization,
           icon: AccountBoxIcon,
           iconName: "AccountBoxIcon",
           importance: "high",
-          toolTipText: "Role in organization"
+          toolTipText: "Role in organization",
         },
         {
           text: m.permission,
-          importance: "low"
-        }
-      ]
+          importance: "low",
+        },
+      ],
     }));
   };
 
-  const handleConnectBtn = async e => {
+  const handleConnectBtn = async (e) => {
     e.preventDefault();
     const token = cookies.get("token");
-    const creator = members.filter(m => m.isCreator === true)[0];
+    const creator = members.filter((m) => m.isCreator === true)[0];
     const chat = await startPrivateChat(creator, token);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
 
   const canEdit =
     user &&
-    !!members.find(m => m.id === user.id) &&
-    ["Creator", "Administrator"].includes(members.find(m => m.id === user.id).permission);
+    !!members.find((m) => m.id === user.id) &&
+    ["Creator", "Administrator"].includes(members.find((m) => m.id === user.id).permission);
 
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
   return (
@@ -265,17 +265,17 @@ async function getOrganizationInfoMetadata() {
 }
 
 function parseProjectStubs(projects) {
-  return projects.map(p => {
+  return projects.map((p) => {
     const project = p.project;
     return {
       ...project,
-      location: project.city + ", " + project.country
+      location: project.city + ", " + project.country,
     };
   });
 }
 
 function parseOrganizationMembers(members) {
-  return members.map(m => {
+  return members.map((m) => {
     const member = m.user;
     return {
       ...member,
@@ -284,7 +284,7 @@ function parseOrganizationMembers(members) {
       isCreator: m.permission.name === "Creator",
       time_per_week: m.time_per_week,
       role_in_organization: m.role_in_organization,
-      location: member.city ? member.city + ", " + member.country : member.country
+      location: member.city ? member.city + ", " + member.country : member.country,
     };
   });
 }

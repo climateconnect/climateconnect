@@ -11,35 +11,35 @@ import {
   LinearProgress,
   Button,
   Container,
-  TableBody
+  TableBody,
 } from "@material-ui/core";
 import GenericDialog from "./GenericDialog";
 import ReactTimeago from "react-timeago";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   user: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
   },
   avatar: {
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
   },
   username: {
-    fontWeight: 600
+    fontWeight: 600,
   },
   followedText: {
     [theme.breakpoints.down("xs")]: {
-      fontSize: 13
-    }
+      fontSize: 13,
+    },
   },
   loginButton: {
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(3),
   },
   loginButtonContainer: {
     display: "flex",
-    justifyContent: "center"
-  }
+    justifyContent: "center",
+  },
 }));
 
 export default function ProjectFollowersDialog({
@@ -49,7 +49,7 @@ export default function ProjectFollowersDialog({
   followers,
   loading,
   user,
-  url
+  url,
 }) {
   const classes = useStyles();
   const handleClose = () => {

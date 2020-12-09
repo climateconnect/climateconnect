@@ -6,15 +6,15 @@ import ChatContent from "./ChatContent";
 import ChatMemberManagementOverlay from "./ChatMemberManagementOverlay";
 import Alert from "@material-ui/lab/Alert";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     maxWidth: {
       maxWidth: theme.breakpoints.values["md"],
-      margin: "0 auto"
+      margin: "0 auto",
     },
     showParticipantsButton: {
-      cursor: "pointer"
-    }
+      cursor: "pointer",
+    },
   };
 });
 
@@ -32,7 +32,7 @@ export default function MessagingLayout({
   rolesOptions,
   token,
   chat_uuid,
-  chat_id
+  chat_id,
 }) {
   const classes = useStyles();
   const { user } = useContext(UserContext);
@@ -41,20 +41,20 @@ export default function MessagingLayout({
   const [memberManagementExpanded, setMemberManagementExpanded] = useState(false);
   const [alertMessage, setAlertMessage] = useState({});
   const [showAlertMessage, setShowAlertMessage] = useState(false);
-  const user_role = participants.filter(p => p.id === user.id)[0].role;
+  const user_role = participants.filter((p) => p.id === user.id)[0].role;
   //TODO show user when socket has closed
-  const onSendMessage = event => {
+  const onSendMessage = (event) => {
     sendMessage(curMessage);
     setCurMessage("");
     if (event) event.preventDefault();
   };
   const canEditMembers = user_role.name === "Creator" || user_role.name === "Administrator";
 
-  const handleMessageKeydown = event => {
+  const handleMessageKeydown = (event) => {
     if (event.key === "Enter" && event.ctrlKey) onSendMessage();
   };
 
-  const onCurMessageChange = event => {
+  const onCurMessageChange = (event) => {
     setCurMessage(event.target.value);
   };
 

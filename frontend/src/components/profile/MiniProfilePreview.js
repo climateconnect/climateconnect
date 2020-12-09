@@ -4,33 +4,33 @@ import { makeStyles } from "@material-ui/core/styles";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import ClearIcon from "@material-ui/icons/Clear";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     avatarWrapper: {
       display: "inline-block",
-      verticalAlign: "middle"
+      verticalAlign: "middle",
     },
     profileName: {
       display: "inline-block",
       verticalAlign: "middle",
       marginLeft: theme.spacing(1),
-      whiteSpace: "nowrap"
+      whiteSpace: "nowrap",
     },
     smallProfileName: {
-      fontSize: 14
+      fontSize: 14,
     },
     smallAvatar: {
       height: 20,
-      width: 20
+      width: 20,
     },
     wrapper: {
       display: "inline-flex",
-      alignItems: "center"
+      alignItems: "center",
     },
     contentWrapper: {
       display: "inline-flex",
-      alignItems: "center"
-    }
+      alignItems: "center",
+    },
   };
 });
 
@@ -40,7 +40,7 @@ export default function MiniProfilePreview({
   avatarClassName,
   size,
   nolink,
-  onDelete
+  onDelete,
 }) {
   const classes = useStyles();
   if (!nolink)

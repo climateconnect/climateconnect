@@ -1,8 +1,8 @@
 import React from "react";
 import { makeStyles, LinearProgress, Container, Typography } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
-  root: props => ({
+const useStyles = makeStyles((theme) => ({
+  root: (props) => ({
     paddingTop: props.embedded ? 0 : theme.spacing(1),
     paddingBottom: props.embedded ? 0 : theme.spacing(1.5),
     background: props.embedded ? "transparent" : "#DFDFDF",
@@ -15,47 +15,40 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("sm")]: {
       position: props.embedded ? "auto" : "fixed",
       top: "auto",
-      bottom: 42
-    }
+      bottom: 42,
+    },
   }),
   rootFixed: {
     [theme.breakpoints.up("md")]: {
       position: "fixed",
       top: 0,
-      borderTop: 0
-    }
+      borderTop: 0,
+    },
   },
-  text: props => ({
+  text: (props) => ({
     textAlign: "center",
     fontWeight: 600,
     color: props.embedded ? "white" : theme.palette.secondary.main,
     marginBottom: theme.spacing(1),
     background: props.textBackground ? props.textBackground : "auto",
-    position: props.textBackground ? "relative" : "auto"
+    position: props.textBackground ? "relative" : "auto",
   }),
-  amount: props => ({
+  amount: (props) => ({
     fontSize: props.embedded ? "auto" : 22,
-    fontWeight: 600
+    fontWeight: 600,
   }),
   barContainer: {
     height: 10,
     borderRadius: 5,
-    backgroundColor: theme.palette.grey[theme.palette.type === "light" ? 200 : 700]
+    backgroundColor: theme.palette.grey[theme.palette.type === "light" ? 200 : 700],
   },
-  bar: props => ({
+  bar: (props) => ({
     borderRadius: 5,
-    backgroundColor: props.barColor ? props.barColor : theme.palette.primary.main
-  })
+    backgroundColor: props.barColor ? props.barColor : theme.palette.primary.main,
+  }),
 }));
 
-export default function DonationGoal({
-  className,
-  current,
-  goal,
-  name,
-  embedded,
-  barColor
-}) {
+export default function DonationGoal({ className, current, goal, name, embedded, barColor }) {
   //const atTopOfPage = TopOfPage({ initTopOfPage: true, marginToTrigger: 95 });
   const classes = useStyles({ embedded: embedded, barColor: barColor });
   return (
@@ -73,7 +66,7 @@ export default function DonationGoal({
           value={(current / goal) * 100}
           classes={{
             root: classes.barContainer,
-            bar: classes.bar
+            bar: classes.bar,
           }}
         />
       </Container>

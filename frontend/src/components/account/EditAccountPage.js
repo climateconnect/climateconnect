@@ -9,7 +9,7 @@ import {
   Tooltip,
   IconButton,
   useMediaQuery,
-  Checkbox
+  Checkbox,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -31,54 +31,54 @@ const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   backgroundContainer: {
     width: "100%",
     height: 305,
     position: "relative",
-    cursor: "pointer"
+    cursor: "pointer",
   },
   photoIcon: {
     position: "absolute",
     left: "-50%",
     top: "-50%",
-    cursor: "pointer"
+    cursor: "pointer",
   },
-  backgroundImage: props => ({
+  backgroundImage: (props) => ({
     backgroundImage: `url(${props.background_image})`,
     backgroundPosition: "center",
-    backgroundSize: "cover"
+    backgroundSize: "cover",
   }),
   backgroundColor: {
-    backgroundColor: "#e0e0e0"
+    backgroundColor: "#e0e0e0",
   },
   backgroundPhotoIcon: {
-    fontSize: 80
+    fontSize: 80,
   },
   avatarPhotoIcon: {
-    fontSize: 40
+    fontSize: 40,
   },
   backgroundPhotoIconContainer: {
     position: "absolute",
     left: "calc(50% - 40px)",
-    top: "calc(50% - 40px)"
+    top: "calc(50% - 40px)",
   },
   backgroundLabel: {
     width: "100%",
     height: "100%",
     display: "block",
-    cursor: "pointer"
+    cursor: "pointer",
   },
   avatarPhotoIconContainer: {
     position: "absolute",
     left: "calc(50% - 20px)",
-    top: "calc(50% - 20px)"
+    top: "calc(50% - 20px)",
   },
   avatarButtonContainer: {
     position: "absolute",
     left: "50%",
     top: "50%",
-    transform: "translate(-50%,-50%)"
+    transform: "translate(-50%,-50%)",
   },
   avatarWithInfo: {
     textAlign: "center",
@@ -87,8 +87,8 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up("sm")]: {
       margin: 0,
       display: "inline-block",
-      width: "auto"
-    }
+      width: "auto",
+    },
   },
   avatarContainer: {
     height: theme.spacing(20),
@@ -97,7 +97,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(-11),
     position: "relative",
     borderRadius: 100,
-    cursor: "pointer"
+    cursor: "pointer",
   },
   avatar: {
     height: "100%",
@@ -107,44 +107,44 @@ const useStyles = makeStyles(theme => ({
     "& img": {
       objectFit: "contain",
       opacity: 0.5,
-      cursor: "pointer"
+      cursor: "pointer",
     },
-    border: `1px solid ${theme.palette.grey[300]}`
+    border: `1px solid ${theme.palette.grey[300]}`,
   },
   accountInfo: {
     padding: 0,
     marginTop: theme.spacing(1),
     [theme.breakpoints.up("sm")]: {
-      paddingRight: theme.spacing(17)
-    }
+      paddingRight: theme.spacing(17),
+    },
   },
   infoElement: {
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
   },
   name: {
     fontWeight: "bold",
     padding: theme.spacing(1),
     paddingLeft: 0,
-    paddingRight: 0
+    paddingRight: 0,
   },
   subtitle: {
     color: `${theme.palette.secondary.main}`,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   noPadding: {
-    padding: 0
+    padding: 0,
   },
   infoContainer: {
     [theme.breakpoints.up("sm")]: {
-      display: "flex"
+      display: "flex",
     },
-    position: "relative"
+    position: "relative",
   },
   marginTop: {
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   chip: {
-    margin: theme.spacing(0.5)
+    margin: theme.spacing(0.5),
   },
   actionButton: {
     position: "absolute",
@@ -153,51 +153,51 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("xs")]: {
       width: theme.spacing(14),
       fontSize: 10,
-      textAlign: "center"
-    }
+      textAlign: "center",
+    },
   },
   saveButton: {
     top: theme.spacing(11.5),
     [theme.breakpoints.up("sm")]: {
-      top: theme.spacing(1)
-    }
+      top: theme.spacing(1),
+    },
   },
   cancelButton: {
     top: theme.spacing(16.5),
     [theme.breakpoints.up("sm")]: {
-      top: theme.spacing(6.5)
-    }
+      top: theme.spacing(6.5),
+    },
   },
   chipArray: {
     display: "flex",
     flexWrap: "wrap",
-    padding: theme.spacing(0.5)
+    padding: theme.spacing(0.5),
   },
   selectOption: {
-    width: 250
+    width: 250,
   },
   dialogWidth: {
-    width: 400
+    width: 400,
   },
   alert: {
     textAlign: "center",
     maxWidth: 1280,
-    margin: "0 auto"
+    margin: "0 auto",
   },
   cursorPointer: {
-    cursor: "pointer"
+    cursor: "pointer",
   },
   helpIcon: {
     fontSize: 20,
-    marginTop: -2
+    marginTop: -2,
   },
   deleteMessage: {
     display: "flex",
     alignItems: "center",
     flexWrap: "wrap",
     justifyContent: "center",
-    marginTop: theme.spacing(10)
-  }
+    marginTop: theme.spacing(10),
+  },
 }));
 
 export default function EditAccountPage({
@@ -212,38 +212,38 @@ export default function EditAccountPage({
   errorMessage,
   skillsOptions,
   splitName,
-  deleteEmail
+  deleteEmail,
 }) {
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
-  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const classes = useStyles(editedAccount);
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
     image: editedAccount.image ? editedAccount.image : DEFAULT_AVATAR_IMAGE,
     background_image: editedAccount.background_image
       ? editedAccount.background_image
-      : DEFAULT_BACKGROUND_IMAGE
+      : DEFAULT_BACKGROUND_IMAGE,
   });
 
   const [open, setOpen] = React.useState({
     backgroundDialog: false,
     avatarDialog: false,
     addTypeDialog: false,
-    confirmExitDialog: false
+    confirmExitDialog: false,
   });
 
-  const handleDialogClickOpen = dialogKey => {
+  const handleDialogClickOpen = (dialogKey) => {
     setOpen({ ...open, [dialogKey]: true });
   };
 
-  const handleBackgroundClose = image => {
+  const handleBackgroundClose = (image) => {
     setOpen({ ...open, backgroundDialog: false });
     if (image && image instanceof HTMLCanvasElement)
       setEditedAccount({ ...editedAccount, background_image: image.toDataURL() });
   };
 
-  const handleAvatarClose = image => {
+  const handleAvatarClose = (image) => {
     setOpen({ ...open, avatarDialog: false });
     if (image && image instanceof HTMLCanvasElement) {
       setEditedAccount({ ...editedAccount, image: image.toDataURL() });
@@ -268,7 +268,7 @@ export default function EditAccountPage({
     }
   };
 
-  const handleConfirmExitClose = exit => {
+  const handleConfirmExitClose = (exit) => {
     setOpen({ ...open, confirmExitDialog: false });
     if (exit) handleCancel();
   };
@@ -278,8 +278,8 @@ export default function EditAccountPage({
       ...editedAccount,
       info: {
         ...editedAccount.info,
-        [key]: editedAccount.info[key].filter(val => val !== entry)
-      }
+        [key]: editedAccount.info[key].filter((val) => val !== entry),
+      },
     });
   };
 
@@ -289,18 +289,18 @@ export default function EditAccountPage({
       editedAccount.info.skills ? [...editedAccount.info.skills] : []
     );
 
-    const handleSkillsDialogClose = skills => {
+    const handleSkillsDialogClose = (skills) => {
       setSkillsDialogOpen(false);
       if (skills)
         setEditedAccount({
           ...editedAccount,
-          info: { ...editedAccount.info, skills: skills }
+          info: { ...editedAccount.info, skills: skills },
         });
     };
 
     const handleDeleteFromInfoArray = (key, entry) => {
       deleteFromInfoArray(key, entry);
-      setSelectedItems([...selectedItems.filter(item => item !== entry)]);
+      setSelectedItems([...selectedItems.filter((item) => item !== entry)]);
     };
 
     const handleSkillsDialogClickOpen = () => setSkillsDialogOpen(true);
@@ -308,7 +308,7 @@ export default function EditAccountPage({
       <div key={key} className={classes.infoElement}>
         <div className={classes.subtitle}>{infoEl.name}:</div>
         <div className={classes.chipArray}>
-          {infoEl.value.map(entry => (
+          {infoEl.value.map((entry) => (
             <Chip
               size="medium"
               label={entry.name}
@@ -339,23 +339,23 @@ export default function EditAccountPage({
     );
   };
 
-  const displayAccountInfo = info =>
-    Object.keys(info).map(key => {
-      const handleChange = event => {
+  const displayAccountInfo = (info) =>
+    Object.keys(info).map((key) => {
+      const handleChange = (event) => {
         setEditedAccount({
           ...editedAccount,
-          info: { ...editedAccount.info, [key]: event.target.value }
+          info: { ...editedAccount.info, [key]: event.target.value },
         });
       };
 
-      const handleSetParentOrganization = newOrg => {
+      const handleSetParentOrganization = (newOrg) => {
         setEditedAccount({
           ...editedAccount,
           info: {
             ...editedAccount.info,
             parent_organization: newOrg,
-            has_parent_organization: !!newOrg
-          }
+            has_parent_organization: !!newOrg,
+          },
         });
       };
 
@@ -384,7 +384,7 @@ export default function EditAccountPage({
               className={classes.inlineBlockElement}
               color="primary"
               size="small"
-              onChange={e => handleChange({ target: { value: e.target.checked } })}
+              onChange={(e) => handleChange({ target: { value: e.target.checked } })}
             />
             <label htmlFor={"checkbox" + i.key}>{i.label}</label>
           </div>
@@ -394,7 +394,7 @@ export default function EditAccountPage({
         i.key === "parent_organization" &&
         (!i.show_if_ticked || editedAccount.info[i.show_if_ticked] === true)
       ) {
-        const renderSearchOption = option => {
+        const renderSearchOption = (option) => {
           return <React.Fragment>{option.name}</React.Fragment>;
         };
         return (
@@ -421,7 +421,7 @@ export default function EditAccountPage({
                 clearOnSelect
                 onSelect={handleSetParentOrganization}
                 renderOption={renderSearchOption}
-                getOptionLabel={option => option.name}
+                getOptionLabel={(option) => option.name}
                 helperText={i.helperText}
               />
             </div>
@@ -446,14 +446,14 @@ export default function EditAccountPage({
       }
     });
 
-  const onBackgroundChange = async backgroundEvent => {
+  const onBackgroundChange = async (backgroundEvent) => {
     const file = backgroundEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
     const options = {
       maxSizeMB: 1,
       maxWidthOrHeight: 1280,
-      useWebWorker: true
+      useWebWorker: true,
     };
 
     try {
@@ -462,7 +462,7 @@ export default function EditAccountPage({
       setTempImages(() => {
         return {
           ...tempImages,
-          background_image: URL.createObjectURL(compressedFile)
+          background_image: URL.createObjectURL(compressedFile),
         };
       });
       handleDialogClickOpen("backgroundDialog");
@@ -471,14 +471,14 @@ export default function EditAccountPage({
     }
   };
 
-  const onAvatarChange = async avatarEvent => {
+  const onAvatarChange = async (avatarEvent) => {
     const file = avatarEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
     const options = {
       maxSizeMB: 0.5,
       maxWidthOrHeight: 600,
-      useWebWorker: true
+      useWebWorker: true,
     };
 
     try {
@@ -486,7 +486,7 @@ export default function EditAccountPage({
       setTempImages(() => {
         return {
           ...tempImages,
-          image: URL.createObjectURL(compressedFile)
+          image: URL.createObjectURL(compressedFile),
         };
       });
       handleDialogClickOpen("avatarDialog");
@@ -495,10 +495,10 @@ export default function EditAccountPage({
     }
   };
 
-  const handleTypeDelete = typeToDelete => {
+  const handleTypeDelete = (typeToDelete) => {
     const tempEditedAccount = { ...editedAccount };
     const fullType = getTypes(possibleAccountTypes, infoMetadata).filter(
-      t => t.key === typeToDelete
+      (t) => t.key === typeToDelete
     )[0];
     //The additional info that has to be provided for that type isn't necessary anymore, so we delete it
     if (fullType.additionalInfo) {
@@ -506,11 +506,11 @@ export default function EditAccountPage({
         delete tempEditedAccount.info[info.key];
       }
     }
-    tempEditedAccount.types = tempEditedAccount.types.filter(t => t !== typeToDelete);
+    tempEditedAccount.types = tempEditedAccount.types.filter((t) => t !== typeToDelete);
     setEditedAccount(tempEditedAccount);
   };
 
-  const handleFileInputClick = type => {
+  const handleFileInputClick = (type) => {
     setSelectedFiles({ ...selectedFiles, [type]: "" });
   };
 
@@ -616,7 +616,7 @@ export default function EditAccountPage({
                 className={classes.name}
                 fullWidth
                 value={editedAccount.first_name}
-                onChange={event => handleTextFieldChange("first_name", event.target.value)}
+                onChange={(event) => handleTextFieldChange("first_name", event.target.value)}
                 multiline
                 label={"First name"}
               />
@@ -624,7 +624,7 @@ export default function EditAccountPage({
                 className={classes.name}
                 fullWidth
                 value={editedAccount.last_name}
-                onChange={event => handleTextFieldChange("last_name", event.target.value)}
+                onChange={(event) => handleTextFieldChange("last_name", event.target.value)}
                 multiline
                 label={"Last name"}
               />
@@ -634,7 +634,7 @@ export default function EditAccountPage({
               className={classes.name}
               fullWidth
               value={editedAccount.name}
-              onChange={event => handleTextFieldChange("name", event.target.value)}
+              onChange={(event) => handleTextFieldChange("name", event.target.value)}
               multiline
             />
           )}
@@ -646,7 +646,7 @@ export default function EditAccountPage({
                   editedAccount,
                   possibleAccountTypes,
                   infoMetadata
-                ).map(typeObject => (
+                ).map((typeObject) => (
                   <Chip
                     label={typeObject.name}
                     key={typeObject.key}
@@ -703,7 +703,7 @@ export default function EditAccountPage({
           open={open.addTypeDialog}
           title="Add Type"
           values={getTypes(possibleAccountTypes, infoMetadata).filter(
-            type => editedAccount.types && !editedAccount.types.includes(type.key)
+            (type) => editedAccount.types && !editedAccount.types.includes(type.key)
           )}
           label={"Choose type"}
           supportAdditionalInfo={true}
@@ -727,18 +727,18 @@ const getFullInfoElement = (infoMetadata, key, value) => {
 };
 
 const getTypes = (possibleAccountTypes, infoMetadata) => {
-  return possibleAccountTypes.map(type => {
+  return possibleAccountTypes.map((type) => {
     return {
       ...type,
-      additionalInfo: type.additionalInfo.map(info => {
+      additionalInfo: type.additionalInfo.map((info) => {
         return { ...infoMetadata[info], key: info };
-      })
+      }),
     };
   });
 };
 
 const getTypesOfAccount = (account, possibleAccountTypes, infoMetadata) => {
-  return getTypes(possibleAccountTypes, infoMetadata).filter(type =>
+  return getTypes(possibleAccountTypes, infoMetadata).filter((type) =>
     account.types.includes(type.key)
   );
 };

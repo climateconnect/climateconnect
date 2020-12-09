@@ -3,19 +3,19 @@ import { makeStyles, Button } from "@material-ui/core";
 import DonationWigetDialog from "../../dialogs/DonationWigetDialog";
 import DonationGoal from "./DonationGoal";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     position: "fixed",
     bottom: 0,
     zIndex: 1,
     width: "100vw",
-    display: "flex"
+    display: "flex",
   },
   button: {
     width: "100%",
     borderRadius: 0,
-    background: theme.palette.primary.light
-  }
+    background: theme.palette.primary.light,
+  },
 }));
 
 export default function ToggleWidgetButton({
@@ -23,7 +23,7 @@ export default function ToggleWidgetButton({
   setOverlayOpen,
   goal_name,
   current_amount,
-  goal_amount
+  goal_amount,
 }) {
   const classes = useStyles();
 

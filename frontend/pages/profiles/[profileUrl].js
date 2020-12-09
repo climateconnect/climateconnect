@@ -23,10 +23,10 @@ import PageNotFound from "../../src/components/general/PageNotFound";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_user.jpg";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     background: {
-      width: "100%"
+      width: "100%",
     },
     profilePreview: {
       margin: "0 auto",
@@ -35,51 +35,51 @@ const useStyles = makeStyles(theme => {
         margin: 0,
         marginTop: theme.spacing(-11),
         display: "inline-block",
-        width: "auto"
-      }
+        width: "auto",
+      },
     },
     memberInfoContainer: {
       [theme.breakpoints.up("sm")]: {
-        display: "inline-block"
+        display: "inline-block",
       },
-      padding: 0
+      padding: 0,
     },
     content: {
       paddingTop: theme.spacing(1),
       paddingBottom: theme.spacing(1),
       color: `${theme.palette.secondary.main}`,
-      fontWeight: "bold"
+      fontWeight: "bold",
     },
     noPadding: {
-      padding: 0
+      padding: 0,
     },
     infoContainer: {
       [theme.breakpoints.up("sm")]: {
-        display: "flex"
-      }
+        display: "flex",
+      },
     },
     noprofile: {
       textAlign: "center",
-      padding: theme.spacing(5)
+      padding: theme.spacing(5),
     },
     marginTop: {
-      marginTop: theme.spacing(1)
+      marginTop: theme.spacing(1),
     },
     loginNudge: {
       textAlign: "center",
-      margin: "0 auto"
+      margin: "0 auto",
     },
     container: {
-      position: "relative"
+      position: "relative",
     },
     createButton: {
       right: theme.spacing(1),
       position: "absolute",
       [theme.breakpoints.down("xs")]: {
         position: "relative",
-        marginTop: theme.spacing(2)
-      }
-    }
+        marginTop: theme.spacing(2),
+      },
+    },
   };
 });
 
@@ -89,7 +89,7 @@ export default function ProfilePage({
   organizations,
   profileTypes,
   infoMetadata,
-  token
+  token,
 }) {
   const { user } = useContext(UserContext);
   const [message, setMessage] = React.useState("");
@@ -126,7 +126,7 @@ export default function ProfilePage({
   );
 }
 
-ProfilePage.getInitialProps = async ctx => {
+ProfilePage.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
   const profileUrl = encodeURI(ctx.query.profileUrl);
   const [profile, organizations, projects, profileTypes, infoMetadata] = await Promise.all([
@@ -134,7 +134,7 @@ ProfilePage.getInitialProps = async ctx => {
     getOrganizationsByUser(profileUrl, token),
     getProjectsByUser(profileUrl, token),
     getProfileTypes(),
-    getProfileInfoMetadata()
+    getProfileInfoMetadata(),
   ]);
   return {
     profile: profile,
@@ -142,7 +142,7 @@ ProfilePage.getInitialProps = async ctx => {
     projects: projects,
     profileTypes: profileTypes,
     infoMetadata: infoMetadata,
-    token: token
+    token: token,
   };
 };
 
@@ -153,11 +153,11 @@ function ProfileLayout({
   profileTypes,
   infoMetadata,
   user,
-  token
+  token,
 }) {
   const classes = useStyles();
   const isOwnAccount = user && user.url_slug === profile.url_slug;
-  const handleConnectBtn = async e => {
+  const handleConnectBtn = async (e) => {
     e.preventDefault();
     const chat = await startPrivateChat(profile, token);
     Router.push("/chat/" + chat.chat_uuid + "/");
@@ -284,23 +284,23 @@ async function getProfileInfoMetadata() {
 }
 
 function parseProjectStubs(projects) {
-  return projects.map(p => {
+  return projects.map((p) => {
     const project = p.project;
     return {
       ...project,
-      location: project.city ? project.city + ", " + project.country : project.country
+      location: project.city ? project.city + ", " + project.country : project.country,
     };
   });
 }
 
 function parseOrganizationStubs(organizations) {
-  return organizations.map(o => ({
+  return organizations.map((o) => ({
     ...o.organization,
-    types: o.organization.types.map(type => type.organization_tag),
+    types: o.organization.types.map((type) => type.organization_tag),
     info: {
       location: o.organization.city
         ? o.organization.city + ", " + o.organization.country
-        : o.organization.country
-    }
+        : o.organization.country,
+    },
   }));
 }
