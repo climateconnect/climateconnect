@@ -6,7 +6,7 @@ import UserContext from "../../context/UserContext";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import SendIcon from "@material-ui/icons/Send";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   chatParticipantsContainer: {
     background: theme.palette.grey[200],
     width: "100%",
@@ -15,41 +15,41 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "center",
     flexWrap: "wrap",
     maxWidth: 960,
-    margin: "0 auto"
+    margin: "0 auto",
   },
   chatParticipantsPreview: {
-    padding: theme.spacing(1)
+    padding: theme.spacing(1),
   },
   content: {
     flex: "auto",
     overflowY: "auto",
-    width: "100%"
+    width: "100%",
   },
   maxWidth: {
     maxWidth: theme.breakpoints.values["md"],
-    margin: "0 auto"
+    margin: "0 auto",
   },
   bottomBar: {
     background: theme.palette.grey[200],
     flex: "none",
-    width: "100%"
+    width: "100%",
   },
   sendMessageBarContent: {
-    padding: theme.spacing(1)
+    padding: theme.spacing(1),
   },
   messageInput: {
     width: "calc(100% - 60px)",
-    border: 0
+    border: 0,
   },
   sendButton: {
     height: 40,
     width: 40,
-    marginLeft: theme.spacing(2)
+    marginLeft: theme.spacing(2),
   },
   sendButtonIcon: {
     height: 35,
-    width: 35
-  }
+    width: 35,
+  },
 }));
 
 export default function ChatContent({
@@ -67,7 +67,7 @@ export default function ChatContent({
   onCurMessageChange,
   handleMessageKeydown,
   onSendMessage,
-  handleToggleMemberManagementExpanded
+  handleToggleMemberManagementExpanded,
 }) {
   const classes = useStyles();
   const { user } = useContext(UserContext);
@@ -76,7 +76,7 @@ export default function ChatContent({
       {showChatParticipants && (
         <div className={classes.chatParticipantsContainer}>
           {participants
-            .filter(p => p.id !== user.id)
+            .filter((p) => p.id !== user.id)
             .map((p, index) => {
               return (
                 <MiniProfilePreview

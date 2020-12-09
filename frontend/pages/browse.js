@@ -347,115 +347,100 @@ export default function Index({
 
             <Divider className={classes.mainContentDivider} />
 
-            {/* Render a circular spinner if a user is filtering, otherwise render
-              all of the filtered content. */}
-            {isLoading ? (
-              <div style={{ margin: "0 auto", textAlign: "center" }}>
-                <CircularProgress size={100} color="inherit" className={classes.loader} />
-              </div>
-            ) : (
-              <>
-                <TabContent value={tabValue} index={0}>
-                  {filtersExpanded && tabValue === 0 && (
-                    <FilterContent
-                      className={classes.tabContent}
-                      type={typesByTabValue[0]}
-                      applyFilters={applyNewFilters}
-                      filtersExpanded={filtersExpanded}
-                      unexpandFilters={unexpandFilters}
-                      possibleFilters={possibleFilters(typesByTabValue[0], filterChoices)}
-                    />
-                  )}
-
-                  {projectsObject && projectsObject.projects && projectsObject.projects.length ? (
-                    <ProjectPreviews
-                      projects={state.items.projects}
-                      loadFunc={loadMoreProjects}
-                      hasMore={state.hasMore.projects}
-                      parentHandlesGridItems
-                      className={classes.itemsContainer}
-                    />
-                  ) : (
-                    <Typography component="h4" variant="h5" className={classes.infoMessage}>
-                      We could not fetch any projects or connect to the API. If this happens
-                      repeatedly, contact support@climateconnect.earth.
+            <TabContent value={tabValue} index={0}>
+              {filtersExpanded && tabValue === 0 && (
+                <FilterContent
+                  className={classes.tabContent}
+                  type={typesByTabValue[0]}
+                  applyFilters={applyNewFilters}
+                  filtersExpanded={filtersExpanded}
+                  unexpandFilters={unexpandFilters}
+                  possibleFilters={possibleFilters(typesByTabValue[0], filterChoices)}
+                />
+              )}
+              {projectsObject && projectsObject.projects && projectsObject.projects.length ? (
+                <ProjectPreviews
+                  projects={state.items.projects}
+                  loadFunc={loadMoreProjects}
+                  hasMore={state.hasMore.projects}
+                  parentHandlesGridItems
+                  className={classes.itemsContainer}
+                />
+              ) : (
+                <Typography component="h4" variant="h5" className={classes.infoMessage}>
+                  We could not fetch any projects or connect to the API. If this happens repeatedly,
+                  contact support@climateconnect.earth.
+                </Typography>
+              )}
+            </TabContent>
+            <TabContent value={tabValue} index={1} className={classes.tabContent}>
+              {filtersExpanded && tabValue === 1 && (
+                <FilterContent
+                  className={classes.tabContent}
+                  type={typesByTabValue[1]}
+                  applyFilters={applyNewFilters}
+                  filtersExpanded={filtersExpanded}
+                  unexpandFilters={unexpandFilters}
+                  possibleFilters={possibleFilters(typesByTabValue[1], filterChoices)}
+                />
+              )}
+              {organizationsObject &&
+              organizationsObject.organizations &&
+              organizationsObject.organizations.length ? (
+                <OrganizationPreviews
+                  organizations={state.items.organizations}
+                  loadFunc={loadMoreOrganizations}
+                  hasMore={state.hasMore.organizations}
+                  showOrganizationType
+                  parentHandlesGridItems
+                />
+              ) : (
+                <Typography component="h4" variant="h5" className={classes.infoMessage}>
+                  There are no organizations on this site yet.{" "}
+                  <Link href="/createorganization">
+                    <Typography
+                      color="primary"
+                      className={classes.link}
+                      component="h5"
+                      variant="h5"
+                    >
+                      Create an organization
                     </Typography>
-                  )}
-                </TabContent>
-
-                <TabContent value={tabValue} index={1} className={classes.tabContent}>
-                  {filtersExpanded && tabValue === 1 && (
-                    <FilterContent
-                      className={classes.tabContent}
-                      type={typesByTabValue[1]}
-                      applyFilters={applyNewFilters}
-                      filtersExpanded={filtersExpanded}
-                      unexpandFilters={unexpandFilters}
-                      possibleFilters={possibleFilters(typesByTabValue[1], filterChoices)}
-                    />
-                  )}
-                  {/* Organizations..  */}
-                  {organizationsObject &&
-                  organizationsObject.organizations &&
-                  organizationsObject.organizations.length ? (
-                    <OrganizationPreviews
-                      organizations={state.items.organizations}
-                      loadFunc={loadMoreOrganizations}
-                      hasMore={state.hasMore.organizations}
-                      showOrganizationType
-                      parentHandlesGridItems
-                    />
-                  ) : (
-                    <Typography component="h4" variant="h5" className={classes.infoMessage}>
-                      There are no organizations yet.{" "}
-                      <Link href="/createorganization">
-                        <Typography
-                          color="primary"
-                          className={classes.link}
-                          component="h5"
-                          variant="h5"
-                        >
-                          Create an organization
-                        </Typography>
-                      </Link>{" "}
-                      to be the first one!
-                    </Typography>
-                  )}
-                </TabContent>
-
-                <TabContent value={tabValue} index={2} className={classes.tabContent}>
-                  {filtersExpanded && tabValue === 2 && (
-                    <FilterContent
-                      className={classes.tabContent}
-                      type={typesByTabValue[2]}
-                      applyFilters={applyNewFilters}
-                      filtersExpanded={filtersExpanded}
-                      unexpandFilters={unexpandFilters}
-                      possibleFilters={possibleFilters(typesByTabValue[2], filterChoices)}
-                    />
-                  )}
-
-                  {membersObject && membersObject.members && membersObject.members.length ? (
-                    <ProfilePreviews
-                      profiles={state.items.members}
-                      loadFunc={loadMoreMembers}
-                      hasMore={state.hasMore.members}
-                      showAdditionalInfo
-                      parentHandlesGridItems
-                    />
-                  ) : (
-                    <Typography component="h4" variant="h5" className={classes.infoMessage}>
-                      There are no members yet.{" "}
-                      <Link href="/signup">
-                        <Typography
-                          color="primary"
-                          className={classes.link}
-                          component="h5"
-                          variant="h5"
-                        >
-                          Create a profile to be the first one!
-                        </Typography>
-                      </Link>
+                  </Link>{" "}
+                  to be the first one!
+                </Typography>
+              )}
+            </TabContent>
+            <TabContent value={tabValue} index={2} className={classes.tabContent}>
+              {filtersExpanded && tabValue === 2 && (
+                <FilterContent
+                  className={classes.tabContent}
+                  type={typesByTabValue[2]}
+                  applyFilters={applyNewFilters}
+                  filtersExpanded={filtersExpanded}
+                  unexpandFilters={unexpandFilters}
+                  possibleFilters={possibleFilters(typesByTabValue[2], filterChoices)}
+                />
+              )}
+              {membersObject && membersObject.members && membersObject.members.length ? (
+                <ProfilePreviews
+                  profiles={state.items.members}
+                  loadFunc={loadMoreMembers}
+                  hasMore={state.hasMore.members}
+                  showAdditionalInfo
+                  parentHandlesGridItems
+                />
+              ) : (
+                <Typography component="h4" variant="h5" className={classes.infoMessage}>
+                  There are no members on this site yet.{" "}
+                  <Link href="/signup">
+                    <Typography
+                      color="primary"
+                      className={classes.link}
+                      component="h5"
+                      variant="h5"
+                    >
+                      Create a profile to be the first one!
                     </Typography>
                   )}
                 </TabContent>

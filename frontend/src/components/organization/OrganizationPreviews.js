@@ -10,11 +10,11 @@ const useStyles = makeStyles({
     margin: 0,
     padding: 0,
     listStyleType: "none",
-    width: "100%"
+    width: "100%",
   },
   spinner: {
-    marginTop: "48px"
-  }
+    marginTop: "48px",
+  },
 });
 
 export default function OrganizationPreviews({
@@ -22,10 +22,10 @@ export default function OrganizationPreviews({
   loadFunc,
   hasMore,
   showOrganizationType,
-  parentHandlesGridItems
+  parentHandlesGridItems,
 }) {
-  const toOrganizationPreviews = organizations =>
-    organizations.map(o => (
+  const toOrganizationPreviews = (organizations) =>
+    organizations.map((o) => (
       <GridItem key={o.url_slug} organization={o} showOrganizationType={showOrganizationType} />
     ));
   const [isLoading, setIsLoading] = React.useState(false);
@@ -33,7 +33,7 @@ export default function OrganizationPreviews({
   const [gridItems, setGridItems] = React.useState(toOrganizationPreviews(organizations));
 
   if (!loadFunc) hasMore = false;
-  const loadMore = async page => {
+  const loadMore = async (page) => {
     if (!isLoading) {
       setIsLoading(true);
       const newOrganizations = await loadFunc(page);

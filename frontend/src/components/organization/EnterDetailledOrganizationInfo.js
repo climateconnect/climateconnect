@@ -10,14 +10,14 @@ const useStyles = makeStyles(() => {
     alert: {
       textAlign: "center",
       maxWidth: 1280,
-      margin: "0 auto"
-    }
+      margin: "0 auto",
+    },
   };
 });
 
-const parseOrganizationInfo = info => {
+const parseOrganizationInfo = (info) => {
   const ret = { info: {} };
-  Object.keys(info).map(key => {
+  Object.keys(info).map((key) => {
     if (organization_info_metadata[key]) ret.info[key] = info[key];
     else ret[key] = info[key];
   });
@@ -28,7 +28,7 @@ export default function EnterDetailledOrganizationInfo({
   errorMessage,
   organizationInfo,
   handleSubmit,
-  tagOptions
+  tagOptions,
 }) {
   const organization = parseOrganizationInfo(organizationInfo);
   const classes = useStyles();

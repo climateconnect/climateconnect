@@ -25,6 +25,11 @@ urlpatterns = [
         name='connect-participants-api'
     ),
     path(
+        'chat/<str:chat_uuid>/send_message/',
+        message_views.SendChatMessage.as_view(),
+        name='send-chat-message-api'
+    ),
+    path(
         'start_group_chat/',
         message_views.StartGroupChatView.as_view(),
         name='start-group-chat-api'

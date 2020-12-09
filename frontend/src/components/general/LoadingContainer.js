@@ -3,22 +3,22 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(() => ({
-  spinnerContainer: props => ({
+  spinnerContainer: (props) => ({
     display: "flex",
     position: "relative",
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     height: `calc(100vh - ${props.subtractedHeight}px)`,
-    flexDirection: "column"
+    flexDirection: "column",
   }),
   spinner: {
-    width: 100
-  }
+    width: 100,
+  },
 }));
 export default function LoadingContainer({ headerHeight, footerHeight }) {
   const classes = useStyles({
-    subtractedHeight: (headerHeight + footerHeight).toString()
+    subtractedHeight: (headerHeight + footerHeight).toString(),
   });
   return (
     <div className={classes.spinnerContainer}>

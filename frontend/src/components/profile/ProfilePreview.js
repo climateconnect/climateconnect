@@ -3,32 +3,32 @@ import { Typography, Link, Avatar, Button, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     avatarWithInfo: {
       textAlign: "center",
-      width: theme.spacing(40)
+      width: theme.spacing(40),
     },
     avatar: {
       height: theme.spacing(20),
       width: theme.spacing(20),
       margin: "0 auto",
-      fontSize: 50
+      fontSize: 50,
     },
     name: {
       fontWeight: 700,
       padding: theme.spacing(1),
       paddingBottom: 0,
-      marginTop: theme.spacing(2)
+      marginTop: theme.spacing(2),
     },
     subtitle: {
-      color: `${theme.palette.secondary.main}`
+      color: `${theme.palette.secondary.main}`,
     },
     messageButton: {
-      margin: "0 auto"
+      margin: "0 auto",
     },
     additionalInfo: {
-      paddingBottom: theme.spacing(1)
+      paddingBottom: theme.spacing(1),
     },
     info: {
       display: "flex",
@@ -36,25 +36,25 @@ const useStyles = makeStyles(theme => {
       margin: "0 auto",
       textAlign: "center",
       justifyContent: "center",
-      marginTop: theme.spacing(0.5)
+      marginTop: theme.spacing(0.5),
     },
     lowImportanceInfo: {
       color: theme.palette.grey[700],
       fontSize: "12px",
       marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1)
+      marginBottom: theme.spacing(1),
     },
     highImportanceInfo: {
-      color: "#000"
+      color: "#000",
     },
     disableHover: {
       "&:hover": {
-        textDecoration: "none"
-      }
+        textDecoration: "none",
+      },
     },
     icon: {
-      marginRight: theme.spacing(0.5)
-    }
+      marginRight: theme.spacing(0.5),
+    },
   };
 });
 

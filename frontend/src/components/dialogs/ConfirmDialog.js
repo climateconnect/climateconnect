@@ -4,14 +4,14 @@ import { Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GenericDialog from "./GenericDialog";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   buttonsContainer: {
     marginTop: theme.spacing(3),
-    textAlign: "right"
+    textAlign: "right",
   },
   button: {
-    marginLeft: theme.spacing(2)
-  }
+    marginLeft: theme.spacing(2),
+  },
 }));
 
 export default function ConfirmDialog(props) {
@@ -58,5 +58,5 @@ ConfirmDialog.propTypes = {
   confirmText: PropTypes.string.isRequired,
   text: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
   title: PropTypes.string.isRequired,
-  className: PropTypes.string
+  className: PropTypes.string,
 };

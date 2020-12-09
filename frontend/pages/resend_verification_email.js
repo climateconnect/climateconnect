@@ -9,12 +9,12 @@ const fields = [
     required: true,
     label: "Enter your login email",
     key: "email",
-    type: "email"
-  }
+    type: "email",
+  },
 ];
 
 const messages = {
-  submitMessage: "Send verification E-Mail again"
+  submitMessage: "Send verification E-Mail again",
 };
 
 export default function ResendVerificationEmail() {
@@ -25,13 +25,13 @@ export default function ResendVerificationEmail() {
     resendEmail(values.email, onSuccess, onError);
   };
 
-  const onSuccess = resp => {
+  const onSuccess = (resp) => {
     redirect("/browse", {
-      message: resp.data.message
+      message: resp.data.message,
     });
   };
 
-  const onError = error => {
+  const onError = (error) => {
     if (error.response && error.response.data) setErrorMessage(error.response.data.message);
   };
 

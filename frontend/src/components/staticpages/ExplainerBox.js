@@ -4,12 +4,12 @@ import SmallCloud from "./SmallCloud";
 import theme from "../../themes/theme";
 import ExplainerElement from "./ExplainerElement";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    position: "relative"
+    position: "relative",
   },
   explainerWrapper: {
     display: "flex",
@@ -21,33 +21,33 @@ const useStyles = makeStyles(theme => ({
       flexDirection: "column",
       justifyContent: "space-between",
       alignItems: "center",
-      height: 580
-    }
+      height: 580,
+    },
   },
   cloud1: {
     position: "absolute",
     left: 50,
     top: -75,
     width: 150,
-    height: 60
+    height: 60,
   },
   cloud2: {
     position: "absolute",
     top: 20,
-    left: 150
+    left: 150,
   },
   cloud3: {
     position: "absolute",
     top: -50,
     left: "30%",
-    width: 100
+    width: 100,
   },
   cloud4: {
     position: "absolute",
     right: 0,
     top: 0,
     width: 150,
-    height: 100
+    height: 100,
   },
   mobileCloud1: {
     position: "absolute",
@@ -58,31 +58,31 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("xs")]: {
       width: 100,
       height: 50,
-      left: -50
-    }
+      left: -50,
+    },
   },
   mobileCloud2: {
     position: "absolute",
-    right: -50
+    right: -50,
   },
   mobileCloud3: {
     position: "absolute",
     right: -130,
     top: -70,
-    width: 135
+    width: 135,
   },
   mobileCloud4: {
     position: "absolute",
     bottom: -40,
-    left: -90
+    left: -90,
   },
   mobileCloud5: {
     position: "absolute",
     left: -50,
     top: 20,
     height: 70,
-    width: 120
-  }
+    width: 120,
+  },
 }));
 export default function ExplainerBox({ h1ClassName, className, hideHeadline }) {
   const classes = useStyles();

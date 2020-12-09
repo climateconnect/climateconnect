@@ -3,11 +3,11 @@ import { Typography, makeStyles } from "@material-ui/core";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     root: {
       marginBottom: theme.spacing(1.5),
-      borderLeft: `5px solid ${theme.palette.primary.main}`
+      borderLeft: `5px solid ${theme.palette.primary.main}`,
     },
     questionWrapper: {
       width: "100%",
@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => {
       paddingRight: theme.spacing(3),
       display: "flex",
       alignItems: "center",
-      cursor: "pointer"
+      cursor: "pointer",
     },
     questionText: {
       fontWeight: "bold",
@@ -26,8 +26,8 @@ const useStyles = makeStyles(theme => {
       width: "100%",
       [theme.breakpoints.down("xs")]: {
         fontSize: 16,
-        fontWeight: "normal"
-      }
+        fontWeight: "normal",
+      },
     },
     answerWrapper: {
       width: "100%",
@@ -39,9 +39,9 @@ const useStyles = makeStyles(theme => {
       fontSize: 17,
       lineHeight: 1.5,
       [theme.breakpoints.down("xs")]: {
-        fontSize: 16
-      }
-    }
+        fontSize: 16,
+      },
+    },
   };
 });
 

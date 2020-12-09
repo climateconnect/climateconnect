@@ -11,10 +11,10 @@ import theme from "../src/themes/theme";
 import ToggleWidgetButton from "../src/components/staticpages/donate/ToggleWidgetButton";
 import axios from "axios";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     root: {
-      position: "relative"
+      position: "relative",
     },
     topImageContainer: {
       width: "100%",
@@ -25,21 +25,21 @@ const useStyles = makeStyles(theme => {
       backgroundPosition: "0px 50%",
       [theme.breakpoints.down("md")]: {
         height: 350,
-        backgroundPosition: "0px 70%"
+        backgroundPosition: "0px 70%",
       },
       [theme.breakpoints.down("sm")]: {
         height: 260,
-        backgroundPosition: "0px 85%"
+        backgroundPosition: "0px 85%",
       },
       [theme.breakpoints.down("xs")]: {
         height: 160,
-        display: "none"
-      }
+        display: "none",
+      },
     },
     imageTextContainer: {
       position: "relative",
       height: "100%",
-      width: "100%"
+      width: "100%",
     },
     headlineClass: {
       fontSize: 25,
@@ -47,8 +47,8 @@ const useStyles = makeStyles(theme => {
       marginBottom: theme.spacing(1.5),
       color: theme.palette.primary.main,
       [theme.breakpoints.down("xs")]: {
-        fontSize: 20
-      }
+        fontSize: 20,
+      },
     },
     imageText: {
       position: "absolute",
@@ -57,34 +57,34 @@ const useStyles = makeStyles(theme => {
       paddingRight: `max(24px, 472px - ((100% - 1280px) / 2))`,
       marginBottom: 0,
       [theme.breakpoints.down("md")]: {
-        paddingRight: 472
+        paddingRight: 472,
       },
       [theme.breakpoints.down("sm")]: {
-        padding: 0
+        padding: 0,
       },
       [theme.breakpoints.down("xs")]: {
-        display: "none"
-      }
+        display: "none",
+      },
     },
     textBodyClass: {
-      color: theme.palette.secondary.main
+      color: theme.palette.secondary.main,
     },
     textSection: {
       marginTop: theme.spacing(5),
       marginBottom: theme.spacing(5),
       paddingRight: `max(24px, 472px - ((100% - 1280px) / 2))`,
       [theme.breakpoints.down("md")]: {
-        paddingRight: 472
+        paddingRight: 472,
       },
       [theme.breakpoints.down("sm")]: {
-        padding: theme.spacing(4)
+        padding: theme.spacing(4),
       },
       [theme.breakpoints.down("xs")]: {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
         paddingTop: theme.spacing(3),
-        paddingBottom: theme.spacing(3)
-      }
+        paddingBottom: theme.spacing(3),
+      },
     },
     subHeadline: {
       color: theme.palette.primary.main,
@@ -93,9 +93,9 @@ const useStyles = makeStyles(theme => {
       fontWeight: 700,
       fontSize: 20,
       [theme.breakpoints.down("xs")]: {
-        fontSize: 16
-      }
-    }
+        fontSize: 16,
+      },
+    },
   };
 });
 
@@ -153,7 +153,7 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
                 There are many climate solutions, that have a huge impact in one place. Many of them could also be implemented in other places, but never get scaled up.
                 With your donation we can reach even more people and enable them to work with the creators of these solutions to spread the most effective climate solutions around the world
 
-              `
+              `,
             },
             {
               headline: "Your donation multiplies the impact of climate actors",
@@ -166,13 +166,13 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
                   donation Climate Connect can multiply the impact of even more climate actors
                   worldwide.
                 </>
-              )
+              ),
             },
             {
               headline: "Your support keeps Climate Connect independent and free for everyone",
               text:
-                "We strongly believe that a platform connecting all climate actors needs to be independent, non-profit and free for everyone. This is only possible with your financial support."
-            }
+                "We strongly believe that a platform connecting all climate actors needs to be independent, non-profit and free for everyone. This is only possible with your financial support.",
+            },
           ]}
           subHeadlineClass={classes.subHeadline}
           icon="/icons/floating_sign_heart.svg"
@@ -211,7 +211,7 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
                   collaboration and knowledge sharing between users. We also constantly improve
                   existing parts of the websites based on user feedback.
                 </>
-              )
+              ),
             },
             {
               headline: "Growing the community and sparking collaboration",
@@ -223,13 +223,13 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
                   constantly in contact with our community and connect users between which we see
                   synergies to spark collaboration between Climate Connect users.
                 </>
-              )
+              ),
             },
             {
               headline: "Ongoing expenses",
               text:
-                "Our ongoing expenses include server costs, fees for bookkeeping and legal advice."
-            }
+                "Our ongoing expenses include server costs, fees for bookkeeping and legal advice.",
+            },
           ]}
           subHeadlineClass={classes.subHeadline}
           icon="/icons/floating_sign_expenses.svg"
@@ -280,7 +280,7 @@ Donate.getInitialProps = async () => {
   return {
     goal_name: goal_name,
     goal_amount: goal_amount,
-    current_amount: current_amount
+    current_amount: current_amount,
   };
 };
 
@@ -292,7 +292,7 @@ const getDonations = async () => {
       goal_start: resp.data.start_date,
       goal_end: resp.data.end_date,
       goal_amount: resp.data.amount,
-      current_amount: resp.data.current_amount
+      current_amount: resp.data.current_amount,
     };
   } catch (err) {
     if (err.response && err.response.data) {

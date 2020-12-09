@@ -9,15 +9,15 @@ import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     divider: {
-      marginBottom: theme.spacing(2)
+      marginBottom: theme.spacing(2),
     },
     bottomNavigation: {
       marginTop: theme.spacing(3),
-      height: theme.spacing(2)
-    }
+      height: theme.spacing(2),
+    },
   };
 });
 
@@ -31,15 +31,15 @@ export default function EditProjectRoot({
   token,
   oldProject,
   user,
-  user_role
+  user_role,
 }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const draftReqiredProperties = ["name", "city", "country"];
 
   const onSaveDraft = async () => {
-    if (draftReqiredProperties.filter(p => !project[p]).length > 0)
-      draftReqiredProperties.map(p => {
+    if (draftReqiredProperties.filter((p) => !project[p]).length > 0)
+      draftReqiredProperties.map((p) => {
         if (!project[p]) {
           alert("Your project draft is missing the following reqired property: " + p);
         }
@@ -51,15 +51,15 @@ export default function EditProjectRoot({
           await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
           tokenConfig(token)
         )
-        .then(function() {
+        .then(function () {
           Router.push({
             pathname: "/profiles/" + user.url_slug,
             query: {
-              message: "You have successfully edited your project."
-            }
+              message: "You have successfully edited your project.",
+            },
           });
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
           if (error) console.log(error.response);
         });
@@ -69,15 +69,15 @@ export default function EditProjectRoot({
     {
       text: "Save Changes as draft",
       argument: "save",
-      onClick: onSaveDraft
-    }
+      onClick: onSaveDraft,
+    },
   ];
 
   const handleCancel = () => {
     Router.push("/projects/" + project.url_slug + "/");
   };
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const projectToSubmit = project;
     let was_draft = false;
@@ -92,17 +92,17 @@ export default function EditProjectRoot({
         await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
         tokenConfig(token)
       )
-      .then(function(response) {
+      .then(function (response) {
         Router.push({
           pathname: "/projects/" + response.data.url_slug,
           query: {
             message: was_draft
               ? "Your project has been published. Great work!"
-              : "You have successfully edited your project."
-          }
+              : "You have successfully edited your project.",
+          },
         });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
         if (error) console.log(error.response);
       });
@@ -111,16 +111,16 @@ export default function EditProjectRoot({
   const deleteProject = () => {
     axios
       .delete(process.env.API_URL + "/api/projects/" + project.url_slug + "/", tokenConfig(token))
-      .then(function(response) {
+      .then(function (response) {
         console.log(response);
         Router.push({
           pathname: "/profiles/" + user.url_slug,
           query: {
-            message: "You have successfully deleted your project."
-          }
+            message: "You have successfully deleted your project.",
+          },
         });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
         if (error) console.log(error.response);
       });
@@ -165,15 +165,15 @@ const getProjectWithoutRedundancies = (newProject, oldProject) => {
   }, {});
 };
 
-const parseProjectForRequest = async project => {
+const parseProjectForRequest = async (project) => {
   const ret = {
-    ...project
+    ...project,
   };
   if (project.image) ret.image = await blobFromObjectUrl(project.image);
   if (project.thumbnail_image)
     ret.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
-  if (project.skills) ret.skills = project.skills.map(s => s.id);
-  if (project.tags) ret.project_tags = project.tags.map(t => t.id);
+  if (project.skills) ret.skills = project.skills.map((s) => s.id);
+  if (project.tags) ret.project_tags = project.tags.map((t) => t.id);
   if (project.status) ret.status = project.status.id;
   if (project.project_parents && project.project_parents.parent_organization)
     ret.parent_organization = project.project_parents.parent_organization.id;

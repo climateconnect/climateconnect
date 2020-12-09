@@ -4,26 +4,26 @@ import { Typography } from "@material-ui/core";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import MiniProfileInput from "../profile/MiniProfileInput";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     memberContainer: {
       display: "flex",
-      flexWrap: "wrap"
+      flexWrap: "wrap",
     },
     member: {
       width: theme.spacing(40),
       textAlign: "center",
       marginRight: theme.spacing(4),
-      marginTop: theme.spacing(2)
+      marginTop: theme.spacing(2),
     },
     info: {
       textAlign: "center",
       fontWeight: "bold",
-      marginBottom: theme.spacing(2)
+      marginBottom: theme.spacing(2),
     },
     infoIcon: {
-      marginBottom: -6
-    }
+      marginBottom: -6,
+    },
   };
 });
 
@@ -33,19 +33,19 @@ export default function AddProjectMembersContainer({
   handleRemoveMember,
   availabilityOptions,
   rolesOptions,
-  handleSetProjectData
+  handleSetProjectData,
 }) {
   const classes = useStyles();
 
-  const handleChangeMember = m => {
+  const handleChangeMember = (m) => {
     handleSetProjectData({
       ...projectData,
       team_members: [
-        ...projectData.team_members.map(t => {
+        ...projectData.team_members.map((t) => {
           if (t.url_slug === m.url_slug) return m;
           else return t;
-        })
-      ]
+        }),
+      ],
     });
   };
   return (
@@ -66,7 +66,7 @@ export default function AddProjectMembersContainer({
                 availabilityOptions={availabilityOptions}
                 rolesOptions={rolesOptions}
                 onChange={handleChangeMember}
-                creatorRole={rolesOptions.find(r => r.name === "Creator")}
+                creatorRole={rolesOptions.find((r) => r.name === "Creator")}
                 fullRolesOptions={rolesOptions}
               />
             );

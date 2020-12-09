@@ -4,21 +4,21 @@ import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   orgImage: {
     height: 35,
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
   },
   smallOrgImage: {
-    height: 20
+    height: 20,
   },
   orgName: {
-    display: "inline-block"
+    display: "inline-block",
   },
   wrapper: {
     display: "inline-flex",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 }));
 
 export default function MiniOrganizationPreview({
@@ -26,7 +26,7 @@ export default function MiniOrganizationPreview({
   className,
   size,
   onDelete,
-  nolink
+  nolink,
 }) {
   if (!nolink)
     return (

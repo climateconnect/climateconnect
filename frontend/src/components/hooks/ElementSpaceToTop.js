@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 export default function ElementSpaceToTop({ el }) {
   const [top, setTop] = useState({
     page: null,
-    screen: null
+    screen: null,
   });
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export default function ElementSpaceToTop({ el }) {
         const rect = el.getBoundingClientRect();
         setTop({
           screen: rect.top,
-          page: scrollY + rect.top
+          page: scrollY + rect.top,
         });
       }
       ticking = false;

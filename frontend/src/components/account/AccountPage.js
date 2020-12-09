@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import Linkify from "react-linkify";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   avatar: {
     height: theme.spacing(20),
     width: theme.spacing(20),
@@ -14,8 +14,8 @@ const useStyles = makeStyles(theme => ({
     backgroundcolor: "white",
     "& img": {
       objectFit: "contain",
-      backgroundColor: "white"
-    }
+      backgroundColor: "white",
+    },
   },
   avatarWithInfo: {
     textAlign: "center",
@@ -24,63 +24,63 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up("sm")]: {
       margin: 0,
       display: "inline-block",
-      width: "auto"
-    }
+      width: "auto",
+    },
   },
   accountInfo: {
     padding: 0,
     marginTop: theme.spacing(1),
     [theme.breakpoints.up("sm")]: {
-      paddingRight: theme.spacing(15)
-    }
+      paddingRight: theme.spacing(15),
+    },
   },
   name: {
     fontWeight: "bold",
     padding: theme.spacing(1),
     paddingLeft: 0,
-    paddingRight: 0
+    paddingRight: 0,
   },
   subtitle: {
-    color: `${theme.palette.secondary.main}`
+    color: `${theme.palette.secondary.main}`,
   },
   content: {
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
     color: `${theme.palette.secondary.main}`,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   noPadding: {
-    padding: 0
+    padding: 0,
   },
   infoContainer: {
     [theme.breakpoints.up("sm")]: {
-      display: "flex"
+      display: "flex",
     },
-    position: "relative"
+    position: "relative",
   },
   noprofile: {
     textAlign: "center",
-    padding: theme.spacing(5)
+    padding: theme.spacing(5),
   },
   marginTop: {
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   chip: {
     marginBottom: theme.spacing(1),
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
   },
   editButton: {
     position: "absolute",
     right: theme.spacing(1),
     top: theme.spacing(12),
     [theme.breakpoints.up("sm")]: {
-      top: theme.spacing(1)
+      top: theme.spacing(1),
     },
     [theme.breakpoints.down("xs")]: {
       width: theme.spacing(14),
-      textAlign: "center"
-    }
-  }
+      textAlign: "center",
+    },
+  },
 }));
 
 export default function AccountPage({
@@ -90,7 +90,7 @@ export default function AccountPage({
   infoMetadata,
   children,
   isOwnAccount,
-  editText
+  editText,
 }) {
   const classes = useStyles();
 
@@ -107,7 +107,7 @@ export default function AccountPage({
     </Link>
   );
 
-  const displayAccountInfo = info =>
+  const displayAccountInfo = (info) =>
     Object.keys(info).map((key, index) => {
       if (info[key]) {
         const i = getFullInfoElement(infoMetadata, key, info[key]);
@@ -129,7 +129,7 @@ export default function AccountPage({
               <div className={classes.subtitle}>{i.name}:</div>
               <div className={classes.chipArray}>
                 {i && i.value && i.value.length > 0
-                  ? i.value.map(entry => (
+                  ? i.value.map((entry) => (
                       <Chip size="medium" label={entry} key={entry} className={classes.chip} />
                     ))
                   : i.missingMessage && <div className={classes.content}>{i.missingMessage}</div>}
@@ -168,7 +168,7 @@ export default function AccountPage({
           backgroundSize: "cover",
           backgroundPosition: "center",
           width: "100%",
-          height: 305
+          height: 305,
         }}
       />
       <Container className={classes.infoContainer}>
@@ -195,7 +195,7 @@ export default function AccountPage({
           </Typography>
           {account.types && (
             <Container className={classes.noPadding}>
-              {account.types.map(type => (
+              {account.types.map((type) => (
                 <Chip label={type.name} key={type.key} className={classes.chip} />
               ))}
             </Container>

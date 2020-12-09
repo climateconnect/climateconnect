@@ -4,7 +4,7 @@ import { Typography, Checkbox, Container, Button, useMediaQuery } from "@materia
 import Cookies from "universal-cookie";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     root: {
       position: "fixed",
@@ -17,52 +17,52 @@ const useStyles = makeStyles(theme => {
       borderTop: `1px solid ${theme.palette.secondary.main}`,
       paddingTop: theme.spacing(1),
       [theme.breakpoints.down("md")]: {
-        height: 200
-      }
+        height: 200,
+      },
     },
     headline: {
       fontWeight: "bold",
       marginBottom: theme.spacing(1),
       [theme.breakpoints.down("md")]: {
-        fontSize: 15
-      }
+        fontSize: 15,
+      },
     },
     buttons: {
       float: "right",
       [theme.breakpoints.down("md")]: {
         float: "none",
-        display: "block"
-      }
+        display: "block",
+      },
     },
     leftButton: {
       [theme.breakpoints.up("md")]: {
-        marginRight: theme.spacing(1)
+        marginRight: theme.spacing(1),
       },
       [theme.breakpoints.down("md")]: {
         paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2)
-      }
+        paddingRight: theme.spacing(2),
+      },
     },
     rightButton: {
       [theme.breakpoints.down("md")]: {
         paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2)
-      }
+        paddingRight: theme.spacing(2),
+      },
     },
     leftButtonContainer: {
       display: "inline-block",
       [theme.breakpoints.down("md")]: {
         width: "50%",
-        padding: theme.spacing(0.5)
-      }
+        padding: theme.spacing(0.5),
+      },
     },
     rightButtonContainer: {
       display: "inline-block",
       [theme.breakpoints.down("md")]: {
         width: "50%",
-        padding: theme.spacing(0.5)
-      }
-    }
+        padding: theme.spacing(0.5),
+      },
+    },
   };
 });
 
@@ -71,7 +71,7 @@ export default function CookieBanner({ closeBanner }) {
   const { updateCookies } = useContext(UserContext);
   const [checked, setChecked] = React.useState({ necessary: true, statistics: false });
   const cookies = new Cookies();
-  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const onStatisticsChange = () => {
     setChecked({ ...checked, statistics: !checked.statistics });
   };
@@ -84,7 +84,7 @@ export default function CookieBanner({ closeBanner }) {
     cookies.set("acceptedStatistics", checked.statistics, {
       path: "/",
       sameSite: "lax",
-      expires: oneYearFromNow
+      expires: oneYearFromNow,
     });
     updateCookies();
     closeBanner();
@@ -95,7 +95,7 @@ export default function CookieBanner({ closeBanner }) {
     cookies.set("acceptedStatistics", true, {
       path: "/",
       sameSite: "lax",
-      expires: oneYearFromNow
+      expires: oneYearFromNow,
     });
     updateCookies();
     closeBanner();

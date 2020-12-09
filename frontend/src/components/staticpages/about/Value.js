@@ -1,31 +1,31 @@
 import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     background: theme.palette.primary.main,
     boxShadow: "0px 3px 6px #00000029",
     width: 130,
     height: 130,
     marginBottom: theme.spacing(3),
-    textAlign: "center"
+    textAlign: "center",
   },
   iconWrapper: {
     display: "flex",
     justifyContent: "center",
     paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(1)
+    paddingBottom: theme.spacing(1),
   },
   icon: {
     color: theme.palette.primary.light,
     fontSize: 40,
     width: 40,
-    height: 40
+    height: 40,
   },
   text: {
     color: theme.palette.yellow.main,
-    fontWeight: 600
-  }
+    fontWeight: 600,
+  },
 }));
 export default function Value({ iconSrc, icon, text }) {
   const classes = useStyles();

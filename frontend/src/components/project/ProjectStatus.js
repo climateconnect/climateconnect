@@ -5,8 +5,8 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles({
   root: {
     textTransform: "uppercase",
-    borderRadius: 10
-  }
+    borderRadius: 10,
+  },
 });
 export default function ProjectStatus({ status, className }) {
   const classes = useStyles();

@@ -18,59 +18,59 @@ import UserContext from "../context/UserContext";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   createdBy: {
-    fontSize: 16
+    fontSize: 16,
   },
   info: {
     fontStyle: "italic",
     marginBottom: theme.spacing(1),
     display: "block",
-    fontSize: 14
+    fontSize: 14,
   },
   creator: {
     paddingLeft: theme.spacing(1),
     color: theme.palette.grey[800],
-    cursor: "pointer"
+    cursor: "pointer",
   },
   collaboratingOrganization: {
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
     color: theme.palette.grey[800],
-    cursor: "pointer"
+    cursor: "pointer",
   },
   creatorImage: {
     height: 24,
     marginBottom: -6,
-    paddingRight: theme.spacing(0.5)
+    paddingRight: theme.spacing(0.5),
   },
   statusContainer: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   subHeader: {
     fontWeight: "bold",
-    paddingBottom: theme.spacing(2)
+    paddingBottom: theme.spacing(2),
   },
   expandButton: {
-    width: "100%"
+    width: "100%",
   },
   icon: {
     verticalAlign: "bottom",
     marginTop: 2,
-    paddingRight: theme.spacing(0.5)
+    paddingRight: theme.spacing(0.5),
   },
   chip: {
     marginBottom: theme.spacing(1),
     marginRight: theme.spacing(1),
-    marinTop: theme.spacing(1)
+    marinTop: theme.spacing(1),
   },
   subSubHeader: {
     fontWeight: 600,
     marginTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1)
+    paddingBottom: theme.spacing(1),
   },
   contentBlock: {
-    marginBottom: theme.spacing(4)
+    marginBottom: theme.spacing(4),
   },
   collabList: {
     listStyle: "none",
@@ -88,28 +88,28 @@ const useStyles = makeStyles(theme => ({
         position: "absolute",
         top: 0,
         left: 0,
-        color: theme.palette.primary.main
-      }
-    }
+        color: theme.palette.primary.main,
+      },
+    },
   },
   progressContent: {
-    marginTop: theme.spacing(5)
+    marginTop: theme.spacing(5),
   },
   collabSection: {
     display: "inline-block",
     width: "50%",
     "@media (max-width:900px)": {
-      width: "100%"
-    }
+      width: "100%",
+    },
   },
   openToCollabBool: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   editProjectButton: {
-    float: "right"
-  }
+    float: "right",
+  },
 }));
 
 export default function ProjectContent({ project }) {
@@ -118,8 +118,8 @@ export default function ProjectContent({ project }) {
   const [showFullDescription, setShowFullDescription] = React.useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
   const user_permission =
-    user && project.team && project.team.find(m => m.id === user.id)
-      ? project.team.find(m => m.id === user.id).permission
+    user && project.team && project.team.find((m) => m.id === user.id)
+      ? project.team.find((m) => m.id === user.id).permission
       : null;
   return (
     <div>
@@ -161,7 +161,7 @@ export default function ProjectContent({ project }) {
             {project.collaborating_organizations && project.collaborating_organizations.length > 0 && (
               <div>
                 <span> In collaboration with</span>
-                {project.collaborating_organizations.map(o => (
+                {project.collaborating_organizations.map((o) => (
                   <MiniOrganizationPreview
                     key={o.id}
                     size="small"
@@ -176,7 +176,7 @@ export default function ProjectContent({ project }) {
             <Typography>
               Finished <TimeAgo date={new Date(project.end_date)} />. Total Duration:{" "}
               {humanizeDuration(new Date(project.end_date) - new Date(project.start_date), {
-                largest: 1
+                largest: 1,
               })}
             </Typography>
           )}
@@ -196,10 +196,11 @@ export default function ProjectContent({ project }) {
           {project.description ? (
             showFullDescription ||
             project.description.length <= MAX_DISPLAYED_DESCRIPTION_LENGTH ? (
-              <MessageContent content={project.description} />
+              <MessageContent content={project.description} renderYoutubeVideos={1} />
             ) : (
               <MessageContent
                 content={project.description.substr(0, MAX_DISPLAYED_DESCRIPTION_LENGTH) + "..."}
+                renderYoutubeVideos={1}
               />
             )
           ) : (
@@ -273,7 +274,7 @@ function CollaborateContent({ project }) {
           <ul className={classes.collabList}>
             {project.helpful_skills &&
               project.helpful_skills.length > 0 &&
-              project.helpful_skills.map(skill => {
+              project.helpful_skills.map((skill) => {
                 return <li key={skill.id}>{skill.name}</li>;
               })}
           </ul>

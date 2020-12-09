@@ -5,35 +5,35 @@ import ExploreIcon from "@material-ui/icons/Explore";
 import { makeStyles } from "@material-ui/core/styles";
 import organization_info_metadata from "../../../public/data/organization_info_metadata";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     root: {
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
       alignItems: "center",
-      textAlign: "left"
+      textAlign: "left",
     },
     orgLogo: {
       height: "0.9rem",
-      marginBottom: -2
+      marginBottom: -2,
     },
     cardIconBox: {
       width: 40,
       flex: "0 0 40px",
       display: "inline-block",
       [theme.breakpoints.down("xs")]: {
-        display: "none"
-      }
+        display: "none",
+      },
     },
     infoLink: {
       display: "flex",
-      marginBottom: theme.spacing(0.5)
+      marginBottom: theme.spacing(0.5),
     },
     textContent: {
       fontSize: 14,
-      whiteSpace: "normal"
-    }
+      whiteSpace: "normal",
+    },
   };
 });
 
@@ -41,13 +41,13 @@ export default function OrganizationMetaData({ organization, showOrganizationTyp
   const classes = useStyles();
   const additionalInfo = organization.types.reduce((arr, type) => {
     if (type.additional_info) {
-      type.additional_info.map(i => {
+      type.additional_info.map((i) => {
         arr.push({
           key: i,
           name: organization_info_metadata[i].name,
           value: organization.info[i],
           icon: organization_info_metadata[i].icon,
-          iconName: organization_info_metadata[i].iconName
+          iconName: organization_info_metadata[i].iconName,
         });
       });
     }

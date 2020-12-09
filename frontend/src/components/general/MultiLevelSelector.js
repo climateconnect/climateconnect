@@ -410,7 +410,8 @@ function ListToChooseFrom({
             const lastParentListItem = parentList && parentList[parentList.length - 1];
             const lastParentListItemSubcategories = lastParentListItem?.subcategories;
             const finalItem =
-              lastParentListItem?.subcategories[lastParentListItemSubcategories.length - 1];
+              lastParentListItemSubcategories &&
+              lastParentListItemSubcategories[lastParentListItemSubcategories.length - 1];
 
             // Does the current item match its parent's last item?
             if (item.name === finalItem?.name) {

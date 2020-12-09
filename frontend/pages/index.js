@@ -17,10 +17,10 @@ import DonationsBanner from "../src/components/landingPage/DonationsBanner";
 import OurTeamBox from "../src/components/landingPage/OurTeamBox";
 import StartNowBanner from "../src/components/staticpages/StartNowBanner";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     background: "#F8F8F8",
-    overflowX: "hidden"
+    overflowX: "hidden",
   },
   h1ClassName: {
     fontSize: 30,
@@ -28,14 +28,14 @@ const useStyles = makeStyles(theme => ({
     textAlign: "center",
     marginBottom: theme.spacing(2),
     [theme.breakpoints.down("xs")]: {
-      fontSize: 22
-    }
+      fontSize: 22,
+    },
   },
   explainerBox: {
     marginTop: theme.spacing(13),
     [theme.breakpoints.down("sm")]: {
-      marginTop: theme.spacing(2)
-    }
+      marginTop: theme.spacing(2),
+    },
   },
   signUpButtonContainer: {
     display: "flex",
@@ -44,21 +44,21 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(10),
     [theme.breakpoints.down("xs")]: {
       marginTop: theme.spacing(0),
-      marginBottom: theme.spacing(7)
-    }
+      marginBottom: theme.spacing(7),
+    },
   },
   signUpButton: {
     width: 300,
     height: 60,
-    fontSize: 18
+    fontSize: 18,
   },
   lowerPart: {
-    position: "relative"
+    position: "relative",
   },
   contentRef: {
     position: "absolute",
-    top: -100
-  }
+    top: -100,
+  },
 }));
 
 export default function Index({ projects, organizations }) {
@@ -124,19 +124,19 @@ export default function Index({ projects, organizations }) {
   );
 }
 
-Index.getInitialProps = async ctx => {
+Index.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
   if (!token) {
-    console.log(`Error: Token was ${token}...`)
+    console.log(`Error: Token was ${token}...`);
   }
 
   return {
     projects: await getProjects(token),
-    organizations: await getOrganizations(token)
+    organizations: await getOrganizations(token),
   };
 };
 
-const getProjects = async token => {
+const getProjects = async (token) => {
   // console.log("In getProjects...")
   try {
     // Read local API URL. This should hit the Django endpoint?
@@ -144,16 +144,9 @@ const getProjects = async token => {
 
     const featuredProjectsEndpoint = `${process.env.API_URL}/api/featured_projects/`;
 
-    console.log(`Hitting featured projects endpoint: ${featuredProjectsEndpoint}`);
-
-
-    const resp = await axios.get(
-      featuredProjectsEndpoint,
-      tokenConfig(token)
-    );
+    const resp = await axios.get(featuredProjectsEndpoint, tokenConfig(token));
 
     if (resp.data.length === 0) {
-      // console.log("Null 🗻")
       return null;
     }
 
@@ -168,7 +161,7 @@ const getProjects = async token => {
   }
 };
 
-const getOrganizations = async token => {
+const getOrganizations = async (token) => {
   try {
     const resp = await axios.get(
       process.env.API_URL + "/api/featured_organizations/",
@@ -185,22 +178,21 @@ const getOrganizations = async token => {
   }
 };
 
-const parseProjects = projects => {
-  console.log("Parsing projects...");
-  return projects.map(project => ({
+const parseProjects = (projects) => {
+  return projects.map((project) => ({
     ...project,
-    location: project.city + ", " + project.country
+    location: project.city + ", " + project.country,
   }));
 };
 
-const parseOrganizations = organizations => {
-  return organizations.map(organization => ({
+const parseOrganizations = (organizations) => {
+  return organizations.map((organization) => ({
     ...organization,
-    types: organization.types.map(type => type.organization_tag),
+    types: organization.types.map((type) => type.organization_tag),
     info: {
       location: organization.city
         ? organization.city + ", " + organization.country
-        : organization.country
-    }
+        : organization.country,
+    },
   }));
 };

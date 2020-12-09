@@ -4,12 +4,12 @@ import { Typography, makeStyles, useMediaQuery } from "@material-ui/core";
 import LightBigButton from "../staticpages/LightBigButton";
 import theme from "../../themes/theme";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     background: theme.palette.primary.main,
     paddingTop: theme.spacing(5),
     paddingBottom: theme.spacing(5),
-    marginTop: theme.spacing(10)
+    marginTop: theme.spacing(10),
   },
   content: {
     width: 848,
@@ -19,15 +19,15 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("sm")]: {
       width: "auto",
       paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2)
-    }
+      paddingRight: theme.spacing(2),
+    },
   },
   heartIconContainer: {
     color: theme.palette.yellow.main,
-    marginRight: theme.spacing(3)
+    marginRight: theme.spacing(3),
   },
   headline: {
-    color: "white"
+    color: "white",
   },
   text: {
     color: "white",
@@ -36,21 +36,21 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("sm")]: {
       fontSize: 16,
       fontWeight: 500,
-      textAlign: "center"
-    }
+      textAlign: "center",
+    },
   },
   heartIcon: {
     width: 120,
-    height: 120
+    height: 120,
   },
   donateButtonContainer: {
     display: "flex",
     justifyContent: "center",
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(3),
   },
   yellow: {
-    color: theme.palette.yellow.main
-  }
+    color: theme.palette.yellow.main,
+  },
 }));
 export default function DonationsBanner({ h1ClassName }) {
   const classes = useStyles();

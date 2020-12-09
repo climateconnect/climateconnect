@@ -5,22 +5,22 @@ import ManageMembers from "../manageMembers/ManageMembers";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 import { getAllChangedMembers } from "../../../public/lib/manageMembers";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     headline: {
       textAlign: "center",
-      marginTop: theme.spacing(4)
+      marginTop: theme.spacing(4),
     },
     buttons: {
-      float: "right"
+      float: "right",
     },
     button: {
-      marginRight: theme.spacing(2)
+      marginRight: theme.spacing(2),
     },
     buttonsContainer: {
       height: 40,
-      width: "100%"
-    }
+      width: "100%",
+    },
   };
 });
 
@@ -32,28 +32,28 @@ export default function ManageOrganizationMembers({
   rolesOptions,
   organization,
   token,
-  availabilityOptions
+  availabilityOptions,
 }) {
   const classes = useStyles();
-  const [user_role, setUserRole] = React.useState(members.find(m => m.id === user.id).role);
-  if (!user_role) setUserRole(members.find(m => m.id === user.id).role);
+  const [user_role, setUserRole] = React.useState(members.find((m) => m.id === user.id).role);
+  if (!user_role) setUserRole(members.find((m) => m.id === user.id).role);
 
-  const canEdit = member => {
+  const canEdit = (member) => {
     return member.id === user.id || user_role.role_type > member.role.role_type;
   };
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     onSubmit()
       .then(() => {
         redirect("/organizations/" + organization.url_slug, {
-          message: "You have successfully updated your organization members"
+          message: "You have successfully updated your organization members",
         });
       })
-      .catch(e => {
+      .catch((e) => {
         console.log(e);
         redirect("/organizations/" + organization.url_slug, {
-          errorMessage: "Not all your updates have worked."
+          errorMessage: "Not all your updates have worked.",
         });
       });
   };
@@ -62,7 +62,7 @@ export default function ManageOrganizationMembers({
     if (!verifyInput()) return false;
     const allChangedMembers = getAllChangedMembers(members, currentMembers, "organization_members");
     return Promise.all(
-      allChangedMembers.map(m => {
+      allChangedMembers.map((m) => {
         if (m.operation === "delete") deleteMember(m);
         if (m.operation === "update") updateMember(m);
         if (m.operation === "create") {
@@ -76,18 +76,18 @@ export default function ManageOrganizationMembers({
   };
 
   const verifyInput = () => {
-    if (currentMembers.filter(cm => cm.role.name === "Creator").length !== 1) {
+    if (currentMembers.filter((cm) => cm.role.name === "Creator").length !== 1) {
       alert("There must be exactly one creator of an organization.");
       return false;
     }
-    if (!members.filter(m => m.role.name === "Creator").length === 1) {
+    if (!members.filter((m) => m.role.name === "Creator").length === 1) {
       alert("error(There wasn't a creator)");
       return false;
     }
     return true;
   };
 
-  const deleteMember = m => {
+  const deleteMember = (m) => {
     apiRequest(
       "delete",
       "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
@@ -97,7 +97,7 @@ export default function ManageOrganizationMembers({
     );
   };
 
-  const updateMember = m => {
+  const updateMember = (m) => {
     apiRequest(
       "patch",
       "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
@@ -107,7 +107,7 @@ export default function ManageOrganizationMembers({
     );
   };
 
-  const createMembers = organization_members => {
+  const createMembers = (organization_members) => {
     apiRequest(
       "post",
       "/api/organizations/" + organization.url_slug + "/add_members/",
@@ -117,7 +117,7 @@ export default function ManageOrganizationMembers({
     );
   };
 
-  const updateCreator = new_creator => {
+  const updateCreator = (new_creator) => {
     apiRequest(
       "post",
       "/api/organizations/" + organization.url_slug + "/change_creator/",
@@ -166,13 +166,13 @@ export default function ManageOrganizationMembers({
   );
 }
 
-const parseMembersForCreateRequest = members => {
+const parseMembersForCreateRequest = (members) => {
   return {
-    organization_members: members.map(m => ({
+    organization_members: members.map((m) => ({
       ...m,
       permission_type_id: m.role.id,
-      role_in_organization: m.role_in_organization ? m.role_in_organization : ""
-    }))
+      role_in_organization: m.role_in_organization ? m.role_in_organization : "",
+    })),
   };
 };
 
@@ -182,6 +182,6 @@ const parseMemberForUpdateRequest = (m, organization) => {
     user: m.id,
     role: m.role.id,
     role_in_organization: m.role_in_organization ? m.role_in_organization : "",
-    organization: organization.id
+    organization: organization.id,
   };
 };

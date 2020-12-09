@@ -20,7 +20,7 @@ export default function EditProfilePage({
   skillsOptions,
   availabilityOptions,
   infoMetadata,
-  token
+  token,
 }) {
   const [message, setMessage] = React.useState("");
   useEffect(() => {
@@ -38,15 +38,15 @@ export default function EditProfilePage({
         getProfileWithoutRedundantOptions(user, parsedProfile),
         tokenConfig(token)
       )
-      .then(function(response) {
+      .then(function (response) {
         Router.push({
           pathname: "/profiles/" + response.data.url_slug,
           query: {
-            message: "You have successfully updated your profile!"
-          }
+            message: "You have successfully updated your profile!",
+          },
         });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
         if (error && error.reponse) console.log(error.response);
       });
@@ -79,18 +79,18 @@ export default function EditProfilePage({
     );
 }
 
-EditProfilePage.getInitialProps = async ctx => {
+EditProfilePage.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
   const [skillsOptions, infoMetadata, availabilityOptions] = await Promise.all([
     getSkillsOptions(token),
     getProfileInfoMetadata(token),
-    getAvailabilityOptions(token)
+    getAvailabilityOptions(token),
   ]);
   return {
     skillsOptions: skillsOptions,
     infoMetadata: infoMetadata,
     availabilityOptions: availabilityOptions,
-    token: token
+    token: token,
   };
 };
 
@@ -101,7 +101,7 @@ function ProfileLayout({
   maxAccountTypes,
   handleSubmit,
   handleCancel,
-  skillsOptions
+  skillsOptions,
 }) {
   return (
     <EditAccountPage
@@ -152,7 +152,7 @@ async function getProfileInfoMetadata() {
 }
 
 const parseProfileForRequest = (profile, availabilityOptions, user) => {
-  const availability = availabilityOptions.find(o => o.name == profile.info.availability);
+  const availability = availabilityOptions.find((o) => o.name == profile.info.availability);
   return {
     first_name: profile.first_name,
     last_name: profile.last_name,
@@ -162,21 +162,21 @@ const parseProfileForRequest = (profile, availabilityOptions, user) => {
     city: profile.info.city,
     biography: profile.info.bio,
     availability: availability ? availability.id : user.availability ? user.availability.id : null,
-    skills: profile.info.skills.map(s => s.id),
-    website: profile.info.website
+    skills: profile.info.skills.map((s) => s.id),
+    website: profile.info.website,
   };
 };
 
 const getProfileWithoutRedundantOptions = (user, newProfile) => {
   const oldProfile = {
     ...user,
-    skills: user.skills.map(s => s.id),
+    skills: user.skills.map((s) => s.id),
     image: getImageUrl(user.image),
     background_image: getImageUrl(user.background_image),
-    availability: user.availability && user.availability.id
+    availability: user.availability && user.availability.id,
   };
   const finalProfile = {};
-  Object.keys(newProfile).map(k => {
+  Object.keys(newProfile).map((k) => {
     if (
       oldProfile[k] &&
       newProfile[k] &&

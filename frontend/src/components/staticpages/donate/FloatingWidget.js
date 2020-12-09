@@ -5,12 +5,12 @@ import BottomOfPage from "../../hooks/BottomOfPage";
 import DonationGoal from "./DonationGoal";
 import ElementSpaceToTop from "../../hooks/ElementSpaceToTop";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     twingle: {
       width: "100%",
       height: "100%",
-      border: 0
+      border: 0,
     },
     twingleContainer: {
       position: "absolute",
@@ -20,23 +20,23 @@ const useStyles = makeStyles(theme => {
       height: 660,
       maxHeight: "95vh",
       [theme.breakpoints.down("md")]: {
-        right: theme.spacing(2)
+        right: theme.spacing(2),
       },
-      zIndex: 2
+      zIndex: 2,
     },
     twingleContainerFixed: {
       position: "fixed",
       bottom: 10,
-      top: "auto"
+      top: "auto",
     },
     twingleContainerHidden: {
-      visibility: "hidden"
+      visibility: "hidden",
     },
     twingleContainerAtBottom: {
       position: "absolute",
       bottom: -20,
-      top: "auto"
-    }
+      top: "auto",
+    },
   };
 });
 
@@ -55,9 +55,10 @@ export default function FloatingWidget({ goal_name, current_amount, goal_amount 
   return (
     <Container maxWidth="xl" className={classes.twingleWrapper}>
       <div
-        className={`${classes.twingleContainer} ${isFixed &&
-          classes.twingleContainerFixed} ${isAtBottom && classes.twingleContainerAtBottom}`}
-        ref={node => {
+        className={`${classes.twingleContainer} ${isFixed && classes.twingleContainerFixed} ${
+          isAtBottom && classes.twingleContainerAtBottom
+        }`}
+        ref={(node) => {
           if (node) {
             setEl(node);
           }

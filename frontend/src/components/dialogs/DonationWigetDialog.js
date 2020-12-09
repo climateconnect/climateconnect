@@ -5,8 +5,8 @@ import { makeStyles } from "@material-ui/core";
 const useStyles = makeStyles(() => ({
   widget: {
     height: "100%",
-    width: "100%"
-  }
+    width: "100%",
+  },
 }));
 
 export default function DonationWigetDialog({ onClose, open, title }) {

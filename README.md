@@ -50,8 +50,8 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
 
 1.  Ensure Docker is running and then run `docker-compose up`. This will start a Redis server on Docker.
 1.  Ensure the Postgres server is running.
-1.  Run `python manage.py migrate` to run Django migrations whenever you are adding or updating database models.
 1.  Run server using `python manage.py runserver`.
+1.  If test data is needed, run this command: `python manage.py create_test_data --number_of_rows 4`
 
 #### Testing
 
@@ -66,19 +66,6 @@ Run a specific test file or test class:
 ```sh
 python manage.py test <file_path> or <file_path + class_name>
 ```
-
-=======
-
-1.  Go to backend directory `cd backend`
-2.  Run `pip install -r requirements.txt` to install all backend libararies.
-3.  Create `.backend_env` to include backend environment variables. You can find upto date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md) file.
-4.  Run `python manage.py migrate` to run django migrations. Note: This command is used for
-    when you first start or whenever you are adding or updating database models.
-5.  Run this command to create test data: `python manage.py create_test_data --number_of_rows 4`
-6.  Run server using `python manage.py runserver`.
-7.  If you want to run tests suite use this command: `python manage.py test`. If you want to run a
-    specific test file or test class run this command:
-    `python manage.py test <file_path> or <file_path + class_name>`
 
 ### Frontend
 

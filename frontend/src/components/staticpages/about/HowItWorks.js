@@ -7,9 +7,9 @@ import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import theme from "../../../themes/theme";
 import CustomDot from "../../general/CustomDot";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    marginTop: theme.spacing(8)
+    marginTop: theme.spacing(8),
   },
   elementRoot: {
     display: "flex",
@@ -21,8 +21,8 @@ const useStyles = makeStyles(theme => ({
       justifyContent: "center",
       margin: "0 auto",
       paddingLeft: theme.spacing(1),
-      paddingRight: theme.spacing(1)
-    }
+      paddingRight: theme.spacing(1),
+    },
   },
   imageBackground: {
     background: theme.palette.primary.light,
@@ -31,38 +31,38 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center",
     justifyContent: "center",
     [theme.breakpoints.up("md")]: {
-      padding: theme.spacing(2)
+      padding: theme.spacing(2),
     },
     [theme.breakpoints.down("md")]: {
       background: "transparent",
-      flexBasis: 0
-    }
+      flexBasis: 0,
+    },
   },
-  imageWrapper: props => ({
+  imageWrapper: (props) => ({
     background: `url('${props.img}')`,
-    backgroundSize: "contain"
+    backgroundSize: "contain",
   }),
   image: {
     visibility: "hidden",
     width: "100%",
-    height: "100%"
+    height: "100%",
   },
   textSection: {
     textAlign: "center",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   carousel: {
     marginTop: theme.spacing(6),
-    paddingBottom: theme.spacing(5)
+    paddingBottom: theme.spacing(5),
   },
   elementHeadline: {
     fontSize: 23,
     fontWeight: 600,
     [theme.breakpoints.down("md")]: {
-      marginBottom: theme.spacing(3)
-    }
+      marginBottom: theme.spacing(3),
+    },
   },
   arrowContainer: {
     position: "absolute",
@@ -73,21 +73,21 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    cursor: "pointer"
+    cursor: "pointer",
   },
   arrowContainerRight: {
-    right: "calc(4% + 1px)"
+    right: "calc(4% + 1px)",
   },
   arrowContainerLeft: {
-    left: "calc(4% + 1px)"
-  }
+    left: "calc(4% + 1px)",
+  },
 }));
 
 const responsive = {
   all: {
     breakpoint: { max: 10000, min: 0 },
-    items: 1
-  }
+    items: 1,
+  },
 };
 
 export default function HowItWorks({ headlineClass }) {

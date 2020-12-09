@@ -1,23 +1,23 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   teamRoot: {
     display: "flex",
     alignItems: "center",
     marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3)
+    marginBottom: theme.spacing(3),
   },
   image: {
-    width: "100%"
+    width: "100%",
   },
   infoLinkBox: {
     flexDirection: "column",
     marginLeft: 0,
     marginRight: theme.spacing(5),
     flexBasis: 400,
-    textAlign: "center"
-  }
+    textAlign: "center",
+  },
 }));
 
 export default function WhoWeAreContent() {

@@ -10,51 +10,51 @@ import CommentInput from "./CommentInput";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import MessageContent from "./MessageContent";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   postDate: {
-    color: theme.palette.grey[700]
+    color: theme.palette.grey[700],
   },
   commentFlexBox: {
-    display: "flex"
+    display: "flex",
   },
   messageWithMetaData: {
     display: "flex",
     flexDirection: "column",
     flexWrap: "wrap",
-    flex: 1
+    flex: 1,
   },
   avatar: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
   },
   username: {
     fontWeight: "bold",
-    marginRight: theme.spacing(0.5)
+    marginRight: theme.spacing(0.5),
   },
   metadata: {
-    display: "flex"
+    display: "flex",
   },
   message: {
-    lineHeight: 1.2
+    lineHeight: 1.2,
   },
   content: {
     wordBreak: "break-word",
     fontSize: 14,
-    whiteSpace: "pre-wrap"
+    whiteSpace: "pre-wrap",
   },
   toggleExpanded: {
     fontWeight: 600,
     fontSize: 14,
     cursor: "pointer",
-    color: theme.palette.grey[700]
+    color: theme.palette.grey[700],
   },
   replyButton: {
-    color: theme.palette.grey[700]
+    color: theme.palette.grey[700],
   },
   toggleReplies: {
     display: "flex",
     alignItems: "center",
-    cursor: "pointer"
-  }
+    cursor: "pointer",
+  },
 }));
 
 export default function Post({
@@ -64,7 +64,7 @@ export default function Post({
   maxLines,
   user,
   onSendComment,
-  onDeletePost
+  onDeletePost,
 }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -84,7 +84,7 @@ export default function Post({
 
   const toggleDeleteDialogOpen = () => setOpen(!open);
 
-  const onConfirmDialogClose = confirmed => {
+  const onConfirmDialogClose = (confirmed) => {
     setOpen(false);
     if (confirmed) onDeletePost(post);
   };

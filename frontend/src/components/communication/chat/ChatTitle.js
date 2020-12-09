@@ -3,18 +3,18 @@ import { Avatar, Typography } from "@material-ui/core";
 import GroupIcon from "@material-ui/icons/Group";
 import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     avatarWrapper: {
       display: "inline-block",
-      verticalAlign: "middle"
+      verticalAlign: "middle",
     },
     profileName: {
       display: "inline-block",
       verticalAlign: "middle",
       marginLeft: theme.spacing(1),
-      whiteSpace: "nowrap"
-    }
+      whiteSpace: "nowrap",
+    },
   };
 });
 

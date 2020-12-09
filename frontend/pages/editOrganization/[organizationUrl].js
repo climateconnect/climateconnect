@@ -16,7 +16,7 @@ import { sendToLogin } from "../../public/lib/apiOperations";
 export default function EditOrganizationPage({ organization, tagOptions, token }) {
   const [errorMessage, setErrorMessage] = React.useState("");
 
-  const handleSetErrorMessage = msg => {
+  const handleSetErrorMessage = (msg) => {
     setErrorMessage(msg);
     window.scrollTo(0, 0);
   };
@@ -33,15 +33,15 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
           org,
           tokenConfig(token)
         )
-        .then(function() {
+        .then(function () {
           Router.push({
             pathname: "/organizations/" + organization.url_slug,
             query: {
-              message: "You have successfully edited your organization."
-            }
+              message: "You have successfully edited your organization.",
+            },
           });
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
           if (error) console.log(error.response);
         });
@@ -56,7 +56,7 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
     delete org.info;
     const oldOrg = { ...oldO, ...oldO.info };
     delete oldOrg.info;
-    Object.keys(org).map(k => {
+    Object.keys(org).map((k) => {
       if (oldOrg[k] && org[k] && Array.isArray(oldOrg[k]) && Array.isArray(org[k])) {
         if (!arraysEqual(oldOrg[k], org[k])) finalProfile[k] = org[k];
       } else if (oldOrg[k] !== org[k] && !(!oldOrg[k] && !org[k])) finalProfile[k] = org[k];
@@ -98,7 +98,7 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
   );
 }
 
-EditOrganizationPage.getInitialProps = async ctx => {
+EditOrganizationPage.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
   if (ctx.req && !token) {
     const message = "You have to log in to edit an organization.";
@@ -107,12 +107,12 @@ EditOrganizationPage.getInitialProps = async ctx => {
   const url = encodeURI(ctx.query.organizationUrl);
   const [organization, tagOptions] = await Promise.all([
     getOrganizationByUrlIfExists(url, token),
-    getOrganizationTagsOptions()
+    getOrganizationTagsOptions(),
   ]);
   return {
     organization: organization,
     tagOptions: tagOptions,
-    token: token
+    token: token,
   };
 };
 
@@ -137,15 +137,15 @@ function parseOrganization(organization) {
     background_image: getImageUrl(organization.background_image),
     name: organization.name,
     image: getImageUrl(organization.image),
-    types: organization.types.map(t => ({ ...t.organization_tag, key: t.organization_tag.id })),
+    types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
     info: {
       city: organization.city,
       country: organization.country,
       shortdescription: organization.short_description,
-      website: organization.website
-    }
+      website: organization.website,
+    },
   };
-  org.types = org.types.map(t => t.key);
+  org.types = org.types.map((t) => t.key);
   const additional_info = organization.types.reduce((additionalInfoArray, t) => {
     const type = t.organization_tag;
     if (type.additional_info && type.additional_info.length > 0) {
@@ -153,7 +153,7 @@ function parseOrganization(organization) {
     } else console.log(type.additional_info);
     return additionalInfoArray;
   }, []);
-  additional_info.map(infoEl => {
+  additional_info.map((infoEl) => {
     org.info[infoEl] = organization[infoEl];
   });
   //Add parent org late so it's the lowest entry on the page
@@ -165,9 +165,9 @@ function parseOrganization(organization) {
   return org;
 }
 
-const parseForRequest = org => {
+const parseForRequest = (org) => {
   const parsedOrg = {
-    ...org
+    ...org,
   };
   if (org.shortdescription) parsedOrg.short_description = org.shortdescription;
   if (org.parent_organization)
@@ -175,28 +175,28 @@ const parseForRequest = org => {
   return parsedOrg;
 };
 
-const verifyChanges = newOrg => {
+const verifyChanges = (newOrg) => {
   const requiredPropErrors = {
     image: 'Please add an avatar image by clicking the "Add Image" button.',
     types:
       'Please choose at least one organization type by clicking the "Add Type" button under the avatar.',
-    name: "Please type your organization name under the avatar image"
+    name: "Please type your organization name under the avatar image",
   };
   const requiredInfoPropErrors = {
     city: "Please specify your city",
-    country: "Please specify your country"
+    country: "Please specify your country",
   };
   for (const prop of Object.keys(requiredPropErrors)) {
     if (!newOrg[prop] || (Array.isArray(newOrg[prop]) && newOrg[prop].length <= 0)) {
       return {
-        error: requiredPropErrors[prop]
+        error: requiredPropErrors[prop],
       };
     }
   }
   for (const prop of Object.keys(requiredInfoPropErrors)) {
     if (!newOrg.info[prop] || (Array.isArray(newOrg.info[prop]) && newOrg.info[prop].length <= 0)) {
       return {
-        error: requiredInfoPropErrors[prop]
+        error: requiredInfoPropErrors[prop],
       };
     }
   }

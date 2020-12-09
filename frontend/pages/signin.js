@@ -13,14 +13,14 @@ export default function Signin() {
       required: true,
       label: "Email",
       key: "username",
-      type: "email"
+      type: "email",
     },
     {
       required: true,
       label: "Password",
       key: "password",
-      type: "password"
-    }
+      type: "password",
+    },
   ];
 
   const messages = {
@@ -29,12 +29,12 @@ export default function Signin() {
       <span>
         New to Climate Connect? <a href="/signup">Click here to create an account</a>
       </span>
-    )
+    ),
   };
 
   const bottomLink = {
     text: "Forgot your password?",
-    href: "/resetpassword"
+    href: "/resetpassword",
   };
 
   const [errorMessage, setErrorMessage] = React.useState(null);
@@ -45,7 +45,7 @@ export default function Signin() {
 
   const [initialized, setInitialized] = React.useState(false);
   const [redirectUrl, setRedirectUrl] = React.useState();
-  useEffect(function() {
+  useEffect(function () {
     if (!initialized) {
       const params = getParams(window.location.href);
       if (params.redirect) setRedirectUrl(decodeURIComponent(params.redirect));
@@ -64,12 +64,12 @@ export default function Signin() {
     axios
       .post(API_URL + "/login/", {
         username: values.username.toLowerCase(),
-        password: values.password
+        password: values.password,
       })
-      .then(async function(response) {
+      .then(async function (response) {
         await signIn(response.data.token, response.data.expiry, redirectUrl);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
         if (error.response && error.response.data) {
           if (error.response.data.type === "not_verified")
