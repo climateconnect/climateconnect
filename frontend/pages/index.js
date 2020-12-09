@@ -152,7 +152,6 @@ const getProjects = async (token) => {
 
     return parseProjects(resp.data.results);
   } catch (err) {
-    console.log("🔴");
     if (err.response && err.response.data) {
       console.log("Error: ");
       console.log(err.response.data);
