@@ -1,7 +1,10 @@
 import React from "react";
+
 import ProjectPreview from "./ProjectPreview";
+
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+
 import InfiniteScroll from "react-infinite-scroller";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
@@ -17,7 +20,7 @@ const useStyles = makeStyles({
   }
 });
 
-//This component is for display projects with the option to infinitely scroll to get more projects
+// This component is for display projects with the option to infinitely scroll to get more projects
 export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHandlesGridItems }) {
   const classes = useStyles();
   const toProjectPreviews = projects =>

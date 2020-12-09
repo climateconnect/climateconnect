@@ -10,11 +10,11 @@ from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from django.contrib.auth.models import User
 
 from organization.models import (
-    Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging, 
+    Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging,
     ProjectStatus, ProjectCollaborators, ProjectFollower, OrganizationTags, OrganizationTagging
 )
 from organization.serializers.project import (
-    ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer, 
+    ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer,
  InsertProjectMemberSerializer, ProjectSitemapEntrySerializer, ProjectFollowerSerializer
 )
 from organization.serializers.status import ProjectStatusSerializer
@@ -44,7 +44,7 @@ class ProjectsOrderingFilter(OrderingFilter):
         if ordering is not None:
             if ordering == 'newest':
                 queryset = queryset.order_by('-id')
-            elif ordering == 'oldest':                
+            elif ordering == 'oldest':
                 queryset = queryset.order_by('id')
         return queryset
 
@@ -59,7 +59,7 @@ class ListProjectsView(ListAPIView):
 
     def get_serializer_class(self):
         return ProjectStubSerializer
-    
+
     def get_queryset(self):
         projects = Project.objects.filter(is_draft=False)
         if 'collaboration' in self.request.query_params:
@@ -104,7 +104,7 @@ class CreateProjectView(APIView):
 
         required_params = [
             'name', 'status', 'short_description',
-            'collaborators_welcome', 'team_members', 
+            'collaborators_welcome', 'team_members',
             'project_tags', 'city', 'country', 'image'
         ]
         for param in required_params:
@@ -129,7 +129,7 @@ class CreateProjectView(APIView):
         if organization:
             project_parents.parent_organization = organization
             project_parents.save()
-        
+
         if 'collaborating_organizations' in request.data:
             for organization_id in request.data['collaborating_organizations']:
                 try:
@@ -142,7 +142,7 @@ class CreateProjectView(APIView):
         # There are only certain roles user can have. So get all the roles first.
         roles = Role.objects.all()
         team_members = request.data['team_members']
-            
+
         if 'project_tags' in request.data:
             order = len(request.data['project_tags'])
             for project_tag_id in request.data['project_tags']:
@@ -173,7 +173,7 @@ class CreateProjectView(APIView):
                 continue
             if user:
                 ProjectMember.objects.create(
-                    project=project, user=user, role=user_role, 
+                    project=project, user=user, role=user_role,
                     availability=user_availability, role_in_project=member['role_in_project']
                 )
                 logger.info("Project member created for user {}".format(user.id))
@@ -189,7 +189,7 @@ class ProjectAPIView(APIView):
 
     def get(self, request, url_slug, format=None):
         try:
-            project = Project.objects.get(url_slug=str(url_slug))            
+            project = Project.objects.get(url_slug=str(url_slug))
         except Project.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
         serializer = ProjectSerializer(project, many=False)
@@ -216,7 +216,7 @@ class ProjectAPIView(APIView):
                     project.skills.add(skill)
                 except Skill.DoesNotExist:
                     logger.error("Passed skill id {} does not exists")
-        
+
         old_project_taggings = ProjectTagging.objects.filter(project=project)
         old_project_tags = old_project_taggings.values('project_tag')
         if 'project_tags' in request.data:
@@ -291,10 +291,10 @@ class ProjectAPIView(APIView):
             'message': 'Project {} successfully updated'.format(project.name),
             'url_slug': project.url_slug
         }, status=status.HTTP_200_OK)
-    
+
     def delete(self, request, url_slug, format=None):
         try:
-            project = Project.objects.get(url_slug=str(url_slug))            
+            project = Project.objects.get(url_slug=str(url_slug))
         except Project.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
         project.delete()
@@ -310,7 +310,7 @@ class ListProjectPostsView(ListAPIView):
     search_fields = ['project__url_slug']
     pagination_class = ProjectPostPagination
     serializer_class = PostSerializer
-    
+
     def get_queryset(self):
         return Post.objects.filter(
             project__url_slug=self.kwargs['url_slug'],
@@ -323,12 +323,12 @@ class ListProjectCommentsView(ListAPIView):
     search_fields = ['project__url_slug']
     pagination_class = ProjectPostPagination
     serializer_class = ProjectCommentSerializer
-    
+
     def get_queryset(self):
         return ProjectComment.objects.filter(
             project__url_slug=self.kwargs['url_slug'],
         )
-    
+
 class AddProjectMembersView(APIView):
     permission_classes = [AddProjectMemberPermission]
 
@@ -392,14 +392,14 @@ class ChangeProjectCreator(APIView):
             new_creator_user = User.objects.get(id=int(request.data['user']))
         except User.DoesNotExist:
             raise NotFound(detail="Profile not found.", code=status.HTTP_404_NOT_FOUND)
-        
+
         if request.user.id == new_creator_user.id:
             return Response({
                 'message': 'Missing required parameters'
             }, status=status.HTTP_400_BAD_REQUEST)
 
         project = Project.objects.get(url_slug=url_slug)
-        roles = Role.objects.all()   
+        roles = Role.objects.all()
 
         if ProjectMember.objects.filter(user=new_creator_user, project = project).exists():
             # update old creator profile and new creator profile
@@ -541,7 +541,7 @@ class ProjectCommentView(APIView):
             comment = ProjectComment.objects.get(project=project, id=comment_id, author_user=request.user)
         except ProjectComment.DoesNotExist:
             raise NotFound(
-                detail="Project comment not found. Project:"+url_slug+" Comment:"+comment_id, 
+                detail="Project comment not found. Project:"+url_slug+" Comment:"+comment_id,
                 code=status.HTTP_404_NOT_FOUND
             )
         comment.delete()
