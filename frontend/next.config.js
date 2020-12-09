@@ -13,6 +13,7 @@ module.exports = {
     "ENVIRONMENT",
     "GOOGLE_ANALYTICS_CODE",
     "LATEST_NEWSLETTER_LINK",
+    "SOCKET_URL",
   ]),
 
   exportPathMap: async function (defaultPathMap) {
