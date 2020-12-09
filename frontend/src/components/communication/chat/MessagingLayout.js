@@ -33,14 +33,32 @@ export default function MessagingLayout({
   token,
   chat_uuid,
   chat_id,
+  handleChatWindowClose,
 }) {
   const classes = useStyles();
   const { user } = useContext(UserContext);
+  
+  const handleWindowClose = (e) => {
+    if(curMessage && curMessage.length > 0){
+      e.preventDefault();
+      return (e.returnValue = "You have an unsent message. Are you sure you want to leave?.");
+    }else
+      handleChatWindowClose()
+  }
+
+  React.useEffect(() => {
+    window.addEventListener("beforeunload", handleWindowClose);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleWindowClose);
+    };
+  });
   const [curMessage, setCurMessage] = useState("");
   const [showChatParticipants, setShowChatParticipants] = useState(false);
   const [memberManagementExpanded, setMemberManagementExpanded] = useState(false);
   const [alertMessage, setAlertMessage] = useState({});
   const [showAlertMessage, setShowAlertMessage] = useState(false);
+  const [showSendHelper, setShowSendHelper] = useState(false);
   const user_role = participants.filter((p) => p.id === user.id)[0].role;
   //TODO show user when socket has closed
   const onSendMessage = (event) => {
@@ -51,7 +69,11 @@ export default function MessagingLayout({
   const canEditMembers = user_role.name === "Creator" || user_role.name === "Administrator";
 
   const handleMessageKeydown = (event) => {
-    if (event.key === "Enter" && event.ctrlKey) onSendMessage();
+    if (event.key === "Enter")
+      if (event.ctrlKey) onSendMessage();
+      else {
+        setShowSendHelper(true);
+      }
   };
 
   const onCurMessageChange = (event) => {
@@ -104,6 +126,8 @@ export default function MessagingLayout({
           title={title}
           loading={loading}
           curMessage={curMessage}
+          showSendHelper={showSendHelper}
+          setShowSendHelper={setShowSendHelper}
           onCurMessageChange={onCurMessageChange}
           handleMessageKeydown={handleMessageKeydown}
           onSendMessage={onSendMessage}

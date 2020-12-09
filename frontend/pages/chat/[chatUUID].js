@@ -28,21 +28,12 @@ export default function Chat({
     nextLink: nextLink,
     hasMore: hasMore,
   });
-
-  const handleWindowClose = (e) => {
+  const handleChatWindowClose = (e) => {
     if (state.messages.filter((m) => m.unconfirmed).length > 0) {
       e.preventDefault();
       return (e.returnValue = "Changes you made might not be saved.");
     }
   };
-
-  useEffect(() => {
-    window.addEventListener("beforeunload", handleWindowClose);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleWindowClose);
-    };
-  });
 
   useEffect(() => {
     if (chatSocket) {
@@ -60,7 +51,7 @@ export default function Chat({
         }
       };
     } else console.log("now there is no chat socket");
-  }, [chatSocket]);
+  }, [chatSocket, state]);
 
   useEffect(() => {
     if (!user)
@@ -185,6 +176,7 @@ export default function Chat({
           chat_uuid={chatUUID}
           chat_id={chat_id}
           setParticipants={setParticipants}
+          handleChatWindowClose={handleChatWindowClose}
         />
       ) : (
         <PageNotFound itemName="Chat" />
