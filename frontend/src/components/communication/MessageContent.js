@@ -41,7 +41,7 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
         const words = line.split(" ");
         const enrichedLine = words.map((w) => {
           if (youtubeRegex().test(w)) {
-            let video_id = w.split("v=")[1];
+            let video_id = YouTubeGetID(w);
             const ampersandPosition = video_id.indexOf("&");
             if (ampersandPosition !== -1) video_id = video_id.substring(0, ampersandPosition);
             return <YouTube videoId={video_id} opts={opts} />;
@@ -56,6 +56,19 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
       });
     return youtubeLines.filter((l, index) => index < renderYoutubeVideos);
   };
+
+  function YouTubeGetID(url){
+    var ID = '';
+    url = url.replace(/(>|<)/gi,'').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
+    if(url[2] !== undefined) {
+      ID = url[2].split(/[^0-9a-z_\-]/i);
+      ID = ID[0];
+    }
+    else {
+      ID = url;
+    }
+      return ID;
+  }
 
   const youtubeVideoLines = renderYoutubeVideos ? getFirstYouTubeVideosLines(content) : null;
 
