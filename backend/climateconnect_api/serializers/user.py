@@ -48,8 +48,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'first_name', 'last_name',
             'url_slug', 'image', 'background_image',
-            'country', 'state', 'city', 'biography', 'is_profile_verified',
-            'availability', 'skills', 'website'
+            'biography', 'is_profile_verified',
+            'availability', 'skills', 'website', 'location'
         )
 
     def get_id(self, obj):
@@ -72,7 +72,7 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'first_name', 'last_name',
             'url_slug', 'image', 'background_image',
-            'country', 'state', 'city', 'website'
+            'location', 'website'
         )
 
     def get_id(self, obj):
@@ -94,7 +94,7 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = (
             'id', 'first_name', 'last_name',
-            'url_slug', 'image', 'country', 'city'
+            'url_slug', 'image', 'location'
         )
 
     def get_id(self, obj):

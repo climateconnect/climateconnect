@@ -5,7 +5,6 @@ import datetime
 from django.db.models import Count, Q
 from django.utils import timezone
 from datetime import datetime, timedelta
-from django.conf import settings
 
 # Rest imports
 from django_filters.rest_framework import DjangoFilterBackend
@@ -38,8 +37,8 @@ from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.permissions import UserPermission
 from climateconnect_api.utility.email_setup import send_user_verification_email
 from climateconnect_api.utility.email_setup import send_password_link
-
-# Logging
+from climateconnect_api.utility.location import get_geo_location
+from django.conf import settings
 import logging
 logger = logging.getLogger(__name__)
 
@@ -79,7 +78,7 @@ class SignUpView(APIView):
     def post(self, request):
         required_params = [
             'email', 'password', 'first_name', 'last_name',
-            'country', 'city', 'send_newsletter'
+            'location', 'send_newsletter'
         ]
         for param in required_params:
             if param not in request.data:
@@ -99,9 +98,11 @@ class SignUpView(APIView):
 
         url_slug = (user.first_name + user.last_name).lower() + str(user.id)
 
+        # Get location
+        geo_location = get_geo_location(request.data['location'])
         user_profile = UserProfile.objects.create(
-            user=user, country=request.data['country'],
-            city=request.data['city'],
+            user=user, location=geo_location['location'],
+            latitude=geo_location['latitude'], longitude=geo_location['longitude'],
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
             verification_key=uuid.uuid4(), send_newsletter=request.data['send_newsletter']
         )
@@ -233,14 +234,16 @@ class EditUserProfile(APIView):
         if 'image' in request.data:
             user_profile.image = get_image_from_data_url(request.data['image'])[0]
         if 'background_image' in request.data:
-            user_profile.background_image = get_image_from_data_url(request.data['background_image'], True, 1280)[0]
-        if 'country' in request.data:
-            user_profile.country = request.data['country']
+            user_profile.background_image = get_image_from_data_url(
+                request.data['background_image'], True, 1280
+            )[0]
 
-        if 'state' in request.data:
-            user_profile.state = request.data['state']
-        if 'city' in request.data:
-            user_profile.city = request.data['city']
+        if 'location' in request.data:
+            geo_location = get_geo_location(request.data['location'])
+            user_profile.location = geo_location['location']
+            user_profile.latitude = geo_location['latitude']
+            user_profile.longitude = geo_location['longitude']
+
         if 'biography' in request.data:
             user_profile.biography = request.data['biography']
         if 'website' in request.data:
@@ -295,6 +298,7 @@ class UserEmailVerificationLinkView(APIView):
         else:
             return Response({'message': 'Permission Denied'}, status=status.HTTP_403_FORBIDDEN)
 
+
 class SendResetPasswordEmail(APIView):
     permission_classes = (AllowAny,)
 
@@ -312,6 +316,7 @@ class SendResetPasswordEmail(APIView):
         user_profile.save()
 
         return Response({"message": "We have sent you an email with your new password. It may take up to 5 minutes to arrive."}, status=status.HTTP_200_OK)
+
 
 class ResendVerificationEmail(APIView):
     permission_classes = (AllowAny,)
@@ -331,17 +336,22 @@ class ResendVerificationEmail(APIView):
 
         return Response({"message": "We have send you your verification email again. It may take up to 5 minutes to arrive. Make sure to also check your junk or spam folder."}, status=status.HTTP_200_OK)
 
+
 class SetNewPassword(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
         if 'password_reset_key' not in request.data or 'new_password' not in request.data:
-            return Response({'message': 'Required parameters are missing.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                'message': 'Required parameters are missing.'
+            }, status=status.HTTP_400_BAD_REQUEST)
         password_reset_key = request.data['password_reset_key'].replace('%2D', '-')
         try:
             user_profile = UserProfile.objects.get(password_reset_key=password_reset_key)
         except UserProfile.DoesNotExist:
-            return Response({'message': 'Profile not found.', 'type': 'not_found'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                'message': 'Profile not found.', 'type': 'not_found'
+            }, status=status.HTTP_400_BAD_REQUEST)
         if user_profile.password_reset_timeout > datetime.now(timezone.utc):
             user_profile.user.set_password(request.data['new_password'])
             user_profile.password_reset_timeout = datetime.now(timezone.utc)
@@ -349,9 +359,15 @@ class SetNewPassword(APIView):
             user_profile.save()
             logger.error("reset password for user "+user_profile.url_slug)
         else:
-            return Response({"message": "This link has expired. Please reset your password again.", "type": "link_timed_out"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                "message": "This link has expired. Please reset your password again.", 
+                "type": "link_timed_out"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({"message": "You have successfully set a new password. You may now log in with your new password."}, status=status.HTTP_200_OK)
+        return Response({
+            "message": "You have successfully set a new password. You may now log in with your new password."
+        }, status=status.HTTP_200_OK)
+
 
 class ListMembersForSitemap(ListAPIView):
     permission_classes = [AllowAny]

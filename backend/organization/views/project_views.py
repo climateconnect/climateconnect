@@ -1,3 +1,4 @@
+from climateconnect_api.utility.location import get_geo_location
 from dateutil.parser import parse
 from rest_framework.generics import ListAPIView,RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -48,6 +49,7 @@ class ProjectsOrderingFilter(OrderingFilter):
                 queryset = queryset.order_by('id')
         return queryset
 
+
 class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter, DjangoFilterBackend, ProjectsOrderingFilter]
@@ -93,6 +95,7 @@ class ListProjectsView(ListAPIView):
             projects = projects.filter(project_parent__in=project_parents)
         return projects
 
+
 class CreateProjectView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -105,7 +108,7 @@ class CreateProjectView(APIView):
         required_params = [
             'name', 'status', 'short_description',
             'collaborators_welcome', 'team_members',
-            'project_tags', 'city', 'country', 'image'
+            'project_tags', 'location', 'image'
         ]
         for param in required_params:
             if param not in request.data:
@@ -259,10 +262,11 @@ class ProjectAPIView(APIView):
             project.short_description = request.data['short_description']
         if 'description' in request.data:
             project.description = request.data['description']
-        if 'country' in request.data:
-            project.country = request.data['country']
-        if 'city' in request.data:
-            project.city = request.data['city']
+        if 'location' in request.data:
+            geo_location = get_geo_location(request.data['location'])
+            project.location = geo_location['location']
+            project.latitude = geo_location['latitude']
+            project.longitude = geo_location['longitude']
         if 'is_draft' in request.data:
             project.is_draft = False
         if 'website' in request.data:
@@ -281,7 +285,9 @@ class ProjectAPIView(APIView):
             try:
                 organization = Organization.objects.get(id=request.data['parent_organization'])
             except Organization.DoesNotExist:
+                organization = None
                 logger.error("Passed parent organization id {} does not exist")
+            
             project_parents.parent_organization = organization
             project_parents.save()
 
@@ -380,6 +386,7 @@ class UpdateProjectMemberView(RetrieveUpdateDestroyAPIView):
         serializer.save()
         return serializer.data
 
+
 class ChangeProjectCreator(APIView):
     permission_classes = [ChangeProjectCreatorPermission]
 
@@ -458,6 +465,7 @@ class ListProjectStatus(ListAPIView):
     def get_queryset(self):
         return ProjectStatus.objects.all()
 
+
 class SetFollowView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -493,6 +501,7 @@ class SetFollowView(APIView):
                 'message': 'Invalid value for variable "following"'
             }, status=status.HTTP_400_BAD_REQUEST)
 
+
 class IsUserFollowing(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -503,6 +512,7 @@ class IsUserFollowing(APIView):
             raise NotFound(detail="Project not found:"+url_slug, code=status.HTTP_404_NOT_FOUND)
         is_following = ProjectFollower.objects.filter(user=request.user, project=project).exists()
         return Response({'is_following': is_following}, status=status.HTTP_200_OK)
+
 
 class ProjectCommentView(APIView):
     permission_classes = [IsAuthenticated]
@@ -547,6 +557,7 @@ class ProjectCommentView(APIView):
         comment.delete()
         return Response(status=status.HTTP_200_OK)
 
+
 class ListFeaturedProjects(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectStubSerializer
@@ -554,12 +565,14 @@ class ListFeaturedProjects(ListAPIView):
     def get_queryset(self):
         return Project.objects.filter(rating__lte=99, is_draft=False)[0:4]
 
+
 class ListProjectsForSitemap(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectSitemapEntrySerializer
 
     def get_queryset(self):
         return Project.objects.filter(is_draft=False)
+
 
 class ListProjectFollowersView(ListAPIView):
     permission_classes = [IsAuthenticated]
