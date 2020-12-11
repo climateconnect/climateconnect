@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import NextCookies from "next-cookies";
 import axios from "axios";
 import Link from "next/link";
@@ -105,18 +105,18 @@ export default function Index({
       members: "",
     },
   };
-  const [state, setState] = React.useState(initialState);
+  const [state, setState] = useState(initialState);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const classes = useStyles();
 
   //Django starts counting at page 1 and we always catch the first page on load.
-  const [hash, setHash] = React.useState(null);
-  const [message, setMessage] = React.useState("");
-  const [errorMessage, setErrorMessage] = React.useState("");
+  const [hash, setHash] = useState(null);
+  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const typesByTabValue = ["projects", "organizations", "members"];
 
   // We render the circular spinner when a user is filtering options.
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -128,10 +128,10 @@ export default function Index({
     if (params.errorMessage) setErrorMessage(decodeURI(params.errorMessage));
   });
 
-  const [tabValue, setTabValue] = React.useState(hash ? typesByTabValue.indexOf(hash) : 0);
-  const [filtersExpanded, setFiltersExpanded] = React.useState(false);
+  const [tabValue, setTabValue] = useState(hash ? typesByTabValue.indexOf(hash) : 0);
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
 
-  const [filters, setFilters] = React.useState({
+  const [filters, setFilters] = useState({
     projects: {},
     members: {},
     organizations: {},
@@ -142,9 +142,8 @@ export default function Index({
    * loading spinner until the async call finishes.
    */
   const applyNewFilters = async (type, newFilters, closeFilters) => {
-    // Sanity bail if filters are equal
+    // Short circuit if filters are equal
     if (filters == newFilters) {
-      // TODO(piper): null / undefined here?
       return;
     }
 
@@ -152,7 +151,6 @@ export default function Index({
 
     const newUrlEnding = buildUrlEndingFromFilters(newFilters);
     if (state.urlEnding[type] == newUrlEnding) {
-      // No need to apply filters
       return;
     }
 
@@ -160,8 +158,6 @@ export default function Index({
       setFiltersExpanded(false);
     }
 
-    // TODO(piper): this fetch could be refactored and deduped
-    // with the the handling of search
     try {
       // Immediately update loading state to render new spinner
       setIsLoading(true);
@@ -319,8 +315,6 @@ export default function Index({
    *
    */
   const handleSearchSubmit = async (type, searchValue) => {
-    // TODO(piper): be sure to fix the state updates here from filtersearchbar
-
     const newSearchQueryParam = `&search=${searchValue}`;
 
     // Bail; no need to search if the query param is the same
