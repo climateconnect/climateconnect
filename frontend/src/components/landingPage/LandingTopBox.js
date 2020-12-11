@@ -6,24 +6,24 @@ import {
   Button,
   Link,
   Container,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import AlternatingText from "../general/AlternatingText";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import theme from "../../themes/theme";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     height: 700,
     background: theme.palette.primary.light,
     position: "relative",
     [theme.breakpoints.down("sm")]: {
-      height: "auto"
-    }
+      height: "auto",
+    },
   },
   container: {
-    position: "relative"
+    position: "relative",
   },
   headerCloud: {
     background: "url(/icons/header-cloud.svg)",
@@ -36,18 +36,18 @@ const useStyles = makeStyles(theme => ({
     height: 233,
     [theme.breakpoints.down("sm")]: {
       width: 300,
-      height: 200
+      height: 200,
     },
     [theme.breakpoints.down("xs")]: {
       width: 270,
       backgroundImage: "url(/icons/header-cloud-mobile.svg)",
       top: -40,
-      left: -90
-    }
+      left: -90,
+    },
   },
   upperFlexWrapper: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
   },
   callToSignupAction: {
     background: "#F8F8F8",
@@ -62,19 +62,19 @@ const useStyles = makeStyles(theme => ({
     left: "calc(50% - 260px)",
     zIndex: 10,
     [theme.breakpoints.down("sm")]: {
-      display: "none"
-    }
+      display: "none",
+    },
   },
   bold: {
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   signUpButton: {
     marginLeft: theme.spacing(3),
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
   },
   lowerWrapper: {
     display: "flex",
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
   },
   lowerFlexWrapper: {
     display: "flex",
@@ -84,8 +84,8 @@ const useStyles = makeStyles(theme => ({
     marginTop: 170,
     [theme.breakpoints.down("sm")]: {
       flexDirection: "column",
-      marginTop: 150
-    }
+      marginTop: 150,
+    },
   },
   titleText: {
     fontSize: 30,
@@ -93,11 +93,11 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.yellow.main,
     marginRight: theme.spacing(1),
     [theme.breakpoints.down("xs")]: {
-      fontSize: 23
+      fontSize: 23,
     },
     ["@media (max-width: 400px)"]: {
-      fontSize: 17
-    }
+      fontSize: 17,
+    },
   },
   titleTextContainer: {
     fontSize: 30,
@@ -105,28 +105,28 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(1),
     [theme.breakpoints.down("xs")]: {
       fontSize: 23,
-      textAlign: "center"
+      textAlign: "center",
     },
     ["@media (max-width: 400px)"]: {
-      fontSize: 17
-    }
+      fontSize: 17,
+    },
   },
   titleTextFirstLine: {
     display: "flex",
     alignItems: "center",
     [theme.breakpoints.down("sm")]: {
       justifyContent: "center",
-      textAlign: "center"
+      textAlign: "center",
     },
     ["@media (max-width: 400px)"]: {
-      fontSize: 17
-    }
+      fontSize: 17,
+    },
   },
   titleTextSubHeader: {
     marginBottom: theme.spacing(2),
     fontWeight: 600,
     [theme.breakpoints.down("sm")]: {
-      textAlign: "center"
+      textAlign: "center",
     },
     [theme.breakpoints.down("xs")]: {
       fontSize: 15,
@@ -135,18 +135,18 @@ const useStyles = makeStyles(theme => ({
       marginBottom: theme.spacing(3),
       ["@media (max-width: 400px)"]: {
         fontSize: 13,
-        maxWidth: 350
-      }
-    }
+        maxWidth: 350,
+      },
+    },
   },
   exploreButtonContainer: {
     display: "flex",
     [theme.breakpoints.down("sm")]: {
-      justifyContent: "center"
-    }
+      justifyContent: "center",
+    },
   },
   callToExploreAction: {
-    position: "relative"
+    position: "relative",
   },
   bigLandingCloudContainer: {
     background: "url(/icons/big-landing-cloud.svg)",
@@ -170,12 +170,12 @@ const useStyles = makeStyles(theme => ({
       height: 400,
       width: "100%",
       minWidth: 420,
-      float: "none"
+      float: "none",
     },
     ["@media (max-width: 400px)"]: {
       height: 350,
-      backgroundPosition: "top center"
-    }
+      backgroundPosition: "top center",
+    },
   },
   worldIconContainer: {
     height: "90%",
@@ -189,15 +189,15 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("md")]: {
       marginRight: 0,
       width: "60%",
-      height: "80%"
+      height: "80%",
     },
     [theme.breakpoints.down("sm")]: {
       width: "60%",
       backgroundPosition: "center center",
       maxWidth: 330,
       height: "80%",
-      marginRight: theme.spacing(-5)
-    }
+      marginRight: theme.spacing(-5),
+    },
   },
   findOutMoreButton: {
     display: "flex",
@@ -212,8 +212,8 @@ const useStyles = makeStyles(theme => ({
       marginTop: "auto",
       bottom: "auto",
       height: 60,
-      justifyContent: "center"
-    }
+      justifyContent: "center",
+    },
   },
   showMoreIcon: {
     fontSize: 25,
@@ -221,11 +221,11 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1),
     borderRadius: 20,
     height: 30,
-    width: 30
+    width: 30,
   },
   showMoreText: {
-    fontSize: 20
-  }
+    fontSize: 20,
+  },
 }));
 
 export default function LandingTopBox({ scrollToContent }) {

@@ -15,7 +15,7 @@ export default function AutoCompleteSearchBar({
   renderOption,
   helperText,
   freeSolo,
-  onUnselect
+  onUnselect,
 }) {
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
@@ -31,8 +31,10 @@ export default function AutoCompleteSearchBar({
         if (active) {
           setOptions(
             response.data.results
-              .map(o => ({ ...o, key: o.url_slug }))
-              .filter(o => (filterOut ? !filterOut.find(fo => fo.url_slug === o.url_slug) : true))
+              .map((o) => ({ ...o, key: o.url_slug }))
+              .filter((o) =>
+                filterOut ? !filterOut.find((fo) => fo.url_slug === o.url_slug) : true
+              )
           );
         }
       } else {
@@ -51,7 +53,7 @@ export default function AutoCompleteSearchBar({
     }
   }, [open]);
 
-  const handleInputChange = event => {
+  const handleInputChange = (event) => {
     setInputValue(event.target.value);
     setSearchValueThrottled(event.target.value);
     if (onUnselect) onUnselect();
@@ -59,7 +61,7 @@ export default function AutoCompleteSearchBar({
 
   const setSearchValueThrottled = React.useMemo(
     () =>
-      throttle(value => {
+      throttle((value) => {
         setSearchValue(value);
       }, 1000),
     []
@@ -98,7 +100,7 @@ export default function AutoCompleteSearchBar({
       inputValue={inputValue}
       renderOption={renderOption}
       noOptionsText={!searchValue && !inputValue ? "Start typing" : "No options"}
-      renderInput={params => (
+      renderInput={(params) => (
         <TextField
           {...params}
           label={label}
@@ -107,7 +109,7 @@ export default function AutoCompleteSearchBar({
           helperText={helperText}
           InputProps={{
             ...params.InputProps,
-            endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>
+            endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
           }}
         />
       )}

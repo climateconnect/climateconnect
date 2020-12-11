@@ -7,7 +7,7 @@ import {
   TextField,
   FormControlLabel,
   Checkbox,
-  CircularProgress
+  CircularProgress,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import tokenConfig from "../../../public/config/tokenConfig";
@@ -17,72 +17,72 @@ import { redirect } from "../../../public/lib/apiOperations";
 import Cookies from "universal-cookie";
 import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   blockElement: {
     display: "block",
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   displayBlock: {
-    display: "block"
+    display: "block",
   },
   forgotPasswordLink: {
     marginTop: theme.spacing(2),
-    display: "block"
+    display: "block",
   },
   marginBottom: {
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
   },
   lowerHeaders: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   primaryColor: {
-    color: theme.palette.primary.main
+    color: theme.palette.primary.main,
   },
   editProfilePageButton: {
     marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
   },
   deleteMessage: {
     display: "flex",
     alignItems: "center",
     flexWrap: "wrap",
     marginTop: theme.spacing(5),
-    marginBottom: theme.spacing(5)
-  }
+    marginBottom: theme.spacing(5),
+  },
 }));
 
 const possibleEmailPreferences = [
   {
     key: "send_newsletter",
-    text: "Receive emails about updates, news and interesting projects (~once per month)"
+    text: "Receive emails about updates, news and interesting projects (~once per month)",
   },
   {
     key: "email_on_private_chat_message",
-    text: "Get notified when somebody sends you a personal chat message"
+    text: "Get notified when somebody sends you a personal chat message",
   },
   {
     key: "email_on_group_chat_message",
-    text: "Get notified when somebody sends you a chat message in a group"
+    text: "Get notified when somebody sends you a chat message in a group",
   },
   {
     key: "email_on_comment_on_your_project",
-    text: "Get notified when somebody leaves a comment on a project you're part of"
+    text: "Get notified when somebody leaves a comment on a project you're part of",
   },
   {
     key: "email_on_reply_to_your_comment",
-    text: "Get notified when somebody replies to your comment on a project"
+    text: "Get notified when somebody replies to your comment on a project",
   },
   {
     key: "email_on_new_project_follower",
-    text: "Get notified when somebody follows a project you're part of"
-  }
+    text: "Get notified when somebody follows a project you're part of",
+  },
 ];
 
 const possibleCookiePreferences = [
   {
     key: "acceptedStatistics",
-    text: "Enable Statistics cookies to help us improve Climate Connect"
-  }
+    text: "Enable Statistics cookies to help us improve Climate Connect",
+  },
 ];
 
 export default function SettingsPage({ settings, setSettings, token, setMessage }) {
@@ -92,13 +92,13 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     newemailerror: "",
     /*profileurlerror: "",*/
     emailpreferenceserror: "",
-    cookiepreferencesserror: ""
+    cookiepreferencesserror: "",
   });
 
   const [passwordInputs, setPasswordInputs] = React.useState({
     oldpassword: "",
     newpassword: "",
-    confirmnewpassword: ""
+    confirmnewpassword: "",
     /*profileurlerror: ""*/
   });
   const [newEmail, setNewEmail] = React.useState("");
@@ -118,7 +118,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
   );
   /*const [newProfileUrl, setNewProfileUrl] = React.useState("");*/
 
-  const handleNewEmailChange = event => {
+  const handleNewEmailChange = (event) => {
     setNewEmail(event.target.value);
   };
 
@@ -129,14 +129,14 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
   const handlePreferenceChange = (event, key) => {
     setEmailPreferences({
       ...emailPreferences,
-      [key]: event.target.checked
+      [key]: event.target.checked,
     });
   };
 
   const handleCookiePreferenceChange = (event, key) => {
     setCookiePreferences({
       ...cookiePreferences,
-      [key]: event.target.checked
+      [key]: event.target.checked,
     });
   };
 
@@ -144,7 +144,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     setNewProfileUrl(event.target.value);
   };*/
 
-  const changePassword = event => {
+  const changePassword = (event) => {
     event.preventDefault();
     if (passwordInputs.newpassword !== passwordInputs.confirmnewpassword) {
       setErrors({ ...errors, passworderror: "Your new passwords don't match" });
@@ -156,29 +156,29 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         {
           password: passwordInputs.newpassword,
           confirm_password: passwordInputs.confirmnewpassword,
-          old_password: passwordInputs.oldpassword
+          old_password: passwordInputs.oldpassword,
         },
         tokenConfig(token)
       )
-        .then(function(response) {
+        .then(function (response) {
           setMessage(response.data.message);
           setErrors({
             ...errors,
-            passworderror: ""
+            passworderror: "",
           });
           setPasswordInputs({
             oldpassword: "",
             newpassword: "",
             confirmnewpassword: "",
-            profileurlerror: ""
+            profileurlerror: "",
           });
           window.scrollTo(0, 0);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           if (error.response && error.response.data)
             setErrors({
               ...errors,
-              passworderror: error.response.data[0]
+              passworderror: error.response.data[0],
             });
           setMessage("");
           if (error) console.log(error.response);
@@ -186,12 +186,12 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     }
   };
 
-  const changeEmail = event => {
+  const changeEmail = (event) => {
     event.preventDefault();
     if (newEmail === settings.email)
       setErrors({
         ...errors,
-        newemailerror: "Your new email can not be the same as your old email."
+        newemailerror: "Your new email can not be the same as your old email.",
       });
     else {
       setErrors({ ...errors, newemailerror: "" });
@@ -200,17 +200,17 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         { email: newEmail },
         tokenConfig(token)
       )
-        .then(function() {
+        .then(function () {
           redirect("/browse", {
             message:
-              "An E-Mail to confirm this E-Mail address change has been sent to your old E-Mail address."
+              "An E-Mail to confirm this E-Mail address change has been sent to your old E-Mail address.",
           });
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
           setErrors({
             ...errors,
-            newemailerror: "Error!"
+            newemailerror: "Error!",
           });
           if (error) console.log(error.response);
         });
@@ -221,8 +221,8 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     if (
       hasChanges(
         settings,
-        possibleEmailPreferences.map(p => p.key),
-        Object.keys(possibleEmailPreferences).map(k => possibleEmailPreferences[k])
+        possibleEmailPreferences.map((p) => p.key),
+        Object.keys(possibleEmailPreferences).map((k) => possibleEmailPreferences[k])
       )
     ) {
       setEmailPreferencesLoading(true);
@@ -231,31 +231,31 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         emailPreferences,
         tokenConfig(token)
       )
-        .then(function(response) {
+        .then(function (response) {
           setEmailPreferencesLoading(false);
           setMessage(response.data.message);
           setSettings({
             ...settings,
-            ...emailPreferences
+            ...emailPreferences,
           });
           setErrors({
             ...errors,
-            emailpreferenceserror: ""
+            emailpreferenceserror: "",
           });
           window.scrollTo(0, 0);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
           setErrors({
             ...errors,
-            emailpreferenceserror: "Error!"
+            emailpreferenceserror: "Error!",
           });
           if (error) console.log(error.response);
         });
     } else
       setErrors({
         ...errors,
-        emailpreferenceserror: "You haven't made any changes."
+        emailpreferenceserror: "You haven't made any changes.",
       });
   };
 
@@ -263,7 +263,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     const now = new Date();
     const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 1));
     let hasChanges = false;
-    Object.keys(cookiePreferences).map(p => {
+    Object.keys(cookiePreferences).map((p) => {
       if (cookies.get(p) === "true" && cookiePreferences[p] === false) {
         cookies.remove(p, { path: "/" });
         if (p === "acceptedStatistics") removeUnnecesaryCookies();
@@ -279,12 +279,12 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       window.scrollTo(0, 0);
       setErrors({
         ...errors,
-        cookiepreferencesserror: ""
+        cookiepreferencesserror: "",
       });
     } else
       setErrors({
         ...errors,
-        cookiepreferencesserror: "You haven't made any changes."
+        cookiepreferencesserror: "You haven't made any changes.",
       });
   };
 
@@ -408,7 +408,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
             {errors.emailpreferenceserror}
           </Typography>
         )}
-        {Object.keys(emailPreferences).map(key => (
+        {Object.keys(emailPreferences).map((key) => (
           <FormControlLabel
             control={
               <Checkbox
@@ -419,7 +419,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
               />
             }
             key={key}
-            label={possibleEmailPreferences.find(p => p.key === key).text}
+            label={possibleEmailPreferences.find((p) => p.key === key).text}
             className={classes.displayBlock}
           />
         ))}
@@ -450,7 +450,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
             {errors.cookiepreferencesserror}
           </Typography>
         )}
-        {Object.keys(cookiePreferences).map(key => (
+        {Object.keys(cookiePreferences).map((key) => (
           <FormControlLabel
             control={
               <Checkbox
@@ -461,7 +461,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
               />
             }
             key={key}
-            label={possibleCookiePreferences.find(p => p.key === key).text}
+            label={possibleCookiePreferences.find((p) => p.key === key).text}
             className={classes.displayBlock}
           />
         ))}

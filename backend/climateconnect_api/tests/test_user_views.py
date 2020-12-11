@@ -1,5 +1,6 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
+
 from django.urls import reverse
 
 from climateconnect_api.factories import UserFactory
@@ -17,7 +18,7 @@ class TestUserLoginView(APITestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
+
     def test_failed_login_api(self):
         url = reverse('login-api')
         data = {
@@ -26,7 +27,7 @@ class TestUserLoginView(APITestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+
     def test_missing_password(self):
         url = reverse('login-api')
         data = {
@@ -39,6 +40,7 @@ class TestUserLoginView(APITestCase):
 class TestSignUpView(APITestCase):
     def test_signup_api_success(self):
         url = reverse('signup-api')
+
         data = {
             "email": "test@testovich.com",
             "password": "testing@2020",
@@ -48,6 +50,7 @@ class TestSignUpView(APITestCase):
             "state": "Berlin",
             "City": "Berlin"
         }
+
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 

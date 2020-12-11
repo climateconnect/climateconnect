@@ -4,31 +4,31 @@ import GenericDialog from "./GenericDialog";
 import theme from "../../themes/theme";
 import axios from "axios";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   callToAction: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
-    textAlign: "center"
+    textAlign: "center",
   },
   subscribeButton: {
     marginLeft: theme.spacing(1),
     [theme.breakpoints.up("md")]: {
       height: 56,
-      width: 150
+      width: 150,
     },
     [theme.breakpoints.down("xs")]: {
       width: 250,
       marginTop: theme.spacing(1),
-      marginLeft: 0
-    }
+      marginLeft: 0,
+    },
   },
   emailTextField: {
     [theme.breakpoints.up("md")]: {
-      width: 340
+      width: 340,
     },
     [theme.breakpoints.down("xs")]: {
-      width: 250
-    }
+      width: 250,
+    },
   },
   textBlock: {
     paddingLeft: theme.spacing(2),
@@ -36,9 +36,9 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up("md")]: {
       paddingLeft: theme.spacing(4),
       paddingRight: theme.spacing(4),
-      marginTop: theme.spacing(-1)
-    }
-  }
+      marginTop: theme.spacing(-1),
+    },
+  },
 }));
 
 export default function SubscribeToNewsletterDialog({ onClose, open }) {
@@ -47,7 +47,7 @@ export default function SubscribeToNewsletterDialog({ onClose, open }) {
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [loading, setLoading] = React.useState(false);
-  const handleSubscribe = async e => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
     console.log("subscribing!");
     try {
@@ -59,7 +59,7 @@ export default function SubscribeToNewsletterDialog({ onClose, open }) {
       console.log(e);
     }
   };
-  const handleEmailTextChange = e => {
+  const handleEmailTextChange = (e) => {
     setEmailAddress(e.target.value);
   };
   return (
@@ -100,21 +100,21 @@ export default function SubscribeToNewsletterDialog({ onClose, open }) {
   );
 }
 
-const subscribeToNewsletter = emailAddress => {
+const subscribeToNewsletter = (emailAddress) => {
   const url = process.env.API_URL + "/api/subscribe_to_newsletter/";
   const payload = { email: emailAddress };
   const config = {
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
-    }
+      "Content-Type": "application/json",
+    },
   };
   axios
     .post(url, payload, config)
-    .then(function(response) {
+    .then(function (response) {
       return response;
     })
-    .catch(function(error) {
+    .catch(function (error) {
       throw error;
     });
 };

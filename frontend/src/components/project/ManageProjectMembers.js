@@ -4,22 +4,22 @@ import { Typography, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     headline: {
       textAlign: "center",
-      marginTop: theme.spacing(4)
+      marginTop: theme.spacing(4),
     },
     buttons: {
-      float: "right"
+      float: "right",
     },
     button: {
-      marginRight: theme.spacing(2)
+      marginRight: theme.spacing(2),
     },
     buttonsContainer: {
       height: 40,
-      width: "100%"
-    }
+      width: "100%",
+    },
   };
 });
 
@@ -31,22 +31,22 @@ export default function ManageProjectMembers({
   rolesOptions,
   project,
   token,
-  availabilityOptions
+  availabilityOptions,
 }) {
   const classes = useStyles();
-  const [user_role, setUserRole] = React.useState(members.find(m => m.id === user.id).role);
-  if (!user_role) setUserRole(members.find(m => m.id === user.id).role);
+  const [user_role, setUserRole] = React.useState(members.find((m) => m.id === user.id).role);
+  if (!user_role) setUserRole(members.find((m) => m.id === user.id).role);
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     onSubmit()
-      .then(ret => {
+      .then((ret) => {
         if (ret !== false)
           redirect("/projects/" + project.url_slug, {
-            message: "You have successfully updated your team"
+            message: "You have successfully updated your team",
           });
       })
-      .catch(e => {
+      .catch((e) => {
         console.log(e);
         redirect("/projects/" + project.url_slug, { message: "Not all your updates have worked." });
       });
@@ -56,7 +56,7 @@ export default function ManageProjectMembers({
     if (!verifyInput()) return false;
     const allChangedMembers = getAllChangedMembers();
     return Promise.all(
-      allChangedMembers.map(m => {
+      allChangedMembers.map((m) => {
         if (m.operation === "delete") deleteMember(m);
         if (m.operation === "update") updateMember(m);
         if (m.operation === "create") {
@@ -70,27 +70,27 @@ export default function ManageProjectMembers({
   };
 
   const getAllChangedMembers = () => {
-    const oldCreatorId = members.filter(m => m.role.name === "Creator")[0].id;
-    const newCreatorId = currentMembers.filter(m => m.role.name === "Creator")[0].id;
-    const deletedMembers = members.filter(m => !currentMembers.find(cm => cm.id === m.id));
+    const oldCreatorId = members.filter((m) => m.role.name === "Creator")[0].id;
+    const newCreatorId = currentMembers.filter((m) => m.role.name === "Creator")[0].id;
+    const deletedMembers = members.filter((m) => !currentMembers.find((cm) => cm.id === m.id));
     const creatorChange =
-      oldCreatorId != newCreatorId ? currentMembers.filter(cm => cm.id === newCreatorId) : [];
+      oldCreatorId != newCreatorId ? currentMembers.filter((cm) => cm.id === newCreatorId) : [];
     const createdMembers = currentMembers.filter(
-      cm =>
-        !members.find(m => m.id === cm.id) &&
-        !creatorChange.find(m => m.id === cm.id) &&
+      (cm) =>
+        !members.find((m) => m.id === cm.id) &&
+        !creatorChange.find((m) => m.id === cm.id) &&
         !(oldCreatorId != newCreatorId && cm.id === oldCreatorId)
     );
     const updatedMembers = currentMembers.filter(
-      cm =>
+      (cm) =>
         !members.includes(cm) &&
         !createdMembers.includes(cm) &&
-        !creatorChange.find(m => m.id === cm.id) &&
+        !creatorChange.find((m) => m.id === cm.id) &&
         !(oldCreatorId != newCreatorId && cm.id === oldCreatorId)
     );
     const allChangedMembers = [
-      ...deletedMembers.map(m => ({ ...m, operation: "delete" })),
-      ...updatedMembers.map(m => ({ ...m, operation: "update" }))
+      ...deletedMembers.map((m) => ({ ...m, operation: "delete" })),
+      ...updatedMembers.map((m) => ({ ...m, operation: "update" })),
     ];
     if (createdMembers.length > 0)
       allChangedMembers.push({ team_members: [...createdMembers], operation: "create" });
@@ -102,22 +102,22 @@ export default function ManageProjectMembers({
   };
 
   const verifyInput = () => {
-    if (currentMembers.filter(cm => cm.role.name === "Creator").length !== 1) {
+    if (currentMembers.filter((cm) => cm.role.name === "Creator").length !== 1) {
       alert("There must be exactly one creator of a project.");
       return false;
     }
-    if (!members.filter(m => m.role.name === "Creator").length === 1) {
+    if (!members.filter((m) => m.role.name === "Creator").length === 1) {
       alert("error(There wasn't a creator)");
       return false;
     }
     return true;
   };
 
-  const canEdit = member => {
+  const canEdit = (member) => {
     return member.id === user.id || user_role.role_type > member.role.role_type;
   };
 
-  const deleteMember = m => {
+  const deleteMember = (m) => {
     apiRequest(
       "delete",
       "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
@@ -127,7 +127,7 @@ export default function ManageProjectMembers({
     );
   };
 
-  const updateMember = m => {
+  const updateMember = (m) => {
     apiRequest(
       "patch",
       "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
@@ -137,7 +137,7 @@ export default function ManageProjectMembers({
     );
   };
 
-  const createMembers = team_members => {
+  const createMembers = (team_members) => {
     apiRequest(
       "post",
       "/api/projects/" + project.url_slug + "/add_members/",
@@ -147,7 +147,7 @@ export default function ManageProjectMembers({
     );
   };
 
-  const updateCreator = new_creator => {
+  const updateCreator = (new_creator) => {
     apiRequest(
       "post",
       "/api/projects/" + project.url_slug + "/change_creator/",
@@ -193,14 +193,14 @@ export default function ManageProjectMembers({
   );
 }
 
-const parseMembersForCreateRequest = members => {
+const parseMembersForCreateRequest = (members) => {
   return {
-    team_members: members.map(m => ({
+    team_members: members.map((m) => ({
       ...m,
       permission_type_id: m.role.id,
       role_in_project: m.role_in_project ? m.role_in_project : "",
-      availability: m.availability.id
-    }))
+      availability: m.availability.id,
+    })),
   };
 };
 
@@ -211,6 +211,6 @@ const parseMemberForUpdateRequest = (m, project) => {
     role: m.role.id,
     role_in_project: m.role_in_project ? m.role_in_project : "",
     project: project.id,
-    availability: m.availability.id
+    availability: m.availability.id,
   };
 };

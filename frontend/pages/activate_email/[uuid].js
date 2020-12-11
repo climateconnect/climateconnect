@@ -6,7 +6,7 @@ import tokenConfig from "../../public/config/tokenConfig";
 import { redirect, sendToLogin } from "../../public/lib/apiOperations";
 import cookies from "next-cookies";
 
-ActivateEmail.getInitialProps = async ctx => {
+ActivateEmail.getInitialProps = async (ctx) => {
   const uuid = encodeURI(ctx.query.uuid);
   const { token } = cookies(ctx);
   if (ctx.req && !token) {
@@ -15,13 +15,13 @@ ActivateEmail.getInitialProps = async ctx => {
   }
   return {
     uuid: uuid,
-    token: token
+    token: token,
   };
 };
 
 async function newEmailVerification(uuid, token) {
   const payload = {
-    uuid: uuid
+    uuid: uuid,
   };
   try {
     const response = await axios.post(
@@ -30,7 +30,7 @@ async function newEmailVerification(uuid, token) {
       tokenConfig(token)
     );
     redirect("/browse", {
-      message: response.data.message
+      message: response.data.message,
     });
   } catch (error) {
     if (error.response && error.response.data) {
@@ -39,11 +39,11 @@ async function newEmailVerification(uuid, token) {
       else redirect("/browse", { errorMessage: error.response.data.message });
     } else if (error.request) {
       redirect("/browse", {
-        errorMessage: "Something went wrong. Please contact our support team."
+        errorMessage: "Something went wrong. Please contact our support team.",
       });
     } else {
       redirect("/browse", {
-        errorMessage: "Something went wrong. Please contact our support team."
+        errorMessage: "Something went wrong. Please contact our support team.",
       });
     }
   }
@@ -51,7 +51,7 @@ async function newEmailVerification(uuid, token) {
 
 export default function ActivateEmail({ uuid, token }) {
   const [sentRequest, setSentRequest] = React.useState(false);
-  useEffect(function() {
+  useEffect(function () {
     if (!sentRequest) {
       console.log("sending new email verification request!");
       newEmailVerification(uuid, token);

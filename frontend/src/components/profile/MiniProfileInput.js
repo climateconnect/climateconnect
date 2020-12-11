@@ -7,44 +7,44 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     name: {
       padding: theme.spacing(1),
-      paddingBottom: 0
+      paddingBottom: 0,
     },
     avatar: {
       height: theme.spacing(7),
       width: theme.spacing(7),
       margin: "0 auto",
-      fontSize: 50
+      fontSize: 50,
     },
     field: {
       width: theme.spacing(34),
-      marginBottom: theme.spacing(1)
+      marginBottom: theme.spacing(1),
     },
     fieldLabel: {
       textAlign: "left",
-      marginBottom: theme.spacing(0.5)
+      marginBottom: theme.spacing(0.5),
     },
     tooltip: {
-      fontSize: 16
+      fontSize: 16,
     },
     removeButton: {
       backgroundColor: theme.palette.error.main,
       color: "white",
       marginTop: theme.spacing(2),
       "&:hover": {
-        backgroundColor: theme.palette.error.main
-      }
+        backgroundColor: theme.palette.error.main,
+      },
     },
     dialogText: {
-      textAlign: "center"
+      textAlign: "center",
     },
     cantEdit: {
       color: "red",
-      fontSize: 14
-    }
+      fontSize: 14,
+    },
   };
 });
 
@@ -61,7 +61,7 @@ export default function MiniProfileInput({
   allowAppointingCreator,
   creatorRole,
   fullRolesOptions,
-  dontPickRole
+  dontPickRole,
 }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -69,46 +69,48 @@ export default function MiniProfileInput({
   useEffect(() => {
     if (
       profile.role.id !== creatorRole.id &&
-      options.filter(o => o.id === creatorRole.id).length > 0
+      options.filter((o) => o.id === creatorRole.id).length > 0
     ) {
-      setOptions(rolesOptions.map(r => ({ ...r, key: r.id })).filter(r => r.name !== "Creator"));
+      setOptions(
+        rolesOptions.map((r) => ({ ...r, key: r.id })).filter((r) => r.name !== "Creator")
+      );
     }
   });
 
   const [options, setOptions] = React.useState(
     profile.role.id === creatorRole.id
-      ? fullRolesOptions.map(r => ({ ...r, key: r.id }))
-      : rolesOptions.map(r => ({ ...r, key: r.id })).filter(r => r.name !== "Creator")
+      ? fullRolesOptions.map((r) => ({ ...r, key: r.id }))
+      : rolesOptions.map((r) => ({ ...r, key: r.id })).filter((r) => r.name !== "Creator")
   );
 
-  const handleChangeRolePermissions = event => {
-    onChange({ ...profile, role: rolesOptions.find(r => r.name === event.target.value) });
+  const handleChangeRolePermissions = (event) => {
+    onChange({ ...profile, role: rolesOptions.find((r) => r.name === event.target.value) });
   };
 
-  const handleChangeRoleInProject = event => {
+  const handleChangeRoleInProject = (event) => {
     onChange({ ...profile, role_in_project: event.target.value });
   };
 
-  const handleChangeRoleInOrganization = event => {
+  const handleChangeRoleInOrganization = (event) => {
     onChange({ ...profile, role_in_organization: event.target.value });
   };
-  const handleChangeAvailability = event => {
+  const handleChangeAvailability = (event) => {
     onChange({
       ...profile,
-      availability: availabilityOptions.find(a => a.name === event.target.value)
+      availability: availabilityOptions.find((a) => a.name === event.target.value),
     });
   };
   const handleOpenConfirmCreatorDialog = () => {
     setOpen(true);
   };
-  const handleConfirmTransferCreator = shouldBeTransfered => {
+  const handleConfirmTransferCreator = (shouldBeTransfered) => {
     setOpen(false);
     if (shouldBeTransfered) {
       setOptions(fullRolesOptions);
       onChange({
         ...profile,
         role: creatorRole,
-        changeCreator: true
+        changeCreator: true,
       });
     }
   };

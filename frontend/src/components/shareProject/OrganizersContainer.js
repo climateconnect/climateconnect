@@ -6,20 +6,20 @@ import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     header: {
       marginBottom: theme.spacing(2),
-      fontSize: 20
+      fontSize: 20,
     },
     info: {
       textAlign: "center",
       fontWeight: "bold",
-      marginBottom: theme.spacing(2)
+      marginBottom: theme.spacing(2),
     },
     infoIcon: {
-      marginBottom: -6
-    }
+      marginBottom: -6,
+    },
   };
 });
 
@@ -29,11 +29,11 @@ export default function OrganizersContainer({
   searchBarClassName,
   searchBarContainerClassName,
   handleAddOrganization,
-  handleRemoveOrganization
+  handleRemoveOrganization,
 }) {
   const classes = useStyles();
 
-  const renderSearchOption = option => {
+  const renderSearchOption = (option) => {
     return (
       <React.Fragment>
         <IconButton>
@@ -60,7 +60,7 @@ export default function OrganizersContainer({
             freeSolo
             onSelect={handleAddOrganization}
             renderOption={renderSearchOption}
-            getOptionLabel={option => option.name}
+            getOptionLabel={(option) => option.name}
             filterOut={allInvolvedOrgs}
             helperText="Type the name of the collaborating organization you want to add next."
           />

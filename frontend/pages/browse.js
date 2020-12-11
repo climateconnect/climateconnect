@@ -1,24 +1,32 @@
 import React, { useEffect } from "react";
-import ProjectPreviews from "../src/components/project/ProjectPreviews";
-import About from "./about";
+import NextCookies from "next-cookies";
+import axios from "axios";
+import Link from "next/link";
+
+// @material-ui
 import { Divider, Tab, Tabs, Typography, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import LocationOnIcon from "@material-ui/icons/LocationOn";
+
+import ProjectPreviews from "../src/components/project/ProjectPreviews";
+import About from "./about";
+
 import FilterContent from "../src/components/filter/FilterContent";
 import possibleFilters from "../public/data/possibleFilters";
 import OrganizationPreviews from "../src/components/organization/OrganizationPreviews";
+import MultiLevelSelectDialog from "../src/components/dialogs/MultiLevelSelectDialog";
 import ProfilePreviews from "../src/components/profile/ProfilePreviews";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
+
 import {
   getSkillsOptions,
   getStatusOptions,
   getProjectTagsOptions,
-  getOrganizationTagsOptions
+  getOrganizationTagsOptions,
 } from "../public/lib/getOptions";
-import NextCookies from "next-cookies";
+
 import tokenConfig from "../public/config/tokenConfig";
-import axios from "axios";
-import Link from "next/link";
+
 import { getParams } from "../public/lib/generalOperations";
 import WideLayout from "../src/components/layouts/WideLayout";
 import FilterSection from "../src/components/indexPage/FilterSection";
@@ -26,29 +34,29 @@ import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingC
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import TopOfPage from "../src/components/hooks/TopOfPage";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     tab: {
       width: 200,
       paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2)
+      paddingRight: theme.spacing(2),
     },
     tabContent: {
       marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2)
+      marginBottom: theme.spacing(2),
     },
     infoMessage: {
       textAlign: "center",
-      marginTop: theme.spacing(4)
+      marginTop: theme.spacing(4),
     },
     link: {
       display: "inline-block",
       textDecoration: "underline",
-      cursor: "pointer"
+      cursor: "pointer",
     },
     mainContentDivider: {
-      marginBottom: theme.spacing(3)
-    }
+      marginBottom: theme.spacing(3),
+    },
   };
 });
 
@@ -57,10 +65,10 @@ export default function Index({
   organizationsObject,
   membersObject,
   token,
-  filterChoices
+  filterChoices,
 }) {
-  const membersWithAdditionalInfo = members => {
-    return members.map(p => {
+  const membersWithAdditionalInfo = (members) => {
+    return members.map((p) => {
       return {
         ...p,
         additionalInfo: [
@@ -68,37 +76,39 @@ export default function Index({
             text: p.location,
             icon: LocationOnIcon,
             iconName: "LocationOnIcon",
-            importance: "high"
-          }
-        ]
+            importance: "high",
+          },
+        ],
       };
     });
   };
+
   const initialState = {
     items: {
       projects: projectsObject ? [...projectsObject.projects] : [],
       organizations: organizationsObject ? [...organizationsObject.organizations] : [],
-      members: membersObject ? membersWithAdditionalInfo(membersObject.members) : []
+      members: membersObject ? membersWithAdditionalInfo(membersObject.members) : [],
     },
     hasMore: {
       projects: !!projectsObject && projectsObject.hasMore,
       organizations: !!organizationsObject && organizationsObject.hasMore,
-      members: !!membersObject && membersObject.hasMore
+      members: !!membersObject && membersObject.hasMore,
     },
     nextPages: {
       projects: 2,
       members: 2,
-      organizations: 2
+      organizations: 2,
     },
     urlEnding: {
       projects: "",
       organizations: "",
-      members: ""
-    }
+      members: "",
+    },
   };
   const [state, setState] = React.useState(initialState);
-  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const classes = useStyles();
+
   //Django starts counting at page 1 and we always catch the first page on load.
   const [hash, setHash] = React.useState(null);
   const [message, setMessage] = React.useState("");
@@ -118,7 +128,7 @@ export default function Index({
   const [filters, setFilters] = React.useState({
     projects: {},
     members: {},
-    organizations: {}
+    organizations: {},
   });
 
   const applyNewFilters = async (type, newFilters, closeFilters) => {
@@ -141,7 +151,7 @@ export default function Index({
             items: { ...state.items, [type]: filteredItemsObject[type] },
             hasMore: { ...state.hasMore, [type]: filteredItemsObject.hasMore },
             urlEnding: { ...state.urlEnding, [type]: newUrlEnding },
-            nextPages: { ...state.nextPages, [type]: 2 }
+            nextPages: { ...state.nextPages, [type]: 2 },
           });
         } catch (e) {
           console.log(e);
@@ -172,16 +182,16 @@ export default function Index({
         ...state,
         nextPages: {
           ...state.nextPages,
-          projects: state.nextPages.projects + 1
+          projects: state.nextPages.projects + 1,
         },
         hasMore: {
           ...state.hasMore,
-          projects: newProjectsObject.hasMore
+          projects: newProjectsObject.hasMore,
         },
         items: {
           ...state.items,
-          projects: [...state.items.projects, ...newProjects]
-        }
+          projects: [...state.items.projects, ...newProjects],
+        },
       });
 
       return [...newProjects];
@@ -190,7 +200,7 @@ export default function Index({
       console.log(e);
       setState({
         ...state,
-        hasMore: { ...state.hasMore, projects: false }
+        hasMore: { ...state.hasMore, projects: false },
       });
       return [];
     }
@@ -209,12 +219,12 @@ export default function Index({
         nextPages: { ...state.nextPages, organizations: state.nextPages.organizations + 1 },
         hasMore: {
           ...state.hasMore,
-          organizations: newOrganizationsObject.hasMore
+          organizations: newOrganizationsObject.hasMore,
         },
         items: {
           ...state.items,
-          organizations: [...state.items.organizations, ...newOrganizations]
-        }
+          organizations: [...state.items.organizations, ...newOrganizations],
+        },
       });
       return [...newOrganizations];
     } catch (e) {
@@ -224,8 +234,8 @@ export default function Index({
         nextPages: { ...state.nextPages, organizations: state.nextPages.organizations + 1 },
         hasMore: {
           ...state.hasMore,
-          organizations: false
-        }
+          organizations: false,
+        },
       });
       return [];
     }
@@ -244,9 +254,9 @@ export default function Index({
         nextPages: { ...state.nextPages, members: state.nextPages.members + 1 },
         hasMore: {
           ...state.hasMore,
-          members: newMembersObject.hasMore
+          members: newMembersObject.hasMore,
         },
-        items: { ...state.items, members: [...state.items.members, ...newMembers] }
+        items: { ...state.items, members: [...state.items.members, ...newMembers] },
       });
       return [...newMembers];
     } catch (e) {
@@ -255,8 +265,8 @@ export default function Index({
         ...state,
         hasMore: {
           ...state.hasMore,
-          members: false
-        }
+          members: false,
+        },
       });
       return [];
     }
@@ -264,7 +274,7 @@ export default function Index({
 
   const isScrollingUp = !useScrollTrigger({
     disableHysteresis: false,
-    threshold: 0
+    threshold: 0,
   });
   const atTopOfPage = TopOfPage({ initTopOfPage: true });
   const showOnScrollUp = isScrollingUp && !atTopOfPage;
@@ -308,7 +318,9 @@ export default function Index({
               <Tab label={capitalizeFirstLetter(typesByTabValue[1])} className={classes.tab} />
               <Tab label={capitalizeFirstLetter(typesByTabValue[2])} className={classes.tab} />
             </Tabs>
+
             <Divider className={classes.mainContentDivider} />
+
             <TabContent value={tabValue} index={0}>
               {filtersExpanded && tabValue === 0 && (
                 <FilterContent
@@ -330,8 +342,8 @@ export default function Index({
                 />
               ) : (
                 <Typography component="h4" variant="h5" className={classes.infoMessage}>
-                  We could not connect to the API. If this happens repeatedly, contact
-                  support@climateconnect.earth.
+                  We could not fetch any projects or connect to the API. If this happens repeatedly,
+                  contact support@climateconnect.earth.
                 </Typography>
               )}
             </TabContent>
@@ -366,9 +378,10 @@ export default function Index({
                       component="h5"
                       variant="h5"
                     >
-                      Create an organization to be the first one!
+                      Create an organization
                     </Typography>
-                  </Link>
+                  </Link>{" "}
+                  to be the first one!
                 </Typography>
               )}
             </TabContent>
@@ -414,9 +427,9 @@ export default function Index({
   );
 }
 
-const buildUrlEndingFromFilters = filters => {
+const buildUrlEndingFromFilters = (filters) => {
   let url = "&";
-  Object.keys(filters).map(filterKey => {
+  Object.keys(filters).map((filterKey) => {
     if (filters[filterKey] && filters[filterKey].length > 0) {
       if (Array.isArray(filters[filterKey]))
         url += encodeURI(filterKey + "=" + filters[filterKey].join()) + "&";
@@ -434,7 +447,7 @@ function TabContent({ value, index, children }) {
   return <div hidden={value !== index}>{children}</div>;
 }
 
-Index.getInitialProps = async ctx => {
+Index.getInitialProps = async (ctx) => {
   const { token, hideInfo } = NextCookies(ctx);
   const [
     projectsObject,
@@ -443,7 +456,7 @@ Index.getInitialProps = async ctx => {
     project_categories,
     organization_types,
     skills,
-    project_statuses
+    project_statuses,
   ] = await Promise.all([
     getProjects(1, token),
     getOrganizations(1, token),
@@ -451,7 +464,7 @@ Index.getInitialProps = async ctx => {
     getProjectTagsOptions(),
     getOrganizationTagsOptions(),
     getSkillsOptions(),
-    getStatusOptions()
+    getStatusOptions(),
   ]);
   return {
     projectsObject: projectsObject,
@@ -462,20 +475,29 @@ Index.getInitialProps = async ctx => {
       project_categories: project_categories,
       organization_types: organization_types,
       skills: skills,
-      project_statuses: project_statuses
+      project_statuses: project_statuses,
     },
-    hideInfo: hideInfo === "true"
+    hideInfo: hideInfo === "true",
   };
 };
 
 async function getProjects(page, token, urlEnding) {
   let url = process.env.API_URL + "/api/projects/?page=" + page;
   if (urlEnding) url += urlEnding;
+
   try {
+    console.log(`Getting projects at ${url}`);
     const resp = await axios.get(url, tokenConfig(token));
-    if (resp.data.length === 0) return null;
-    else {
-      return { projects: parseProjects(resp.data.results), hasMore: !!resp.data.next };
+
+    if (resp.data.length === 0) {
+      console.log("No projects found...");
+      return null;
+    } else {
+      console.log(resp.data.results);
+      return {
+        projects: parseProjects(resp.data.results),
+        hasMore: !!resp.data.next,
+      };
     }
   } catch (err) {
     if (err.response && err.response.data) {
@@ -511,6 +533,7 @@ async function getMembers(page, token, urlEnding) {
     console.log("getting members for page " + page + " with urlEnding " + urlEnding);
     let url = process.env.API_URL + "/api/members/?page=" + page;
     if (urlEnding) url += urlEnding;
+
     const resp = await axios.get(url, tokenConfig(token));
     if (resp.data.length === 0) return null;
     else {
@@ -525,28 +548,28 @@ async function getMembers(page, token, urlEnding) {
   }
 }
 
-const parseProjects = projects => {
-  return projects.map(project => ({
+const parseProjects = (projects) => {
+  return projects.map((project) => ({
     ...project,
-    location: project.city + ", " + project.country
+    location: project.city + ", " + project.country,
   }));
 };
 
-const parseMembers = members => {
-  return members.map(member => ({
+const parseMembers = (members) => {
+  return members.map((member) => ({
     ...member,
-    location: members.city ? member.city + ", " + member.country : member.country
+    location: members.city ? member.city + ", " + member.country : member.country,
   }));
 };
 
-const parseOrganizations = organizations => {
-  return organizations.map(organization => ({
+const parseOrganizations = (organizations) => {
+  return organizations.map((organization) => ({
     ...organization,
-    types: organization.types.map(type => type.organization_tag),
+    types: organization.types.map((type) => type.organization_tag),
     info: {
       location: organization.city
         ? organization.city + ", " + organization.country
-        : organization.country
-    }
+        : organization.country,
+    },
   }));
 };

@@ -3,24 +3,24 @@ import { Typography, Link } from "@material-ui/core";
 import Layout from "../../src/components/layouts/layout";
 import axios from "axios";
 
-ProfileVerified.getInitialProps = async ctx => {
+ProfileVerified.getInitialProps = async (ctx) => {
   const uuid = encodeURI(ctx.query.uuid);
   const messages = await profileVerification(uuid);
   return {
     successMessage: messages["successMessage"],
-    errorMessage: messages["errorMessage"]
+    errorMessage: messages["errorMessage"],
   };
 };
 
 async function profileVerification(uuid) {
   const payload = {
-    uuid: uuid
+    uuid: uuid,
   };
   const config = {
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
-    }
+      "Content-Type": "application/json",
+    },
   };
   try {
     const response = await axios.post(
@@ -35,12 +35,12 @@ async function profileVerification(uuid) {
     } else if (error.request) {
       return {
         successMessage: "",
-        errorMessage: "Something went wrong. Please contact our support team."
+        errorMessage: "Something went wrong. Please contact our support team.",
       };
     } else {
       return {
         successMessage: "",
-        errorMessage: "Something went wrong. Please contact our support team."
+        errorMessage: "Something went wrong. Please contact our support team.",
       };
     }
   }

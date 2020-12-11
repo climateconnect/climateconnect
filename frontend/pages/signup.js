@@ -17,7 +17,7 @@ export default function Signup() {
     last_name: "",
     country: "",
     city: "",
-    newsletter: ""
+    newsletter: "",
   });
 
   const steps = ["basicinfo", "personalinfo"];
@@ -36,7 +36,7 @@ export default function Signup() {
       ...userInfo,
       email: values.email,
       password: values.password,
-      repeatpassword: values.password
+      repeatpassword: values.password,
     });
     //TODO: add check if email is still available
     if (values.password !== values.repeatpassword)
@@ -52,7 +52,7 @@ export default function Signup() {
       last_name: values.last_name,
       country: values.country,
       city: values.city,
-      sendNewsletter: values.sendNewsletter
+      sendNewsletter: values.sendNewsletter,
     });
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
@@ -61,27 +61,27 @@ export default function Signup() {
       last_name: values.last_name.trim(),
       country: values.country.trim(),
       city: values.city.trim(),
-      send_newsletter: values.sendNewsletter
+      send_newsletter: values.sendNewsletter,
     };
     const config = {
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
-      }
+        "Content-Type": "application/json",
+      },
     };
     setIsLoading(true);
     axios
       .post(process.env.API_URL + "/signup/", payload, config)
-      .then(function() {
+      .then(function () {
         ReactGA.event({
           category: "User",
-          action: "Created an Account"
+          action: "Created an Account",
         });
         Router.push({
-          pathname: "/accountcreated/"
+          pathname: "/accountcreated/",
         });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
         setIsLoading(false);
         if (error.response.data.message)
@@ -97,7 +97,7 @@ export default function Signup() {
       first_name: values.first_name,
       last_name: values.last_name,
       country: values.country,
-      city: values.city
+      city: values.city,
     });
     setCurStep(steps[0]);
   };

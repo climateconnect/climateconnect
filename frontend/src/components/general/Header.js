@@ -19,7 +19,7 @@ import {
   ClickAwayListener,
   Link,
   Typography,
-  Divider
+  Divider,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -43,9 +43,9 @@ import Notification from "../communication/notifications/Notification";
 import HomeIcon from "@material-ui/icons/Home";
 import theme from "../../themes/theme";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
-    root: props => {
+    root: (props) => {
       return {
         zIndex: props.fixedHeader ? 20 : "auto",
         borderBottom:
@@ -56,80 +56,80 @@ const useStyles = makeStyles(theme => {
         width: props.fixedHeader ? "100%" : "auto",
         height: props.fixedHeader ? 97 : "auto",
         top: props.fixedHeader ? 0 : "auto",
-        background: !props.transparentHeader && props.fixedHeader && "#F8F8F8"
+        background: !props.transparentHeader && props.fixedHeader && "#F8F8F8",
       };
     },
     spacingBottom: {
-      marginBottom: theme.spacing(2)
+      marginBottom: theme.spacing(2),
     },
     container: {
       padding: theme.spacing(2),
       paddingRight: "auto",
       paddingLeft: "auto",
       [theme.breakpoints.down("md")]: {
-        padding: theme.spacing(2)
+        padding: theme.spacing(2),
       },
       display: "flex",
       justifyContent: "space-between",
-      alignItems: "center"
+      alignItems: "center",
     },
     logo: {
-      height: 60
+      height: 60,
     },
     buttonMarginLeft: {
-      marginLeft: theme.spacing(1)
+      marginLeft: theme.spacing(1),
     },
     marginRight: {
-      marginRight: theme.spacing(3)
+      marginRight: theme.spacing(3),
     },
     loggedInRoot: {
       display: "inline-block",
       verticalAlign: "middle",
-      marginLeft: theme.spacing(2)
+      marginLeft: theme.spacing(2),
     },
     loggedInAvatar: {
       height: 30,
-      width: 30
+      width: 30,
     },
     loggedInAvatarMobile: {
       height: 60,
       width: 60,
       display: "block",
-      margin: "0 auto"
+      margin: "0 auto",
     },
     loggedInLink: {
       color: theme.palette.primary.main,
-      width: "100%"
+      width: "100%",
     },
     linkContainer: {
       display: "flex",
       alignItems: "center",
       maxWidth: "calc(100% - 200px)",
       [theme.breakpoints.down("md")]: {
-        maxWidth: "calc(100% - 150px)"
+        maxWidth: "calc(100% - 150px)",
       },
-      justifyContent: "space-around"
+      justifyContent: "space-around",
     },
-    menuLink: props => ({
+    menuLink: (props) => ({
       color: props.transparentHeader ? "white" : theme.palette.primary.main,
-      textDecoration: "inherit"
+      textDecoration: "inherit",
     }),
     shareProjectButton: {
       height: 36,
       marginLeft: theme.spacing(1),
       marginRight: theme.spacing(1),
       paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2)
+      paddingRight: theme.spacing(2),
     },
     staticPageLinksWrapper: {
       width: "100%",
       height: 50,
-      background: theme.palette.primary.main
+      background: theme.palette.primary.main,
     },
     staticPageLinksContainer: {
       width: "100%",
       maxWidth: 1280,
-      height: "100%"
+      height: "100%",
     },
     staticPageLinks: {
       float: "right",
@@ -138,8 +138,8 @@ const useStyles = makeStyles(theme => {
       alignItems: "center",
       [theme.breakpoints.down("xs")]: {
         width: "100%",
-        justifyContent: "space-between"
-      }
+        justifyContent: "space-between",
+      },
     },
     staticPageLink: {
       paddingLeft: theme.spacing(2),
@@ -151,32 +151,32 @@ const useStyles = makeStyles(theme => {
       textDecoration: "inherit",
       color: "white",
       [theme.breakpoints.down("xs")]: {
-        padding: 0
-      }
+        padding: 0,
+      },
     },
     currentStaticPageLink: {
-      textDecoration: "underline"
+      textDecoration: "underline",
     },
     notificationsHeadline: {
       padding: theme.spacing(2),
-      textAlign: "center"
+      textAlign: "center",
     },
     loggedInLinksFixedHeader: {
-      zIndex: 30
-    }
+      zIndex: 30,
+    },
   };
 });
 
-const getLinks = path_to_redirect => [
+const getLinks = (path_to_redirect) => [
   {
     href: "/browse",
     text: "Browse",
-    iconForDrawer: HomeIcon
+    iconForDrawer: HomeIcon,
   },
   {
     href: "/about",
     text: "About",
-    iconForDrawer: InfoIcon
+    iconForDrawer: InfoIcon,
   },
   {
     href: "/donate",
@@ -184,7 +184,7 @@ const getLinks = path_to_redirect => [
     iconForDrawer: FavoriteBorderIcon,
     isOutlinedInHeader: true,
     icon: FavoriteBorderIcon,
-    vanillaIfLoggedOut: true
+    vanillaIfLoggedOut: true,
   },
   {
     href: "/share",
@@ -193,7 +193,7 @@ const getLinks = path_to_redirect => [
     iconForDrawer: AddCircleIcon,
     isFilledInHeader: true,
     className: "shareProjectButton",
-    vanillaIfLoggedOut: true
+    vanillaIfLoggedOut: true,
   },
   {
     type: "notificationsButton",
@@ -205,7 +205,7 @@ const getLinks = path_to_redirect => [
     className: "notificationsButton",
     icon: NotificationsIcon,
     alwaysDisplayDirectly: true,
-    onlyShowLoggedIn: true
+    onlyShowLoggedIn: true,
   },
   {
     href: "/signin?redirect=" + path_to_redirect,
@@ -213,30 +213,30 @@ const getLinks = path_to_redirect => [
     iconForDrawer: AccountCircleIcon,
     isOutlinedInHeader: true,
     onlyShowLoggedOut: true,
-    alwaysDisplayDirectly: true
+    alwaysDisplayDirectly: true,
   },
   {
     href: "/signup",
     text: "Sign up",
     iconForDrawer: AccountCircleIcon,
     isOutlinedInHeader: true,
-    onlyShowLoggedOut: true
-  }
+    onlyShowLoggedOut: true,
+  },
 ];
 
 const STATIC_PAGE_LINKS = [
   {
     href: "/about",
-    text: "About"
+    text: "About",
   },
   {
     href: "/donate",
-    text: "Donate"
+    text: "Donate",
   },
   {
     href: "/faq",
-    text: "FAQ"
-  }
+    text: "FAQ",
+  },
 ];
 
 const getLoggedInLinks = ({ loggedInUser }) => {
@@ -244,35 +244,35 @@ const getLoggedInLinks = ({ loggedInUser }) => {
     {
       href: "/profiles/" + loggedInUser.url_slug,
       text: "My Profile",
-      iconForDrawer: AccountCircleIcon
+      iconForDrawer: AccountCircleIcon,
     },
     {
       href: "/inbox",
       text: "Inbox",
-      iconForDrawer: MailOutlineIcon
+      iconForDrawer: MailOutlineIcon,
     },
     {
       href: "/profiles/" + loggedInUser.url_slug + "/#projects",
       text: "My Projects",
-      iconForDrawer: GroupWorkIcon
+      iconForDrawer: GroupWorkIcon,
     },
     {
       href: "/settings",
       text: "Settings",
-      iconForDrawer: SettingsIcon
+      iconForDrawer: SettingsIcon,
     },
     {
       avatar: true,
       href: "/profiles/" + loggedInUser.url_slug,
       src: loggedInUser.image,
       alt: loggedInUser.name,
-      showOnMobileOnly: true
+      showOnMobileOnly: true,
     },
     {
       isLogoutButton: true,
       text: "Log out",
-      iconForDrawer: ExitToAppIcon
-    }
+      iconForDrawer: ExitToAppIcon,
+    },
   ];
 };
 
@@ -281,18 +281,18 @@ export default function Header({
   noSpacingBottom,
   isStaticPage,
   fixedHeader,
-  transparentHeader
+  transparentHeader,
 }) {
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
-    isStaticPage: isStaticPage
+    isStaticPage: isStaticPage,
   });
   const { user, signOut, notifications, pathName } = useContext(UserContext);
   const [anchorEl, setAnchorEl] = React.useState(false);
-  const isNarrowScreen = useMediaQuery(theme => theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
   const LINKS = getLinks(pathName);
-  const toggleShowNotifications = event => {
+  const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
     else setAnchorEl(null);
   };
@@ -360,8 +360,9 @@ function StaticPageLinks() {
               <Link
                 href={link.href}
                 key={index + "-" + link.text}
-                className={`${classes.staticPageLink} ${window.location.href.includes(link.href) &&
-                  classes.currentStaticPageLink}`}
+                className={`${classes.staticPageLink} ${
+                  window.location.href.includes(link.href) && classes.currentStaticPageLink
+                }`}
               >
                 {link.text}
               </Link>
@@ -382,14 +383,14 @@ function NormalScreenLinks({
   notifications,
   transparentHeader,
   fixedHeader,
-  LINKS
+  LINKS,
 }) {
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
   return (
     <Box className={classes.linkContainer}>
       {LINKS.filter(
-        link =>
+        (link) =>
           !(loggedInUser && link.onlyShowLoggedOut) &&
           !(!loggedInUser && link.onlyShowLoggedIn) &&
           !link.showOnMobileOnly
@@ -472,7 +473,7 @@ function NarrowScreenLinks({
   notifications,
   transparentHeader,
   fixedHeader,
-  LINKS
+  LINKS,
 }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -480,7 +481,7 @@ function NarrowScreenLinks({
   const closeDrawer = setIsDrawerOpen.bind(null, false);
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const linksOutsideDrawer = LINKS.filter(
-    link =>
+    (link) =>
       link.alwaysDisplayDirectly &&
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
@@ -566,7 +567,7 @@ function NarrowScreenLinks({
         >
           <List styles={{ height: "100vh" }}>
             {LINKS.filter(
-              link =>
+              (link) =>
                 !link.alwaysDisplayDirectly &&
                 !(loggedInUser && link.onlyShowLoggedOut) &&
                 !(!loggedInUser && link.onlyShowLoggedIn)
@@ -663,11 +664,11 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader }) => {
           <Paper>
             <MenuList>
               {getLoggedInLinks({ loggedInUser })
-                .filter(link => !link.showOnMobileOnly)
+                .filter((link) => !link.showOnMobileOnly)
                 .map((link, index) => {
                   const menuItemProps = {
                     component: "button",
-                    className: classes.loggedInLink
+                    className: classes.loggedInLink,
                   };
                   if (link.isLogoutButton) menuItemProps.onClick = handleLogout;
                   else menuItemProps.href = link.href;

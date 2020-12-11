@@ -5,20 +5,20 @@ import { makeStyles } from "@material-ui/core/styles";
 import GenericDialog from "./../dialogs/GenericDialog";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   textField: {
-    width: "100%"
+    width: "100%",
   },
   feedback: {
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
   },
   sendButton: {
     marginTop: theme.spacing(2),
-    float: "right"
+    float: "right",
   },
   checkbox: {
-    marginLeft: theme.spacing(-1)
-  }
+    marginLeft: theme.spacing(-1),
+  },
 }));
 
 export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLength, className }) {
@@ -32,21 +32,21 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
     setElement(null);
   };
 
-  const onSend = event => {
+  const onSend = (event) => {
     event.preventDefault();
     const data = {
       message: element,
       email_address: email,
-      send_response: checked
+      send_response: checked,
     };
     onClose(data);
   };
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setElement(event.target.value);
   };
 
-  const handleEmailChange = event => {
+  const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
 
@@ -77,7 +77,7 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
             checked={checked}
             color="primary"
             size="small"
-            onChange={e => setChecked(e.target.checked)}
+            onChange={(e) => setChecked(e.target.checked)}
           />
           <label htmlFor={"feedbackcheckbox"}>Please send me a response to my feedback</label>
           {checked && !user && (
@@ -110,5 +110,5 @@ FeedbackDialog.propTypes = {
   inputLabel: PropTypes.string.isRequired,
   applyText: PropTypes.string.isRequired,
   maxLength: PropTypes.number,
-  className: PropTypes.string
+  className: PropTypes.string,
 };

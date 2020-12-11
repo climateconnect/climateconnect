@@ -10,12 +10,12 @@ const fields = [
     required: true,
     label: "Enter your login email",
     key: "email",
-    type: "email"
-  }
+    type: "email",
+  },
 ];
 
 const messages = {
-  submitMessage: "Send password reset email"
+  submitMessage: "Send password reset email",
 };
 
 export default function ResetPassword() {
@@ -31,7 +31,7 @@ export default function ResetPassword() {
           tokenConfig
         );
         redirect("/browse", {
-          message: response.data.message
+          message: response.data.message,
         });
       } catch (error) {
         console.log(error);

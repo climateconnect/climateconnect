@@ -6,39 +6,39 @@ import { makeStyles } from "@material-ui/core/styles";
 import tokenConfig from "../../../public/config/tokenConfig.js";
 import axios from "axios";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     divider: {
       marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1)
-    }
+      marginBottom: theme.spacing(1),
+    },
   };
 });
 
 export default function CommentsContent({ user, project, token, setCurComments }) {
   const classes = useStyles();
   const comments = project.comments;
-  const handleAddComment = c => {
+  const handleAddComment = (c) => {
     if (c.parent_comment_id) {
-      const parent_comment = project.comments.find(pc => pc.id === c.parent_comment_id);
+      const parent_comment = project.comments.find((pc) => pc.id === c.parent_comment_id);
       const newCurComments = [
-        ...project.comments.filter(c => c.id !== parent_comment.id),
-        { ...parent_comment, replies: [...parent_comment.replies, c] }
+        ...project.comments.filter((c) => c.id !== parent_comment.id),
+        { ...parent_comment, replies: [...parent_comment.replies, c] },
       ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setCurComments(newCurComments);
     } else {
       setCurComments([
         c,
         ...project.comments.filter(
-          oc =>
+          (oc) =>
             !(oc.content === c.content && oc.author_user.id === c.author_user.id && oc.unconfirmed)
-        )
+        ),
       ]);
     }
   };
 
-  const handleRemoveComment = c => {
-    setCurComments([...project.comments.filter(pc => pc.id !== c.id)]);
+  const handleRemoveComment = (c) => {
+    setCurComments([...project.comments.filter((pc) => pc.id !== c.id)]);
   };
 
   const onSendComment = async (curComment, parent_comment, clearInput, setDisplayReplies) => {
@@ -51,7 +51,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
       content: comment,
       created_at: new Date(),
       replies: [],
-      unconfirmed: true
+      unconfirmed: true,
     });
     clearInput();
     if (parent_comment) payload.parent_comment = parent_comment;
@@ -70,7 +70,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
     }
   };
 
-  const onDeleteComment = async post => {
+  const onDeleteComment = async (post) => {
     try {
       await axios.delete(
         process.env.API_URL + "/api/projects/" + project.url_slug + "/comment/" + post.id + "/",

@@ -2,15 +2,15 @@ import React from "react";
 import { makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
-  root: props => ({
+  root: (props) => ({
     backgroundImage:
       "url(/icons/small-cloud-" + props.type + (props.light ? "-light" : "") + ".svg)",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
     height: 50,
     width: 85,
-    transform: props.reverse ? "scaleX(-1)" : "auto"
-  })
+    transform: props.reverse ? "scaleX(-1)" : "auto",
+  }),
 }));
 
 export default function SmallCloud({ className, type, reverse, light }) {

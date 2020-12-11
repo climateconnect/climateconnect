@@ -6,19 +6,19 @@ import CheckIcon from "@material-ui/icons/Check";
 
 const ICON_OFFSET = 3; //offset required to center icons horizontally in px.
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     stepper: {
       maxWidth: 1000,
-      margin: "0 auto"
+      margin: "0 auto",
     },
     grayBackgroundRoot: {
       backgroundColor: "#F7F7F7",
       paddingTop: theme.spacing(10),
-      paddingBottom: theme.spacing(6)
+      paddingBottom: theme.spacing(6),
     },
     grayBackground: {
-      backgroundColor: "#F7F7F7"
+      backgroundColor: "#F7F7F7",
     },
     customIcon: {
       backgroundColor: theme.palette.primary.main,
@@ -28,14 +28,14 @@ const useStyles = makeStyles(theme => {
       borderRadius: 20,
       alignItems: "center",
       marginTop: ICON_OFFSET,
-      zIndex: 10
+      zIndex: 10,
     },
     customIconMarginBottom: {
-      marginBottom: 10
+      marginBottom: 10,
     },
     stepText: {
       fontSize: 13,
-      textTransform: "uppercase"
+      textTransform: "uppercase",
     },
     active: {
       height: 40,
@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => {
       borderRadius: 20,
       marginTop: ICON_OFFSET - 10,
       marginLeft: -10,
-      position: "absolute"
+      position: "absolute",
     },
     completed: {
       backgroundColor: "#D7E2E4",
@@ -53,11 +53,11 @@ const useStyles = makeStyles(theme => {
       border: "10px solid #D7E2E4",
       borderRadius: 20,
       marginTop: ICON_OFFSET - 10,
-      fontSize: "bold"
+      fontSize: "bold",
     },
     completedText: {
-      color: "#a4b4b7"
-    }
+      color: "#a4b4b7",
+    },
     /*topDivActive: {
       content: '""',
       position: "absolute",
@@ -81,11 +81,11 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-const CustomConnector = withStyles(theme => {
+const CustomConnector = withStyles((theme) => {
   return {
     root: {
       left: "calc(-50%)",
-      right: "calc(50%)"
+      right: "calc(50%)",
     },
     line: {
       height: 3,
@@ -93,22 +93,22 @@ const CustomConnector = withStyles(theme => {
       backgroundColor: theme.palette.primary.main,
       borderRadius: 1,
       margin: 0,
-      zIndex: 9
+      zIndex: 9,
     },
     completed: {
       "& $line": {
-        backgroundColor: "#bbced2"
-      }
+        backgroundColor: "#bbced2",
+      },
     },
     active: {
       "& $line": {
-        backgroundColor: "#bbced2"
-      }
-    }
+        backgroundColor: "#bbced2",
+      },
+    },
   };
 })(StepConnector);
 
-const CustomStepIcon = props => {
+const CustomStepIcon = (props) => {
   const classes = useStyles();
   const { active, completed } = props;
   if (completed)
@@ -125,7 +125,7 @@ const CustomStepIcon = props => {
 
 export default function StepsTracker({ steps, activeStep, grayBackground, onlyDisplayActiveStep }) {
   const classes = useStyles();
-  const activeStepIndex = steps.indexOf(steps.find(step => step.key === activeStep));
+  const activeStepIndex = steps.indexOf(steps.find((step) => step.key === activeStep));
   return (
     <div className={`${grayBackground && classes.grayBackgroundRoot}`}>
       <Stepper
@@ -143,8 +143,9 @@ export default function StepsTracker({ steps, activeStep, grayBackground, onlyDi
             >
               <Typography
                 color="primary"
-                className={`${classes.stepText} ${index < activeStepIndex &&
-                  classes.completedText}`}
+                className={`${classes.stepText} ${
+                  index < activeStepIndex && classes.completedText
+                }`}
               >
                 {(!onlyDisplayActiveStep || index === activeStepIndex) && step.text}
               </Typography>
@@ -159,5 +160,5 @@ export default function StepsTracker({ steps, activeStep, grayBackground, onlyDi
 StepsTracker.propTypes = {
   steps: PropTypes.array.isRequired,
   activeStep: PropTypes.string.isRequired,
-  grayBackground: PropTypes.bool
+  grayBackground: PropTypes.bool,
 };

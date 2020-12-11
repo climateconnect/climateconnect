@@ -7,25 +7,25 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import Alert from "@material-ui/lab/Alert";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     position: "fixed",
     bottom: "calc(50vh - 20px)",
     transform: "rotate(-90deg)",
-    right: -27.35
+    right: -27.35,
   },
   buttonText: {
-    color: theme.palette.primary.main
+    color: theme.palette.primary.main,
   },
   alert: {
     position: "absolute",
     top: 98,
     width: "100%",
-    maxWidth: 1280
+    maxWidth: 1280,
   },
   link: {
-    cursor: "pointer"
-  }
+    cursor: "pointer",
+  },
 }));
 
 export default function FeedbackButton({ justLink, children }) {
@@ -34,7 +34,7 @@ export default function FeedbackButton({ justLink, children }) {
   const cookies = new Cookies();
   const [message, setMessage] = React.useState("");
 
-  const submitFeedback = async data => {
+  const submitFeedback = async (data) => {
     const token = cookies.get("token");
     try {
       const response = await axios.post(
@@ -49,7 +49,7 @@ export default function FeedbackButton({ justLink, children }) {
     }
   };
 
-  const onFeedbackDialogClose = text => {
+  const onFeedbackDialogClose = (text) => {
     setOpen(false);
     if (text) submitFeedback(text);
   };
@@ -75,7 +75,7 @@ export default function FeedbackButton({ justLink, children }) {
           size="small"
           classes={{
             root: classes.root,
-            label: classes.buttonText
+            label: classes.buttonText,
           }}
           onClick={handleOpenDialog}
         >

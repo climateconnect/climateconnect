@@ -12,12 +12,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import ManageProjectMembers from "../../src/components/project/ManageProjectMembers";
 import { sendToLogin } from "../../public/lib/apiOperations";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     headline: {
       textAlign: "center",
-      marginTop: theme.spacing(4)
-    }
+      marginTop: theme.spacing(4),
+    },
   };
 });
 
@@ -26,7 +26,7 @@ export default function manageProjectMembers({
   members,
   availabilityOptions,
   rolesOptions,
-  token
+  token,
 }) {
   const { user } = useContext(UserContext);
   const classes = useStyles();
@@ -39,7 +39,7 @@ export default function manageProjectMembers({
         <LoginNudge fullPage whatToDo="manage the members of this project" />
       </WideLayout>
     );
-  else if (!members.find(m => m.id === user.id))
+  else if (!members.find((m) => m.id === user.id))
     return (
       <WideLayout title="Please log in to manage the members of an project" hideHeadline={true}>
         <Typography variant="h4" color="primary" className={classes.headline}>
@@ -49,8 +49,8 @@ export default function manageProjectMembers({
       </WideLayout>
     );
   else if (
-    members.find(m => m.id === user.id).role.name != "Creator" &&
-    members.find(m => m.id === user.id).role.name != "Administrator"
+    members.find((m) => m.id === user.id).role.name != "Creator" &&
+    members.find((m) => m.id === user.id).role.name != "Administrator"
   )
     return (
       <WideLayout title="No permission to manage members of this project" hideHeadline={true}>
@@ -77,7 +77,7 @@ export default function manageProjectMembers({
   }
 }
 
-manageProjectMembers.getInitialProps = async ctx => {
+manageProjectMembers.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
   if (ctx.req && !token) {
     const message = "You have to log in to manage a project's members.";
@@ -88,14 +88,14 @@ manageProjectMembers.getInitialProps = async ctx => {
     getProjectByUrlIfExists(projectUrl, token),
     getMembersByProject(projectUrl, token),
     getRolesOptions(token),
-    getAvailabilityOptions(token)
+    getAvailabilityOptions(token),
   ]);
   return {
     project: project,
     members: members,
     rolesOptions: rolesOptions,
     availabilityOptions: availabilityOptions,
-    token: token
+    token: token,
   };
 };
 
@@ -131,7 +131,7 @@ async function getMembersByProject(projectUrl, token) {
 }
 
 function parseProjectMembers(members) {
-  return members.map(m => {
+  return members.map((m) => {
     const member = m.user;
     return {
       ...member,
@@ -143,7 +143,7 @@ function parseProjectMembers(members) {
       availability: m.availability,
       role_in_project: m.role_in_project ? m.role_in_project : "",
       location: member.city ? member.city + ", " + member.country : member.country,
-      isCreator: m.role.role_type === 2
+      isCreator: m.role.role_type === 2,
     };
   });
 }
@@ -168,13 +168,13 @@ function parseProject(project) {
       ? project.project_parents[0].parent_organization
       : project.project_parents[0].parent_user,
     isPersonalProject: !project.project_parents[0].parent_organization,
-    tags: project.tags.map(t => t.project_tag.name),
+    tags: project.tags.map((t) => t.project_tag.name),
     collaborating_organizations: project.collaborating_organizations.map(
-      o => o.collaborating_organization
-    )
+      (o) => o.collaborating_organization
+    ),
   };
 }
-const getRolesOptions = async token => {
+const getRolesOptions = async (token) => {
   try {
     const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
@@ -188,7 +188,7 @@ const getRolesOptions = async token => {
   }
 };
 
-const getAvailabilityOptions = async token => {
+const getAvailabilityOptions = async (token) => {
   try {
     const resp = await axios.get(process.env.API_URL + "/availability/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;

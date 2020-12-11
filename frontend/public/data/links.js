@@ -8,20 +8,20 @@ export default [
     icon: DescriptionIcon,
     iconName: "DescriptionIcon",
     text: "Onepager",
-    internal: true
+    internal: true,
   },
   {
     href: "/faq",
     icon: HelpOutlineIcon,
     iconName: "HelpOutlineIcon",
     text: "FAQ",
-    internal: true
+    internal: true,
   },
   {
     href: "https://xd.adobe.com/view/263c33d4-4ee4-441b-7c68-f4533c94f5ee-500d/",
     icon: ImportantDevicesIcon,
     iconName: "ImportantDevicesIcon",
     text: "Design prototype",
-    internal: false
-  }
+    internal: false,
+  },
 ];

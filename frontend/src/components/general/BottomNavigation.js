@@ -3,24 +3,24 @@ import { Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     navigationButtonWrapper: {
-      marginTop: theme.spacing(10)
+      marginTop: theme.spacing(10),
     },
     backButton: {
-      color: theme.palette.primary.main
+      color: theme.palette.primary.main,
     },
     nextStepButtonsContainer: {
       float: "right",
       [theme.breakpoints.down("xs")]: {
         float: "none",
-        marginTop: theme.spacing(2)
-      }
+        marginTop: theme.spacing(2),
+      },
     },
     draftButton: {
-      marginRight: theme.spacing(2)
-    }
+      marginRight: theme.spacing(2),
+    },
   };
 });
 
@@ -31,7 +31,7 @@ export default function BottomNavigation({
   nextStepButtonType,
   onClickNextStep,
   saveAsDraft,
-  additionalButtons
+  additionalButtons,
 }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -40,7 +40,7 @@ export default function BottomNavigation({
     setOpen(true);
   };
 
-  const handleClickCancel = cancelled => {
+  const handleClickCancel = (cancelled) => {
     if (cancelled) {
       onClickCancel();
       setOpen(false);

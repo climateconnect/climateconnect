@@ -14,16 +14,16 @@ import Router from "next/router";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import countries from "./../../../public/data/countries.json";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     stepsTracker: {
       maxWidth: 600,
-      margin: "0 auto"
+      margin: "0 auto",
     },
     headline: {
       textAlign: "center",
-      marginTop: theme.spacing(4)
-    }
+      marginTop: theme.spacing(4),
+    },
   };
 });
 
@@ -31,22 +31,22 @@ const steps = [
   {
     key: "share",
     text: "share project",
-    headline: "Share a project"
+    headline: "Share a project",
   },
   {
     key: "selectCategory",
     text: "project category",
-    headline: "Select 1-3 categories that fit your project"
+    headline: "Select 1-3 categories that fit your project",
   },
   {
     key: "enterDetails",
-    text: "project details"
+    text: "project details",
   },
   {
     key: "addTeam",
     text: "add team",
-    headline: "Add your team"
-  }
+    headline: "Add your team",
+  },
 ];
 
 export default function ShareProjectRoot({
@@ -57,15 +57,15 @@ export default function ShareProjectRoot({
   rolesOptions,
   user,
   statusOptions,
-  token
+  token,
 }) {
   const classes = useStyles();
   const [project, setProject] = React.useState(
     getDefaultProjectValues(
       {
         ...user,
-        role: rolesOptions.find(r => r.name === "Creator"),
-        role_in_project: ""
+        role: rolesOptions.find((r) => r.name === "Creator"),
+        role_in_project: "",
       },
       statusOptions,
       userOrganizations
@@ -103,7 +103,7 @@ export default function ShareProjectRoot({
     window.scrollTo(0, 0);
   };
 
-  const submitProject = async event => {
+  const submitProject = async (event) => {
     event.preventDefault();
     axios
       .post(
@@ -111,10 +111,10 @@ export default function ShareProjectRoot({
         await formatProjectForRequest(project),
         tokenConfig(token)
       )
-      .then(function(response) {
+      .then(function (response) {
         setProject({ ...project, url_slug: response.data.url_slug });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
         setProject({ ...project, error: true });
         if (error) console.log(error.response);
@@ -122,7 +122,7 @@ export default function ShareProjectRoot({
     setFinished(true);
   };
 
-  const saveAsDraft = async event => {
+  const saveAsDraft = async (event) => {
     event.preventDefault();
     axios
       .post(
@@ -130,10 +130,10 @@ export default function ShareProjectRoot({
         await formatProjectForRequest({ ...project, is_draft: true }),
         tokenConfig(token)
       )
-      .then(function(response) {
+      .then(function (response) {
         setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
         setProject({ ...project, error: true });
         if (error) console.log(error.response);
@@ -141,7 +141,7 @@ export default function ShareProjectRoot({
     setFinished(true);
   };
 
-  const handleSetProject = newProjectData => {
+  const handleSetProject = (newProjectData) => {
     setProject({ ...project, ...newProjectData });
   };
   return (
@@ -214,7 +214,7 @@ export default function ShareProjectRoot({
 const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations) => {
   return {
     collaborators_welcome: true,
-    status: statusOptions.find(s => s.id === DEFAULT_STATUS),
+    status: statusOptions.find((s) => s.id === DEFAULT_STATUS),
     skills: [],
     helpful_connections: [],
     collaborating_organizations: [],
@@ -224,26 +224,26 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
     is_organization_project: userOrganizations && userOrganizations.length > 0,
     //TODO: Should contain the logged in user as the creator and parent_user by default
     team_members: [{ ...loggedInUser }],
-    website: ""
+    website: "",
   };
 };
 
-const formatProjectForRequest = async project => {
+const formatProjectForRequest = async (project) => {
   return {
     ...project,
     status: project.status.id,
-    skills: project.skills.map(s => s.key),
-    team_members: project.team_members.map(m => ({
+    skills: project.skills.map((s) => s.key),
+    team_members: project.team_members.map((m) => ({
       url_slug: m.url_slug,
       role: m.role.id,
       availability: m.availability.id,
       id: m.id,
-      role_in_project: m.role_in_project
+      role_in_project: m.role_in_project,
     })),
-    project_tags: project.project_tags.map(s => s.key),
+    project_tags: project.project_tags.map((s) => s.key),
     parent_organization: project.parent_organization.id,
-    collaborating_organizations: project.collaborating_organizations.map(o => o.id),
+    collaborating_organizations: project.collaborating_organizations.map((o) => o.id),
     image: await blobFromObjectUrl(project.image),
-    thumbnail_image: await blobFromObjectUrl(project.thumbnail_image)
+    thumbnail_image: await blobFromObjectUrl(project.thumbnail_image),
   };
 };

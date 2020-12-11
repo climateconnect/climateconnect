@@ -4,15 +4,15 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import theme from "../../../themes/theme";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: theme.spacing(4),
     position: "relative",
     paddingLeft: 0,
     paddingRight: 0,
     [theme.breakpoints.down("sm")]: {
-      marginTop: theme.spacing(2)
-    }
+      marginTop: theme.spacing(2),
+    },
   },
   imageContainer: {
     marginTop: theme.spacing(2),
@@ -23,36 +23,36 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("md")]: {
       minHeight: 350,
       backgroundSize: "cover",
-      backgroundPosition: "-300px 5px"
+      backgroundPosition: "-300px 5px",
     },
     [theme.breakpoints.down("sm")]: {
       minHeight: 220,
-      backgroundPosition: "-150px 5px"
+      backgroundPosition: "-150px 5px",
     },
     [theme.breakpoints.down("xs")]: {
-      minHeight: 180
-    }
+      minHeight: 180,
+    },
   },
   img: {
     width: "100%",
     height: "100%",
-    visibility: "hidden"
+    visibility: "hidden",
   },
   contentWrapper: {
     background: theme.palette.primary.main,
     marginTop: theme.spacing(-1),
-    paddingTop: theme.spacing(2)
+    paddingTop: theme.spacing(2),
   },
   subHeader: {
     fontSize: 22,
-    fontWeight: 600
+    fontWeight: 600,
   },
   subHeaderWrapper: {
     textAlign: "center",
-    color: "white"
+    color: "white",
   },
   expandMoreIcon: {
-    color: "white"
+    color: "white",
   },
   challengesWrapper: {
     display: "flex",
@@ -70,8 +70,8 @@ const useStyles = makeStyles(theme => ({
       justifyContent: "center",
       alignItems: "center",
       textAlign: "center",
-      paddingBottom: 0
-    }
+      paddingBottom: 0,
+    },
   },
   challenge: {
     color: "white",
@@ -85,8 +85,8 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("sm")]: {
       width: "100%",
       maxWidth: 600,
-      paddingBottom: theme.spacing(3)
-    }
+      paddingBottom: theme.spacing(3),
+    },
   },
   thisisWhy: {
     paddingTop: theme.spacing(2),
@@ -94,15 +94,15 @@ const useStyles = makeStyles(theme => ({
     marginRight: "auto",
     textAlign: "center",
     fontSize: 25,
-    fontWeight: 600
+    fontWeight: 600,
   },
   expandLessIconWrapper: {
-    textAlign: "center"
+    textAlign: "center",
   },
   marked: {
     color: "yellow",
-    fontWeight: 600
-  }
+    fontWeight: 600,
+  },
 }));
 
 export default function Challenge({ headlineClass, showContent, className }) {

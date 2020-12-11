@@ -4,52 +4,52 @@ import TuneIcon from "@material-ui/icons/Tune";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import FilterSearchBar from "../filter/FilterSearchBar";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     filterButton: {
       borderColor: "#707070",
-      height: 40
+      height: 40,
     },
     rightSidePlaceholder: {
-      width: 100
+      width: 100,
     },
     filterSectionFirstLine: {
       display: "flex",
       marginBottom: theme.spacing(2),
       maxWidth: 650,
       margin: "0 auto",
-      justifyContent: "center"
+      justifyContent: "center",
     },
     searchBarContainer: {
       display: "flex",
       flexGrow: 1,
       alignItems: "center",
-      justifyContent: "center"
+      justifyContent: "center",
     },
     filterSearchbar: {
       marginRight: theme.spacing(2),
       width: "100%",
       maxWidth: 650,
       margin: "0 auto",
-      borderColor: "#000"
+      borderColor: "#000",
     },
     filterSectionTabsWithContent: {
-      marginBottom: theme.spacing(3)
+      marginBottom: theme.spacing(3),
     },
     inputLabel: {
       color: "black !important",
-      borderColor: "black !important"
-    }
+      borderColor: "black !important",
+    },
   };
 });
 
 const searchBarLabels = {
   projects: "Search for climate action projects",
   organizations: "Search for organizations fighting climate change",
-  members: "Search for people active against climate change"
+  members: "Search for people active against climate change",
 };
 
-const buildUrlEndingFromSearch = searchValue => {
+const buildUrlEndingFromSearch = (searchValue) => {
   return "&search=" + searchValue;
 };
 
@@ -64,18 +64,18 @@ export default function FilterSection({
   membersWithAdditionalInfo,
   token,
   state,
-  setState
+  setState,
 }) {
   const classes = useStyles();
   const [searchFilters, setSearchFilters] = React.useState({
     projects: "",
     members: "",
-    organizations: ""
+    organizations: "",
   });
 
   const InputLabelClasses = {
     root: classes.inputLabel,
-    notchedOutline: classes.inputLabel
+    notchedOutline: classes.inputLabel,
   };
 
   const onClickExpandFilters = () => {
@@ -86,7 +86,7 @@ export default function FilterSection({
     setSearchFilters({ ...searchFilters, [type]: newValue });
   };
 
-  const onSearchSubmit = async type => {
+  const onSearchSubmit = async (type) => {
     const newUrlEnding = buildUrlEndingFromSearch(searchFilters[type]);
     if (state.urlEnding[type] != newUrlEnding) {
       try {
@@ -105,7 +105,7 @@ export default function FilterSection({
           items: { ...state.items, [type]: filteredItemsObject[type] },
           hasMore: { ...state.hasMore, [type]: filteredItemsObject.hasMore },
           urlEnding: { ...state.urlEnding, [type]: newUrlEnding },
-          nextPages: { ...state.nextPages, [type]: 2 }
+          nextPages: { ...state.nextPages, [type]: 2 },
         });
       } catch (e) {
         console.log(e);

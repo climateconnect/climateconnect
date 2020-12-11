@@ -1,18 +1,18 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   iconContainer: {
-    width: 40
+    width: 40,
   },
   icon: {
-    width: "100%"
+    width: "100%",
   },
   leftWrapper: {
     padding: theme.spacing(4),
     paddingTop: theme.spacing(1),
-    paddingBottom: 0
-  }
+    paddingBottom: 0,
+  },
 }));
 
 export default function IconWrapper({ src }) {

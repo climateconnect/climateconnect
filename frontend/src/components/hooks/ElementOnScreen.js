@@ -27,7 +27,7 @@ export default function ElementOnScreen({ el }) {
   return elementOnScreen;
 }
 
-const isElementInViewport = el => {
+const isElementInViewport = (el) => {
   if (!el) return false;
   const rect = el.getBoundingClientRect();
   return (
