@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import NextCookies from "next-cookies";
 import axios from "axios";
 import Link from "next/link";
 
 // @material-ui
 import { Divider, Tab, Tabs, Typography, Container } from "@material-ui/core";
-import { CircularProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -131,6 +130,7 @@ export default function Index({
 
   const [tabValue, setTabValue] = React.useState(hash ? typesByTabValue.indexOf(hash) : 0);
   const [filtersExpanded, setFiltersExpanded] = React.useState(false);
+
   const [filters, setFilters] = React.useState({
     projects: {},
     members: {},
@@ -142,43 +142,50 @@ export default function Index({
    * loading spinner until the async call finishes.
    */
   const applyNewFilters = async (type, newFilters, closeFilters) => {
-    if (filters !== newFilters) {
-      setFilters({ ...filters, [type]: newFilters });
+    // Sanity bail if filters are equal
+    if (filters == newFilters) {
+      // TODO(piper): null / undefined here?
+      return;
+    }
 
-      const newUrlEnding = buildUrlEndingFromFilters(newFilters);
-      if (state.urlEnding[type] != newUrlEnding) {
-        if (closeFilters) {
-          setFiltersExpanded(false);
-        }
+    setFilters({ ...filters, [type]: newFilters });
 
-        try {
-          let filteredItemsObject;
-          if (type === "projects") {
-            setIsLoading(true);
-            filteredItemsObject = await getProjects(1, token, newUrlEnding);
-            setIsLoading(false);
-          } else if (type === "organizations") {
-            setIsLoading(true);
-            filteredItemsObject = await getOrganizations(1, token, newUrlEnding);
-            setIsLoading(false);
-          } else if (type === "members") {
-            setIsLoading(true);
-            filteredItemsObject = await getMembers(1, token, newUrlEnding);
-            filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
-            setIsLoading(false);
-          }
+    const newUrlEnding = buildUrlEndingFromFilters(newFilters);
+    if (state.urlEnding[type] == newUrlEnding) {
+      // No need to apply filters
+      return;
+    }
 
-          setState({
-            ...state,
-            items: { ...state.items, [type]: filteredItemsObject[type] },
-            hasMore: { ...state.hasMore, [type]: filteredItemsObject.hasMore },
-            urlEnding: { ...state.urlEnding, [type]: newUrlEnding },
-            nextPages: { ...state.nextPages, [type]: 2 },
-          });
-        } catch (e) {
-          console.log(e);
-        }
+    if (closeFilters) {
+      setFiltersExpanded(false);
+    }
+
+    // TODO(piper): this fetch could be refactored and deduped
+    // with the the handling of search
+    try {
+      // Immediately update loading state to render new spinner
+      setIsLoading(true);
+      let filteredItemsObject;
+      if (type === "projects") {
+        filteredItemsObject = await getProjects(1, token, newUrlEnding);
+      } else if (type === "organizations") {
+        filteredItemsObject = await getOrganizations(1, token, newUrlEnding);
+      } else if (type === "members") {
+        filteredItemsObject = await getMembers(1, token, newUrlEnding);
+        filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
       }
+
+      // Restore non loading state
+      setIsLoading(false);
+      setState({
+        ...state,
+        hasMore: { ...state.hasMore, [type]: filteredItemsObject.hasMore },
+        items: { ...state.items, [type]: filteredItemsObject[type] },
+        nextPages: { ...state.nextPages, [type]: 2 },
+        urlEnding: { ...state.urlEnding, [type]: newUrlEnding },
+      });
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -204,6 +211,7 @@ export default function Index({
         state.urlEnding.projects
       );
       const newProjects = newProjectsObject.projects;
+
       setState({
         ...state,
         nextPages: {
@@ -219,9 +227,6 @@ export default function Index({
           projects: [...state.items.projects, ...newProjects],
         },
       });
-
-      setIsLoading(false);
-
       return [...newProjects];
     } catch (e) {
       console.log(e);
@@ -304,6 +309,55 @@ export default function Index({
     }
   };
 
+  /**
+   * This handler is a callback that's passed through to the
+   * the underlying search bar. We manage state for searching
+   * (like loading state) within browse.
+   *
+   * Asynchonously get new projects, orgs or members. We render
+   * a loading spinner until the request is done.
+   *
+   */
+  const handleSearchSubmit = async (type, searchValue) => {
+    // TODO(piper): be sure to fix the state updates here from filtersearchbar
+
+    const newSearchQueryParam = `&search=${searchValue}`;
+
+    // Bail; no need to search if the query param is the same
+    if (state.urlEnding[type] == newSearchQueryParam) {
+      return;
+    }
+
+    try {
+      // Render the spinner while we're updating search...
+      setIsLoading(true);
+
+      let filteredItemsObject;
+      if (type === "projects") {
+        filteredItemsObject = await getProjects(1, token, newSearchQueryParam);
+      } else if (type === "organizations") {
+        console.log(newSearchQueryParam);
+        filteredItemsObject = await getOrganizations(1, token, newSearchQueryParam);
+      } else if (type === "members") {
+        filteredItemsObject = await getMembers(1, token, newSearchQueryParam);
+        filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
+      } else {
+        console.log("cannot find type!");
+      }
+
+      setIsLoading(false);
+      setState({
+        ...state,
+        hasMore: { ...state.hasMore, [type]: filteredItemsObject.hasMore },
+        items: { ...state.items, [type]: filteredItemsObject[type] },
+        nextPages: { ...state.nextPages, [type]: 2 },
+        urlEnding: { ...state.urlEnding, [type]: newSearchQueryParam },
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const isScrollingUp = !useScrollTrigger({
     disableHysteresis: false,
     threshold: 0,
@@ -329,16 +383,10 @@ export default function Index({
             {/* This is the search bar container. */}
             <FilterSection
               filtersExpanded={filtersExpanded}
+              filters={filters}
+              onSubmit={handleSearchSubmit}
               setFiltersExpanded={setFiltersExpanded}
-              typesByTabValue={typesByTabValue}
-              tabValue={tabValue}
-              getProjects={getProjects}
-              getOrganizations={getOrganizations}
-              getMembers={getMembers}
-              membersWithAdditionalInfo={membersWithAdditionalInfo}
-              token={token}
-              state={state}
-              setState={setState}
+              type={typesByTabValue[tabValue]}
             />
 
             {/* Tabs to select projects, orgs, members... */}
@@ -535,6 +583,7 @@ async function getProjects(page, token, urlEnding) {
   try {
     const resp = await axios.get(url, tokenConfig(token));
 
+    // debugger;
     if (resp.data.length === 0) {
       console.log("No projects found...");
       return null;

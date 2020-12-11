@@ -28,11 +28,15 @@ export default function OrganizationPreviews({
     organizations.map((o) => (
       <GridItem key={o.url_slug} organization={o} showOrganizationType={showOrganizationType} />
     ));
+
   const [isLoading, setIsLoading] = React.useState(false);
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(toOrganizationPreviews(organizations));
 
-  if (!loadFunc) hasMore = false;
+  if (!loadFunc) {
+    hasMore = false;
+  }
+
   const loadMore = async (page) => {
     if (!isLoading) {
       setIsLoading(true);

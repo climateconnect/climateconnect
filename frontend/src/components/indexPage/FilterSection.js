@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, makeStyles } from "@material-ui/core";
 import TuneIcon from "@material-ui/icons/Tune";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
@@ -50,32 +50,8 @@ const searchBarLabels = {
   members: "Search for people active against climate change",
 };
 
-const buildUrlEndingFromSearch = (searchValue) => {
-  return "&search=" + searchValue;
-};
-
-export default function FilterSection({
-  filtersExpanded,
-  setFiltersExpanded,
-  typesByTabValue,
-  tabValue,
-  getProjects,
-  getOrganizations,
-  getMembers,
-  membersWithAdditionalInfo,
-  token,
-  state,
-  setState,
-}) {
+export default function FilterSection({ filtersExpanded, onSubmit, setFiltersExpanded, type }) {
   const classes = useStyles();
-  const [searchFilters, setSearchFilters] = useState({
-    projects: "",
-    members: "",
-    organizations: "",
-  });
-
-  // We render the circular spinner when a user is filtering options.
-  const [isLoading, setIsLoading] = useState(false);
 
   const InputLabelClasses = {
     root: classes.inputLabel,
@@ -86,61 +62,18 @@ export default function FilterSection({
     setFiltersExpanded(!filtersExpanded);
   };
 
-  const onSearchValueChange = (type, newValue) => {
-    setSearchFilters({ ...searchFilters, [type]: newValue });
-  };
-
-  /**
-   * Asynchonously get new projects, orgs or members. We render
-   * a loading spinner until the request is done.
-   */
-  const handleSearchSubmit = async (type) => {
-    const newUrlEnding = buildUrlEndingFromSearch(searchFilters[type]);
-    if (state.urlEnding[type] != newUrlEnding) {
-      try {
-        let filteredItemsObject;
-        if (type === "projects") {
-          setIsLoading(true);
-          filteredItemsObject = await getProjects(1, token, newUrlEnding);
-          setIsLoading(false);
-        } else if (type === "organizations") {
-          setIsLoading(true);
-          filteredItemsObject = await getOrganizations(1, token, newUrlEnding);
-          setIsLoading(false);
-        } else if (type === "members") {
-          setIsLoading(true);
-          filteredItemsObject = await getMembers(1, token, newUrlEnding);
-          filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
-          setIsLoading(false);
-        } else {
-          console.log("cannot find type!");
-        }
-
-        setState({
-          ...state,
-          items: { ...state.items, [type]: filteredItemsObject[type] },
-          hasMore: { ...state.hasMore, [type]: filteredItemsObject.hasMore },
-          urlEnding: { ...state.urlEnding, [type]: newUrlEnding },
-          nextPages: { ...state.nextPages, [type]: 2 },
-        });
-      } catch (e) {
-        console.log(e);
-      }
-    }
-  };
-
   return (
     <div className={classes.filterSection}>
       <div className={classes.filterSectionFirstLine}>
         <div className={classes.searchBarContainer}>
           <FilterSearchBar
-            type={typesByTabValue[tabValue]}
-            label={searchBarLabels[typesByTabValue[tabValue]]}
             className={classes.filterSearchbar}
-            onSubmit={handleSearchSubmit}
-            onChange={onSearchValueChange}
-            value={searchFilters[typesByTabValue[tabValue]]}
             InputLabelClasses={InputLabelClasses}
+            label={searchBarLabels[type]}
+            // Pass submit handler through to
+            // the underlying search bar.
+            onSubmit={onSubmit}
+            type={type}
           />
         </div>
         <Button
