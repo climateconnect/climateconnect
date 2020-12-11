@@ -48,6 +48,7 @@ class ProjectsOrderingFilter(OrderingFilter):
                 queryset = queryset.order_by('id')
         return queryset
 
+
 class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter, DjangoFilterBackend, ProjectsOrderingFilter]
@@ -72,9 +73,12 @@ class ListProjectsView(ListAPIView):
         if 'category' in self.request.query_params:
             project_category = self.request.query_params.get('category').split(',')
             project_tags = ProjectTags.objects.filter(name__in=project_category)
+            # We use distinct to deduplicate selected rows. We
+            # must use order_by in conjunction with distinct:
+            # https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.distinct
             projects = projects.filter(
                 tag_project__project_tag__in=project_tags
-            ).distinct('id')
+            ).order_by('id').distinct('id')
 
         if 'status' in self.request.query_params:
             statuses = self.request.query_params.get('status').split(',')
@@ -83,7 +87,10 @@ class ListProjectsView(ListAPIView):
         if 'skills' in self.request.query_params:
             skill_names = self.request.query_params.get('skills').split(',')
             skills = Skill.objects.filter(name__in=skill_names)
-            projects = projects.filter(skills__in=skills).distinct('id')
+            # We use distinct to deduplicate selected rows. We
+            # must use order_by in conjunction with distinct:
+            # https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.distinct
+            projects = projects.filter(skills__in=skills).order_by('id').distinct('id')
 
         if 'organization_type' in self.request.query_params:
             organization_type_names = self.request.query_params.get('organization_type').split(',')
