@@ -312,36 +312,30 @@ export default function Header({
             className={classes.logo}
           />
         </Link>
-        {process.env.PRE_LAUNCH === "true" ? (
-          <></>
+        {isNarrowScreen ? (
+          <NarrowScreenLinks
+            loggedInUser={user}
+            handleLogout={signOut}
+            anchorEl={anchorEl}
+            toggleShowNotifications={toggleShowNotifications}
+            onNotificationsClose={onNotificationsClose}
+            notifications={notifications}
+            transparentHeader={transparentHeader}
+            fixedHeader={fixedHeader}
+            LINKS={LINKS}
+          />
         ) : (
-          <>
-            {isNarrowScreen ? (
-              <NarrowScreenLinks
-                loggedInUser={user}
-                handleLogout={signOut}
-                anchorEl={anchorEl}
-                toggleShowNotifications={toggleShowNotifications}
-                onNotificationsClose={onNotificationsClose}
-                notifications={notifications}
-                transparentHeader={transparentHeader}
-                fixedHeader={fixedHeader}
-                LINKS={LINKS}
-              />
-            ) : (
-              <NormalScreenLinks
-                loggedInUser={user}
-                handleLogout={signOut}
-                anchorEl={anchorEl}
-                toggleShowNotifications={toggleShowNotifications}
-                onNotificationsClose={onNotificationsClose}
-                notifications={notifications}
-                transparentHeader={transparentHeader}
-                fixedHeader={fixedHeader}
-                LINKS={LINKS}
-              />
-            )}
-          </>
+          <NormalScreenLinks
+            loggedInUser={user}
+            handleLogout={signOut}
+            anchorEl={anchorEl}
+            toggleShowNotifications={toggleShowNotifications}
+            onNotificationsClose={onNotificationsClose}
+            notifications={notifications}
+            transparentHeader={transparentHeader}
+            fixedHeader={fixedHeader}
+            LINKS={LINKS}
+          />
         )}
       </Container>
       <div>{isStaticPage && <StaticPageLinks />}</div>
