@@ -19,5 +19,8 @@ all: docker start
 migrate:
 	python3 manage.py migrate
 
+# just an alias for migrate
+migrations: migrate
+
 test-data:
 	python manage.py create_test_data --number_of_rows 4
