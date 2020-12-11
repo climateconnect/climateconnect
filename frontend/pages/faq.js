@@ -118,7 +118,6 @@ export default function Faq({ questionsBySection, questions }) {
             {"Can't"} find the answer to your question? Contact support@climateconnect.earth.
           </Typography>
           <div className={classes.searchBarContainer}>
-            {/* TODO(piper): ensure this is ok */}
             <FilterSearchBar
               label="Search for keywords"
               className={classes.searchBar}

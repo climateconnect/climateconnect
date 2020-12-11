@@ -27,7 +27,6 @@ export default function FilterSearchBar({ className, InputLabelClasses, label, o
       InputLabelProps={{
         classes: InputLabelClasses,
       }}
-      onChange={handleChange}
       onKeyDown={handleKeyDown}
       placeholder={label}
       size="small"
