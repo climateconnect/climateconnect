@@ -14,9 +14,7 @@ export default function PageNotFound({ itemName }) {
     <div className={classes.root}>
       <Typography variant="h1">{itemName ? itemName + " " : "Page "} not found.</Typography>
       <p>
-        <Link href="/browse">
-          <a>Click here to return to the homepage.</a>
-        </Link>
+        <Link href="/browse">Return to homepage.</Link>
       </p>
     </div>
   );
