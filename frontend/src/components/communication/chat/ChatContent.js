@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import MiniProfilePreview from "../../profile/MiniProfilePreview";
-import { Button, IconButton, TextField, makeStyles } from "@material-ui/core";
+import { Button, IconButton, TextField, makeStyles, Tooltip } from "@material-ui/core";
 import Messages from "./Messages";
 import UserContext from "../../context/UserContext";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
@@ -68,9 +68,19 @@ export default function ChatContent({
   handleMessageKeydown,
   onSendMessage,
   handleToggleMemberManagementExpanded,
+  showSendHelper,
+  setShowSendHelper,
 }) {
   const classes = useStyles();
   const { user } = useContext(UserContext);
+
+  const handleOpen = () => {
+    setShowSendHelper(true);
+  };
+  const handleClose = () => {
+    setShowSendHelper(false);
+  };
+
   return (
     <>
       {showChatParticipants && (
@@ -123,16 +133,25 @@ export default function ChatContent({
             onChange={onCurMessageChange}
             onKeyDown={handleMessageKeydown}
           />
-          <IconButton
-            disableRipple
-            disableFocusRipple
-            size="small"
-            type="submit"
-            className={classes.sendButton}
-            style={{ backgroundColor: "transparent" }}
+          <Tooltip
+            open={showSendHelper}
+            onClose={handleClose}
+            onOpen={handleOpen}
+            arrow
+            title="Click here to send (or press ctrl + Enter)"
+            placement="top"
           >
-            <SendIcon className={classes.sendButtonIcon} />
-          </IconButton>
+            <IconButton
+              disableRipple
+              disableFocusRipple
+              size="small"
+              type="submit"
+              className={classes.sendButton}
+              style={{ backgroundColor: "transparent" }}
+            >
+              <SendIcon className={classes.sendButtonIcon} />
+            </IconButton>
+          </Tooltip>
         </form>
       </div>
     </>
