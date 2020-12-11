@@ -13,18 +13,18 @@ import { getImageUrl } from "../../public/lib/imageOperations";
 import {
   getSkillsOptions,
   getStatusOptions,
-  getProjectTagsOptions
+  getProjectTagsOptions,
 } from "../../public/lib/getOptions";
 import { sendToLogin } from "../../public/lib/apiOperations";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    textAlign: "center"
+    textAlign: "center",
   },
   errorTitle: {
     textAlign: "center",
-    marginTop: theme.spacing(8)
-  }
+    marginTop: theme.spacing(8),
+  },
 }));
 
 export default function EditProjectPage({
@@ -34,20 +34,20 @@ export default function EditProjectPage({
   userOrganizations,
   statusOptions,
   tagsOptions,
-  token
+  token,
 }) {
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,
-    status: statusOptions.find(s => s.name === project.status)
+    status: statusOptions.find((s) => s.name === project.status),
   });
   project = {
     ...project,
-    status: statusOptions.find(s => s.name === project.status)
+    status: statusOptions.find((s) => s.name === project.status),
   };
   const { user } = useContext(UserContext);
 
-  const handleSetProject = newProject => {
+  const handleSetProject = (newProject) => {
     setCurProject({ ...newProject });
   };
 
@@ -65,7 +65,7 @@ export default function EditProjectPage({
         </Typography>
       </Layout>
     );
-  else if (!members.find(m => m.user && m.user.id === user.id))
+  else if (!members.find((m) => m.user && m.user.id === user.id))
     return (
       <WideLayout title="Please log in to edit an project" hideHeadline={true}>
         <Typography variant="h4" color="primary" className={classes.errorTitle}>
@@ -76,8 +76,8 @@ export default function EditProjectPage({
       </WideLayout>
     );
   else if (
-    members.find(m => m.user && m.user.id === user.id).role.name != "Creator" &&
-    members.find(m => m.user && m.user.id === user.id).role.name != "Administrator"
+    members.find((m) => m.user && m.user.id === user.id).role.name != "Creator" &&
+    members.find((m) => m.user && m.user.id === user.id).role.name != "Administrator"
   )
     return (
       <WideLayout title="No permission to edit this project" hideHeadline={true}>
@@ -87,7 +87,7 @@ export default function EditProjectPage({
       </WideLayout>
     );
   else {
-    const user_role = members.find(m => m.user && m.user.id === user.id).role;
+    const user_role = members.find((m) => m.user && m.user.id === user.id).role;
     return (
       <WideLayout className={classes.root} title={"Edit project " + project.name} hideHeadline>
         <EditProjectRoot
@@ -107,7 +107,7 @@ export default function EditProjectPage({
   }
 }
 
-EditProjectPage.getInitialProps = async ctx => {
+EditProjectPage.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
   if (ctx.req && !token) {
     const message = "You have to log in to edit a project.";
@@ -120,14 +120,14 @@ EditProjectPage.getInitialProps = async ctx => {
     skillsOptions,
     userOrganizations,
     statusOptions,
-    tagsOptions
+    tagsOptions,
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, token),
     getMembersByProject(projectUrl, token),
     getSkillsOptions(),
     getUserOrganizations(token),
     getStatusOptions(),
-    getProjectTagsOptions()
+    getProjectTagsOptions(),
   ]);
   return {
     project: project,
@@ -136,7 +136,7 @@ EditProjectPage.getInitialProps = async ctx => {
     userOrganizations: userOrganizations,
     statusOptions: statusOptions,
     tagsOptions: tagsOptions,
-    token: token
+    token: token,
   };
 };
 
@@ -157,16 +157,16 @@ async function getProjectByIdIfExists(projectUrl, token) {
   }
 }
 
-const parseProject = project => ({
+const parseProject = (project) => ({
   ...project,
   image: getImageUrl(project.image),
-  tags: project.tags.map(t => t.project_tag),
+  tags: project.tags.map((t) => t.project_tag),
   project_parents: project.project_parents[0],
   is_personal_project: !project.project_parents[0].parent_organization,
-  skills: project.skills.map(s => ({ ...s, key: s.id }))
+  skills: project.skills.map((s) => ({ ...s, key: s.id })),
 });
 
-const getUserOrganizations = async token => {
+const getUserOrganizations = async (token) => {
   try {
     const resp = await axios.get(
       process.env.API_URL + "/api/my_organizations/",
@@ -174,7 +174,7 @@ const getUserOrganizations = async token => {
     );
     if (resp.data.length === 0) return null;
     else {
-      return resp.data.map(o => o.organization);
+      return resp.data.map((o) => o.organization);
     }
   } catch (err) {
     console.log(err);

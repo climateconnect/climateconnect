@@ -7,7 +7,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import { getAllChangedMembers } from "../../../../public/lib/manageMembers";
 import { apiRequest } from "../../../../public/lib/apiOperations";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flex: "auto",
     overflowY: "auto",
@@ -16,14 +16,14 @@ const useStyles = makeStyles(theme => ({
     maxWidth: theme.breakpoints.values["md"],
     margin: "0 auto",
     paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2)
+    paddingRight: theme.spacing(2),
   },
   saveIcon: {
-    float: "right"
+    float: "right",
   },
   buttonsWrapper: {
-    marginTop: theme.spacing(0.5)
-  }
+    marginTop: theme.spacing(0.5),
+  },
 }));
 
 export default function ChatMemberManagementOverlay({
@@ -34,23 +34,23 @@ export default function ChatMemberManagementOverlay({
   chat_uuid,
   token,
   chat_id,
-  toggleMemberManagementExpanded
+  toggleMemberManagementExpanded,
 }) {
   const classes = useStyles();
   const [state, setState] = React.useState({
     curParticipants: participants,
-    curUserRole: user_role
+    curUserRole: user_role,
   });
   const { user } = useContext(UserContext);
-  const canEdit = p => {
-    const participant_role = p.role.name ? p.role : rolesOptions.find(o => o.name === p.role);
+  const canEdit = (p) => {
+    const participant_role = p.role.name ? p.role : rolesOptions.find((o) => o.name === p.role);
     return p.id === user.id || state.curUserRole.role_type > participant_role.role_type;
   };
 
-  const handleSetCurParticipants = newValue => setState({ ...state, curParticipants: newValue });
-  const handleSetCurUserRole = newValue => setState({ ...state, curUserRole: newValue });
+  const handleSetCurParticipants = (newValue) => setState({ ...state, curParticipants: newValue });
+  const handleSetCurUserRole = (newValue) => setState({ ...state, curUserRole: newValue });
 
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     onSubmit()
       .then(() => {
@@ -60,7 +60,7 @@ export default function ChatMemberManagementOverlay({
           "success"
         );
       })
-      .catch(e => {
+      .catch((e) => {
         console.log(e);
         toggleMemberManagementExpanded(
           "Something went wrong! Contact contact@climateconnect.earth if this happens repeatedly!",
@@ -77,7 +77,7 @@ export default function ChatMemberManagementOverlay({
       "chat_participants"
     );
     return Promise.all(
-      allChangedMembers.map(m => {
+      allChangedMembers.map((m) => {
         if (m.operation === "delete") deleteMember(m);
         if (m.operation === "update") updateMember(m);
         if (m.operation === "create") {
@@ -90,7 +90,7 @@ export default function ChatMemberManagementOverlay({
     );
   };
 
-  const deleteMember = m => {
+  const deleteMember = (m) => {
     apiRequest(
       "delete",
       "/api/chat/" + chat_uuid + "/update_member/" + m.participant_id + "/",
@@ -100,7 +100,7 @@ export default function ChatMemberManagementOverlay({
     );
   };
 
-  const updateMember = m => {
+  const updateMember = (m) => {
     apiRequest(
       "patch",
       "/api/chat/" + chat_uuid + "/update_member/" + m.participant_id + "/",
@@ -110,7 +110,7 @@ export default function ChatMemberManagementOverlay({
     );
   };
 
-  const createMembers = chat_participants => {
+  const createMembers = (chat_participants) => {
     apiRequest(
       "post",
       "/api/chat/" + chat_uuid + "/add_members/",
@@ -120,7 +120,7 @@ export default function ChatMemberManagementOverlay({
     );
   };
 
-  const updateCreator = new_creator => {
+  const updateCreator = (new_creator) => {
     apiRequest(
       "post",
       "/api/chat/" + chat_uuid + "/change_creator/",
@@ -130,30 +130,30 @@ export default function ChatMemberManagementOverlay({
     );
   };
 
-  const parseMembersForCreateRequest = members => {
+  const parseMembersForCreateRequest = (members) => {
     return {
-      chat_participants: members.map(m => ({
+      chat_participants: members.map((m) => ({
         ...m,
-        permission_type_id: m.role.id
-      }))
+        permission_type_id: m.role.id,
+      })),
     };
   };
 
-  const parseMemberForUpdateRequest = m => {
+  const parseMemberForUpdateRequest = (m) => {
     return {
       id: m.participant_id,
       user: m.id,
       role: m.role.id,
-      chat: chat_id
+      chat: chat_id,
     };
   };
 
   const verifyInput = () => {
-    if (state.curParticipants.filter(cm => cm.role.name === "Creator").length !== 1) {
+    if (state.curParticipants.filter((cm) => cm.role.name === "Creator").length !== 1) {
       alert("There must be exactly one creator of an organization.");
       return false;
     }
-    if (!participants.filter(m => m.role.name === "Creator").length === 1) {
+    if (!participants.filter((m) => m.role.name === "Creator").length === 1) {
       alert("error(There wasn't a creator)");
       return false;
     }

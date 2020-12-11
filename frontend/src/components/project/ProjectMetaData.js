@@ -6,52 +6,52 @@ import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import ExploreIcon from "@material-ui/icons/Explore";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   creatorImage: {
     height: 20,
     marginRight: theme.spacing(1),
-    marginBottom: -5
+    marginBottom: -5,
   },
   cardIcon: {
     verticalAlign: "bottom",
     marginBottom: -2,
     marginTop: 2,
-    marginRight: theme.spacing(0.5)
+    marginRight: theme.spacing(0.5),
   },
   status: {
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
-  categories: props => ({
+  categories: (props) => ({
     display: "flex",
     marginTop: theme.spacing(0.5),
     background: props.hovering ? "#E1E1E1" : "auto",
     padding: props.hovering ? theme.spacing(2) : 0,
     paddingTop: props.hovering ? theme.spacing(1) : 0,
-    paddingBottom: props.hovering ? theme.spacing(1) : 0
+    paddingBottom: props.hovering ? theme.spacing(1) : 0,
   }),
   categoryText: {
-    marginTop: theme.spacing(0.5)
+    marginTop: theme.spacing(0.5),
   },
   metadataText: {
     display: "inline",
-    fontSize: 14
+    fontSize: 14,
   },
   shortDescription: {
     fontSize: 13,
     marginTop: theme.spacing(1.5),
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
   },
-  wrapper: props => ({
+  wrapper: (props) => ({
     padding: theme.spacing(2),
     paddingTop: 0,
-    paddingBottom: props.hovering ? theme.spacing(0.5) : "auto"
-  })
+    paddingBottom: props.hovering ? theme.spacing(0.5) : "auto",
+  }),
 }));
 
 export default function ProjectMetaData({ project, hovering, withDescription }) {
   const classes = useStyles({ hovering: hovering });
   const project_parent = project.project_parents[0];
-  const main_project_tag = project.tags.map(t => t.project_tag.name)[0];
+  const main_project_tag = project.tags.map((t) => t.project_tag.name)[0];
   if (withDescription)
     return (
       <WithDescription

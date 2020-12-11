@@ -5,8 +5,8 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles({
   root: {
     "&:hover": {
-      backgroundColor: "transparent"
-    }
+      backgroundColor: "transparent",
+    },
   },
   icon: {
     borderRadius: "50%",
@@ -17,15 +17,15 @@ const useStyles = makeStyles({
     backgroundImage: "linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))",
     "$root.Mui-focusVisible &": {
       outline: "2px auto rgba(19,124,189,.6)",
-      outlineOffset: 2
+      outlineOffset: 2,
     },
     "input:hover ~ &": {
-      backgroundColor: "#ebf1f5"
+      backgroundColor: "#ebf1f5",
     },
     "input:disabled ~ &": {
       boxShadow: "none",
-      background: "rgba(206,217,224,.5)"
-    }
+      background: "rgba(206,217,224,.5)",
+    },
   },
   checkedIcon: {
     backgroundColor: "#137cbd",
@@ -35,12 +35,12 @@ const useStyles = makeStyles({
       width: 16,
       height: 16,
       backgroundImage: "radial-gradient(#fff,#fff 28%,transparent 32%)",
-      content: '""'
+      content: '""',
     },
     "input:hover ~ &": {
-      backgroundColor: "#106ba3"
-    }
-  }
+      backgroundColor: "#106ba3",
+    },
+  },
 });
 
 function StyledRadio(props) {
@@ -61,7 +61,7 @@ function StyledRadio(props) {
 export default function RadioButtons({ values, defaultValue, value, className, onChange }) {
   const [checkedValue, setCheckedValue] = React.useState(value ? value : defaultValue);
 
-  const handleCheckedValueChange = event => {
+  const handleCheckedValueChange = (event) => {
     setCheckedValue(event.target.value);
     onChange(event.target.value);
   };
@@ -74,7 +74,7 @@ export default function RadioButtons({ values, defaultValue, value, className, o
       aria-label="project status"
       name="customized-radios"
     >
-      {values.map(value => (
+      {values.map((value) => (
         <FormControlLabel
           value={value.key}
           key={value.key}

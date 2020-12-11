@@ -1,3 +1,4 @@
 export default function WebSocketService(apiURLStr) {
-  return new WebSocket(process.env.SOCKET_URL + apiURLStr);
+  if (process.env.SOCKET_URL) return new WebSocket(process.env.SOCKET_URL + apiURLStr);
+  else console.log(process.env);
 }

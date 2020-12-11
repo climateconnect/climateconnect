@@ -14,5 +14,5 @@ export default function DateDisplay({ date, className }) {
 
 DateDisplay.propTypes = {
   date: PropTypes.instanceOf(Date).isRequired,
-  className: PropTypes.string
+  className: PropTypes.string,
 };

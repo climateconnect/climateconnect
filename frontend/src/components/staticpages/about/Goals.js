@@ -2,9 +2,9 @@ import React from "react";
 import { Typography, Container, makeStyles } from "@material-ui/core";
 import ExplainerElement from "../ExplainerElement";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    marginTop: theme.spacing(6)
+    marginTop: theme.spacing(6),
   },
   wrapper: {
     display: "flex",
@@ -12,8 +12,8 @@ const useStyles = makeStyles(theme => ({
     position: "relative",
     [theme.breakpoints.down("sm")]: {
       justifyContent: "center",
-      height: 300
-    }
+      height: 300,
+    },
   },
   imageOuterWrapper: {
     width: "50%",
@@ -26,20 +26,20 @@ const useStyles = makeStyles(theme => ({
       padding: 0,
       marginLeft: "auto",
       marginRight: "auto",
-      background: "white"
-    }
+      background: "white",
+    },
   },
   imageWrapper: {
     maxWidth: "100%",
     maxHeight: "100%",
     background: "url('/images/about-goal.svg')",
     backgroundRepeat: "no-repeat",
-    backgroundSize: "contain"
+    backgroundSize: "contain",
   },
   image: {
     width: "100%",
     height: "100%",
-    visibility: "hidden"
+    visibility: "hidden",
   },
   explainerElementsWrapper: {
     display: "flex",
@@ -52,9 +52,9 @@ const useStyles = makeStyles(theme => ({
       justifyContent: "space-between",
       height: "100%",
       background: "rgba(255,255,255,0.9)",
-      zIndex: 1
-    }
-  }
+      zIndex: 1,
+    },
+  },
 }));
 
 export default function Goals({ headlineClass }) {

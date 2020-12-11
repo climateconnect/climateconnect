@@ -5,26 +5,26 @@ import ChatTitle from "../../communication/chat/ChatTitle";
 import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   topBar: {
     textAlign: "center",
     padding: theme.spacing(1),
     background: theme.palette.grey[200],
     width: "100%",
-    flex: "none"
+    flex: "none",
   },
   backIcon: {
     float: "left",
-    left: theme.spacing(1)
+    left: theme.spacing(1),
   },
   manageMembersButton: {
     float: "right",
-    right: theme.spacing(1)
+    right: theme.spacing(1),
   },
   showParticipantsButton: {
     cursor: "pointer",
-    userSelect: "none"
-  }
+    userSelect: "none",
+  },
 }));
 
 export default function ChatHeader({
@@ -36,7 +36,7 @@ export default function ChatHeader({
   className,
   canEditMembers,
   handleToggleMemberManagementExpanded,
-  memberManagementExpanded
+  memberManagementExpanded,
 }) {
   const classes = useStyles();
   return (

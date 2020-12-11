@@ -10,9 +10,9 @@ export default function DatePicker({
   className,
   minDate,
   maxDate,
-  required
+  required,
 }) {
-  const handleDateChange = selectedDate => {
+  const handleDateChange = (selectedDate) => {
     handleChange(selectedDate);
   };
   return (
@@ -27,7 +27,7 @@ export default function DatePicker({
         value={date ? date : null}
         onChange={handleDateChange}
         KeyboardButtonProps={{
-          "aria-label": "change date"
+          "aria-label": "change date",
         }}
         maxDate={maxDate && maxDate}
         minDate={minDate && minDate}

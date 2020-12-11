@@ -11,11 +11,11 @@ const useStyles = makeStyles({
     height: "calc(100vh)",
     minHeight: "100vh",
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   noFlex: {
-    flex: "none"
-  }
+    flex: "none",
+  },
 });
 
 export default function FixedHeightLayout({ title, children }) {

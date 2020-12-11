@@ -5,34 +5,34 @@ const coreTheme = createMuiTheme({
   palette: {
     primary: {
       main: "#207178",
-      light: "#66BCB5"
+      light: "#66BCB5",
     },
     secondary: { main: "#484848" },
     yellow: {
-      main: "#FFDE0A"
+      main: "#FFDE0A",
     },
     background: { default: "#fff" },
     action: {
-      selected: "#387077"
-    }
+      selected: "#387077",
+    },
   },
   typography: {
     fontFamily: "Open Sans",
     h1: {
       fontSize: "3rem",
-      align: "center"
+      align: "center",
     },
     subtitle1: {
-      fontSize: "0.9rem"
+      fontSize: "0.9rem",
     },
     subtitle2: {
       fontSize: "0.9rem",
-      fontWeight: "bold"
+      fontWeight: "bold",
     },
     button: {
-      fontWeight: 600
-    }
-  }
+      fontWeight: 600,
+    },
+  },
 });
 
 const theme = createMuiTheme(coreTheme, {
@@ -43,28 +43,28 @@ const theme = createMuiTheme(coreTheme, {
         paddingLeft: coreTheme.spacing(4),
         paddingRight: coreTheme.spacing(4),
         paddingTop: coreTheme.spacing(1),
-        paddingBottom: coreTheme.spacing(1)
-      }
+        paddingBottom: coreTheme.spacing(1),
+      },
     },
     MuiTab: {
       root: {
         minWidth: 0,
         [coreTheme.breakpoints.up("xs")]: {
-          minWidth: 0
-        }
-      }
+          minWidth: 0,
+        },
+      },
     },
     MuiTooltip: {
       tooltip: {
-        fontSize: 14
-      }
-    }
+        fontSize: 14,
+      },
+    },
   },
   props: {
     MuiButton: {
-      disableElevation: true
-    }
-  }
+      disableElevation: true,
+    },
+  },
 });
 
 export default theme;

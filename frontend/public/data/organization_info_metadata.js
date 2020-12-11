@@ -11,7 +11,7 @@ export default {
     iconName: "PlaceIcon",
     name: "City",
     type: "location",
-    key: "city"
+    key: "city",
   },
   country: {
     icon: PlaceIcon,
@@ -19,14 +19,14 @@ export default {
     name: "Country",
     key: "country",
     type: "select",
-    options: countries.map(c => ({ key: c.toLowerCase(), name: c }))
+    options: countries.map((c) => ({ key: c.toLowerCase(), name: c })),
   },
   location: {
     icon: PlaceIcon,
     iconName: "PlaceIcon",
     name: "Location",
     type: "location",
-    key: "location"
+    key: "location",
   },
   shortdescription: {
     icon: DescriptionIcon,
@@ -34,30 +34,30 @@ export default {
     name: "Description",
     key: "shortdescription",
     helptext:
-      "Describe what your organization is doing, how you work and what impact you have on climate change. Please only use english!"
+      "Describe what your organization is doing, how you work and what impact you have on climate change. Please only use english!",
   },
   school: {
     icon: SchoolIcon,
     iconName: "SchoolIcon",
     name: "School/University",
-    key: "school"
+    key: "school",
   },
   organ: {
     icon: SupervisorAccountIcon,
     iconName: "SupervisorAccountIcon",
     name: "Organ",
-    key: "organ"
+    key: "organ",
   },
   website: {
     name: "Website",
     type: "text",
     key: "bio",
     maxLength: 240,
-    linkify: true
+    linkify: true,
   },
   has_parent_organization: {
     type: "checkbox",
-    label: "We are a sub-organization of a larger organization (e.g. local group)"
+    label: "We are a sub-organization of a larger organization (e.g. local group)",
   },
   parent_organization: {
     icon: AccountBalanceIcon,
@@ -68,6 +68,6 @@ export default {
     label: "Edit your parent organization",
     show_if_ticked: "has_parent_organization",
     baseUrl: "/api/organizations/?search=",
-    helperText: "Type the name of your parent organization"
-  }
+    helperText: "Type the name of your parent organization",
+  },
 };

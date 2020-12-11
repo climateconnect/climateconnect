@@ -2,16 +2,16 @@ import React from "react";
 import { Typography, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     loginNudge: {
       margin: "0 auto",
-      marginTop: theme.spacing(12)
+      marginTop: theme.spacing(12),
     },
     loginNudgeText: {
       textAlign: "center",
-      fontSize: 35
-    }
+      fontSize: 35,
+    },
   };
 });
 

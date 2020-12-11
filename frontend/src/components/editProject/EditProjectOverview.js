@@ -7,7 +7,7 @@ import {
   getImageDialogHeight,
   getCompressedJPG,
   whitenTransparentPixels,
-  getResizedImage
+  getResizedImage,
 } from "../../../public/lib/imageOperations";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -16,66 +16,66 @@ import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import SelectField from "../general/SelectField";
 import countries from "./../../../public/data/countries.json";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
   projectTitleInput: {
     marginBottom: theme.spacing(2),
     marginTop: theme.spacing(2),
-    width: "100%"
+    width: "100%",
   },
   largeProjectTitleInput: {
-    fontSize: 32
+    fontSize: 32,
   },
   largeScreenImageContainer: {
-    width: "50%"
+    width: "50%",
   },
   imageZoneWrapper: {
     display: "block",
     width: "100%",
-    position: "relative"
+    position: "relative",
   },
-  imageZone: props => ({
+  imageZone: (props) => ({
     cursor: "pointer",
     border: "1px dashed #000",
     width: "100%",
     paddingBottom: "56.25%",
     backgroundImage: `${props.image ? `url(${props.image})` : null}`,
-    backgroundSize: "contain"
+    backgroundSize: "contain",
   }),
   addPhotoContainer: {
     position: "absolute",
     left: "-50%",
     top: "-50%",
-    width: 170
+    width: 170,
   },
   addPhotoWrapper: {
     position: "absolute",
     left: "calc(50% - 85px)",
-    top: "calc(50% - 44px)"
+    top: "calc(50% - 44px)",
   },
   photoIcon: {
     display: "block",
     marginBottom: theme.spacing(1),
     margin: "0 auto",
     cursor: "pointer",
-    fontSize: 40
+    fontSize: 40,
   },
   cityInput: {
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
   },
   overviewHeadline: {
-    fontSize: 12
+    fontSize: 12,
   },
   openCategoriesDialogButton: {
-    marginTop: theme.spacing(1)
-  }
+    marginTop: theme.spacing(1),
+  },
 }));
 
 export default function EditProjectOverview({
   project,
   handleSetProject,
   smallScreen,
-  tagsOptions
+  tagsOptions,
 }) {
   const classes = useStyles();
   const handleChangeProject = (newValue, key) => {
@@ -85,7 +85,7 @@ export default function EditProjectOverview({
     handleSetProject({
       ...project,
       image: newImage,
-      thumbnail_image: newThumbnailImage
+      thumbnail_image: newThumbnailImage,
     });
   };
   return (
@@ -162,7 +162,7 @@ const InputShortDescription = ({ project, handleChangeProject }) => {
       fullWidth
       value={project.short_description}
       type="text"
-      onChange={event =>
+      onChange={(event) =>
         handleChangeProject(event.target.value.substring(0, 240), "short_description")
       }
       required
@@ -187,7 +187,7 @@ const InputLocation = ({ project, handleChangeProject }) => {
         value={project.city}
         className={classes.cityInput}
         type="text"
-        onChange={event => handleChangeProject(event.target.value, "city")}
+        onChange={(event) => handleChangeProject(event.target.value, "city")}
         required
       />
       <SelectField
@@ -197,9 +197,9 @@ const InputLocation = ({ project, handleChangeProject }) => {
         controlled
         controlledValue={project.country}
         type="text"
-        onChange={event => handleChangeProject(event.target.value, "country")}
+        onChange={(event) => handleChangeProject(event.target.value, "country")}
         required
-        options={countries.map(c => ({ key: c.toLowerCase(), name: c }))}
+        options={countries.map((c) => ({ key: c.toLowerCase(), name: c }))}
       />
     </div>
   );
@@ -216,7 +216,7 @@ const InputWebsite = ({ project, handleChangeProject }) => {
         value={project.website}
         className={classes.input}
         type="text"
-        onChange={event => handleChangeProject(event.target.value, "website")}
+        onChange={(event) => handleChangeProject(event.target.value, "website")}
       />
     </div>
   );
@@ -231,14 +231,14 @@ const InputTags = ({ project, handleChangeProject, tagsOptions }) => {
     setOpen(true);
   };
 
-  const handleCategoriesDialogClose = tags => {
+  const handleCategoriesDialogClose = (tags) => {
     if (tags) handleChangeProject(tags, "tags");
     setOpen(false);
   };
 
-  const handleTagDelete = tag => {
-    handleChangeProject([...project.tags.filter(t => t.id !== tag.id)], "tags");
-    setSelectedItems([...project.tags.filter(t => t.id !== tag.id)]);
+  const handleTagDelete = (tag) => {
+    handleChangeProject([...project.tags.filter((t) => t.id !== tag.id)], "tags");
+    setSelectedItems([...project.tags.filter((t) => t.id !== tag.id)]);
   };
 
   return (
@@ -290,7 +290,7 @@ const InputName = ({ project, screenSize, handleChangeProject }) => {
       className={classes.projectTitleInput}
       inputProps={screenSize === "large" ? { className: classes.largeProjectTitleInput } : {}}
       type="text"
-      onChange={event => handleChangeProject(event.target.value, "name")}
+      onChange={(event) => handleChangeProject(event.target.value, "name")}
       required
     />
   );
@@ -305,7 +305,7 @@ const InputImage = ({ project, screenSize, handleChangeImage }) => {
     project.image ? getImageUrl(project.image) : null
   );
 
-  const onImageChange = async event => {
+  const onImageChange = async (event) => {
     const file = event.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
@@ -314,16 +314,16 @@ const InputImage = ({ project, screenSize, handleChangeImage }) => {
     setOpen(true);
   };
 
-  const onUploadImageClick = event => {
+  const onUploadImageClick = (event) => {
     event.preventDefault();
     inputFileRef.current.click();
   };
 
-  const handleImageDialogClose = async image => {
+  const handleImageDialogClose = async (image) => {
     setOpen(false);
     if (image && image instanceof HTMLCanvasElement) {
       whitenTransparentPixels(image);
-      image.toBlob(async function(blob) {
+      image.toBlob(async function (blob) {
         const resizedBlob = URL.createObjectURL(blob);
         const thumbnailBlob = await getResizedImage(
           URL.createObjectURL(blob),

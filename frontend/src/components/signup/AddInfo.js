@@ -6,8 +6,8 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles(() => {
   return {
     checkboxLabels: {
-      fontSize: 14
-    }
+      fontSize: 14,
+    },
   };
 });
 
@@ -19,33 +19,33 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
       label: "First Name",
       type: "text",
       key: "first_name",
-      value: values["first_name"]
+      value: values["first_name"],
     },
     {
       required: true,
       label: "Last Name",
       type: "text",
       key: "last_name",
-      value: values["last_name"]
+      value: values["last_name"],
     },
     {
       required: true,
       label: "Country",
       select: {
-        values: countries.map(country => {
+        values: countries.map((country) => {
           return { key: country, name: country };
         }),
         defaultValue: values["country"] ? values["country"] : "",
-        addEmptyValue: true
+        addEmptyValue: true,
       },
-      key: "country"
+      key: "country",
     },
     {
       required: true,
       label: "City/Place",
       type: "text",
       key: "city",
-      value: values["city"]
+      value: values["city"],
     },
     {
       required: false,
@@ -56,7 +56,7 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
       ),
       type: "checkbox",
       key: "sendNewsletter",
-      value: false
+      value: false,
     },
     {
       required: true,
@@ -75,19 +75,19 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
       ),
       type: "checkbox",
       key: "terms",
-      value: false
-    }
+      value: false,
+    },
   ];
 
   const messages = {
     submitMessage: "Next Step",
-    headerMessage: "Step 2: A little bit about yourself"
+    headerMessage: "Step 2: A little bit about yourself",
   };
 
   //dummy route while we don't have backend
   const formAction = {
     href: "/addinfo",
-    method: "GET"
+    method: "GET",
   };
 
   return (

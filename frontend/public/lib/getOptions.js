@@ -7,7 +7,7 @@ export async function getSkillsOptions() {
     if (resp.data.results.length === 0) return null;
     else {
       return parseOptions(
-        resp.data.results.map(s => ({ ...s, key: s.id })),
+        resp.data.results.map((s) => ({ ...s, key: s.id })),
         "parent_skill"
       );
     }
@@ -51,7 +51,7 @@ export async function getOrganizationTagsOptions() {
     const resp = await axios.get(process.env.API_URL + "/api/organizationtags/");
     if (resp.data.results.length === 0) return null;
     else {
-      return resp.data.results.map(t => {
+      return resp.data.results.map((t) => {
         return { ...t, key: t.id, additionalInfo: t.additional_info ? t.additional_info : [] };
       });
     }

@@ -2,10 +2,10 @@ import React from "react";
 import { Typography, makeStyles, Container } from "@material-ui/core";
 import SmallCloud from "./SmallCloud";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   contentWrapper: {
     background: theme.palette.primary.light,
-    position: "relative"
+    position: "relative",
   },
   contentContainer: {
     display: "flex",
@@ -13,24 +13,24 @@ const useStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(3),
     maxWidth: theme.breakpoints.md,
-    margin: "0 auto"
+    margin: "0 auto",
   },
   headersContainer: {
     marginLeft: theme.spacing(3),
-    position: "relative"
+    position: "relative",
   },
   headline: {
     color: theme.palette.primary.main,
     fontSize: 40,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   subHeader: {
     fontSize: 19,
     fontWeight: 600,
-    color: theme.palette.secondary.main
+    color: theme.palette.secondary.main,
   },
   mobileSubheaderContainer: {
-    marginTop: 30
+    marginTop: 30,
   },
   smallCloud2: {
     position: "absolute",
@@ -39,19 +39,19 @@ const useStyles = makeStyles(theme => ({
     bottom: 0,
     right: 20,
     [theme.breakpoints.down("xs")]: {
-      display: "none"
-    }
+      display: "none",
+    },
   },
   smallCloud1: {
     position: "absolute",
     width: 120,
     height: 90,
     top: -20,
-    right: -60
+    right: -60,
   },
   image: {
-    maxWidth: 70
-  }
+    maxWidth: 70,
+  },
 }));
 export default function TopSection({ headline, subHeader }) {
   const classes = useStyles();

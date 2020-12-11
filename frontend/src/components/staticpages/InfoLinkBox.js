@@ -1,8 +1,8 @@
 import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
-  infoLinkBox: props => ({
+const useStyles = makeStyles((theme) => ({
+  infoLinkBox: (props) => ({
     display: "flex",
     alignItems: "center",
     maxWidth: 600,
@@ -13,27 +13,27 @@ const useStyles = makeStyles(theme => ({
       width: "100%",
       maxWidth: 700,
       margin: "0 auto",
-      marginTop: theme.spacing(3)
-    }
+      marginTop: theme.spacing(3),
+    },
   }),
-  icon: props => ({
+  icon: (props) => ({
     marginRight: props.centerContent ? 0 : theme.spacing(3),
     width: 80,
     ["@media (max-width: 400px)"]: {
-      width: 45
-    }
+      width: 45,
+    },
   }),
   headline: {
     fontSize: 20,
     fontWeight: 700,
     marginBottom: theme.spacing(1),
     ["@media (max-width: 400px)"]: {
-      fontSize: 21
-    }
+      fontSize: 21,
+    },
   },
   text: {
-    fontWeight: 600
-  }
+    fontWeight: 600,
+  },
 }));
 
 export default function InfoLinkBox({
@@ -43,7 +43,7 @@ export default function InfoLinkBox({
   text,
   headline,
   children,
-  centerContent
+  centerContent,
 }) {
   const classes = useStyles({ centerContent: centerContent });
   return (

@@ -15,80 +15,82 @@ const NOT_LISTED = [
   "/settings",
   "/share",
   "/sitemap.xml",
-  "/stream"
+  "/stream",
 ];
 
 const STATIC_PAGE_PROPS = {
   "/": {
     priority: 1,
-    changefreq: "hourly"
+    changefreq: "hourly",
   },
   "/about": {
     priority: 0.9,
-    changefreq: "daily"
+    changefreq: "daily",
   },
   "/browse": {
     priority: 1,
-    changefreq: "hourly"
+    changefreq: "hourly",
   },
   "/donate": {
     priority: 0.9,
-    changefreq: "daily"
+    changefreq: "daily",
   },
   "/faq": {
     priority: 0.9,
-    changefreq: "daily"
+    changefreq: "daily",
   },
   "/imprint": {
     priority: 0.5,
-    changefreq: "monthly"
+    changefreq: "monthly",
   },
   "/privacy": {
     priority: 0.5,
-    changefreq: "weekly"
+    changefreq: "weekly",
   },
   "/signin": {
     priority: 0.8,
-    changefreq: "weekly"
+    changefreq: "weekly",
   },
   "/signup": {
     priority: 1,
-    changefreq: "weekly"
+    changefreq: "weekly",
   },
   "/terms": {
     priority: 0.5,
-    changefreq: "weekly"
+    changefreq: "weekly",
   },
   "/zoom": {
     priority: 0.5,
-    changefreq: "monthly"
-  }
+    changefreq: "monthly",
+  },
 };
 
 async function createSitemap(projectEntries, organizationEntries, memberEntries) {
   const staticPages = (await globby(["pages/*.js"]))
-    .map(pageUrl => pageUrl.replace("pages", "").replace(".js", ""))
-    .filter(pageUrl => !NOT_LISTED.includes(pageUrl));
+    .map((pageUrl) => pageUrl.replace("pages", "").replace(".js", ""))
+    .filter((pageUrl) => !NOT_LISTED.includes(pageUrl));
   const BASE_URL = process.env.BASE_URL ? process.env.BASE_URL : "https://climateconnect.earth";
   return `<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     ${getStaticPageEntries(staticPages)
-      .map(p => renderEntry(BASE_URL, p.url, p.priority, p.changefreq, p.lastmod))
+      .map((p) => renderEntry(BASE_URL, p.url, p.priority, p.changefreq, p.lastmod))
       .join("")}
-    ${projectEntries.map(p => renderEntry(BASE_URL, p.url_slug, 1, "daily", p.updated_at)).join("")}
+    ${projectEntries
+      .map((p) => renderEntry(BASE_URL, p.url_slug, 1, "daily", p.updated_at))
+      .join("")}
     ${organizationEntries
-      .map(o => renderEntry(BASE_URL, o.url_slug, 0.9, "daily", o.updated_at))
+      .map((o) => renderEntry(BASE_URL, o.url_slug, 0.9, "daily", o.updated_at))
       .join("")}
     ${memberEntries
-      .map(m => renderEntry(BASE_URL, m.url_slug, 0.8, "daily", m.updated_at))
+      .map((m) => renderEntry(BASE_URL, m.url_slug, 0.8, "daily", m.updated_at))
       .join("")}
     </urlset>`;
 }
 
-const getStaticPageEntries = staticPages => {
-  return staticPages.map(p => {
+const getStaticPageEntries = (staticPages) => {
+  return staticPages.map((p) => {
     const entry = {
-      url: p === "/index" ? "/" : p
+      url: p === "/index" ? "/" : p,
     };
     if (STATIC_PAGE_PROPS[p]) return { ...entry, ...STATIC_PAGE_PROPS[p] };
     return entry;
@@ -108,7 +110,7 @@ export async function getServerSideProps(ctx) {
   const [projectEntries, organizationEntries, memberEntries] = await Promise.all([
     getEntries("projects"),
     getEntries("organizations"),
-    getEntries("members")
+    getEntries("members"),
   ]);
   const res = ctx.res;
   res.setHeader("Content-Type", "text/xml");
@@ -122,7 +124,7 @@ export async function getServerSideProps(ctx) {
   return { props: {} };
 }
 
-const getEntries = async entryTypePlural => {
+const getEntries = async (entryTypePlural) => {
   try {
     const resp = await axios.get(process.env.API_URL + "/api/sitemap/" + entryTypePlural + "/");
     if (resp.data.length === 0) return null;
@@ -136,10 +138,10 @@ const getEntries = async entryTypePlural => {
 
 const parseEntries = (entryTypePlural, entries) => {
   const firstLevelPath = entryTypePlural === "members" ? "profiles" : entryTypePlural;
-  return entries.map(e => {
+  return entries.map((e) => {
     return {
       url_slug: "/" + firstLevelPath + "/" + encodeURIComponent(e.url_slug),
-      updated_at: e.updated_at
+      updated_at: e.updated_at,
     };
   });
 };

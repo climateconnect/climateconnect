@@ -2,16 +2,16 @@ import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
     position: "relative",
     ["&:hover #hover-image-container"]: {
       transform: "scale(0.3)",
       transitionDuration: "0.5s",
-      transformOrigin: "0% 100%"
-    }
+      transformOrigin: "0% 100%",
+    },
   },
-  imageContainer: props => ({
+  imageContainer: (props) => ({
     background: `url('${props.image}')`,
     transformOrigin: "0% 100%",
     transitionDuration: "0.5s",
@@ -20,13 +20,13 @@ const useStyles = makeStyles(theme => ({
     height: "100%",
     width: "100%",
     position: "relative",
-    zIndex: 1
+    zIndex: 1,
   }),
   image: {
     width: "100%",
-    height: "100%"
+    height: "100%",
   },
-  backgroundDiv: props => ({
+  backgroundDiv: (props) => ({
     position: "absolute",
     background:
       props.background === "primary" ? theme.palette.primary.main : theme.palette.yellow.main,
@@ -34,11 +34,11 @@ const useStyles = makeStyles(theme => ({
     bottom: 20,
     right: -20,
     left: 20,
-    textAlign: "center"
+    textAlign: "center",
   }),
   text: {
     fontWeight: 600,
-    fontSize: 14
+    fontSize: 14,
   },
   textDivInnerWrapper: {
     position: "relative",
@@ -47,16 +47,16 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "center",
     alignItems: "center",
     height: "100%",
-    width: "100%"
+    width: "100%",
   },
-  arrowIcon: props => ({
+  arrowIcon: (props) => ({
     position: "absolute",
     top: 0,
     right: 0,
     transform: "rotate(-45deg)",
     fontSize: 22,
-    color: props.background === "primary" ? "white" : theme.palette.primary.main
-  })
+    color: props.background === "primary" ? "white" : theme.palette.primary.main,
+  }),
 }));
 
 export default function HoverImage({ src, text, className, background }) {

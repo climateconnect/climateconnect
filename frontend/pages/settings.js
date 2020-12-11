@@ -30,15 +30,15 @@ export default function Settings({ settings, token }) {
     );
 }
 
-Settings.getInitialProps = async ctx => {
+Settings.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
   return {
     settings: await getSettings(token),
-    token: token
+    token: token,
   };
 };
 
-const getSettings = async token => {
+const getSettings = async (token) => {
   try {
     const resp = await Axios.get(
       process.env.API_URL + "/api/account_settings/",

@@ -6,12 +6,12 @@ import Cookies from "universal-cookie";
 import { useMediaQuery, Typography } from "@material-ui/core";
 import FeedbackButton from "../feedback/FeedbackButton";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   leaveSpaceForFooter: {
     position: "relative",
     //height of footer + spacing(1)
     paddingBottom: theme.spacing(9),
-    minHeight: "100vh"
+    minHeight: "100vh",
   },
   spinnerContainer: {
     display: "flex",
@@ -20,11 +20,11 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center",
     justifyContent: "center",
     height: "100vh",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   spinner: {
-    width: 100
-  }
+    width: 100,
+  },
 }));
 
 export default function LayoutWrapper({
@@ -34,17 +34,17 @@ export default function LayoutWrapper({
   fixedHeight,
   noFeedbackButton,
   noSpaceForFooter,
-  description
+  description,
 }) {
   const classes = useStyles();
   const [initialized, setInitialized] = React.useState(false);
-  const isSmallerThanMediumScreen = useMediaQuery(theme => theme.breakpoints.down("md"));
+  const isSmallerThanMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const [loading, setLoading] = React.useState(true);
   const cookies = new Cookies();
   const [bannerOpen, setBannerOpen] = React.useState(true);
   const acceptedNecessary = cookies.get("acceptedNecessary");
   const closeBanner = () => setBannerOpen(false);
-  useEffect(function() {
+  useEffect(function () {
     if (!initialized) setInitialized(true);
     if (loading) {
       setLoading(false);

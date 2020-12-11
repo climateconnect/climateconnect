@@ -12,12 +12,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import ManageOrganizationMembers from "../../src/components/organization/ManageOrganizationMembers";
 import { sendToLogin } from "../../public/lib/apiOperations";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     headline: {
       textAlign: "center",
-      marginTop: theme.spacing(4)
-    }
+      marginTop: theme.spacing(4),
+    },
   };
 });
 
@@ -26,7 +26,7 @@ export default function manageOrganizationMembers({
   members,
   availabilityOptions,
   rolesOptions,
-  token
+  token,
 }) {
   const { user } = useContext(UserContext);
   const classes = useStyles();
@@ -42,7 +42,7 @@ export default function manageOrganizationMembers({
         <LoginNudge fullPage whatToDo="manage the members of this organization" />
       </WideLayout>
     );
-  else if (!members.find(m => m.id === user.id))
+  else if (!members.find((m) => m.id === user.id))
     return (
       <WideLayout
         title="Please log in to manage the members of an organization"
@@ -56,8 +56,8 @@ export default function manageOrganizationMembers({
       </WideLayout>
     );
   else if (
-    members.find(m => m.id === user.id).role.name != "Creator" &&
-    members.find(m => m.id === user.id).role.name != "Administrator"
+    members.find((m) => m.id === user.id).role.name != "Creator" &&
+    members.find((m) => m.id === user.id).role.name != "Administrator"
   )
     return (
       <WideLayout title="No permission to manage members of this organization" hideHeadline={true}>
@@ -84,7 +84,7 @@ export default function manageOrganizationMembers({
   }
 }
 
-manageOrganizationMembers.getInitialProps = async ctx => {
+manageOrganizationMembers.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
   if (ctx.req && !token) {
     const message = "You have to log in to manage an organization's members.";
@@ -95,14 +95,14 @@ manageOrganizationMembers.getInitialProps = async ctx => {
     getOrganizationByUrlIfExists(organizationUrl, token),
     getMembersByOrganization(organizationUrl, token),
     getRolesOptions(token),
-    getAvailabilityOptions(token)
+    getAvailabilityOptions(token),
   ]);
   return {
     organization: organization,
     members: members,
     rolesOptions: rolesOptions,
     availabilityOptions: availabilityOptions,
-    token: token
+    token: token,
   };
 };
 
@@ -138,7 +138,7 @@ async function getMembersByOrganization(organizationUrl, token) {
 }
 
 function parseOrganizationMembers(members) {
-  return members.map(m => {
+  return members.map((m) => {
     const member = m.user;
     return {
       ...member,
@@ -149,7 +149,7 @@ function parseOrganizationMembers(members) {
       time_per_week: m.time_per_week,
       role_in_organization: m.role_in_organization ? m.role_in_organization : "",
       location: member.city ? member.city + ", " + member.country : member.country,
-      isCreator: m.permission.role_type === 2
+      isCreator: m.permission.role_type === 2,
     };
   });
 }
@@ -160,7 +160,7 @@ function parseOrganization(organization) {
     background_image: organization.background_image,
     name: organization.name,
     image: organization.image,
-    types: organization.types.map(t => ({ ...t.organization_tag, key: t.organization_tag.id })),
+    types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
     info: {
       location: organization.city
         ? organization.city + ", " + organization.country
@@ -168,12 +168,12 @@ function parseOrganization(organization) {
       shortdescription: organization.short_description,
       school: organization.school,
       organ: organization.organ,
-      parent_organization: organization.parent_organization
-    }
+      parent_organization: organization.parent_organization,
+    },
   };
 }
 
-const getRolesOptions = async token => {
+const getRolesOptions = async (token) => {
   try {
     const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
@@ -187,7 +187,7 @@ const getRolesOptions = async token => {
   }
 };
 
-const getAvailabilityOptions = async token => {
+const getAvailabilityOptions = async (token) => {
   try {
     const resp = await axios.get(process.env.API_URL + "/availability/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;

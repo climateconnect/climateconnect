@@ -5,11 +5,11 @@ import ProjectMetaData from "./ProjectMetaData";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import Truncate from "react-truncate";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     root: {
       "&:hover": {
-        cursor: "pointer"
+        cursor: "pointer",
       },
       "-webkit-user-select": "none",
       "-moz-user-select": "none",
@@ -20,17 +20,17 @@ const useStyles = makeStyles(theme => {
       position: "relative",
       height: "100%",
       display: "flex",
-      flexDirection: "column"
+      flexDirection: "column",
     },
     placeholderImg: {
       visibility: "hidden",
-      width: "100%"
+      width: "100%",
     },
     projectNameWrapper: {
       display: "block",
       marginBottom: theme.spacing(0.75),
       padding: theme.spacing(2),
-      paddingBottom: 0
+      paddingBottom: 0,
     },
     projectName: {
       fontWeight: "bold",
@@ -38,25 +38,25 @@ const useStyles = makeStyles(theme => {
       lineHeight: 1.5,
       fontSize: 15,
       ["&span"]: {
-        whiteSpace: "nowrap"
-      }
+        whiteSpace: "nowrap",
+      },
     },
     button: {
       marginTop: theme.spacing(1),
       margin: "0 auto",
-      display: "block"
+      display: "block",
     },
     noUnderline: {
       textDecoration: "inherit",
       "&:hover": {
-        textDecoration: "inherit"
-      }
+        textDecoration: "inherit",
+      },
     },
     draftTriangle: {
       width: 0,
       height: 0,
       borderTop: "100px solid " + theme.palette.primary.main,
-      borderRight: "100px solid transparent"
+      borderRight: "100px solid transparent",
     },
     draftText: {
       transform: "rotate(-45deg)",
@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => {
       marginTop: "-56px",
       marginLeft: "10px",
       fontSize: "20px",
-      color: "white"
+      color: "white",
     },
     cardContent: {
       background: "white",
@@ -75,20 +75,20 @@ const useStyles = makeStyles(theme => {
       width: "100%",
       visibility: "hidden",
       ["&:last-child"]: {
-        padding: 0
-      }
+        padding: 0,
+      },
     },
     cardContentWithDescription: {
       position: "absolute",
       visibility: "visible",
       background: "white",
       bottom: 0,
-      minHeight: "100%"
+      minHeight: "100%",
     },
     cardContentWrapper: {
       position: "relative",
-      flex: 1
-    }
+      flex: 1,
+    },
   };
 });
 

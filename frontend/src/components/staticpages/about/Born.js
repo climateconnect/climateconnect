@@ -2,16 +2,16 @@ import React from "react";
 import { makeStyles, Typography, Container } from "@material-ui/core";
 import HoverImage from "../HoverImage";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    background: theme.palette.primary.main
+    background: theme.palette.primary.main,
   },
   wrapper: {
     display: "flex",
     alignItems: "center",
     [theme.breakpoints.down("sm")]: {
-      flexDirection: "column"
-    }
+      flexDirection: "column",
+    },
   },
   textBlock: {
     color: "white",
@@ -22,15 +22,15 @@ const useStyles = makeStyles(theme => ({
       fontSize: 18,
       marginTop: theme.spacing(3),
       paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2)
-    }
+      paddingRight: theme.spacing(2),
+    },
   },
   textWrapper: {
     marginRight: theme.spacing(3),
     [theme.breakpoints.down("sm")]: {
       marginRight: 0,
-      marginTop: theme.spacing(3)
-    }
+      marginTop: theme.spacing(3),
+    },
   },
   imageWrapper: {
     display: "flex",
@@ -45,17 +45,17 @@ const useStyles = makeStyles(theme => ({
       marginBottom: theme.spacing(7),
       paddingRight: theme.spacing(3),
       width: "80%",
-      maxWidth: 630
-    }
+      maxWidth: 630,
+    },
   },
   hoverImage: {
     width: 300,
     height: 200,
     [theme.breakpoints.down("sm")]: {
       width: "100%",
-      height: "auto"
-    }
-  }
+      height: "auto",
+    },
+  },
 }));
 
 export default function Born({ className, headlineClass }) {

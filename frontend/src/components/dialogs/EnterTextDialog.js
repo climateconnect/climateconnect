@@ -6,8 +6,8 @@ import GenericDialog from "./GenericDialog";
 
 const useStyles = makeStyles({
   textField: {
-    width: "100%"
-  }
+    width: "100%",
+  },
 });
 
 export default function EnterTextDialog({
@@ -17,7 +17,7 @@ export default function EnterTextDialog({
   inputLabel,
   applyText,
   maxLength,
-  className
+  className,
 }) {
   const classes = useStyles();
   const [element, setElement] = React.useState(null);
@@ -32,11 +32,11 @@ export default function EnterTextDialog({
     setElement(null);
   };
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setElement(event.target.value);
   };
 
-  const handleKeyPress = event => {
+  const handleKeyPress = (event) => {
     if (event.key === "Enter") applyElement();
   };
 
@@ -72,5 +72,5 @@ EnterTextDialog.propTypes = {
   inputLabel: PropTypes.string.isRequired,
   applyText: PropTypes.string.isRequired,
   maxLength: PropTypes.number,
-  className: PropTypes.string
+  className: PropTypes.string,
 };

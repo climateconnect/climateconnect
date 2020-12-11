@@ -4,11 +4,11 @@ import { Typography, Card, CardContent, Link, Avatar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     root: {
       "&:hover": {
-        cursor: "pointer"
+        cursor: "pointer",
       },
       "-webkit-user-select": "none",
       "-moz-user-select": "none",
@@ -17,29 +17,29 @@ const useStyles = makeStyles(theme => {
       backgroundColor: "inherit",
       borderRadius: 0,
       textAlign: "center",
-      height: 250
+      height: 250,
     },
     bold: {
-      fontWeight: "bold"
+      fontWeight: "bold",
     },
     button: {
       marginTop: theme.spacing(1),
       margin: "0 auto",
-      display: "block"
+      display: "block",
     },
     media: {
       height: 80,
       width: 80,
       backgroundSize: "contain",
       marginTop: theme.spacing(3),
-      margin: "0 auto"
+      margin: "0 auto",
     },
     noUnderline: {
       textDecoration: "inherit",
       "&:hover": {
-        textDecoration: "inherit"
-      }
-    }
+        textDecoration: "inherit",
+      },
+    },
   };
 });
 

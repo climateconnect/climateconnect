@@ -4,18 +4,18 @@ import theme from "../../themes/theme";
 import SmallCloud from "../staticpages/SmallCloud";
 import pitch_elements from "../../../public/data/pitch_elements.json";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: theme.spacing(10),
     position: "relative",
     maxWidth: 1280,
-    margin: "0 auto"
+    margin: "0 auto",
   },
   pitchElementsWrapper: {
     marginTop: theme.spacing(8),
     [theme.breakpoints.down("sm")]: {
-      marginTop: theme.spacing(5)
-    }
+      marginTop: theme.spacing(5),
+    },
   },
   pitchElementRoot: {
     width: "90%",
@@ -30,15 +30,15 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("sm")]: {
       flexDirection: "column",
       justifyContent: "space-between",
-      minHeight: 500
-    }
+      minHeight: 500,
+    },
   },
   pitchElementHeadline: {
     fontSize: 25,
     fontWeight: 600,
-    marginBottom: theme.spacing(3)
+    marginBottom: theme.spacing(3),
   },
-  pitchElementImageContainer: props => ({
+  pitchElementImageContainer: (props) => ({
     flexBasis: 450,
     flexShrink: 0,
     height: 300,
@@ -52,58 +52,58 @@ const useStyles = makeStyles(theme => ({
       background: "none",
       height: "auto",
       maxHeight: 230,
-      margin: 0
-    }
+      margin: 0,
+    },
   }),
   pitchElementImage: {
-    maxWidth: "100%"
+    maxWidth: "100%",
   },
   smallCloud1: {
     position: "absolute",
     top: -100,
     width: 120,
     height: 80,
-    left: -50
+    left: -50,
   },
   smallCloud2: {
     position: "absolute",
     top: 0,
-    left: 0
+    left: 0,
   },
   smallCloud3: {
     position: "absolute",
     top: 0,
-    right: -200
+    right: -200,
   },
   smallCloud4: {
     position: "absolute",
     top: 115,
     left: -180,
     height: 80,
-    width: 145
+    width: 145,
   },
   smallCloud5: {
     position: "absolute",
     top: 295,
     right: -170,
     width: 120,
-    height: 80
+    height: 80,
   },
   smallCloud6: {
     position: "absolute",
     top: 380,
-    right: -100
+    right: -100,
   },
   smallCloud7: {
     position: "absolute",
     right: 40,
-    top: 0
+    top: 0,
   },
   pitchElementText: {
     maxWidth: 500,
     [theme.breakpoints.down("xs")]: {
-      paddingBottom: theme.spacing(4)
-    }
+      paddingBottom: theme.spacing(4),
+    },
   },
   mobileCloud1: {
     position: "absolute",
@@ -112,40 +112,40 @@ const useStyles = makeStyles(theme => ({
     width: 120,
     height: 80,
     [theme.breakpoints.down("xs")]: {
-      left: -60
-    }
+      left: -60,
+    },
   },
   mobileCloud2: {
     position: "absolute",
     left: -75,
     width: 130,
-    height: 80
+    height: 80,
   },
   mobileCloud3: {
     position: "absolute",
     right: -80,
     top: 130,
     width: 120,
-    height: 80
+    height: 80,
   },
   mobileCloud4: {
     position: "absolute",
     left: -30,
-    top: -80
+    top: -80,
   },
   mobileCloud5: {
     position: "absolute",
     right: -50,
-    top: -40
+    top: -40,
   },
   mobileCloud6: {
     position: "absolute",
     bottom: -60,
     left: 0,
     [theme.breakpoints.down("xs")]: {
-      display: "none"
-    }
-  }
+      display: "none",
+    },
+  },
 }));
 
 export default function PitchBox({ h1ClassName }) {

@@ -9,15 +9,15 @@ export default function FilterSearchBar({
   onSubmit,
   value,
   onChange,
-  InputLabelClasses
+  InputLabelClasses,
 }) {
-  const handleKeyDown = event => {
+  const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       onSubmit(type);
       event.target.blur();
     }
   };
-  const handleChange = event => {
+  const handleChange = (event) => {
     onChange(type, event.target.value);
   };
   return (
@@ -32,10 +32,10 @@ export default function FilterSearchBar({
             <SearchIcon />
           </InputAdornment>
         ),
-        classes: InputLabelClasses
+        classes: InputLabelClasses,
       }}
       InputLabelProps={{
-        classes: InputLabelClasses
+        classes: InputLabelClasses,
       }}
       value={value}
       onChange={handleChange}

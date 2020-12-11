@@ -9,14 +9,14 @@ import Alert from "@material-ui/lab/Alert";
 import LoadingContainer from "../general/LoadingContainer";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   mainHeading: {
     textAlign: "center",
-    margin: `${theme.spacing(4)}px 0`
+    margin: `${theme.spacing(4)}px 0`,
   },
   alert: {
-    width: "100%"
-  }
+    width: "100%",
+  },
 }));
 
 export default function Layout({
@@ -27,7 +27,7 @@ export default function Layout({
   message,
   messageType,
   isLoading,
-  isStaticPage
+  isStaticPage,
 }) {
   const classes = useStyles();
   const [hideAlertMessage, setHideAlertMessage] = React.useState(false);

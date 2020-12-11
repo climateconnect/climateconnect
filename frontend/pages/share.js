@@ -15,7 +15,7 @@ export default function Share({
   skillsOptions,
   rolesOptions,
   statusOptions,
-  token
+  token,
 }) {
   const { user } = useContext(UserContext);
   if (!user)
@@ -42,7 +42,7 @@ export default function Share({
   }
 }
 
-Share.getInitialProps = async ctx => {
+Share.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
   const [
     availabilityOptions,
@@ -50,14 +50,14 @@ Share.getInitialProps = async ctx => {
     categoryOptions,
     skillsOptions,
     rolesOptions,
-    statusOptions
+    statusOptions,
   ] = await Promise.all([
     getAvailabilityOptions(token),
     getUserOrganizations(token),
     getCategoryOptions(token),
     getSkillsOptions(token),
     getRolesOptions(token),
-    getStatusOptions(token)
+    getStatusOptions(token),
   ]);
   return {
     availabilityOptions: availabilityOptions,
@@ -66,11 +66,11 @@ Share.getInitialProps = async ctx => {
     skillsOptions: skillsOptions,
     rolesOptions: rolesOptions,
     statusOptions: statusOptions,
-    token: token
+    token: token,
   };
 };
 
-const getAvailabilityOptions = async token => {
+const getAvailabilityOptions = async (token) => {
   try {
     const resp = await axios.get(process.env.API_URL + "/availability/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
@@ -84,7 +84,7 @@ const getAvailabilityOptions = async token => {
   }
 };
 
-const getCategoryOptions = async token => {
+const getCategoryOptions = async (token) => {
   try {
     const resp = await axios.get(process.env.API_URL + "/api/projecttags/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
@@ -98,7 +98,7 @@ const getCategoryOptions = async token => {
   }
 };
 
-const getSkillsOptions = async token => {
+const getSkillsOptions = async (token) => {
   try {
     const resp = await axios.get(process.env.API_URL + "/skills/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
@@ -112,7 +112,7 @@ const getSkillsOptions = async token => {
   }
 };
 
-const getRolesOptions = async token => {
+const getRolesOptions = async (token) => {
   try {
     const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
@@ -126,7 +126,7 @@ const getRolesOptions = async token => {
   }
 };
 
-const getStatusOptions = async token => {
+const getStatusOptions = async (token) => {
   try {
     const resp = await axios.get(process.env.API_URL + "/api/projectstatus/", tokenConfig(token));
     if (resp.data.results.length === 0) return null;
@@ -140,7 +140,7 @@ const getStatusOptions = async token => {
   }
 };
 
-const getUserOrganizations = async token => {
+const getUserOrganizations = async (token) => {
   try {
     const resp = await axios.get(
       process.env.API_URL + "/api/my_organizations/",
@@ -148,7 +148,7 @@ const getUserOrganizations = async token => {
     );
     if (resp.data.length === 0) return null;
     else {
-      return resp.data.map(o => o.organization);
+      return resp.data.map((o) => o.organization);
     }
   } catch (err) {
     console.log(err);

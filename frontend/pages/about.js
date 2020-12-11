@@ -20,15 +20,15 @@ import StartNowBanner from "../src/components/staticpages/StartNowBanner";
 import UserContext from "../src/components/context/UserContext";
 import TopOfPage from "../src/components/hooks/TopOfPage";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     root: {
-      overflowX: "hidden"
+      overflowX: "hidden",
     },
     headlineClass: {
       fontSize: 28,
       fontWeight: 600,
-      textAlign: "center"
+      textAlign: "center",
     },
     boxHeadlineClass: {
       fontSize: 28,
@@ -38,26 +38,26 @@ const useStyles = makeStyles(theme => {
       marginBottom: theme.spacing(2),
       [theme.breakpoints.down("sm")]: {
         textAlign: "center",
-        fontSize: 25
-      }
+        fontSize: 25,
+      },
     },
     solutionHeadline: {
       marginTop: theme.spacing(12),
-      marginBottom: theme.spacing(5)
+      marginBottom: theme.spacing(5),
     },
     quote: {
       maxWidth: 800,
-      marginTop: theme.spacing(10)
+      marginTop: theme.spacing(10),
     },
     born: {
-      marginTop: theme.spacing(6)
+      marginTop: theme.spacing(6),
     },
     team: {
-      marginBottom: theme.spacing(6)
+      marginBottom: theme.spacing(6),
     },
     challenege: {
-      marginTop: theme.spacing(6)
-    }
+      marginTop: theme.spacing(6),
+    },
   };
 });
 
@@ -116,7 +116,7 @@ export default function About({ faqQuestions }) {
 About.getInitialProps = async () => {
   const questions = await getQuestionsWithAnswers();
   return {
-    faqQuestions: questions
+    faqQuestions: questions,
   };
 };
 
@@ -128,7 +128,7 @@ const getQuestionsWithAnswers = async () => {
       console.log(resp.data.results);
       return {
         by_section: sortBySection(resp.data.results),
-        all: resp.data.results
+        all: resp.data.results,
       };
     }
   } catch (err) {
@@ -139,7 +139,7 @@ const getQuestionsWithAnswers = async () => {
   }
 };
 
-const sortBySection = questions => {
+const sortBySection = (questions) => {
   return questions.reduce((obj, question) => {
     if (!obj[question.section]) obj[question.section] = [question];
     else obj[question.section].push(question);

@@ -10,26 +10,26 @@ import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import EnterTextDialog from "../dialogs/EnterTextDialog";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   select: {
-    maxWidth: 250
+    maxWidth: 250,
   },
   startDate: {
-    marginRight: theme.spacing(4)
+    marginRight: theme.spacing(4),
   },
   creator: {
     display: "inline-block",
-    marginLeft: theme.spacing(2)
+    marginLeft: theme.spacing(2),
   },
   inlineBlock: {
     marginBottom: theme.spacing(2),
-    display: "inline-block"
+    display: "inline-block",
   },
   block: {
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
   },
   subHeader: {
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   skill: {
     display: "flex",
@@ -40,23 +40,23 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1),
     background: "none",
     borderRadius: 0,
-    fontSize: 16
+    fontSize: 16,
   },
   flexContainer: {
     display: "flex",
     flexDirection: "row",
     padding: 0,
     marginBottom: theme.spacing(3),
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   deleteProjectButton: {
     float: "right",
     backgroundColor: theme.palette.error.main,
     color: "white",
     "&:hover": {
-      backgroundColor: "#ea6962"
-    }
-  }
+      backgroundColor: "#ea6962",
+    },
+  },
 }));
 
 export default function EditProjectContent({
@@ -66,15 +66,15 @@ export default function EditProjectContent({
   userOrganizations,
   skillsOptions,
   user_role,
-  deleteProject
+  deleteProject,
 }) {
   const classes = useStyles();
   const [selectedItems, setSelectedItems] = React.useState(
     project.skills ? [...project.skills] : []
   );
   const [open, setOpen] = React.useState({ skills: false, connections: false, delete: false });
-  const statusesWithStartDate = statusOptions.filter(s => s.has_start_date).map(s => s.id);
-  const statusesWithEndDate = statusOptions.filter(s => s.has_end_date).map(s => s.id);
+  const statusesWithStartDate = statusOptions.filter((s) => s.has_start_date).map((s) => s.id);
+  const statusesWithEndDate = statusOptions.filter((s) => s.has_end_date).map((s) => s.id);
 
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
@@ -84,15 +84,15 @@ export default function EditProjectContent({
     setOpen({ ...open, skills: true });
   };
 
-  const handleSkillDelete = skill => {
+  const handleSkillDelete = (skill) => {
     handleSetProject({
       ...project,
-      skills: project.skills.filter(s => s.id !== skill.id)
+      skills: project.skills.filter((s) => s.id !== skill.id),
     });
-    setSelectedItems(project.skills.filter(s => s.id !== skill.id));
+    setSelectedItems(project.skills.filter((s) => s.id !== skill.id));
   };
 
-  const handleSkillsDialogClose = skills => {
+  const handleSkillsDialogClose = (skills) => {
     if (skills) handleSetProject({ ...project, skills: skills });
     setOpen({ ...open, skills: false });
   };
@@ -101,21 +101,21 @@ export default function EditProjectContent({
     setOpen({ ...open, connections: true });
   };
 
-  const handleConnectionDelete = connection => {
+  const handleConnectionDelete = (connection) => {
     handleSetProject({
       ...project,
-      helpful_connections: project.helpful_connections.filter(c => c != connection)
+      helpful_connections: project.helpful_connections.filter((c) => c != connection),
     });
   };
 
-  const handleConnectionsDialogClose = connection => {
+  const handleConnectionsDialogClose = (connection) => {
     if (project.helpful_connections && project.helpful_connections.includes(connection))
       alert("You can not add the same connection twice.");
     else {
       if (connection)
         handleSetProject({
           ...project,
-          helpful_connections: [...project.helpful_connections, connection]
+          helpful_connections: [...project.helpful_connections, connection],
         });
       setOpen({ ...open, connections: false });
     }
@@ -125,14 +125,14 @@ export default function EditProjectContent({
     setOpen({ ...open, delete: true });
   };
 
-  const handleDeleteProjectDialogClose = confirmed => {
+  const handleDeleteProjectDialogClose = (confirmed) => {
     if (confirmed) {
       deleteProject();
     }
     setOpen({ ...open, delete: false });
   };
 
-  const handleSwitchChange = event => {
+  const handleSwitchChange = (event) => {
     if (
       event.target.checked &&
       !project.project_parents.parent_organization &&
@@ -142,9 +142,9 @@ export default function EditProjectContent({
         ...project,
         project_parents: {
           ...project.project_parents,
-          parent_organization: userOrganizations[0]
+          parent_organization: userOrganizations[0],
         },
-        is_personal_project: !event.target.checked
+        is_personal_project: !event.target.checked,
       });
     else handleChangeProject(!event.target.checked, "is_personal_project");
   };
@@ -167,7 +167,7 @@ export default function EditProjectContent({
           <Button
             classes={{
               root: classes.deleteProjectButton,
-              focusVisible: classes.deleteProjectButtonFocus
+              focusVisible: classes.deleteProjectButtonFocus,
             }}
             variant="contained"
             color="error"
@@ -194,11 +194,13 @@ export default function EditProjectContent({
                   ? project.project_parents.parent_organization
                   : userOrganizations[0]
               }
-              onChange={event =>
+              onChange={(event) =>
                 handleChangeProject(
                   {
                     ...project.project_parents,
-                    parent_organization: userOrganizations.find(o => o.name === event.target.value)
+                    parent_organization: userOrganizations.find(
+                      (o) => o.name === event.target.value
+                    ),
                   },
                   "project_parents"
                 )
@@ -214,9 +216,9 @@ export default function EditProjectContent({
           <SelectField
             controlled
             controlledValue={project.status}
-            onChange={event =>
+            onChange={(event) =>
               handleChangeProject(
-                statusOptions.find(s => s.name === event.target.value),
+                statusOptions.find((s) => s.name === event.target.value),
                 "status"
               )
             }
@@ -232,7 +234,7 @@ export default function EditProjectContent({
               className={classes.startDate}
               label="Start date"
               date={project.start_date}
-              handleChange={newDate => handleChangeProject(newDate, "start_date")}
+              handleChange={(newDate) => handleChangeProject(newDate, "start_date")}
               required
             />
           )}
@@ -241,7 +243,7 @@ export default function EditProjectContent({
               className={classes.datePicker}
               label="End date"
               date={project.start_date}
-              handleChange={newDate => handleChangeProject(newDate, "end_date")}
+              handleChange={(newDate) => handleChangeProject(newDate, "end_date")}
               required
               minDate={project.start_date && new Date(project.start_date)}
             />
@@ -255,7 +257,7 @@ export default function EditProjectContent({
             multiline
             rows={9}
             label="Project description"
-            onChange={event =>
+            onChange={(event) =>
               handleChangeProject(event.target.value.substring(0, 4000), "description")
             }
             helperText={"Describe your project in detail. Please only use English!"}
@@ -271,7 +273,7 @@ export default function EditProjectContent({
           </Typography>
           <Switch
             checked={project.collaborators_welcome}
-            onChange={event => handleChangeProject(event.target.checked, "collaborators_welcome")}
+            onChange={(event) => handleChangeProject(event.target.checked, "collaborators_welcome")}
             name="checkedA"
             inputProps={{ "aria-label": "secondary checkbox" }}
             color="primary"
@@ -293,7 +295,7 @@ export default function EditProjectContent({
               <div>
                 {project.skills && (
                   <List className={classes.flexContainer}>
-                    {project.skills.map(skill => (
+                    {project.skills.map((skill) => (
                       <Chip
                         key={skill.id}
                         label={skill.name}
@@ -321,7 +323,7 @@ export default function EditProjectContent({
               </Typography>
               {project.helpful_connections && (
                 <List className={classes.flexContainer}>
-                  {project.helpful_connections.map(connection => (
+                  {project.helpful_connections.map((connection) => (
                     <Chip
                       key={connection}
                       label={connection}

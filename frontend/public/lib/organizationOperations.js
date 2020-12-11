@@ -7,17 +7,17 @@ export function parseOrganization(organization, reduceTypes) {
     name: organization.name,
     image: getImageUrl(organization.image),
     types: organization.types
-      ? organization.types.map(t => ({ ...t.organization_tag, key: t.organization_tag.id }))
+      ? organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id }))
       : [],
     info: {
       location: organization.city
         ? organization.city + ", " + organization.country
         : organization.country,
       shortdescription: organization.short_description,
-      website: organization.website
-    }
+      website: organization.website,
+    },
   };
-  if (reduceTypes) org.types = organization.types ? org.types.map(t => t.key) : [];
+  if (reduceTypes) org.types = organization.types ? org.types.map((t) => t.key) : [];
   const additional_info = organization.types.reduce((additionalInfoArray, t) => {
     const type = t.organization_tag;
     if (type.additional_info && type.additional_info.length > 0) {
@@ -25,7 +25,7 @@ export function parseOrganization(organization, reduceTypes) {
     } else return additionalInfoArray;
   }, []);
   if (additional_info) {
-    additional_info.map(infoEl => {
+    additional_info.map((infoEl) => {
       org.info[infoEl] = organization[infoEl];
     });
   }

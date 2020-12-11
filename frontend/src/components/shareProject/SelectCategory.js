@@ -4,34 +4,34 @@ import MultiLevelSelector from "../general/MultiLevelSelector";
 import { makeStyles } from "@material-ui/core/styles";
 import BottomNavigation from "../general/BottomNavigation";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     headline: {
       textAlign: "center",
       marginTop: theme.spacing(8),
-      marginBottom: theme.spacing(8)
+      marginBottom: theme.spacing(8),
     },
     stepsTracker: {
       maxWidth: 600,
-      margin: "0 auto"
+      margin: "0 auto",
     },
     block: {
-      marginBottom: theme.spacing(4)
+      marginBottom: theme.spacing(4),
     },
     backButton: {
-      color: theme.palette.primary.main
+      color: theme.palette.primary.main,
     },
     nextStepButton: {
-      float: "right"
+      float: "right",
     },
     appealText: {
       textAlign: "center",
-      fontWeight: "bold"
+      fontWeight: "bold",
     },
     appealBox: {
       marginTop: theme.spacing(4),
-      marginBottom: theme.spacing(-2)
-    }
+      marginBottom: theme.spacing(-2),
+    },
   };
 });
 
@@ -40,7 +40,7 @@ export default function SelectCategory({
   handleSetProjectData,
   goToNextStep,
   goToPreviousStep,
-  categoryOptions
+  categoryOptions,
 }) {
   const classes = useStyles();
   const [selectedCategories, setSelectedCategories] = React.useState(

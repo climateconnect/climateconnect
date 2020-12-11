@@ -3,11 +3,11 @@ import { makeStyles, Typography, Button } from "@material-ui/core";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import ProjectPreviewsFixed from "../project/ProjectPreviewsFixed";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: "90%",
     maxWidth: 1280,
-    margin: "0 auto"
+    margin: "0 auto",
   },
   headline: {
     fontSize: 25,
@@ -15,23 +15,23 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(1),
     [theme.breakpoints.down("xs")]: {
       fontSize: 21,
-      marginBottom: theme.spacing(2)
-    }
+      marginBottom: theme.spacing(2),
+    },
   },
   explainerText: {
     maxWidth: 750,
-    marginBottom: theme.spacing(3)
+    marginBottom: theme.spacing(3),
   },
   showProjectsButtonContainer: {
     marginTop: theme.spacing(3),
-    color: theme.palette.yellow.main
+    color: theme.palette.yellow.main,
   },
   showProjectsArrow: {
-    marginLeft: theme.spacing(2)
+    marginLeft: theme.spacing(2),
   },
   showProjectsText: {
-    textDecoration: "underline"
-  }
+    textDecoration: "underline",
+  },
 }));
 
 export default function ProjectsSharedBox({ projects }) {

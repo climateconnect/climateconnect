@@ -4,22 +4,22 @@ import LightBigButton from "../staticpages/LightBigButton";
 import SmallCloud from "../staticpages/SmallCloud";
 import theme from "../../themes/theme";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     background: theme.palette.primary.main,
     height: 700,
     marginTop: theme.spacing(-20),
     paddingTop: theme.spacing(23),
     [theme.breakpoints.down("sm")]: {
-      height: 850
-    }
+      height: 850,
+    },
   },
   content: {
     display: "flex",
     alignItems: "center",
     [theme.breakpoints.down("sm")]: {
-      flexDirection: "column"
-    }
+      flexDirection: "column",
+    },
   },
   cloudContainer: {
     background: "url(/icons/join-community-cloud.svg)",
@@ -36,17 +36,17 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center",
     position: "relative",
     [theme.breakpoints.down("lg")]: {
-      marginLeft: -100
+      marginLeft: -100,
     },
     [theme.breakpoints.down("sm")]: {
       marginLeft: -300,
       marginTop: -100,
       minWidth: 400,
-      justifyContent: "flex-end"
+      justifyContent: "flex-end",
     },
     [theme.breakpoints.down("xs")]: {
-      maxWidth: 475
-    }
+      maxWidth: 475,
+    },
   },
   loginIconContainer: {
     width: 500,
@@ -58,33 +58,33 @@ const useStyles = makeStyles(theme => ({
     backgroundSize: "contain",
     backgroundPosition: "right center",
     [theme.breakpoints.down("lg")]: {
-      maxWidth: "65%"
+      maxWidth: "65%",
     },
     [theme.breakpoints.down("sm")]: {
       maxWidth: "65%",
-      marginRight: 50
+      marginRight: 50,
     },
     [theme.breakpoints.down("xs")]: {
-      maxWidth: "55%"
+      maxWidth: "55%",
     },
     ["@media (max-width: 400px)"]: {
-      maxWidth: "45%"
-    }
+      maxWidth: "45%",
+    },
   },
   headline: {
     marginBottom: theme.spacing(3),
     position: "relative",
-    textAlign: "left"
+    textAlign: "left",
   },
   textContainer: {
     color: "white",
     marginLeft: theme.spacing(5),
     [theme.breakpoints.down("sm")]: {
-      marginLeft: 0
-    }
+      marginLeft: 0,
+    },
   },
   yellow: {
-    color: theme.palette.yellow.main
+    color: theme.palette.yellow.main,
   },
   signUpButtonContainer: {
     display: "flex",
@@ -95,19 +95,19 @@ const useStyles = makeStyles(theme => ({
     zIndex: 10,
     [theme.breakpoints.down("sm")]: {
       justifyContent: "flex-end",
-      marginBottom: 0
-    }
+      marginBottom: 0,
+    },
   },
   bePartOfCommunityText: {
     fontSize: 18,
     maxWidth: 580,
     [theme.breakpoints.down("sm")]: {
       fontWeight: 600,
-      fontSize: 17
+      fontSize: 17,
     },
     [theme.breakpoints.down("xs")]: {
-      fontSize: 15
-    }
+      fontSize: 15,
+    },
   },
   smallCloud1: {
     position: "absolute",
@@ -117,20 +117,20 @@ const useStyles = makeStyles(theme => ({
     height: 80,
     [theme.breakpoints.down("sm")]: {
       top: -60,
-      right: 200
+      right: 200,
     },
     [theme.breakpoints.down("xs")]: {
-      display: "none"
-    }
+      display: "none",
+    },
   },
   smallCloud2: {
     position: "absolute",
     top: -80,
     right: 0,
     [theme.breakpoints.down("sm")]: {
-      top: -60
-    }
-  }
+      top: -60,
+    },
+  },
 }));
 
 export default function JoinCommunityBox({ h1ClassName }) {

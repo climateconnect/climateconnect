@@ -4,7 +4,7 @@ import { IconButton } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import countries from "./../../../public/data/countries.json";
 
-const renderSearchOption = option => {
+const renderSearchOption = (option) => {
   return (
     <React.Fragment>
       <IconButton>
@@ -18,27 +18,27 @@ const renderSearchOption = option => {
 export default function EnterBasicOrganizationInfo({
   errorMessage,
   handleSubmit,
-  organizationInfo
+  organizationInfo,
 }) {
   const [parentOrganization, setParentOrganization] = React.useState(null);
   const onUnselect = () => {
     if (parentOrganization) setParentOrganization(null);
   };
-  const getOptionLabel = option => option.name;
+  const getOptionLabel = (option) => option.name;
   const fields = [
     {
       required: true,
       label: "Organization name",
       key: "organizationname",
       type: "text",
-      value: organizationInfo["name"]
+      value: organizationInfo["name"],
     },
     {
       label: "We are a sub-organization of a larger organization (e.g. local group)",
       key: "hasparentorganization",
       type: "checkbox",
       checked: false,
-      value: organizationInfo["hasparentorganization"]
+      value: organizationInfo["hasparentorganization"],
     },
     {
       required: true,
@@ -53,17 +53,17 @@ export default function EnterBasicOrganizationInfo({
         getOptionLabel: getOptionLabel,
         helperText: "Type the name of your parent organization.",
         onUnselect: onUnselect,
-        filterOut: []
+        filterOut: [],
       },
       onlyShowIfChecked: "hasparentorganization",
-      value: organizationInfo["parentorganizationname"]
+      value: organizationInfo["parentorganizationname"],
     },
     {
       required: true,
       label: "City",
       key: "city",
       type: "text",
-      value: organizationInfo["city"]
+      value: organizationInfo["city"],
     },
     {
       required: true,
@@ -72,21 +72,21 @@ export default function EnterBasicOrganizationInfo({
       type: "select",
       select: {
         defaultValue: organizationInfo["country"],
-        values: countries.map(c => ({ key: c.toLowerCase(), name: c })),
-        addEmptyValue: true
-      }
+        values: countries.map((c) => ({ key: c.toLowerCase(), name: c })),
+        addEmptyValue: true,
+      },
     },
     {
       required: true,
       label: `I verify that I am an authorized representative of this organization and have the right to act on its behalf in the creation and management of this page.`,
       key: "verified",
       type: "checkbox",
-      value: organizationInfo["verified"]
-    }
+      value: organizationInfo["verified"],
+    },
   ];
 
   const messages = {
-    submitMessage: "Next step"
+    submitMessage: "Next step",
   };
 
   return (

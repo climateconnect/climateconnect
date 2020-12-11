@@ -4,45 +4,45 @@ import PropTypes from "prop-types";
 import Message from "./Message";
 import InfiniteScroll from "react-infinite-scroller";
 
-const styles = theme => {
+const styles = (theme) => {
   return {
     receivedContainer: {
       textAlign: "left",
-      marginLeft: theme.spacing(1)
+      marginLeft: theme.spacing(1),
     },
     sentContainer: {
       textAlign: "right",
-      marginRight: theme.spacing(1)
+      marginRight: theme.spacing(1),
     },
     messageContainer: {
       marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1)
+      marginBottom: theme.spacing(1),
     },
     receivedMessage: {
       backgroundColor: theme.palette.grey[300],
       padding: theme.spacing(1),
-      paddingRight: theme.spacing(4)
+      paddingRight: theme.spacing(4),
     },
     sentMessage: {
       backgroundColor: theme.palette.primary.main,
       padding: theme.spacing(1),
       color: "white",
       textAlign: "left",
-      paddingRight: theme.spacing(4)
+      paddingRight: theme.spacing(4),
     },
     message: {
       maxWidth: "70%",
       display: "inline-block",
-      borderRadius: theme.spacing(1)
+      borderRadius: theme.spacing(1),
     },
     loader: {
       display: "inline-block",
-      marginRight: theme.spacing(0.25)
+      marginRight: theme.spacing(0.25),
     },
     noHistoryText: {
       textAlign: "center",
-      fontStyle: "italic"
-    }
+      fontStyle: "italic",
+    },
   };
 };
 
@@ -52,7 +52,7 @@ class Messages extends React.Component {
     super(props);
     this.myRef = React.createRef();
     this.state = {
-      isLoading: true
+      isLoading: true,
     };
   }
 
@@ -61,7 +61,7 @@ class Messages extends React.Component {
     const messageContainer = this.myRef.current;
     messageContainer.scrollComponent.scrollTop = messageContainer.scrollComponent.scrollHeight;
     this.setState({
-      isLoading: false
+      isLoading: false,
     });
   }
 
@@ -74,14 +74,14 @@ class Messages extends React.Component {
   }
 
   render() {
-    const loadMore = async page => {
+    const loadMore = async (page) => {
       if (!this.state.isLoading) {
         this.setState({
-          isLoading: true
+          isLoading: true,
         });
         await this.props.loadFunc(page);
         this.setState({
-          isLoading: false
+          isLoading: false,
         });
       }
     };
@@ -142,7 +142,7 @@ Messages.propTypes = {
   loadFunc: PropTypes.func.isRequired,
   hasMore: PropTypes.bool.isRequired,
   title: PropTypes.string,
-  isPrivateChat: PropTypes.bool.isRequired
+  isPrivateChat: PropTypes.bool.isRequired,
 };
 
 export default withStyles(styles)(Messages);

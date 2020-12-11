@@ -5,22 +5,22 @@ import { getDateTime } from "../../../../public/lib/dateOperations";
 import UserContext from "../../context/UserContext";
 import { Typography, Link, CircularProgress, Tooltip } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   time: {
     fontSize: 10,
     float: "right",
     marginRight: theme.spacing(-3),
-    color: theme.palette.secondary.main
+    color: theme.palette.secondary.main,
   },
   timeContainer: {
-    paddingLeft: theme.spacing(4)
+    paddingLeft: theme.spacing(4),
   },
   sentTime: {
-    color: "#bdb8c7"
+    color: "#bdb8c7",
   },
   senderName: {
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 }));
 
 export default function Message({ message, classes, isPrivateChat }) {

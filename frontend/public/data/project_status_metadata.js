@@ -2,28 +2,28 @@ const project_status_metadata = [
   {
     key: "idea",
     name: "Idea",
-    createProjectLabel: "an idea"
+    createProjectLabel: "an idea",
   },
   {
     key: "inprogress",
     name: "In Progress",
-    createProjectLabel: "in progress"
+    createProjectLabel: "in progress",
   },
   {
     key: "finished",
     name: "Successfully Finished",
-    createProjectLabel: "successfully finished"
+    createProjectLabel: "successfully finished",
   },
   {
     key: "cancelled",
     name: "Cancelled",
-    createProjectLabel: "cancelled"
+    createProjectLabel: "cancelled",
   },
   {
     key: "recurring",
     name: "Recurring",
-    createProjectLabel: "recurring"
-  }
+    createProjectLabel: "recurring",
+  },
 ];
 
 export default project_status_metadata;

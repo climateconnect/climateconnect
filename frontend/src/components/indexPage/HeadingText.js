@@ -3,7 +3,7 @@ import { Typography, makeStyles, IconButton } from "@material-ui/core";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import AlternatingText from "../general/AlternatingText";
 
-const useStyles = makeStyles(theme => {
+const useStyles = makeStyles((theme) => {
   return {
     mainHeading: {
       textAlign: "center",
@@ -13,22 +13,22 @@ const useStyles = makeStyles(theme => {
       flexWrap: "wrap",
       marginBottom: -37,
       position: "absolute",
-      width: "100%"
+      width: "100%",
     },
     mainHeadingInfoTextHidde: {
       position: "relative",
-      marginBottom: 0
+      marginBottom: 0,
     },
     titleText: {
       display: "inline-block",
       fontWeight: "bold",
       fontSize: 30,
       [theme.breakpoints.down("md")]: {
-        fontSize: 21
+        fontSize: 21,
       },
       [theme.breakpoints.down("xs")]: {
-        fontSize: 12.5
-      }
+        fontSize: 12.5,
+      },
     },
     titleTextRight: {
       display: "inline-block",
@@ -36,21 +36,21 @@ const useStyles = makeStyles(theme => {
       fontWeight: "bold",
       fontSize: 30,
       [theme.breakpoints.down("md")]: {
-        fontSize: 21
+        fontSize: 21,
       },
       [theme.breakpoints.down("xs")]: {
-        fontSize: 12.5
-      }
+        fontSize: 12.5,
+      },
     },
-    mainHeadingText: props => ({
+    mainHeadingText: (props) => ({
       background: props.mobile ? "none" : "white",
       paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2)
+      paddingRight: theme.spacing(2),
     }),
     mainHeadingTextInfoHidden: {
       paddingLeft: 0,
-      paddingRight: theme.spacing(1)
-    }
+      paddingRight: theme.spacing(1),
+    },
   };
 });
 
@@ -63,8 +63,9 @@ export default function HeadingText({ mobile, showInfoText, toggleShowInfoText }
       className={`${classes.mainHeading} ${!showInfoText && classes.mainHeadingInfoTextHidde}`}
     >
       <div
-        className={`${classes.mainHeadingText} ${!showInfoText &&
-          classes.mainHeadingTextInfoHidden}`}
+        className={`${classes.mainHeadingText} ${
+          !showInfoText && classes.mainHeadingTextInfoHidden
+        }`}
       >
         <AlternatingText mobile={mobile} classes={classes} />
         <Typography

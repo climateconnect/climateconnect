@@ -3,15 +3,17 @@ const NECESSARY_COOKIES = [
   "acceptedStatistics",
   "csrftoken",
   "token",
-  "hideInfo"
+  "hideInfo",
 ];
 import Cookies from "universal-cookie";
 
 export function removeUnnecesaryCookies() {
   const cookies = new Cookies();
   const allCookies = cookies.getAll();
-  const non_essential_cookies = Object.keys(allCookies).filter(k => !NECESSARY_COOKIES.includes(k));
-  non_essential_cookies.map(k => {
+  const non_essential_cookies = Object.keys(allCookies).filter(
+    (k) => !NECESSARY_COOKIES.includes(k)
+  );
+  non_essential_cookies.map((k) => {
     cookies.remove(k, { path: "/" });
   });
 }
@@ -23,7 +25,7 @@ export function getCookieProps(expiry) {
     path: "/",
     sameSite: develop ? false : "lax",
     expires: new Date(expiry),
-    secure: !develop
+    secure: !develop,
   };
   if (!develop) cookieProps.domain = "." + process.env.API_HOST;
   return cookieProps;

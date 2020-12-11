@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles, Button } from "@material-ui/core";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   button: {
     background: "#D7F7F5",
     color: theme.palette.primary.main,
@@ -10,9 +10,9 @@ const useStyles = makeStyles(theme => ({
     paddingRight: theme.spacing(4),
     fontSize: 18,
     "&:hover": {
-      background: "#fff"
-    }
-  }
+      background: "#fff",
+    },
+  },
 }));
 
 export default function LightBigButton({ className, children, href }) {

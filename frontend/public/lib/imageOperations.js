@@ -18,8 +18,8 @@ export async function getResizedImage(blob, width, height, type, forceExactSize)
   //only resize by factors of 2, otherwise we'll lose quality
   const image = new Image();
   image.src = blob;
-  return new Promise(function(resolve) {
-    image.onload = async function() {
+  return new Promise(function (resolve) {
+    image.onload = async function () {
       if (image.width / 2 > width || image.height / 2 > height) {
         const blob = await getResizedBlob(image, image.width / 2, image.height / 2, type);
         resolve(await getResizedImage(blob, width, height, type, forceExactSize));
@@ -41,8 +41,8 @@ function getResizedBlob(image, width, height, type) {
   context.fillStyle = "#fff";
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.drawImage(image, 0, 0, width, height);
-  return new Promise(function(resolve) {
-    canvas.toBlob(function(blob) {
+  return new Promise(function (resolve) {
+    canvas.toBlob(function (blob) {
       resolve(URL.createObjectURL(blob));
     }, type);
   });
@@ -72,14 +72,14 @@ export function whitenTransparentPixels(canvas) {
 export async function getCompressedJPG(file, maxSizeMB) {
   const canvas = document.createElement("canvas");
   const image = new Image();
-  return new Promise(function(resolve, reject) {
-    image.onload = function() {
+  return new Promise(function (resolve, reject) {
+    image.onload = function () {
       drawImageOnCanvas(image, canvas);
       canvas.toBlob(
-        async function(blob) {
+        async function (blob) {
           const options = {
             maxSizeMB: maxSizeMB,
-            useWebWorker: true
+            useWebWorker: true,
           };
           try {
             const compressedFile = await imageCompression(blob, options);
@@ -127,9 +127,9 @@ const drawImageOnCanvas = (image, canvas) => {
 
 export async function blobFromObjectUrl(objectUrl) {
   var a = new FileReader();
-  const blob = await fetch(objectUrl).then(r => r.blob());
-  return new Promise(function(resolve) {
-    a.onload = function(e) {
+  const blob = await fetch(objectUrl).then((r) => r.blob());
+  return new Promise(function (resolve) {
+    a.onload = function (e) {
       resolve(e.target.result);
     };
     a.readAsDataURL(blob);

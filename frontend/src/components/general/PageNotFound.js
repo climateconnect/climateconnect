@@ -1,11 +1,11 @@
 import { makeStyles, Typography, Link } from "@material-ui/core";
 import React from "react";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     textAlign: "center",
-    paddingTop: theme.spacing(5)
-  }
+    paddingTop: theme.spacing(5),
+  },
 }));
 
 export default function PageNotFound({ itemName }) {

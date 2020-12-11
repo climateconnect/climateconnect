@@ -22,7 +22,7 @@ export default function MyApp({
   user,
   notifications,
   pathName,
-  donationGoal
+  donationGoal,
 }) {
   const [stateInitialized, setStateInitialized] = React.useState(false);
   const [gaInitialized, setGaInitialized] = React.useState(false);
@@ -40,27 +40,30 @@ export default function MyApp({
       debug: ["develop", "development", "test"].includes(process.env.ENVIRONMENT),
       gaOptions: {
         cookieDomain: process.env.BASE_URL_HOST,
-        anonymizeIp: true
-      }
+        anonymizeIp: true,
+      },
     });
     ReactGA.pageview(!!pathName ? pathName : "/");
     setGaInitialized(true);
   }
+
   const API_URL = process.env.API_URL;
   const API_HOST = process.env.API_HOST;
   const ENVIRONMENT = process.env.ENVIRONMENT;
   const SOCKET_URL = process.env.SOCKET_URL;
+  //possible socket connection states: "disconnected", "connecting", "connected"
   const [state, setState] = React.useState({
     user: user,
     notifications: [],
-    chatSocket: null
+    chatSocket: null,
   });
+  const [socketConnectionState, setSocketConnectionState] = React.useState("connecting");
 
   //TODO: reload current path or main page while being logged out
   const signOut = async () => {
     const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT);
     const cookieProps = {
-      path: "/"
+      path: "/",
     };
     if (!develop) cookieProps.domain = "." + API_HOST;
     try {
@@ -69,14 +72,14 @@ export default function MyApp({
       cookies.remove("token", cookieProps);
       setState({
         ...state,
-        user: null
+        user: null,
       });
     } catch (err) {
       console.log(err);
       cookies.remove("token", cookieProps);
       setState({
         ...state,
-        user: null
+        user: null,
       });
       return null;
     }
@@ -86,7 +89,7 @@ export default function MyApp({
     const notifications = await getNotifications(cookies.get("token"));
     setState({
       ...state,
-      notifications: notifications
+      notifications: notifications,
     });
   };
 
@@ -96,7 +99,8 @@ export default function MyApp({
     cookies.set("token", token, cookieProps);
     const user = await getLoggedInUser(cookies.get("token") ? cookies.get("token") : token);
     setState({
-      user: user
+      ...state,
+      user: user,
     });
   };
 
@@ -104,17 +108,13 @@ export default function MyApp({
     if (!stateInitialized) {
       if (user) {
         const client = WebSocketService("/ws/chat/");
-        client.onopen = () => {
-          console.log("connected");
-        };
-        client.onmessage = async () => {
-          await refreshNotifications();
-        };
         setState({
+          ...state,
           user: user,
           chatSocket: client,
-          notifications: notifications
+          notifications: notifications,
         });
+        connect(client);
       }
       // Remove the server-side injected CSS.
       const jssStyles = document.querySelector("#jss-server-side");
@@ -124,6 +124,32 @@ export default function MyApp({
       setStateInitialized(true);
     }
   });
+
+  useEffect(() => {}, [state.socketConnectionState]);
+
+  const connect = (initialClient) => {
+    const client = initialClient ? initialClient : WebSocketService("/ws/chat/");
+    client.onopen = () => {
+      setSocketConnectionState("connected");
+    };
+    client.onmessage = async () => {
+      await refreshNotifications();
+    };
+    client.onclose = () => {
+      setSocketConnectionState("closed");
+      if (process.env.SOCKET_URL) {
+        setTimeout(function () {
+          connect();
+        }, 1000);
+      }
+    };
+    if (!initialClient) {
+      setState({
+        ...state,
+        chatSocket: client,
+      });
+    }
+  };
 
   const contextValues = {
     user: state.user,
@@ -140,7 +166,8 @@ export default function MyApp({
     pathName: pathName,
     ReactGA: ReactGA,
     updateCookies: updateCookies,
-    donationGoal: donationGoal
+    socketConnectionState: socketConnectionState,
+    donationGoal: donationGoal,
   };
   return (
     <React.Fragment>
@@ -155,12 +182,13 @@ export default function MyApp({
   );
 }
 
-MyApp.getInitialProps = async ctx => {
+MyApp.getInitialProps = async (ctx) => {
   const { token, acceptedStatistics } = NextCookies(ctx.ctx);
+
   if (ctx.router.route === "/" && token) {
     ctx.ctx.res.writeHead(302, {
       Location: "/browse",
-      "Content-Type": "text/html; charset=utf-8"
+      "Content-Type": "text/html; charset=utf-8",
     });
     ctx.ctx.res.end();
     return;
@@ -169,10 +197,10 @@ MyApp.getInitialProps = async ctx => {
     getLoggedInUser(token),
     getNotifications(token),
     process.env.DONATION_CAMPAIGN_RUNNING ? getDonationGoalData() : null,
-    ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps(ctx.ctx) : {}
+    ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps(ctx.ctx) : {},
   ]);
-  console.log(donationGoal)
   const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
+
   if (token) {
     const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
     if (notificationsToSetRead.length > 0) {
@@ -183,7 +211,7 @@ MyApp.getInitialProps = async ctx => {
         notifications: updatedNotifications ? updatedNotifications : [],
         acceptedStatistics: acceptedStatistics,
         pathName: pathName,
-        donationGoal: donationGoal
+        donationGoal: donationGoal,
       };
     }
   }
@@ -192,15 +220,15 @@ MyApp.getInitialProps = async ctx => {
     user: user,
     notifications: notifications ? notifications : [],
     pathName: pathName,
-    donationGoal: donationGoal
+    donationGoal: donationGoal,
   };
 };
 
 const getNotificationsToSetRead = (notifications, pageProps) => {
   let notifications_to_set_unread = [];
   if (pageProps.comments) {
-    const comment_ids = pageProps.comments.map(p => p.id);
-    const comment_notifications_to_set_unread = notifications.filter(n => {
+    const comment_ids = pageProps.comments.map((p) => p.id);
+    const comment_notifications_to_set_unread = notifications.filter((n) => {
       if (n.project_comment) {
         if (
           comment_ids.includes(n.project_comment.id) ||
@@ -212,16 +240,16 @@ const getNotificationsToSetRead = (notifications, pageProps) => {
     });
     notifications_to_set_unread = [
       ...notifications_to_set_unread,
-      ...comment_notifications_to_set_unread
+      ...comment_notifications_to_set_unread,
     ];
   }
   if (pageProps.chatUUID && pageProps.messages) {
-    const chat_notifications_to_set_unread = notifications.filter(n => {
+    const chat_notifications_to_set_unread = notifications.filter((n) => {
       if (n.chat_uuid) return n.chat_uuid === pageProps.chatUUID;
     });
     notifications_to_set_unread = [
       ...notifications_to_set_unread,
-      ...chat_notifications_to_set_unread
+      ...chat_notifications_to_set_unread,
     ];
   }
   return notifications_to_set_unread;
@@ -232,7 +260,7 @@ const setNotificationsRead = async (token, notifications) => {
     try {
       const resp = await axios.post(
         process.env.API_URL + "/api/set_user_notifications_read/",
-        { notifications: notifications.map(n => n.id) },
+        { notifications: notifications.map((n) => n.id) },
         tokenConfig(token)
       );
       return resp.data;
@@ -285,7 +313,7 @@ async function getDonationGoalData() {
       goal_start: resp.data.start_date,
       goal_end: resp.data.end_date,
       goal_amount: resp.data.amount,
-      current_amount: resp.data.current_amount
+      current_amount: resp.data.current_amount,
     };
   } catch (err) {
     if (err.response && err.response.data) {

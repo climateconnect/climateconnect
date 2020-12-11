@@ -2,29 +2,29 @@ import React from "react";
 import { makeStyles, Typography, Container } from "@material-ui/core";
 import LightBigButton from "./LightBigButton";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(3),
-    background: theme.palette.primary.main
+    background: theme.palette.primary.main,
   },
   headline: {
     color: "white",
     maxWidth: 580,
     textAlign: "center",
-    margin: "0 auto"
+    margin: "0 auto",
   },
   signUpButton: {
-    margin: "0 auto"
+    margin: "0 auto",
   },
   buttonContainer: {
     display: "flex",
     justifyContent: "center",
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(3),
   },
   yellow: {
-    color: theme.palette.yellow.main
-  }
+    color: theme.palette.yellow.main,
+  },
 }));
 
 export default function StartNowBanner({ h1ClassName, className }) {
