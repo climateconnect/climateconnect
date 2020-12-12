@@ -105,9 +105,6 @@ export default function ProjectPreview({ project }) {
     setHovering(false);
   };
 
-  // eslint-disable-next-line
-  // debugger;
-
   return (
     <Link
       href={project.is_draft ? `/editProject/${project.url_slug}` : `/projects/${project.url_slug}`}
