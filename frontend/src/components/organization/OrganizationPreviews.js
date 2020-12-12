@@ -3,7 +3,8 @@ import OrganizationPreview from "./OrganizationPreview";
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfiniteScroll from "react-infinite-scroller";
-import CircularProgress from "@material-ui/core/CircularProgress";
+
+import LoadingSpinner from "../general/LoadingSpinner";
 
 const useStyles = makeStyles({
   reset: {
@@ -48,14 +49,6 @@ export default function OrganizationPreviews({
     }
   };
 
-  const loadingSpinner = () => {
-    return isLoading ? (
-      <Grid container justify="center">
-        <CircularProgress className={classes.spinner} />
-      </Grid>
-    ) : null;
-  };
-
   // TODO: use `organization.id` instead of index when using real organizations
   return (
     <InfiniteScroll
@@ -73,7 +66,7 @@ export default function OrganizationPreviews({
           ? toOrganizationPreviews(organizations)
           : "No organizations found."
         : gridItems}
-      {loadingSpinner()}
+      <LoadingSpinner />
     </InfiniteScroll>
   );
 }
