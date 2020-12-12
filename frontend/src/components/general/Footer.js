@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Box, useMediaQuery, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GitHubIcon from "@material-ui/icons/GitHub";
@@ -51,7 +52,12 @@ const useStyles = makeStyles((theme) => ({
     height: 20,
     marginLeft: theme.spacing(1),
     color: "inherit",
+
+    "&:hover": {
+      color: theme.palette.primary.main,
+    },
   },
+
   inheritColor: {
     color: "inherit",
   },

@@ -34,6 +34,19 @@ export default function MultiLevelSelectDialog({
     ? skillsToChooseFrom
     : type === "project categories" && categoriesToChooseFrom;
 
+  // Alphabetize options by name
+  possibleItems.sort((a, b) => {
+    if (a?.name?.toUpperCase() < b?.name?.toUpperCase()) {
+      return -1;
+    }
+
+    if (a?.name?.toUpperCase() > b?.name?.toUpperCase()) {
+      return 1;
+    }
+
+    return 0;
+  });
+
   return (
     <GenericDialog
       applyText={"Save"}
