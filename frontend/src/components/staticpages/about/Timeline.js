@@ -131,7 +131,7 @@ const getTimelineData = (isMediumScreen) => [
   {
     date: "Summer 2021",
     headline: "Leaving Beta",
-    content: `In the summer of 2021 we expect all core functionality to work smooth and all pages and content to be polished and user-friendly. Help us get here by sharing your feedback!`,
+    content: `In the summer of 2021 we expect all core functionality to work smoothly and all pages and content to be polished and user-friendly. Help us get here by sharing your feedback!`,
   },
 ];
 
