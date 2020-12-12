@@ -143,14 +143,14 @@ export default function Index({
    */
   const applyNewFilters = async (type, newFilters, closeFilters) => {
     // Short circuit if filters are equal
-    if (filters == newFilters) {
+    if (filters === newFilters) {
       return;
     }
 
     setFilters({ ...filters, [type]: newFilters });
 
     const newUrlEnding = buildUrlEndingFromFilters(newFilters);
-    if (state.urlEnding[type] == newUrlEnding) {
+    if (state.urlEnding[type] === newUrlEnding) {
       return;
     }
 
