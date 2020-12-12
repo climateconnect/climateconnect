@@ -8,13 +8,14 @@ import InstagramIcon from "@material-ui/icons/Instagram";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import FavoriteIcon from "@material-ui/icons/Favorite";
+
 import LargeFooter from "../footer/LargeFooter";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
     height: theme.spacing(8),
-    borderTop: `1px solid ${theme.palette.grey[300]}`,
+    borderTop: `1px solid ${theme.palette.grey[100]}`,
     width: "100%",
   },
   absolutePosition: {

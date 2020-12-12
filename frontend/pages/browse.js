@@ -385,18 +385,19 @@ export default function Index({
 
             {/* Tabs to select projects, orgs, members... */}
             <Tabs
-              variant={isNarrowScreen ? "fullWidth" : "standard"}
-              value={tabValue}
-              onChange={handleTabChange}
-              indicatorColor="primary"
-              textColor="primary"
+              disableRipple
               centered={true}
+              indicatorColor="primary"
+              onChange={handleTabChange}
+              textColor="primary"
+              value={tabValue}
+              variant={isNarrowScreen ? "fullWidth" : "standard"}
             >
               <Tab label={capitalizeFirstLetter(typesByTabValue[0])} className={classes.tab} />
               <Tab label={capitalizeFirstLetter(typesByTabValue[1])} className={classes.tab} />
               <Tab label={capitalizeFirstLetter(typesByTabValue[2])} className={classes.tab} />
             </Tabs>
-            <Divider className={classes.mainContentDivider} />
+            {/* <Divider className={classes.mainContentDivider} /> */}
 
             {/* While we're collecting filter results, render a spinner...  */}
             <>
