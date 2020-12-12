@@ -3,7 +3,8 @@ import ProfilePreview from "./ProfilePreview";
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfiniteScroll from "react-infinite-scroller";
-import CircularProgress from "@material-ui/core/CircularProgress";
+
+import LoadingSpinner from "../general/LoadingSpinner";
 
 const useStyles = makeStyles({
   reset: {
@@ -11,9 +12,6 @@ const useStyles = makeStyles({
     padding: 0,
     listStyleType: "none",
     width: "100%",
-  },
-  spinner: {
-    marginTop: "48px",
   },
 });
 
@@ -44,14 +42,6 @@ export default function ProfilePreviews({
     }
   };
 
-  const loadingSpinner = () => {
-    return isLoading ? (
-      <Grid container justify="center">
-        <CircularProgress className={classes.spinner} />
-      </Grid>
-    ) : null;
-  };
-
   // TODO: use `profile.id` instead of index when using real profiles
   return (
     <InfiniteScroll
@@ -69,7 +59,7 @@ export default function ProfilePreviews({
           ? toProfilePreviews(profiles)
           : "No members found."
         : gridItems}
-      {loadingSpinner()}
+      <LoadingSpinner />
     </InfiniteScroll>
   );
 }

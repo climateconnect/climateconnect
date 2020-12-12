@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 
-import ProjectPreview from "./ProjectPreview";
-
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-
 import InfiniteScroll from "react-infinite-scroller";
-import CircularProgress from "@material-ui/core/CircularProgress";
+
+import ProjectPreview from "./ProjectPreview";
+import LoadingSpinner from "../general/LoadingSpinner";
 
 const useStyles = makeStyles({
   reset: {
@@ -14,9 +13,6 @@ const useStyles = makeStyles({
     padding: 0,
     listStyleType: "none",
     width: "100%",
-  },
-  spinner: {
-    marginTop: "48px",
   },
 });
 
@@ -45,14 +41,6 @@ export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHan
     }
   };
 
-  const loadingSpinner = () => {
-    return isLoading ? (
-      <Grid container justify="center">
-        <CircularProgress className={classes.spinner} />
-      </Grid>
-    ) : null;
-  };
-
   // TODO: use `project.id` instead of index when using real projects
   return (
     <InfiniteScroll
@@ -70,7 +58,7 @@ export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHan
           ? toProjectPreviews(projects)
           : "No projects found."
         : gridItems}
-      {loadingSpinner()}
+      <LoadingSpinner />
     </InfiniteScroll>
   );
 }

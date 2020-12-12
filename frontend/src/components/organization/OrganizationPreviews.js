@@ -13,9 +13,6 @@ const useStyles = makeStyles({
     listStyleType: "none",
     width: "100%",
   },
-  spinner: {
-    marginTop: "48px",
-  },
 });
 
 export default function OrganizationPreviews({
