@@ -397,7 +397,6 @@ export default function Index({
               <Tab label={capitalizeFirstLetter(typesByTabValue[1])} className={classes.tab} />
               <Tab label={capitalizeFirstLetter(typesByTabValue[2])} className={classes.tab} />
             </Tabs>
-            {/* <Divider className={classes.mainContentDivider} /> */}
 
             {/* While we're collecting filter results, render a spinner...  */}
             <>

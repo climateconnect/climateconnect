@@ -153,9 +153,9 @@ const SocialLinks = () => {
   const classes = useStyles();
   return (
     <div className={classes.socialIconsContainer}>
-      {/* <Link target="_blank" href="https://www.instagram.com/climate_connect.earth/">
+      <Link target="_blank" href="https://www.instagram.com/climate_connect.earth/">
         <InstagramIcon color="primary" className={classes.socialIcon} />
-      </Link> */}
+      </Link>
       <Link target="_blank" href="https://github.com/climateconnect/climateconnect">
         <GitHubIcon className={classes.socialIcon} />
       </Link>
