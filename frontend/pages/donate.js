@@ -138,13 +138,13 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
           textBodyClass={classes.textBodyClass}
           headline="Why donate?"
           text={`
-              Great that you want to support us! 
+              Great that you want to support us!
 
               We believe that the possibility to connect and get active in the climate movement should be free and include everyone.
 
               With a donation you enable us to stay independent. Our full-time team is working hard every day to multiply the impact of climate actors around the globe.
 
-          
+
             `}
           subPoints={[
             {
@@ -206,7 +206,7 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
                     open source codebase
                   </a>
                   ). For the next few months, we will create hubs for each important topic in
-                  climate action, vastly improve user experience on Climate connect and try to
+                  climate action, vastly improve user experience on Climate Connect and try to
                   optimize project pages even more so we can be most effective at sparking
                   collaboration and knowledge sharing between users. We also constantly improve
                   existing parts of the websites based on user feedback.

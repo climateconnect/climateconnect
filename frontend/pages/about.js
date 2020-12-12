@@ -68,9 +68,9 @@ export default function About({ faqQuestions }) {
   const { user } = useContext(UserContext);
 
   const quoteText = `
-    We want to connect everyone that is fighting against climate change from 
-    Greta Thunberg and Greenpeace to the local sustainable startup, local 
-    and national governments, and your friend who just recently realized that 
+    We want to connect everyone that is fighting against climate change from
+    Greta Thunberg and Greenpeace to the local sustainable startup, local
+    and national governments, and your friend who just recently realized that
     biking to work instead of driving can already make a difference.
   `;
 

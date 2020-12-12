@@ -201,7 +201,7 @@ const SiteLinks = () => {
             <Typography className={classes.li}>+4915730101056</Typography>
           </Link>
           <FeedbackButton justLink>
-            <Typography className={classes.li}>Leave Feedback</Typography>
+            <Typography className={classes.li}>Leave feedback</Typography>
           </FeedbackButton>
         </div>
       </div>
