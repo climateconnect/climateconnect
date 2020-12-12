@@ -4,7 +4,7 @@ import axios from "axios";
 import Link from "next/link";
 
 // @material-ui
-import { Divider, Tab, Tabs, Typography, Container } from "@material-ui/core";
+import { Tab, Tabs, Typography, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -40,6 +40,9 @@ const useStyles = makeStyles((theme) => {
       width: 200,
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),
+    },
+    tabs: {
+      marginBottom: theme.spacing(2),
     },
     tabContent: {
       marginTop: theme.spacing(2),
@@ -385,8 +388,8 @@ export default function Index({
 
             {/* Tabs to select projects, orgs, members... */}
             <Tabs
-              disableRipple
               centered={true}
+              className={classes.tabs}
               indicatorColor="primary"
               onChange={handleTabChange}
               textColor="primary"
