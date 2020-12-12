@@ -577,7 +577,6 @@ async function getProjects(page, token, urlEnding) {
   try {
     const resp = await axios.get(url, tokenConfig(token));
 
-    // debugger;
     if (resp.data.length === 0) {
       console.log("No projects found...");
       return null;
