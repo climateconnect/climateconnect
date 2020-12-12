@@ -99,7 +99,8 @@ const WithDescription = ({ className, project_parent, hovering, project, main_pr
             <PlaceIcon className={classes.cardIcon} />
           </Tooltip>
           <Typography className={classes.metadataText}>{project.location}</Typography>
-          <Collapse in={hovering} timeout={500}>
+          {/* Defer to MUI's best guess on height calculation for timeout: https://material-ui.com/api/collapse/ */}
+          <Collapse in={hovering} timeout="auto">
             <Typography className={classes.shortDescription}>
               {project.short_description}
             </Typography>

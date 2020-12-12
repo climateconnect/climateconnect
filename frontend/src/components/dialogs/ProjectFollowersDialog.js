@@ -13,8 +13,9 @@ import {
   Container,
   TableBody,
 } from "@material-ui/core";
-import GenericDialog from "./GenericDialog";
 import ReactTimeago from "react-timeago";
+
+import GenericDialog from "./GenericDialog";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles((theme) => ({
