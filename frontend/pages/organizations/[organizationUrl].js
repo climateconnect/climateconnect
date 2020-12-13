@@ -269,7 +269,7 @@ function parseProjectStubs(projects) {
     const project = p.project;
     return {
       ...project,
-      location: project.city + ", " + project.country,
+      location: project.location,
     };
   });
 }
@@ -284,7 +284,7 @@ function parseOrganizationMembers(members) {
       isCreator: m.permission.name === "Creator",
       time_per_week: m.time_per_week,
       role_in_organization: m.role_in_organization,
-      location: member.city ? member.city + ", " + member.country : member.country,
+      location: member.location
     };
   });
 }
