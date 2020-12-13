@@ -13,8 +13,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ('id', 'types', 'name', 'url_slug', 'image', 
-            'background_image', 'parent_organization', 'country', 
-            'state', 'city', 'short_description', 'organ', 'school', 'website'
+            'background_image', 'parent_organization', 'location',
+            'short_description', 'organ', 'school', 'website'
         )
 
     def get_types(self, obj):
@@ -25,20 +25,28 @@ class OrganizationSerializer(serializers.ModelSerializer):
         serializer = OrganizationStubSerializer(obj.parent_organization)
         return serializer.data
 
+
 class OrganizationMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
-        fields = ('id', 'name', 'url_slug', 'image', 'short_description', 'background_image', 'country', 'state', 'city', 'website')
+        fields = (
+            'id', 'name', 'url_slug', 'image', 'short_description', 
+            'background_image', 'location', 'website'
+        )
+
 
 class OrganizationCardSerializer(serializers.ModelSerializer):
     types = serializers.SerializerMethodField()
     class Meta:
         model = Organization
-        fields = ('id', 'name', 'url_slug', 'image', 'city', 'country', 'types')
+        fields = (
+            'id', 'name', 'url_slug', 'image', 'location', 'types'
+        )
 
     def get_types(self, obj):
         serializer = OrganizationTaggingSerializer(obj.tag_organization, many=True)
         return serializer.data
+
 
 class OrganizationStubSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,6 +72,7 @@ class OrganizationMemberSerializer(serializers.ModelSerializer):
             'role_in_organization': instance.role_in_organization
         }
 
+
 class UserOrganizationSerializer(serializers.ModelSerializer):
     organization = serializers.SerializerMethodField()
     class Meta: 
@@ -73,6 +82,7 @@ class UserOrganizationSerializer(serializers.ModelSerializer):
     def get_organization(self, obj):
         return OrganizationStubSerializer(obj.organization).data
 
+
 class OrganizationsFromProjectMember(serializers.ModelSerializer):
     organization = serializers.SerializerMethodField()
     class Meta: 
@@ -81,6 +91,7 @@ class OrganizationsFromProjectMember(serializers.ModelSerializer):
     
     def get_organization(self, obj):
         return OrganizationCardSerializer(obj.organization).data
+
 
 class OrganizationSitemapEntrySerializer(serializers.ModelSerializer):
     class Meta:

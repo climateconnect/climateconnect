@@ -17,8 +17,12 @@ from organization.serializers.project import (ProjectFromProjectParentsSerialize
 from organization.serializers.tags import (OrganizationTagsSerializer)
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from organization.models import Organization, OrganizationMember, ProjectParents, OrganizationTags, OrganizationTagging
-from organization.permissions import (OrganizationReadWritePermission, OrganizationReadWritePermission, OrganizationMemberReadWritePermission, AddOrganizationMemberPermission, ChangeOrganizationCreatorPermission)
+from organization.permissions import (
+    AddOrganizationMemberPermission, ChangeOrganizationCreatorPermission,
+    OrganizationReadWritePermission, OrganizationReadWritePermission, OrganizationMemberReadWritePermission
+)
 from climateconnect_api.models import Role, UserProfile
+from climateconnect_api.utility.location import get_geo_location
 from organization.pagination import (OrganizationsPagination, ProjectsPagination)
 from climateconnect_api.pagination import MembersPagination
 from climateconnect_main.utility.general import get_image_from_data_url
@@ -52,7 +56,7 @@ class CreateOrganizationView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        required_params = ['name', 'team_members', 'city', 'country', 'image', 'organization_tags']
+        required_params = ['name', 'team_members', 'location', 'image', 'organization_tags']
         for param in required_params:
             if param not in request.data:
                 return Response({
@@ -79,12 +83,13 @@ class CreateOrganizationView(APIView):
 
                 organization.parent_organization = parent_org
 
-            if 'country' in request.data:
-                organization.country = request.data['country']
-            if 'state' in request.data:
-                organization.state = request.data['state']
-            if 'city' in request.data:
-                organization.city = request.data['city']
+
+            # Get accurate location from google maps.
+            geo_location = get_geo_location(request.data['location'])
+            if 'location' in request.data:
+                organization.location = geo_location['location']
+                organization.latitude = geo_location['latitude']
+                organization.longitude = geo_location['longitude']
             if 'short_description' in request.data:
                 organization.short_description = request.data['short_description']
             if 'website' in request.data:
@@ -145,10 +150,20 @@ class OrganizationAPIView(APIView):
             organization = Organization.objects.get(url_slug=str(url_slug))            
         except Organization.DoesNotExist:
             return Response({'message': 'Organization not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
-        pass_through_params = ['name', 'state', 'city', 'country', 'short_description', 'school', 'organ', 'website']
+        pass_through_params = ['name', 'short_description', 'school', 'organ', 'website']
         for param in pass_through_params:
             if param in request.data:
                 setattr(organization, param, request.data[param])
+        
+        # Author: Dip
+        # When we pass location as a param in the API, We are first checking with google maps API whether the passed param is accurate.
+        # Then we are actually getting formatted address, latitude and longitude from it. 
+        # So here for location we can't just setattr method. Hence writing our own logic.
+        if 'location' in request.data:
+            geo_location = get_geo_location(request.data[param])
+            organization.location = geo_location['location']
+            organization.latitude = geo_location['latitude']
+            organization.longitude = geo_location['longitude']
         if 'image' in request.data:
             organization.image = get_image_from_data_url(request.data['image'])[0]
         if 'background_image' in request.data:
@@ -250,6 +265,7 @@ class AddOrganizationMembersView(APIView):
 
         return Response({'message': 'Member added to the organization'}, status=status.HTTP_201_CREATED)
 
+
 class ChangeOrganizationCreator(APIView):
     permission_classes = [ChangeOrganizationCreatorPermission]
 
@@ -331,6 +347,7 @@ class ListOrganizationMembersAPIView(ListAPIView):
             organization__url_slug=self.kwargs['url_slug'],
         ).order_by('id')
 
+
 class ListOrganizationTags(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = OrganizationTagsSerializer
@@ -338,12 +355,14 @@ class ListOrganizationTags(ListAPIView):
     def get_queryset(self):
         return OrganizationTags.objects.all()
 
+
 class ListFeaturedOrganizations(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = OrganizationCardSerializer
 
     def get_queryset(self):
         return Organization.objects.filter(rating__lte=99)[0:4]
+
 
 class ListOrganizationsForSitemap(ListAPIView):
     permission_classes = [AllowAny]

@@ -203,6 +203,13 @@ class ProjectAPIView(APIView):
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Author: Dip
+        # Code formatting here. So fields are just pass through so combing them and using setattr method insted.
+        pass_through_params = ['collaborators_welcome', 'description', 'helpful_connections','short_description', 'website']
+        for param in pass_through_params:
+            if param in request.data:
+                setattr(project, project.param, request.data[param])
 
         if 'name' in request.data and request.data['name'] != project.name:
             project.name = request.data['name']
@@ -258,10 +265,6 @@ class ProjectAPIView(APIView):
             project.start_date = parse(request.data['start_date'])
         if 'end_date' in request.data:
             project.end_date = parse(request.data['end_date'])
-        if 'short_description' in request.data:
-            project.short_description = request.data['short_description']
-        if 'description' in request.data:
-            project.description = request.data['description']
         if 'location' in request.data:
             geo_location = get_geo_location(request.data['location'])
             project.location = geo_location['location']
@@ -269,12 +272,6 @@ class ProjectAPIView(APIView):
             project.longitude = geo_location['longitude']
         if 'is_draft' in request.data:
             project.is_draft = False
-        if 'website' in request.data:
-            project.website = request.data['website']
-        if 'collaborators_welcome' in request.data:
-            project.collaborators_welcome = request.data['collaborators_welcome']
-        if 'helpful_connections' in request.data:
-            project.helpful_connections = request.data['helpful_connections']
         if 'is_personal_project' in request.data:
             if request.data['is_personal_project'] == True:
                 project_parents = ProjectParents.objects.get(project=project)
