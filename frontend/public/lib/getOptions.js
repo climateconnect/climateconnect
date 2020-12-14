@@ -1,5 +1,6 @@
 import axios from "axios";
 import { parseOptions } from "./selectOptionsOperations";
+import LocationOnIcon from "@material-ui/icons/LocationOn";
 
 export async function getSkillsOptions() {
   try {
@@ -61,3 +62,20 @@ export async function getOrganizationTagsOptions() {
     return null;
   }
 }
+
+//This function can not be called from getInitialProps, because the icon cannot be rendered as a component if this function is called on server side
+export function membersWithAdditionalInfo(members) {
+  return members.map((p) => {
+    return {
+      ...p,
+      additionalInfo: [
+        {
+          text: p.location,
+          icon: LocationOnIcon,
+          iconName: "LocationOnIcon",
+          importance: "high",
+        },
+      ],
+    };
+  });
+};
