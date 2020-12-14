@@ -132,7 +132,7 @@ export default function Challenge({ headlineClass, showContent, className }) {
                 <Typography className={classes.challenge}>
                   The climate crisis is{" "}
                   <span className={classes.marked}>the biggest challenge</span> humanity has ever
-                  faced - and we can only solve it together
+                  faced - and we can only solve it together.
                 </Typography>
                 <Typography className={classes.challenge}>
                   Many people are working on very effective climate solutions. We need to{" "}
