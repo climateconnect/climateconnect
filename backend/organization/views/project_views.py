@@ -448,7 +448,11 @@ class ListProjectTags(ListAPIView):
     serializer_class = ProjectTagsSerializer
 
     def get_queryset(self):
-        return ProjectTags.objects.all()
+        if("parent_tag_key" in self.request.query_params):
+            parent_tag = ProjectTags.objects.get(key=self.request.query_params['parent_tag_key'])
+            return ProjectTags.objects.filter(parent_tag=parent_tag)
+        else:
+            return ProjectTags.objects.all()
 
 
 class ListProjectStatus(ListAPIView):
