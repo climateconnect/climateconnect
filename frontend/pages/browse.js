@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import NextCookies from "next-cookies";
 import axios from "axios";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
 
 import {
   getSkillsOptions,
   getStatusOptions,
   getProjectTagsOptions,
   getOrganizationTagsOptions,
+  membersWithAdditionalInfo,
 } from "../public/lib/getOptions";
 
 import tokenConfig from "../public/config/tokenConfig";
@@ -19,7 +19,7 @@ import TopOfPage from "../src/components/hooks/TopOfPage";
 import BrowseContent from "../src/components/browse/BrowseContent";
 import { parseData } from "../public/lib/parsingOperations";
 
-export default function Index({
+export default function Browse({
   projectsObject,
   organizationsObject,
   membersObject,
@@ -62,6 +62,32 @@ export default function Index({
     }
   };
 
+  const applySearch = async (type, searchValue, oldUrlEnding) => {
+    const newSearchQueryParam = `&search=${searchValue}`;
+    console.log(newSearchQueryParam)
+    if (oldUrlEnding === newSearchQueryParam) {
+      console.log("it's the same!")
+      return;
+    }
+    try {
+      const filteredItemsObject = await getDataFromServer({
+        type: type,
+        page: 1,
+        token: token,
+        urlEnding: newSearchQueryParam,
+      });
+      if (type === "members") {
+        filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
+      }
+      return {
+        filteredItemsObject: filteredItemsObject,
+        newUrlEnding: newSearchQueryParam,
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   const loadMoreData = async (type, page, urlEnding) => {
     try {
       const newDataObject = await getDataFromServer({
@@ -100,16 +126,13 @@ export default function Index({
       >
         <MainHeadingContainerMobile />
         <BrowseContent
-          getProjects={getProjects}
-          getOrganizations={getOrganizations}
-          getMembers={getMembers}
-          membersWithAdditionalInfo={membersWithAdditionalInfo}
-          projectsObject={projectsObject}
-          organizationsObject={organizationsObject}
-          membersObject={membersObject}
+          initialProjects={projectsObject}
+          initialOrganizations={organizationsObject}
+          initialMembers={membersObject}
           applyNewFilters={applyNewFilters}
           filterChoices={filterChoices}
           loadMoreData={loadMoreData}
+          applySearch={applySearch}
         />
       </WideLayout>
     </>
@@ -128,7 +151,7 @@ const buildUrlEndingFromFilters = (filters) => {
   return url;
 };
 
-Index.getInitialProps = async (ctx) => {
+Browse.getInitialProps = async (ctx) => {
   const { token, hideInfo } = NextCookies(ctx);
   const [
     projectsObject,
@@ -214,20 +237,3 @@ async function getDataFromServer({ type, page, token, urlEnding }) {
     throw err;
   }
 }
-
-//This function can not be called from getInitialProps, because the icon cannot be rendered as a component if this function is called on server side
-const membersWithAdditionalInfo = (members) => {
-  return members.map((p) => {
-    return {
-      ...p,
-      additionalInfo: [
-        {
-          text: p.location,
-          icon: LocationOnIcon,
-          iconName: "LocationOnIcon",
-          importance: "high",
-        },
-      ],
-    };
-  });
-};

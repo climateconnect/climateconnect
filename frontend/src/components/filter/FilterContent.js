@@ -1,5 +1,6 @@
 import React from "react";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+
 import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
@@ -15,6 +16,7 @@ export default function FilterContent({
 }) {
   const isMediumScreen = useMediaQuery(theme.breakpoints.between("xs", "md"));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
+
   const possibleFiltersFirstHalf = possibleFilters.slice(0, Math.ceil(possibleFilters.length / 2));
   const possibleFiltersSecondHalf = possibleFilters.slice(
     Math.ceil(possibleFilters.length / 2),
