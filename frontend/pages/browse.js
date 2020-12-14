@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import NextCookies from "next-cookies";
 import axios from "axios";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -26,8 +26,6 @@ export default function Index({
   token,
   filterChoices,
 }) {
-  const [errorMessage, setErrorMessage] = useState("");
-  const [message, setMessage] = useState("");
 
   const [filters, setFilters] = useState({
     projects: {},
@@ -98,8 +96,6 @@ export default function Index({
       <WideLayout
         title="Climate Connect - global platform form climate change solutions"
         hideHeadline
-        message={errorMessage ? errorMessage : message}
-        messageType={errorMessage ? "error" : "success"}
         showOnScrollUp={showOnScrollUp}
       >
         <MainHeadingContainerMobile />
@@ -107,7 +103,6 @@ export default function Index({
           getProjects={getProjects}
           getOrganizations={getOrganizations}
           getMembers={getMembers}
-          token={token}
           membersWithAdditionalInfo={membersWithAdditionalInfo}
           projectsObject={projectsObject}
           organizationsObject={organizationsObject}

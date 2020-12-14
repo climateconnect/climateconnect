@@ -7,6 +7,7 @@ import ProfilePreviews from "../profile/ProfilePreviews";
 import OrganizationPreviews from "../organization/OrganizationPreviews";
 import possibleFilters from "../../../public/data/possibleFilters";
 import NoItemsFound from "./NoItemsFound";
+import Cookies from "universal-cookie";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -29,7 +30,6 @@ export default function BrowseContent({
   getProjects,
   getOrganizations,
   getMembers,
-  token,
   membersObject,
   organizationsObject,
   projectsObject,
@@ -39,7 +39,7 @@ export default function BrowseContent({
   membersWithAdditionalInfo,
 }) {
   const classes = useStyles();
-
+  const token = new Cookies().get("token")
   const TYPES_BY_TAB_VALUE = ["projects", "organizations", "members"];
   const [hash, setHash] = React.useState(null);
   const [tabValue, setTabValue] = React.useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
@@ -69,9 +69,9 @@ export default function BrowseContent({
   const [state, setState] = React.useState(initialState);
 
   const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
     if (newValue === 0) window.location.hash = "";
     else window.location.hash = TYPES_BY_TAB_VALUE[newValue];
-    setTabValue(newValue);
   };
 
   useEffect(() => {
