@@ -13,8 +13,20 @@ import {
   getSkillsOptions,
   getStatusOptions,
 } from "../../public/lib/getOptions";
+import BrowseContent from "../../src/components/browse/BrowseContent";
 
-export default function Hub({ name, headline, image, quickInfo, detailledInfo, stats }) {
+export default function Hub({ 
+  name, 
+  headline, 
+  image, 
+  quickInfo, 
+  detailledInfo, 
+  stats,
+  initialProjects,
+  initialOrganizations,
+  initialMembers,
+  filterChoices
+}) {
   return (
     <WideLayout header={headline}>
       <NavigationSubHeader hubName={name} />
@@ -26,30 +38,55 @@ export default function Hub({ name, headline, image, quickInfo, detailledInfo, s
         name={name}
         stats={stats}
       />
+      <BrowseContent
+        initialProjects={initialProjects}
+        initialOrganizations={initialOrganizations}
+        initialMembers={initialMembers}
+        filterChoices={filterChoices}
+      />
     </WideLayout>
   );
 }
 
 Hub.getInitialProps = async (ctx) => {
-  const url_slug = ctx.query.hubUrl;
+  const categoryKey = ctx.query.categoryKey;
+  console.log(categoryKey)
   const { token } = NextCookies(ctx);
-  const [hubData] = await Promise.all([
-    getHubData(url_slug),
+  const [
+    hubData,
+    initialProjects,
+    initialOrganizations,
+    initialMembers,
+    project_categories,
+    organization_types,
+    skills,
+    project_statuses,
+  ] = await Promise.all([
+    getHubData(categoryKey),
     getProjects(1, token),
     getOrganizations(1, token),
     getMembers(1, token),
-    getProjectTagsOptions(),
-    getOrganizationTagsOptions(),
-    getSkillsOptions(),
-    getStatusOptions(),
+    getProjectTagsOptions(categoryKey),
+    getOrganizationTagsOptions(categoryKey),
+    getSkillsOptions(categoryKey),
+    getStatusOptions(categoryKey),
   ]);
   return {
-    url_slug: url_slug,
+    url_slug: categoryKey,
     name: hubData.name,
     headline: hubData.headline,
     image: hubData.image,
     quickInfo: hubData.quick_info,
     stats: hubData.stats,
+    initialProjects: initialProjects,
+    initialOrganizations: initialOrganizations,
+    initialMembers: initialMembers,
+    filterChoices: {
+      project_categories: project_categories,
+      organization_types: organization_types,
+      skills: skills,
+      project_statuses: project_statuses,
+    },
   };
 };
 
