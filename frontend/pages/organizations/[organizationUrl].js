@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Typography, Container, Button, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import NextCookies from "next-cookies";
@@ -13,7 +13,6 @@ import ProjectPreviews from "../../src/components/project/ProjectPreviews";
 
 import TEMP_INFOMETADATA from "./../../public/data/organization_info_metadata.js";
 import tokenConfig from "../../public/config/tokenConfig";
-import { getParams } from "./../../public/lib/generalOperations";
 
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
@@ -53,19 +52,10 @@ export default function OrganizationPage({
   organizationTypes,
   infoMetadata,
 }) {
-  const [message, setMessage] = React.useState("");
-  const [errorMessage, setErrorMessage] = React.useState("");
 
-  useEffect(() => {
-    const params = getParams(window.location.href);
-    if (params.message) setMessage(decodeURI(params.message));
-    if (params.errorMessage) setErrorMessage(decodeURI(params.message));
-  });
   const { user } = useContext(UserContext);
   return (
     <WideLayout
-      errorMessage={errorMessage}
-      message={message}
       title={organization ? organization.name : "Not found"}
       description={organization.name + " | " + organization.info.shortdescription}
     >

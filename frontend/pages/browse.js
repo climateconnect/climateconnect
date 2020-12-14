@@ -12,7 +12,6 @@ import {
 
 import tokenConfig from "../public/config/tokenConfig";
 
-import { getParams } from "../public/lib/generalOperations";
 import WideLayout from "../src/components/layouts/WideLayout";
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
@@ -27,14 +26,8 @@ export default function Index({
   token,
   filterChoices,
 }) {
-  const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    const params = getParams(window.location.href);
-    if (params.message) setMessage(decodeURI(params.message));
-    if (params.errorMessage) setErrorMessage(decodeURI(params.errorMessage));
-  });
+  const [message, setMessage] = useState("");
 
   const [filters, setFilters] = useState({
     projects: {},
@@ -43,30 +36,31 @@ export default function Index({
   });
 
   const applyNewFilters = async (type, newFilters, closeFilters, oldUrlEnding) => {
-    if (filters !== newFilters) {
-      console.log(newFilters);
-      setFilters({ ...filters, [type]: newFilters });
-      const newUrlEnding = buildUrlEndingFromFilters(newFilters);
-      if (oldUrlEnding != newUrlEnding) {
-        try {
-          const filteredItemsObject = await getDataFromServer({
-            type: type,
-            page: 1,
-            token: token,
-            urlEnding: newUrlEnding,
-          });
-          if (type === "members") {
-            filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
-          }
-          return {
-            closeFilters: closeFilters,
-            filteredItemsObject: filteredItemsObject,
-            newUrlEnding: newUrlEnding,
-          };
-        } catch (e) {
-          console.log(e);
-        }
-      } else return null;
+    if (filters === newFilters) {
+      return;
+    }
+    setFilters({ ...filters, [type]: newFilters });
+    const newUrlEnding = buildUrlEndingFromFilters(newFilters);
+    if (oldUrlEnding === newUrlEnding){
+      return null 
+    }
+    try {
+      const filteredItemsObject = await getDataFromServer({
+        type: type,
+        page: 1,
+        token: token,
+        urlEnding: newUrlEnding,
+      });
+      if (type === "members") {
+        filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
+      }
+      return {
+        closeFilters: closeFilters,
+        filteredItemsObject: filteredItemsObject,
+        newUrlEnding: newUrlEnding,
+      };
+    } catch (e) {
+      console.log(e);
     }
   };
 

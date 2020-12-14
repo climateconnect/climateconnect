@@ -29,3 +29,10 @@ const parseOrganizations = (organizations) => {
     },
   }));
 };
+
+export function getMessageFromUrl (message){
+  if(typeof message === "object")
+    return message
+  else
+    return decodeURIComponent(message).replaceAll("+", " ")
+}
