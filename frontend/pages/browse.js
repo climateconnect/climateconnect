@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import NextCookies from "next-cookies";
 import axios from "axios";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -27,8 +27,8 @@ export default function Index({
   token,
   filterChoices,
 }) {
-  const [message, setMessage] = React.useState("");
-  const [errorMessage, setErrorMessage] = React.useState("");
+  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const params = getParams(window.location.href);
@@ -36,7 +36,7 @@ export default function Index({
     if (params.errorMessage) setErrorMessage(decodeURI(params.errorMessage));
   });
 
-  const [filters, setFilters] = React.useState({
+  const [filters, setFilters] = useState({
     projects: {},
     members: {},
     organizations: {},
