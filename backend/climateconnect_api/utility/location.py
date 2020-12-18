@@ -1,3 +1,4 @@
+from typing import Optional, Dict
 # Django imports
 from django.conf import settings
 
@@ -5,15 +6,18 @@ from django.conf import settings
 from googlemaps import Client as maps_client
 
 
-def get_geo_location(location: str) -> dict:
+def get_geo_location(location: str) -> Optional[Dict]:
     maps = maps_client(key=settings.GOOGLE_MAPS_API_KEY)
 
     # Now get geocode result for the provided location
     # TODO [Maybe?]: Add check on location. 
     geo_location = maps.geocode(location)
 
-    return {
-        'location': geo_location[0]['formatted_address'],
-        'latitude': geo_location[0]['geometry']['location']['lat'],
-        'longitude': geo_location[0]['geometry']['location']['lng']
-    }
+    if geo_location:
+        return {
+            'location': geo_location[0]['formatted_address'],
+            'latitude': geo_location[0]['geometry']['location']['lat'],
+            'longitude': geo_location[0]['geometry']['location']['lng']
+        }
+    
+    return None
