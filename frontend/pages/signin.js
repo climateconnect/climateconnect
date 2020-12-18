@@ -88,11 +88,7 @@ export default function Signin() {
   };
 
   return (
-    <Layout
-      title="Log In"
-      isLoading={isLoading}
-      messageType="error"
-    >
+    <Layout title="Log In" isLoading={isLoading} messageType="error">
       <Form
         fields={fields}
         messages={messages}

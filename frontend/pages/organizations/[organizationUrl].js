@@ -52,7 +52,6 @@ export default function OrganizationPage({
   organizationTypes,
   infoMetadata,
 }) {
-
   const { user } = useContext(UserContext);
   return (
     <WideLayout

@@ -33,16 +33,16 @@ export default function Layout({
 }) {
   const classes = useStyles();
   const [hideAlertMessage, setHideAlertMessage] = React.useState(false);
-  const [initialMessageType, setInitialMessageType] = React.useState(null)
-  const [initialMessage, setInitialMessage] = React.useState("")
+  const [initialMessageType, setInitialMessageType] = React.useState(null);
+  const [initialMessage, setInitialMessage] = React.useState("");
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) setInitialMessage(decodeURI(params.message));
     if (params.errorMessage) {
       setInitialMessage(decodeURI(params.errorMessage));
-      setInitialMessageType("error")
+      setInitialMessageType("error");
     }
-  }, [])
+  }, []);
   return (
     <LayoutWrapper theme={theme} title={title}>
       <Header noSpacingBottom={noSpacingBottom} isStaticPage={isStaticPage} />
@@ -54,12 +54,14 @@ export default function Layout({
           {(message || initialMessage) && !(hideAlertMessage === message) && (
             <Alert
               className={classes.alert}
-              severity={messageType ? messageType : (initialMessageType ? initialMessageType : "success")}
+              severity={
+                messageType ? messageType : initialMessageType ? initialMessageType : "success"
+              }
               onClose={() => {
                 setHideAlertMessage(message);
               }}
             >
-              {getMessageFromUrl(message?message:initialMessage)}
+              {getMessageFromUrl(message ? message : initialMessage)}
             </Alert>
           )}
           <Container maxWidth="sm">

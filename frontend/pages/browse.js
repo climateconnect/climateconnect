@@ -26,7 +26,6 @@ export default function Browse({
   token,
   filterChoices,
 }) {
-
   const [filters, setFilters] = useState({
     projects: {},
     members: {},
@@ -39,8 +38,8 @@ export default function Browse({
     }
     setFilters({ ...filters, [type]: newFilters });
     const newUrlEnding = buildUrlEndingFromFilters(newFilters);
-    if (oldUrlEnding === newUrlEnding){
-      return null 
+    if (oldUrlEnding === newUrlEnding) {
+      return null;
     }
     try {
       const filteredItemsObject = await getDataFromServer({
@@ -64,9 +63,7 @@ export default function Browse({
 
   const applySearch = async (type, searchValue, oldUrlEnding) => {
     const newSearchQueryParam = `&search=${searchValue}`;
-    console.log(newSearchQueryParam)
     if (oldUrlEnding === newSearchQueryParam) {
-      console.log("it's the same!")
       return;
     }
     try {
@@ -86,7 +83,7 @@ export default function Browse({
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   const loadMoreData = async (type, page, urlEnding) => {
     try {
