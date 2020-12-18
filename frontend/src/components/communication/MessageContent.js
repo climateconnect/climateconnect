@@ -57,17 +57,16 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
     return youtubeLines.filter((l, index) => index < renderYoutubeVideos);
   };
 
-  function YouTubeGetID(url){
-    var ID = '';
-    url = url.replace(/(>|<)/gi,'').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
-    if(url[2] !== undefined) {
+  function YouTubeGetID(url) {
+    var ID = "";
+    url = url.replace(/(>|<)/gi, "").split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
+    if (url[2] !== undefined) {
       ID = url[2].split(/[^0-9a-z_\-]/i);
       ID = ID[0];
-    }
-    else {
+    } else {
       ID = url;
     }
-      return ID;
+    return ID;
   }
 
   const youtubeVideoLines = renderYoutubeVideos ? getFirstYouTubeVideosLines(content) : null;

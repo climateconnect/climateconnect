@@ -57,9 +57,6 @@ class ListProjectsView(ListAPIView):
     serializer_class = ProjectStubSerializer
     queryset = Project.objects.filter(is_draft=False)
 
-    def get_serializer_class(self):
-        return ProjectStubSerializer
-
     def get_queryset(self):
         projects = Project.objects.filter(is_draft=False)
         if 'collaboration' in self.request.query_params:
@@ -69,12 +66,20 @@ class ListProjectsView(ListAPIView):
             if collaborators_welcome == 'no':
                 projects = projects.filter(collaborators_welcome=False)
 
+        if 'project_category_parent' in self.request.query_params:
+            project_parent_category = self.request.query_params.get('project_category_parent').split(',')
+            project_parent_tags = ProjectTags.objects.filter(key__in=project_parent_category)
+            project_tags = ProjectTags.objects.filter(parent_tag__in=project_parent_tags)
+            projects = projects.filter(
+                tag_project__project_tag__in=project_tags
+            ).order_by('id').distinct('id')
+
         if 'category' in self.request.query_params:
             project_category = self.request.query_params.get('category').split(',')
             project_tags = ProjectTags.objects.filter(name__in=project_category)
             projects = projects.filter(
                 tag_project__project_tag__in=project_tags
-            ).distinct('id')
+            ).distinct('id')        
 
         if 'status' in self.request.query_params:
             statuses = self.request.query_params.get('status').split(',')
@@ -448,7 +453,11 @@ class ListProjectTags(ListAPIView):
     serializer_class = ProjectTagsSerializer
 
     def get_queryset(self):
-        return ProjectTags.objects.all()
+        if("parent_tag_key" in self.request.query_params):
+            parent_tag = ProjectTags.objects.get(key=self.request.query_params['parent_tag_key'])
+            return ProjectTags.objects.filter(parent_tag=parent_tag)
+        else:
+            return ProjectTags.objects.all()
 
 
 class ListProjectStatus(ListAPIView):
