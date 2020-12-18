@@ -8,6 +8,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundSize: "cover",
     backgroundPosition: "bottom center",
     width: "100%",
+    [theme.breakpoints.down("sm")]: {
+      minHeight: 100,
+      backgroundSize: "cover",
+    },
   }),
   img: {
     width: "50%",

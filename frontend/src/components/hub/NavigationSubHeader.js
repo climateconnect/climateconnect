@@ -25,7 +25,7 @@ export default function NavigationSubHeader({ hubName }) {
   return (
     <div className={classes.root}>
       <Container>
-        <Typography className={classes.path}>
+        <Typography className={classes.path} component="div">
           <Link className={classes.link} href="/browse">
             Browse
           </Link>
