@@ -38,19 +38,20 @@ export default function WideLayout({
   largeFooter,
   description,
   landingPage,
+  headerBackground,
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
-  const [initialMessageType, setInitialMessageType] = React.useState(null)
-  const [initialMessage, setInitialMessage] = React.useState("")
+  const [initialMessageType, setInitialMessageType] = React.useState(null);
+  const [initialMessage, setInitialMessage] = React.useState("");
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) setInitialMessage(decodeURI(params.message));
     if (params.errorMessage) {
       setInitialMessage(decodeURI(params.errorMessage));
-      setInitialMessageType("error")
+      setInitialMessageType("error");
     }
-  }, [])
+  }, []);
   return (
     <LayoutWrapper
       title={title}
@@ -63,6 +64,7 @@ export default function WideLayout({
         fixedHeader={fixedHeader}
         transparentHeader={transparentHeader}
         noSpacingBottom={isStaticPage}
+        background={headerBackground}
       />
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />
@@ -71,12 +73,14 @@ export default function WideLayout({
           {(message || initialMessage) && alertOpen && (
             <Alert
               className={classes.alert}
-              severity={messageType ? messageType : (initialMessageType ? initialMessageType : "success")}
+              severity={
+                messageType ? messageType : initialMessageType ? initialMessageType : "success"
+              }
               onClose={() => {
                 setAlertOpen(false);
               }}
             >
-              {getMessageFromUrl(message?message:initialMessage)}
+              {getMessageFromUrl(message ? message : initialMessage)}
             </Alert>
           )}
           {process.env.DONATION_CAMPAIGN_RUNNING && !landingPage && <DonationCampaignInformation />}
