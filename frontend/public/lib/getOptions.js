@@ -33,12 +33,16 @@ export async function getStatusOptions() {
   }
 }
 
-export async function getProjectTagsOptions() {
+export async function getProjectTagsOptions(parent_tag_key) {
+  const url = parent_tag_key
+    ? `${process.env.API_URL}/api/projecttags/?parent_tag_key=${parent_tag_key}`
+    : `${process.env.API_URL}/api/projecttags/`;
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/projecttags/");
+    const resp = await axios.get(url);
     if (resp.data.results.length === 0) return null;
     else {
-      return parseOptions(resp.data.results, "parent_tag");
+      if (parent_tag_key) return resp.data.results;
+      else return parseOptions(resp.data.results, "parent_tag");
     }
   } catch (err) {
     console.log(err);
@@ -78,4 +82,4 @@ export function membersWithAdditionalInfo(members) {
       ],
     };
   });
-};
+}
