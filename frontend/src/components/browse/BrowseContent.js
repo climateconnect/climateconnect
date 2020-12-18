@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Tabs, Tab, Divider, useMediaQuery, makeStyles } from "@material-ui/core";
 import FilterSection from "../indexPage/FilterSection";
 import FilterContent from "../filter/FilterContent";
@@ -33,18 +33,43 @@ export default function BrowseContent({
   applyNewFilters,
   filterChoices,
   loadMoreData,
-  applySearch
+  applySearch,
+  hideMembers,
+  customSearchBarLabels,
 }) {
+  const initialState = {
+    items: {
+      projects: initialProjects ? [...initialProjects.projects] : [],
+      organizations: initialOrganizations ? [...initialOrganizations.organizations] : [],
+      members:
+        initialMembers && !hideMembers ? membersWithAdditionalInfo(initialMembers.members) : [],
+    },
+    hasMore: {
+      projects: !!initialProjects && initialProjects.hasMore,
+      organizations: !!initialOrganizations && initialOrganizations.hasMore,
+      members: !!initialMembers && initialMembers.hasMore,
+    },
+    nextPages: {
+      projects: 2,
+      members: 2,
+      organizations: 2,
+    },
+    urlEnding: {
+      projects: "",
+      organizations: "",
+      members: "",
+    },
+  };
   const classes = useStyles();
-  const TYPES_BY_TAB_VALUE = ["projects", "organizations", "members"];
-  const [hash, setHash] = React.useState(null);
-  const [tabValue, setTabValue] = React.useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
-  const [filtersExpanded, setFiltersExpanded] = React.useState(false);
-  const [state, setState] = React.useState(getInitialState(initialMembers, initialProjects, initialOrganizations));
-
+  const TYPES_BY_TAB_VALUE = hideMembers
+    ? ["projects", "organizations"]
+    : ["projects", "organizations", "members"];
+  const [hash, setHash] = useState(null);
+  const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
+  const [state, setState] = useState(initialState);
   const handleTabChange = (event, newValue) => {
-    if (newValue === 0) window.location.hash = "";
-    else window.location.hash = TYPES_BY_TAB_VALUE[newValue];
+    window.location.hash = TYPES_BY_TAB_VALUE[newValue];
     setTabValue(newValue);
   };
 
@@ -58,9 +83,7 @@ export default function BrowseContent({
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
-  function TabContent({ value, index, children }) {
-    return <div hidden={value !== index}>{children}</div>;
-  }
+
   const unexpandFilters = () => {
     setFiltersExpanded(false);
   };
@@ -119,8 +142,7 @@ export default function BrowseContent({
   };
 
   const handleSearchSubmit = async (type, searchValue) => {
-    const res = await applySearch(type, searchValue, state.urlEnding[type])
-    console.log(res)
+    const res = await applySearch(type, searchValue, state.urlEnding[type]);
     if (res.filteredItemsObject) {
       setState({
         ...state,
@@ -130,7 +152,7 @@ export default function BrowseContent({
         nextPages: { ...state.nextPages, [type]: 2 },
       });
     }
-  }
+  };
 
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   return (
@@ -140,6 +162,7 @@ export default function BrowseContent({
         onSubmit={handleSearchSubmit}
         setFiltersExpanded={setFiltersExpanded}
         type={TYPES_BY_TAB_VALUE[tabValue]}
+        customSearchBarLabels={customSearchBarLabels}
       />
       <Tabs
         variant={isNarrowScreen ? "fullWidth" : "standard"}
@@ -149,9 +172,9 @@ export default function BrowseContent({
         textColor="primary"
         centered={true}
       >
-        <Tab label={capitalizeFirstLetter(TYPES_BY_TAB_VALUE[0])} className={classes.tab} />
-        <Tab label={capitalizeFirstLetter(TYPES_BY_TAB_VALUE[1])} className={classes.tab} />
-        <Tab label={capitalizeFirstLetter(TYPES_BY_TAB_VALUE[2])} className={classes.tab} />
+        {TYPES_BY_TAB_VALUE.map((t, index) => (
+          <Tab label={capitalizeFirstLetter(t)} className={classes.tab} key={index} />
+        ))}
       </Tabs>
 
       <Divider className={classes.mainContentDivider} />
@@ -161,7 +184,7 @@ export default function BrowseContent({
           <FilterContent
             className={classes.tabContent}
             type={TYPES_BY_TAB_VALUE[0]}
-            applyFilters={applyNewFilters}
+            applyFilters={handleApplyNewFilters}
             filtersExpanded={filtersExpanded}
             unexpandFilters={unexpandFilters}
             possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[0], filterChoices)}
@@ -202,57 +225,35 @@ export default function BrowseContent({
           <NoItemsFound type="organizations" />
         )}
       </TabContent>
-      <TabContent value={tabValue} index={2} className={classes.tabContent}>
-        {filtersExpanded && tabValue === 2 && (
-          <FilterContent
-            className={classes.tabContent}
-            type={TYPES_BY_TAB_VALUE[2]}
-            applyFilters={applyNewFilters}
-            filtersExpanded={filtersExpanded}
-            unexpandFilters={unexpandFilters}
-            possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[2], filterChoices)}
-          />
-        )}
-        {state && state.items && state.items.members && state.items.members.length ? (
-          <ProfilePreviews
-            profiles={state.items.members}
-            loadFunc={loadMoreMembers}
-            hasMore={state.hasMore.members}
-            showAdditionalInfo
-            parentHandlesGridItems
-          />
-        ) : (
-          <NoItemsFound type="members" />
-        )}
-      </TabContent>
+      {!hideMembers && (
+        <TabContent value={tabValue} index={2} className={classes.tabContent}>
+          {filtersExpanded && tabValue === 2 && (
+            <FilterContent
+              className={classes.tabContent}
+              type={TYPES_BY_TAB_VALUE[2]}
+              applyFilters={handleApplyNewFilters}
+              filtersExpanded={filtersExpanded}
+              unexpandFilters={unexpandFilters}
+              possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[2], filterChoices)}
+            />
+          )}
+          {state && state.items && state.items.members && state.items.members.length ? (
+            <ProfilePreviews
+              profiles={state.items.members}
+              loadFunc={loadMoreMembers}
+              hasMore={state.hasMore.members}
+              showAdditionalInfo
+              parentHandlesGridItems
+            />
+          ) : (
+            <NoItemsFound type="members" />
+          )}
+        </TabContent>
+      )}
     </Container>
   );
 }
 
-const getInitialState = (membersObject, projectsObject, organizationsObject) => {
-  console.log(membersObject)
-  console.log(projectsObject)
-  console.log(organizationsObject)
-  return {
-    items: {
-      projects: projectsObject ? [...projectsObject.projects] : [],
-      organizations: organizationsObject ? [...organizationsObject.organizations] : [],
-      members: membersObject ? membersWithAdditionalInfo(membersObject.members) : [],
-    },
-    hasMore: {
-      projects: !!projectsObject && projectsObject.hasMore,
-      organizations: !!organizationsObject && organizationsObject.hasMore,
-      members: !!membersObject && membersObject.hasMore,
-    },
-    nextPages: {
-      projects: 2,
-      members: 2,
-      organizations: 2,
-    },
-    urlEnding: {
-      projects: "",
-      organizations: "",
-      members: "",
-    },
-  };
+function TabContent({ value, index, children }) {
+  return <div hidden={value !== index}>{children}</div>;
 }
