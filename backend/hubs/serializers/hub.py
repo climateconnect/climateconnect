@@ -12,7 +12,9 @@ class HubSerializer(serializers.ModelSerializer):
             "headline", 
             "image",
             "quick_info",
-            "stats"
+            "stats",
+            "sub_headline",
+            "segway_text"
         )
     
     def get_stats(self, obj):
@@ -27,5 +29,7 @@ class HubStatSerializer(serializers.ModelSerializer):
             "name",
             "value",
             "value_description",
-            "description"
+            "description",
+            "source_name",
+            "source_link"
         )
