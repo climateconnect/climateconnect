@@ -13,7 +13,6 @@ class HubStat(models.Model):
     value = models.CharField(
         help_text="Value of the stat that is being highlighted in the stat box (e.g. '75%')",
         verbose_name="Stat Value",
-        unique=True,
         max_length=128,
         null=True,
         blank=True
@@ -30,11 +29,26 @@ class HubStat(models.Model):
     description = models.CharField(
         help_text="Description that is shown in the stat box",
         verbose_name="Stat box description",
-        unique=True,
         max_length=1024,
         null=True,
         blank=True
     )
+
+    source_link = models.CharField(
+        help_text="Link to the source of the stat",
+        verbose_name="Source link",
+        max_length=1024,
+        null=True,
+        blank=True
+    ) 
+
+    source_name = models.CharField(
+        help_text="Name of the source",
+        verbose_name="Source Name",
+        max_length=1024,
+        null=True,
+        blank=True
+    ) 
 
     class Meta:
         app_label = "hubs"
@@ -60,8 +74,26 @@ class Hub(models.Model):
     )
 
     headline = models.CharField(
-        help_text="URL slug for hub",
+        help_text="Headline",
         verbose_name="headline",
+        unique=True,
+        max_length=1024,
+        null=True,
+        blank=True
+    )
+
+    sub_headline = models.CharField(
+        help_text="Sub headline",
+        verbose_name="Sub headline",
+        unique=True,
+        max_length=1024,
+        null=True,
+        blank=True
+    )
+
+    segway_text = models.CharField(
+        help_text="Segway text between the info and the solutions",
+        verbose_name="Segway text",
         unique=True,
         max_length=1024,
         null=True,
@@ -84,13 +116,9 @@ class Hub(models.Model):
         upload_to=hub_image_path
     )
 
-    quick_info = models.CharField(
+    quick_info = models.TextField(
         help_text="Text that is shown when the hub info is not expanded",
         verbose_name="Quick info about the hub (non-expanded text)",
-        unique=True,
-        max_length=2048,
-        null=True,
-        blank=True
     )
 
     stats = models.ManyToManyField(
