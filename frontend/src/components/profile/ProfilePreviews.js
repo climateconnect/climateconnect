@@ -1,10 +1,11 @@
 import React from "react";
-import ProfilePreview from "./ProfilePreview";
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfiniteScroll from "react-infinite-scroller";
 
 import LoadingSpinner from "../general/LoadingSpinner";
+
+import ProfilePreview from "./ProfilePreview";
 
 const useStyles = makeStyles({
   reset: {
@@ -45,13 +46,13 @@ export default function ProfilePreviews({
   // TODO: use `profile.id` instead of index when using real profiles
   return (
     <InfiniteScroll
-      pageStart={0}
-      loadMore={loadMore}
-      hasMore={hasMore && !isLoading}
-      element={Grid}
-      container
-      component="ul"
       className={`${classes.reset} ${classes.root}`}
+      component="ul"
+      container
+      element={Grid}
+      hasMore={hasMore && !isLoading}
+      loadMore={loadMore}
+      pageStart={0}
       spacing={2}
     >
       {parentHandlesGridItems
