@@ -37,14 +37,13 @@ export default function MessagingLayout({
 }) {
   const classes = useStyles();
   const { user } = useContext(UserContext);
-  
+
   const handleWindowClose = (e) => {
-    if(curMessage && curMessage.length > 0){
+    if (curMessage && curMessage.length > 0) {
       e.preventDefault();
       return (e.returnValue = "You have an unsent message. Are you sure you want to leave?.");
-    }else
-      handleChatWindowClose()
-  }
+    } else handleChatWindowClose();
+  };
 
   React.useEffect(() => {
     window.addEventListener("beforeunload", handleWindowClose);

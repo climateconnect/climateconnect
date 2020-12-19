@@ -97,7 +97,7 @@ export default function Chat({
   const sendMessage = async (message) => {
     if (message.length > 0) {
       if (socketConnectionState === "connected") await sendChatMessageThroughSocket(message);
-      else await sendChatMessageThroughPostRequest(message);
+      else await sendChatMessageThroughPostRequest(message, chatUUID, token);
     }
   };
 

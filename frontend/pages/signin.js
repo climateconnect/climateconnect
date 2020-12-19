@@ -38,7 +38,6 @@ export default function Signin() {
   };
 
   const [errorMessage, setErrorMessage] = React.useState(null);
-  const [message, setMessage] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const { user, signIn, API_URL } = useContext(UserContext);
@@ -49,7 +48,6 @@ export default function Signin() {
     if (!initialized) {
       const params = getParams(window.location.href);
       if (params.redirect) setRedirectUrl(decodeURIComponent(params.redirect));
-      if (params.message) setMessage(params.message);
       setInitialized(true);
       //TODO: remove router
     }
@@ -90,13 +88,7 @@ export default function Signin() {
   };
 
   return (
-    <Layout
-      title="Log In"
-      isLoading={isLoading}
-      message={message}
-      noSpacingBottom={!!message}
-      messageType="error"
-    >
+    <Layout title="Log In" isLoading={isLoading} messageType="error">
       <Form
         fields={fields}
         messages={messages}
