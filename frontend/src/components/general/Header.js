@@ -52,7 +52,10 @@ const useStyles = makeStyles((theme) => {
         width: props.fixedHeader ? "100%" : "auto",
         height: props.fixedHeader ? 97 : "auto",
         top: props.fixedHeader ? 0 : "auto",
-        background: !props.transparentHeader && props.fixedHeader && "#F8F8F8",
+        background:
+          !props.transparentHeader &&
+          props.fixedHeader &&
+          (props.background ? props.background : "#F8F8F8"),
       };
     },
     spacingBottom: {
@@ -278,11 +281,13 @@ export default function Header({
   isStaticPage,
   fixedHeader,
   transparentHeader,
+  background,
 }) {
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
     isStaticPage: isStaticPage,
+    background: background,
   });
   const { user, signOut, notifications, pathName } = useContext(UserContext);
   const [anchorEl, setAnchorEl] = React.useState(false);
@@ -308,36 +313,30 @@ export default function Header({
             className={classes.logo}
           />
         </Link>
-        {process.env.PRE_LAUNCH === "true" ? (
-          <></>
+        {isNarrowScreen ? (
+          <NarrowScreenLinks
+            loggedInUser={user}
+            handleLogout={signOut}
+            anchorEl={anchorEl}
+            toggleShowNotifications={toggleShowNotifications}
+            onNotificationsClose={onNotificationsClose}
+            notifications={notifications}
+            transparentHeader={transparentHeader}
+            fixedHeader={fixedHeader}
+            LINKS={LINKS}
+          />
         ) : (
-          <>
-            {isNarrowScreen ? (
-              <NarrowScreenLinks
-                loggedInUser={user}
-                handleLogout={signOut}
-                anchorEl={anchorEl}
-                toggleShowNotifications={toggleShowNotifications}
-                onNotificationsClose={onNotificationsClose}
-                notifications={notifications}
-                transparentHeader={transparentHeader}
-                fixedHeader={fixedHeader}
-                LINKS={LINKS}
-              />
-            ) : (
-              <NormalScreenLinks
-                loggedInUser={user}
-                handleLogout={signOut}
-                anchorEl={anchorEl}
-                toggleShowNotifications={toggleShowNotifications}
-                onNotificationsClose={onNotificationsClose}
-                notifications={notifications}
-                transparentHeader={transparentHeader}
-                fixedHeader={fixedHeader}
-                LINKS={LINKS}
-              />
-            )}
-          </>
+          <NormalScreenLinks
+            loggedInUser={user}
+            handleLogout={signOut}
+            anchorEl={anchorEl}
+            toggleShowNotifications={toggleShowNotifications}
+            onNotificationsClose={onNotificationsClose}
+            notifications={notifications}
+            transparentHeader={transparentHeader}
+            fixedHeader={fixedHeader}
+            LINKS={LINKS}
+          />
         )}
       </Container>
       <div>{isStaticPage && <StaticPageLinks />}</div>

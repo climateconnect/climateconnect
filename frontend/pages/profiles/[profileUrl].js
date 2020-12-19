@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Container, Typography, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
@@ -17,7 +17,6 @@ import TEMP_INFOMETADATA from "./../../public/data/profile_info_metadata";
 import tokenConfig from "../../public/config/tokenConfig";
 import LoginNudge from "../../src/components/general/LoginNudge";
 import { parseProfile } from "./../../public/lib/profileOperations";
-import { getParams } from "./../../public/lib/generalOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 import PageNotFound from "../../src/components/general/PageNotFound";
 
@@ -92,15 +91,8 @@ export default function ProfilePage({
   token,
 }) {
   const { user } = useContext(UserContext);
-  const [message, setMessage] = React.useState("");
-
-  useEffect(() => {
-    const params = getParams(window.location.href);
-    if (params.message) setMessage(decodeURI(params.message));
-  });
   return (
     <WideLayout
-      message={message}
       title={profile ? profile.name + "'s profile" : "Not found"}
       description={
         profile.name +

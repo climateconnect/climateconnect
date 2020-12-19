@@ -50,7 +50,13 @@ const searchBarLabels = {
   members: "Search for people active against climate change",
 };
 
-export default function FilterSection({ filtersExpanded, onSubmit, setFiltersExpanded, type }) {
+export default function FilterSection({
+  filtersExpanded,
+  onSubmit,
+  setFiltersExpanded,
+  type,
+  customSearchBarLabels,
+}) {
   const classes = useStyles();
 
   const InputLabelClasses = {
@@ -69,7 +75,7 @@ export default function FilterSection({ filtersExpanded, onSubmit, setFiltersExp
           <FilterSearchBar
             className={classes.filterSearchbar}
             InputLabelClasses={InputLabelClasses}
-            label={searchBarLabels[type]}
+            label={customSearchBarLabels ? customSearchBarLabels[type] : searchBarLabels[type]}
             // Pass submit handler through to
             // the underlying search bar.
             onSubmit={onSubmit}
