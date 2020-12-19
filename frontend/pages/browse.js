@@ -183,7 +183,7 @@ export default function Browse({
   return (
     <>
       <WideLayout
-        title="Climate Connect - global platform form climate change solutions"
+        title="Climate Connect - Global platform for climate change solutions"
         hideHeadline
         showOnScrollUp={showOnScrollUp}
       >
