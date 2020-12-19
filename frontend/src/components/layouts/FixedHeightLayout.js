@@ -1,7 +1,8 @@
 import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+
 import Header from "../general/Header";
 import Footer from "../general/Footer";
-import { makeStyles } from "@material-ui/core/styles";
 import theme from "../../themes/theme";
 import LayoutWrapper from "./LayoutWrapper";
 
