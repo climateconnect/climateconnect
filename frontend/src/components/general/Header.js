@@ -48,6 +48,10 @@ const useStyles = makeStyles((theme) => {
     root: (props) => {
       return {
         zIndex: props.fixedHeader ? 20 : "auto",
+        borderBottom:
+          props.transparentHeader || props.isStaticPage
+            ? 0
+            : `1px solid ${theme.palette.grey[300]}`,
         position: props.fixedHeader ? "fixed" : "auto",
         width: props.fixedHeader ? "100%" : "auto",
         height: props.fixedHeader ? 97 : "auto",
