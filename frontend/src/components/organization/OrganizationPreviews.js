@@ -63,7 +63,7 @@ export default function OrganizationPreviews({
           ? toOrganizationPreviews(organizations)
           : "No organizations found."
         : gridItems}
-      <LoadingSpinner />
+      <LoadingSpinner isLoading={isLoading}/>
     </InfiniteScroll>
   );
 }

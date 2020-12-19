@@ -60,7 +60,7 @@ export default function ProfilePreviews({
           ? toProfilePreviews(profiles)
           : "No members found."
         : gridItems}
-      <LoadingSpinner />
+      <LoadingSpinner isLoading={isLoading}/>
     </InfiniteScroll>
   );
 }
