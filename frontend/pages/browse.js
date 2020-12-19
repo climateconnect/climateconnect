@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import NextCookies from "next-cookies";
 import axios from "axios";
 
@@ -107,51 +107,6 @@ export default function Browse({
       console.log("error");
       console.log(e);
       throw e;
-    }
-  };
-
-  /**
-   * This handler is a callback that's passed through to the
-   * the underlying search bar. We manage state for searching
-   * (like loading state) within browse.
-   *
-   * Asynchonously get new projects, orgs or members. We render
-   * a loading spinner until the request is done.
-   *
-   */
-  const handleSearchSubmit = async (type, searchValue) => {
-    const newSearchQueryParam = `&search=${searchValue}`;
-
-    // Bail; no need to search if the query param is the same
-    if (state.urlEnding[type] == newSearchQueryParam) {
-      return;
-    }
-
-    try {
-      // Render the spinner while we're updating search...
-
-      let filteredItemsObject;
-      if (type === "projects") {
-        filteredItemsObject = await getProjects(1, token, newSearchQueryParam);
-      } else if (type === "organizations") {
-        console.log(newSearchQueryParam);
-        filteredItemsObject = await getOrganizations(1, token, newSearchQueryParam);
-      } else if (type === "members") {
-        filteredItemsObject = await getMembers(1, token, newSearchQueryParam);
-        filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
-      } else {
-        console.log("cannot find type!");
-      }
-
-      setState({
-        ...state,
-        hasMore: { ...state.hasMore, [type]: filteredItemsObject.hasMore },
-        items: { ...state.items, [type]: filteredItemsObject[type] },
-        nextPages: { ...state.nextPages, [type]: 2 },
-        urlEnding: { ...state.urlEnding, [type]: newSearchQueryParam },
-      });
-    } catch (e) {
-      console.log(e);
     }
   };
 

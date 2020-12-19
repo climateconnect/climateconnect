@@ -158,6 +158,10 @@ export default function BrowseContent({
     setIsLoading(false);
   };
 
+  /**
+   * Asynchonously get new projects, orgs or members. We render
+   * a loading spinner until the request is done.
+   */
   const handleSearchSubmit = async (type, searchValue) => {
     setIsLoading(true);
     const res = await applySearch(type, searchValue, state.urlEnding[type]);
