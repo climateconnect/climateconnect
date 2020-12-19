@@ -1,22 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NextCookies from "next-cookies";
 import axios from "axios";
-import Link from "next/link";
-
-// @material-ui
-import { Divider, Tab, Tabs, Typography, Container } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
-
-import ProjectPreviews from "../src/components/project/ProjectPreviews";
-import About from "./about";
-
-import FilterContent from "../src/components/filter/FilterContent";
-import possibleFilters from "../public/data/possibleFilters";
-import OrganizationPreviews from "../src/components/organization/OrganizationPreviews";
-import ProfilePreviews from "../src/components/profile/ProfilePreviews";
-import LoadingSpinner from "../src/components/general/LoadingSpinner";
 
 import {
   getSkillsOptions,
@@ -52,11 +36,13 @@ export default function Browse({
     if (filters === newFilters) {
       return;
     }
+
     setFilters({ ...filters, [type]: newFilters });
     const newUrlEnding = buildUrlEndingFromFilters(newFilters);
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }
+
     try {
       const filteredItemsObject = await getDataFromServer({
         type: type,
@@ -89,8 +75,6 @@ export default function Browse({
         token: token,
         urlEnding: newSearchQueryParam,
       });
-
-      setIsLoading(false);
 
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
@@ -145,7 +129,6 @@ export default function Browse({
 
     try {
       // Render the spinner while we're updating search...
-      setIsLoading(true);
 
       let filteredItemsObject;
       if (type === "projects") {
@@ -160,7 +143,6 @@ export default function Browse({
         console.log("cannot find type!");
       }
 
-      setIsLoading(false);
       setState({
         ...state,
         hasMore: { ...state.hasMore, [type]: filteredItemsObject.hasMore },

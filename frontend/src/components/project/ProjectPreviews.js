@@ -58,7 +58,7 @@ export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHan
           ? toProjectPreviews(projects)
           : "No projects found."
         : gridItems}
-      <LoadingSpinner isLoading={isLoading}/>
+      <LoadingSpinner isLoading={isLoading} />
     </InfiniteScroll>
   );
 }
