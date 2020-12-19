@@ -61,9 +61,9 @@ export default function OrganizationPreviews({
       {parentHandlesGridItems
         ? organizations && organizations.length > 0
           ? toOrganizationPreviews(organizations)
-          : "No organizations found."
+          : "No organizations found. Try changing or removing your filter or search query."
         : gridItems}
-      <LoadingSpinner isLoading={isLoading}/>
+      <LoadingSpinner isLoading={isLoading} />
     </InfiniteScroll>
   );
 }
