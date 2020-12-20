@@ -30,22 +30,10 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
     },
     {
       required: true,
-      label: "Country",
-      select: {
-        values: countries.map((country) => {
-          return { key: country, name: country };
-        }),
-        defaultValue: values["country"] ? values["country"] : "",
-        addEmptyValue: true,
-      },
-      key: "country",
-    },
-    {
-      required: true,
-      label: "City/Place",
+      label: "Location",
       type: "text",
-      key: "city",
-      value: values["city"],
+      key: "location",
+      value: values["location"]
     },
     {
       required: false,

@@ -100,19 +100,8 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
       required: true,
       label: "Location",
       type: "text",
-      key: "city",
-      value: project.city,
-    },
-    {
-      required: true,
-      label: "Country",
-      select: {
-        values: countries.map((country) => {
-          return { key: country, name: country };
-        }),
-        defaultValue: project.country,
-      },
-      key: "country",
+      key: "location",
+      value: project.location,
     },
   ];
   const messages = {

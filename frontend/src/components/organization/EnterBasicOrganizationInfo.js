@@ -60,21 +60,10 @@ export default function EnterBasicOrganizationInfo({
     },
     {
       required: true,
-      label: "City",
-      key: "city",
+      label: "Location",
+      key: "location",
       type: "text",
-      value: organizationInfo["city"],
-    },
-    {
-      required: true,
-      label: "Country",
-      key: "country",
-      type: "select",
-      select: {
-        defaultValue: organizationInfo["country"],
-        values: countries.map((c) => ({ key: c.toLowerCase(), name: c })),
-        addEmptyValue: true,
-      },
+      value: organizationInfo["location"],
     },
     {
       required: true,

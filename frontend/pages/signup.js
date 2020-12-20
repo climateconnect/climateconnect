@@ -15,8 +15,7 @@ export default function Signup() {
     repeatpassword: "",
     first_name: "",
     last_name: "",
-    country: "",
-    city: "",
+    location: "",
     newsletter: "",
   });
 
@@ -50,8 +49,7 @@ export default function Signup() {
       ...userInfo,
       first_name: values.first_name,
       last_name: values.last_name,
-      country: values.country,
-      city: values.city,
+      location: values.location,
       sendNewsletter: values.sendNewsletter,
     });
     const payload = {
@@ -59,8 +57,7 @@ export default function Signup() {
       password: userInfo.password,
       first_name: values.first_name.trim(),
       last_name: values.last_name.trim(),
-      country: values.country.trim(),
-      city: values.city.trim(),
+      location: values.location.trim(),
       send_newsletter: values.sendNewsletter,
     };
     const config = {
@@ -96,8 +93,7 @@ export default function Signup() {
       ...userInfo,
       first_name: values.first_name,
       last_name: values.last_name,
-      country: values.country,
-      city: values.city,
+      location: values.location,
     });
     setCurStep(steps[0]);
   };

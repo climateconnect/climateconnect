@@ -280,7 +280,7 @@ function parseProjectStubs(projects) {
     const project = p.project;
     return {
       ...project,
-      location: project.city ? project.city + ", " + project.country : project.country,
+      location: project.location,
     };
   });
 }
@@ -290,9 +290,7 @@ function parseOrganizationStubs(organizations) {
     ...o.organization,
     types: o.organization.types.map((type) => type.organization_tag),
     info: {
-      location: o.organization.city
-        ? o.organization.city + ", " + o.organization.country
-        : o.organization.country,
+      location: o.organization.location,
     },
   }));
 }

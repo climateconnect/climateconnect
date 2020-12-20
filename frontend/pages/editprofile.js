@@ -153,7 +153,7 @@ const parseProfileForRequest = (profile, availabilityOptions, user) => {
     image: profile.image,
     background_image: profile.background_image,
     country: profile.info.country,
-    city: profile.info.city,
+    location: profile.info.location,
     biography: profile.info.bio,
     availability: availability ? availability.id : user.availability ? user.availability.id : null,
     skills: profile.info.skills.map((s) => s.id),

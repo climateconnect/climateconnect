@@ -139,8 +139,7 @@ function parseOrganization(organization) {
     image: getImageUrl(organization.image),
     types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
     info: {
-      city: organization.city,
-      country: organization.country,
+      location: organization.location,
       shortdescription: organization.short_description,
       website: organization.website,
     },
@@ -183,8 +182,7 @@ const verifyChanges = (newOrg) => {
     name: "Please type your organization name under the avatar image",
   };
   const requiredInfoPropErrors = {
-    city: "Please specify your city",
-    country: "Please specify your country",
+    location: "Please specify your location",
   };
   for (const prop of Object.keys(requiredPropErrors)) {
     if (!newOrg[prop] || (Array.isArray(newOrg[prop]) && newOrg[prop].length <= 0)) {

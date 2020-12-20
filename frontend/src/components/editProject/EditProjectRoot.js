@@ -35,7 +35,7 @@ export default function EditProjectRoot({
 }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-  const draftReqiredProperties = ["name", "city", "country"];
+  const draftReqiredProperties = ["name", "location"];
 
   const onSaveDraft = async () => {
     if (draftReqiredProperties.filter((p) => !project[p]).length > 0)

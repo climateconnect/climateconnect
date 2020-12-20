@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     fontSize: 40,
   },
-  cityInput: {
+  locationInput: {
     marginBottom: theme.spacing(1),
   },
   overviewHeadline: {
@@ -181,25 +181,14 @@ const InputLocation = ({ project, handleChangeProject }) => {
   return (
     <div className={classes.projectInfoEl}>
       <TextField
-        label="City"
+        label="Location"
         variant="outlined"
         fullWidth
-        value={project.city}
-        className={classes.cityInput}
+        value={project.location}
+        className={classes.locationInput}
         type="text"
-        onChange={(event) => handleChangeProject(event.target.value, "city")}
+        onChange={(event) => handleChangeProject(event.target.value, "location")}
         required
-      />
-      <SelectField
-        label="Country"
-        variant="outlined"
-        fullWidth
-        controlled
-        controlledValue={project.country}
-        type="text"
-        onChange={(event) => handleChangeProject(event.target.value, "country")}
-        required
-        options={countries.map((c) => ({ key: c.toLowerCase(), name: c }))}
       />
     </div>
   );

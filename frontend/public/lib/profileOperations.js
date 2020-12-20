@@ -6,8 +6,7 @@ export function parseProfile(profile, detailledSkills, keepOldProps) {
   if (keepOldProps) {
     user.first_name = profile.first_name;
     user.last_name = profile.last_name;
-    user.info.city = profile.city;
-    user.info.country = profile.country;
+    user.info.location = profile.location;
   }
   user = {
     ...user,
@@ -17,7 +16,7 @@ export function parseProfile(profile, detailledSkills, keepOldProps) {
     background_image: getImageUrl(profile.background_image),
     info: {
       ...user.info,
-      location: profile.city + ", " + profile.country,
+      location: profile.location,
       bio: profile.biography,
       skills: profile.skills && profile.skills.map((s) => s.name),
       availability: profile.availability && profile.availability.name,

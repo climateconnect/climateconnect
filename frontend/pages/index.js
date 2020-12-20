@@ -180,7 +180,7 @@ const getOrganizations = async (token) => {
 const parseProjects = (projects) => {
   return projects.map((project) => ({
     ...project,
-    location: project.city + ", " + project.country,
+    location: project.location,
   }));
 };
 
@@ -189,9 +189,7 @@ const parseOrganizations = (organizations) => {
     ...organization,
     types: organization.types.map((type) => type.organization_tag),
     info: {
-      location: organization.city
-        ? organization.city + ", " + organization.country
-        : organization.country,
+      location: organization.location,
     },
   }));
 };

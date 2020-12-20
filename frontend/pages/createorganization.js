@@ -25,8 +25,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     organizationname: "",
     hasparentorganization: false,
     parentorganization: "",
-    city: "",
-    country: "",
+    location: "",
     verified: false,
     shortdescription: "",
     website: "",
@@ -69,8 +68,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
             ...organizationInfo,
             name: values.organizationname,
             parentorganization: values.parentorganizationname,
-            city: values.city,
-            country: values.country,
+            location: values.location,
           });
           setCurStep(steps[1]);
         }
@@ -87,8 +85,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     organization_tags:
       'Please choose at least one organization type by clicking the "Add Type" button under the avatar.',
     name: "Please type your organization name under the avatar image",
-    city: "Please specify your city",
-    country: "Please specify your country",
+    location: "Please specify your location",
   };
 
   const handleDetailledInfoSubmit = (event, account) => {
@@ -209,8 +206,7 @@ const parseOrganizationForRequest = (o, user, rolesOptions) => {
     name: o.name,
     background_image: o.background_image,
     image: o.image,
-    city: o.info.city,
-    country: o.info.country,
+    location: o.info.location,
     website: o.info.website,
     short_description: o.info.shortdescription,
     organization_tags: o.types,
