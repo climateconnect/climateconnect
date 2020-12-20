@@ -16,13 +16,6 @@ module.exports = {
   ]),
 
   exportPathMap: async function (defaultPathMap) {
-    if (process.env.PRE_LAUNCH)
-      return {
-        "/": { page: "/" },
-        "/zoom": { page: "/zoom" },
-        "/stream": { page: "/stream" },
-        "/donate": { page: "/donate" },
-      };
-    else return defaultPathMap;
+    return defaultPathMap;
   },
 };

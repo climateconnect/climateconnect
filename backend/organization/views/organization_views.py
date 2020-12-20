@@ -1,3 +1,4 @@
+from organization.models.tags import ProjectTags
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework.filters import SearchFilter
@@ -42,7 +43,16 @@ class ListOrganizationsAPIView(ListAPIView):
         return OrganizationCardSerializer
 
     def get_queryset(self):
-        organizations = Organization.objects.all()
+        organizations  = Organization.objects.all()
+
+        if 'project_category_parent' in self.request.query_params:
+            project_parent_category = self.request.query_params.get('project_category_parent').split(',')
+            project_parent_tags = ProjectTags.objects.filter(key__in=project_parent_category)
+            project_tags = ProjectTags.objects.filter(parent_tag__in=project_parent_tags)
+            organizations = organizations.filter(
+                project_parent_org__project__tag_project__project_tag__in=project_tags
+            ).order_by('id').distinct('id')
+
         if 'organization_type' in self.request.query_params:
             organization_type_names = self.request.query_params.get('organization_type').split(',')
             organization_types = OrganizationTags.objects.filter(name__in=organization_type_names)

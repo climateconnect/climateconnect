@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import Router from "next/router";
 import WideLayout from "../src/components/layouts/WideLayout";
 import EditAccountPage from "./../src/components/account/EditAccountPage";
@@ -13,7 +13,6 @@ import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
 import axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
-import { getParams } from "./../public/lib/generalOperations";
 import PageNotFound from "../src/components/general/PageNotFound";
 
 export default function EditProfilePage({
@@ -22,11 +21,6 @@ export default function EditProfilePage({
   infoMetadata,
   token,
 }) {
-  const [message, setMessage] = React.useState("");
-  useEffect(() => {
-    const params = getParams(window.location.href);
-    if (params.message) setMessage(decodeURI(params.message));
-  });
   const { user } = useContext(UserContext);
   infoMetadata.availability.options = availabilityOptions;
   const profile = user ? parseProfile(user, true, true) : null;
@@ -63,7 +57,7 @@ export default function EditProfilePage({
     );
   else
     return (
-      <WideLayout message={message} title={"Edit Profile"}>
+      <WideLayout title={"Edit Profile"}>
         {profile ? (
           <ProfileLayout
             profile={profile}

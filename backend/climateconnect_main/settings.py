@@ -46,7 +46,9 @@ AUTO_VERIFY = env('AUTO_VERIFY')
 
 CUSTOM_APPS = [
     'climateconnect_api',
-    'organization', 'chat_messages'
+    'organization', 
+    'chat_messages',
+    'hubs',
 ]
 
 LIBRARY_APPS = [
