@@ -2,7 +2,6 @@ import React from "react";
 import Form from "../general/Form";
 import { Typography, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import countries from "./../../../public/data/countries.json";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 
 const useStyles = makeStyles((theme) => ({
