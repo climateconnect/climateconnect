@@ -20,6 +20,7 @@ import FoodDescription from "../../src/components/hub/description/FoodDescriptio
 import BrowseExplainer from "../../src/components/hub/BrowseExplainer";
 import { makeStyles, Typography } from "@material-ui/core";
 import { getImageUrl } from "../../public/lib/imageOperations";
+import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -154,6 +155,7 @@ export default function Hub({
     <WideLayout header={headline} fixedHeader headerBackground="#FFF">
       <div className={classes.contentUnderHeader}>
         <NavigationSubHeader hubName={name} />
+        {process.env.DONATION_CAMPAIGN_RUNNING && <DonationCampaignInformation />}
         <HubHeaderImage image={getImageUrl(image)} />
         <HubContent
           headline={headline}

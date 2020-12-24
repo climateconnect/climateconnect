@@ -85,7 +85,7 @@ export default function WideLayout({
             </Alert>
           )}
           {subHeader && subHeader}
-          {process.env.DONATION_CAMPAIGN_RUNNING && !landingPage && <DonationCampaignInformation />}
+          {!fixedHeader && process.env.DONATION_CAMPAIGN_RUNNING && !landingPage && <DonationCampaignInformation />}
           {children}
         </Container>
       )}
