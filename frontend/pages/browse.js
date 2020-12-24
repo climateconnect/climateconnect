@@ -18,6 +18,7 @@ import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import TopOfPage from "../src/components/hooks/TopOfPage";
 import BrowseContent from "../src/components/browse/BrowseContent";
 import { parseData } from "../public/lib/parsingOperations";
+import HubsSubHeader from "../src/components/indexPage/HubsSubHeader";
 
 export default function Browse({
   projectsObject,
@@ -25,6 +26,7 @@ export default function Browse({
   membersObject,
   token,
   filterChoices,
+  hubs,
 }) {
   const [filters, setFilters] = useState({
     projects: {},
@@ -120,6 +122,7 @@ export default function Browse({
         title="Climate Connect - global platform form climate change solutions"
         hideHeadline
         showOnScrollUp={showOnScrollUp}
+        subHeader={<HubsSubHeader hubs={hubs} />}
       >
         <MainHeadingContainerMobile />
         <BrowseContent
@@ -158,6 +161,7 @@ Browse.getInitialProps = async (ctx) => {
     organization_types,
     skills,
     project_statuses,
+    hubs,
   ] = await Promise.all([
     getProjects(1, token),
     getOrganizations(1, token),
@@ -166,6 +170,7 @@ Browse.getInitialProps = async (ctx) => {
     getOrganizationTagsOptions(),
     getSkillsOptions(),
     getStatusOptions(),
+    getHubs(),
   ]);
   return {
     projectsObject: projectsObject,
@@ -179,6 +184,7 @@ Browse.getInitialProps = async (ctx) => {
       project_statuses: project_statuses,
     },
     hideInfo: hideInfo === "true",
+    hubs: hubs,
   };
 };
 
@@ -232,5 +238,14 @@ async function getDataFromServer({ type, page, token, urlEnding }) {
       console.log(err.response.data);
     } else console.log(err);
     throw err;
+  }
+}
+
+async function getHubs() {
+  try {
+    const resp = await axios.get(`${process.env.API_URL}/api/hubs/`);
+    return resp.data.results;
+  } catch (e) {
+    console.log(e);
   }
 }
