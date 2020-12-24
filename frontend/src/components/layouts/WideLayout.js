@@ -39,6 +39,7 @@ export default function WideLayout({
   description,
   landingPage,
   headerBackground,
+  subHeader,
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -83,6 +84,7 @@ export default function WideLayout({
               {getMessageFromUrl(message ? message : initialMessage)}
             </Alert>
           )}
+          {subHeader && subHeader}
           {process.env.DONATION_CAMPAIGN_RUNNING && !landingPage && <DonationCampaignInformation />}
           {children}
         </Container>

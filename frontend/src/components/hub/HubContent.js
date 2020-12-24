@@ -68,6 +68,8 @@ const useStyles = makeStyles((theme) => ({
     bottom: theme.spacing(2),
     left: "50%",
     marginLeft: -125,
+    zIndex: 1,
+    border: "1px solid white",
   },
   buttonContainer: {
     display: "flex",
@@ -85,10 +87,9 @@ export default function HubContent({
   quickInfo,
   detailledInfo,
   stats,
-  name,
+  statBoxTitle,
   scrollToSolutions,
   subHeadline,
-  segwayText,
 }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -113,7 +114,7 @@ export default function HubContent({
       <div className={classes.root}>
         {!isNarrowScreen && (
           <div className={classes.infoBoxContainer}>
-            <StatBox name={name} stats={stats} />
+            <StatBox title={statBoxTitle} stats={stats} />
           </div>
         )}
         <div>
@@ -122,7 +123,7 @@ export default function HubContent({
           </Typography>
           {isNarrowScreen && (
             <div className={classes.infoBoxContainerMobile}>
-              <StatBox name={name} stats={stats} />
+              <StatBox title={statBoxTitle} stats={stats} />
             </div>
           )}
           <Typography component="h2" className={classes.textHeadline}>
@@ -149,7 +150,6 @@ export default function HubContent({
               )}
             </Button>
           </div>
-          <Typography className={classes.quickInfo}>{segwayText}</Typography>
         </div>
       </div>
       <div
