@@ -1,6 +1,5 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core";
-import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -13,17 +12,17 @@ const useStyles = makeStyles((theme) => ({
       backgroundSize: "cover",
     },
   }),
-  img: {
-    width: "50%",
+  img: (props) => ({
+    width: props.fullWidth ? "80%" : "50%",
     visibility: "hidden",
-  },
+  }),
 }));
 
-export default function HubHeaderImage({ image }) {
-  const classes = useStyles({ image: getImageUrl(image) });
+export default function HubHeaderImage({ image, fullWidth }) {
+  const classes = useStyles({ image: image, fullWidth: fullWidth });
   return (
     <div className={classes.root}>
-      <img src={getImageUrl(image)} className={classes.img} />
+      <img src={image} className={classes.img} />
     </div>
   );
 }
