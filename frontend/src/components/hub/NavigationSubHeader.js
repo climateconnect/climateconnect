@@ -33,8 +33,12 @@ export default function NavigationSubHeader({ hubName }) {
           <Link className={classes.link} href="/hubs">
             Hubs
           </Link>
-          {" / "}
-          <Typography className={classes.link}>{hubName}</Typography>
+          {hubName && (
+            <>
+              {" / "}
+              <Typography className={classes.link}>{hubName}</Typography>
+            </>
+          )}
         </Typography>
       </Container>
     </div>

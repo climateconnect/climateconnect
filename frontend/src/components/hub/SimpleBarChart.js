@@ -86,7 +86,6 @@ export default function SimpleBarChart({ config, className, labelsOutSideBar, ti
 }
 
 const Bar = ({ value, unit, maxValue, labelsOutSideBar }) => {
-  console.log(value);
   const classes = useStyles({ barWidth: (value / maxValue) * 100 });
   return (
     <div className={classes.barContainer}>

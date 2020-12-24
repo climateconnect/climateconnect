@@ -24,12 +24,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function StatBox({ name, stats }) {
+export default function StatBox({ title, stats }) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
       <Typography component="h2" className={classes.h2}>
-        {name} is responsible for
+        {title}
       </Typography>
       {stats.map((s) => (
         <Stat key={s.name} statData={s} />

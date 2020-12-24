@@ -50,7 +50,7 @@ export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHan
       element={Grid}
       container
       component="ul"
-      className={`${classes.reset} ${classes.root}`}
+      className={classes.reset}
       spacing={2}
     >
       {parentHandlesGridItems

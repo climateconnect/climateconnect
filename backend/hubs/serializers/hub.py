@@ -14,12 +14,23 @@ class HubSerializer(serializers.ModelSerializer):
             "quick_info",
             "stats",
             "sub_headline",
-            "segway_text"
+            "segway_text",
+            "stat_box_title"
         )
     
     def get_stats(self, obj):
         print(obj)
         return HubStatSerializer(obj.stats, many=True).data
+
+class HubStubSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hub
+        fields = (
+            "name",  
+            "thumbnail_image",
+            "quick_info",
+            "url_slug",
+        )
 
 class HubStatSerializer(serializers.ModelSerializer):
 
