@@ -71,7 +71,11 @@ export default function BrowseContent({
   const [filtersExpanded, setFiltersExpanded] = useState(false);
   const [state, setState] = useState(initialState);
 
-  const [isLoading, setIsLoading] = useState(false);
+  // We have 2 distinct loading states: filtering, and loading more data. For
+  // each state, we want to treat the loading spinner a bit differently, hence
+  // why we have two separate pieces of state
+  const [isFiltering, setIsFiltering] = useState(false);
+  const [isFetchingMoreData, setIsFetchingMoreData] = useState(false);
 
   const handleTabChange = (event, newValue) => {
     window.location.hash = TYPES_BY_TAB_VALUE[newValue];
@@ -107,9 +111,9 @@ export default function BrowseContent({
 
   const handleLoadMoreData = async (type) => {
     try {
-      setIsLoading(true);
+      setIsFetchingMoreData(true);
       const res = await loadMoreData(type, state.nextPages[type], state.urlEnding[type]);
-      setIsLoading(false);
+      setIsFetchingMoreData(false);
 
       setState({
         ...state,
@@ -142,7 +146,7 @@ export default function BrowseContent({
    * state.
    */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
-    setIsLoading(true);
+    setIsFiltering(true);
     const res = await applyNewFilters(type, newFilters, closeFilters, state.urlEnding[type]);
 
     if (res?.closeFilters) setFiltersExpanded(false);
@@ -155,7 +159,7 @@ export default function BrowseContent({
         nextPages: { ...state.nextPages, [type]: 2 },
       });
     }
-    setIsLoading(false);
+    setIsFiltering(false);
   };
 
   /**
@@ -163,9 +167,9 @@ export default function BrowseContent({
    * a loading spinner until the request is done.
    */
   const handleSearchSubmit = async (type, searchValue) => {
-    setIsLoading(true);
+    setIsFiltering(true);
     const res = await applySearch(type, searchValue, state.urlEnding[type]);
-    setIsLoading(false);
+    setIsFiltering(false);
 
     if (res?.filteredItemsObject) {
       setState({
@@ -217,16 +221,23 @@ export default function BrowseContent({
           )}
 
           {/*
-            Render the spinner until results are returned.
+            We have two loading spinner states: filtering, and fetching more data.
+            When filtering, the spinner replaces the Previews components.
+            When fetching more data, the spinner appears under the last row of the Previews components.
             Render the not found page if the object came back empty.
           */}
-          {isLoading ? (
-            <LoadingSpinner isLoading={isLoading} />
+          {isFiltering ? (
+            <LoadingSpinner isLoading={isFiltering} />
           ) : state?.items?.projects?.length ? (
             <ProjectPreviews
               className={classes.itemsContainer}
               hasMore={state.hasMore.projects}
               loadFunc={loadMoreProjects}
+              // We manage loading state for fetching more
+              // projects, organizations, and profiles in this
+              // root component, and pass the loading state into
+              // the generic spinner within the Previews components.
+              isFetchingMoreData={isFetchingMoreData}
               parentHandlesGridItems
               projects={state.items.projects}
             />
@@ -247,14 +258,21 @@ export default function BrowseContent({
           )}
 
           {/*
-            Render the spinner until results are returned.
+            We have two loading spinner states: filtering, and fetching more data.
+            When filtering, the spinner replaces the Previews components.
+            When fetching more data, the spinner appears under the last row of the Previews components.
             Render the not found page if the object came back empty.
           */}
-          {isLoading ? (
-            <LoadingSpinner isLoading={isLoading} />
+          {isFiltering ? (
+            <LoadingSpinner isLoading={isFiltering} />
           ) : state?.items?.organizations?.length ? (
             <OrganizationPreviews
               hasMore={state.hasMore.organizations}
+              // We manage loading state for fetching more
+              // projects, organizations, and profiles in this
+              // root component, and pass the loading state into
+              // the generic spinner within the Previews components.
+              isFetchingMoreData={isFetchingMoreData}
               loadFunc={loadMoreOrganizations}
               organizations={state.items.organizations}
               parentHandlesGridItems
@@ -279,18 +297,25 @@ export default function BrowseContent({
             )}
 
             {/*
-              Render the spinner until results are returned.
+              We have two loading spinner states: filtering, and fetching more data.
+              When filtering, the spinner replaces the Previews components.
+              When fetching more data, the spinner appears under the last row of the Previews components.
               Render the not found page if the object came back empty.
             */}
-            {isLoading ? (
-              <LoadingSpinner isLoading={isLoading} />
+            {isFiltering ? (
+              <LoadingSpinner isLoading={isFiltering} />
             ) : state?.items?.members?.length ? (
               <ProfilePreviews
-                profiles={state.items.members}
-                loadFunc={loadMoreMembers}
                 hasMore={state.hasMore.members}
-                showAdditionalInfo
+                // We manage loading state for fetching more
+                // projects, organizations, and profiles in this
+                // root component, and pass the loading state into
+                // the generic spinner within the Previews components.
+                isFetchingMoreData={isFetchingMoreData}
+                loadFunc={loadMoreMembers}
                 parentHandlesGridItems
+                profiles={state.items.members}
+                showAdditionalInfo
               />
             ) : (
               <NoItemsFound type="members" />

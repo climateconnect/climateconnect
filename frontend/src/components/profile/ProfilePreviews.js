@@ -17,29 +17,29 @@ const useStyles = makeStyles({
 });
 
 export default function ProfilePreviews({
-  profiles,
-  loadFunc,
   hasMore,
-  showAdditionalInfo,
+  isFetchingMoreData,
+  loadFunc,
   parentHandlesGridItems,
+  profiles,
+  showAdditionalInfo,
 }) {
   const classes = useStyles();
+
   const toProfilePreviews = (profiles) =>
     profiles.map((p) => (
       <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
     ));
-  const [isLoading, setIsLoading] = React.useState(false);
+
   const [gridItems, setGridItems] = React.useState(toProfilePreviews(profiles));
 
   if (!loadFunc) hasMore = false;
   const loadMore = async (page) => {
-    if (!isLoading) {
-      setIsLoading(true);
+    if (!isFetchingMoreData) {
       const newProfiles = await loadFunc(page);
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toProfilePreviews(newProfiles)]);
       }
-      setIsLoading(false);
     }
   };
 
@@ -50,7 +50,7 @@ export default function ProfilePreviews({
       component="ul"
       container
       element={Grid}
-      hasMore={hasMore && !isLoading}
+      hasMore={hasMore && !isFetchingMoreData}
       loadMore={loadMore}
       pageStart={0}
       spacing={2}
@@ -60,7 +60,7 @@ export default function ProfilePreviews({
           ? toProfilePreviews(profiles)
           : "No members found."
         : gridItems}
-      <LoadingSpinner isLoading={isLoading}/>
+      <LoadingSpinner isLoading={isFetchingMoreData} />
     </InfiniteScroll>
   );
 }

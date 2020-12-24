@@ -16,18 +16,18 @@ const useStyles = makeStyles({
 });
 
 export default function OrganizationPreviews({
-  organizations,
-  loadFunc,
   hasMore,
-  showOrganizationType,
+  isFetchingMoreData,
+  loadFunc,
+  organizations,
   parentHandlesGridItems,
+  showOrganizationType,
 }) {
   const toOrganizationPreviews = (organizations) =>
     organizations.map((o) => (
       <GridItem key={o.url_slug} organization={o} showOrganizationType={showOrganizationType} />
     ));
 
-  const [isLoading, setIsLoading] = React.useState(false);
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(toOrganizationPreviews(organizations));
 
@@ -36,13 +36,11 @@ export default function OrganizationPreviews({
   }
 
   const loadMore = async (page) => {
-    if (!isLoading) {
-      setIsLoading(true);
+    if (!isFetchingMoreData) {
       const newOrganizations = await loadFunc(page);
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toOrganizationPreviews(newOrganizations)]);
       }
-      setIsLoading(false);
     }
   };
 
@@ -51,7 +49,7 @@ export default function OrganizationPreviews({
     <InfiniteScroll
       pageStart={0}
       loadMore={loadMore}
-      hasMore={hasMore && !isLoading}
+      hasMore={hasMore && !isFetchingMoreData}
       element={Grid}
       container
       component="ul"
@@ -63,7 +61,7 @@ export default function OrganizationPreviews({
           ? toOrganizationPreviews(organizations)
           : "No organizations found. Try changing or removing your filter or search query."
         : gridItems}
-      <LoadingSpinner isLoading={isLoading} />
+      <LoadingSpinner isLoading={isFetchingMoreData} />
     </InfiniteScroll>
   );
 }
