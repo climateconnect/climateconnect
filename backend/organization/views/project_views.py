@@ -85,10 +85,7 @@ class ListProjectsView(ListAPIView):
             # We then sort by rating, to show most relevant results
             projects = projects.filter(
                 tag_project__project_tag__in=project_tags
-            ).order_by('id').distinct('id')
-            projects = projects.filter(
-                tag_project__project_tag__in=project_tags
-            ).order_by('rating').distinct('rating')
+            ).distinct()
 
         if 'status' in self.request.query_params:
             statuses = self.request.query_params.get('status').split(',')
@@ -101,8 +98,7 @@ class ListProjectsView(ListAPIView):
             # must use order_by in conjunction with distinct:
             # https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.distinct
             # We then sort by rating, to show most relevant results
-            projects = projects.filter(skills__in=skills).order_by('id').distinct('id')
-            projects = projects.filter(skills__in=skills).order_by('rating').distinct('rating')
+            projects = projects.filter(skills__in=skills).distinct()
 
         if 'organization_type' in self.request.query_params:
             organization_type_names = self.request.query_params.get('organization_type').split(',')
