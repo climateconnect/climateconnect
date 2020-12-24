@@ -208,7 +208,6 @@ const buildUrlEndingFromFilters = (filters) => {
 
 Hub.getInitialProps = async (ctx) => {
   const hubUrl = ctx.query.hubUrl;
-  console.log(hubUrl);
   const { token } = NextCookies(ctx);
   const [
     hubData,
@@ -227,7 +226,6 @@ Hub.getInitialProps = async (ctx) => {
     getSkillsOptions(),
     getStatusOptions(),
   ]);
-  console.log(hubData);
   return {
     hubUrl: hubUrl,
     name: hubData.name,

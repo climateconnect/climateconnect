@@ -41,7 +41,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Hubs({ hubs }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
-  console.log(hubs);
   return (
     <WideLayout largeFooter noSpaceBottom>
       <NavigationSubHeader />
