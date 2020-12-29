@@ -78,9 +78,6 @@ export default function BrowseContent({
   const [isFiltering, setIsFiltering] = useState(false);
   const [isFetchingMoreData, setIsFetchingMoreData] = useState(false);
 
-  // Default loading state to false
-  // const LoadingContext = React.createContext(false);
-
   const handleTabChange = (event, newValue) => {
     window.location.hash = TYPES_BY_TAB_VALUE[newValue];
     setTabValue(newValue);

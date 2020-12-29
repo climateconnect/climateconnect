@@ -102,7 +102,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
           chat={chat}
         />
       ))}
-      <LoadingSpinner isLoading={isLoading}/>
+      <LoadingSpinner />
     </InfiniteScroll>
   );
 }
