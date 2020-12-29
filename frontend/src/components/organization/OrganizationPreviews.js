@@ -17,7 +17,6 @@ const useStyles = makeStyles({
 
 export default function OrganizationPreviews({
   hasMore,
-  isFetchingMoreData,
   loadFunc,
   organizations,
   parentHandlesGridItems,
@@ -36,7 +35,7 @@ export default function OrganizationPreviews({
   }
 
   const loadMore = async (page) => {
-    if (!isFetchingMoreData) {
+    if (!hasMore) {
       const newOrganizations = await loadFunc(page);
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toOrganizationPreviews(newOrganizations)]);
@@ -46,23 +45,25 @@ export default function OrganizationPreviews({
 
   // TODO: use `organization.id` instead of index when using real organizations
   return (
-    <InfiniteScroll
-      pageStart={0}
-      loadMore={loadMore}
-      hasMore={hasMore && !isFetchingMoreData}
-      element={Grid}
-      container
-      component="ul"
-      className={`${classes.reset} ${classes.root}`}
-      spacing={2}
-    >
-      {parentHandlesGridItems
-        ? organizations && organizations.length > 0
-          ? toOrganizationPreviews(organizations)
-          : "No organizations found. Try changing or removing your filter or search query."
-        : gridItems}
-      <LoadingSpinner isLoading={isFetchingMoreData} />
-    </InfiniteScroll>
+    <>
+      <InfiniteScroll
+        pageStart={0}
+        loadMore={loadMore}
+        hasMore={hasMore}
+        element={Grid}
+        container
+        component="ul"
+        className={`${classes.reset} ${classes.root}`}
+        spacing={2}
+      >
+        {parentHandlesGridItems
+          ? organizations && organizations.length > 0
+            ? toOrganizationPreviews(organizations)
+            : "No organizations found. Try changing or removing your filter or search query."
+          : gridItems}
+      </InfiniteScroll>
+      <LoadingSpinner />
+    </>
   );
 }
 

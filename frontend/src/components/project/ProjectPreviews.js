@@ -17,13 +17,7 @@ const useStyles = makeStyles({
 });
 
 // This component is for display projects with the option to infinitely scroll to get more projects
-export default function ProjectPreviews({
-  hasMore,
-  isFetchingMoreData,
-  loadFunc,
-  parentHandlesGridItems,
-  projects,
-}) {
+export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridItems, projects }) {
   const classes = useStyles();
   const toProjectPreviews = (projects) =>
     projects.map((p) => <GridItem key={p.url_slug} project={p} />);
@@ -35,8 +29,9 @@ export default function ProjectPreviews({
   }
 
   const loadMore = async () => {
-    //sometimes InfiniteScroll calls loadMore twice really fast. Therefore we're using isFetchingMoreData to make sure it doesn't catch 2 pages at once
-    if (!isFetchingMoreData) {
+    // Sometimes InfiniteScroll calls loadMore twice really fast. Therefore
+    // we're aiming to cache to improve performance
+    if (hasMore) {
       const newProjects = await loadFunc();
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toProjectPreviews(newProjects)]);
@@ -46,23 +41,26 @@ export default function ProjectPreviews({
 
   // TODO: use `project.id` instead of index when using real projects
   return (
-    <InfiniteScroll
-      className={classes.reset}
-      component="ul"
-      container
-      element={Grid}
-      hasMore={hasMore && !isFetchingMoreData}
-      loadMore={loadMore}
-      pageStart={1}
-      spacing={2}
-    >
-      {parentHandlesGridItems
-        ? projects && projects.length > 0
-          ? toProjectPreviews(projects)
-          : "No projects found."
-        : gridItems}
-      <LoadingSpinner isLoading={isFetchingMoreData} />
-    </InfiniteScroll>
+    <>
+      <InfiniteScroll
+        className={classes.reset}
+        component="ul"
+        container
+        element={Grid}
+        hasMore={hasMore}
+        loadMore={loadMore}
+        pageStart={1}
+        spacing={2}
+      >
+        {parentHandlesGridItems
+          ? projects && projects.length > 0
+            ? toProjectPreviews(projects)
+            : "No projects found."
+          : gridItems}
+      </InfiniteScroll>
+      {/* The spinner should use the LoadingContext to render when needed. */}
+      <LoadingSpinner />
+    </>
   );
 }
 

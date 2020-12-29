@@ -18,7 +18,6 @@ const useStyles = makeStyles({
 
 export default function ProfilePreviews({
   hasMore,
-  isFetchingMoreData,
   loadFunc,
   parentHandlesGridItems,
   profiles,
@@ -33,9 +32,12 @@ export default function ProfilePreviews({
 
   const [gridItems, setGridItems] = React.useState(toProfilePreviews(profiles));
 
-  if (!loadFunc) hasMore = false;
+  if (!loadFunc) {
+    hasMore = false;
+  }
+
   const loadMore = async (page) => {
-    if (!isFetchingMoreData) {
+    if (!hasMore) {
       const newProfiles = await loadFunc(page);
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toProfilePreviews(newProfiles)]);
@@ -45,23 +47,25 @@ export default function ProfilePreviews({
 
   // TODO: use `profile.id` instead of index when using real profiles
   return (
-    <InfiniteScroll
-      className={`${classes.reset} ${classes.root}`}
-      component="ul"
-      container
-      element={Grid}
-      hasMore={hasMore && !isFetchingMoreData}
-      loadMore={loadMore}
-      pageStart={0}
-      spacing={2}
-    >
-      {parentHandlesGridItems
-        ? profiles && profiles.length > 0
-          ? toProfilePreviews(profiles)
-          : "No members found."
-        : gridItems}
-      <LoadingSpinner isLoading={isFetchingMoreData} />
-    </InfiniteScroll>
+    <>
+      <InfiniteScroll
+        className={`${classes.reset} ${classes.root}`}
+        component="ul"
+        container
+        element={Grid}
+        hasMore={hasMore}
+        loadMore={loadMore}
+        pageStart={0}
+        spacing={2}
+      >
+        {parentHandlesGridItems
+          ? profiles && profiles.length > 0
+            ? toProfilePreviews(profiles)
+            : "No members found."
+          : gridItems}
+      </InfiniteScroll>
+      <LoadingSpinner />
+    </>
   );
 }
 
