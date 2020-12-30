@@ -185,9 +185,25 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
           text="Give your loved ones a gift that helps save our planet. By donating you support a global effort of move towards a carbon-neutral future. You will recieve a personalized christmas themed donation certificate."
           icon="/icons/floating_sign_gift.svg"
         />
+        <TextBox
+          className={classes.textSection}
+          headlineClass={classes.headlineClass}
+          textBodyClass={classes.textBodyClass}
+          headline="Donate with cryptocurrency"
+          text="While we prefer other payment methods, we've also added the option to donate cryptocurrency. When donating with cryptocurrency you will not receive a donation receipt."
+          icon="/icons/bitcoin.svg"
+          subPoints={[{
+            text: (
+              <>
+                <Typography color="primary" component="span">Our Bitcoin address: </Typography>
+                <Typography component="span">1NA3T5z2bmxSETq3fA8U5h3LdoPJvQExtv</Typography>
+              </>
+            )
+          }]}
+        />
         <QuoteBox
           className={classes.textSection}
-          text="We can only prevent a global climate catastrophe if everyone working in climate action coordinates their efforts and the most effective solutions get spread globally - if you believe that too you should donate"
+          text="We can only prevent a global climate catastrophe if everyone working in climate action coordinates their efforts and the most effective solutions get spread globally - support our vision by donating."
         />
         <TextBox
           className={classes.textSection}
