@@ -196,7 +196,7 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
             text: (
               <>
                 <Typography color="primary" component="span">Our Bitcoin address: </Typography>
-                <Typography component="span">1NA3T5z2bmxSETq3fA8U5h3LdoPJvQExtv</Typography>
+                <Typography component="span">1BTKuBx78uSGBkNcS8pCkvLKwXTH1NyJ23</Typography>
               </>
             )
           }]}
