@@ -48,6 +48,7 @@ export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridIt
         container
         element={Grid}
         hasMore={hasMore}
+        loader={<LoadingSpinner isLoading key="project-previews-spinner" />}
         loadMore={loadMore}
         pageStart={1}
         spacing={2}
@@ -58,8 +59,6 @@ export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridIt
             : "No projects found."
           : gridItems}
       </InfiniteScroll>
-      {/* The spinner should use the LoadingContext to render when needed. */}
-      <LoadingSpinner />
     </>
   );
 }

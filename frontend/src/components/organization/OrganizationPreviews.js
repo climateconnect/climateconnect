@@ -35,7 +35,7 @@ export default function OrganizationPreviews({
   }
 
   const loadMore = async (page) => {
-    if (!hasMore) {
+    if (hasMore) {
       const newOrganizations = await loadFunc(page);
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toOrganizationPreviews(newOrganizations)]);
@@ -47,13 +47,14 @@ export default function OrganizationPreviews({
   return (
     <>
       <InfiniteScroll
-        pageStart={0}
-        loadMore={loadMore}
-        hasMore={hasMore}
-        element={Grid}
-        container
-        component="ul"
         className={`${classes.reset} ${classes.root}`}
+        component="ul"
+        container
+        element={Grid}
+        hasMore={hasMore}
+        loader={<LoadingSpinner isLoading key="organization-previews-spinner" />}
+        loadMore={loadMore}
+        pageStart={0}
         spacing={2}
       >
         {parentHandlesGridItems
@@ -62,7 +63,6 @@ export default function OrganizationPreviews({
             : "No organizations found. Try changing or removing your filter or search query."
           : gridItems}
       </InfiniteScroll>
-      <LoadingSpinner />
     </>
   );
 }

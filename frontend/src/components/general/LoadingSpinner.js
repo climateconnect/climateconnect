@@ -17,10 +17,19 @@ const useStyles = makeStyles({
  * for search and filtering use cases. Uses a global loading context
  * to determine if the spinnner should be rendered.
  */
-const LoadingSpinner = () => {
+const LoadingSpinner = ({ isLoading = false }) => {
   const classes = useStyles();
-  const loadingContext = useContext(LoadingContext);
 
+  // A short-circuit isLoading prop will bypass the loading context.
+  if (isLoading) {
+    return (
+      <Grid container justify="center">
+        <CircularProgress className={classes.spinner} />
+      </Grid>
+    );
+  }
+
+  const loadingContext = useContext(LoadingContext);
   if (!loadingContext.spinning) {
     return null;
   }

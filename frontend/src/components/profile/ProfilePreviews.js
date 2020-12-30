@@ -37,7 +37,7 @@ export default function ProfilePreviews({
   }
 
   const loadMore = async (page) => {
-    if (!hasMore) {
+    if (hasMore) {
       const newProfiles = await loadFunc(page);
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toProfilePreviews(newProfiles)]);
@@ -54,6 +54,7 @@ export default function ProfilePreviews({
         container
         element={Grid}
         hasMore={hasMore}
+        loader={<LoadingSpinner isLoading key="profile-previews-spinner" />}
         loadMore={loadMore}
         pageStart={0}
         spacing={2}
@@ -64,7 +65,6 @@ export default function ProfilePreviews({
             : "No members found."
           : gridItems}
       </InfiniteScroll>
-      <LoadingSpinner />
     </>
   );
 }
