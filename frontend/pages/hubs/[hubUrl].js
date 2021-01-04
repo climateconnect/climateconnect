@@ -53,6 +53,7 @@ export default function Hub({
   initialOrganizations,
   filterChoices,
   subHeadline,
+  image_attribution,
 }) {
   console.log(statBoxTitle);
   const classes = useStyles();
@@ -156,7 +157,7 @@ export default function Hub({
       <div className={classes.contentUnderHeader}>
         <NavigationSubHeader hubName={name} />
         {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
-        <HubHeaderImage image={getImageUrl(image)} />
+        <HubHeaderImage image={getImageUrl(image)} source={image_attribution}/>
         <HubContent
           headline={headline}
           quickInfo={quickInfo}
@@ -237,6 +238,7 @@ Hub.getInitialProps = async (ctx) => {
     quickInfo: hubData.quick_info,
     stats: hubData.stats,
     statBoxTitle: hubData.stat_box_title,
+    image_attribution: hubData.image_attribution,
     initialProjects: initialProjects,
     initialOrganizations: initialOrganizations,
     filterChoices: {
