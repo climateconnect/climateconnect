@@ -155,7 +155,7 @@ export default function Hub({
     <WideLayout header={headline} fixedHeader headerBackground="#FFF">
       <div className={classes.contentUnderHeader}>
         <NavigationSubHeader hubName={name} />
-        {process.env.DONATION_CAMPAIGN_RUNNING && <DonationCampaignInformation />}
+        {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
         <HubHeaderImage image={getImageUrl(image)} />
         <HubContent
           headline={headline}
