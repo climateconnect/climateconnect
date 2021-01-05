@@ -1,3 +1,4 @@
+from organization.models.tags import ProjectTags
 from django.db import models
 
 def hub_image_path(instance, filename):
@@ -76,7 +77,6 @@ class Hub(models.Model):
     headline = models.CharField(
         help_text="Headline",
         verbose_name="headline",
-        unique=True,
         max_length=1024,
         null=True,
         blank=True
@@ -85,16 +85,19 @@ class Hub(models.Model):
     sub_headline = models.CharField(
         help_text="Sub headline",
         verbose_name="Sub headline",
-        unique=True,
         max_length=1024,
         null=True,
         blank=True
     )
 
-    segway_text = models.CharField(
+    segway_text = models.TextField(
         help_text="Segway text between the info and the solutions",
-        verbose_name="Segway text",
-        unique=True,
+        verbose_name="Segway text"
+    )
+
+    image_attribution = models.CharField(
+        help_text="This is incase we have to attribute somebody or a website for using their image",
+        verbose_name="Image attribution",
         max_length=1024,
         null=True,
         blank=True
@@ -118,7 +121,7 @@ class Hub(models.Model):
 
     quick_info = models.TextField(
         help_text="Text that is shown when the hub info is not expanded",
-        verbose_name="Quick info about the hub (non-expanded text)",
+        verbose_name="Quick info about the hub (non-expanded text)"
     )
 
     stats = models.ManyToManyField(
@@ -133,6 +136,22 @@ class Hub(models.Model):
         help_text="The larger the number, the more to the top this hub will be displayed on the hubs overview page",
         verbose_name="Importance (1-100)",
         default=100
+    )
+
+    filter_parent_tags = models.ManyToManyField(
+        ProjectTags,
+        related_name="hub_parent_tags",
+        help_text="Only project with these parent tags will be shown in the hub",
+        verbose_name="Hub categories",
+        blank=True
+    )
+
+    stat_box_title = models.CharField(
+        help_text="The text displayed on top of the stat box",
+        verbose_name="Stat box title",
+        max_length=1024,
+        null=True,
+        blank=True
     )
 
     class Meta:

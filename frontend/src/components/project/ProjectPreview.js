@@ -95,7 +95,6 @@ const useStyles = makeStyles((theme) => {
 export default function ProjectPreview({ project }) {
   const [hovering, setHovering] = React.useState(false);
   const classes = useStyles({ hovering: hovering });
-  const cardRef = React.useRef(null);
   const handleMouseEnter = () => {
     setHovering(true);
   };
@@ -110,7 +109,6 @@ export default function ProjectPreview({ project }) {
       <Card
         className={classes.root}
         variant="outlined"
-        ref={cardRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
