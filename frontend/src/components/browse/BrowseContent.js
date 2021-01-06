@@ -129,8 +129,8 @@ export default function BrowseContent({
 
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
     const res = await applyNewFilters(type, newFilters, closeFilters, state.urlEnding[type]);
-    if (res.closeFilters) setFiltersExpanded(false);
-    if (res.filteredItemsObject) {
+    if (res?.closeFilters) setFiltersExpanded(false);
+    if (res?.filteredItemsObject) {
       setState({
         ...state,
         items: { ...state.items, [type]: res.filteredItemsObject[type] },

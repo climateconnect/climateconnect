@@ -98,7 +98,7 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
     {
       required: true,
       label: "Location",
-      type: "text",
+      type: "location",
       key: "location",
       value: project.location,
     },

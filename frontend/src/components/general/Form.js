@@ -13,7 +13,8 @@ import {
 import SelectField from "./SelectField";
 import { makeStyles } from "@material-ui/core/styles";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
-import AutoCompleteSearchBar from "./AutoCompleteSearchBar";
+import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
+import LocationSearchBar from "../search/LocationSearchBar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -194,6 +195,7 @@ export default function Form({
           </Typography>
         )}
         {fields.map((field) => {
+          console.log(field.type)
           if (
             (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) &&
             field.select
@@ -267,6 +269,13 @@ export default function Form({
                 </span>
               </div>
             );
+          } else if (field.type === "location") {
+            return (
+              <LocationSearchBar 
+                label={field.label}
+                required={field.required}
+              />
+            )
           } else if (
             (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) &&
             field.type === "autocomplete"
