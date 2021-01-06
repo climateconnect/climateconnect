@@ -23,7 +23,7 @@ import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import imageCompression from "browser-image-compression";
 import { getImageDialogHeight } from "../../../public/lib/imageOperations";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
+import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import Alert from "@material-ui/lab/Alert";
 

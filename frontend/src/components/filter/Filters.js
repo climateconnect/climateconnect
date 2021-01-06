@@ -3,6 +3,7 @@ import { TextField, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import SelectField from "../general/SelectField";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
+import LocationSearchBar from "../search/LocationSearchBar";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -155,6 +156,25 @@ export default function Filters({
                 </div>
               );
             }
+          }
+
+          if (filter.type === "location") {
+            const handleLocationSelect = location => {
+              handleValueChange(filter.key, location)
+            }
+            return (
+              <LocationSearchBar
+                inputClassName= {classes.field}
+                smallInput
+                onSelect={handleLocationSelect}
+                label={
+                  <div className={classes.iconLabel}>
+                    <filter.icon fontSize="inherit" />
+                    {filter.title}
+                  </div>
+                }
+              />
+            )
           }
         })}
         {withApplyButton && (
