@@ -141,15 +141,27 @@ export default function Browse({
 
 const buildUrlEndingFromFilters = (filters) => {
   let url = "&";
-  Object.keys(filters).map((filterKey) => {
-    if (filters[filterKey] && filters[filterKey].length > 0) {
-      if (Array.isArray(filters[filterKey]))
+  Object.keys(filters).map((filterKey) => {    
+    if (filters[filterKey] && (filters[filterKey].length > 0 || Object.keys(filters[filterKey]).length > 0)) {
+      if(filterKey === "location")
+        url += getLocationFilterUrl(filters[filterKey])
+      else if (Array.isArray(filters[filterKey]))
         url += encodeURI(filterKey + "=" + filters[filterKey].join()) + "&";
       else url += encodeURI(filterKey + "=" + filters[filterKey] + "&");
     }
   });
+  console.log(url)
   return url;
 };
+
+const getLocationFilterUrl = location => {
+  //get the simple_name which is compiled by our code from location.address without the country
+  const city = "city="+location.simple_name.replace(`, ${location.address.country}`, "")
+  const country = `&country=${location.address.country}`
+  const lat = `&lat=${location.lat}`
+  const lon = `&lon=${location.lon}`
+  return city+country+lat+lon
+}
 
 Browse.getInitialProps = async (ctx) => {
   const { token, hideInfo } = NextCookies(ctx);
