@@ -25,17 +25,9 @@ const getMembersFilters = (filterChoices) => [
   {
     icon: LocationOnOutlinedIcon,
     iconName: "LocationOnOutlinedIcon",
-    title: "Country",
-    type: "select",
-    key: "country",
-    options: countries.map((c) => ({ key: c.toLowerCase(), name: c })),
-  },
-  {
-    icon: LocationOnOutlinedIcon,
-    iconName: "LocationOnOutlinedIcon",
-    title: "City",
-    type: "text",
-    key: "city",
+    title: "Location",
+    type: "location",
+    key: "location",
   },
   {
     icon: GroupAddIcon,
@@ -52,17 +44,9 @@ const getOrganizationsFilters = (filterChoices) => [
   {
     icon: LocationOnOutlinedIcon,
     iconName: "LocationOnOutlinedIcon",
-    title: "Country",
-    type: "select",
-    key: "country",
-    options: countries.map((c) => ({ key: c.toLowerCase(), name: c })),
-  },
-  {
-    icon: LocationOnOutlinedIcon,
-    iconName: "LocationOnOutlinedIcon",
-    title: "City",
-    type: "text",
-    key: "city",
+    title: "Location",
+    type: "location",
+    key: "location",
   },
   {
     icon: GroupIcon,
@@ -78,17 +62,9 @@ const getProjectsFilters = (filterChoices) => [
   {
     icon: LocationOnOutlinedIcon,
     iconName: "LocationOnOutlinedIcon",
-    title: "Country",
-    type: "select",
-    key: "country",
-    options: countries.map((c) => ({ key: c.toLowerCase(), name: c })),
-  },
-  {
-    icon: LocationOnOutlinedIcon,
-    iconName: "LocationOnOutlinedIcon",
-    title: "City",
-    type: "text",
-    key: "city",
+    title: "Location",
+    type: "location",
+    key: "location",
   },
   {
     icon: DoneAllOutlinedIcon,
