@@ -7,8 +7,7 @@ import Cookies from "next-cookies";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
 import { getImageUrl } from "../public/lib/imageOperations";
 
-//temporary fake data
-import TEMP_INFOMETADATA from "./../public/data/profile_info_metadata";
+import profile_info_metadata from "./../public/data/profile_info_metadata";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
 import axios from "axios";
@@ -23,7 +22,7 @@ export default function EditProfilePage({
 }) {
   const { user } = useContext(UserContext);
   infoMetadata.availability.options = availabilityOptions;
-  const profile = user ? parseProfile(user, true, true) : null;
+  const profile = user ? parseProfile(user, true, /*true*/) : null;
   const saveChanges = (event, editedAccount) => {
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
     axios
@@ -48,7 +47,6 @@ export default function EditProfilePage({
   const handleCancel = () => {
     Router.push("/profiles/" + profile.url_slug);
   };
-
   if (!profile)
     return (
       <WideLayout title="Please log in to edit your profile" hideHeadline={true}>
@@ -107,7 +105,6 @@ function ProfileLayout({
       handleSubmit={handleSubmit}
       handleCancel={handleCancel}
       skillsOptions={skillsOptions}
-      splitName
       deleteEmail="support@climateconnect.earth"
     />
   );
@@ -142,7 +139,7 @@ async function getAvailabilityOptions(token) {
 }
 
 async function getProfileInfoMetadata() {
-  return TEMP_INFOMETADATA;
+  return profile_info_metadata;
 }
 
 const parseProfileForRequest = (profile, availabilityOptions, user) => {
