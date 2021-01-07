@@ -5,13 +5,13 @@ export function parseProfile(profile, detailledSkills, keepOldProps) {
   let user = { info: {} };
   if (keepOldProps) {
     user.first_name = profile.first_name;
-    user.last_name = profile.last_name;
-    user.info.location = profile.location;
   }
   user = {
     ...user,
     url_slug: profile.url_slug,
     name: profile.first_name + " " + profile.last_name,
+    first_name: profile.first_name,
+    last_name: profile.last_name,
     image: getImageUrl(profile.image),
     background_image: getImageUrl(profile.background_image),
     info: {

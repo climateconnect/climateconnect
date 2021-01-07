@@ -26,6 +26,7 @@ import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import Alert from "@material-ui/lab/Alert";
+import LocationSearchBar from "../search/LocationSearchBar"
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -339,8 +340,10 @@ export default function EditAccountPage({
     );
   };
 
-  const displayAccountInfo = (info) =>
-    Object.keys(info).map((key) => {
+  const displayAccountInfo = (info) => {
+    console.log(info)
+    return Object.keys(info).map((key) => {
+      console.log(key)
       const handleChange = (event) => {
         setEditedAccount({
           ...editedAccount,
@@ -358,9 +361,7 @@ export default function EditAccountPage({
           },
         });
       };
-
       const i = getFullInfoElement(infoMetadata, key, info[key]);
-
       if (i.type === "array") {
         return displayInfoArrayData(key, i);
       } else if (i.type === "select") {
@@ -398,36 +399,42 @@ export default function EditAccountPage({
           return <React.Fragment>{option.name}</React.Fragment>;
         };
         return (
-          <>
-            <div className={classes.infoElement}>
-              {i.value && (
-                <>
-                  <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
-                    Parent organization:
-                  </Typography>
-                  <MiniOrganizationPreview
-                    organization={i.value}
-                    size="small"
-                    className={classes.infoElement}
-                    onDelete={() => handleSetParentOrganization(null)}
-                  />
-                </>
-              )}
-              <AutoCompleteSearchBar
-                label={i.label}
-                className={`${classes.marginTop} ${classes.block}`}
-                baseUrl={process.env.API_URL + i.baseUrl}
-                freeSolo
-                clearOnSelect
-                onSelect={handleSetParentOrganization}
-                renderOption={renderSearchOption}
-                getOptionLabel={(option) => option.name}
-                helperText={i.helperText}
-              />
-            </div>
-          </>
+          <div className={classes.infoElement}>
+            {i.value && (
+              <>
+                <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
+                  Parent organization:
+                </Typography>
+                <MiniOrganizationPreview
+                  organization={i.value}
+                  size="small"
+                  className={classes.infoElement}
+                  onDelete={() => handleSetParentOrganization(null)}
+                />
+              </>
+            )}
+            <AutoCompleteSearchBar
+              label={i.label}
+              className={`${classes.marginTop} ${classes.block}`}
+              baseUrl={process.env.API_URL + i.baseUrl}
+              freeSolo
+              clearOnSelect
+              onSelect={handleSetParentOrganization}
+              renderOption={renderSearchOption}
+              getOptionLabel={(option) => option.name}
+              helperText={i.helperText}
+            />
+          </div>
         );
-      } else if (key != "parent_organization") {
+      } else if (i.type === "location"){
+        return (
+          <div className={classes.infoElement}>
+            <LocationSearchBar 
+              label={i.name}
+            />
+          </div>
+        )
+      }else if (key != "parent_organization") {
         return (
           <div key={key} className={classes.infoElement}>
             <Typography className={classes.subtitle}>
@@ -445,6 +452,7 @@ export default function EditAccountPage({
         );
       }
     });
+  }
 
   const onBackgroundChange = async (backgroundEvent) => {
     const file = backgroundEvent.target.files[0];
@@ -518,7 +526,7 @@ export default function EditAccountPage({
     console.log(event.target.value);
     console.log(type);
   };
-
+  console.log(editedAccount)
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       {errorMessage && (
