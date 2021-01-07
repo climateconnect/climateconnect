@@ -677,7 +677,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader }) => {
                       component="button"
                       className={classes.loggedInLink}
                       onClick={link.isLogoutButton && handleLogout}
-                      href={!link.isLogoutButton && link.href}
+                      href={!link.isLogoutButton ? link.href : undefined}
                     >
                       {link.text}
                     </MenuItem>
