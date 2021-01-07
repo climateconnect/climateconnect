@@ -2,7 +2,6 @@ import { TextField } from "@material-ui/core";
 import React from "react"
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "axios";
-import fetch from "node-fetch"
 import { debounce } from "lodash";
 
 
@@ -13,6 +12,9 @@ export default function LocationSearchBar({
   inputClassName,
   smallInput,
   onSelect,
+  className,
+  value,
+  onChange,
 }) {
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
@@ -88,6 +90,8 @@ export default function LocationSearchBar({
     const getFirstPart = (address, order) => {
       for(const el of order){
         if(address[el]){
+          if(el === "state")
+            return address[el] + " (state), "
           return address[el] + ", "
         }
       }
@@ -121,7 +125,10 @@ export default function LocationSearchBar({
   };
 
   const handleInputChange = (event) => {
-    setInputValue(event.target.value);
+    if(value && onChange)
+      onChange(event.target.value)
+    else
+      setInputValue(event.target.value);
     setSearchValueThrottled(event.target.value);
   };
 
@@ -137,10 +144,6 @@ export default function LocationSearchBar({
     if (reason === "select-option") {
       setInputValue(value);
       if(onSelect){
-        console.log("on select")
-        console.log(value)
-        console.log(options.map(o=>o.simple_name).join(", "))
-        console.log(options.filter(o=>o.simple_name === value)[0])
         onSelect(options.filter(o=>o.simple_name === value)[0])
       }
     }
@@ -157,7 +160,7 @@ export default function LocationSearchBar({
 
   return (
     <Autocomplete
-      className={inputClassName}
+      className={`${className} ${inputClassName}`}
       open={open}
       onOpen={() => {
         setOpen(true);
@@ -168,7 +171,7 @@ export default function LocationSearchBar({
       onClose={handleClose}
       onChange={handleChange}
       options={options.map(o=>o.simple_name)}
-      inputValue={inputValue}
+      inputValue={value ? value : inputValue}
       filterOptions={handleFilterOptions}
       getOptionDisabled={handleGetOptionDisabled}
       renderOption={renderSearchOption}
@@ -177,6 +180,7 @@ export default function LocationSearchBar({
         <TextField
           {...params}
           label={label}
+          required={required}
           variant="outlined"
           onChange={handleInputChange}
           helperText={helperText}

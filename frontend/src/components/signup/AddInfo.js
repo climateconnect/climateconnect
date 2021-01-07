@@ -31,7 +31,7 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
     {
       required: true,
       label: "Location",
-      type: "text",
+      type: "location",
       key: "location",
       value: values["location"]
     },

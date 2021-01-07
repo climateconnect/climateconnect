@@ -195,7 +195,6 @@ export default function Form({
           </Typography>
         )}
         {fields.map((field) => {
-          console.log(field.type)
           if (
             (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) &&
             field.select

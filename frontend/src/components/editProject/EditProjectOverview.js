@@ -15,6 +15,7 @@ const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import SelectField from "../general/SelectField";
 import countries from "./../../../public/data/countries.json";
+import LocationSearchBar from "../search/LocationSearchBar";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -180,15 +181,12 @@ const InputLocation = ({ project, handleChangeProject }) => {
   const classes = useStyles();
   return (
     <div className={classes.projectInfoEl}>
-      <TextField
+      <LocationSearchBar
         label="Location"
-        variant="outlined"
-        fullWidth
-        value={project.location}
-        className={classes.locationInput}
-        type="text"
-        onChange={(event) => handleChangeProject(event.target.value, "location")}
         required
+        className={classes.locationInput}
+        value={project.location}
+        onChange={(value) => handleChangeProject(value, "location")}
       />
     </div>
   );

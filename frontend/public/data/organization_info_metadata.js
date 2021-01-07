@@ -3,24 +3,8 @@ import DescriptionIcon from "@material-ui/icons/Description";
 import SchoolIcon from "@material-ui/icons/School";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
-import countries from "./countries.json";
 
 export default {
-  city: {
-    icon: PlaceIcon,
-    iconName: "PlaceIcon",
-    name: "City",
-    type: "location",
-    key: "city",
-  },
-  country: {
-    icon: PlaceIcon,
-    iconName: "PlaceIcon",
-    name: "Country",
-    key: "country",
-    type: "select",
-    options: countries.map((c) => ({ key: c.toLowerCase(), name: c })),
-  },
   location: {
     icon: PlaceIcon,
     iconName: "PlaceIcon",
