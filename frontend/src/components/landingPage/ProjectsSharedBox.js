@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles, Typography, Button } from "@material-ui/core";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import ProjectPreviewsFixed from "../project/ProjectPreviewsFixed";
+import FixedPreviewCards from "./FixedPreviewCards";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
   showProjectsButtonContainer: {
     marginTop: theme.spacing(3),
-    color: theme.palette.yellow.main,
+    color: theme.palette.primary.main,
   },
   showProjectsArrow: {
     marginLeft: theme.spacing(2),
@@ -34,18 +34,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectsSharedBox({ projects }) {
+export default function ProjectsSharedBox({ projects, className }) {
   const classes = useStyles();
   return (
-    <div className={classes.root}>
+    <div className={`${className} ${classes.root}`}>
       <Typography color="primary" component="h1" className={classes.headline}>
-        Make an impact nearby or anywhere on earth
+        Climate solutions shared by Climate Connect users
       </Typography>
       <Typography color="secondary" className={classes.explainerText}>
-        Find the best climate change solutions from around the world. Share your own solutions and
-        projects for others to replicate.
+        Find the best climate change solutions from around the world. Get involved, share your own
+        solutions or spread effective projects and ideas to your location.
       </Typography>
-      <ProjectPreviewsFixed projects={projects} />
+      <FixedPreviewCards elements={projects} type="project" />
       <div className={classes.showProjectsButtonContainer}>
         <Button color="inherit" href="/browse">
           <span className={classes.showProjectsText}>Show all projects</span>
