@@ -192,14 +192,18 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
           headline="Donate with cryptocurrency"
           text="While we prefer other payment methods, we've also added the option to donate cryptocurrency. When donating with cryptocurrency you will not receive a donation receipt."
           icon="/icons/bitcoin.svg"
-          subPoints={[{
-            text: (
-              <>
-                <Typography color="primary" component="span">Our Bitcoin address: </Typography>
-                <Typography component="span">1BTKuBx78uSGBkNcS8pCkvLKwXTH1NyJ23</Typography>
-              </>
-            )
-          }]}
+          subPoints={[
+            {
+              text: (
+                <>
+                  <Typography color="primary" component="span">
+                    Our Bitcoin address:{" "}
+                  </Typography>
+                  <Typography component="span">1BTKuBx78uSGBkNcS8pCkvLKwXTH1NyJ23</Typography>
+                </>
+              ),
+            },
+          ]}
         />
         <QuoteBox
           className={classes.textSection}
