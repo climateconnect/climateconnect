@@ -18,7 +18,9 @@ import BrowseContent from "../../src/components/browse/BrowseContent";
 import Cookies from "universal-cookie";
 import FoodDescription from "../../src/components/hub/description/FoodDescription";
 import BrowseExplainer from "../../src/components/hub/BrowseExplainer";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
+import { getImageUrl } from "../../public/lib/imageOperations";
+import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -32,11 +34,17 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     top: -90,
   },
+  moreInfoSoon: {
+    fontWeight: 600,
+    marginTop: theme.spacing(2),
+    textAlign: "center",
+  },
 }));
 
 export default function Hub({
-  categoryKey,
+  hubUrl,
   name,
+  statBoxTitle,
   headline,
   image,
   quickInfo,
@@ -45,8 +53,9 @@ export default function Hub({
   initialOrganizations,
   filterChoices,
   subHeadline,
-  segwayText,
+  image_attribution,
 }) {
+  console.log(statBoxTitle);
   const classes = useStyles();
   const token = new Cookies().get("token");
   const [filters, setFilters] = useState({
@@ -69,7 +78,7 @@ export default function Hub({
         page: page,
         token: token,
         urlEnding: urlEnding,
-        categoryKey: categoryKey,
+        hubUrl: hubUrl,
       });
       const newData =
         type === "members" ? membersWithAdditionalInfo(newDataObject.members) : newDataObject[type];
@@ -100,7 +109,7 @@ export default function Hub({
         page: 1,
         token: token,
         urlEnding: newUrlEnding,
-        categoryKey: categoryKey,
+        hubUrl: hubUrl,
       });
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
@@ -129,7 +138,7 @@ export default function Hub({
         page: 1,
         token: token,
         urlEnding: newSearchQueryParam,
-        categoryKey: categoryKey,
+        hubUrl: hubUrl,
       });
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
@@ -144,19 +153,19 @@ export default function Hub({
   };
 
   return (
-    <WideLayout header={headline} fixedHeader headerBackground="#FFF">
+    <WideLayout title={headline + " | Climate Connect"} fixedHeader headerBackground="#FFF">
       <div className={classes.contentUnderHeader}>
         <NavigationSubHeader hubName={name} />
-        <HubHeaderImage image={image} />
+        {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
+        <HubHeaderImage image={getImageUrl(image)} source={image_attribution} />
         <HubContent
           headline={headline}
           quickInfo={quickInfo}
-          name={name}
+          statBoxTitle={statBoxTitle}
           stats={stats}
           scrollToSolutions={scrollToSolutions}
-          detailledInfo={<FoodDescription />}
+          detailledInfo={<HubDescription hub={hubUrl} />}
           subHeadline={subHeadline}
-          segwayText={segwayText}
         />
         <div className={classes.contentRefContainer}>
           <div ref={contentRef} className={classes.contentRef} />
@@ -177,6 +186,17 @@ export default function Hub({
   );
 }
 
+const HubDescription = ({ hub }) => {
+  const classes = useStyles();
+  if (hub === "food") return <FoodDescription />;
+  return (
+    <Typography className={classes.moreInfoSoon}>
+      More Info coming soon! Have a look at the projects and solutions submitted by Climate Connect
+      users below!
+    </Typography>
+  );
+};
+
 const buildUrlEndingFromFilters = (filters) => {
   let url = "&";
   Object.keys(filters).map((filterKey) => {
@@ -190,8 +210,7 @@ const buildUrlEndingFromFilters = (filters) => {
 };
 
 Hub.getInitialProps = async (ctx) => {
-  const categoryKey = ctx.query.categoryKey;
-  console.log(categoryKey);
+  const hubUrl = ctx.query.hubUrl;
   const { token } = NextCookies(ctx);
   const [
     hubData,
@@ -202,23 +221,24 @@ Hub.getInitialProps = async (ctx) => {
     skills,
     project_statuses,
   ] = await Promise.all([
-    getHubData(categoryKey),
-    getProjects({ page: 1, token: token, categoryKey: categoryKey }),
-    getOrganizations({ page: 1, token: token, categoryKey: categoryKey }),
-    getProjectTagsOptions(categoryKey),
+    getHubData(hubUrl),
+    getProjects({ page: 1, token: token, hubUrl: hubUrl }),
+    getOrganizations({ page: 1, token: token, hubUrl: hubUrl }),
+    getProjectTagsOptions(hubUrl),
     getOrganizationTagsOptions(),
     getSkillsOptions(),
     getStatusOptions(),
   ]);
   return {
-    categoryKey: categoryKey,
+    hubUrl: hubUrl,
     name: hubData.name,
     headline: hubData.headline,
     subHeadline: hubData.sub_headline,
-    segwayText: hubData.segway_text,
     image: hubData.image,
     quickInfo: hubData.quick_info,
     stats: hubData.stats,
+    statBoxTitle: hubData.stat_box_title,
+    image_attribution: hubData.image_attribution,
     initialProjects: initialProjects,
     initialOrganizations: initialOrganizations,
     filterChoices: {
@@ -243,29 +263,29 @@ const getHubData = async (url_slug) => {
   }
 };
 
-async function getProjects({ page, token, urlEnding, categoryKey }) {
+async function getProjects({ page, token, urlEnding, hubUrl }) {
   return await getDataFromServer({
     type: "projects",
     page: page,
     token: token,
     urlEnding: urlEnding,
-    categoryKey: categoryKey,
+    hubUrl: hubUrl,
   });
 }
 
-async function getOrganizations({ page, token, urlEnding, categoryKey }) {
+async function getOrganizations({ page, token, urlEnding, hubUrl }) {
   return await getDataFromServer({
     type: "organizations",
     page: page,
     token: token,
     urlEnding: urlEnding,
-    categoryKey: categoryKey,
+    hubUrl: hubUrl,
   });
 }
 
-async function getDataFromServer({ type, page, token, urlEnding, categoryKey }) {
-  let url = `${process.env.API_URL}/api/${type}/?page=${page}&project_category_parent=${categoryKey}`;
-  console.log(`getting ${type} data for category ${categoryKey}`);
+async function getDataFromServer({ type, page, token, urlEnding, hubUrl }) {
+  let url = `${process.env.API_URL}/api/${type}/?page=${page}&hub=${hubUrl}`;
+  console.log(`getting ${type} data for category ${hubUrl}`);
   if (urlEnding) url += urlEnding;
 
   try {

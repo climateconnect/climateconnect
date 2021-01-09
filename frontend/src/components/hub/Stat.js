@@ -2,6 +2,7 @@ import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 import theme from "../../themes/theme";
 import { PieChart } from "react-minimal-pie-chart";
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 
 const useStyles = makeStyles((theme) => ({
   pieChartContainer: {
@@ -21,6 +22,14 @@ const useStyles = makeStyles((theme) => ({
   chartInfoDescription: {
     fontSize: 16,
   },
+  footnote: {
+    fontSize: 14,
+  },
+  infoIcon: {
+    fontSize: 19,
+    marginBottom: -4,
+    marginRight: theme.spacing(0.25),
+  },
 }));
 
 export default function Stat({ statData }) {
@@ -30,18 +39,26 @@ export default function Stat({ statData }) {
     { value: 100 - parseInt(statData.value), title: "Rest", color: "#D6D6D6" },
   ];
   return (
-    <div className={classes.pieChartContainer}>
-      <PieChart data={data} lineWidth={30} startAngle={270} className={classes.pieChart} />
-      <div className={classes.chartInfo}>
-        <Typography color="primary" className={classes.chartInfoHeadline}>
-          {statData.value}
-        </Typography>
-        <div>
-          <Typography className={classes.chartInfoDescription}>
-            {statData.value_description}
+    <div>
+      <div className={classes.pieChartContainer}>
+        <PieChart data={data} lineWidth={30} startAngle={270} className={classes.pieChart} />
+        <div className={classes.chartInfo}>
+          <Typography color="primary" className={classes.chartInfoHeadline}>
+            {statData.value}
           </Typography>
+          <div>
+            <Typography className={classes.chartInfoDescription}>
+              {statData.value_description}
+            </Typography>
+          </div>
         </div>
       </div>
+      {statData.description && (
+        <Typography className={classes.footnote}>
+          <InfoOutlinedIcon className={classes.infoIcon} />
+          {`${statData.description}`}
+        </Typography>
+      )}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+from hubs.models.hub import Hub
 from dateutil.parser import parse
 from rest_framework.generics import ListAPIView,RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -60,6 +61,7 @@ class ListProjectsView(ListAPIView):
 
     def get_queryset(self):
         projects = Project.objects.filter(is_draft=False)
+
         if 'collaboration' in self.request.query_params:
             collaborators_welcome = self.request.query_params.get('collaboration')
             if collaborators_welcome == 'yes':
@@ -67,9 +69,10 @@ class ListProjectsView(ListAPIView):
             if collaborators_welcome == 'no':
                 projects = projects.filter(collaborators_welcome=False)
 
-        if 'project_category_parent' in self.request.query_params:
-            project_parent_category = self.request.query_params.get('project_category_parent').split(',')
-            project_parent_tags = ProjectTags.objects.filter(key__in=project_parent_category)
+        if 'hub' in self.request.query_params:
+            project_parent_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
+            project_parent_category_ids = list(map(lambda c: c.id, project_parent_category))
+            project_parent_tags = ProjectTags.objects.filter(id__in=project_parent_category_ids)
             project_tags = ProjectTags.objects.filter(parent_tag__in=project_parent_tags)
             projects = projects.filter(
                 tag_project__project_tag__in=project_tags
@@ -78,12 +81,12 @@ class ListProjectsView(ListAPIView):
         if 'category' in self.request.query_params:
             project_category = self.request.query_params.get('category').split(',')
             project_tags = ProjectTags.objects.filter(name__in=project_category)
-            # We use distinct to deduplicate selected rows. We
-            # must use order_by in conjunction with distinct:
+            # Use .distinct to dedupe selected rows.
             # https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.distinct
+            # We then sort by rating, to show most relevant results
             projects = projects.filter(
                 tag_project__project_tag__in=project_tags
-            ).distinct()        
+            ).distinct()
 
         if 'status' in self.request.query_params:
             statuses = self.request.query_params.get('status').split(',')
@@ -92,6 +95,9 @@ class ListProjectsView(ListAPIView):
         if 'skills' in self.request.query_params:
             skill_names = self.request.query_params.get('skills').split(',')
             skills = Skill.objects.filter(name__in=skill_names)
+            # Use .distinct to dedupe selected rows.
+            # https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.distinct
+            # We then sort by rating, to show most relevant results
             projects = projects.filter(skills__in=skills).distinct()
 
         if 'organization_type' in self.request.query_params:
@@ -100,6 +106,7 @@ class ListProjectsView(ListAPIView):
             organization_taggings = OrganizationTagging.objects.filter(organization_tag__in=organization_types)
             project_parents = ProjectParents.objects.filter(parent_organization__tag_organization__in=organization_taggings)
             projects = projects.filter(project_parent__in=project_parents)
+
         return projects
 
 class CreateProjectView(APIView):

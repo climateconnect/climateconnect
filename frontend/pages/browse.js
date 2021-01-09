@@ -18,6 +18,7 @@ import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import TopOfPage from "../src/components/hooks/TopOfPage";
 import BrowseContent from "../src/components/browse/BrowseContent";
 import { parseData } from "../public/lib/parsingOperations";
+import HubsSubHeader from "../src/components/indexPage/HubsSubHeader";
 
 export default function Browse({
   projectsObject,
@@ -25,6 +26,7 @@ export default function Browse({
   membersObject,
   token,
   filterChoices,
+  hubs,
 }) {
   const [filters, setFilters] = useState({
     projects: {},
@@ -36,11 +38,13 @@ export default function Browse({
     if (filters === newFilters) {
       return;
     }
+
     setFilters({ ...filters, [type]: newFilters });
     const newUrlEnding = buildUrlEndingFromFilters(newFilters);
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }
+
     try {
       const filteredItemsObject = await getDataFromServer({
         type: type,
@@ -73,6 +77,7 @@ export default function Browse({
         token: token,
         urlEnding: newSearchQueryParam,
       });
+
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
       }
@@ -164,9 +169,10 @@ export default function Browse({
   return (
     <>
       <WideLayout
-        title="Climate Connect - global platform form climate change solutions"
+        title="Climate Connect - Global platform for climate change solutions"
         hideHeadline
         showOnScrollUp={showOnScrollUp}
+        subHeader={<HubsSubHeader hubs={hubs} />}
       >
         <MainHeadingContainerMobile />
         <BrowseContent
@@ -205,6 +211,7 @@ Browse.getInitialProps = async (ctx) => {
     organization_types,
     skills,
     project_statuses,
+    hubs,
   ] = await Promise.all([
     getProjects(1, token),
     getOrganizations(1, token),
@@ -213,6 +220,7 @@ Browse.getInitialProps = async (ctx) => {
     getOrganizationTagsOptions(),
     getSkillsOptions(),
     getStatusOptions(),
+    getHubs(),
   ]);
   return {
     projectsObject: projectsObject,
@@ -226,6 +234,7 @@ Browse.getInitialProps = async (ctx) => {
       project_statuses: project_statuses,
     },
     hideInfo: hideInfo === "true",
+    hubs: hubs,
   };
 };
 
@@ -278,5 +287,14 @@ async function getDataFromServer({ type, page, token, urlEnding }) {
       console.log(err.response.data);
     } else console.log(err);
     throw err;
+  }
+}
+
+async function getHubs() {
+  try {
+    const resp = await axios.get(`${process.env.API_URL}/api/hubs/`);
+    return resp.data.results;
+  } catch (e) {
+    console.log(e);
   }
 }

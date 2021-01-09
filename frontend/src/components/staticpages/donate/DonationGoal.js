@@ -63,7 +63,7 @@ export default function DonationGoal({ className, current, goal, name, embedded,
         </Typography>
         <LinearProgress
           variant="determinate"
-          value={(current / goal) * 100}
+          value={current / goal > 100 ? (current / goal) * 100 : 100}
           classes={{
             root: classes.barContainer,
             bar: classes.bar,

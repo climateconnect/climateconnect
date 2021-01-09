@@ -34,6 +34,7 @@ jobs:
         BASE_URL_HOST: ${{ secrets.BASE_URL_HOST }}
         LATEST_NEWSLETTER_LINK: ${{ secrets.LATEST_NEWSLETTER_LINK }}
         DONATION_CAMPAIGN_RUNNING: ${{ secrets.DONATION_CAMPAIGN_RUNNING }}
+        LETS_ENCRYPT_FILE_CONTENT: ${{ secrets.LETS_ENCRYPT_FILE_CONTENT }}
 
 
     - name: 'Deploy to Azure Web App'

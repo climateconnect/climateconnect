@@ -1,6 +1,9 @@
 default: start
 
 start:
+	$(info )
+	$(info -- Starting server --)
+	$(info )
 	python3 manage.py runserver
 
 install:
@@ -10,7 +13,10 @@ test:
 	python3 manage.py test
 
 docker:
-	docker-compose up &
+	docker-compose up -d
+	$(info )
+	$(info -- Running Docker in background (detached mode) --)
+	$(info )
 
 all: docker start
 
