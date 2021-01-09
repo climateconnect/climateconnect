@@ -88,10 +88,10 @@ export default function ProjectPage({ project, members, posts, comments, token, 
   });
   return (
     <WideLayout
-      message={message.message}
-      messageType={message.messageType}
-      title={project ? project.name : "Project not found"}
       description={project?.shortdescription}
+      message={message?.message}
+      messageType={message?.messageType}
+      title={project ? project.name : "Project not found"}
     >
       {project ? (
         <ProjectLayout

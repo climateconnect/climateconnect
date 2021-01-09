@@ -16,6 +16,7 @@ import OrganizationsSharedBox from "../src/components/landingPage/OrganizationsS
 import DonationsBanner from "../src/components/landingPage/DonationsBanner";
 import OurTeamBox from "../src/components/landingPage/OurTeamBox";
 import StartNowBanner from "../src/components/staticpages/StartNowBanner";
+import HubsBox from "../src/components/landingPage/HubsBox";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   explainerBox: {
-    marginTop: theme.spacing(13),
+    marginTop: theme.spacing(6),
     [theme.breakpoints.down("sm")]: {
       marginTop: theme.spacing(2),
     },
@@ -59,9 +60,15 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     top: -100,
   },
+  pitchBox: {
+    marginTop: theme.spacing(4),
+  },
+  projectsSharedBox: {
+    marginTop: theme.spacing(5),
+  },
 }));
 
-export default function Index({ projects, organizations }) {
+export default function Index({ projects, organizations, hubs }) {
   const classes = useStyles();
   const [initialized, setInitialized] = React.useState(false);
   const [pos, setPos] = useState("top");
@@ -100,7 +107,8 @@ export default function Index({ projects, organizations }) {
         <div className={classes.lowerPart}>
           <div id="info" ref={contentRef} className={classes.contentRef} />
           <ExplainerBox h1ClassName={classes.h1ClassName} className={classes.explainerBox} />
-          <PitchBox h1ClassName={classes.h1ClassName} />
+          <ProjectsSharedBox projects={projects} className={classes.projectsSharedBox} />
+          <PitchBox h1ClassName={classes.h1ClassName} className={classes.pitchBox} />
           <div className={classes.signUpButtonContainer}>
             <Button
               href="/signup"
@@ -112,7 +120,7 @@ export default function Index({ projects, organizations }) {
               {"Sign up & make a change"}
             </Button>
           </div>
-          <ProjectsSharedBox projects={projects} />
+          <HubsBox hubs={hubs} />
           <JoinCommunityBox h1ClassName={classes.h1ClassName} />
           <OrganizationsSharedBox organizations={organizations} />
           <DonationsBanner h1ClassName={classes.h1ClassName} />
@@ -133,6 +141,7 @@ Index.getInitialProps = async (ctx) => {
   return {
     projects: await getProjects(token),
     organizations: await getOrganizations(token),
+    hubs: await getHubs(),
   };
 };
 
@@ -193,4 +202,16 @@ const parseOrganizations = (organizations) => {
         : organization.country,
     },
   }));
+};
+
+const getHubs = async () => {
+  try {
+    const resp = await axios.get(`${process.env.API_URL}/api/hubs/`);
+    return resp.data.results;
+  } catch (err) {
+    if (err.response && err.response.data)
+      console.log("Error in getHubData: " + err.response.data.detail);
+    console.log(err);
+    return null;
+  }
 };

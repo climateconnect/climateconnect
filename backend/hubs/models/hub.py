@@ -95,6 +95,14 @@ class Hub(models.Model):
         verbose_name="Segway text"
     )
 
+    image_attribution = models.CharField(
+        help_text="This is incase we have to attribute somebody or a website for using their image",
+        verbose_name="Image attribution",
+        max_length=1024,
+        null=True,
+        blank=True
+    )
+
     image = models.ImageField(
         help_text="Hub image",
         verbose_name="Image",

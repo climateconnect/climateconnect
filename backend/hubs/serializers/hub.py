@@ -15,11 +15,11 @@ class HubSerializer(serializers.ModelSerializer):
             "stats",
             "sub_headline",
             "segway_text",
-            "stat_box_title"
+            "stat_box_title",
+            "image_attribution"
         )
     
     def get_stats(self, obj):
-        print(obj)
         return HubStatSerializer(obj.stats, many=True).data
 
 class HubStubSerializer(serializers.ModelSerializer):
