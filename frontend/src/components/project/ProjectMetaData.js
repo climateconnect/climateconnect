@@ -108,6 +108,7 @@ const WithDescription = ({ className, project_parent, hovering, project, main_pr
               {project.short_description}
             </Typography>
           </Collapse>
+          {!hovering && <Categories main_project_tag={main_project_tag} />}
         </Box>
       </Container>
       {hovering && <Categories main_project_tag={main_project_tag} hovering={hovering} />}
