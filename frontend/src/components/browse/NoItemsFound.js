@@ -14,8 +14,7 @@ export default function NoItemsFound({ type }) {
   const classes = useStyles();
   return (
     <Typography component="h4" variant="h5" className={classes.infoMessage}>
-      Error trying to retrieve <strong>{type}</strong> data from the server. <br />
-      Please contact contact@climateconnect.earth if this happens repeatedly.
+      No results.
     </Typography>
   );
 }
