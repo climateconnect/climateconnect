@@ -110,7 +110,7 @@ const WithDescription = ({ className, project_parent, hovering, project, main_pr
           </Collapse>
         </Box>
       </Container>
-      <Categories main_project_tag={main_project_tag} />
+      {hovering && <Categories main_project_tag={main_project_tag} hovering={hovering} />}
     </Box>
   );
 };
