@@ -38,11 +38,13 @@ export default function Browse({
     if (filters === newFilters) {
       return;
     }
+
     setFilters({ ...filters, [type]: newFilters });
     const newUrlEnding = buildUrlEndingFromFilters(newFilters);
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }
+
     try {
       const filteredItemsObject = await getDataFromServer({
         type: type,
@@ -75,6 +77,7 @@ export default function Browse({
         token: token,
         urlEnding: newSearchQueryParam,
       });
+
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
       }
@@ -119,7 +122,7 @@ export default function Browse({
   return (
     <>
       <WideLayout
-        title="Climate Connect - global platform form climate change solutions"
+        title="Climate Connect - Global platform for climate change solutions"
         hideHeadline
         showOnScrollUp={showOnScrollUp}
         subHeader={<HubsSubHeader hubs={hubs} />}
