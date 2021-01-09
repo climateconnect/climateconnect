@@ -225,7 +225,6 @@ async function getDataFromServer({ type, page, token, urlEnding }) {
   try {
     console.log(`Getting data for ${type} at ${url}`);
     const resp = await axios.get(url, tokenConfig(token));
-
     if (resp.data.length === 0) {
       console.log(`No data of type ${type} found...`);
       return null;

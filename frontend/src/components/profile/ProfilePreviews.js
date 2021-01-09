@@ -4,7 +4,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import InfiniteScroll from "react-infinite-scroller";
 
 import LoadingSpinner from "../general/LoadingSpinner";
-
 import ProfilePreview from "./ProfilePreview";
 
 const useStyles = makeStyles({

@@ -81,8 +81,7 @@ class ListProjectsView(ListAPIView):
         if 'category' in self.request.query_params:
             project_category = self.request.query_params.get('category').split(',')
             project_tags = ProjectTags.objects.filter(name__in=project_category)
-            # Use .distinct to dedupe selected rows. We
-            # must use order_by in conjunction with distinct:
+            # Use .distinct to dedupe selected rows.
             # https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.distinct
             # We then sort by rating, to show most relevant results
             projects = projects.filter(
@@ -96,8 +95,7 @@ class ListProjectsView(ListAPIView):
         if 'skills' in self.request.query_params:
             skill_names = self.request.query_params.get('skills').split(',')
             skills = Skill.objects.filter(name__in=skill_names)
-            # Use .distinct to dedupe selected rows. We
-            # must use order_by in conjunction with distinct:
+            # Use .distinct to dedupe selected rows.
             # https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.distinct
             # We then sort by rating, to show most relevant results
             projects = projects.filter(skills__in=skills).distinct()
