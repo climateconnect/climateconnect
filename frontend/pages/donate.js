@@ -138,13 +138,13 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
           textBodyClass={classes.textBodyClass}
           headline="Why donate?"
           text={`
-              Great that you want to support us! 
+              Great that you want to support us!
 
               We believe that the possibility to connect and get active in the climate movement should be free and include everyone.
 
               With a donation you enable us to stay independent. Our full-time team is working hard every day to multiply the impact of climate actors around the globe.
 
-          
+
             `}
           subPoints={[
             {
@@ -185,9 +185,29 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
           text="Give your loved ones a gift that helps save our planet. By donating you support a global effort of move towards a carbon-neutral future. You will recieve a personalized christmas themed donation certificate."
           icon="/icons/floating_sign_gift.svg"
         />
+        <TextBox
+          className={classes.textSection}
+          headlineClass={classes.headlineClass}
+          textBodyClass={classes.textBodyClass}
+          headline="Donate with cryptocurrency"
+          text="While we prefer other payment methods, we've also added the option to donate cryptocurrency. When donating with cryptocurrency you will not receive a donation receipt."
+          icon="/icons/bitcoin.svg"
+          subPoints={[
+            {
+              text: (
+                <>
+                  <Typography color="primary" component="span">
+                    Our Bitcoin address:{" "}
+                  </Typography>
+                  <Typography component="span">1BTKuBx78uSGBkNcS8pCkvLKwXTH1NyJ23</Typography>
+                </>
+              ),
+            },
+          ]}
+        />
         <QuoteBox
           className={classes.textSection}
-          text="We can only prevent a global climate catastrophe if everyone working in climate action coordinates their efforts and the most effective solutions get spread globally - if you believe that too you should donate"
+          text="We can only prevent a global climate catastrophe if everyone working in climate action coordinates their efforts and the most effective solutions get spread globally - support our vision by donating."
         />
         <TextBox
           className={classes.textSection}
@@ -206,7 +226,7 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
                     open source codebase
                   </a>
                   ). For the next few months, we will create hubs for each important topic in
-                  climate action, vastly improve user experience on Climate connect and try to
+                  climate action, vastly improve user experience on Climate Connect and try to
                   optimize project pages even more so we can be most effective at sparking
                   collaboration and knowledge sharing between users. We also constantly improve
                   existing parts of the websites based on user feedback.

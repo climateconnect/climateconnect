@@ -87,11 +87,11 @@ export default function FaqSection({ headlineClass, questions }) {
               Got a question?
             </Typography>
             <Typography className={classes.textBody}>
-              Here you will find the most commonly asked questions and their answers. You can find
-              all questions and answer on the{" "}
+              Find all commonly asked questions and their answers on the{" "}
               <Link className={classes.faqLink} href="/faq" target="_blank">
                 FAQ page
               </Link>
+              .
             </Typography>
           </div>
         </div>

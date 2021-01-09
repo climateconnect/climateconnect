@@ -96,7 +96,7 @@ export default function Values({ headlineClass }) {
             dedicate all our work to make an impact on climate change. Being an independent
             organisation allows us to work with{" "}
             <span className={classes.yellow}>everyone involved in fighting climate change.</span>{" "}
-            This is also why we include our community as much as possible. Our code-base is{" "}
+            This is also why we include our community as much as possible. Our codebase is{" "}
             <span className={classes.yellow}>open source</span>, we organize regular network events
             and let our users help us decide what steps to take next.
           </Typography>

@@ -2,7 +2,9 @@ import React from "react";
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfiniteScroll from "react-infinite-scroller";
-import CircularProgress from "@material-ui/core/CircularProgress";
+
+import LoadingSpinner from "../general/LoadingSpinner";
+import ProfilePreview from "./ProfilePreview";
 
 import ProfilePreview from "./ProfilePreview";
 
@@ -13,65 +15,58 @@ const useStyles = makeStyles({
     listStyleType: "none",
     width: "100%",
   },
-  spinner: {
-    marginTop: "48px",
-  },
 });
 
 export default function ProfilePreviews({
-  profiles,
-  loadFunc,
   hasMore,
-  showAdditionalInfo,
+  loadFunc,
   parentHandlesGridItems,
+  profiles,
+  showAdditionalInfo,
 }) {
   const classes = useStyles();
+
   const toProfilePreviews = (profiles) =>
     profiles.map((p) => (
       <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
     ));
-  const [isLoading, setIsLoading] = React.useState(false);
+
   const [gridItems, setGridItems] = React.useState(toProfilePreviews(profiles));
 
-  if (!loadFunc) hasMore = false;
+  if (!loadFunc) {
+    hasMore = false;
+  }
+
   const loadMore = async (page) => {
-    if (!isLoading) {
-      setIsLoading(true);
+    if (hasMore) {
       const newProfiles = await loadFunc(page);
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toProfilePreviews(newProfiles)]);
       }
-      setIsLoading(false);
     }
-  };
-
-  const loadingSpinner = () => {
-    return isLoading ? (
-      <Grid container justify="center">
-        <CircularProgress className={classes.spinner} />
-      </Grid>
-    ) : null;
   };
 
   // TODO: use `profile.id` instead of index when using real profiles
   return (
-    <InfiniteScroll
-      className={`${classes.reset} ${classes.root}`}
-      component="ul"
-      container
-      element={Grid}
-      hasMore={hasMore && !isLoading}
-      loadMore={loadMore}
-      pageStart={0}
-      spacing={2}
-    >
-      {parentHandlesGridItems
-        ? profiles && profiles.length > 0
-          ? toProfilePreviews(profiles)
-          : "No members found."
-        : gridItems}
-      {loadingSpinner()}
-    </InfiniteScroll>
+    <>
+      <InfiniteScroll
+        className={`${classes.reset} ${classes.root}`}
+        component="ul"
+        container
+        element={Grid}
+        hasMore={hasMore}
+        loader={<LoadingSpinner isLoading key="profile-previews-spinner" />}
+        loadMore={loadMore}
+        pageStart={0}
+        spacing={2}
+      >
+        {parentHandlesGridItems
+          ? profiles && profiles.length > 0
+            ? toProfilePreviews(profiles)
+            : "No members found."
+          : gridItems}
+      </InfiniteScroll>
+    </>
   );
 }
 

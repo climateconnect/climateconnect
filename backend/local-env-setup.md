@@ -19,6 +19,7 @@ DATABASE_PORT=<database port>
 
 ALLOWED_HOSTS=<hosts allowed. eg: http://localhost:8000>
 ENVIRONMENT=<Environment you are in, eg: development>
+AUTO_VERIFY=<Set to True locally>
 ```
 
 Env variables needed for email sending with [mailjet](https://www.mailjet.com/):

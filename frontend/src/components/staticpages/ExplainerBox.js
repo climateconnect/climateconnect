@@ -139,7 +139,7 @@ export default function ExplainerBox({ h1ClassName, className, hideHeadline }) {
             <>
               Enabling global and local
               <br />
-              <b>{"collaboration & knowledge sharing"}</b>
+              <b>{"collaboration and knowledge sharing"}</b>
               <br />
               in climate action.
             </>
