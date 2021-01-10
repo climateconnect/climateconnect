@@ -56,7 +56,7 @@ export default function LayoutWrapper({
   return (
     <>
       <Head>
-        <title>{title ? title : "Climate Connect"}</title>
+        <title>{title ? (title + " | Climate Connect") : "Climate Connect"}</title>
         <link
           href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800"
           rel="stylesheet"
