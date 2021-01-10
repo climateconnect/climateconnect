@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Tabs, Tab, Divider, useMediaQuery, makeStyles } from "@material-ui/core";
+
 import FilterSection from "../indexPage/FilterSection";
 import FilterContent from "../filter/FilterContent";
 import ProjectPreviews from "../project/ProjectPreviews";
@@ -8,6 +9,8 @@ import OrganizationPreviews from "../organization/OrganizationPreviews";
 import possibleFilters from "../../../public/data/possibleFilters";
 import NoItemsFound from "./NoItemsFound";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
+import LoadingSpinner from "../general/LoadingSpinner";
+import LoadingContext from "../context/LoadingContext";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -68,6 +71,13 @@ export default function BrowseContent({
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
   const [filtersExpanded, setFiltersExpanded] = useState(false);
   const [state, setState] = useState(initialState);
+
+  // We have 2 distinct loading states: filtering, and loading more data. For
+  // each state, we want to treat the loading spinner a bit differently, hence
+  // why we have two separate pieces of state
+  const [isFiltering, setIsFiltering] = useState(false);
+  const [isFetchingMoreData, setIsFetchingMoreData] = useState(false);
+
   const handleTabChange = (event, newValue) => {
     window.location.hash = TYPES_BY_TAB_VALUE[newValue];
     setTabValue(newValue);
@@ -102,7 +112,11 @@ export default function BrowseContent({
 
   const handleLoadMoreData = async (type) => {
     try {
+      setIsFetchingMoreData(true);
       const res = await loadMoreData(type, state.nextPages[type], state.urlEnding[type]);
+
+      // TODO: these setState and hooks calls should likely be memoized and combined
+      setIsFetchingMoreData(false);
       setState({
         ...state,
         nextPages: {
@@ -127,7 +141,13 @@ export default function BrowseContent({
     }
   };
 
+  /**
+   * Sets loading state to true to until the results are
+   * returned from applying the new filters. Then updates the
+   * state.
+   */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
+    setIsFiltering(true);
     const res = await applyNewFilters(type, newFilters, closeFilters, state.urlEnding[type]);
     if (res?.closeFilters) setFiltersExpanded(false);
     if (res?.filteredItemsObject) {
@@ -139,11 +159,19 @@ export default function BrowseContent({
         nextPages: { ...state.nextPages, [type]: 2 },
       });
     }
+    setIsFiltering(false);
   };
 
+  /**
+   * Asynchonously get new projects, orgs or members. We render
+   * a loading spinner until the request is done.
+   */
   const handleSearchSubmit = async (type, searchValue) => {
+    setIsFiltering(true);
     const res = await applySearch(type, searchValue, state.urlEnding[type]);
-    if (res.filteredItemsObject) {
+    setIsFiltering(false);
+
+    if (res?.filteredItemsObject) {
       setState({
         ...state,
         items: { ...state.items, [type]: res.filteredItemsObject[type] },
@@ -155,102 +183,138 @@ export default function BrowseContent({
   };
 
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+
   return (
-    <Container maxWidth="lg">
-      <FilterSection
-        filtersExpanded={filtersExpanded}
-        onSubmit={handleSearchSubmit}
-        setFiltersExpanded={setFiltersExpanded}
-        type={TYPES_BY_TAB_VALUE[tabValue]}
-        customSearchBarLabels={customSearchBarLabels}
-      />
-      <Tabs
-        variant={isNarrowScreen ? "fullWidth" : "standard"}
-        value={tabValue}
-        onChange={handleTabChange}
-        indicatorColor="primary"
-        textColor="primary"
-        centered={true}
-      >
-        {TYPES_BY_TAB_VALUE.map((t, index) => (
-          <Tab label={capitalizeFirstLetter(t)} className={classes.tab} key={index} />
-        ))}
-      </Tabs>
+    <LoadingContext.Provider
+      value={{
+        spinning: isFetchingMoreData || isFiltering,
+      }}
+    >
+      <Container maxWidth="lg">
+        <FilterSection
+          filtersExpanded={filtersExpanded}
+          onSubmit={handleSearchSubmit}
+          setFiltersExpanded={setFiltersExpanded}
+          type={TYPES_BY_TAB_VALUE[tabValue]}
+          customSearchBarLabels={customSearchBarLabels}
+        />
+        <Tabs
+          variant={isNarrowScreen ? "fullWidth" : "standard"}
+          value={tabValue}
+          onChange={handleTabChange}
+          indicatorColor="primary"
+          textColor="primary"
+          centered={true}
+        >
+          {TYPES_BY_TAB_VALUE.map((t, index) => (
+            <Tab label={capitalizeFirstLetter(t)} className={classes.tab} key={index} />
+          ))}
+        </Tabs>
 
-      <Divider className={classes.mainContentDivider} />
+        <Divider className={classes.mainContentDivider} />
 
-      <TabContent value={tabValue} index={0}>
-        {filtersExpanded && tabValue === 0 && (
-          <FilterContent
-            className={classes.tabContent}
-            type={TYPES_BY_TAB_VALUE[0]}
-            applyFilters={handleApplyNewFilters}
-            filtersExpanded={filtersExpanded}
-            unexpandFilters={unexpandFilters}
-            possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[0], filterChoices)}
-          />
-        )}
-        {state && state.items && state.items.projects && state.items.projects.length ? (
-          <ProjectPreviews
-            projects={state.items.projects}
-            loadFunc={loadMoreProjects}
-            hasMore={state.hasMore.projects}
-            parentHandlesGridItems
-            className={classes.itemsContainer}
-          />
-        ) : (
-          <NoItemsFound type="organizations" />
-        )}
-      </TabContent>
-      <TabContent value={tabValue} index={1} className={classes.tabContent}>
-        {filtersExpanded && tabValue === 1 && (
-          <FilterContent
-            className={classes.tabContent}
-            type={TYPES_BY_TAB_VALUE[1]}
-            applyFilters={handleApplyNewFilters}
-            filtersExpanded={filtersExpanded}
-            unexpandFilters={unexpandFilters}
-            possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[1], filterChoices)}
-          />
-        )}
-        {state && state.items && state.items.organizations && state.items.organizations.length ? (
-          <OrganizationPreviews
-            organizations={state.items.organizations}
-            loadFunc={loadMoreOrganizations}
-            hasMore={state.hasMore.organizations}
-            showOrganizationType
-            parentHandlesGridItems
-          />
-        ) : (
-          <NoItemsFound type="organizations" />
-        )}
-      </TabContent>
-      {!hideMembers && (
-        <TabContent value={tabValue} index={2} className={classes.tabContent}>
-          {filtersExpanded && tabValue === 2 && (
-            <FilterContent
-              className={classes.tabContent}
-              type={TYPES_BY_TAB_VALUE[2]}
-              applyFilters={handleApplyNewFilters}
-              filtersExpanded={filtersExpanded}
-              unexpandFilters={unexpandFilters}
-              possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[2], filterChoices)}
-            />
+        <>
+          <TabContent value={tabValue} index={0}>
+            {filtersExpanded && tabValue === 0 && (
+              <FilterContent
+                className={classes.tabContent}
+                type={TYPES_BY_TAB_VALUE[0]}
+                applyFilters={handleApplyNewFilters}
+                filtersExpanded={filtersExpanded}
+                unexpandFilters={unexpandFilters}
+                possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[0], filterChoices)}
+              />
+            )}
+            {/*
+              We have two loading spinner states: filtering, and fetching more data.
+              When filtering, the spinner replaces the Previews components.
+              When fetching more data, the spinner appears under the last row of the Previews components.
+              Render the not found page if the object came back empty.
+            */}
+            {isFiltering ? (
+              <LoadingSpinner />
+            ) : state?.items?.projects?.length ? (
+              <ProjectPreviews
+                className={classes.itemsContainer}
+                hasMore={state.hasMore.projects}
+                loadFunc={loadMoreProjects}
+                parentHandlesGridItems
+                projects={state.items.projects}
+              />
+            ) : (
+              <NoItemsFound type="projects" />
+            )}
+          </TabContent>
+          <TabContent value={tabValue} index={1} className={classes.tabContent}>
+            {filtersExpanded && tabValue === 1 && (
+              <FilterContent
+                className={classes.tabContent}
+                type={TYPES_BY_TAB_VALUE[1]}
+                applyFilters={handleApplyNewFilters}
+                filtersExpanded={filtersExpanded}
+                unexpandFilters={unexpandFilters}
+                possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[1], filterChoices)}
+              />
+            )}
+
+            {/*
+              We have two loading spinner states: filtering, and fetching more data.
+              When filtering, the spinner replaces the Previews components.
+              When fetching more data, the spinner appears under the last row of the Previews components.
+              Render the not found page if the object came back empty.
+            */}
+            {isFiltering ? (
+              <LoadingSpinner />
+            ) : state?.items?.organizations?.length ? (
+              <OrganizationPreviews
+                hasMore={state.hasMore.organizations}
+                loadFunc={loadMoreOrganizations}
+                organizations={state.items.organizations}
+                parentHandlesGridItems
+                showOrganizationType
+              />
+            ) : (
+              <NoItemsFound type="organizations" />
+            )}
+          </TabContent>
+
+          {!hideMembers && (
+            <TabContent value={tabValue} index={2} className={classes.tabContent}>
+              {filtersExpanded && tabValue === 2 && (
+                <FilterContent
+                  className={classes.tabContent}
+                  type={TYPES_BY_TAB_VALUE[2]}
+                  applyFilters={handleApplyNewFilters}
+                  filtersExpanded={filtersExpanded}
+                  unexpandFilters={unexpandFilters}
+                  possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[2], filterChoices)}
+                />
+              )}
+
+              {/*
+                We have two loading spinner states: filtering, and fetching more data.
+                When filtering, the spinner replaces the Previews components.
+                When fetching more data, the spinner appears under the last row of the Previews components.
+                Render the not found page if the object came back empty.
+              */}
+              {isFiltering ? (
+                <LoadingSpinner />
+              ) : state?.items?.members?.length ? (
+                <ProfilePreviews
+                  hasMore={state.hasMore.members}
+                  loadFunc={loadMoreMembers}
+                  parentHandlesGridItems
+                  profiles={state.items.members}
+                  showAdditionalInfo
+                />
+              ) : (
+                <NoItemsFound type="members" />
+              )}
+            </TabContent>
           )}
-          {state && state.items && state.items.members && state.items.members.length ? (
-            <ProfilePreviews
-              profiles={state.items.members}
-              loadFunc={loadMoreMembers}
-              hasMore={state.hasMore.members}
-              showAdditionalInfo
-              parentHandlesGridItems
-            />
-          ) : (
-            <NoItemsFound type="members" />
-          )}
-        </TabContent>
-      )}
-    </Container>
+        </>
+      </Container>
+    </LoadingContext.Provider>
   );
 }
 

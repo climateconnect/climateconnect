@@ -216,7 +216,6 @@ const getLinks = (path_to_redirect) => [
     iconForDrawer: AccountCircleIcon,
     isOutlinedInHeader: true,
     onlyShowLoggedOut: true,
-    alwaysDisplayDirectly: true,
   },
   {
     href: "/signup",
@@ -224,6 +223,7 @@ const getLinks = (path_to_redirect) => [
     iconForDrawer: AccountCircleIcon,
     isOutlinedInHeader: true,
     onlyShowLoggedOut: true,
+    alwaysDisplayDirectly: true,
   },
 ];
 

@@ -153,11 +153,11 @@ export default function Hub({
   };
 
   return (
-    <WideLayout header={headline} fixedHeader headerBackground="#FFF">
+    <WideLayout title={headline + " | Climate Connect"} fixedHeader headerBackground="#FFF">
       <div className={classes.contentUnderHeader}>
         <NavigationSubHeader hubName={name} />
         {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
-        <HubHeaderImage image={getImageUrl(image)} source={image_attribution}/>
+        <HubHeaderImage image={getImageUrl(image)} source={image_attribution} />
         <HubContent
           headline={headline}
           quickInfo={quickInfo}
