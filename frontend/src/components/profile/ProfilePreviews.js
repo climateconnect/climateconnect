@@ -6,8 +6,6 @@ import InfiniteScroll from "react-infinite-scroller";
 import LoadingSpinner from "../general/LoadingSpinner";
 import ProfilePreview from "./ProfilePreview";
 
-import ProfilePreview from "./ProfilePreview";
-
 const useStyles = makeStyles({
   reset: {
     margin: 0,
