@@ -76,6 +76,17 @@ python manage.py test <file_path> or <file_path + class_name>
 3. Add a `.env` file for frontend environment variables. You can find variables you need to set in [`/frontend/next.config.js/`](https://github.com/climateconnect/climateconnect/blob/master/frontend/next.config.js)
 4. `yarn dev` to start developing
 
+#### Testing
+
+We use Jest as our testing framework write to tests for the FE code. Write
+test files with `.test.js` and execute them directly with
+
+```sh
+yarn jest path/to/testfile.test.js
+```
+
+See npm scripts in `package.json`.
+
 ## To Deploy
 
 ### Frontend

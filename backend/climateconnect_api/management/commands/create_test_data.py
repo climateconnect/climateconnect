@@ -141,7 +141,7 @@ def create_project_test_data(number_of_rows: int):
             # fixing a bug around the "timeago" utility, where
             # timeago would round up to 2 years, when a project
             # is only 1 year and 1 day old:
-            over_a_year_ago = timezone.now() - timezone.timedelta(days = 366)
+            over_a_year_ago = timezone.now() - timezone.timedelta(days = 200)
 
             project = Project.objects.create(
                 name=name,

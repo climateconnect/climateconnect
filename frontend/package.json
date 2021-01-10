@@ -11,7 +11,8 @@
     "gcp-build": "IS_BUILDING_ON_GOOGLE_CLOUD=1 yarn build",
     "lint": "eslint .",
     "pretest": "yarn run lint",
-    "start": "NODE_ENV=production node server.js"
+    "start": "NODE_ENV=production node server.js",
+    "test": "jest"
   },
   "jest": {
     "setupFiles": [
