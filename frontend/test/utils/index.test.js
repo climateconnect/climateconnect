@@ -14,8 +14,8 @@ describe.only("utils", () => {
       );
     });
 
-    it("should return undefined for dates that aren't over a year", () => {
-      expect(yearAndDayFormatter(0, "weeks")).toBeUndefined();
+    it("should use the defaultFormatter logic for dates not over a year", () => {
+      expect(yearAndDayFormatter(1, "week", "ago")).toBe("1 week ago");
     });
   });
 });

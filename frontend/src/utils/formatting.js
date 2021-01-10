@@ -13,20 +13,28 @@
  * See more on the formatting options, here:
  * https://github.com/nmn/react-timeago#formatter-optional
  */
-const yearAndDayFormatter = (unit, value, suffix, epochMiliseconds) => {
-  if (value === "year") {
+const yearAndDayFormatter = (value, unit, suffix, epochMiliseconds) => {
+  if (unit === "year") {
     // The days calculation comes directly from react-timeago:
     const days = Math.round(Math.abs(epochMiliseconds - Date.now()) / (1000 * 60 * 60 * 24));
 
     // With the number of days, we can just append the remaining
     // days after taking into account the year overflow
-    const dayAfterYears = days % (365 * unit);
+    const dayAfterYears = days % (365 * value);
     const pluralizeDays = (days) => {
       return days !== 1 ? "days" : "day";
     };
 
-    return `${unit} ${value} and ${dayAfterYears} ${pluralizeDays(dayAfterYears)} ago`;
+    return `${value} ${unit} and ${dayAfterYears} ${pluralizeDays(dayAfterYears)} ago`;
   }
+
+  // Otherwise, just default. This logic comes from:
+  // https://github.com/nmn/react-timeago/blob/master/src/defaultFormatter.js
+  if (value !== 1) {
+    unit += "s";
+  }
+
+  return `${value} ${unit} ${suffix}`;
 };
 
 export { yearAndDayFormatter };
