@@ -17,7 +17,7 @@ import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import { getDateTime } from "../../../../public/lib/dateOperations";
 import ChatTitle from "./ChatTitle";
 import MobileChatPreview from "./MobileChatPreview";
-import LoadingSpinner from "../general/LoadingSpinner";
+import LoadingSpinner from "../../general/LoadingSpinner";
 
 const useStyles = makeStyles((theme) => {
   return {
