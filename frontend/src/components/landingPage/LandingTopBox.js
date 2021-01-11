@@ -17,11 +17,11 @@ const useStyles = makeStyles((theme) => ({
       backgroundPosition: "0px -9vw",
     },
     [theme.breakpoints.down("sm")]: {
-      backgroundPosition: "0px -6vw"
+      backgroundPosition: "0px -6vw",
     },
     [theme.breakpoints.down("xs")]: {
       backgroundSize: "cover",
-      backgroundPosition: "0px 0px"
+      backgroundPosition: "0px 0px",
     },
   },
   img: {
