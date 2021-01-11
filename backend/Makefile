@@ -31,4 +31,4 @@ migrate:
 migrations: migrate
 
 test-data:
-	python manage.py create_test_data --number_of_rows 60
+	python manage.py create_test_data --number_of_rows 4
