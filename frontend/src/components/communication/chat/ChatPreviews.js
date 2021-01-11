@@ -7,9 +7,7 @@ import {
   Divider,
   Badge,
   Typography,
-  useMediaQuery,
-  Grid,
-  CircularProgress,
+  useMediaQuery
 } from "@material-ui/core";
 import Truncate from "react-truncate";
 import { makeStyles } from "@material-ui/core/styles";
@@ -19,7 +17,7 @@ import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import { getDateTime } from "../../../../public/lib/dateOperations";
 import ChatTitle from "./ChatTitle";
 import MobileChatPreview from "./MobileChatPreview";
-import LoadingSpinner from "../general/LoadingSpinner";
+import LoadingSpinner from "../../general/LoadingSpinner";
 
 const useStyles = makeStyles((theme) => {
   return {
