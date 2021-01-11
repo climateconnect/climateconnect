@@ -8,8 +8,6 @@ import {
   Badge,
   Typography,
   useMediaQuery,
-  Grid,
-  CircularProgress,
 } from "@material-ui/core";
 import Truncate from "react-truncate";
 import { makeStyles } from "@material-ui/core/styles";

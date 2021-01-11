@@ -7,10 +7,11 @@
     "deploy": "yarn build && yarn export",
     "dev": "next dev",
     "export": "next export",
+    "fix-lint": "eslint . --fix",
     "format": "prettier --write '**/*.{js,jsx,json,md}'",
     "gcp-build": "IS_BUILDING_ON_GOOGLE_CLOUD=1 yarn build",
     "lint": "eslint .",
-    "pretest": "yarn run lint",
+    "pretest": "yarn lint",
     "start": "NODE_ENV=production node server.js",
     "test": "jest"
   },
