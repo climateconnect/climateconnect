@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 import { ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import theme from "../src/themes/theme";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import NextCookies from "next-cookies";
-import UserContext from "../src/components/context/UserContext";
 import ReactGA from "react-ga";
+
+import theme from "../src/themes/theme";
+import UserContext from "../src/components/context/UserContext";
 
 //add global styles
 import "react-multi-carousel/lib/styles.css";
@@ -43,7 +44,7 @@ export default function MyApp({
         anonymizeIp: true,
       },
     });
-    ReactGA.pageview(!!pathName ? pathName : "/");
+    ReactGA.pageview(pathName ? pathName : "/");
     setGaInitialized(true);
   }
 

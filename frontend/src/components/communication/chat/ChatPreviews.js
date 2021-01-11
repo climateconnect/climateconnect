@@ -7,17 +7,17 @@ import {
   Divider,
   Badge,
   Typography,
-  useMediaQuery,
-  Grid,
-  CircularProgress,
+  useMediaQuery
 } from "@material-ui/core";
 import Truncate from "react-truncate";
 import { makeStyles } from "@material-ui/core/styles";
+import InfiniteScroll from "react-infinite-scroller";
+
 import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import { getDateTime } from "../../../../public/lib/dateOperations";
 import ChatTitle from "./ChatTitle";
 import MobileChatPreview from "./MobileChatPreview";
-import InfiniteScroll from "react-infinite-scroller";
+import LoadingSpinner from "../../general/LoadingSpinner";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -58,9 +58,6 @@ const useStyles = makeStyles((theme) => {
     listItem: {
       display: "flex",
     },
-    spinner: {
-      marginTop: "48px",
-    },
   };
 });
 
@@ -88,14 +85,6 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
       </>
     );
 
-  const loadingSpinner = () => {
-    return isLoading ? (
-      <Grid container justify="center">
-        <CircularProgress className={classes.spinner} />
-      </Grid>
-    ) : null;
-  };
-
   return (
     <InfiniteScroll
       pageStart={1}
@@ -111,7 +100,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
           chat={chat}
         />
       ))}
-      {loadingSpinner()}
+      <LoadingSpinner />
     </InfiniteScroll>
   );
 }

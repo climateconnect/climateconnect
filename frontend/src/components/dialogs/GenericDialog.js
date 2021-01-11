@@ -1,7 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
+
 import { Dialog, DialogTitle, Button, IconButton } from "@material-ui/core";
-import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
+import CloseIcon from "@material-ui/icons/Close";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -42,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-//This component should only be used by other "dialog" components
+// This component should only be used by other "dialog" components
 export default function GenericDialog({
   onClose,
   open,
@@ -71,7 +72,7 @@ export default function GenericDialog({
       <DialogTitle>
         {onClose ? (
           <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-            <KeyboardBackspaceIcon />
+            <CloseIcon />
           </IconButton>
         ) : null}
         <span className={classes.titleText}>{title}</span>
@@ -94,10 +95,10 @@ export default function GenericDialog({
 }
 
 GenericDialog.propTypes = {
+  applyText: PropTypes.string,
+  onApply: PropTypes.func,
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   title: PropTypes.string.isRequired,
   useApplyButton: PropTypes.bool,
-  onApply: PropTypes.func,
-  applyText: PropTypes.string,
 };
