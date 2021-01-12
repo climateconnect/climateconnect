@@ -1,6 +1,6 @@
 from hubs.models.hub import Hub
 from dateutil.parser import parse
-from rest_framework.generics import ListAPIView,RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView,RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.filters import SearchFilter
 from rest_framework.views import APIView
@@ -582,3 +582,37 @@ class ListProjectFollowersView(ListAPIView):
             return None
         followers = ProjectFollower.objects.filter(project=project[0])
         return followers
+
+
+
+class LeaveProject(RetrieveUpdateAPIView):
+    """
+    A view that enables a user to unsubscribe from a project
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        required_params = [
+            'project_id'
+        ]
+        for param in required_params:
+            if param not in request.data:
+                raise ValidationError('Required parameter is missing') 
+
+
+        try:
+            record = ProjectMember.objects.get(user=self.request.user,project=request.data['project_id'])
+            record.is_active = False
+            record.save()
+            return Response(data={'message':f'Unsubscribe from project successfully'}, status=status.HTTP_200_OK)
+
+        except ProjectMember.DoesNotExist:
+            return Response(data={'message':f'User and/or Project not found '}, status=status.HTTP_404_NOT_FOUND) 
+
+        except ProjectMember.MultipleObjectsReturned: 
+            #Multiple records for the same user/ project id. Duplicate records. 
+            #TODO: Implement a signal to send dev a message 
+            return Response(data={'message':f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+        except Exception as E:
+            E
+            return Response(data={'message':f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
