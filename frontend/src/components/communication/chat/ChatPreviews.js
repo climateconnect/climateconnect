@@ -7,7 +7,7 @@ import {
   Divider,
   Badge,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import Truncate from "react-truncate";
 import { makeStyles } from "@material-ui/core/styles";
