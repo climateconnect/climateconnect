@@ -50,7 +50,8 @@ export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridIt
         className={classes.reset}
         component="ul"
         container
-        // TODO: fix this element; InfiniteScroll is throwing a React error
+        // TODO: fix this: InfiniteScroll is throwing a React error:
+        // Failed prop type: Invalid prop `element` supplied to `InfiniteScroll`, expected a ReactNode.
         element={Grid}
         // We block subsequent invocations from InfinteScroll until we update local state
         hasMore={hasMore && !isFetchingMore}
