@@ -19,11 +19,17 @@ const useStyles = makeStyles({
 // This component is for display projects with the option to infinitely scroll to get more projects
 export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridItems, projects }) {
   const classes = useStyles();
-  const toProjectPreviews = (projects) =>
-    projects.map((p) => <GridItem key={p.url_slug} project={p} />);
+
+  const toProjectPreviews = (projects) => {
+    if (!projects) {
+      return null;
+    }
+
+    return projects.map((p) => <GridItem key={p.url_slug} project={p} />);
+  };
 
   const [gridItems, setGridItems] = useState(toProjectPreviews(projects));
-  const [isFetchingMore, setIsFetchingMore] = React.useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   if (!loadFunc) {
     hasMore = false;
@@ -55,7 +61,6 @@ export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridIt
         element={Grid}
         // We block subsequent invocations from InfinteScroll until we update local state
         hasMore={hasMore && !isFetchingMore}
-        loader={<LoadingSpinner isLoading key="project-previews-spinner" />}
         loadMore={loadMore}
         pageStart={1}
         spacing={2}
@@ -66,6 +71,7 @@ export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridIt
             : "No projects found."
           : gridItems}
       </InfiniteScroll>
+      {isFetchingMore && <LoadingSpinner isLoading key="project-previews-spinner" />}
     </>
   );
 }

@@ -144,7 +144,17 @@ const MadeWithLoveForEarth = () => {
   return (
     <div className={classes.madeWith}>
       Made with <FavoriteIcon className={classes.heart} /> for{" "}
-      <img className={classes.earth} src="/images/earth.svg" alt="Picture of our earth" />
+      <img
+        className={classes.earth}
+        // Always include a height and width on image elements
+        // when possible, to rely on default browser UA stylesheets
+        // to set the aspect ratio. This minimizes layout shift:
+        // https://web.dev/optimize-cls/#modern-best-practice
+        width="20"
+        height="20"
+        src="/images/earth.svg"
+        alt="Picture of our earth"
+      />
     </div>
   );
 };

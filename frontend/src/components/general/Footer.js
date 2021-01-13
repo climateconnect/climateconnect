@@ -123,8 +123,18 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
         </Box>
         {!isNarrowScreen && (
           <Box component="span" className={classes.centerText}>
-            Made with <FavoriteIcon className={classes.heart} /> for{" "}
-            <img className={classes.earth} src="/images/earth.svg" alt="Picture of our earth" />
+            Made with <FavoriteIcon width="20" height="20" className={classes.heart} /> for{" "}
+            <img
+              alt="Picture of our earth"
+              className={classes.earth}
+              src="/images/earth.svg"
+              // Always include a height and width on image elements
+              // when possible, to rely on default browser UA stylesheets
+              // to set the aspect ratio. This minimizes layout shift:
+              // https://web.dev/optimize-cls/#modern-best-practice
+              height="20"
+              width="20"
+            />
           </Box>
         )}
         <Box component="span" className={classes.rightBox}>
