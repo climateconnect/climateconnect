@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Box, useMediaQuery, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GitHubIcon from "@material-ui/icons/GitHub";
@@ -8,14 +7,13 @@ import InstagramIcon from "@material-ui/icons/Instagram";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import FavoriteIcon from "@material-ui/icons/Favorite";
-
 import LargeFooter from "../footer/LargeFooter";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
     height: theme.spacing(8),
-    borderTop: `1px solid ${theme.palette.grey[100]}`,
+    borderTop: `1px solid ${theme.palette.grey[300]}`,
     width: "100%",
   },
   absolutePosition: {
@@ -53,12 +51,7 @@ const useStyles = makeStyles((theme) => ({
     height: 20,
     marginLeft: theme.spacing(1),
     color: "inherit",
-
-    "&:hover": {
-      color: theme.palette.primary.main,
-    },
   },
-
   inheritColor: {
     color: "inherit",
   },

@@ -1,6 +1,6 @@
 import { createMuiTheme } from "@material-ui/core/styles";
 
-// Create core theme so we can access spacing etc. when customizing components
+//Create core theme so we can access spacing etc. when customizing components
 const coreTheme = createMuiTheme({
   palette: {
     primary: {

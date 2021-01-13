@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
+
+import ProjectPreview from "./ProjectPreview";
 
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import InfiniteScroll from "react-infinite-scroller";
 
-import ProjectPreview from "./ProjectPreview";
-import LoadingSpinner from "../general/LoadingSpinner";
+import InfiniteScroll from "react-infinite-scroller";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles({
   reset: {
@@ -14,59 +15,59 @@ const useStyles = makeStyles({
     listStyleType: "none",
     width: "100%",
   },
+  spinner: {
+    marginTop: "48px",
+  },
 });
 
 // This component is for display projects with the option to infinitely scroll to get more projects
-export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridItems, projects }) {
+export default function ProjectPreviews({ projects, loadFunc, hasMore, parentHandlesGridItems }) {
   const classes = useStyles();
   const toProjectPreviews = (projects) =>
     projects.map((p) => <GridItem key={p.url_slug} project={p} />);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [gridItems, setGridItems] = React.useState(toProjectPreviews(projects));
 
-  const [gridItems, setGridItems] = useState(toProjectPreviews(projects));
-  const [isFetchingMore, setIsFetchingMore] = React.useState(false);
-
-  if (!loadFunc) {
-    hasMore = false;
-  }
-
+  if (!loadFunc) hasMore = false;
   const loadMore = async () => {
-    // Sometimes InfiniteScroll calls loadMore twice really fast. Therefore
-    // to improve performance, we aim to guard against subsequent
-    // fetches to the API by maintaining a local state flag.
-    if (!isFetchingMore) {
-      setIsFetchingMore(true);
+    //sometimes InfiniteScroll calls loadMore twice really fast. Therefore we're using isLoading to make sure it doesn't catch 2 pages at once
+    if (!isLoading) {
+      setIsLoading(true);
       const newProjects = await loadFunc();
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toProjectPreviews(newProjects)]);
       }
-      setIsFetchingMore(false);
+      setIsLoading(false);
     }
+  };
+
+  const loadingSpinner = () => {
+    return isLoading ? (
+      <Grid container justify="center">
+        <CircularProgress className={classes.spinner} />
+      </Grid>
+    ) : null;
   };
 
   // TODO: use `project.id` instead of index when using real projects
   return (
-    <>
-      <InfiniteScroll
-        className={classes.reset}
-        component="ul"
-        container
-        // TODO: fix this: InfiniteScroll is throwing a React error:
-        // Failed prop type: Invalid prop `element` supplied to `InfiniteScroll`, expected a ReactNode.
-        element={Grid}
-        // We block subsequent invocations from InfinteScroll until we update local state
-        hasMore={hasMore && !isFetchingMore}
-        loader={<LoadingSpinner isLoading key="project-previews-spinner" />}
-        loadMore={loadMore}
-        pageStart={1}
-        spacing={2}
-      >
-        {parentHandlesGridItems
-          ? projects && projects.length > 0
-            ? toProjectPreviews(projects)
-            : "No projects found."
-          : gridItems}
-      </InfiniteScroll>
-    </>
+    <InfiniteScroll
+      pageStart={1}
+      loadMore={loadMore}
+      hasMore={hasMore && !isLoading}
+      element={Grid}
+      container
+      component="ul"
+      className={classes.reset}
+      spacing={2}
+    >
+      {parentHandlesGridItems
+        ? projects && projects.length > 0
+          ? toProjectPreviews(projects)
+          : "No Results"
+        : gridItems}
+      {loadingSpinner()}
+    </InfiniteScroll>
   );
 }
 

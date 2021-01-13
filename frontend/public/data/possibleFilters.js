@@ -44,7 +44,7 @@ const getMembersFilters = (filterChoices) => [
     type: "openMultiSelectDialogButton",
     key: "skills",
     itemType: "skills",
-    itemsToChooseFrom: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
+    itemsToChooseFrom: filterChoices.skills.map((s) => ({ ...s, key: s.id })),
   },
 ];
 
@@ -69,7 +69,7 @@ const getOrganizationsFilters = (filterChoices) => [
     iconName: "GroupIcon",
     title: "Organization type",
     type: "multiselect",
-    options: filterChoices?.organization_types?.map((t) => ({ ...t, key: t.id })),
+    options: (filterChoices || {}).organization_types.map((t) => ({ ...t, key: t.id })),
     key: "organization_type",
   },
 ];

@@ -38,13 +38,11 @@ export default function Browse({
     if (filters === newFilters) {
       return;
     }
-
     setFilters({ ...filters, [type]: newFilters });
     const newUrlEnding = buildUrlEndingFromFilters(newFilters);
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }
-
     try {
       const filteredItemsObject = await getDataFromServer({
         type: type,
@@ -77,7 +75,6 @@ export default function Browse({
         token: token,
         urlEnding: newSearchQueryParam,
       });
-
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
       }
@@ -122,7 +119,7 @@ export default function Browse({
   return (
     <>
       <WideLayout
-        title="Climate Connect - Global platform for climate change solutions"
+        title="Climate Connect - global platform form climate change solutions"
         hideHeadline
         showOnScrollUp={showOnScrollUp}
         subHeader={<HubsSubHeader hubs={hubs} />}
@@ -225,6 +222,7 @@ async function getDataFromServer({ type, page, token, urlEnding }) {
   try {
     console.log(`Getting data for ${type} at ${url}`);
     const resp = await axios.get(url, tokenConfig(token));
+
     if (resp.data.length === 0) {
       console.log(`No data of type ${type} found...`);
       return null;

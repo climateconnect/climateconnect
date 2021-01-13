@@ -162,7 +162,7 @@ def create_project_test_data(number_of_rows: int):
 
 
 class Command(BaseCommand):
-    help = "Creates test data of user's availability to volunteer to an organization."
+    help = "Creates test data of users availability to volunteer to an organization."
 
     def add_arguments(self, parser) -> None:
         number_of_rows = parser.add_argument("--number_of_rows", dest="number_of_rows", type=int)

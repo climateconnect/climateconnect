@@ -1,9 +1,6 @@
 default: start
 
 start:
-	$(info )
-	$(info -- Starting server --)
-	$(info )
 	python3 manage.py runserver
 
 install:
@@ -13,10 +10,7 @@ test:
 	python3 manage.py test
 
 docker:
-	docker-compose up -d
-	$(info )
-	$(info -- Running Docker in background (detached mode) --)
-	$(info )
+	docker-compose up &
 
 all: docker start
 
@@ -24,9 +18,6 @@ all: docker start
 # database migrations and test data creation
 migrate:
 	python3 manage.py migrate
-
-# just an alias for migrate
-migrations: migrate
 
 test-data:
 	python manage.py create_test_data --number_of_rows 4

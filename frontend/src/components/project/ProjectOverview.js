@@ -167,7 +167,7 @@ function SmallScreenOverview({
           {project.name}
         </Typography>
 
-        <Typography>{project?.shortdescription}</Typography>
+        <Typography>{project.shortdescription}</Typography>
         <div className={classes.projectInfoEl}>
           <Typography>
             <Tooltip title="Location">
@@ -245,7 +245,7 @@ function LargeScreenOverview({
             Summary
           </Typography>
           <Typography component="div">
-            <MessageContent content={project?.shortdescription} />
+            <MessageContent content={project.shortdescription} />
           </Typography>
           <div className={classes.projectInfoEl}>
             <Typography>

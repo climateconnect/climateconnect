@@ -7,7 +7,7 @@ from climateconnect_api.models import (Skill,)
 
 def project_image_path(instance, filename):
     return "projects/{}/{}".format(instance.id, filename)
-
+    
 
 class Project(models.Model):
     name = models.CharField(

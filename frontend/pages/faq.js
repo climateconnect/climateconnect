@@ -1,15 +1,14 @@
 import React from "react";
 import { Typography, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import HeaderImage from "../src/components/staticpages/HeaderImage";
+import WideLayout from "../src/components/layouts/WideLayout";
+import FilterSearchBar from "../src/components/filter/FilterSearchBar";
 import Cookies from "next-cookies";
 import axios from "axios";
-
-import FilteredFaqContent from "../src/components/faq/FilteredFaqContent";
-import FilterSearchBar from "../src/components/filter/FilterSearchBar";
-import HeaderImage from "../src/components/staticpages/HeaderImage";
 import tokenConfig from "../public/config/tokenConfig";
 import UnfilteredFaqContent from "../src/components/faq/UnfilteredFaqContent";
-import WideLayout from "../src/components/layouts/WideLayout";
+import FilteredFaqContent from "../src/components/faq/FilteredFaqContent";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -87,7 +86,7 @@ const useStyles = makeStyles((theme) => {
 
 export default function Faq({ questionsBySection, questions }) {
   const classes = useStyles();
-  // The first section should be the initial tab value
+  //The first section should be the initial tab value
   const [searchValue, setSearchValue] = React.useState("");
 
   const handleSearchBarChange = (type, value) => setSearchValue(value);

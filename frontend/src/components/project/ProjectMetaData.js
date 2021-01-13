@@ -1,12 +1,10 @@
 import React from "react";
-
 import { Box, Tooltip, Typography, Container, Collapse } from "@material-ui/core";
 import PlaceIcon from "@material-ui/icons/Place";
 import { makeStyles } from "@material-ui/core/styles";
-import ExploreIcon from "@material-ui/icons/Explore";
-
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
+import ExploreIcon from "@material-ui/icons/Explore";
 
 const useStyles = makeStyles((theme) => ({
   creatorImage: {
@@ -26,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   categories: (props) => ({
     display: "flex",
     marginTop: theme.spacing(0.5),
-    background: props.hovering ? "#e1e1e147" : "auto",
+    background: props.hovering ? "#E1E1E1" : "auto",
     padding: props.hovering ? theme.spacing(2) : 0,
     paddingTop: props.hovering ? theme.spacing(1) : 0,
     paddingBottom: props.hovering ? theme.spacing(1) : 0,
@@ -54,7 +52,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }) 
   const classes = useStyles({ hovering: hovering });
   const project_parent = project.project_parents[0];
   const main_project_tag = project.tags.map((t) => t.project_tag.name)[0];
-  if (withDescription) {
+  if (withDescription)
     return (
       <WithDescription
         className={classes.WithDescription}
@@ -64,16 +62,15 @@ export default function ProjectMetaData({ project, hovering, withDescription }) 
         main_project_tag={main_project_tag}
       />
     );
-  }
-
-  return (
-    <WithOutDescription
-      className={classes.WithDescription}
-      project_parent={project_parent}
-      project={project}
-      main_project_tag={main_project_tag}
-    />
-  );
+  else
+    return (
+      <WithOutDescription
+        className={classes.WithDescription}
+        project_parent={project_parent}
+        project={project}
+        main_project_tag={main_project_tag}
+      />
+    );
 }
 
 const WithDescription = ({ className, project_parent, hovering, project, main_project_tag }) => {
@@ -102,8 +99,7 @@ const WithDescription = ({ className, project_parent, hovering, project, main_pr
             <PlaceIcon className={classes.cardIcon} />
           </Tooltip>
           <Typography className={classes.metadataText}>{project.location}</Typography>
-          {/* Defer to MUI's best guess on height calculation for timeout: https://material-ui.com/api/collapse/ */}
-          <Collapse in={hovering} timeout="auto">
+          <Collapse in={hovering} timeout={500}>
             <Typography className={classes.shortDescription}>
               {project.short_description}
             </Typography>

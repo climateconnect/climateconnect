@@ -125,6 +125,7 @@ const getQuestionsWithAnswers = async () => {
     const resp = await axios.get(process.env.API_URL + "/api/list_faq/");
     if (resp.data.length === 0) return null;
     else {
+      console.log(resp.data.results);
       return {
         by_section: sortBySection(resp.data.results),
         all: resp.data.results,

@@ -12,9 +12,11 @@ export default function PageNotFound({ itemName }) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <Typography variant="h1">{itemName ? `${itemName} ` : "Page "} not found.</Typography>
+      <Typography variant="h1">{itemName ? itemName + " " : "Page "} not found.</Typography>
       <p>
-        <Link href="/browse">Return to home.</Link>
+        <Link href="/browse">
+          <a>Click here to return to the homepage.</a>
+        </Link>
       </p>
     </div>
   );

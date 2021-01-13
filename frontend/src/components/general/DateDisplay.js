@@ -1,7 +1,6 @@
 import React from "react";
 import { PropTypes } from "prop-types";
 import TimeAgo from "react-timeago";
-
 const ONE_WEEK_IN_MINISECONDS = 1000 * 60 * 60 * 24 * 7;
 
 export default function DateDisplay({ date, className }) {

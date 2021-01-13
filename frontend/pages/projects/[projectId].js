@@ -86,7 +86,6 @@ export default function ProjectPage({ project, members, posts, comments, token, 
       window.removeEventListener("beforeunload", handleWindowClose);
     };
   });
-
   return (
     <WideLayout
       description={project?.shortdescription}

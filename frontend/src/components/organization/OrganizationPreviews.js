@@ -3,8 +3,7 @@ import OrganizationPreview from "./OrganizationPreview";
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfiniteScroll from "react-infinite-scroller";
-
-import LoadingSpinner from "../general/LoadingSpinner";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles({
   reset: {
@@ -13,65 +12,65 @@ const useStyles = makeStyles({
     listStyleType: "none",
     width: "100%",
   },
+  spinner: {
+    marginTop: "48px",
+  },
 });
 
 export default function OrganizationPreviews({
-  hasMore,
-  loadFunc,
   organizations,
-  parentHandlesGridItems,
+  loadFunc,
+  hasMore,
   showOrganizationType,
+  parentHandlesGridItems,
 }) {
-  const classes = useStyles();
-
   const toOrganizationPreviews = (organizations) =>
     organizations.map((o) => (
       <GridItem key={o.url_slug} organization={o} showOrganizationType={showOrganizationType} />
     ));
-
+  const [isLoading, setIsLoading] = React.useState(false);
+  const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(toOrganizationPreviews(organizations));
-  const [isFetchingMore, setIsFetchingMore] = React.useState(false);
 
-  if (!loadFunc) {
-    hasMore = false;
-  }
-
+  if (!loadFunc) hasMore = false;
   const loadMore = async (page) => {
-    // Sometimes InfiniteScroll calls loadMore twice really fast. Therefore
-    // to improve performance, we aim to guard against subsequent
-    // fetches to the API by maintaining a local state flag.
-    if (!isFetchingMore) {
-      setIsFetchingMore(true);
+    if (!isLoading) {
+      setIsLoading(true);
       const newOrganizations = await loadFunc(page);
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toOrganizationPreviews(newOrganizations)]);
       }
-      setIsFetchingMore(false);
+      setIsLoading(false);
     }
+  };
+
+  const loadingSpinner = () => {
+    return isLoading ? (
+      <Grid container justify="center">
+        <CircularProgress className={classes.spinner} />
+      </Grid>
+    ) : null;
   };
 
   // TODO: use `organization.id` instead of index when using real organizations
   return (
-    <>
-      <InfiniteScroll
-        className={`${classes.reset} ${classes.root}`}
-        component="ul"
-        container
-        element={Grid}
-        // We block subsequent invocations from InfinteScroll until we update local state
-        hasMore={hasMore && !isFetchingMore}
-        loader={<LoadingSpinner isLoading key="organization-previews-spinner" />}
-        loadMore={loadMore}
-        pageStart={0}
-        spacing={2}
-      >
-        {parentHandlesGridItems
-          ? organizations && organizations.length > 0
-            ? toOrganizationPreviews(organizations)
-            : "No organizations found. Try changing or removing your filter or search query."
-          : gridItems}
-      </InfiniteScroll>
-    </>
+    <InfiniteScroll
+      pageStart={0}
+      loadMore={loadMore}
+      hasMore={hasMore && !isLoading}
+      element={Grid}
+      container
+      component="ul"
+      className={`${classes.reset} ${classes.root}`}
+      spacing={2}
+    >
+      {parentHandlesGridItems
+        ? organizations && organizations.length > 0
+          ? toOrganizationPreviews(organizations)
+          : "No Results"
+        : gridItems}
+      {loadingSpinner()}
+    </InfiniteScroll>
   );
 }
 
