@@ -9,6 +9,7 @@ from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 
 from django.contrib.auth.models import User
+import traceback
 
 from organization.models import (
     Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging,
@@ -447,7 +448,7 @@ class ListProjectMembersView(ListAPIView):
     def get_queryset(self):
         project = Project.objects.get(url_slug=self.kwargs['url_slug'])
 
-        return project.project_member.all()
+        return project.project_member.filter(is_active=True)
 
 
 class ListProjectTags(ListAPIView):
@@ -594,10 +595,10 @@ class LeaveProject(RetrieveUpdateAPIView):
     def post(self, request, url_slug):
         try:
             project = Project.objects.get(url_slug=url_slug)
-            record = ProjectMember.objects.get(user=self.request.user,project=project)
+            record = ProjectMember.objects.get(user=self.request.user,project=project,is_active=True)
             record.is_active = False
             record.save()
-            return Response(data={'message':f'Unsubscribe from project successfully'}, status=status.HTTP_200_OK)
+            return Response(data={'message':f'Left project {url_slug} successfully'}, status=status.HTTP_200_OK)
 
         except ProjectMember.DoesNotExist:
             return Response(data={'message':f'User and/or Project not found '}, status=status.HTTP_404_NOT_FOUND) 
@@ -606,6 +607,7 @@ class LeaveProject(RetrieveUpdateAPIView):
             #Multiple records for the same user/ project id. Duplicate records. 
             #TODO: Implement a signal to send dev a message 
             return Response(data={'message':f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
-        except Exception as E:
-            E
+        except:
+            ##Send E to dev
+            E = traceback.format_exc()
             return Response(data={'message':f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
