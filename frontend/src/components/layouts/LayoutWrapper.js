@@ -68,7 +68,7 @@ export default function LayoutWrapper({
         <meta name="description" content={description ? description : defaultDescription} />
       </Head>
       {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
-      <ThemeProvider theme={theme || {}}>
+      <ThemeProvider theme={theme}>
         {loading ? (
           <div className={classes.spinnerContainer}>
             <div>
