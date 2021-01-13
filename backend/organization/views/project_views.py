@@ -591,17 +591,10 @@ class LeaveProject(RetrieveUpdateAPIView):
     """
     permission_classes = (IsAuthenticated,)
 
-    def post(self, request):
-        required_params = [
-            'project_id'
-        ]
-        for param in required_params:
-            if param not in request.data:
-                raise ValidationError('Required parameter is missing') 
-
-
+    def post(self, request, url_slug):
         try:
-            record = ProjectMember.objects.get(user=self.request.user,project=request.data['project_id'])
+            project = Project.objects.get(url_slug=url_slug)
+            record = ProjectMember.objects.get(user=self.request.user,project=project)
             record.is_active = False
             record.save()
             return Response(data={'message':f'Unsubscribe from project successfully'}, status=status.HTTP_200_OK)
