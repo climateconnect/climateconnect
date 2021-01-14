@@ -22,24 +22,31 @@ export default function OrganizationPreviews({
   parentHandlesGridItems,
   showOrganizationType,
 }) {
+  const classes = useStyles();
+
   const toOrganizationPreviews = (organizations) =>
     organizations.map((o) => (
       <GridItem key={o.url_slug} organization={o} showOrganizationType={showOrganizationType} />
     ));
 
-  const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(toOrganizationPreviews(organizations));
+  const [isFetchingMore, setIsFetchingMore] = React.useState(false);
 
   if (!loadFunc) {
     hasMore = false;
   }
 
   const loadMore = async (page) => {
-    if (hasMore) {
+    // Sometimes InfiniteScroll calls loadMore twice really fast. Therefore
+    // to improve performance, we aim to guard against subsequent
+    // fetches to the API by maintaining a local state flag.
+    if (!isFetchingMore) {
+      setIsFetchingMore(true);
       const newOrganizations = await loadFunc(page);
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toOrganizationPreviews(newOrganizations)]);
       }
+      setIsFetchingMore(false);
     }
   };
 
@@ -51,7 +58,8 @@ export default function OrganizationPreviews({
         component="ul"
         container
         element={Grid}
-        hasMore={hasMore}
+        // We block subsequent invocations from InfinteScroll until we update local state
+        hasMore={hasMore && !isFetchingMore}
         loader={<LoadingSpinner isLoading key="organization-previews-spinner" />}
         loadMore={loadMore}
         pageStart={0}

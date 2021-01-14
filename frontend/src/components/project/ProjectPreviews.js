@@ -23,6 +23,7 @@ export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridIt
     projects.map((p) => <GridItem key={p.url_slug} project={p} />);
 
   const [gridItems, setGridItems] = useState(toProjectPreviews(projects));
+  const [isFetchingMore, setIsFetchingMore] = React.useState(false);
 
   if (!loadFunc) {
     hasMore = false;
@@ -30,12 +31,15 @@ export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridIt
 
   const loadMore = async () => {
     // Sometimes InfiniteScroll calls loadMore twice really fast. Therefore
-    // we're aiming to cache to improve performance
-    if (hasMore) {
+    // to improve performance, we aim to guard against subsequent
+    // fetches to the API by maintaining a local state flag.
+    if (!isFetchingMore) {
+      setIsFetchingMore(true);
       const newProjects = await loadFunc();
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toProjectPreviews(newProjects)]);
       }
+      setIsFetchingMore(false);
     }
   };
 
@@ -46,8 +50,11 @@ export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridIt
         className={classes.reset}
         component="ul"
         container
+        // TODO: fix this: InfiniteScroll is throwing a React error:
+        // Failed prop type: Invalid prop `element` supplied to `InfiniteScroll`, expected a ReactNode.
         element={Grid}
-        hasMore={hasMore}
+        // We block subsequent invocations from InfinteScroll until we update local state
+        hasMore={hasMore && !isFetchingMore}
         loader={<LoadingSpinner isLoading key="project-previews-spinner" />}
         loadMore={loadMore}
         pageStart={1}
