@@ -104,7 +104,7 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
   const [overlayOpen, setOverlayOpen] = React.useState(false);
   return (
-    <WideLayout title="Your donation counts" isStaticPage noSpaceBottom noFeedbackButton>
+    <WideLayout title="Your Donation Counts" isStaticPage noSpaceBottom noFeedbackButton>
       <div className={classes.root}>
         {isLargeScreen ? (
           <FloatingWidget
