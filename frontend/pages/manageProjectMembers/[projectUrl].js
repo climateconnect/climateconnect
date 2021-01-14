@@ -35,13 +35,13 @@ export default function manageProjectMembers({
   );
   if (!user)
     return (
-      <WideLayout title="Please log in to manage the members of this project" hideHeadline={true}>
+      <WideLayout title="Please Log In to Manage the Members of this Climate Solution" hideHeadline={true}>
         <LoginNudge fullPage whatToDo="manage the members of this project" />
       </WideLayout>
     );
   else if (!members.find((m) => m.id === user.id))
     return (
-      <WideLayout title="Please log in to manage the members of an project" hideHeadline={true}>
+      <WideLayout title="Please Log In to Manage the Members of an Climate Solution" hideHeadline={true}>
         <Typography variant="h4" color="primary" className={classes.headline}>
           You are not a member of this project. Go to{" "}
           <a href={"/projects/" + project.url_slug}>the project page</a> and click join to join it.
@@ -53,7 +53,7 @@ export default function manageProjectMembers({
     members.find((m) => m.id === user.id).role.name != "Administrator"
   )
     return (
-      <WideLayout title="No permission to manage members of this project" hideHeadline={true}>
+      <WideLayout title="No Permission to Manage Members of this Climate Solution" hideHeadline={true}>
         <Typography variant="h4" color="primary" className={classes.headline}>
           You need to be an administrator of the project to manage project members.
         </Typography>
@@ -61,7 +61,7 @@ export default function manageProjectMembers({
     );
   else {
     return (
-      <Layout title="Manage project's members" hideHeadline>
+      <Layout title="Manage Solution Members" hideHeadline>
         <ManageProjectMembers
           user={user}
           members={members}

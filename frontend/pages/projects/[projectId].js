@@ -92,7 +92,7 @@ export default function ProjectPage({ project, members, posts, comments, token, 
       description={project?.shortdescription}
       message={message?.message}
       messageType={message?.messageType}
-      title={project ? project.name : "Project not found"}
+      title={project ? project.name : "Solution Not Found"}
     >
       {project ? (
         <ProjectLayout

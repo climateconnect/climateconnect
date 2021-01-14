@@ -53,13 +53,13 @@ export default function EditProjectPage({
 
   if (!user)
     return (
-      <WideLayout title="Please log in to edit this project" hideHeadline={true}>
+      <WideLayout title="Please Log In to Edit this Climate Solution" hideHeadline={true}>
         <LoginNudge fullPage whatToDo="edit this project" />
       </WideLayout>
     );
   else if (!project)
     return (
-      <Layout className={classes.root} title="Project not found">
+      <Layout className={classes.root} title="Project not Found">
         <Typography className={classes.errorTitle} variant="h3">
           This project does not exist. <Link href="/share">Click here</Link> to create a project
         </Typography>
@@ -67,7 +67,7 @@ export default function EditProjectPage({
     );
   else if (!members.find((m) => m.user && m.user.id === user.id))
     return (
-      <WideLayout title="Please log in to edit an project" hideHeadline={true}>
+      <WideLayout title="Please Log In to Edit a Climate Solution" hideHeadline={true}>
         <Typography variant="h4" color="primary" className={classes.errorTitle}>
           You are not a member of this project. Go to{" "}
           <a href={"/projects/" + project.url_slug}>the project page</a> and ask to be part of the
@@ -80,7 +80,7 @@ export default function EditProjectPage({
     members.find((m) => m.user && m.user.id === user.id).role.name != "Administrator"
   )
     return (
-      <WideLayout title="No permission to edit this project" hideHeadline={true}>
+      <WideLayout title="No Permission to Edit this Climate Solution" hideHeadline={true}>
         <Typography variant="h4" color="primary" cclassName={classes.errorTitle}>
           You need to be an administrator of the project to manage the team.
         </Typography>
@@ -89,7 +89,7 @@ export default function EditProjectPage({
   else {
     const user_role = members.find((m) => m.user && m.user.id === user.id).role;
     return (
-      <WideLayout className={classes.root} title={"Edit project " + project.name} hideHeadline>
+      <WideLayout className={classes.root} title={"Edit Solution " + project.name} hideHeadline>
         <EditProjectRoot
           oldProject={project}
           project={curProject}

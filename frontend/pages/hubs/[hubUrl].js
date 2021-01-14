@@ -153,7 +153,7 @@ export default function Hub({
   };
 
   return (
-    <WideLayout title={headline + " | Climate Connect"} fixedHeader headerBackground="#FFF">
+    <WideLayout title={headline} fixedHeader headerBackground="#FFF">
       <div className={classes.contentUnderHeader}>
         <NavigationSubHeader hubName={name} />
         {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
