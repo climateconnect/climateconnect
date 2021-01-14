@@ -62,7 +62,8 @@ LIBRARY_APPS = [
     'knox',
     'corsheaders',
     'channels',
-    'django_filters'
+    'django_filters',
+    'django.contrib.gis'
 ]
 
 INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
