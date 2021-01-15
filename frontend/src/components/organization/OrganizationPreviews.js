@@ -60,7 +60,6 @@ export default function OrganizationPreviews({
         element={Grid}
         // We block subsequent invocations from InfinteScroll until we update local state
         hasMore={hasMore && !isFetchingMore}
-        loader={<LoadingSpinner isLoading key="organization-previews-spinner" />}
         loadMore={loadMore}
         pageStart={0}
         spacing={2}
@@ -70,6 +69,7 @@ export default function OrganizationPreviews({
             ? toOrganizationPreviews(organizations)
             : "No organizations found. Try changing or removing your filter or search query."
           : gridItems}
+        {isFetchingMore && <LoadingSpinner isLoading key="organization-previews-spinner" />}
       </InfiniteScroll>
     </>
   );

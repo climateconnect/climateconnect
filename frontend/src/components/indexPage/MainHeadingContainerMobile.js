@@ -178,7 +178,7 @@ export default function MainHeadingContainerMobile() {
         arrows={false}
         infinite={true}
         autoPlay={true}
-        autoPlaySpeed={7000}
+        autoPlaySpeed={5000}
       >
         {carouselContent.map((c, index) => (
           <div key={index}>
