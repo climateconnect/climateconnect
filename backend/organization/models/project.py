@@ -1,3 +1,4 @@
+from location.models import Location
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
@@ -118,18 +119,12 @@ class Project(models.Model):
         blank=True
     )
 
-    latitude = models.CharField(
-        help_text="Latitude of project's location",
-        verbose_name="Latitude",
-        max_length=512,
-        null=True,
-        blank=True
-    )
-
-    longitude = models.CharField(
-        help_text="Longitude of project's location",
-        verbose_name="Longitude",
-        max_length=512,
+    loc = models.ForeignKey(
+        Location,
+        help_text="Points to the project's location",
+        verbose_name="Location",
+        related_name="project_location",
+        on_delete=models.CASCADE,
         null=True,
         blank=True
     )
