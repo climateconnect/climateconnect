@@ -13,9 +13,8 @@ import UploadImageDialog from "../dialogs/UploadImageDialog";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
-import SelectField from "../general/SelectField";
-import countries from "./../../../public/data/countries.json";
 import LocationSearchBar from "../search/LocationSearchBar";
+import { getNameFromLocation } from "../../../public/lib/locationOperations";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -82,6 +81,9 @@ export default function EditProjectOverview({
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
   };
+  const handleChangeMultipleProjectValues = ( newValues ) => {
+    handleSetProject({...project, ...newValues})
+  }
   const handleChangeImage = (newImage, newThumbnailImage) => {
     handleSetProject({
       ...project,
@@ -97,6 +99,7 @@ export default function EditProjectOverview({
           handleChangeProject={handleChangeProject}
           handleChangeImage={handleChangeImage}
           tagsOptions={tagsOptions}
+          handleChangeMultipleProjectValues={handleChangeMultipleProjectValues}
         />
       ) : (
         <LargeScreenOverview
@@ -104,13 +107,14 @@ export default function EditProjectOverview({
           handleChangeProject={handleChangeProject}
           handleChangeImage={handleChangeImage}
           tagsOptions={tagsOptions}
+          handleChangeMultipleProjectValues={handleChangeMultipleProjectValues}
         />
       )}
     </Container>
   );
 }
 
-function SmallScreenOverview({ project, handleChangeProject, handleChangeImage, tagsOptions }) {
+function SmallScreenOverview({ project, handleChangeProject, handleChangeImage, tagsOptions, handleChangeMultipleProjectValues }) {
   const classes = useStyles();
   return (
     <>
@@ -118,7 +122,7 @@ function SmallScreenOverview({ project, handleChangeProject, handleChangeImage, 
       <div className={classes.blockProjectInfo}>
         <InputName project={project} screenSize="small" />
         <InputShortDescription project={project} handleChangeProject={handleChangeProject} />
-        <InputLocation project={project} handleChangeProject={handleChangeProject} />
+        <InputLocation project={project} handleChangeProject={handleChangeProject} handleChangeMultipleProjectValues={handleChangeMultipleProjectValues} />
         <InputWebsite project={project} handleChangeProject={handleChangeProject} />
         <InputTags
           tagsOptions={tagsOptions}
@@ -130,7 +134,7 @@ function SmallScreenOverview({ project, handleChangeProject, handleChangeImage, 
   );
 }
 
-function LargeScreenOverview({ project, handleChangeProject, handleChangeImage, tagsOptions }) {
+function LargeScreenOverview({ project, handleChangeProject, handleChangeImage, tagsOptions, handleChangeMultipleProjectValues }) {
   const classes = useStyles();
   return (
     <>
@@ -141,7 +145,7 @@ function LargeScreenOverview({ project, handleChangeProject, handleChangeImage, 
         </div>
         <div className={classes.inlineProjectInfo}>
           <InputShortDescription project={project} handleChangeProject={handleChangeProject} />
-          <InputLocation project={project} handleChangeProject={handleChangeProject} />
+          <InputLocation project={project} handleChangeProject={handleChangeProject} handleChangeMultipleProjectValues={handleChangeMultipleProjectValues}/>
           <InputWebsite project={project} handleChangeProject={handleChangeProject} />
           <InputTags
             tagsOptions={tagsOptions}
@@ -177,8 +181,12 @@ const InputShortDescription = ({ project, handleChangeProject }) => {
   );
 };
 
-const InputLocation = ({ project, handleChangeProject }) => {
+const InputLocation = ({ project, handleChangeProject, handleChangeMultipleProjectValues }) => {
   const classes = useStyles();
+  const handleChangeLocation = location => {
+    console.log(location)
+    handleChangeMultipleProjectValues({location: getNameFromLocation(location), loc: location?.geojson?.coordinates})
+  }
   return (
     <div className={classes.projectInfoEl}>
       <LocationSearchBar
@@ -187,6 +195,7 @@ const InputLocation = ({ project, handleChangeProject }) => {
         className={classes.locationInput}
         value={project.location}
         onChange={(value) => handleChangeProject(value, "location")}
+        onSelect={handleChangeLocation}
       />
     </div>
   );
