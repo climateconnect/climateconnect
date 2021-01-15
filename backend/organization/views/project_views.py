@@ -35,6 +35,7 @@ from organization.utility.notification import (
 from rest_framework.exceptions import ValidationError, NotFound
 from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.models import Role, Skill, Availability
+from django.db.models import Q
 import logging
 logger = logging.getLogger(__name__)
 
@@ -62,22 +63,23 @@ class ListProjectsView(ListAPIView):
     def get_queryset(self):
         projects = Project.objects.filter(is_draft=False)
 
+        if 'hub' in self.request.query_params:
+            project_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
+            project_category_ids = list(map(lambda c: c.id, project_category))
+            project_tags = ProjectTags.objects.filter(id__in=project_category_ids)
+            project_tags_with_children = ProjectTags.objects.filter(Q(parent_tag__in=project_tags) | Q(id__in=project_tags))
+            projects = projects.filter(
+                tag_project__project_tag__in=project_tags_with_children
+            ).distinct()
+
+
         if 'collaboration' in self.request.query_params:
             collaborators_welcome = self.request.query_params.get('collaboration')
             if collaborators_welcome == 'yes':
                 projects = projects.filter(collaborators_welcome=True)
             if collaborators_welcome == 'no':
                 projects = projects.filter(collaborators_welcome=False)
-
-        if 'hub' in self.request.query_params:
-            project_parent_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
-            project_parent_category_ids = list(map(lambda c: c.id, project_parent_category))
-            project_parent_tags = ProjectTags.objects.filter(id__in=project_parent_category_ids)
-            project_tags = ProjectTags.objects.filter(parent_tag__in=project_parent_tags)
-            projects = projects.filter(
-                tag_project__project_tag__in=project_tags
-            ).distinct()
-
+        
         if 'category' in self.request.query_params:
             project_category = self.request.query_params.get('category').split(',')
             project_tags = ProjectTags.objects.filter(name__in=project_category)
