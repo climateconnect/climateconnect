@@ -61,7 +61,7 @@ export default function manageProjectMembers({
     );
   else {
     return (
-      <Layout title="Manage Solution Members" hideHeadline>
+      <Layout title="Manage Solution's Members" hideHeadline>
         <ManageProjectMembers
           user={user}
           members={members}
