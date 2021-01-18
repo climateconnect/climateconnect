@@ -42,7 +42,7 @@ export default function ResetPassword({ uuid }) {
   };
 
   return (
-    <Layout title="Set a new password">
+    <Layout title="Set a New Password">
       <Form
         fields={fields}
         messages={messages}

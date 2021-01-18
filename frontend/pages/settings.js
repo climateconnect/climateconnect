@@ -24,7 +24,7 @@ export default function Settings({ settings, token }) {
     );
   else
     return (
-      <Layout title="Please log in" hideHeadline>
+      <Layout title="Please Log In" hideHeadline>
         <LoginNudge whatToDo="edit your settings." fullPage />
       </Layout>
     );

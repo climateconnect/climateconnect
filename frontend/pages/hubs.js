@@ -42,7 +42,7 @@ export default function Hubs({ hubs }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   return (
-    <WideLayout largeFooter noSpaceBottom>
+    <WideLayout largeFooter noSpaceBottom title="Climate Solution Hubs">
       <NavigationSubHeader />
       <HubHeaderImage image="/images/hubs_background.jpg" fullWidth />
       <Container>

@@ -78,7 +78,7 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
   }
 
   return (
-    <WideLayout title={organization ? organization.name + "'s profile" : "Not found"}>
+    <WideLayout title={organization ? organization.name + "'s Profile" : "Not found"}>
       {organization ? (
         <EditAccountPage
           type="organization"
