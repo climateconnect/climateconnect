@@ -628,7 +628,7 @@ class LeaveProject(RetrieveUpdateAPIView):
 
             if project_member_record.role.name == 'Creator':
                 if "new_creator" not in self.request.data.keys() and active_members_in_project > 1 :
-                    raise Exception("Cannot leave a project without appointing a new creator")
+                    return Response(data={'message':f'A new creator needs to be assigned'}, status=status.HTTP_400_BAD_REQUEST) 
                 elif "new_creator" not in self.request.data.keys() and active_members_in_project == 1:
                     ## deactivate project
                     project.is_active = False
