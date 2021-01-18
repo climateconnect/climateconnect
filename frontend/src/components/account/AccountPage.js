@@ -46,6 +46,8 @@ const useStyles = makeStyles((theme) => ({
   subtitle: {
     color: `${theme.palette.secondary.main}`,
     fontWeight: "bold",
+    marginBottom: theme.spacing(1),
+    marginTop: theme.spacing(1),
   },
   content: {
     paddingTop: theme.spacing(1),
