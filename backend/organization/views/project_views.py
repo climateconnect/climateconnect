@@ -35,7 +35,7 @@ from organization.utility.notification import (
 )
 from rest_framework.exceptions import ValidationError, NotFound
 from climateconnect_main.utility.general import get_image_from_data_url
-from climateconnect_api.models import Role, Skill, Availability
+from climateconnect_api.models import Role, Skill, Availability, UserProfile
 import logging
 logger = logging.getLogger(__name__)
 
@@ -57,10 +57,10 @@ class ListProjectsView(ListAPIView):
     filterset_fields = ['collaborators_welcome', 'country', 'city']
     pagination_class = ProjectsPagination
     serializer_class = ProjectStubSerializer
-    queryset = Project.objects.filter(is_draft=False)
+    queryset = Project.objects.filter(is_draft=False,is_active=True)
 
     def get_queryset(self):
-        projects = Project.objects.filter(is_draft=False)
+        projects = Project.objects.filter(is_draft=False,is_active=True)
         if 'collaboration' in self.request.query_params:
             collaborators_welcome = self.request.query_params.get('collaboration')
             if collaborators_welcome == 'yes':
@@ -74,14 +74,16 @@ class ListProjectsView(ListAPIView):
             project_parent_tags = ProjectTags.objects.filter(id__in=project_parent_category_ids)
             project_tags = ProjectTags.objects.filter(parent_tag__in=project_parent_tags)
             projects = projects.filter(
-                tag_project__project_tag__in=project_tags
+                tag_project__project_tag__in=project_tags,
+                is_active=True
             ).distinct()
 
         if 'category' in self.request.query_params:
             project_category = self.request.query_params.get('category').split(',')
             project_tags = ProjectTags.objects.filter(name__in=project_category)
             projects = projects.filter(
-                tag_project__project_tag__in=project_tags
+                tag_project__project_tag__in=project_tags,
+                is_active=True
             ).distinct()        
 
         if 'status' in self.request.query_params:
@@ -352,6 +354,7 @@ class AddProjectMembersView(APIView):
         for member in request.data['team_members']:
             try:
                 user = User.objects.get(id=int(member['id']))
+                user_inactive = True if ProjectMember.objects.filter(user=user,project=project,is_active=False).count() == 1 else False
             except User.DoesNotExist:
                 logger.error("[AddProjectMembersView] Passed user id {} does not exists".format(int(member['id'])))
                 continue
@@ -363,10 +366,19 @@ class AddProjectMembersView(APIView):
                 user_availability = Availability.objects.filter(id=int(member['availability'])).first()
             except Availability.DoesNotExist:
                 raise NotFound(detail="Availability not found.", code=status.HTTP_404_NOT_FOUND)
-            if user:
+            if user and not(user_inactive):
                 ProjectMember.objects.create(
                     project=project, user=user, role=user_role, role_in_project=member['role_in_project'], availability=user_availability
                 )
+                logger.info("Project member created for user {}".format(user.id))
+            elif user and user_inactive:
+                record = ProjectMember.objects.get(project=project, user=user)
+                record.is_active = True 
+                record.save()
+                logger.info("Project member reactivated for user {}".format(user.id))
+
+
+
                 logger.info("Project member created for user {}".format(user.id))
 
         return Response({'message': 'Member added to the project'}, status=status.HTTP_201_CREATED)
@@ -564,14 +576,14 @@ class ListFeaturedProjects(ListAPIView):
     serializer_class = ProjectStubSerializer
 
     def get_queryset(self):
-        return Project.objects.filter(rating__lte=99, is_draft=False)[0:4]
+        return Project.objects.filter(rating__lte=99, is_draft=False,is_active=True)[0:4]
 
 class ListProjectsForSitemap(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectSitemapEntrySerializer
 
     def get_queryset(self):
-        return Project.objects.filter(is_draft=False)
+        return Project.objects.filter(is_draft=False,is_active=True)
 
 class ListProjectFollowersView(ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -592,12 +604,44 @@ class LeaveProject(RetrieveUpdateAPIView):
     """
     permission_classes = (IsAuthenticated,)
 
+    def _assign_new_creator(self,new_creator_slug,project_url_slug):
+        """Assigns new creator to the project if the creator is leaving the latter. Returns 2 updatable records that need to have their .save() called.
+        First record is the new creator record in ProjectMember, the second one is for ProjectParents
+        """
+        project = Project.objects.get(url_slug=project_url_slug)
+        user = UserProfile.objects.get(url_slug=new_creator_slug)
+        new_creator_record = ProjectMember.objects.get(user_id=user.user_id,project=project,is_active=True)
+        project_parent_record = ProjectParents.objects.get(project=project)
+        project_parent_record.parent_user_id = user.user_id
+        new_creator_record.role = Role.objects.get(name="Creator") 
+        return [new_creator_record,project_parent_record]
+
+
     def post(self, request, url_slug):
+
+
+        updatable_records = list()
         try:
             project = Project.objects.get(url_slug=url_slug)
-            record = ProjectMember.objects.get(user=self.request.user,project=project,is_active=True)
-            record.is_active = False
-            record.save()
+            project_member_record = ProjectMember.objects.get(user=self.request.user,project=project,is_active=True)
+            active_members_in_project = ProjectMember.objects.filter(project=project,is_active=True).count()
+
+            if project_member_record.role.name == 'Creator':
+                if "new_creator" not in self.request.data.keys() and active_members_in_project > 1 :
+                    raise Exception("Cannot leave a project without appointing a new creator")
+                elif "new_creator" not in self.request.data.keys() and active_members_in_project == 1:
+                    ## deactivate project
+                    project.is_active = False
+                    updatable_records.append(project)
+                else:
+                    updatable_records += self._assign_new_creator(new_creator_slug=self.request.data["new_creator"],project_url_slug=url_slug)
+                    project_member_record.role = Role.objects.get(name="Member")
+
+            
+            project_member_record.is_active = False
+            updatable_records.append(project_member_record)
+            for updatable_record in updatable_records:
+                updatable_record.save()
             return Response(data={'message':f'Left project {url_slug} successfully'}, status=status.HTTP_200_OK)
 
         except ProjectMember.DoesNotExist:
