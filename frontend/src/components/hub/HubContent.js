@@ -121,11 +121,6 @@ export default function HubContent({
           <Typography color="primary" component="h1" className={classes.h1}>
             {headline}
           </Typography>
-          {isNarrowScreen && (
-            <div className={classes.infoBoxContainerMobile}>
-              <StatBox title={statBoxTitle} stats={stats} />
-            </div>
-          )}
           <Typography component="h2" className={classes.textHeadline}>
             {subHeadline}
           </Typography>
