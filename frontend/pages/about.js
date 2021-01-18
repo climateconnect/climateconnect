@@ -76,7 +76,7 @@ export default function About({ faqQuestions }) {
 
   return (
     <>
-      <WideLayout title="About Climate Connect" isStaticPage noSpaceBottom>
+      <WideLayout title="About" isStaticPage noSpaceBottom>
         <div className={classes.root}>
           <TopSection
             headline="About"

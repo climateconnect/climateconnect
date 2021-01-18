@@ -36,7 +36,7 @@ export default function manageOrganizationMembers({
   if (!user)
     return (
       <WideLayout
-        title="Please log in to manage the members of this organization"
+        title="Please Log In to Manage the Members of this Organization"
         hideHeadline={true}
       >
         <LoginNudge fullPage whatToDo="manage the members of this organization" />
@@ -45,7 +45,7 @@ export default function manageOrganizationMembers({
   else if (!members.find((m) => m.id === user.id))
     return (
       <WideLayout
-        title="Please log in to manage the members of an organization"
+        title="Please Log In to Manage the Members of an Organization"
         hideHeadline={true}
       >
         <Typography variant="h4" color="primary" className={classes.headline}>
@@ -60,7 +60,7 @@ export default function manageOrganizationMembers({
     members.find((m) => m.id === user.id).role.name != "Administrator"
   )
     return (
-      <WideLayout title="No permission to manage members of this organization" hideHeadline={true}>
+      <WideLayout title="No Permission to Manage Members of this Organization" hideHeadline={true}>
         <Typography variant="h4" color="primary" className={classes.headline}>
           You need to be an administrator of the organization to manage organization members.
         </Typography>
@@ -68,7 +68,7 @@ export default function manageOrganizationMembers({
     );
   else {
     return (
-      <Layout title="Manage organization's members" hideHeadline>
+      <Layout title="Manage organization's Members" hideHeadline>
         <ManageOrganizationMembers
           user={user}
           members={members}
