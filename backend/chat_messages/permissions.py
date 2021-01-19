@@ -11,9 +11,12 @@ class ParticipantReadWritePermission(BasePermission):
         
         try:
             requesting_participant = Participant.objects.filter(
-                user=request.user, chat=chat
+                user=request.user, chat=chat, is_active=True
             )
-            participant_to_update = Participant.objects.filter(id=int(view.kwargs.get('pk')), chat=chat)
+            participant_to_update = Participant.objects.filter(
+                id=int(view.kwargs.get('pk')), 
+                chat=chat
+            )
         except Participant.DoesNotExist:
             return False  
         
@@ -38,7 +41,7 @@ class AddParticipantsPermission(BasePermission):
 
         try:
             requesting_participant = Participant.objects.filter(
-                user=request.user, chat=chat
+                user=request.user, chat=chat, is_active=True
             )
         except Participant.DoesNotExist:
             return False   
@@ -68,7 +71,10 @@ class ChangeChatCreatorPermission(BasePermission):
 
         try:
             requesting_member = Participant.objects.filter(
-                user=request.user, role__role_type__in=[Role.ALL_TYPE], chat=chat
+                user=request.user, 
+                role__role_type__in=[Role.ALL_TYPE], 
+                chat=chat, 
+                is_active=True
             )
         except Participant.DoesNotExist:
             return False   

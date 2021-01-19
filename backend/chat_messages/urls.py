@@ -25,6 +25,11 @@ urlpatterns = [
         name='connect-participants-api'
     ),
     path(
+        'chat/<str:chat_uuid>/leave/',
+        message_views.LeaveChatView.as_view(),
+        name='leave-chat-api'
+    ),
+    path(
         'chat/<str:chat_uuid>/send_message/',
         message_views.SendChatMessage.as_view(),
         name='send-chat-message-api'
