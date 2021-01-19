@@ -10,6 +10,14 @@ const useStyles = makeStyles((theme) => ({
   editButton: {
     marginBottom: theme.spacing(1),
   },
+  leaveProjectButton: {
+    float: "right",
+    background: theme.palette.error.main,
+    color: "white",
+    ["&:hover"]: {
+      backgroundColor: theme.palette.error.main,
+    }
+  }
 }));
 
 function getTeamWithAdditionalInfo(team) {
@@ -40,7 +48,7 @@ function getTeamWithAdditionalInfo(team) {
   });
 }
 
-export default function TeamContent({ project }) {
+export default function TeamContent({ project, leaveProject }) {
   const { user } = useContext(UserContext);
   const classes = useStyles();
   if (!user) return <LoginNudge whatToDo="see this project's team  members" />;
@@ -49,20 +57,32 @@ export default function TeamContent({ project }) {
       <>
         {user &&
           !!project.team.find((m) => m.id === user.id) &&
-          ["Creator", "Administrator"].includes(
-            project.team.find((m) => m.id === user.id).permission
-          ) && (
-            <div>
+          (
+            <div>                     
+              {
+                ["Creator", "Administrator"].includes(
+                  project.team.find((m) => m.id === user.id).permission
+                ) && (
+                  <Button
+                    className={classes.editButton}
+                    variant="contained"
+                    color="primary"
+                    href={"/manageProjectMembers/" + project.url_slug}
+                  >
+                    Manage members
+                  </Button>
+                )
+              }
               <Button
-                className={classes.editButton}
+                className={classes.leaveProjectButton}
                 variant="contained"
-                color="primary"
-                href={"/manageProjectMembers/" + project.url_slug}
+                onClick={leaveProject}
               >
-                Manage members
-              </Button>
+                Leave project
+              </Button> 
             </div>
-          )}
+          )
+        }
         <ProfilePreviews
           profiles={getTeamWithAdditionalInfo(project.team)}
           allowMessage

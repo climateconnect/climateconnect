@@ -107,12 +107,24 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     fontWeight: "bold",
   },
-  editProjectButton: {
+  memberButtons: {
     float: "right",
+    display: "flex",
+    flexDirection: "column"
   },
+  editProjectButton: {
+    marginTop: theme.spacing(1)
+  },
+  leaveProjectButton: {
+    background: theme.palette.error.main,
+    color: "white",
+    ["&:hover"]: {
+      backgroundColor: theme.palette.error.main,
+    }
+  }
 }));
 
-export default function ProjectContent({ project }) {
+export default function ProjectContent({ project, leaveProject }) {
   const classes = useStyles();
   const { user } = useContext(UserContext);
   const [showFullDescription, setShowFullDescription] = React.useState(false);
@@ -125,15 +137,26 @@ export default function ProjectContent({ project }) {
     <div>
       <div className={classes.contentBlock}>
         <div className={classes.createdBy}>
-          {user_permission && ["Creator", "Administrator"].includes(user_permission) && (
-            <Button
-              className={classes.editProjectButton}
-              variant="contained"
-              color="primary"
-              href={"/editProject/" + project.url_slug}
-            >
-              {project.is_draft ? "Edit Draft" : "Edit Project"}
-            </Button>
+          {user && project.team && project.team.find((m) => m.id === user.id) && (
+            <div className={classes.memberButtons}>
+              <Button
+                className={classes.leaveProjectButton}
+                variant="contained"
+                onClick={leaveProject}
+              >
+                Leave project
+              </Button> 
+              {user_permission && ["Creator", "Administrator"].includes(user_permission) && (
+                <Button
+                  className={classes.editProjectButton}
+                  variant="contained"
+                  color="primary"
+                  href={"/editProject/" + project.url_slug}
+                >
+                  {project.is_draft ? "Edit Draft" : "Edit Project"}
+                </Button>
+              )}
+            </div>
           )}
           <Typography>
             Created: <DateDisplay date={new Date(project.creation_date)} />
