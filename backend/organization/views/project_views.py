@@ -604,19 +604,6 @@ class LeaveProject(RetrieveUpdateAPIView):
     """
     permission_classes = (IsAuthenticated,)
 
-    def _assign_new_creator(self,new_creator_slug,project_url_slug):
-        """Assigns new creator to the project if the creator is leaving the latter. Returns 2 updatable records that need to have their .save() called.
-        First record is the new creator record in ProjectMember, the second one is for ProjectParents
-        """
-        project = Project.objects.get(url_slug=project_url_slug)
-        user = UserProfile.objects.get(url_slug=new_creator_slug)
-        new_creator_record = ProjectMember.objects.get(user_id=user.user_id,project=project,is_active=True)
-        project_parent_record = ProjectParents.objects.get(project=project)
-        project_parent_record.parent_user_id = user.user_id
-        new_creator_record.role = Role.objects.get(name="Creator") 
-        return [new_creator_record,project_parent_record]
-
-
     def post(self, request, url_slug):
 
 
@@ -627,15 +614,12 @@ class LeaveProject(RetrieveUpdateAPIView):
             active_members_in_project = ProjectMember.objects.filter(project=project,is_active=True).count()
 
             if project_member_record.role.name == 'Creator':
-                if "new_creator" not in self.request.data.keys() and active_members_in_project > 1 :
-                    return Response(data={'message':f'A new creator needs to be assigned'}, status=status.HTTP_400_BAD_REQUEST) 
-                elif "new_creator" not in self.request.data.keys() and active_members_in_project == 1:
+                if active_members_in_project > 1 :
+                    return Response(data={'message':f'A new creator needs to be assigned first'}, status=status.HTTP_400_BAD_REQUEST) 
+                elif active_members_in_project == 1:
                     ## deactivate project
                     project.is_active = False
                     updatable_records.append(project)
-                else:
-                    updatable_records += self._assign_new_creator(new_creator_slug=self.request.data["new_creator"],project_url_slug=url_slug)
-                    project_member_record.role = Role.objects.get(name="Member")
 
             
             project_member_record.is_active = False
