@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
   root: (props) => ({
+    display: "none",
     backgroundImage:
       "url(/icons/small-cloud-" + props.type + (props.light ? "-light" : "") + ".svg)",
     backgroundSize: "contain",

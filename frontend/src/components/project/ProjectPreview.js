@@ -1,9 +1,10 @@
 import React from "react";
 import { Typography, Card, CardMedia, CardContent, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import Truncate from "react-truncate";
+
 import ProjectMetaData from "./ProjectMetaData";
 import { getImageUrl } from "../../../public/lib/imageOperations";
-import Truncate from "react-truncate";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -95,12 +96,14 @@ const useStyles = makeStyles((theme) => {
 export default function ProjectPreview({ project }) {
   const [hovering, setHovering] = React.useState(false);
   const classes = useStyles({ hovering: hovering });
+
   const handleMouseEnter = () => {
     setHovering(true);
   };
   const handleMouseLeave = () => {
     setHovering(false);
   };
+
   return (
     <Link
       href={project.is_draft ? `/editProject/${project.url_slug}` : `/projects/${project.url_slug}`}
@@ -156,6 +159,7 @@ const CardContentWithoutDescription = ({ project, hovering }) => {
 
 const CardContentWithDescription = ({ project, hovering }) => {
   const classes = useStyles({ hovering: hovering });
+
   return (
     <CardContent className={`${classes.cardContentWithDescription} ${classes.cardContent}`}>
       <div className={classes.projectNameWrapper}>

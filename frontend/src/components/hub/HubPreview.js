@@ -3,9 +3,10 @@ import { makeStyles, Link, Card, CardMedia, Typography } from "@material-ui/core
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    boxShadow: `3px 3px 3px #f8f8f8`,
-  },
+  root: (props) => ({
+    boxShadow: props.disableBoxShadow ? 0 : `3px 3px 3px #f8f8f8`,
+    border: 0,
+  }),
   placeholderImg: {
     visibility: "hidden",
     width: "100%",
@@ -29,8 +30,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubPreview({ hub }) {
-  const classes = useStyles();
+export default function HubPreview({ hub, disableBoxShadow }) {
+  const classes = useStyles({ disableBoxShadow: disableBoxShadow });
 
   return (
     <Link href={`/hubs/${hub.url_slug}`} className={classes.noUnderline}>

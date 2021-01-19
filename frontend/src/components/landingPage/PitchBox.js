@@ -6,7 +6,6 @@ import pitch_elements from "../../../public/data/pitch_elements.json";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    marginTop: theme.spacing(10),
     position: "relative",
     maxWidth: 1280,
     margin: "0 auto",
@@ -148,11 +147,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function PitchBox({ h1ClassName }) {
+export default function PitchBox({ h1ClassName, className }) {
   const classes = useStyles();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
   return (
-    <div className={classes.root}>
+    <div className={`${classes.root} ${className}`}>
       {!isMediumScreen && (
         <>
           <SmallCloud type={1} className={classes.smallCloud1} />

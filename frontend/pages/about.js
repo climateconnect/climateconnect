@@ -76,7 +76,7 @@ export default function About({ faqQuestions }) {
 
   return (
     <>
-      <WideLayout title="About Climate Connect" isStaticPage noSpaceBottom>
+      <WideLayout title="About" isStaticPage noSpaceBottom>
         <div className={classes.root}>
           <TopSection
             headline="About"
@@ -125,7 +125,6 @@ const getQuestionsWithAnswers = async () => {
     const resp = await axios.get(process.env.API_URL + "/api/list_faq/");
     if (resp.data.length === 0) return null;
     else {
-      console.log(resp.data.results);
       return {
         by_section: sortBySection(resp.data.results),
         all: resp.data.results,

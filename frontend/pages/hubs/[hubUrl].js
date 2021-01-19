@@ -21,6 +21,7 @@ import BrowseExplainer from "../../src/components/hub/BrowseExplainer";
 import { makeStyles, Typography } from "@material-ui/core";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
+import FashionDescription from "../../src/components/hub/description/FashionDescription";
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -153,7 +154,7 @@ export default function Hub({
   };
 
   return (
-    <WideLayout header={headline} fixedHeader headerBackground="#FFF">
+    <WideLayout title={headline} fixedHeader headerBackground="#FFF">
       <div className={classes.contentUnderHeader}>
         <NavigationSubHeader hubName={name} />
         {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
@@ -189,6 +190,7 @@ export default function Hub({
 const HubDescription = ({ hub }) => {
   const classes = useStyles();
   if (hub === "food") return <FoodDescription />;
+  if (hub === "fashion") return <FashionDescription />;
   return (
     <Typography className={classes.moreInfoSoon}>
       More Info coming soon! Have a look at the projects and solutions submitted by Climate Connect

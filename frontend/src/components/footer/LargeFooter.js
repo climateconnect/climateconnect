@@ -1,6 +1,7 @@
 import React from "react";
 import { makeStyles, Typography, Link, Button, Container } from "@material-ui/core";
 import FeedbackButton from "../feedback/FeedbackButton";
+
 import InstagramIcon from "@material-ui/icons/Instagram";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import TwitterIcon from "@material-ui/icons/Twitter";
@@ -84,6 +85,10 @@ const useStyles = makeStyles((theme) => ({
   },
   socialIcon: {
     fontSize: 30,
+    color: "black",
+    "&:hover": {
+      color: "blue",
+    },
   },
   socialIconsContainer: {
     display: "flex",
@@ -120,6 +125,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+
 export default function LargeFooter({ className }) {
   const classes = useStyles();
   return (
@@ -151,7 +157,7 @@ const SocialLinks = () => {
         <InstagramIcon color="primary" className={classes.socialIcon} />
       </Link>
       <Link target="_blank" href="https://github.com/climateconnect/climateconnect">
-        <GitHubIcon color="primary" className={classes.socialIcon} />
+        <GitHubIcon className={classes.socialIcon} />
       </Link>
       <Link target="_blank" href="https://twitter.com/ConnectClimate">
         <TwitterIcon color="primary" className={classes.socialIcon} />

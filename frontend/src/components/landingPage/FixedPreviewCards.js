@@ -1,6 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core";
-import ProjectPreview from "./ProjectPreview";
+import ProjectPreview from "../project/ProjectPreview";
+import HubPreview from "../hub/HubPreview";
 //This component is to display a fixed amount of projects without  the option to load more
 
 const useStyles = makeStyles((theme) => ({
@@ -55,19 +56,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectPreviewsFixed({ projects }) {
+export default function FixedPreviewCards({ elements, type }) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
       <div className={classes.container}>
-        {projects.map((project, index) => (
+        {elements.map((e, index) => (
           <span
             className={`${classes.project} ${index === 0 && classes.firstProject} ${
-              index === projects.length - 1 && classes.lastProject
+              index === elements.length - 1 && classes.lastProject
             }`}
-            key={project.url_slug}
+            key={e.url_slug}
           >
-            <ProjectPreview project={project} />
+            {type === "project" ? (
+              <ProjectPreview project={e} />
+            ) : (
+              type === "hub" && <HubPreview hub={e} disableBoxShadow />
+            )}
           </span>
         ))}
       </div>

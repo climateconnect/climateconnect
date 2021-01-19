@@ -55,7 +55,7 @@ export default function OrganizationPage({
   const { user } = useContext(UserContext);
   return (
     <WideLayout
-      title={organization ? organization.name : "Not found"}
+      title={organization ? organization.name : "Not Found"}
       description={organization.name + " | " + organization.info.shortdescription}
     >
       {organization ? (
