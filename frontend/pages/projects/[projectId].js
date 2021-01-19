@@ -143,7 +143,7 @@ function ProjectLayout({
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const [hash, setHash] = React.useState(null);
-  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({follow: false, leave: false});
+  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({ follow: false, leave: false });
   const typesByTabValue = ["project", "team", "comments"];
 
   useEffect(() => {
@@ -189,47 +189,39 @@ function ProjectLayout({
 
   const onFollowDialogClose = (confirmed) => {
     if (confirmed) toggleFollowProject();
-    setConfirmDialogOpen({...confirmDialogOpen, follow: false});
+    setConfirmDialogOpen({ ...confirmDialogOpen, follow: false });
   };
 
   const leaveProject = async () => {
     try {
-      console.log(tokenConfig(token))
+      console.log(tokenConfig(token));
       const resp = await axios.post(
-        process.env.API_URL + "/api/projects/" + project.url_slug + "/leave/", 
-        {}, 
+        process.env.API_URL + "/api/projects/" + project.url_slug + "/leave/",
+        {},
         tokenConfig(token)
-      )
-      console.log(resp)
-      if(resp.status === 200)
+      );
+      console.log(resp);
+      if (resp.status === 200)
         setMessage({
-          message: (
-            <span>
-              You have successfully left the project.
-            </span>
-          ),
+          message: <span>You have successfully left the project.</span>,
           messageType: "success",
-        })
-        redirect(`/projects/${project.url_slug}`, {
-          message: "You have successfully left the project."
-        })
+        });
+      redirect(`/projects/${project.url_slug}`, {
+        message: "You have successfully left the project.",
+      });
     } catch (e) {
-      console.log(e?.response?.data?.message)
+      console.log(e?.response?.data?.message);
       setMessage({
-        message: (
-          <span>
-            {e?.response?.data?.message}
-          </span>
-        ),
+        message: <span>{e?.response?.data?.message}</span>,
         messageType: "error",
-      })
+      });
     }
-  }
+  };
 
-  const onConfirmDialogClose = async confirmed => {
-    if(confirmed) await leaveProject();
-    setConfirmDialogOpen({...confirmDialogOpen, leave: false})
-  }
+  const onConfirmDialogClose = async (confirmed) => {
+    if (confirmed) await leaveProject();
+    setConfirmDialogOpen({ ...confirmDialogOpen, leave: false });
+  };
 
   const handleToggleFollowProject = () => {
     if (!token)
@@ -241,7 +233,7 @@ function ProjectLayout({
         ),
         messageType: "error",
       });
-    else if (isUserFollowing) setConfirmDialogOpen({...confirmDialogOpen, follow: true});
+    else if (isUserFollowing) setConfirmDialogOpen({ ...confirmDialogOpen, follow: true });
     else toggleFollowProject();
   };
 
@@ -270,18 +262,19 @@ function ProjectLayout({
   };
 
   const requestLeaveProject = () => {
-    const user_permission = user && project.team && project.team.find((m) => m.id === user.id)
-      ? project.team.find((m) => m.id === user.id).permission
-      : null;
-    const team_size = project?.team?.length
-    if(user_permission === "Creator" && team_size >1)
+    const user_permission =
+      user && project.team && project.team.find((m) => m.id === user.id)
+        ? project.team.find((m) => m.id === user.id).permission
+        : null;
+    const team_size = project?.team?.length;
+    if (user_permission === "Creator" && team_size > 1)
       setMessage({
-        message: "You can't leave a project as the creator. Please give the creator role to another team member by clicking \"Manage Members\" in the team tab",
-        messageType: "error"
-      })
-    else
-      setConfirmDialogOpen({...confirmDialogOpen, leave: true})
-  }
+        message:
+          'You can\'t leave a project as the creator. Please give the creator role to another team member by clicking "Manage Members" in the team tab',
+        messageType: "error",
+      });
+    else setConfirmDialogOpen({ ...confirmDialogOpen, leave: true });
+  };
 
   return (
     <div className={classes.root}>
@@ -310,10 +303,10 @@ function ProjectLayout({
 
       <Container className={classes.tabContent}>
         <TabContent value={tabValue} index={0}>
-          <ProjectContent project={project} leaveProject={requestLeaveProject}/>
+          <ProjectContent project={project} leaveProject={requestLeaveProject} />
         </TabContent>
         <TabContent value={tabValue} index={1}>
-          <ProjectTeamContent project={project} leaveProject={requestLeaveProject}/>
+          <ProjectTeamContent project={project} leaveProject={requestLeaveProject} />
         </TabContent>
         <TabContent value={tabValue} index={2}>
           <ProjectCommentsContent
@@ -347,8 +340,13 @@ function ProjectLayout({
             Are you sure that you want to leave this project?
             <br />
             You {"won't"} be part of the team anymore.
-            {project?.team?.length === 1 &&(
-              <Typography color="error"><b>Danger: You are the only member of this project. <br /> If you leave the project it will be deactivated.</b></Typography>
+            {project?.team?.length === 1 && (
+              <Typography color="error">
+                <b>
+                  Danger: You are the only member of this project. <br /> If you leave the project
+                  it will be deactivated.
+                </b>
+              </Typography>
             )}
           </span>
         }

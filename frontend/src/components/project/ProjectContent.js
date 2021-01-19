@@ -110,18 +110,18 @@ const useStyles = makeStyles((theme) => ({
   memberButtons: {
     float: "right",
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   editProjectButton: {
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   leaveProjectButton: {
     background: theme.palette.error.main,
     color: "white",
     ["&:hover"]: {
       backgroundColor: theme.palette.error.main,
-    }
-  }
+    },
+  },
 }));
 
 export default function ProjectContent({ project, leaveProject }) {
@@ -145,7 +145,7 @@ export default function ProjectContent({ project, leaveProject }) {
                 onClick={leaveProject}
               >
                 Leave project
-              </Button> 
+              </Button>
               {user_permission && ["Creator", "Administrator"].includes(user_permission) && (
                 <Button
                   className={classes.editProjectButton}

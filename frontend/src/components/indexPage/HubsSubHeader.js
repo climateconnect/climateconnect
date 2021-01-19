@@ -20,35 +20,36 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-end",
     [theme.breakpoints.down("xs")]: {
-      justifyContent: "center"
-    }
+      justifyContent: "center",
+    },
   },
   viewHubsButton: {
-    background: "white"
-  }
+    background: "white",
+  },
 }));
 
 export default function HubsSubHeader({ hubs }) {
   const classes = useStyles();
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"))
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   return (
     <div className={classes.root}>
       <Container className={classes.container}>
-        {
-          isNarrowScreen ?
-            <Button className={classes.viewHubsButton} variant="contained" href={`/hubs/`}>View sector hubs</Button>
-          :
+        {isNarrowScreen ? (
+          <Button className={classes.viewHubsButton} variant="contained" href={`/hubs/`}>
+            View sector hubs
+          </Button>
+        ) : (
           <Link className={classes.link} key={"/hubs"} href={`/hubs/`}>
             All Hubs
           </Link>
-        }
-        {hubs && !isNarrowScreen &&
+        )}
+        {hubs &&
+          !isNarrowScreen &&
           hubs.map((hub) => (
             <Link className={classes.link} key={hub.url_slug} href={`/hubs/${hub.url_slug}`}>
               {hub.name}
             </Link>
-          ))
-        }
+          ))}
       </Container>
     </div>
   );

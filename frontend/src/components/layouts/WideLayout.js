@@ -25,8 +25,8 @@ const useStyles = makeStyles((theme) => ({
   alertFixed: {
     top: 0,
     position: "fixed",
-    width: "100%"
-  }
+    width: "100%",
+  },
 }));
 
 export default function WideLayout({
@@ -83,7 +83,7 @@ export default function WideLayout({
             <Alert
               className={`
                 ${classes.alert}
-                ${spaceToTop.screen <= 0 && spaceToTop.page >=98 && classes.alertFixed}
+                ${spaceToTop.screen <= 0 && spaceToTop.page >= 98 && classes.alertFixed}
               `}
               severity={
                 messageType ? messageType : initialMessageType ? initialMessageType : "success"
@@ -101,7 +101,9 @@ export default function WideLayout({
             </Alert>
           )}
           {subHeader && subHeader}
-          {!fixedHeader && process.env.DONATION_CAMPAIGN_RUNNING === "true" && !landingPage && <DonationCampaignInformation />}
+          {!fixedHeader && process.env.DONATION_CAMPAIGN_RUNNING === "true" && !landingPage && (
+            <DonationCampaignInformation />
+          )}
           {children}
         </Container>
       )}

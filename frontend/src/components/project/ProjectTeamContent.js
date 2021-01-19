@@ -16,8 +16,8 @@ const useStyles = makeStyles((theme) => ({
     color: "white",
     ["&:hover"]: {
       backgroundColor: theme.palette.error.main,
-    }
-  }
+    },
+  },
 }));
 
 function getTeamWithAdditionalInfo(team) {
@@ -55,34 +55,29 @@ export default function TeamContent({ project, leaveProject }) {
   else if (project.team)
     return (
       <>
-        {user &&
-          !!project.team.find((m) => m.id === user.id) &&
-          (
-            <div>                     
-              {
-                ["Creator", "Administrator"].includes(
-                  project.team.find((m) => m.id === user.id).permission
-                ) && (
-                  <Button
-                    className={classes.editButton}
-                    variant="contained"
-                    color="primary"
-                    href={"/manageProjectMembers/" + project.url_slug}
-                  >
-                    Manage members
-                  </Button>
-                )
-              }
+        {user && !!project.team.find((m) => m.id === user.id) && (
+          <div>
+            {["Creator", "Administrator"].includes(
+              project.team.find((m) => m.id === user.id).permission
+            ) && (
               <Button
-                className={classes.leaveProjectButton}
+                className={classes.editButton}
                 variant="contained"
-                onClick={leaveProject}
+                color="primary"
+                href={"/manageProjectMembers/" + project.url_slug}
               >
-                Leave project
-              </Button> 
-            </div>
-          )
-        }
+                Manage members
+              </Button>
+            )}
+            <Button
+              className={classes.leaveProjectButton}
+              variant="contained"
+              onClick={leaveProject}
+            >
+              Leave project
+            </Button>
+          </div>
+        )}
         <ProfilePreviews
           profiles={getTeamWithAdditionalInfo(project.team)}
           allowMessage
