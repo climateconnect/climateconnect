@@ -51,6 +51,7 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
             )
         except MessageParticipants.DoesNotExist:
             chat = None
+        # Only select active participant IDs 
         receiver_user_ids = Participant.objects.filter(chat=chat, is_active=True).values_list('user', flat=True)
         receiver_users = User.objects.filter(id__in=receiver_user_ids)
         message = Message.objects.create(

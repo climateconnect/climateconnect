@@ -239,10 +239,11 @@ Chat.getInitialProps = async (ctx) => {
     getChatMessagesByUUID(ctx.query.chatUUID, token, 1),
     getRolesOptions(),
   ]);
-  if(!chat)
+  if (!chat) {
     return {
       chat_id: null
     }
+  }
   return {
     token: token,
     chat_uuid: chat.chat_uuid,

@@ -23,18 +23,20 @@ const useStyles = makeStyles({
 });
 
 export default function FixedHeightLayout({ 
-  title, 
   children,
   message,
-  messageType
+  messageType,
+  title
 }) {
   const classes = useStyles();
-  const [initialMessageType, setInitialMessageType] = React.useState(null);
-  const [alertOpen, setAlertOpen] = React.useState(true);
-  const [initialMessage, setInitialMessage] = React.useState("");
+  const [initialMessageType, setInitialMessageType] = useState(null);
+  const [alertOpen, setAlertOpen] = useState(true);
+  const [initialMessage, setInitialMessage] = useState("");
   useEffect(() => {
     const params = getParams(window.location.href);
-    if (params.message) setInitialMessage(decodeURI(params.message));
+    if (params.message) {
+        setInitialMessage(decodeURI(params.message));
+    }
     if (params.errorMessage) {
       setInitialMessage(decodeURI(params.errorMessage));
       setInitialMessageType("error");
@@ -51,10 +53,11 @@ export default function FixedHeightLayout({
               messageType ? messageType : initialMessageType ? initialMessageType : "success"
             }
             onClose={() => {
-              if(message)
+              if (message) {
                 setAlertOpen(false);
-              else
-                setInitialMessage(null)
+              } else {
+                setInitialMessage(null);
+              }
             }}
           >
             {getMessageFromUrl(message ? message : initialMessage)}
