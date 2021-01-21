@@ -37,7 +37,6 @@ from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.permissions import UserPermission
 from climateconnect_api.utility.email_setup import send_user_verification_email
 from climateconnect_api.utility.email_setup import send_password_link
-from climateconnect_api.utility.location import get_geo_location
 from django.conf import settings
 import logging
 logger = logging.getLogger(__name__)
@@ -99,10 +98,8 @@ class SignUpView(APIView):
         url_slug = (user.first_name + user.last_name).lower() + str(user.id)
 
         # Get location
-        geo_location = get_geo_location(request.data['location'])
         user_profile = UserProfile.objects.create(
-            user=user, location=geo_location['location'],
-            latitude=geo_location['latitude'], longitude=geo_location['longitude'],
+            user=user, location=request.data['location'],
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
             verification_key=uuid.uuid4(), send_newsletter=request.data['send_newsletter']
         )

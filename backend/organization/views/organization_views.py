@@ -24,7 +24,6 @@ from organization.permissions import (
     OrganizationReadWritePermission, OrganizationReadWritePermission, OrganizationMemberReadWritePermission
 )
 from climateconnect_api.models import Role, UserProfile
-from climateconnect_api.utility.location import get_geo_location
 from organization.pagination import (OrganizationsPagination, ProjectsPagination)
 from climateconnect_api.pagination import MembersPagination
 from climateconnect_main.utility.general import get_image_from_data_url
@@ -100,11 +99,8 @@ class CreateOrganizationView(APIView):
 
 
             # Get accurate location from google maps.
-            geo_location = get_geo_location(request.data['location'])
             if 'location' in request.data:
-                organization.location = geo_location['location']
-                organization.latitude = geo_location['latitude']
-                organization.longitude = geo_location['longitude']
+                organization.location = request.data['location']
             if 'short_description' in request.data:
                 organization.short_description = request.data['short_description']
             if 'website' in request.data:
@@ -175,10 +171,7 @@ class OrganizationAPIView(APIView):
         # Then we are actually getting formatted address, latitude and longitude from it. 
         # So here for location we can't just setattr method. Hence writing our own logic.
         if 'location' in request.data:
-            geo_location = get_geo_location(request.data[param])
-            organization.location = geo_location['location']
-            organization.latitude = geo_location['latitude']
-            organization.longitude = geo_location['longitude']
+            organization.location = request.data['location']
         if 'image' in request.data:
             organization.image = get_image_from_data_url(request.data['image'])[0]
         if 'background_image' in request.data:

@@ -1,4 +1,5 @@
-from climateconnect_api.utility.location import get_geo_location
+from location.utility import get_location
+from location.models import Location
 from hubs.models.hub import Hub
 from dateutil.parser import parse
 from rest_framework.generics import ListAPIView,RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
@@ -284,10 +285,10 @@ class ProjectAPIView(APIView):
         if 'end_date' in request.data:
             project.end_date = parse(request.data['end_date'])
         if 'location' in request.data:
-            geo_location = get_geo_location(request.data['location'])
-            project.location = geo_location['location']
-            project.latitude = geo_location['latitude']
-            project.longitude = geo_location['longitude']
+            project.location = request.data['location']
+        if 'location' in request.data:
+            location = get_location(request.data['loc'])
+            project.loc = location
         if 'is_draft' in request.data:
             project.is_draft = False
         if 'is_personal_project' in request.data:
