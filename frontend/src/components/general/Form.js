@@ -269,12 +269,7 @@ export default function Form({
               </div>
             );
           } else if (field.type === "location") {
-            return (
-              <LocationSearchBar 
-                label={field.label}
-                required={field.required}
-              />
-            )
+            return <LocationSearchBar label={field.label} required={field.required} />;
           } else if (
             (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) &&
             field.type === "autocomplete"

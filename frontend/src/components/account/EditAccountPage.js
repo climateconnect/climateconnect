@@ -26,7 +26,7 @@ import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import Alert from "@material-ui/lab/Alert";
-import LocationSearchBar from "../search/LocationSearchBar"
+import LocationSearchBar from "../search/LocationSearchBar";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -341,9 +341,9 @@ export default function EditAccountPage({
   };
 
   const displayAccountInfo = (info) => {
-    console.log(info)
+    console.log(info);
     return Object.keys(info).map((key) => {
-      console.log(key)
+      console.log(key);
       const handleChange = (event) => {
         setEditedAccount({
           ...editedAccount,
@@ -426,15 +426,13 @@ export default function EditAccountPage({
             />
           </div>
         );
-      } else if (i.type === "location"){
+      } else if (i.type === "location") {
         return (
           <div className={classes.infoElement}>
-            <LocationSearchBar 
-              label={i.name}
-            />
+            <LocationSearchBar label={i.name} />
           </div>
-        )
-      }else if (key != "parent_organization") {
+        );
+      } else if (key != "parent_organization") {
         return (
           <div key={key} className={classes.infoElement}>
             <Typography className={classes.subtitle}>
@@ -452,7 +450,7 @@ export default function EditAccountPage({
         );
       }
     });
-  }
+  };
 
   const onBackgroundChange = async (backgroundEvent) => {
     const file = backgroundEvent.target.files[0];
@@ -526,7 +524,7 @@ export default function EditAccountPage({
     console.log(event.target.value);
     console.log(type);
   };
-  console.log(editedAccount)
+  console.log(editedAccount);
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       {errorMessage && (

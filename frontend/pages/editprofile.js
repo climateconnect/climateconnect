@@ -22,7 +22,7 @@ export default function EditProfilePage({
 }) {
   const { user } = useContext(UserContext);
   infoMetadata.availability.options = availabilityOptions;
-  const profile = user ? parseProfile(user, true, /*true*/) : null;
+  const profile = user ? parseProfile(user, true /*true*/) : null;
   const saveChanges = (event, editedAccount) => {
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
     axios

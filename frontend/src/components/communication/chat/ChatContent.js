@@ -84,16 +84,15 @@ export default function ChatContent({
     <>
       {showChatParticipants && (
         <div className={classes.chatParticipantsContainer}>
-          {participants
-            .map((p, index) => {
-              return (
-                <MiniProfilePreview
-                  key={index}
-                  profile={p}
-                  className={classes.chatParticipantsPreview}
-                />
-              );
-            })}
+          {participants.map((p, index) => {
+            return (
+              <MiniProfilePreview
+                key={index}
+                profile={p}
+                className={classes.chatParticipantsPreview}
+              />
+            );
+          })}
           {user_role.name === "Creator" && (
             <Button
               className={classes.manageMembersButton}

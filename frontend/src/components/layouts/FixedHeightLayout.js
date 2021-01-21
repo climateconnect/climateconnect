@@ -22,12 +22,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function FixedHeightLayout({ 
-  children,
-  message,
-  messageType,
-  title
-}) {
+export default function FixedHeightLayout({ children, message, messageType, title }) {
   const classes = useStyles();
   const [initialMessageType, setInitialMessageType] = useState(null);
   const [alertOpen, setAlertOpen] = useState(true);
@@ -35,7 +30,7 @@ export default function FixedHeightLayout({
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) {
-        setInitialMessage(decodeURI(params.message));
+      setInitialMessage(decodeURI(params.message));
     }
     if (params.errorMessage) {
       setInitialMessage(decodeURI(params.errorMessage));

@@ -159,12 +159,12 @@ export default function Filters({
           }
 
           if (filter.type === "location") {
-            const handleLocationSelect = location => {
-              handleValueChange(filter.key, location)
-            }
+            const handleLocationSelect = (location) => {
+              handleValueChange(filter.key, location);
+            };
             return (
               <LocationSearchBar
-                inputClassName= {classes.field}
+                inputClassName={classes.field}
                 smallInput
                 onSelect={handleLocationSelect}
                 label={
@@ -174,7 +174,7 @@ export default function Filters({
                   </div>
                 }
               />
-            )
+            );
           }
         })}
         {withApplyButton && (
