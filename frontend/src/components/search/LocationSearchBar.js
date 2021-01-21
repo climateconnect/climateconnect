@@ -1,10 +1,9 @@
 import { TextField } from "@material-ui/core";
-import React from "react"
+import React from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "axios";
 import { debounce } from "lodash";
 import { getNameFromLocation } from "../../../public/lib/locationOperations";
-
 
 export default function LocationSearchBar({
   label,
@@ -21,30 +20,40 @@ export default function LocationSearchBar({
   const [options, setOptions] = React.useState([]);
   const [searchValue, setSearchValue] = React.useState("");
   const [inputValue, setInputValue] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
     let active = true;
 
     (async () => {
       if (searchValue) {
-        console.log("searching for " + searchValue)
+        console.log("searching for " + searchValue);
         const config = {
-          method: 'GET',
-          mode: 'no-cors',
-          referrerPolicy: 'origin'
-        }
-        const response = await axios(`https://nominatim.openstreetmap.org/search?q=${searchValue}&format=json&addressdetails=1&polygon_geojson=1`, config)   
-        console.log(response.data)
+          method: "GET",
+          mode: "no-cors",
+          referrerPolicy: "origin",
+        };
+        const response = await axios(
+          `https://nominatim.openstreetmap.org/search?q=${searchValue}&format=json&addressdetails=1&polygon_geojson=1`,
+          config
+        );
+        console.log(response.data);
         if (active) {
-          const filteredData = response.data.filter(o=>o.importance > 0.5 && o.class !== "landuse")
-          console.log(filteredData)
-          const data = filteredData.length > 0 ? filteredData : response.data.slice(0,2).filter(o=>o.class !== "landuse")
-          setOptions(
-            data.map((o) => ({ ...o, simple_name: getNameFromLocation(o), key: o.place_id }))
+          const filteredData = response.data.filter(
+            (o) => o.importance > 0.5 && o.class !== "landuse"
           );
-        } 
+          console.log(filteredData);
+          const data =
+            filteredData.length > 0
+              ? filteredData
+              : response.data.slice(0, 2).filter((o) => o.class !== "landuse");
+          setOptions(
+            data.map((o) => ({ ...o, simple_name: getNameFromLocation(o).name, key: o.place_id }))
+          );
+          setLoading(false);
+        }
       } else {
-        console.log("setting options to nothing!")
+        console.log("setting options to nothing!");
         setOptions([]);
       }
     })();
@@ -63,10 +72,11 @@ export default function LocationSearchBar({
   };
 
   const handleInputChange = (event) => {
-    if(value && onChange)
-      onChange(event.target.value)
-    else
-      setInputValue(event.target.value);
+    console.log("input is being changed!");
+    if (!loading) setLoading(true);
+    if (options?.length > 0) setOptions([]);
+    if (value && onChange) onChange(event.target.value);
+    else setInputValue(event.target.value);
     setSearchValueThrottled(event.target.value);
   };
 
@@ -80,23 +90,23 @@ export default function LocationSearchBar({
 
   const handleChange = (event, value, reason) => {
     if (reason === "select-option") {
-      console.log(options.filter(o=>o.simple_name === value)[0])
+      console.log(options.filter((o) => o.simple_name === value)[0]);
       setInputValue(value);
-      if(onSelect){
-        onSelect(options.filter(o=>o.simple_name === value)[0])
+      if (onSelect) {
+        onSelect(options.filter((o) => o.simple_name === value)[0]);
       }
     }
   };
 
-  const handleGetOptionDisabled = option => {
-    console.log(option)
-    return false
-  }
+  const handleGetOptionDisabled = (option) => {
+    console.log(option);
+    return false;
+  };
 
-  const handleFilterOptions = (options) =>  {
-    return options
-  }
-
+  const handleFilterOptions = (options) => {
+    return options;
+  };
+  console.log(options);
   return (
     <Autocomplete
       className={`${className} ${inputClassName}`}
@@ -106,15 +116,15 @@ export default function LocationSearchBar({
       }}
       handleHomeEndKeys
       disableClearable
-      freeSolo
+      loading={loading}
       onClose={handleClose}
       onChange={handleChange}
-      options={options.map(o=>o.simple_name)}
+      options={options.map((o) => o.simple_name)}
       inputValue={value ? value : inputValue}
       filterOptions={handleFilterOptions}
       getOptionDisabled={handleGetOptionDisabled}
       renderOption={renderSearchOption}
-      noOptionsText={!searchValue && !inputValue ? "Start typing" : "Loading..."}
+      noOptionsText="No options"
       renderInput={(params) => (
         <TextField
           {...params}
@@ -131,5 +141,5 @@ export default function LocationSearchBar({
         />
       )}
     />
-  )
+  );
 }

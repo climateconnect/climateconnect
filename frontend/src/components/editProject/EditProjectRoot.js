@@ -44,9 +44,7 @@ export default function EditProjectRoot({
           alert("Your project draft is missing the following reqired property: " + p);
         }
       });
-    else{
-      console.log(project)
-      return
+    else {
       axios
         .patch(
           process.env.API_URL + "/api/projects/" + project.url_slug + "/",
@@ -180,6 +178,5 @@ const parseProjectForRequest = async (project) => {
   if (project.status) ret.status = project.status.id;
   if (project.project_parents && project.project_parents.parent_organization)
     ret.parent_organization = project.project_parents.parent_organization.id;
-  console.log(ret)
   return ret;
 };

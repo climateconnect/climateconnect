@@ -30,7 +30,12 @@ export function getNameFromLocation(location) {
   const middlePartSuffixes = ["city", "state"];
   const firstPart = getFirstPart(location.address, firstPartOrder);
   const middlePart = getMiddlePart(location.address, middlePartOrder, middlePartSuffixes);
-  return firstPart + middlePart + location.address.country;
+  return {
+    city: firstPart,
+    state: middlePart,
+    country: location.address.country,
+    name: firstPart + middlePart + location.address.country
+  };
 }
 
 const getFirstPart = (address, order) => {
