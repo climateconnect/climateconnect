@@ -8,13 +8,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function PageNotFound({ itemName }) {
+export default function PageNotFound({ itemName, returnText, returnLink }) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
       <Typography variant="h1">{itemName ? `${itemName} ` : "Page "} not found.</Typography>
       <p>
-        <Link href="/browse">Return to home.</Link>
+        <Link href={returnLink ? returnLink : "/browse"}>
+          {returnText ? returnText : "Return to home."}
+        </Link>
       </p>
     </div>
   );

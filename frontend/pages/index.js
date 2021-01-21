@@ -93,7 +93,7 @@ export default function Index({ projects, organizations, hubs }) {
 
   return (
     <WideLayout
-      title="Climate Connect - Global platform for climate change solutions"
+      title="Global Platform for Climate Change Solutions"
       hideTitle
       fixedHeader
       transparentHeader={pos === "top"}

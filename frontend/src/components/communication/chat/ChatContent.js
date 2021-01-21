@@ -72,7 +72,6 @@ export default function ChatContent({
   setShowSendHelper,
 }) {
   const classes = useStyles();
-  const { user } = useContext(UserContext);
 
   const handleOpen = () => {
     setShowSendHelper(true);
@@ -86,7 +85,6 @@ export default function ChatContent({
       {showChatParticipants && (
         <div className={classes.chatParticipantsContainer}>
           {participants
-            .filter((p) => p.id !== user.id)
             .map((p, index) => {
               return (
                 <MiniProfilePreview

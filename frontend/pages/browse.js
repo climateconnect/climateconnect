@@ -122,7 +122,7 @@ export default function Browse({
   return (
     <>
       <WideLayout
-        title="Climate Connect - Global platform for climate change solutions"
+        title="Global Platform for Climate Change Solutions"
         hideHeadline
         showOnScrollUp={showOnScrollUp}
         subHeader={<HubsSubHeader hubs={hubs} />}

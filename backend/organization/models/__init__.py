@@ -4,7 +4,7 @@ from organization.models.organization import (
 )
 from organization.models.tags import (
     OrganizationTags, OrganizationTagging,
-    ProjectTags, ProjectTagging
+    ProjectTags, ProjectTagging, OrganizationFieldTagging
 )
 from organization.models.project import (
     Project, ProjectParents, ProjectCollaborators

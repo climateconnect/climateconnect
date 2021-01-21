@@ -55,7 +55,6 @@ export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridIt
         element={Grid}
         // We block subsequent invocations from InfinteScroll until we update local state
         hasMore={hasMore && !isFetchingMore}
-        loader={<LoadingSpinner isLoading key="project-previews-spinner" />}
         loadMore={loadMore}
         pageStart={1}
         spacing={2}
@@ -65,6 +64,7 @@ export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridIt
             ? toProjectPreviews(projects)
             : "No projects found."
           : gridItems}
+        {isFetchingMore && <LoadingSpinner isLoading key="project-previews-spinner" />}
       </InfiniteScroll>
     </>
   );

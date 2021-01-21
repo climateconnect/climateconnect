@@ -1,3 +1,4 @@
+from hubs.models.hub import Hub
 from organization.models.tags import ProjectTags
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
@@ -28,6 +29,7 @@ from organization.pagination import (OrganizationsPagination, ProjectsPagination
 from climateconnect_api.pagination import MembersPagination
 from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.models import Role
+from django.db.models import Q
 import logging
 logger = logging.getLogger(__name__)
 
@@ -45,13 +47,16 @@ class ListOrganizationsAPIView(ListAPIView):
     def get_queryset(self):
         organizations  = Organization.objects.all()
 
-        if 'project_category_parent' in self.request.query_params:
-            project_parent_category = self.request.query_params.get('project_category_parent').split(',')
-            project_parent_tags = ProjectTags.objects.filter(key__in=project_parent_category)
-            project_tags = ProjectTags.objects.filter(parent_tag__in=project_parent_tags)
+        if 'hub' in self.request.query_params:
+            project_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
+            project_category_ids = list(map(lambda c: c.id, project_category))
+            project_tags = ProjectTags.objects.filter(id__in=project_category_ids)
+            project_tags_with_children = ProjectTags.objects.filter(Q(parent_tag__in=project_tags) | Q(id__in=project_tags))
             organizations = organizations.filter(
-                project_parent_org__project__tag_project__project_tag__in=project_tags
-            ).order_by('id').distinct('id')
+                Q(project_parent_org__project__tag_project__project_tag__in=project_tags_with_children) 
+                | 
+                Q(field_tag_organization__field_tag__in=project_tags_with_children)
+            ).distinct()
 
         if 'organization_type' in self.request.query_params:
             organization_type_names = self.request.query_params.get('organization_type').split(',')

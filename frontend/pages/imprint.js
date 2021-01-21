@@ -8,7 +8,7 @@ Until we have incorporated a charitable company, I put my name as the responsibl
 */
 const Impressum = () => (
   <div>
-    <Layout title="Imprint/Legal disclosure">
+    <Layout title="Imprint/Legal Disclosure">
       <h1>Legal Disclosure</h1>
       Information in accordance with Section 5 TMG
       <br />

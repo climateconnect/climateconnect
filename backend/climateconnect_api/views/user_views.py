@@ -183,12 +183,14 @@ class ListMemberProjectsView(ListAPIView):
         searched_user = UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user
         if self.request.user == searched_user:     
             return ProjectMember.objects.filter(
-                user=searched_user
+                user=searched_user,
+                is_active=True
             ).order_by('-id')
         else:
             return ProjectMember.objects.filter(
                 user=searched_user,
-                project__is_draft=False
+                project__is_draft=False,
+                is_active=True
             ).order_by('-id')
 
 

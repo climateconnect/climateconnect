@@ -10,6 +10,14 @@ const useStyles = makeStyles((theme) => ({
   editButton: {
     marginBottom: theme.spacing(1),
   },
+  leaveProjectButton: {
+    float: "right",
+    background: theme.palette.error.main,
+    color: "white",
+    ["&:hover"]: {
+      backgroundColor: theme.palette.error.main,
+    },
+  },
 }));
 
 function getTeamWithAdditionalInfo(team) {
@@ -40,19 +48,18 @@ function getTeamWithAdditionalInfo(team) {
   });
 }
 
-export default function TeamContent({ project }) {
+export default function TeamContent({ project, leaveProject }) {
   const { user } = useContext(UserContext);
   const classes = useStyles();
   if (!user) return <LoginNudge whatToDo="see this project's team  members" />;
   else if (project.team)
     return (
       <>
-        {user &&
-          !!project.team.find((m) => m.id === user.id) &&
-          ["Creator", "Administrator"].includes(
-            project.team.find((m) => m.id === user.id).permission
-          ) && (
-            <div>
+        {user && !!project.team.find((m) => m.id === user.id) && (
+          <div>
+            {["Creator", "Administrator"].includes(
+              project.team.find((m) => m.id === user.id).permission
+            ) && (
               <Button
                 className={classes.editButton}
                 variant="contained"
@@ -61,8 +68,16 @@ export default function TeamContent({ project }) {
               >
                 Manage members
               </Button>
-            </div>
-          )}
+            )}
+            <Button
+              className={classes.leaveProjectButton}
+              variant="contained"
+              onClick={leaveProject}
+            >
+              Leave project
+            </Button>
+          </div>
+        )}
         <ProfilePreviews
           profiles={getTeamWithAdditionalInfo(project.team)}
           allowMessage

@@ -60,7 +60,6 @@ export default function ProfilePreviews({
         element={Grid}
         // We block subsequent invocations from InfinteScroll until we update local state
         hasMore={hasMore && !isFetchingMore}
-        loader={<LoadingSpinner isLoading key="profile-previews-spinner" />}
         loadMore={loadMore}
         pageStart={0}
         spacing={2}
@@ -70,6 +69,7 @@ export default function ProfilePreviews({
             ? toProfilePreviews(profiles)
             : "No members found."
           : gridItems}
+        {isFetchingMore && <LoadingSpinner isLoading key="profile-previews-spinner" />}
       </InfiniteScroll>
     </>
   );

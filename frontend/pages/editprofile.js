@@ -49,7 +49,7 @@ export default function EditProfilePage({
   };
   if (!profile)
     return (
-      <WideLayout title="Please log in to edit your profile" hideHeadline={true}>
+      <WideLayout title="Please Log In to Edit your Profile" hideHeadline={true}>
         <LoginNudge fullPage whatToDo="edit your profile" />
       </WideLayout>
     );
