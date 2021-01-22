@@ -229,7 +229,7 @@ class AddChatMembersView(APIView):
             user_role = roles.filter(id=int(member['permission_type_id'])).first()
             if user:
                 old_participant = Participant.objects.filter(chat=chat, user=user)
-                if old_participant.length > 0:
+                if old_participant.exists():
                     old_participant.is_active = True
                     old_participant.role=user_role
                     old_participant.save()
