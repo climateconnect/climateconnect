@@ -16,6 +16,7 @@ import tokenConfig from "../../../public/config/tokenConfig";
 import Axios from "axios";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import { getParams } from "../../../public/lib/generalOperations";
+import EmailIcon from '@material-ui/icons/Email';
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -43,6 +44,11 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 18,
     color: theme.palette.secondary.light,
   },
+  infoBottomBar: {
+    display: "flex",
+    marginTop: theme.spacing(3),
+    justifyContent: "space-between"
+  }
 }));
 
 const componentDecorator = (href, text, key) => (
@@ -283,14 +289,17 @@ function LargeScreenOverview({
               followingChangePending={followingChangePending}
             />
             {!hasAdminPermissions && (
-              <Button
-                className={classes.contactProjectButton}
-                variant="contained"
-                color="primary"
-                onClick={handleClickContact}
-              >
-                Contact organizer
-              </Button>
+              <Tooltip title="Contact the project's creator with just one click!">
+                <Button
+                  className={classes.contactProjectButton}
+                  variant="contained"
+                  color="primary"
+                  onClick={handleClickContact}
+                  startIcon={<EmailIcon />}
+                >
+                  Contact organizer
+                </Button>
+              </Tooltip>
             )}
           </div>
         </div>
