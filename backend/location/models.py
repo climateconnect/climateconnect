@@ -47,3 +47,10 @@ class Location(models.Model):
         help_text="Nominatim's place id of this location",
         verbose_name="Place ID"
     )
+
+    class Meta:
+        verbose_name = "Location"
+        verbose_name_plural = "Location"
+
+    def __str__(self):
+        return "%s" % (self.name)
