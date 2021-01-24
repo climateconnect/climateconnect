@@ -40,7 +40,7 @@ export default function LocationSearchBar({
         console.log(response.data);
         if (active) {
           const filteredData = response.data.filter(
-            (o) => o.importance > 0.5 && o.class !== "landuse"
+            (o) => o.importance > 0.5 && o.class !== "landuse" && o?.geojson?.type !== "Point"
           );
           console.log(filteredData);
           const data =

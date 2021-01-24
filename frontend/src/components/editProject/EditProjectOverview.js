@@ -209,6 +209,7 @@ const InputLocation = ({ project, handleChangeProject, handleChangeMultipleProje
       location: location_object.name,
       loc: {
         polygon: location?.geojson?.coordinates,
+        geojson: location?.geojson,
         place_id: location?.place_id,
         osm_id: location?.osm_id,
         name: location_object.name,
