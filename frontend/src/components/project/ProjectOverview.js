@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
   contactProjectButton: {
     marginLeft: theme.spacing(1),
+    maxHeight: 40,
   },
   followButtonContainer: (props) => ({
     display: "inline-flex",
