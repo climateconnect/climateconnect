@@ -99,23 +99,6 @@ class Organization(models.Model):
         blank=True
     )
 
-
-    latitude = models.CharField(
-        help_text="Latitude of organization's location",
-        verbose_name="Latitude",
-        max_length=512,
-        null=True,
-        blank=True
-    )
-
-    longitude = models.CharField(
-        help_text="Longitude of organization's location",
-        verbose_name="Longitude",
-        max_length=512,
-        null=True,
-        blank=True
-    )
-
     short_description = models.TextField(
         help_text="Short description about an organization",
         verbose_name="Short Description",
