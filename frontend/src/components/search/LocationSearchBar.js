@@ -15,8 +15,10 @@ export default function LocationSearchBar({
   className,
   value,
   onChange,
+  open,
+  handleSetOpen,
+  locationInputRef,
 }) {
-  const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
   const [searchValue, setSearchValue] = React.useState("");
   const [inputValue, setInputValue] = React.useState("");
@@ -64,7 +66,7 @@ export default function LocationSearchBar({
   }, [searchValue]);
 
   const handleClose = () => {
-    setOpen(false);
+    handleSetOpen(false);
   };
 
   const renderSearchOption = (option) => {
@@ -72,11 +74,11 @@ export default function LocationSearchBar({
   };
 
   const handleInputChange = (event) => {
-    console.log("input is being changed!");
     if (!loading) setLoading(true);
     if (options?.length > 0) setOptions([]);
-    if (value && onChange) onChange(event.target.value);
-    else setInputValue(event.target.value);
+    if (event.target.value && onChange) {
+      onChange(event.target.value);
+    }setInputValue(event.target.value);
     setSearchValueThrottled(event.target.value);
   };
 
@@ -112,7 +114,7 @@ export default function LocationSearchBar({
       className={`${className} ${inputClassName}`}
       open={open}
       onOpen={() => {
-        setOpen(true);
+        handleSetOpen(true);
       }}
       handleHomeEndKeys
       disableClearable
@@ -124,7 +126,7 @@ export default function LocationSearchBar({
       filterOptions={handleFilterOptions}
       getOptionDisabled={handleGetOptionDisabled}
       renderOption={renderSearchOption}
-      noOptionsText="No options"
+      noOptionsText="No options"      
       renderInput={(params) => (
         <TextField
           {...params}
@@ -134,6 +136,7 @@ export default function LocationSearchBar({
           onChange={handleInputChange}
           helperText={helperText}
           size={smallInput && "small"}
+          inputRef={locationInputRef}
           InputProps={{
             ...params.InputProps,
             endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,

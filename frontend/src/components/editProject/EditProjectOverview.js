@@ -14,7 +14,9 @@ import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import LocationSearchBar from "../search/LocationSearchBar";
-import { getNameFromLocation, getFirstPart, getMiddlePart } from "../../../public/lib/locationOperations";
+import {
+  getNameFromLocation,
+} from "../../../public/lib/locationOperations";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -76,13 +78,14 @@ export default function EditProjectOverview({
   handleSetProject,
   smallScreen,
   tagsOptions,
+  overviewInputsRef,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
+  locationInputRef,
 }) {
   const classes = useStyles();
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
-  };
-  const handleChangeMultipleProjectValues = (newValues) => {
-    handleSetProject({ ...project, ...newValues });
   };
   const handleChangeImage = (newImage, newThumbnailImage) => {
     handleSetProject({
@@ -99,7 +102,10 @@ export default function EditProjectOverview({
           handleChangeProject={handleChangeProject}
           handleChangeImage={handleChangeImage}
           tagsOptions={tagsOptions}
-          handleChangeMultipleProjectValues={handleChangeMultipleProjectValues}
+          overviewInputsRef={overviewInputsRef}
+          locationOptionsOpen={locationOptionsOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          locationInputRef={locationInputRef}
         />
       ) : (
         <LargeScreenOverview
@@ -107,7 +113,10 @@ export default function EditProjectOverview({
           handleChangeProject={handleChangeProject}
           handleChangeImage={handleChangeImage}
           tagsOptions={tagsOptions}
-          handleChangeMultipleProjectValues={handleChangeMultipleProjectValues}
+          overviewInputsRef={overviewInputsRef}
+          locationOptionsOpen={locationOptionsOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          locationInputRef={locationInputRef}
         />
       )}
     </Container>
@@ -119,19 +128,24 @@ function SmallScreenOverview({
   handleChangeProject,
   handleChangeImage,
   tagsOptions,
-  handleChangeMultipleProjectValues,
+  overviewInputsRef,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
+  locationInputRef,
 }) {
   const classes = useStyles();
   return (
     <>
       <InputImage project={project} screenSize="small" handleChangeImage={handleChangeImage} />
-      <div className={classes.blockProjectInfo}>
+      <div className={classes.blockProjectInfo} ref={overviewInputsRef}>
         <InputName project={project} screenSize="small" />
         <InputShortDescription project={project} handleChangeProject={handleChangeProject} />
         <InputLocation
           project={project}
           handleChangeProject={handleChangeProject}
-          handleChangeMultipleProjectValues={handleChangeMultipleProjectValues}
+          locationOptionsOpen={locationOptionsOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          locationInputRef={locationInputRef}
         />
         <InputWebsite project={project} handleChangeProject={handleChangeProject} />
         <InputTags
@@ -149,7 +163,10 @@ function LargeScreenOverview({
   handleChangeProject,
   handleChangeImage,
   tagsOptions,
-  handleChangeMultipleProjectValues,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
+  overviewInputsRef,
+  locationInputRef,
 }) {
   const classes = useStyles();
   return (
@@ -159,12 +176,14 @@ function LargeScreenOverview({
         <div className={classes.largeScreenImageContainer}>
           <InputImage project={project} screenSize="large" handleChangeImage={handleChangeImage} />
         </div>
-        <div className={classes.inlineProjectInfo}>
+        <div className={classes.inlineProjectInfo} ref={overviewInputsRef}>
           <InputShortDescription project={project} handleChangeProject={handleChangeProject} />
           <InputLocation
             project={project}
             handleChangeProject={handleChangeProject}
-            handleChangeMultipleProjectValues={handleChangeMultipleProjectValues}
+            locationOptionsOpen={locationOptionsOpen}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+            locationInputRef={locationInputRef}
           />
           <InputWebsite project={project} handleChangeProject={handleChangeProject} />
           <InputTags
@@ -201,13 +220,18 @@ const InputShortDescription = ({ project, handleChangeProject }) => {
   );
 };
 
-const InputLocation = ({ project, handleChangeProject, handleChangeMultipleProjectValues }) => {
+const InputLocation = ({ 
+  project, 
+  handleChangeProject, 
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
+  locationInputRef,
+}) => {
   const classes = useStyles();
   const handleChangeLocation = (location) => {
-    const location_object = getNameFromLocation(location)
-    handleChangeMultipleProjectValues({
-      location: location_object.name,
-      loc: {
+    const location_object = getNameFromLocation(location);
+    handleChangeProject(
+      {
         polygon: location?.geojson?.coordinates,
         geojson: location?.geojson,
         place_id: location?.place_id,
@@ -217,7 +241,8 @@ const InputLocation = ({ project, handleChangeProject, handleChangeMultipleProje
         state: location_object.state,
         country: location_object.country,
       },
-    });
+      "loc"
+    );
   };
   return (
     <div className={classes.projectInfoEl}>
@@ -226,8 +251,13 @@ const InputLocation = ({ project, handleChangeProject, handleChangeMultipleProje
         required
         className={classes.locationInput}
         value={project.location}
-        onChange={(value) => handleChangeProject(value, "location")}
+        onChange={(value) => {
+          handleChangeProject(value, "loc")
+        }}
         onSelect={handleChangeLocation}
+        open={locationOptionsOpen}
+        handleSetOpen={handleSetLocationOptionsOpen}
+        locationInputRef={locationInputRef}
       />
     </div>
   );

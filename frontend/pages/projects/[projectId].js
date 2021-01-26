@@ -370,7 +370,6 @@ async function getProjectByIdIfExists(projectUrl, token) {
     );
     if (resp.data.length === 0) return null;
     else {
-      //TODO: get comments and timeline posts and project taggings
       return parseProject(resp.data);
     }
   } catch (err) {

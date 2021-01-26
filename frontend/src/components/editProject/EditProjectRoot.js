@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useMediaQuery, Container, Divider } from "@material-ui/core";
 import EditProjectOverview from "./EditProjectOverview";
 import EditProjectContent from "./EditProjectContent";
@@ -8,6 +8,7 @@ import Router from "next/router";
 import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
+import { isLocationValid } from "../../../public/lib/locationOperations";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -16,7 +17,7 @@ const useStyles = makeStyles((theme) => {
     },
     bottomNavigation: {
       marginTop: theme.spacing(3),
-      height: theme.spacing(2),
+      minHeight: theme.spacing(2),
     },
   };
 });
@@ -32,16 +33,36 @@ export default function EditProjectRoot({
   oldProject,
   user,
   user_role,
+  handleSetErrorMessage,
 }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-  const draftReqiredProperties = ["name", "location"];
+  const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
+  const draftReqiredProperties = {
+    "name": "Project name", 
+    "loc": "Location"
+  };
+  const overviewInputsRef = useRef(null);
+  const locationInputRef = useRef(null)
+
+  const handleSetLocationOptionsOpen = (bool) => {
+    setLocationOptionsOpen(bool);
+  };
 
   const onSaveDraft = async () => {
-    if (draftReqiredProperties.filter((p) => !project[p]).length > 0)
-      draftReqiredProperties.map((p) => {
-        if (!project[p]) {
-          alert("Your project draft is missing the following reqired property: " + p);
+    if (project.loc && !isLocationValid(project.loc)) {
+      overviewInputsRef.current.scrollIntoView();
+      locationInputRef.current.focus()
+      setLocationOptionsOpen(true);
+      handleSetErrorMessage("Please choose one of the location options")
+      return;
+    }
+    if (Object.keys(draftReqiredProperties).filter((key) => !project[key]).length > 0)
+      Object.keys(draftReqiredProperties).map((key) => {
+        if (!project[key]) {
+          alert(
+            "Your project draft is missing the following reqired property: " + draftReqiredProperties[key]
+            );
         }
       });
     else {
@@ -128,13 +149,17 @@ export default function EditProjectRoot({
   };
 
   return (
-    <Container disableGutters={isNarrowScreen}>
+    <Container >
       <form onSubmit={handleSubmit}>
         <EditProjectOverview
           tagsOptions={tagsOptions}
           project={project}
           smallScreen={isNarrowScreen}
           handleSetProject={handleSetProject}
+          overviewInputsRef={overviewInputsRef}
+          locationOptionsOpen={locationOptionsOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          locationInputRef={locationInputRef}
         />
         <EditProjectContent
           project={project}

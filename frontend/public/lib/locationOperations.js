@@ -34,7 +34,7 @@ export function getNameFromLocation(location) {
     city: firstPart,
     state: middlePart,
     country: location.address.country,
-    name: firstPart + middlePart + location.address.country
+    name: firstPart + middlePart + location.address.country,
   };
 }
 
@@ -60,3 +60,8 @@ const getMiddlePart = (address, order, suffixes) => {
   }
   return "";
 };
+
+export function isLocationValid(location) {
+  if (!location || typeof location == "string") return false;
+  else return true;
+}

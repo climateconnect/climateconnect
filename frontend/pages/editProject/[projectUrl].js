@@ -45,15 +45,22 @@ export default function EditProjectPage({
     ...project,
     status: statusOptions.find((s) => s.name === project.status),
   };
+  const [errorMessage, setErrorMessage] = React.useState("")
   const { user } = useContext(UserContext);
 
+  const handleSetErrorMessage = (newErrorMessage) => {
+    setErrorMessage(newErrorMessage)
+  }
   const handleSetProject = (newProject) => {
     setCurProject({ ...newProject });
   };
 
   if (!user)
     return (
-      <WideLayout title="Please Log In to Edit this Climate Solution" hideHeadline={true}>
+      <WideLayout 
+        title="Please Log In to Edit this Climate Solution" 
+        hideHeadline={true}
+      >
         <LoginNudge fullPage whatToDo="edit this project" />
       </WideLayout>
     );
@@ -89,7 +96,13 @@ export default function EditProjectPage({
   else {
     const user_role = members.find((m) => m.user && m.user.id === user.id).role;
     return (
-      <WideLayout className={classes.root} title={"Edit Solution " + project.name} hideHeadline>
+      <WideLayout 
+        className={classes.root} 
+        title={"Edit Solution " + project.name} 
+        hideHeadline
+        message={errorMessage}
+        messageType={errorMessage && "error"}
+      >
         <EditProjectRoot
           oldProject={project}
           project={curProject}
@@ -101,6 +114,7 @@ export default function EditProjectPage({
           token={token}
           user={user}
           user_role={user_role}
+          handleSetErrorMessage={handleSetErrorMessage}
         />
       </WideLayout>
     );
