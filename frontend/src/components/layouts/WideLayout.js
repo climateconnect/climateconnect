@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     [theme.breakpoints.up("lg")]: {
       left: "50%",
-      marginLeft: -640
-    }
+      marginLeft: -640,
+    },
   },
 }));
 
@@ -67,8 +67,8 @@ export default function WideLayout({
     }
   }, []);
   useEffect(() => {
-    setAlertOpen(true)
-  }, [message])
+    setAlertOpen(true);
+  }, [message]);
   return (
     <LayoutWrapper
       title={title}

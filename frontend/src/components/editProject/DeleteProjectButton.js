@@ -1,5 +1,5 @@
-import React from "react"
-import { Button, makeStyles } from "@material-ui/core"
+import React from "react";
+import { Button, makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   deleteProjectButton: {
@@ -10,10 +10,10 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#ea6962",
     },
   },
-}))
+}));
 
-export default function DeleteProjectButton({project, handleClickDeleteProjectPopup}) {
-  const classes = useStyles()
+export default function DeleteProjectButton({ project, handleClickDeleteProjectPopup }) {
+  const classes = useStyles();
   return (
     <Button
       classes={{
@@ -25,5 +25,5 @@ export default function DeleteProjectButton({project, handleClickDeleteProjectPo
     >
       {project.is_draft ? "Delete Draft" : "Delete Project"}
     </Button>
-  )
+  );
 }

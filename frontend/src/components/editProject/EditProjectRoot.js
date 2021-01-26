@@ -39,11 +39,11 @@ export default function EditProjectRoot({
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
   const draftReqiredProperties = {
-    "name": "Project name", 
-    "loc": "Location"
+    name: "Project name",
+    loc: "Location",
   };
   const overviewInputsRef = useRef(null);
-  const locationInputRef = useRef(null)
+  const locationInputRef = useRef(null);
 
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
@@ -52,17 +52,18 @@ export default function EditProjectRoot({
   const onSaveDraft = async () => {
     if (project.loc && !isLocationValid(project.loc)) {
       overviewInputsRef.current.scrollIntoView();
-      locationInputRef.current.focus()
+      locationInputRef.current.focus();
       setLocationOptionsOpen(true);
-      handleSetErrorMessage("Please choose one of the location options")
+      handleSetErrorMessage("Please choose one of the location options");
       return;
     }
     if (Object.keys(draftReqiredProperties).filter((key) => !project[key]).length > 0)
       Object.keys(draftReqiredProperties).map((key) => {
         if (!project[key]) {
           alert(
-            "Your project draft is missing the following reqired property: " + draftReqiredProperties[key]
-            );
+            "Your project draft is missing the following reqired property: " +
+              draftReqiredProperties[key]
+          );
         }
       });
     else {
@@ -149,7 +150,7 @@ export default function EditProjectRoot({
   };
 
   return (
-    <Container >
+    <Container>
       <form onSubmit={handleSubmit}>
         <EditProjectOverview
           tagsOptions={tagsOptions}

@@ -14,9 +14,7 @@ import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import LocationSearchBar from "../search/LocationSearchBar";
-import {
-  getNameFromLocation,
-} from "../../../public/lib/locationOperations";
+import { getNameFromLocation } from "../../../public/lib/locationOperations";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -220,9 +218,9 @@ const InputShortDescription = ({ project, handleChangeProject }) => {
   );
 };
 
-const InputLocation = ({ 
-  project, 
-  handleChangeProject, 
+const InputLocation = ({
+  project,
+  handleChangeProject,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   locationInputRef,
@@ -252,7 +250,7 @@ const InputLocation = ({
         className={classes.locationInput}
         value={project.location}
         onChange={(value) => {
-          handleChangeProject(value, "loc")
+          handleChangeProject(value, "loc");
         }}
         onSelect={handleChangeLocation}
         open={locationOptionsOpen}

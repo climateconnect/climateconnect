@@ -78,7 +78,8 @@ export default function LocationSearchBar({
     if (options?.length > 0) setOptions([]);
     if (event.target.value && onChange) {
       onChange(event.target.value);
-    }setInputValue(event.target.value);
+    }
+    setInputValue(event.target.value);
     setSearchValueThrottled(event.target.value);
   };
 
@@ -126,7 +127,7 @@ export default function LocationSearchBar({
       filterOptions={handleFilterOptions}
       getOptionDisabled={handleGetOptionDisabled}
       renderOption={renderSearchOption}
-      noOptionsText="No options"      
+      noOptionsText="No options"
       renderInput={(params) => (
         <TextField
           {...params}
