@@ -228,7 +228,7 @@ class ProjectAPIView(APIView):
         pass_through_params = ['collaborators_welcome', 'description', 'helpful_connections','short_description', 'website']
         for param in pass_through_params:
             if param in request.data:
-                setattr(project, project.param, request.data[param])
+                setattr(project, param, request.data[param])
 
         if 'name' in request.data and request.data['name'] != project.name:
             project.name = request.data['name']
@@ -286,7 +286,7 @@ class ProjectAPIView(APIView):
             project.end_date = parse(request.data['end_date'])
         if 'location' in request.data:
             project.location = request.data['location']
-        if 'location' in request.data:
+        if 'loc' in request.data:
             location = get_location(request.data['loc'])
             project.loc = location
         if 'is_draft' in request.data:
