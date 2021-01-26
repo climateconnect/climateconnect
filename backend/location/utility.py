@@ -1,6 +1,6 @@
 from rest_framework.exceptions import ValidationError
 from location.models import Location
-from django.contrib.gis.geos import (MultiPolygon, Polygon, GEOSGeometry)
+from django.contrib.gis.geos import (MultiPolygon, Polygon, GEOSGeometry, LinearRing, Point)
 
 
 def get_location(location_object):
@@ -20,14 +20,7 @@ def get_location(location_object):
     if loc.exists():
         return loc[0]
     else:
-        print(location_object['geojson'])
-        polygon = GEOSGeometry(str(location_object['geojson']))
-        print(polygon)
-        for coord in polygon.coords:
-            points = get_points_from_poly(coord)
-        print("done----")
-        multipolygon = MultiPolygon([polygon])
-        print(polygon)
+        multipolygon = get_multipolygon_from_geojson(location_object['geojson'])
         loc = Location.objects.create(
             osm_id=location_object['osm_id'],
             place_id=location_object['place_id'],
@@ -39,4 +32,31 @@ def get_location(location_object):
         )
         return loc
 
-def get_points_from_poly()
+def get_multipolygon_from_geojson(geojson):
+    input_polygon =  GEOSGeometry(str(geojson))
+    
+    if isinstance(input_polygon,Polygon):
+        return MultiPolygon(
+            get_polygon_with_switched_coordinates(input_polygon)
+        )
+    elif isinstance(input_polygon, MultiPolygon):
+        polygons = list(input_polygon)
+        switched_multipolygon = []
+        for polygon in polygons:
+            switched_polygon = get_polygon_with_switched_coordinates(polygon)
+            switched_multipolygon.append(switched_polygon)        
+        return MultiPolygon(switched_multipolygon)
+    else:
+        raise Exception("Wrong input")
+
+def get_polygon_with_switched_coordinates(polygon):
+    switched_poly = []
+    linear_rings = list(polygon)
+    for ring in linear_rings:
+        switched_ring = []
+        points = list(ring)
+        for point in points:
+            switched_point = (point[1], point[0])
+            switched_ring.append(switched_point)
+        switched_poly.append(LinearRing(switched_ring))
+    return Polygon(*switched_poly)
