@@ -9,7 +9,6 @@ import ProjectOverview from "../../src/components/project/ProjectOverview";
 import ProjectContent from "../../src/components/project/ProjectContent";
 import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
 import ProjectCommentsContent from "../../src/components/project/ProjectCommentsContent";
-import { getParams } from "./../../public/lib/generalOperations";
 
 import tokenConfig from "../../public/config/tokenConfig";
 import axios from "axios";

@@ -1,4 +1,3 @@
-import countries from "./countries.json";
 import PlaceIcon from "@material-ui/icons/Place";
 
 export default {

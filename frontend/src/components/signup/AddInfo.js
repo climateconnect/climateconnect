@@ -1,6 +1,5 @@
 import React from "react";
 import Form from "./../general/Form";
-import countries from "./../../../public/data/countries.json";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(() => {
