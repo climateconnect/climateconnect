@@ -1,3 +1,5 @@
+from location.models import Location
+from location.serializers import LocationStubSerializer
 from rest_framework import serializers
 
 from climateconnect_api.models import UserProfile
@@ -15,6 +17,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     status = serializers.CharField(source='status.name', read_only=True)
     collaborating_organizations = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -50,6 +53,11 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_number_of_followers(self, obj):
         return obj.project_following.count()
+
+    def get_location(self, obj):
+        if obj.loc == None:
+            return None
+        return obj.loc.name
 
 
 class ProjectParentsSerializer(serializers.ModelSerializer):
