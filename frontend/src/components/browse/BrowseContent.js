@@ -162,7 +162,7 @@ export default function BrowseContent({
     const newUrl = `${origin}${pathname}${filteredQueryParams}`;
 
     // Only push state if there's a URL change
-    if (newUrl !== window.location.href) {
+    if (newUrl !== window?.location?.href) {
       window.history.pushState({}, "", newUrl);
     }
   };
