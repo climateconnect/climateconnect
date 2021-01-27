@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
 import NextCookies from "next-cookies";
+
+import { buildUrlEndingFromFilters } from "../../src/utils/index";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import HubHeaderImage from "../../src/components/hub/HubHeaderImage";
@@ -197,18 +199,6 @@ const HubDescription = ({ hub }) => {
       users below!
     </Typography>
   );
-};
-
-const buildUrlEndingFromFilters = (filters) => {
-  let url = "&";
-  Object.keys(filters).map((filterKey) => {
-    if (filters[filterKey] && filters[filterKey].length > 0) {
-      if (Array.isArray(filters[filterKey]))
-        url += encodeURI(filterKey + "=" + filters[filterKey].join()) + "&";
-      else url += encodeURI(filterKey + "=" + filters[filterKey] + "&");
-    }
-  });
-  return url;
 };
 
 Hub.getInitialProps = async (ctx) => {
