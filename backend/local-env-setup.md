@@ -20,6 +20,7 @@ DATABASE_PORT=<database port>
 ALLOWED_HOSTS=<hosts allowed. eg: http://localhost:8000>
 ENVIRONMENT=<Environment you are in, eg: development>
 AUTO_VERIFY=<Set to True locally>
+CELERY_BROKER_URL=<Set celery broker url, eg: "redis://127.0.0.1">
 ```
 
 Env variables needed for email sending with [mailjet](https://www.mailjet.com/):
