@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Container, Tabs, Tab, Divider, useMediaQuery, makeStyles } from "@material-ui/core";
 
+import { buildUrlEndingFromFilters } from "../../utils/index";
 import FilterSection from "../indexPage/FilterSection";
 import FilterContent from "../filter/FilterContent";
 import ProjectPreviews from "../project/ProjectPreviews";
@@ -142,11 +143,43 @@ export default function BrowseContent({
   };
 
   /**
+   * For example when filtering by location="San Francisco", the url should
+   * automatically change to active filters. This enables filtered searches
+   * to persist, so that they can be easily shareable to other users.
+   *
+   * Builds a URL and updates window state. E.g. something like:
+   * http://localhost:3000/browse?&country=Austria&city=vienna&
+   */
+  const persistFiltersInURL = (activeFilters) => {
+    // Build query params, include the `?` but ignore
+    // the standalone 'ampersand' case when no active filters are present.
+    // TODO-PR - could refactor this function likely
+    const filteredParams = buildUrlEndingFromFilters(activeFilters);
+    const filteredQueryParams = filteredParams !== "&" ? `?${filteredParams}` : "";
+
+    // Build a URL with properties. E.g., /browse?...
+    const origin = window?.location?.origin;
+    const pathname = window?.location?.pathname;
+    const newUrl = `${origin}${pathname}${filteredQueryParams}`;
+
+    // TODO(piper-pr): not sure what best practice is for push state
+    // TODO(piper-pr): what's this feature called?
+
+    // Only push state if there's a URL change
+    if (newUrl !== window.location.href) {
+      window.history.pushState({}, "", newUrl);
+    }
+  };
+
+  /**
    * Sets loading state to true to until the results are
    * returned from applying the new filters. Then updates the
    * state.
    */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
+    // Save these filters as query params to the URL
+    persistFiltersInURL(newFilters);
+
     setIsFiltering(true);
     const res = await applyNewFilters(type, newFilters, closeFilters, state.urlEnding[type]);
 
@@ -207,6 +240,7 @@ export default function BrowseContent({
           textColor="primary"
           centered={true}
         >
+          test
           {TYPES_BY_TAB_VALUE.map((t, index) => (
             <Tab label={capitalizeFirstLetter(t)} className={classes.tab} key={index} />
           ))}
