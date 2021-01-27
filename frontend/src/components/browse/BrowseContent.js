@@ -153,7 +153,6 @@ export default function BrowseContent({
   const persistFiltersInURL = (activeFilters) => {
     // Build query params, include the `?` but ignore
     // the standalone 'ampersand' case when no active filters are present.
-    // TODO-PR - could refactor this function likely
     const filteredParams = buildUrlEndingFromFilters(activeFilters);
     const filteredQueryParams = filteredParams !== "&" ? `?${filteredParams}` : "";
 
@@ -161,9 +160,6 @@ export default function BrowseContent({
     const origin = window?.location?.origin;
     const pathname = window?.location?.pathname;
     const newUrl = `${origin}${pathname}${filteredQueryParams}`;
-
-    // TODO(piper-pr): not sure what best practice is for push state
-    // TODO(piper-pr): what's this feature called?
 
     // Only push state if there's a URL change
     if (newUrl !== window.location.href) {
