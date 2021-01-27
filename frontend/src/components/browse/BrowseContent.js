@@ -236,7 +236,6 @@ export default function BrowseContent({
           textColor="primary"
           centered={true}
         >
-          test
           {TYPES_BY_TAB_VALUE.map((t, index) => (
             <Tab label={capitalizeFirstLetter(t)} className={classes.tab} key={index} />
           ))}
