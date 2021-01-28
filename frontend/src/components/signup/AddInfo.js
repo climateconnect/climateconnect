@@ -6,11 +6,19 @@ const useStyles = makeStyles(() => {
   return {
     checkboxLabels: {
       fontSize: 14,
-    },
+    }
   };
 });
 
-export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBack }) {
+export default function AddInfo({ 
+  handleSubmit, 
+  errorMessage, 
+  values, 
+  handleGoBack ,
+  locationInputRef,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen
+}) {
   const classes = useStyles();
   const fields = [
     {
@@ -33,6 +41,9 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
       type: "location",
       key: "location",
       value: values["location"],
+      ref: locationInputRef,
+      locationOptionsOpen: locationOptionsOpen,
+      handleSetLocationOptionsOpen: handleSetLocationOptionsOpen
     },
     {
       required: false,
@@ -86,6 +97,7 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
         onSubmit={(event, values) => handleSubmit(event, values)}
         errorMessage={errorMessage}
         onGoBack={handleGoBack}
+        fieldClassName={classes.fieldClassName}
       />
     </>
   );

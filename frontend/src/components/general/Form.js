@@ -61,13 +61,6 @@ const useStyles = makeStyles((theme) => ({
   backButton: {
     float: "left",
   },
-  inputField: {
-    borderRadius: 2,
-    borderWidth: 5,
-  },
-  notchedOutline: {
-    borderWidth: 2,
-  },
   rightAlignedButton: {
     float: "right",
     marginTop: theme.spacing(4),
@@ -111,7 +104,6 @@ export default function Form({
   fieldClassName,
 }) {
   const classes = useStyles();
-
   const [curPercentage, setCurPercentage] = React.useState(percentage);
   const [values, setValues] = React.useState(
     fields.reduce((obj, field) => {
@@ -151,6 +143,10 @@ export default function Form({
     setValues(newValues);
     //setValues doesn't apply instantly, so we pass the new values to the updatePercentage function
     if (updateInstantly) updatePercentage(newValues);
+  }
+
+  function handleLocationChange(newLocation, key) {
+    setValues({...values, [key]: newLocation})
   }
 
   function handleBlur() {
@@ -212,12 +208,6 @@ export default function Form({
                   className={`${classes.blockElement} ${fieldClassName}`}
                   key={field.label + fields.indexOf(field)}
                   onChange={() => handleValueChange(event, field.key, field.type, true)}
-                  InputProps={{
-                    classes: {
-                      root: classes.inputField,
-                      notchedOutline: classes.notchedOutline,
-                    },
-                  }}
                 />
                 {field.bottomLink && field.bottomLink}
               </React.Fragment>
@@ -269,7 +259,19 @@ export default function Form({
               </div>
             );
           } else if (field.type === "location") {
-            return <LocationSearchBar label={field.label} required={field.required} />;
+            return (
+              <LocationSearchBar 
+                label={field.label} 
+                required={field.required} 
+                onSelect={(value) => handleLocationChange(value, field.key)}
+                onChange={(value) => handleLocationChange(value, field.key)}
+                initialValue={field.value}
+                locationInputRef={field.ref}
+                handleSetOpen={field.handleSetLocationOptionsOpen}
+                open={field.locationOptionsOpen}
+                className={`${classes.blockElement} ${fieldClassName}`}
+              />
+              )
           } else if (
             (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) &&
             field.type === "autocomplete"
@@ -305,12 +307,6 @@ export default function Form({
                   className={`${classes.blockElement} ${fieldClassName}`}
                   onBlur={handleBlur}
                   onChange={() => handleValueChange(event, field.key, field.type)}
-                  InputProps={{
-                    classes: {
-                      root: classes.inputField,
-                      notchedOutline: classes.notchedOutline,
-                    },
-                  }}
                 />
                 {field.bottomLink && field.bottomLink}
               </React.Fragment>

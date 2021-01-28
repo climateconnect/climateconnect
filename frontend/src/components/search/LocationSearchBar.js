@@ -14,16 +14,28 @@ export default function LocationSearchBar({
   onSelect,
   className,
   value,
+  initialValue,
   onChange,
   open,
   handleSetOpen,
   locationInputRef,
 }) {
-  const [options, setOptions] = React.useState([]);
-  const [searchValue, setSearchValue] = React.useState("");
-  const [inputValue, setInputValue] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
+  const getValue = (newValue) => {
+    if(!newValue){
+      return ""
+    }else if(typeof newValue === "object"){
+      return newValue.name ? newValue.name : newValue.simple_name
+    } else {
+      return newValue
+    }
+  } 
 
+  const [options, setOptions] = React.useState([]);
+  // If no 'open' prop is passed to the component, the component handles its 'open' state with this internal state
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false)
+  const [searchValue, setSearchValue] = React.useState("");
+  const [inputValue, setInputValue] = React.useState(getValue(initialValue));
+  const [loading, setLoading] = React.useState(false);
   React.useEffect(() => {
     let active = true;
 
@@ -40,15 +52,18 @@ export default function LocationSearchBar({
           config
         );
         console.log(response.data);
+        const bannedClasses = ["landuse", "tourism", "railway"]
         if (active) {
           const filteredData = response.data.filter(
-            (o) => o.importance > 0.5 && o.class !== "landuse" && o?.geojson?.type !== "Point"
+            (o) => {
+              return o.importance > 0.5 && !bannedClasses.includes(o.class) && o?.geojson?.type !== "Point"
+            }
           );
           console.log(filteredData);
           const data =
             filteredData.length > 0
               ? filteredData
-              : response.data.slice(0, 2).filter((o) => o.class !== "landuse");
+              : response.data.slice(0, 2).filter((o) => !bannedClasses.includes(o.class));
           setOptions(
             data.map((o) => ({ ...o, simple_name: getNameFromLocation(o).name, key: o.place_id }))
           );
@@ -66,8 +81,15 @@ export default function LocationSearchBar({
   }, [searchValue]);
 
   const handleClose = () => {
-    handleSetOpen(false);
+    setOpen(false);
   };
+
+  const setOpen = newOpenValue => {
+    if(open === undefined)
+      setUncontrolledOpen(newOpenValue)
+    else
+      handleSetOpen(newOpenValue)
+  }
 
   const renderSearchOption = (option) => {
     return <React.Fragment>{option}</React.Fragment>;
@@ -76,7 +98,7 @@ export default function LocationSearchBar({
   const handleInputChange = (event) => {
     if (!loading) setLoading(true);
     if (options?.length > 0) setOptions([]);
-    if (event.target.value && onChange) {
+    if ((event.target.value || event.target.value === "") && onChange) {
       onChange(event.target.value);
     }
     setInputValue(event.target.value);
@@ -108,14 +130,15 @@ export default function LocationSearchBar({
 
   const handleFilterOptions = (options) => {
     return options;
-  };
+  };  
+
   console.log(options);
   return (
     <Autocomplete
       className={`${className} ${inputClassName}`}
-      open={open}
+      open={open === undefined ? uncontrolledOpen : open}
       onOpen={() => {
-        handleSetOpen(true);
+        setOpen(true);
       }}
       handleHomeEndKeys
       disableClearable
@@ -123,7 +146,7 @@ export default function LocationSearchBar({
       onClose={handleClose}
       onChange={handleChange}
       options={options.map((o) => o.simple_name)}
-      inputValue={value ? value : inputValue}
+      inputValue={value ? getValue(value) : inputValue}
       filterOptions={handleFilterOptions}
       getOptionDisabled={handleGetOptionDisabled}
       renderOption={renderSearchOption}

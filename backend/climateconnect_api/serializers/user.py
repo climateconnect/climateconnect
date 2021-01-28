@@ -11,6 +11,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
     email = serializers.SerializerMethodField()
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
     availability = AvailabilitySerializer()
     skills = SkillSerializer(many=True)
 
@@ -19,7 +20,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'email', 'first_name', 'last_name',
             'url_slug', 'image', 'background_image',
-            'country', 'state', 'city', 'biography', 'is_profile_verified',
+            'location', 'biography', 'is_profile_verified',
             'availability', 'skills', 'has_logged_in', 'website'
         )
 
@@ -35,11 +36,17 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
     def get_last_name(self, obj):
         return obj.user.last_name
 
+    def get_location(self, obj):
+        if obj.location == None:
+            return None
+        return obj.location.name
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
     availability = AvailabilitySerializer()
     skills = SkillSerializer(many=True)
 
@@ -60,12 +67,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_last_name(self, obj):
         return obj.user.last_name
+    
+    def get_location(self, obj):
+        if obj.location == None:
+            return None
+        return obj.location.name
 
 
 class UserProfileMinimalSerializer(serializers.ModelSerializer):
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
     id = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -84,11 +97,17 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
     def get_last_name(self, obj):
         return obj.user.last_name
 
+    def get_location(self, obj):
+        if obj.location == None:
+            return None
+        return obj.location.name
+
 
 class UserProfileStubSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -105,6 +124,11 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
 
     def get_last_name(self, obj):
         return obj.user.last_name
+
+    def get_location(self, obj):
+        if obj.location == None:
+            return None
+        return obj.location.name
 
 class UserAccountSettingsSerializer(serializers.ModelSerializer):
     email = serializers.SerializerMethodField()

@@ -34,15 +34,15 @@ export function getNameFromLocation(location) {
     city: firstPart,
     state: middlePart,
     country: location.address.country,
-    name: firstPart + middlePart + location.address.country,
+    name: firstPart + ", " + middlePart + (middlePart?.length > 0 ? ", " : "") + location.address.country,
   };
 }
 
 const getFirstPart = (address, order) => {
   for (const el of order) {
     if (address[el]) {
-      if (el === "state") return address[el] + " (state), ";
-      return address[el] + ", ";
+      if (el === "state") return address[el] + " (state)";
+      return address[el];
     }
   }
   return "";
@@ -53,7 +53,7 @@ const getMiddlePart = (address, order, suffixes) => {
     if (address[el]) {
       for (const suffix of suffixes) {
         if (address[suffix]) {
-          return `${address[suffix]}, `;
+          return address[suffix];
         }
       }
     }
@@ -64,4 +64,19 @@ const getMiddlePart = (address, order, suffixes) => {
 export function isLocationValid(location) {
   if (!location || typeof location == "string") return false;
   else return true;
+}
+
+export function parseLocation(location) {
+  const location_object = getNameFromLocation(location);
+  return {
+    type: location?.geojson?.type,
+    coordinates: location?.geojson?.coordinates,
+    geojson: location?.geojson,
+    place_id: location?.place_id,
+    osm_id: location?.osm_id,
+    name: location_object.name,
+    city: location_object.city,
+    state: location_object.state,
+    country: location_object.country,
+  }
 }

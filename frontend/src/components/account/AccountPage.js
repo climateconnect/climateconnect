@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Avatar, Typography, Chip, Button, Link } from "@material-ui/core";
+import { Container, Avatar, Typography, Chip, Button, Link, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import Linkify from "react-linkify";
@@ -169,7 +169,9 @@ export default function AccountPage({
             return (
               <div key={index}>
                 <div className={classes.content}>
-                  <PlaceIcon color="primary" className={classes.infoIcon} />
+                  <Tooltip title="Location">
+                    <PlaceIcon color="primary" className={classes.infoIcon} />
+                  </Tooltip>
                   {value ? value + additionalText : i.missingMessage}
                 </div>
               </div>
