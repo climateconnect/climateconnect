@@ -11,14 +11,28 @@ def get_location(location_object):
         'state',
         'country',
         'name',
-        'geojson'
+        'type'
     ]
     for param in required_params:
         if param not in location_object:
-            raise ValidationError('Required parameter is missing')
+            raise ValidationError('Required parameter is missing:'+param)
     loc = Location.objects.filter(place_id=location_object['place_id'])
     if loc.exists():
         return loc[0]
+    elif location_object['type'] == "Point":
+        point = GEOSGeometry(str(location_object['geojson']))
+        coords = list(point)
+        switched_point = Point(coords[1], coords[0])
+        loc = Location.objects.create(
+            osm_id=location_object['osm_id'],
+            place_id=location_object['place_id'],
+            city=location_object['city'],
+            state=location_object['state'],
+            country=location_object['country'],
+            name=location_object['name'],
+            centre_point=switched_point,
+        )
+        return loc
     else:
         multipolygon = get_multipolygon_from_geojson(location_object['geojson'])
         loc = Location.objects.create(

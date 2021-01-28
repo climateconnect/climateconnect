@@ -10,13 +10,13 @@ class Location(models.Model):
 
     city = models.CharField(
         help_text="Points to location's city name",
-        verbose_name="Name",
+        verbose_name="City",
         max_length=1024
     )
 
     state = models.CharField(
         help_text="Points to location's state name",
-        verbose_name="Name",
+        verbose_name="State",
         max_length=1024,
         blank=True,
         null=True
@@ -24,15 +24,21 @@ class Location(models.Model):
 
     country = models.CharField(
         help_text="Points to location's country name",
-        verbose_name="Name",
+        verbose_name="Country",
         max_length=1024
     )
 
     multi_polygon = models.MultiPolygonField(
-        geography=True
+        geography=True,
+        verbose_name="Multi Polygon",
+        help_text="The area where the location is located",
+        null=True,
+        blank=True
     )
 
-    main_polygon = models.PolygonField(
+    centre_point = models.PointField(
+        verbose_name="Centre point",
+        help_text="This is only set if the location is just a point",
         geography=True,
         blank=True,
         null=True
