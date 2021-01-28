@@ -58,6 +58,7 @@ export default function ShareProjectRoot({
   user,
   statusOptions,
   token,
+  setMessage,
 }) {
   const classes = useStyles();
   const [project, setProject] = React.useState(
@@ -93,12 +94,14 @@ export default function ShareProjectRoot({
 
   const goToNextStep = () => {
     setCurStep(steps[steps.indexOf(curStep) + 1]);
+    setMessage("")
     //scroll to top when navigating to another step
     window.scrollTo(0, 0);
   };
 
   const goToPreviousStep = () => {
     setCurStep(steps[steps.indexOf(curStep) - 1]);
+    setMessage("")
     //scroll to top when navigating to another step
     window.scrollTo(0, 0);
   };
@@ -163,6 +166,7 @@ export default function ShareProjectRoot({
               handleSetProjectData={handleSetProject}
               goToNextStep={goToNextStep}
               userOrganizations={userOrganizations}
+              setMessage={setMessage}
             />
           )}
           {curStep.key === "selectCategory" && (

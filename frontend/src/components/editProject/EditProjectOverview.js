@@ -14,7 +14,7 @@ import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import LocationSearchBar from "../search/LocationSearchBar";
-import { getNameFromLocation } from "../../../public/lib/locationOperations";
+import { parseLocation } from "../../../public/lib/locationOperations";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -227,18 +227,8 @@ const InputLocation = ({
 }) => {
   const classes = useStyles();
   const handleChangeLocation = (location) => {
-    const location_object = getNameFromLocation(location);
     handleChangeProject(
-      {
-        polygon: location?.geojson?.coordinates,
-        geojson: location?.geojson,
-        place_id: location?.place_id,
-        osm_id: location?.osm_id,
-        name: location_object.name,
-        city: location_object.city,
-        state: location_object.state,
-        country: location_object.country,
-      },
+      parseLocation(location),
       "loc"
     );
   };
@@ -248,7 +238,7 @@ const InputLocation = ({
         label="Location"
         required
         className={classes.locationInput}
-        value={project.location}
+        value={project.loc}
         onChange={(value) => {
           handleChangeProject(value, "loc");
         }}

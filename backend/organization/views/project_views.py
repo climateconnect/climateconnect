@@ -65,7 +65,6 @@ class ListProjectsView(ListAPIView):
 
     def get_queryset(self):
         projects = Project.objects.filter(is_draft=False,is_active=True)
-
         if 'hub' in self.request.query_params:
             project_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
             project_category_ids = list(map(lambda c: c.id, project_category))
@@ -127,7 +126,7 @@ class CreateProjectView(APIView):
         required_params = [
             'name', 'status', 'short_description',
             'collaborators_welcome', 'team_members',
-            'project_tags', 'location', 'image'
+            'project_tags', 'loc', 'image'
         ]
         for param in required_params:
             if param not in request.data:

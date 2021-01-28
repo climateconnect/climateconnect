@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useRef } from "react";
 import Form from "../general/Form";
 import { Typography, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import { isLocationValid, parseLocation } from "../../../public/lib/locationOperations";
 
 const useStyles = makeStyles((theme) => ({
   orgBottomLink: {
@@ -37,8 +38,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Share({ project, handleSetProjectData, goToNextStep, userOrganizations }) {
+export default function Share({ 
+  project, 
+  handleSetProjectData, 
+  goToNextStep, 
+  userOrganizations,
+  setMessage
+}) {
   const classes = useStyles();
+  const locationInputRef = useRef(null)
+  const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
+  
+  const handleSetLocationOptionsOpen = (bool) => {
+    setLocationOptionsOpen(bool);
+  };
+
   const organizations = !userOrganizations
     ? []
     : userOrganizations.map((org) => {
@@ -99,13 +113,17 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
       required: true,
       label: "Location",
       type: "location",
-      key: "location",
-      value: project.location,
+      key: "loc",
+      value: project.loc,
+      ref: locationInputRef,
+      locationOptionsOpen: locationOptionsOpen,
+      handleSetLocationOptionsOpen: handleSetLocationOptionsOpen
     },
   ];
   const messages = {
     submitMessage: "Next Step",
   };
+
 
   const getOrgObject = (org) => {
     return userOrganizations.find((o) => o.name === org);
@@ -114,16 +132,26 @@ export default function Share({ project, handleSetProjectData, goToNextStep, use
   const onSubmit = (event, values) => {
     event.preventDefault();
     Object.keys(values).map(
-      (k) => (values[k] = values[k] && values[k] != true ? values[k].trim() : values[k])
+      (k) => (values[k] = (values[k] && values[k] != true && typeof values[k] !== "object") ? values[k].trim() : values[k])
     );
+    //Short circuit if the location is not valid
+    if(!isLocationValid(values.loc)){
+      setLocationOptionsOpen(true)
+      locationInputRef.current.focus();
+      setMessage("Please choose one of the location options")
+      return
+    }
+    const loc = parseLocation(values.loc)
     if (!values.parent_organization)
       handleSetProjectData({
         ...values,
+        loc: loc,
         isPersonalProject: true,
       });
     else
       handleSetProjectData({
         ...values,
+        loc: loc,
         parent_organization: getOrgObject(values.parent_organization),
         isPersonalProject: false,
       });

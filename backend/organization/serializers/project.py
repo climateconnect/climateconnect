@@ -18,6 +18,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     collaborating_organizations = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
+    loc = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -26,7 +27,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             'image', 'status',
             'start_date', 'end_date',
             'short_description', 'description',
-            'location',
+            'loc', 'location',
             'collaborators_welcome', 
             'skills', 'helpful_connections',
             'project_parents', 'tags', 
@@ -54,6 +55,11 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_number_of_followers(self, obj):
         return obj.project_following.count()
 
+    def get_loc(self, obj):
+        if obj.loc == None:
+            return None
+        return obj.loc.name
+    
     def get_location(self, obj):
         if obj.loc == None:
             return None
@@ -84,6 +90,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True)
     project_parents = serializers.SerializerMethodField()
     status = serializers.CharField(source='status.name', read_only=True)
+    location = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -96,6 +103,11 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
     def get_project_parents(self, obj):
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
         return serializer.data
+    
+    def get_location(self, obj):
+        if obj.loc == None:
+            return None
+        return obj.loc.name
 
 
 class ProjectStubSerializer(serializers.ModelSerializer):
@@ -103,6 +115,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField()
     status = serializers.CharField(source='status.name', read_only=True)
     image = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
     
     class Meta:
         model = Project
@@ -128,6 +141,11 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             return obj.image.url
         else:
             return None
+    
+    def get_location(self, obj):
+        if obj.loc == None:
+            return None
+        return obj.loc.name
 
 
 class ProjectMemberSerializer(serializers.ModelSerializer):

@@ -1,3 +1,4 @@
+from location.utility import get_location
 from typing import Dict
 from organization.models import Project
 from climateconnect_api.models import (Skill,)
@@ -17,8 +18,9 @@ def create_new_project(data: Dict) -> Project:
     # Add all non required parameters if they exists in the request.
     if 'start_date' in data:
         project.start_date = data['start_date']
-    if 'location' in data:
-        project.location = data['location']
+    if 'loc' in data:
+        location = get_location(data['loc'])
+        project.loc = location
     if 'country' in data:
         project.country = data['country']
     if 'city' in data:
