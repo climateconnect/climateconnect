@@ -154,6 +154,12 @@ function ProfileLayout({
     const chat = await startPrivateChat(profile, token);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
+  const contentRef = React.useRef(null);
+  const scrollDownToProject = () => { contentRef.current.scrollIntoView({ behavior: "smooth" }); };
+  React.useEffect(() => {
+    const URL = window.location.href;
+    if (URL.slice(-9) == "#projects") { scrollDownToProject(); }
+  }, []);
   return (
     <AccountPage
       account={profile}
@@ -167,7 +173,7 @@ function ProfileLayout({
       {!user && (
         <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
       )}
-      <Container className={classes.container} id="projects">
+      <Container className={classes.container} ref={contentRef}>
         {user && user.url_slug !== profile.url_slug && (
           <Button variant="contained" color="primary" onClick={handleConnectBtn}>
             Message
