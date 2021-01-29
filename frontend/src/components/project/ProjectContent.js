@@ -161,7 +161,6 @@ export default function ProjectContent({ project, leaveProject }) {
             </div>
           )}
           {/* Note: created date is not the same as the start date, for projects */}
-          {project.start_date}
           <Typography>
             Created: <DateDisplay date={new Date(project.creation_date)} />
           </Typography>
