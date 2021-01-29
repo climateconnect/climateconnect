@@ -13,19 +13,37 @@
  * See more on the formatting options, here:
  * https://github.com/nmn/react-timeago#formatter-optional
  */
-const yearAndDayFormatter = (value, unit, suffix, epochMiliseconds) => {
+const yearAndDayFormatter = (value, unit, suffix, elapsedMilliseconds) => {
+  // Only apply custom logic for the year case
   if (unit === "year") {
     // The days calculation comes directly from react-timeago:
-    const days = Math.round(Math.abs(epochMiliseconds - Date.now()) / (1000 * 60 * 60 * 24));
+    // https://github.com/nmn/react-timeago/blob/master/src/formatters/buildFormatter.js#L84-L86
+
+    // Number of ms in a second: 1000
+    // Number of seconds in a minute: 60
+    // Number of minutes in an hour: 60
+    // Number of hours in a day: 24
+    // Should be 86,400,000
+    const msInDays = 1000 * 60 * 60 * 24;
+    const elapsedDaysSinceEpoch = Math.round(elapsedMilliseconds / msInDays);
+    const dayWithinYear = elapsedDaysSinceEpoch % 365;
 
     // With the number of days, we can just append the remaining
-    // days after taking into account the year overflow
-    const dayAfterYears = days % (365 * value);
-    const pluralizeDays = (days) => {
-      return days !== 1 ? "days" : "day";
-    };
+    // days after taking into account the year overflow. We also
+    // handle the "0 days ago" case
+    if (dayWithinYear === 0) {
+      return `${value} ${unit} ago`;
+    }
 
-    return `${value} ${unit} and ${dayAfterYears} ${pluralizeDays(dayAfterYears)} ago`;
+    // Case: plural "years" and "days"
+    // Case: plural "years" and "days"
+    const pluralizeUnit = (value, unit) => {
+      return value !== 1 ? `${unit}s` : unit;
+    };
+    const pluralizedDays = pluralizeUnit(dayWithinYear, "day");
+    const pluralizedYears = pluralizeUnit(value, "year");
+
+    return `${value} ${pluralizedYears} and ${dayWithinYear} ${pluralizedDays} ago`;
   }
 
   // Otherwise, just default. This logic comes from:
