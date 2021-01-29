@@ -21,7 +21,7 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
     window.scrollTo(0, 0);
   };
 
-  const saveChanges = (event, editedOrg) => {
+  const saveChanges = (editedOrg) => {
     const error = verifyChanges(editedOrg).error;
     if (error) {
       handleSetErrorMessage(error);

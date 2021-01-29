@@ -722,45 +722,45 @@ export default function EditAccountPage({
             If you wish to delete this account, send an E-Mail to {deleteEmail}
           </Typography>
         )}
-        <UploadImageDialog
-          onClose={handleBackgroundClose}
-          open={open.backgroundDialog}
-          imageUrl={tempImages.background_image}
-          height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
-          mobileHeight={80}
-          mediumHeight={120}
-          ratio={3}
-        />
-        <UploadImageDialog
-          onClose={handleAvatarClose}
-          open={open.avatarDialog}
-          imageUrl={tempImages.image}
-          borderRadius={10000}
-          height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
-          ratio={1}
-        />
-        {possibleAccountTypes && (
-          <SelectDialog
-            onClose={handleAddTypeClose}
-            open={open.addTypeDialog}
-            title="Add Type"
-            values={getTypes(possibleAccountTypes, infoMetadata).filter(
-              (type) => editedAccount.types && !editedAccount.types.includes(type.key)
-            )}
-            label={"Choose type"}
-            supportAdditionalInfo={true}
-            className={classes.dialogWidth}
-          />
-        )}
-        <ConfirmDialog
-          open={open.confirmExitDialog}
-          onClose={handleConfirmExitClose}
-          title="Exit"
-          text="Do you really want to exit without saving?"
-          cancelText="No"
-          confirmText="Yes"
-        />
       </form>
+      <UploadImageDialog
+        onClose={handleBackgroundClose}
+        open={open.backgroundDialog}
+        imageUrl={tempImages.background_image}
+        height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
+        mobileHeight={80}
+        mediumHeight={120}
+        ratio={3}
+      />
+      <UploadImageDialog
+        onClose={handleAvatarClose}
+        open={open.avatarDialog}
+        imageUrl={tempImages.image}
+        borderRadius={10000}
+        height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
+        ratio={1}
+      />
+      {possibleAccountTypes && (
+        <SelectDialog
+          onClose={handleAddTypeClose}
+          open={open.addTypeDialog}
+          title="Add Type"
+          values={getTypes(possibleAccountTypes, infoMetadata).filter(
+            (type) => editedAccount.types && !editedAccount.types.includes(type.key)
+          )}
+          label={"Choose type"}
+          supportAdditionalInfo={true}
+          className={classes.dialogWidth}
+        />
+      )}
+      <ConfirmDialog
+        open={open.confirmExitDialog}
+        onClose={handleConfirmExitClose}
+        title="Exit"
+        text="Do you really want to exit without saving?"
+        cancelText="No"
+        confirmText="Yes"
+      />      
     </Container>
   );
 }

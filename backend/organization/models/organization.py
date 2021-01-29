@@ -1,3 +1,4 @@
+from location.models import Location
 from django.db import models
 
 
@@ -67,6 +68,7 @@ class Organization(models.Model):
         auto_now=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     country = models.CharField(
         help_text="Points to what country the organization is located.",
         verbose_name="Country",
@@ -75,6 +77,7 @@ class Organization(models.Model):
         blank=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     state = models.CharField(
         help_text="Points to what state the organization is located.",
         verbose_name="State",
@@ -83,6 +86,7 @@ class Organization(models.Model):
         blank=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     city = models.CharField(
         help_text="Points to what city the organization is located",
         verbose_name="City",
@@ -91,10 +95,12 @@ class Organization(models.Model):
         blank=True
     )
 
-    location = models.CharField(
-        help_text="Organization location",
+    location = models.ForeignKey(
+        Location,
+        help_text="Points to the organization's location",
         verbose_name="Location",
-        max_length=2048,
+        related_name="organization_loc",
+        on_delete=models.CASCADE,
         null=True,
         blank=True
     )

@@ -95,6 +95,7 @@ class Project(models.Model):
         max_length=4800
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     country = models.CharField(
         help_text="Points to a country of the project",
         verbose_name="Country",
@@ -103,6 +104,7 @@ class Project(models.Model):
         blank=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     city = models.CharField(
         help_text="Points to a city of the project",
         verbose_name="City",
@@ -111,6 +113,7 @@ class Project(models.Model):
         blank=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     location = models.CharField(
         help_text="Project location",
         verbose_name="Location",

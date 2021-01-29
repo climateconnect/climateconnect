@@ -9,6 +9,7 @@ from rest_framework import serializers
 class OrganizationSerializer(serializers.ModelSerializer):
     types = serializers.SerializerMethodField()
     parent_organization = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
 
     class Meta:
         model = Organization
@@ -24,24 +25,41 @@ class OrganizationSerializer(serializers.ModelSerializer):
     def get_parent_organization(self, obj):
         serializer = OrganizationStubSerializer(obj.parent_organization)
         return serializer.data
+    
+    def get_location(self, obj):
+        if obj.location == None:
+            return None
+        return obj.location.name
 
 
 class OrganizationMinimalSerializer(serializers.ModelSerializer):
+    location = serializers.SerializerMethodField()
     class Meta:
         model = Organization
         fields = (
             'id', 'name', 'url_slug', 'image', 'short_description', 
             'background_image', 'location', 'website'
         )
+    
+    def get_location(self, obj):
+        if obj.location == None:
+            return None
+        return obj.location.name
 
 
 class OrganizationCardSerializer(serializers.ModelSerializer):
     types = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
     class Meta:
         model = Organization
         fields = (
             'id', 'name', 'url_slug', 'image', 'location', 'types'
         )
+    
+    def get_location(self, obj):
+        if obj.location == None:
+            return None
+        return obj.location.name
 
     def get_types(self, obj):
         serializer = OrganizationTaggingSerializer(obj.tag_organization, many=True)
@@ -49,9 +67,16 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
 
 
 class OrganizationStubSerializer(serializers.ModelSerializer):
+    location = serializers.SerializerMethodField()
+
     class Meta:
         model = Organization
-        fields = ('id', 'name', 'url_slug', 'image')
+        fields = ('id', 'name', 'url_slug', 'image', 'location')
+
+    def get_location(self, obj):
+        if obj.location == None:
+            return None
+        return obj.location.name
 
 
 class OrganizationMemberSerializer(serializers.ModelSerializer):

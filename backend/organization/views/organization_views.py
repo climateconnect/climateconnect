@@ -1,3 +1,4 @@
+from location.utility import get_location
 from hubs.models.hub import Hub
 from organization.models.tags import ProjectTags
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -100,7 +101,7 @@ class CreateOrganizationView(APIView):
 
             # Get accurate location from google maps.
             if 'location' in request.data:
-                organization.location = request.data['location']
+                organization.location = get_location(request.data['location'])
             if 'short_description' in request.data:
                 organization.short_description = request.data['short_description']
             if 'website' in request.data:
@@ -166,12 +167,8 @@ class OrganizationAPIView(APIView):
             if param in request.data:
                 setattr(organization, param, request.data[param])
         
-        # Author: Dip
-        # When we pass location as a param in the API, We are first checking with google maps API whether the passed param is accurate.
-        # Then we are actually getting formatted address, latitude and longitude from it. 
-        # So here for location we can't just setattr method. Hence writing our own logic.
         if 'location' in request.data:
-            organization.location = request.data['location']
+            organization.location = get_location(request.data['location'])
         if 'image' in request.data:
             organization.image = get_image_from_data_url(request.data['image'])[0]
         if 'background_image' in request.data:

@@ -13,7 +13,7 @@ import LoginNudge from "../src/components/general/LoginNudge";
 import axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
 import PageNotFound from "../src/components/general/PageNotFound";
-import { isLocationValid } from "../public/lib/locationOperations";
+import { isLocationValid, indicateWrongLocation } from "../public/lib/locationOperations";
 
 export default function EditProfilePage({
   skillsOptions,
@@ -47,9 +47,7 @@ export default function EditProfilePage({
   const profile = user ? parseProfile(user, true /*true*/) : null;
   const saveChanges = (editedAccount) => {
     if (editedAccount?.info?.location && !isLocationValid(editedAccount?.info?.location)) {
-      locationInputRef.current.focus();
-      setLocationOptionsOpen(true);
-      setErrorMessage("Please choose one of the location options");
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage)
       return;
     }
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);

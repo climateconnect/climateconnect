@@ -3,7 +3,7 @@ import Form from "../general/Form";
 import { Typography, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import { isLocationValid, parseLocation } from "../../../public/lib/locationOperations";
+import { isLocationValid, parseLocation, indicateWrongLocation } from "../../../public/lib/locationOperations";
 
 const useStyles = makeStyles((theme) => ({
   orgBottomLink: {
@@ -136,9 +136,7 @@ export default function Share({
     );
     //Short circuit if the location is not valid
     if(!isLocationValid(values.loc)){
-      setLocationOptionsOpen(true)
-      locationInputRef.current.focus();
-      setMessage("Please choose one of the location options")
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage)
       return
     }
     const loc = parseLocation(values.loc)

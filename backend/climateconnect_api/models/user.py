@@ -56,6 +56,7 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     country = models.CharField(
         help_text="User's country",
         verbose_name="Country",
@@ -64,6 +65,7 @@ class UserProfile(models.Model):
         null=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     state = models.CharField(
         help_text="User's state",
         verbose_name="State",
@@ -72,6 +74,7 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     city = models.CharField(
         help_text="User's city",
         verbose_name="City",

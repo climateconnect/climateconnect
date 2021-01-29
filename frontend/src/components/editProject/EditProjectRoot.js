@@ -8,7 +8,7 @@ import Router from "next/router";
 import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
-import { isLocationValid } from "../../../public/lib/locationOperations";
+import { isLocationValid, indicateWrongLocation } from "../../../public/lib/locationOperations";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -52,9 +52,7 @@ export default function EditProjectRoot({
   const onSaveDraft = async () => {
     if (project.loc && !isLocationValid(project.loc)) {
       overviewInputsRef.current.scrollIntoView();
-      locationInputRef.current.focus();
-      setLocationOptionsOpen(true);
-      handleSetErrorMessage("Please choose one of the location options");
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetErrorMessage)
       return;
     }
     if (Object.keys(draftReqiredProperties).filter((key) => !project[key]).length > 0)

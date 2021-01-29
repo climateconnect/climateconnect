@@ -80,3 +80,13 @@ export function parseLocation(location) {
     country: location_object.country,
   }
 }
+
+export function indicateWrongLocation(
+  locationInputRef, 
+  setLocationOptionsOpen, 
+  setErrorMessage
+) {
+  locationInputRef.current.focus();
+  setLocationOptionsOpen(true);
+  setErrorMessage("Please choose one of the location options");
+}

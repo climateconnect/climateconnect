@@ -5,7 +5,7 @@ import axios from "axios";
 import Router from "next/router";
 import Layout from "../src/components/layouts/layout";
 import UserContext from "../src/components/context/UserContext";
-import { parseLocation, isLocationValid } from "../public/lib/locationOperations";
+import { parseLocation, isLocationValid, indicateWrongLocation } from "../public/lib/locationOperations";
 
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
@@ -52,11 +52,8 @@ export default function Signup() {
 
   const handleAddInfoSubmit = (event, values) => {
     event.preventDefault();
-    console.log(values.location)
     if(!isLocationValid(values.location)){
-      locationInputRef.current.focus();
-      setLocationOptionsOpen(true);
-      setErrorMessage("Please search and choose one of the location options");
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage)
       return
     }
     setUserInfo({
