@@ -137,6 +137,8 @@ export default function ProjectContent({ project }) {
               {project.is_draft ? "Edit Draft" : "Edit Project"}
             </Button>
           )}
+          {/* Note: created date is not the same as the start date, for projects */}
+          {project.start_date}
           <Typography>
             Created: <DateDisplay date={new Date(project.creation_date)} />
           </Typography>
