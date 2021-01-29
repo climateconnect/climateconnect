@@ -1,5 +1,6 @@
 {
   "name": "frontend",
+  "description": "This is the user-facing client code for the Climate Connect platform.",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,7 +14,8 @@
     "lint": "eslint .",
     "pretest": "yarn lint",
     "start": "NODE_ENV=production node server.js",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "jest": {
     "setupFiles": [
