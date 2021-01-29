@@ -20,13 +20,13 @@ export default function Share({
   const { user } = useContext(UserContext);
   if (!user)
     return (
-      <WideLayout title="Please log in to share a project" hideHeadline={true}>
+      <WideLayout title="Please Log In to Share your Climate Solution" hideHeadline={true}>
         <LoginNudge fullPage whatToDo="share a project" />
       </WideLayout>
     );
   else {
     return (
-      <WideLayout title="Share a project" hideHeadline={true}>
+      <WideLayout title="Share your Climate Solution" hideHeadline={true}>
         <ShareProjectRoot
           availabilityOptions={availabilityOptions}
           userOrganizations={userOrganizations}

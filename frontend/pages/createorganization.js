@@ -128,13 +128,13 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
 
   if (!user)
     return (
-      <WideLayout title="Please log in to create an organization" hideHeadline={true}>
+      <WideLayout title="Please Log In to Create an Organization" hideHeadline={true}>
         <LoginNudge fullPage whatToDo="create an organization" />
       </WideLayout>
     );
   else if (curStep === "basicorganizationinfo")
     return (
-      <Layout title="Create an organization">
+      <Layout title="Create an Organization">
         <EnterBasicOrganizationInfo
           errorMessage={errorMessages.basicOrganizationInfo}
           handleSubmit={handleBasicInfoSubmit}
@@ -144,7 +144,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     );
   else if (curStep === "detailledorganizationinfo")
     return (
-      <WideLayout title="Create an organization">
+      <WideLayout title="Create an Organization">
         <EnterDetailledOrganizationInfo
           errorMessage={errorMessages.detailledOrganizationInfo}
           handleSubmit={handleDetailledInfoSubmit}

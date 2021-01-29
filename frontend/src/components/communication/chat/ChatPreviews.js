@@ -121,7 +121,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat }) => {
           alignItems="center"
           className={classes.listItem}
         >
-          {!chat.chatting_partner && chat.name ? (
+          {chat.name ? (
             <ChatTitle chat={chat} className={classes.miniProfilePreview} mobile={isNarrowScreen} />
           ) : (
             <MiniProfilePreview

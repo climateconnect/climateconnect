@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Button } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GenericDialog from "./GenericDialog";
 
@@ -28,7 +28,7 @@ export default function ConfirmDialog(props) {
 
   return (
     <GenericDialog onClose={handleCancel} open={open} title={title} className={className}>
-      <div>{text}</div>
+      <Typography>{text}</Typography>
       <div className={classes.buttonsContainer}>
         <Button
           variant="contained"

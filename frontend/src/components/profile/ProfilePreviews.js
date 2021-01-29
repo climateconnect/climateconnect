@@ -30,17 +30,23 @@ export default function ProfilePreviews({
     ));
 
   const [gridItems, setGridItems] = React.useState(toProfilePreviews(profiles));
+  const [isFetchingMore, setIsFetchingMore] = React.useState(false);
 
   if (!loadFunc) {
     hasMore = false;
   }
 
   const loadMore = async (page) => {
-    if (hasMore) {
+    // Sometimes InfiniteScroll calls loadMore twice really fast. Therefore
+    // to improve performance, we aim to guard against subsequent
+    // fetches to the API by maintaining a local state flag.
+    if (!isFetchingMore) {
+      setIsFetchingMore(true);
       const newProfiles = await loadFunc(page);
       if (!parentHandlesGridItems) {
         setGridItems([...gridItems, ...toProfilePreviews(newProfiles)]);
       }
+      setIsFetchingMore(false);
     }
   };
 
@@ -52,8 +58,8 @@ export default function ProfilePreviews({
         component="ul"
         container
         element={Grid}
-        hasMore={hasMore}
-        loader={<LoadingSpinner isLoading key="profile-previews-spinner" />}
+        // We block subsequent invocations from InfinteScroll until we update local state
+        hasMore={hasMore && !isFetchingMore}
         loadMore={loadMore}
         pageStart={0}
         spacing={2}
@@ -63,6 +69,7 @@ export default function ProfilePreviews({
             ? toProfilePreviews(profiles)
             : "No members found."
           : gridItems}
+        {isFetchingMore && <LoadingSpinner isLoading key="profile-previews-spinner" />}
       </InfiniteScroll>
     </>
   );

@@ -78,7 +78,6 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
       {content.split("\n").map((i, index) => {
         if (!i.length) return <br key={index} />;
         if (youtubeVideoLines && youtubeVideoLines.find((l) => l.index === index)) {
-          console.log(youtubeVideoLines.find((l) => l.index === index));
           return <div key={index}>{youtubeVideoLines.find((l) => l.index === index).content}</div>;
         }
         return <div key={index}>{i ? i : " "}</div>;

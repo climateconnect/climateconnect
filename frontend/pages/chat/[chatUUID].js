@@ -8,6 +8,7 @@ import UserContext from "../../src/components/context/UserContext";
 import PageNotFound from "../../src/components/general/PageNotFound";
 import { sendToLogin, redirect } from "../../public/lib/apiOperations";
 import MessagingLayout from "../../src/components/communication/chat/MessagingLayout";
+import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
 
 export default function Chat({
   chatParticipants,
@@ -24,10 +25,12 @@ export default function Chat({
   const [participants, setParticipants] = React.useState(chatParticipants);
   const [state, setState] = React.useState({
     nextPage: 2,
-    messages: [...messages],
+    messages: messages ? [...messages] : [],
     nextLink: nextLink,
     hasMore: hasMore,
   });
+  const [errorMessage, setErrorMessage] = React.useState("")
+  const [dialogOpen, setDialogOpen] = React.useState(false)
   const handleChatWindowClose = (e) => {
     if (state.messages.filter((m) => m.unconfirmed).length > 0) {
       e.preventDefault();
@@ -61,7 +64,7 @@ export default function Chat({
       });
   }, [user]);
 
-  const chatting_partner = user && participants.filter((p) => p.id !== user.id)[0];
+  const chatting_partner = user && participants?.filter((p) => p.id !== user.id)[0];
   const isPrivateChat = !title || title.length === 0;
 
   const loadMoreMessages = async () => {
@@ -152,15 +155,46 @@ export default function Chat({
     }
   };
 
+  const requestLeaveChat = ()  => {
+    setDialogOpen(true)
+  }
+
+  const onDialogClose = async (confirmed) => {
+    if(confirmed)
+      await leaveChat()
+    setDialogOpen(false)
+  }
+
+  const leaveChat = async () => {
+    if(!title)
+      setErrorMessage("You can only leave group chats")
+    try{
+      const res = await axios.post(
+        process.env.API_URL + "/api/chat/" + chatUUID + "/leave/",
+        {},
+        tokenConfig(token)
+      )
+      console.log(res)
+      redirect("/inbox", {
+        message: `You successfully left the group chat ${title}`
+      })
+    } catch(e) {
+      console.log(e.response.data.detail)
+      setErrorMessage(e?.response?.data?.detail)
+    }
+  }
+
   return (
     <FixedHeightLayout
+      message={errorMessage}
+      messageType={errorMessage && "error"}
       title={
         isPrivateChat && chatting_partner
           ? "Message " + chatting_partner.first_name + " " + chatting_partner.last_name
           : title
       }
     >
-      {chatting_partner ? (
+      {chat_id && chatting_partner ? (
         <MessagingLayout
           chatting_partner={chatting_partner}
           messages={state.messages}
@@ -177,10 +211,19 @@ export default function Chat({
           chat_id={chat_id}
           setParticipants={setParticipants}
           handleChatWindowClose={handleChatWindowClose}
+          leaveChat={requestLeaveChat}
         />
       ) : (
-        <PageNotFound itemName="Chat" />
+        <PageNotFound itemName="Chat" returnText="Return to inbox" returnLink="/inbox"/>
       )}
+      <ConfirmDialog
+        open={dialogOpen}
+        onClose={onDialogClose}
+        title="Do you really want to leave this group chat?"
+        text="You will not be able to rejoin without being invited"
+        confirmText="Yes"
+        cancelText="No"
+      />
     </FixedHeightLayout>
   );
 }
@@ -196,6 +239,11 @@ Chat.getInitialProps = async (ctx) => {
     getChatMessagesByUUID(ctx.query.chatUUID, token, 1),
     getRolesOptions(),
   ]);
+  if (!chat) {
+    return {
+      chat_id: null
+    }
+  }
   return {
     token: token,
     chat_uuid: chat.chat_uuid,
@@ -218,15 +266,19 @@ const parseParticipantsWithRole = (participants, rolesOptions) => {
 };
 
 async function getChat(chat_uuid, token) {
-  const resp = await axios.get(
-    process.env.API_URL + "/api/chat/" + chat_uuid + "/",
-    tokenConfig(token)
-  );
-  return {
-    participants: parseParticipants(resp.data.participants, resp.data.user),
-    title: resp.data.name,
-    id: resp.data.id,
-  };
+  try {
+    const resp = await axios.get(
+      process.env.API_URL + "/api/chat/" + chat_uuid + "/",
+      tokenConfig(token)
+    );
+    return {
+      participants: parseParticipants(resp.data.participants, resp.data.user),
+      title: resp.data.name,
+      id: resp.data.id,
+    };
+  } catch(e) {
+    console.log(e?.response)
+  }
 }
 
 const parseParticipants = (participants, user) => {
@@ -251,7 +303,6 @@ async function getChatMessagesByUUID(chat_uuid, token, page, link) {
       nextLink: resp.data.next,
     };
   } catch (err) {
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     console.log("error!");
     console.log(err);
     return null;

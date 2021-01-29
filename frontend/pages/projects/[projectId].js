@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from "react";
-import { Container, Tabs, Tab } from "@material-ui/core";
+import { Container, Tabs, Tab, Typography } from "@material-ui/core";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles } from "@material-ui/core/styles";
 import Cookies from "next-cookies";
@@ -16,6 +16,7 @@ import axios from "axios";
 import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
 import UserContext from "../../src/components/context/UserContext";
 import PageNotFound from "../../src/components/general/PageNotFound";
+import { redirect } from "../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -76,10 +77,6 @@ export default function ProjectPage({ project, members, posts, comments, token, 
   };
 
   useEffect(() => {
-    const params = getParams(window.location.href);
-    if (params.message && encodeURI(message.message) != params.message) {
-      setMessage({ message: decodeURI(params.message) });
-    }
     window.addEventListener("beforeunload", handleWindowClose);
 
     return () => {
@@ -92,7 +89,7 @@ export default function ProjectPage({ project, members, posts, comments, token, 
       description={project?.shortdescription}
       message={message?.message}
       messageType={message?.messageType}
-      title={project ? project.name : "Project not found"}
+      title={project ? project.name : "Solution Not Found"}
     >
       {project ? (
         <ProjectLayout
@@ -147,7 +144,7 @@ function ProjectLayout({
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const [hash, setHash] = React.useState(null);
-  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState(false);
+  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({ follow: false, leave: false });
   const typesByTabValue = ["project", "team", "comments"];
 
   useEffect(() => {
@@ -178,7 +175,7 @@ function ProjectLayout({
     if (project && project.comments) {
       if (project.comments.length === 10) {
         commentsLabel += ` (${project.comments.length}+)`;
-      } else if (project.team.length < 10 && project.comments.length > 0) {
+      } else if (project?.team?.length < 10 && project.comments.length > 0) {
         commentsLabel += ` (${project.comments.length})`;
       }
     }
@@ -191,9 +188,40 @@ function ProjectLayout({
     setTabValue(newValue);
   };
 
-  const onConfirmDialogClose = (confirmed) => {
+  const onFollowDialogClose = (confirmed) => {
     if (confirmed) toggleFollowProject();
-    setConfirmDialogOpen(false);
+    setConfirmDialogOpen({ ...confirmDialogOpen, follow: false });
+  };
+
+  const leaveProject = async () => {
+    try {
+      console.log(tokenConfig(token));
+      const resp = await axios.post(
+        process.env.API_URL + "/api/projects/" + project.url_slug + "/leave/",
+        {},
+        tokenConfig(token)
+      );
+      console.log(resp);
+      if (resp.status === 200)
+        setMessage({
+          message: <span>You have successfully left the project.</span>,
+          messageType: "success",
+        });
+      redirect(`/projects/${project.url_slug}`, {
+        message: "You have successfully left the project.",
+      });
+    } catch (e) {
+      console.log(e?.response?.data?.message);
+      setMessage({
+        message: <span>{e?.response?.data?.message}</span>,
+        messageType: "error",
+      });
+    }
+  };
+
+  const onConfirmDialogClose = async (confirmed) => {
+    if (confirmed) await leaveProject();
+    setConfirmDialogOpen({ ...confirmDialogOpen, leave: false });
   };
 
   const handleToggleFollowProject = () => {
@@ -206,7 +234,7 @@ function ProjectLayout({
         ),
         messageType: "error",
       });
-    else if (isUserFollowing) setConfirmDialogOpen(true);
+    else if (isUserFollowing) setConfirmDialogOpen({ ...confirmDialogOpen, follow: true });
     else toggleFollowProject();
   };
 
@@ -232,6 +260,21 @@ function ProjectLayout({
         console.log(error);
         if (error && error.reponse) console.log(error.response);
       });
+  };
+
+  const requestLeaveProject = () => {
+    const user_permission =
+      user && project.team && project.team.find((m) => m.id === user.id)
+        ? project.team.find((m) => m.id === user.id).permission
+        : null;
+    const team_size = project?.team?.length;
+    if (user_permission === "Creator" && team_size > 1)
+      setMessage({
+        message:
+          'You can\'t leave a project as the creator. Please give the creator role to another team member by clicking "Manage Members" in the team tab',
+        messageType: "error",
+      });
+    else setConfirmDialogOpen({ ...confirmDialogOpen, leave: true });
   };
 
   return (
@@ -261,10 +304,10 @@ function ProjectLayout({
 
       <Container className={classes.tabContent}>
         <TabContent value={tabValue} index={0}>
-          <ProjectContent project={project} />
+          <ProjectContent project={project} leaveProject={requestLeaveProject} />
         </TabContent>
         <TabContent value={tabValue} index={1}>
-          <ProjectTeamContent project={project} />
+          <ProjectTeamContent project={project} leaveProject={requestLeaveProject} />
         </TabContent>
         <TabContent value={tabValue} index={2}>
           <ProjectCommentsContent
@@ -276,14 +319,36 @@ function ProjectLayout({
         </TabContent>
       </Container>
       <ConfirmDialog
-        open={confirmDialogOpen}
-        onClose={onConfirmDialogClose}
+        open={confirmDialogOpen.follow}
+        onClose={onFollowDialogClose}
         title="Do you really want to unfollow?"
         text={
           <span className={classes.dialogText}>
             Are you sure that you want to unfollow this project?
             <br />
             You {"won't"} receive updates about it anymore
+          </span>
+        }
+        confirmText="Yes"
+        cancelText="No"
+      />
+      <ConfirmDialog
+        open={confirmDialogOpen.leave}
+        onClose={onConfirmDialogClose}
+        title="Do you really want to leave this project?"
+        text={
+          <span className={classes.dialogText}>
+            Are you sure that you want to leave this project?
+            <br />
+            You {"won't"} be part of the team anymore.
+            {project?.team?.length === 1 && (
+              <Typography color="error">
+                <b>
+                  Danger: You are the only member of this project. <br /> If you leave the project
+                  it will be deactivated.
+                </b>
+              </Typography>
+            )}
           </span>
         }
         confirmText="Yes"
