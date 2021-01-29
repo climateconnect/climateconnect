@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import NextCookies from "next-cookies";
 
-import { buildUrlEndingFromFilters } from "../../src/utils/index";
+import { buildUrlEndingFromFilters } from "../../public/lib/urlParsing";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import HubHeaderImage from "../../src/components/hub/HubHeaderImage";

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Container, Tabs, Tab, Divider, useMediaQuery, makeStyles } from "@material-ui/core";
 
-import { buildUrlEndingFromFilters } from "../../utils/index";
+import { buildUrlEndingFromFilters } from "../../../public/lib/urlParsing";
 import FilterSection from "../indexPage/FilterSection";
 import FilterContent from "../filter/FilterContent";
 import ProjectPreviews from "../project/ProjectPreviews";

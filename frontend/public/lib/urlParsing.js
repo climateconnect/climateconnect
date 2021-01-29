@@ -1,7 +1,3 @@
-/**
- * Shared utilities file.
- */
-
 const buildUrlEndingFromFilters = (filters) => {
   let url = "&";
   Object.keys(filters).map((filterKey) => {

@@ -10,7 +10,7 @@ import {
   membersWithAdditionalInfo,
 } from "../public/lib/getOptions";
 
-import { buildUrlEndingFromFilters } from "../src/utils/index";
+import { buildUrlEndingFromFilters } from "../public/lib/urlParsing";
 import tokenConfig from "../public/config/tokenConfig";
 
 import WideLayout from "../src/components/layouts/WideLayout";
