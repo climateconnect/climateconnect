@@ -28,5 +28,6 @@ migrate:
 # just an alias for migrate
 migrations: migrate
 
+# Edit the number as you see fit
 test-data:
-	python manage.py create_test_data --number_of_rows 4
+	python manage.py create_test_data --number_of_rows 1
