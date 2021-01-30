@@ -62,7 +62,20 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
 1.  Ensure Docker is running and then run `sudo docker-compose up`. This will start a Redis server on Docker.
 1.  Ensure the Postgres server is running.
 1.  Run server using `python manage.py runserver`.
-1.  If test data is needed, run this command: `python manage.py create_test_data --number_of_rows 4`
+
+#### Creating and Removing Test Data
+* If test data is needed, run this command: `python manage.py create_test_data --number_of_rows 4`
+* If you need to wipe your local database and start over:
+  `$ sudo -u postgres psql`
+  ```sql
+  postgres-# \connect $DATABASE_NAME
+  $DATABASE_NAME-# \dt
+  $DATABASE_NAME-# DROP SCHEMA public CASCADE;
+  $DATABASE_NAME-# CREATE SCHEMA public;
+  $DATABASE_NAME-# \q;
+  ```
+
+  You will then need to run `python manage.py migrate` and `python manage.py createsuperuser` again after doing so.
 
 #### Testing
 
@@ -81,9 +94,17 @@ python manage.py test <file_path> or <file_path + class_name>
 ### Frontend
 
 1. `cd frontend`
-2. `yarn install` to download all npm packages
-3. Add a `.env` file for frontend environment variables. You can find variables you need to set in [`/frontend/next.config.js/`](https://github.com/climateconnect/climateconnect/blob/master/frontend/next.config.js)
-4. `yarn dev` to start developing
+1. `yarn install` to download all npm packages
+1. Add a `.env` file for frontend environment variables. You can find variables you need to set in [`/frontend/next.config.js/`](https://github.com/climateconnect/climateconnect/blob/master/frontend/next.config.js)
+
+  For local development, use the following contents for `.env`:
+  ```sh
+    API_HOST="localhost"
+    API_URL="http://127.0.0.1:8000"
+    BASE_URL_HOST=""
+    SOCKET_URL="ws://api.climateconnect.earth"
+  ```
+1. `yarn dev` to start developing
 
 ## To Deploy
 

@@ -19,6 +19,7 @@ __pycache__
 .idea/
 
 # vscode
+*.code-workspace
 /.vscode
 backend/.vscode
 frontend/.vscode

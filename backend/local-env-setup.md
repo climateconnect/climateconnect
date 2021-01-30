@@ -7,20 +7,23 @@ Basic env variables which you will need for initial setup:
 
 ```
 FRONTEND_URL=<your frontend URL eg: http://localhost:3001>
-
-
 SECRET_KEY=<Django secret-key e.g. output of $ openssl rand -base64 32>
 
-DATABASE_NAME=<database name>
+ALLOWED_HOSTS=<hosts allowed. eg: http://localhost:8000>
+ENVIRONMENT=<Environment you are in, eg: development>
+DEBUG=<Set to True, locally>
+AUTO_VERIFY=<Set to True, locally>
+```
+The following should correspond to how you've configured your Postgres database:
+
+```
+DATABASE_NAME=<database name e.g. climateconnect-dev>
 DATABASE_USER=<database user>
 DATABASE_PASSWORD=<database role password>
 DATABASE_HOST=<database host e.g. localhost>
 DATABASE_PORT=<database port e.g. 5432>
-
-ALLOWED_HOSTS=<hosts allowed. eg: http://localhost:8000>
-ENVIRONMENT=<Environment you are in, eg: development>
-AUTO_VERIFY=<Set to True locally>
 ```
+
 
 Env variables needed for email sending with [mailjet](https://www.mailjet.com/):
 
