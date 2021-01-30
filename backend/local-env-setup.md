@@ -6,16 +6,16 @@ Basic env variables which you will need for initial setup:
 (use double quotes for all values)
 
 ```
-FRONTEND_URL=<YOUR FRONTEND URL. eg: http://localhost:3001>
+FRONTEND_URL=<your frontend URL eg: http://localhost:3001>
 
 
-SECRET_KEY=<Django secret key>
+SECRET_KEY=<Django secret-key e.g. output of $ openssl rand -base64 32>
 
 DATABASE_NAME=<database name>
 DATABASE_USER=<database user>
-DATABASE_PASSWORD=<database admin>
-DATABASE_HOST=<database host>
-DATABASE_PORT=<database port>
+DATABASE_PASSWORD=<database role password>
+DATABASE_HOST=<database host e.g. localhost>
+DATABASE_PORT=<database port e.g. 5432>
 
 ALLOWED_HOSTS=<hosts allowed. eg: http://localhost:8000>
 ENVIRONMENT=<Environment you are in, eg: development>
