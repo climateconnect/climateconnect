@@ -1,6 +1,8 @@
 from rest_framework.exceptions import ValidationError
 from location.models import Location
-from django.contrib.gis.geos import (MultiPolygon, Polygon, GEOSGeometry, LinearRing, Point)
+from django.contrib.gis.geos import (
+    MultiPolygon, Polygon, GEOSGeometry, LinearRing, Point
+)
 
 
 def get_location(location_object):
@@ -46,6 +48,7 @@ def get_location(location_object):
         )
         return loc
 
+
 def get_multipolygon_from_geojson(geojson):
     input_polygon =  GEOSGeometry(str(geojson))
     
@@ -61,7 +64,8 @@ def get_multipolygon_from_geojson(geojson):
             switched_multipolygon.append(switched_polygon)        
         return MultiPolygon(switched_multipolygon)
     else:
-        raise Exception("Wrong input")
+        raise Exception("PolygonInstanceNotFound: Wrong input")
+
 
 def get_polygon_with_switched_coordinates(polygon):
     switched_poly = []
@@ -73,4 +77,5 @@ def get_polygon_with_switched_coordinates(polygon):
             switched_point = (point[1], point[0])
             switched_ring.append(switched_point)
         switched_poly.append(LinearRing(switched_ring))
+
     return Polygon(*switched_poly)
