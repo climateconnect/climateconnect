@@ -12,9 +12,18 @@ The code for https://climateconnect.earth.
 
 You will connect to this for your local backend project.
 
+* Create a new superuser
+* Alter your new user's password
+* Create a new database 
+
+Supply these values to your local `backend/.backend_env`.
+
+
 ### Docker
 
 We use Docker to run the local Redis server. See the [Docker install docs](https://docs.docker.com/get-docker/) if you don't have it.
+
+Make sure to install docker-ce, docker-ce-cli, containerd.io, and docker-compose.
 
 ## Get Started
 
@@ -45,7 +54,7 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
 1.  Go to backend directory: `cd backend`
 1.  Run `pip install -r requirements.txt` to install all backend libraries.
 1.  Create `.backend_env` to set environment variables.
-    - You can find up to date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md).
+    - You can find up-to-date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md).
     - For the [Django `SECRET_KEY`](https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-SECRET_KEY), run `openssl rand -base64 32` to create a 32 char random secret.
 1.  Run `python manage.py migrate` to run Django migrations.
     - Note: This command is used for when you first start, or whenever you are adding or updating database models.
@@ -54,10 +63,24 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
 
 #### Continual Development
 
-1.  Ensure Docker is running and then run `docker-compose up`. This will start a Redis server on Docker.
+1.  Ensure Docker is running and then run `sudo docker-compose up`. This will start a Redis server on Docker.
 1.  Ensure the Postgres server is running.
 1.  Run server using `python manage.py runserver`.
-1.  If test data is needed, run this command: `python manage.py create_test_data --number_of_rows 4`
+1.  Run Celery using `celery -A climateconnect_main worker -l INFO`
+
+#### Creating and Removing Test Data
+* If test data is needed, run this command: `python manage.py create_test_data --number_of_rows 4`
+* If you need to wipe your local database and start over:
+  `$ sudo -u postgres psql`
+  ```sql
+  postgres-# \connect $DATABASE_NAME
+  $DATABASE_NAME-# \dt
+  $DATABASE_NAME-# DROP SCHEMA public CASCADE;
+  $DATABASE_NAME-# CREATE SCHEMA public;
+  $DATABASE_NAME-# \q;
+  ```
+
+  You will then need to run `python manage.py migrate` and `python manage.py createsuperuser` again after doing so.
 
 #### Testing
 
@@ -76,9 +99,17 @@ python manage.py test <file_path> or <file_path + class_name>
 ### Frontend
 
 1. `cd frontend`
-2. `yarn install` to download all npm packages
-3. Add a `.env` file for frontend environment variables. You can find variables you need to set in [`/frontend/next.config.js/`](https://github.com/climateconnect/climateconnect/blob/master/frontend/next.config.js)
-4. `yarn dev` to start developing
+1. `yarn install` to download all npm packages
+1. Add a `.env` file for frontend environment variables. You can find variables you need to set in [`/frontend/next.config.js/`](https://github.com/climateconnect/climateconnect/blob/master/frontend/next.config.js)
+
+  For local development, use the following contents for `.env`:
+  ```sh
+    API_HOST="localhost"
+    API_URL="http://127.0.0.1:8000"
+    BASE_URL_HOST=""
+    SOCKET_URL="ws://api.climateconnect.earth"
+  ```
+1. `yarn dev` to start developing
 
 ## To Deploy
 
