@@ -115,8 +115,6 @@ WSGI_APPLICATION = 'climateconnect_main.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -212,3 +210,7 @@ CHANNEL_LAYERS = {
         }
     }
 }
+
+# For Celery we use Redis as a broker URL
+CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_TIMEZONE = "UTC"

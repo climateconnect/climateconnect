@@ -62,6 +62,7 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
 1.  Ensure Docker is running and then run `sudo docker-compose up`. This will start a Redis server on Docker.
 1.  Ensure the Postgres server is running.
 1.  Run server using `python manage.py runserver`.
+1.  Run Celery using `celery -A climateconnect_main worker -l INFO`
 
 #### Creating and Removing Test Data
 * If test data is needed, run this command: `python manage.py create_test_data --number_of_rows 4`
