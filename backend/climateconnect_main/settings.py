@@ -211,6 +211,6 @@ CHANNEL_LAYERS = {
     }
 }
 
-# For celery we are using redis as a broker URL
+# For Celery we use Redis as a broker URL
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
 CELERY_TIMEZONE = "UTC"
