@@ -41,7 +41,6 @@ export default function LocationSearchBar({
 
     (async () => {
       if (searchValue) {
-        console.log("searching for " + searchValue);
         const config = {
           method: "GET",
           mode: "no-cors",
@@ -51,7 +50,6 @@ export default function LocationSearchBar({
           `https://nominatim.openstreetmap.org/search?q=${searchValue}&format=json&addressdetails=1&polygon_geojson=1`,
           config
         );
-        console.log(response.data);
         const bannedClasses = ["landuse", "tourism", "railway"]
         if (active) {
           const filteredData = response.data.filter(
@@ -59,7 +57,6 @@ export default function LocationSearchBar({
               return o.importance > 0.5 && !bannedClasses.includes(o.class) && o?.geojson?.type !== "Point"
             }
           );
-          console.log(filteredData);
           const data =
             filteredData.length > 0
               ? filteredData
@@ -70,7 +67,6 @@ export default function LocationSearchBar({
           setLoading(false);
         }
       } else {
-        console.log("setting options to nothing!");
         setOptions([]);
       }
     })();
@@ -115,7 +111,6 @@ export default function LocationSearchBar({
 
   const handleChange = (event, value, reason) => {
     if (reason === "select-option") {
-      console.log(options.filter((o) => o.simple_name === value)[0]);
       setInputValue(value);
       if (onSelect) {
         onSelect(options.filter((o) => o.simple_name === value)[0]);
@@ -124,7 +119,6 @@ export default function LocationSearchBar({
   };
 
   const handleGetOptionDisabled = (option) => {
-    console.log(option);
     return false;
   };
 
@@ -132,7 +126,6 @@ export default function LocationSearchBar({
     return options;
   };  
 
-  console.log(options);
   return (
     <Autocomplete
       className={`${className} ${inputClassName}`}

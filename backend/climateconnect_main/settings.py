@@ -40,7 +40,7 @@ ALLOWED_HOSTS = [
     'api.cc-test-domain.com'
 ]
 
-AUTO_VERIFY = env('AUTO_VERIFY')
+AUTO_VERIFY = True if env('AUTO_VERIFY') in ['True', 'true', 'TRUE'] else False
 
 # Application definition
 
