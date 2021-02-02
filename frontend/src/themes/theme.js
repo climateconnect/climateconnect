@@ -19,7 +19,7 @@ const coreTheme = createMuiTheme({
   typography: {
     fontFamily: "Open Sans",
     h1: {
-      fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))",
+      fontSize: "3rem",
       align: "center",
     },
     subtitle1: {
