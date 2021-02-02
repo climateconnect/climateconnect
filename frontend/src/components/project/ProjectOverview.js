@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
     justifyContent: "space-between"
   },
-  smallScreenHeader {
+  smallScreenHeader: {
     fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))"
   }
 }));
