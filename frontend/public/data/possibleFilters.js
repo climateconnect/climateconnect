@@ -3,7 +3,6 @@ import DoneAllOutlinedIcon from "@material-ui/icons/DoneAllOutlined";
 import GroupIcon from "@material-ui/icons/Group";
 import ExploreOutlinedIcon from "@material-ui/icons/ExploreOutlined";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
-import countries from "./countries.json";
 
 export default function getFilters(key, filterChoices) {
   if (!filterChoices) {

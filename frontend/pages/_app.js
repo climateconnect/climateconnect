@@ -44,7 +44,7 @@ export default function MyApp({
         anonymizeIp: true,
       },
     });
-    ReactGA.pageview(!!pathName ? pathName : "/");
+    ReactGA.pageview(pathName ? pathName : "/");
     setGaInitialized(true);
   }
 

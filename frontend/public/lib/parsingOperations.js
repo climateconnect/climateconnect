@@ -12,10 +12,7 @@ const parseProjects = (projects) => {
 };
 
 const parseMembers = (members) => {
-  return members.map((member) => ({
-    ...member,
-    location: members.location,
-  }));
+  return members
 };
 
 const parseOrganizations = (organizations) => {

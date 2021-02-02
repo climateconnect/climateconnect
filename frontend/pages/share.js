@@ -18,15 +18,23 @@ export default function Share({
   token,
 }) {
   const { user } = useContext(UserContext);
+  const [errorMessage, setErrorMessage] = React.useState("")
+
+  const handleSetErrorMessage = (newMessage) => setErrorMessage(newMessage)
   if (!user)
     return (
-      <WideLayout title="Please log in to share a project" hideHeadline={true}>
+      <WideLayout title="Please Log In to Share your Climate Solution" hideHeadline={true}>
         <LoginNudge fullPage whatToDo="share a project" />
       </WideLayout>
     );
   else {
     return (
-      <WideLayout title="Share a project" hideHeadline={true}>
+      <WideLayout 
+        title="Share your Climate Solution" 
+        hideHeadline={true}
+        message={errorMessage}
+        messageType={errorMessage && "error"}
+      >
         <ShareProjectRoot
           availabilityOptions={availabilityOptions}
           userOrganizations={userOrganizations}
@@ -36,6 +44,7 @@ export default function Share({
           user={user}
           statusOptions={statusOptions}
           token={token}
+          setMessage={handleSetErrorMessage}
         />
       </WideLayout>
     );

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef, useState } from "react";
 import Router from "next/router";
 import WideLayout from "../src/components/layouts/WideLayout";
 import EditAccountPage from "./../src/components/account/EditAccountPage";
@@ -13,6 +13,7 @@ import LoginNudge from "../src/components/general/LoginNudge";
 import axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
 import PageNotFound from "../src/components/general/PageNotFound";
+import { isLocationValid, indicateWrongLocation } from "../public/lib/locationOperations";
 
 export default function EditProfilePage({
   skillsOptions,
@@ -21,9 +22,34 @@ export default function EditProfilePage({
   token,
 }) {
   const { user } = useContext(UserContext);
-  infoMetadata.availability.options = availabilityOptions;
-  const profile = user ? parseProfile(user, true, /*true*/) : null;
-  const saveChanges = (event, editedAccount) => {
+  const [errorMessage, setErrorMessage] = useState("")
+  const locationInputRef = useRef(null)
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false)
+  
+  const handleSetLocationOptionsOpen = (newValue) => {
+    setLocationOptionsOpen(newValue)
+  }
+
+  //add dynamic data to the data retrieved from profile_info_metadata.js
+  infoMetadata = {
+    ...infoMetadata,
+    availability: {
+      ...infoMetadata.availability,
+      options: availabilityOptions
+    },
+    location: {
+      ...infoMetadata.location,
+      locationOptionsOpen: locationOptionsOpen,
+      setLocationOptionsOpen: handleSetLocationOptionsOpen,
+      locationInputRef: locationInputRef
+    }
+  }
+  const profile = user ? parseProfile(user, true /*true*/) : null;
+  const saveChanges = (editedAccount) => {
+    if (editedAccount?.info?.location && !isLocationValid(editedAccount?.info?.location)) {
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage)
+      return;
+    }
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
     axios
       .post(
@@ -49,13 +75,17 @@ export default function EditProfilePage({
   };
   if (!profile)
     return (
-      <WideLayout title="Please log in to edit your profile" hideHeadline={true}>
+      <WideLayout title="Please Log In to Edit your Profile" hideHeadline={true}>
         <LoginNudge fullPage whatToDo="edit your profile" />
       </WideLayout>
     );
   else
     return (
-      <WideLayout title={"Edit Profile"}>
+      <WideLayout 
+        title={"Edit Profile"} 
+        message={errorMessage} 
+        messageType={errorMessage && "error"}
+      >
         {profile ? (
           <ProfileLayout
             profile={profile}
@@ -96,16 +126,17 @@ function ProfileLayout({
   skillsOptions,
 }) {
   return (
-    <EditAccountPage
-      type="profile"
-      account={profile}
-      possibleAccountTypes={profileTypes}
+    <EditAccountPage      
+      account={profile}   
+      deleteEmail="support@climateconnect.earth"   
+      handleCancel={handleCancel}
+      handleSubmit={handleSubmit}    
       infoMetadata={infoMetadata}
       maxAccountTypes={maxAccountTypes}
-      handleSubmit={handleSubmit}
-      handleCancel={handleCancel}
+      possibleAccountTypes={profileTypes}
       skillsOptions={skillsOptions}
-      deleteEmail="support@climateconnect.earth"
+      splitName
+      type="profile"      
     />
   );
 }

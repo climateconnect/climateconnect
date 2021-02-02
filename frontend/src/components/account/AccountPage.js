@@ -1,8 +1,10 @@
 import React from "react";
-import { Container, Avatar, Typography, Chip, Button, Link } from "@material-ui/core";
+import { Container, Avatar, Typography, Chip, Button, Link, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import Linkify from "react-linkify";
+import MessageContent from "../communication/MessageContent";
+import PlaceIcon from "@material-ui/icons/Place";
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -11,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "0 auto",
     marginTop: theme.spacing(-11),
     fontSize: 50,
+    border: "4px solid white",
     backgroundcolor: "white",
     "& img": {
       objectFit: "contain",
@@ -42,12 +45,15 @@ const useStyles = makeStyles((theme) => ({
   },
   subtitle: {
     color: `${theme.palette.secondary.main}`,
+    fontWeight: "bold",
+    marginBottom: theme.spacing(1),
+    marginTop: theme.spacing(1),
   },
   content: {
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
     color: `${theme.palette.secondary.main}`,
-    fontWeight: "bold",
+    fontSize: 16,
   },
   noPadding: {
     padding: 0,
@@ -81,6 +87,9 @@ const useStyles = makeStyles((theme) => ({
       textAlign: "center",
     },
   },
+  infoIcon: {
+    marginBottom: -4,
+  },
 }));
 
 export default function AccountPage({
@@ -93,7 +102,6 @@ export default function AccountPage({
   editText,
 }) {
   const classes = useStyles();
-
   const componentDecorator = (href, text, key) => (
     <Link
       color="primary"
@@ -108,55 +116,78 @@ export default function AccountPage({
   );
 
   const displayAccountInfo = (info) =>
-    Object.keys(info).map((key, index) => {
-      if (info[key]) {
-        const i = getFullInfoElement(infoMetadata, key, info[key]);
-        const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
-        const additionalText = i.additionalText ? i.additionalText : "";
-        if (key === "parent_organization") {
-          if (value.name)
+    Object.keys(info)
+      .sort((a, b) => {
+        a = getFullInfoElement(infoMetadata, a, info[a]);
+        b = getFullInfoElement(infoMetadata, b, info[b]);
+        return b?.weight - a?.weight;
+      })
+      .map((key, index) => {
+        if (info[key]) {
+          const i = getFullInfoElement(infoMetadata, key, info[key]);
+          const value = Array.isArray(i.value) ? i.value.join(", ") : i.value;
+          const additionalText = i.additionalText ? i.additionalText : "";
+          if (key === "parent_organization") {
+            if (value.name)
+              return (
+                <div key={index} className={classes.subtitle}>
+                  {account.name} is a suborganization of{" "}
+                  <Link color="inherit" href={"/organizations/" + value.url_slug} target="_blank">
+                    <MiniOrganizationPreview organization={value} size="small" />
+                  </Link>
+                </div>
+              );
+          } else if (i.type === "array" && i?.value?.length > 0) {
             return (
-              <div key={index} className={classes.subtitle}>
-                {account.name} is a suborganization of{" "}
-                <Link color="inherit" href={"/organizations/" + value.url_slug} target="_blank">
-                  <MiniOrganizationPreview organization={value} size="small" />
-                </Link>
+              <div key={index} className={classes.infoElement}>
+                <div className={classes.subtitle}>{i.name}:</div>
+                <div className={classes.chipArray}>
+                  {i && i.value && i.value.length > 0
+                    ? i.value.map((entry) => (
+                        <Chip size="medium" label={entry} key={entry} className={classes.chip} />
+                      ))
+                    : i.missingMessage && <div className={classes.content}>{i.missingMessage}</div>}
+                </div>
               </div>
             );
-        } else if (i.type === "array") {
-          return (
-            <div key={index} className={classes.infoElement}>
-              <div className={classes.subtitle}>{i.name}:</div>
-              <div className={classes.chipArray}>
-                {i && i.value && i.value.length > 0
-                  ? i.value.map((entry) => (
-                      <Chip size="medium" label={entry} key={entry} className={classes.chip} />
-                    ))
-                  : i.missingMessage && <div className={classes.content}>{i.missingMessage}</div>}
+          } else if (i.linkify && value) {
+            return (
+              <>
+                <div className={classes.subtitle}>{i.name}:</div>
+                <Linkify componentDecorator={componentDecorator} key={index}>
+                  <div className={classes.content}>{value}</div>
+                </Linkify>
+              </>
+            );
+          } else if (i.type === "bio" && value) {
+            return (
+              <div key={index} className={classes.content}>
+                <MessageContent content={value ? value + additionalText : i.missingMessage} />
               </div>
-            </div>
-          );
-        } else if (i.linkify && value) {
-          return (
-            <>
-              <div className={classes.subtitle}>{i.name}:</div>
-              <Linkify componentDecorator={componentDecorator} key={index}>
-                <div className={classes.content}>{value}</div>
-              </Linkify>
-            </>
-          );
-        } else if (value) {
-          return (
-            <div key={index}>
-              <div className={classes.subtitle}>{i.name}:</div>
-              <div className={classes.content}>
-                {value ? value + additionalText : i.missingMessage}
+            );
+          } else if (i.type === "location" && value) {
+            return (
+              <div key={index}>
+                <div className={classes.content}>
+                  <Tooltip title="Location">
+                    <PlaceIcon color="primary" className={classes.infoIcon} />
+                  </Tooltip>
+                  {value ? value + additionalText : i.missingMessage}
+                </div>
               </div>
-            </div>
-          );
+            );
+          } else if (value) {
+            return (
+              <div key={index}>
+                <div className={classes.subtitle}>{i.name}:</div>
+                <div className={classes.content}>
+                  {value ? value + additionalText : i.missingMessage}
+                </div>
+              </div>
+            );
+          }
         }
-      }
-    });
+      });
 
   return (
     <Container maxWidth="lg" className={classes.noPadding}>

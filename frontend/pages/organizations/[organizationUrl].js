@@ -55,7 +55,7 @@ export default function OrganizationPage({
   const { user } = useContext(UserContext);
   return (
     <WideLayout
-      title={organization ? organization.name : "Not found"}
+      title={organization ? organization.name : "Not Found"}
       description={organization.name + " | " + organization.info.shortdescription}
     >
       {organization ? (
@@ -273,7 +273,7 @@ function parseOrganizationMembers(members) {
       isCreator: m.permission.name === "Creator",
       time_per_week: m.time_per_week,
       role_in_organization: m.role_in_organization,
-      location: member.location
+      location: member.location,
     };
   });
 }

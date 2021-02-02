@@ -34,6 +34,7 @@ export default function MessagingLayout({
   chat_uuid,
   chat_id,
   handleChatWindowClose,
+  leaveChat,
 }) {
   const classes = useStyles();
   const { user } = useContext(UserContext);
@@ -100,6 +101,7 @@ export default function MessagingLayout({
         canEditMembers={canEditMembers}
         handleToggleMemberManagementExpanded={handleToggleMemberManagementExpanded}
         memberManagementExpanded={memberManagementExpanded}
+        leaveChat={leaveChat}
       />
       {showAlertMessage && alertMessage && (
         <Alert

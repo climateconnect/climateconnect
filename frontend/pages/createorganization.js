@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import EnterDetailledOrganizationInfo from "./../src/components/organization/EnterDetailledOrganizationInfo";
 import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
 import Layout from "./../src/components/layouts/layout";
@@ -9,6 +9,7 @@ import tokenConfig from "../public/config/tokenConfig";
 import LoginNudge from "../src/components/general/LoginNudge";
 import UserContext from "../src/components/context/UserContext";
 import Router from "next/router";
+import { isLocationValid, indicateWrongLocation, parseLocation } from "../public/lib/locationOperations";
 
 export default function CreateOrganization({ tagOptions, token, rolesOptions }) {
   const [errorMessages, setErrorMessages] = React.useState({
@@ -34,44 +35,63 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
   const { user } = useContext(UserContext);
   const steps = ["basicorganizationinfo", "detailledorganizationinfo"];
   const [curStep, setCurStep] = React.useState(steps[0]);
+  const locationInputRef = useRef(null)
+  const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false)
+
+  const handleSetLocationOptionsOpen = (bool) => {
+    setLocationOptionsOpen(bool)
+  }
+
+  const handleSetLocationErrorMessage = (newMessage) => {
+    handleSetErrorMessages({
+      ...errorMessages,
+      basicOrganizationInfo: newMessage
+    })
+  }
 
   const handleBasicInfoSubmit = async (event, values) => {
     event.preventDefault();
-    //TODO: actually check if organization name is available
     try {
-      if (values.hasparentorganization && !values.parentOrganization)
+      //Short circuit if there is no parent organization
+      if (values.hasparentorganization && !values.parentOrganization){
         handleSetErrorMessages({
-          errorMessages,
+          ...errorMessages,
           basicOrganizationInfo:
             "You have not selected a parent organization. Either untick the sub-organization field or choose/create your parent organization.",
         });
-      else {
-        const resp = await axios.get(
-          process.env.API_URL + "/api/organizations/?search=" + values.organizationname
-        );
-        if (
-          resp.data.results &&
-          resp.data.results.find((r) => r.name === values.organizationname)
-        ) {
-          const org = resp.data.results.find((r) => r.name === values.organizationname);
-          handleSetErrorMessages({
-            errorMessages,
-            basicOrganizationInfo: (
-              <div>
-                An organization with this name already exists. Click{" "}
-                <a href={"/organizations/" + org.url_slug}>here</a> to see it.
-              </div>
-            ),
-          });
-        } else {
-          setOrganizationInfo({
-            ...organizationInfo,
-            name: values.organizationname,
-            parentorganization: values.parentorganizationname,
-            location: values.location,
-          });
-          setCurStep(steps[1]);
-        }
+        return;
+      }
+
+      //short circuit if the location is invalid
+      if(!isLocationValid(values.location)){
+        indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetLocationErrorMessage)
+        return;
+      }
+      const resp = await axios.get(
+        process.env.API_URL + "/api/organizations/?search=" + values.organizationname
+      );
+      if (
+        resp.data.results &&
+        resp.data.results.find((r) => r.name === values.organizationname)
+      ) {
+        const org = resp.data.results.find((r) => r.name === values.organizationname);
+        handleSetErrorMessages({
+          errorMessages,
+          basicOrganizationInfo: (
+            <div>
+              An organization with this name already exists. Click{" "}
+              <a href={"/organizations/" + org.url_slug}>here</a> to see it.
+            </div>
+          ),
+        });
+      } else {
+        setOrganizationInfo({
+          ...organizationInfo,
+          name: values.organizationname,
+          parentorganization: values.parentorganizationname,
+          location: parseLocation(values.location),
+        });
+        setCurStep(steps[1]);
       }
     } catch (err) {
       console.log(err);
@@ -88,7 +108,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     location: "Please specify your location",
   };
 
-  const handleDetailledInfoSubmit = (event, account) => {
+  const handleDetailledInfoSubmit = (account) => {
     const organizationToSubmit = parseOrganizationForRequest(account, user, rolesOptions);
     for (const prop of Object.keys(requiredPropErrors)) {
       if (
@@ -119,29 +139,36 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       })
       .catch(function (error) {
         console.log(error);
-        if (error) console.log(error.response);
+        if (error) console.log(error.response.data);
+        handleSetErrorMessages({
+          errorMessages,
+          detailledOrganizationInfo: error?.response?.data,
+        });
       });
   };
 
   if (!user)
     return (
-      <WideLayout title="Please log in to create an organization" hideHeadline={true}>
+      <WideLayout title="Please Log In to Create an Organization" hideHeadline={true}>
         <LoginNudge fullPage whatToDo="create an organization" />
       </WideLayout>
     );
   else if (curStep === "basicorganizationinfo")
     return (
-      <Layout title="Create an organization">
+      <Layout title="Create an Organization">
         <EnterBasicOrganizationInfo
           errorMessage={errorMessages.basicOrganizationInfo}
           handleSubmit={handleBasicInfoSubmit}
           organizationInfo={organizationInfo}
+          locationInputRef={locationInputRef}
+          locationOptionsOpen={locationOptionsOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
         />
       </Layout>
     );
   else if (curStep === "detailledorganizationinfo")
     return (
-      <WideLayout title="Create an organization">
+      <WideLayout title="Create an Organization">
         <EnterDetailledOrganizationInfo
           errorMessage={errorMessages.detailledOrganizationInfo}
           handleSubmit={handleDetailledInfoSubmit}

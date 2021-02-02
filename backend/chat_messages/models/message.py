@@ -142,6 +142,11 @@ class Participant(models.Model):
         auto_now_add=True
     )
 
+    is_active = models.BooleanField(
+        help_text="Check if the user is still part of the chat.",
+        verbose_name="Is active?", default=True
+    )
+
     updated_at = models.DateTimeField(
         help_text="Time when the user's role in the chat updated", verbose_name="Updated At",
         auto_now=True

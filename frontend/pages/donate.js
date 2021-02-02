@@ -2,7 +2,7 @@ import React from "react";
 import WideLayout from "../src/components/layouts/WideLayout";
 import { makeStyles } from "@material-ui/core/styles";
 import TopSection from "../src/components/staticpages/TopSection";
-import { Container, Typography, useMediaQuery } from "@material-ui/core";
+import { Container, Typography, useMediaQuery, Link } from "@material-ui/core";
 import QuoteBox from "../src/components/staticpages/QuoteBox";
 import TextBox from "../src/components/staticpages/donate/TextBox";
 import WhoWeAreContent from "../src/components/staticpages/donate/WhoWeAreContent";
@@ -104,7 +104,7 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
   const [overlayOpen, setOverlayOpen] = React.useState(false);
   return (
-    <WideLayout title="Your donation counts" isStaticPage noSpaceBottom noFeedbackButton>
+    <WideLayout title="Your Donation Counts" isStaticPage noSpaceBottom noFeedbackButton>
       <div className={classes.root}>
         {isLargeScreen ? (
           <FloatingWidget
@@ -290,6 +290,31 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
         >
           <WhoWeAreContent />
         </TextBox>
+        <TextBox
+          className={classes.textSection}
+          headlineClass={classes.headlineClass}
+          textBodyClass={classes.textBodyClass}
+          headline="Donation receipts"
+          text={
+            <>
+              <Typography>
+                We are an official non-profit company registered in Germany (Climate Connect gUG
+                (haftungsbeschränkt). This means we can issue tax deductible donations receipts. For
+                german citizens with accumulated donations of less than 300€ per year a simplified
+                proof of grant is sufficient. You can find a document explaining a simplified proof
+                of grant and confirming our nonprofit status{" "}
+                <Link target="_blank" href="/documents/nonprofit_status_confirmation.pdf">
+                  here (PDF in german language)
+                </Link>
+                .<br />
+                For donors who donate over 300€ per year we issue a donation receipt.{" "}
+                <Link href="mailto:contact@climateconnect.earth">Contact us</Link> if you need any
+                other documents.
+              </Typography>
+            </>
+          }
+          icon="/icons/floating_sign_letter.svg"
+        />
       </div>
     </WideLayout>
   );

@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.exceptions import NotFound
+from location.utility import get_location
 from rest_framework.filters import SearchFilter
 
 from rest_framework.exceptions import ValidationError
@@ -37,7 +38,6 @@ from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.permissions import UserPermission
 from climateconnect_api.utility.email_setup import send_user_verification_email
 from climateconnect_api.utility.email_setup import send_password_link
-from climateconnect_api.utility.location import get_geo_location
 from django.conf import settings
 import logging
 logger = logging.getLogger(__name__)
@@ -97,12 +97,9 @@ class SignUpView(APIView):
         user.save()
 
         url_slug = (user.first_name + user.last_name).lower() + str(user.id)
-
         # Get location
-        geo_location = get_geo_location(request.data['location'])
         user_profile = UserProfile.objects.create(
-            user=user, location=geo_location['location'],
-            latitude=geo_location['latitude'], longitude=geo_location['longitude'],
+            user=user, location=get_location(request.data['location']),
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
             verification_key=uuid.uuid4(), send_newsletter=request.data['send_newsletter']
         )
@@ -139,9 +136,7 @@ class ListMemberProfilesView(ListAPIView):
     filter_backends = [SearchFilter, DjangoFilterBackend]
     filterset_fields = ['name', 'country', 'city']
     search_fields = ['name']
-
-    def get_serializer_class(self):
-        return UserProfileStubSerializer
+    serializer_class = UserProfileStubSerializer
 
     def get_queryset(self):
         user_profiles = UserProfile.objects\
@@ -183,12 +178,14 @@ class ListMemberProjectsView(ListAPIView):
         searched_user = UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user
         if self.request.user == searched_user:     
             return ProjectMember.objects.filter(
-                user=searched_user
+                user=searched_user,
+                is_active=True
             ).order_by('-id')
         else:
             return ProjectMember.objects.filter(
                 user=searched_user,
-                project__is_draft=False
+                project__is_draft=False,
+                is_active=True
             ).order_by('-id')
 
 
@@ -239,10 +236,8 @@ class EditUserProfile(APIView):
             )[0]
 
         if 'location' in request.data:
-            geo_location = get_geo_location(request.data['location'])
-            user_profile.location = geo_location['location']
-            user_profile.latitude = geo_location['latitude']
-            user_profile.longitude = geo_location['longitude']
+            geo_location = get_location(request.data['location'])
+            user_profile.location = geo_location
 
         if 'biography' in request.data:
             user_profile.biography = request.data['biography']

@@ -61,6 +61,8 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
     var ID = "";
     url = url.replace(/(>|<)/gi, "").split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
     if (url[2] !== undefined) {
+      // TODO: confirm this escape character is required
+      // eslint-disable-next-line no-useless-escape
       ID = url[2].split(/[^0-9a-z_\-]/i);
       ID = ID[0];
     } else {
@@ -76,7 +78,6 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
       {content.split("\n").map((i, index) => {
         if (!i.length) return <br key={index} />;
         if (youtubeVideoLines && youtubeVideoLines.find((l) => l.index === index)) {
-          console.log(youtubeVideoLines.find((l) => l.index === index));
           return <div key={index}>{youtubeVideoLines.find((l) => l.index === index).content}</div>;
         }
         return <div key={index}>{i ? i : " "}</div>;

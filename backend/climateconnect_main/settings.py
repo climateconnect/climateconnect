@@ -49,6 +49,7 @@ CUSTOM_APPS = [
     'organization', 
     'chat_messages',
     'hubs',
+    'location'
 ]
 
 LIBRARY_APPS = [
@@ -58,6 +59,7 @@ LIBRARY_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'rest_framework',
     'knox',
     'corsheaders',
@@ -120,7 +122,7 @@ WSGI_APPLICATION = 'climateconnect_main.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': env('DATABASE_NAME'),
         'USER': env('DATABASE_USER'),
         'PASSWORD': env('DATABASE_PASSWORD'),
@@ -213,6 +215,3 @@ CHANNEL_LAYERS = {
         }
     }
 }
-
-
-GOOGLE_MAPS_API_KEY = env('GOOGLE_MAPS_API_KEY', '')

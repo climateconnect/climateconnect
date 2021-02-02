@@ -9,6 +9,7 @@ import LoadingContainer from "../general/LoadingContainer";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
+import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 
 const useStyles = makeStyles((theme) => ({
   main: (props) => ({
@@ -18,8 +19,18 @@ const useStyles = makeStyles((theme) => ({
   }),
   alert: {
     textAlign: "center",
-    maxWidth: 1280,
     margin: "0 auto",
+    zIndex: 10,
+    maxWidth: 1280,
+  },
+  alertFixed: {
+    top: 0,
+    position: "fixed",
+    width: "100%",
+    [theme.breakpoints.up("lg")]: {
+      left: "50%",
+      marginLeft: -640,
+    },
   },
 }));
 
@@ -45,6 +56,8 @@ export default function WideLayout({
   const [alertOpen, setAlertOpen] = React.useState(true);
   const [initialMessageType, setInitialMessageType] = React.useState(null);
   const [initialMessage, setInitialMessage] = React.useState("");
+  const [alertEl, setAlertEl] = React.useState(null);
+  const spaceToTop = ElementSpaceToTop({ initTopOfPage: true, el: alertEl });
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) setInitialMessage(decodeURI(params.message));
@@ -53,6 +66,9 @@ export default function WideLayout({
       setInitialMessageType("error");
     }
   }, []);
+  useEffect(() => {
+    setAlertOpen(true);
+  }, [message]);
   return (
     <LayoutWrapper
       title={title}
@@ -73,10 +89,18 @@ export default function WideLayout({
         <Container maxWidth={false} component="main" className={classes.main}>
           {(message || initialMessage) && alertOpen && (
             <Alert
-              className={classes.alert}
+              className={`
+                ${classes.alert}
+                ${spaceToTop.screen <= 0 && spaceToTop.page >= 98 && classes.alertFixed}
+              `}
               severity={
                 messageType ? messageType : initialMessageType ? initialMessageType : "success"
               }
+              ref={(node) => {
+                if (node) {
+                  setAlertEl(node);
+                }
+              }}
               onClose={() => {
                 setAlertOpen(false);
               }}

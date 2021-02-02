@@ -1,8 +1,7 @@
-import React, { useContext } from "react";
+import React from "react";
 import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import { Button, IconButton, TextField, makeStyles, Tooltip } from "@material-ui/core";
 import Messages from "./Messages";
-import UserContext from "../../context/UserContext";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import SendIcon from "@material-ui/icons/Send";
 
@@ -72,7 +71,6 @@ export default function ChatContent({
   setShowSendHelper,
 }) {
   const classes = useStyles();
-  const { user } = useContext(UserContext);
 
   const handleOpen = () => {
     setShowSendHelper(true);
@@ -85,17 +83,15 @@ export default function ChatContent({
     <>
       {showChatParticipants && (
         <div className={classes.chatParticipantsContainer}>
-          {participants
-            .filter((p) => p.id !== user.id)
-            .map((p, index) => {
-              return (
-                <MiniProfilePreview
-                  key={index}
-                  profile={p}
-                  className={classes.chatParticipantsPreview}
-                />
-              );
-            })}
+          {participants.map((p, index) => {
+            return (
+              <MiniProfilePreview
+                key={index}
+                profile={p}
+                className={classes.chatParticipantsPreview}
+              />
+            );
+          })}
           {user_role.name === "Creator" && (
             <Button
               className={classes.manageMembersButton}

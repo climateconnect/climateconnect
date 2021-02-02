@@ -93,7 +93,7 @@ export default function ProfilePage({
   const { user } = useContext(UserContext);
   return (
     <WideLayout
-      title={profile ? profile.name + "'s profile" : "Not found"}
+      title={profile ? profile.name + "'s Profile" : "Not Found"}
       description={
         profile.name +
         " | " +

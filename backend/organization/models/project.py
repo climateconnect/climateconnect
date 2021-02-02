@@ -1,3 +1,4 @@
+from location.models import Location
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
@@ -94,6 +95,7 @@ class Project(models.Model):
         max_length=4800
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     country = models.CharField(
         help_text="Points to a country of the project",
         verbose_name="Country",
@@ -102,6 +104,7 @@ class Project(models.Model):
         blank=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     city = models.CharField(
         help_text="Points to a city of the project",
         verbose_name="City",
@@ -110,6 +113,7 @@ class Project(models.Model):
         blank=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     location = models.CharField(
         help_text="Project location",
         verbose_name="Location",
@@ -118,18 +122,12 @@ class Project(models.Model):
         blank=True
     )
 
-    latitude = models.CharField(
-        help_text="Latitude of project's location",
-        verbose_name="Latitude",
-        max_length=512,
-        null=True,
-        blank=True
-    )
-
-    longitude = models.CharField(
-        help_text="Longitude of project's location",
-        verbose_name="Longitude",
-        max_length=512,
+    loc = models.ForeignKey(
+        Location,
+        help_text="Points to the project's location",
+        verbose_name="Location",
+        related_name="project_loc",
+        on_delete=models.CASCADE,
         null=True,
         blank=True
     )
@@ -173,6 +171,13 @@ class Project(models.Model):
         help_text="The larger the number, the more to the top this project will be displayed",
         verbose_name="Rating (1-100)",
         default=100
+    )
+
+    is_active = models.BooleanField(
+        help_text="Flags if the project is still publically active or not",
+        verbose_name="Is an Active Project",
+        default=True,
+        null=False
     )
 
     class Meta:

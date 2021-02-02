@@ -1,4 +1,4 @@
-import countries from "./countries.json";
+import PlaceIcon from "@material-ui/icons/Place";
 
 export default {
   availability: {
@@ -17,10 +17,11 @@ export default {
   },
   bio: {
     name: "Bio",
-    type: "text",
+    type: "bio",
     key: "bio",
     missingMessage: "This user hasn't added a bio yet.",
     maxLength: 240,
+    weight: 1,
   },
   website: {
     name: "Website",
@@ -32,7 +33,9 @@ export default {
   location: {
     name: "Location",
     key: "location",
+    icon: PlaceIcon,
     missingMessage: "This user hasn't specified their location yet.",
     type: "location",
+    weight: 0,
   },
 };

@@ -56,7 +56,7 @@ export default function LayoutWrapper({
   return (
     <>
       <Head>
-        <title>{title ? title : "Climate Connect"}</title>
+        <title>{title ? title + " | Climate Connect" : "Climate Connect"}</title>
         <link
           href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800"
           rel="stylesheet"
@@ -68,7 +68,7 @@ export default function LayoutWrapper({
         <meta name="description" content={description ? description : defaultDescription} />
       </Head>
       {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
-      <ThemeProvider theme={theme || {}}>
+      <ThemeProvider theme={theme}>
         {loading ? (
           <div className={classes.spinnerContainer}>
             <div>

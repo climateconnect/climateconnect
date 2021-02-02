@@ -6,7 +6,11 @@ The code for https://climateconnect.earth.
 
 ### Postgres
 
-Create a local Postgres database with your own username and password. You will connect to this for your local backend project.
+1. Create a local Postgres database with your own username and password. 
+1. Install [PostGIS](https://postgis.net/install/) on your local machine
+1. Create the postgis extension within that database: run [`CREATE EXTENSION postgis;`](https://docs.djangoproject.com/en/3.1/ref/contrib/gis/install/postgis/)
+
+You will connect to this for your local backend project.
 
 ### Docker
 

@@ -8,8 +8,6 @@ import {
   Badge,
   Typography,
   useMediaQuery,
-  Grid,
-  CircularProgress,
 } from "@material-ui/core";
 import Truncate from "react-truncate";
 import { makeStyles } from "@material-ui/core/styles";
@@ -19,7 +17,7 @@ import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import { getDateTime } from "../../../../public/lib/dateOperations";
 import ChatTitle from "./ChatTitle";
 import MobileChatPreview from "./MobileChatPreview";
-import LoadingSpinner from "../general/LoadingSpinner";
+import LoadingSpinner from "../../general/LoadingSpinner";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -123,7 +121,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat }) => {
           alignItems="center"
           className={classes.listItem}
         >
-          {!chat.chatting_partner && chat.name ? (
+          {chat.name ? (
             <ChatTitle chat={chat} className={classes.miniProfilePreview} mobile={isNarrowScreen} />
           ) : (
             <MiniProfilePreview

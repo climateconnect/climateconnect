@@ -18,6 +18,9 @@ export default function EnterBasicOrganizationInfo({
   errorMessage,
   handleSubmit,
   organizationInfo,
+  locationInputRef,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
 }) {
   const [parentOrganization, setParentOrganization] = React.useState(null);
   const onUnselect = () => {
@@ -63,6 +66,9 @@ export default function EnterBasicOrganizationInfo({
       key: "location",
       type: "location",
       value: organizationInfo["location"],
+      ref: locationInputRef,
+      locationOptionsOpen: locationOptionsOpen,
+      handleSetLocationOptionsOpen: handleSetLocationOptionsOpen
     },
     {
       required: true,

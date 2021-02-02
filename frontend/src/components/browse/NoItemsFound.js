@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Link, makeStyles } from "@material-ui/core";
+import { Typography, makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function NoItemsFound({ type }) {
+export default function NoItemsFound() {
   const classes = useStyles();
   return (
     <Typography component="h4" variant="h5" className={classes.infoMessage}>

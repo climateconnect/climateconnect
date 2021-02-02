@@ -3,22 +3,42 @@ import DescriptionIcon from "@material-ui/icons/Description";
 import SchoolIcon from "@material-ui/icons/School";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
+import LanguageIcon from "@material-ui/icons/Language";
+import countries from "./countries.json";
 
 export default {
+  shortdescription: {
+    icon: DescriptionIcon,
+    iconName: "DescriptionIcon",
+    name: "Description",
+    key: "shortdescription",
+    type: "bio",
+    weight: 1,
+    helptext:
+      "Describe what your organization is doing, how you work and what impact you have on climate change. Please only use english!",
+  },
+  city: {
+    icon: PlaceIcon,
+    iconName: "PlaceIcon",
+    name: "City",
+    type: "location",
+    key: "city",
+  },
+  country: {
+    icon: PlaceIcon,
+    iconName: "PlaceIcon",
+    name: "Country",
+    key: "country",
+    type: "select",
+    options: countries.map((c) => ({ key: c.toLowerCase(), name: c })),
+  },
   location: {
     icon: PlaceIcon,
     iconName: "PlaceIcon",
     name: "Location",
     type: "location",
     key: "location",
-  },
-  shortdescription: {
-    icon: DescriptionIcon,
-    iconName: "DescriptionIcon",
-    name: "Description",
-    key: "shortdescription",
-    helptext:
-      "Describe what your organization is doing, how you work and what impact you have on climate change. Please only use english!",
+    weight: 0,
   },
   school: {
     icon: SchoolIcon,
@@ -33,9 +53,10 @@ export default {
     key: "organ",
   },
   website: {
+    icon: LanguageIcon,
     name: "Website",
     type: "text",
-    key: "bio",
+    key: "website",
     maxLength: 240,
     linkify: true,
   },

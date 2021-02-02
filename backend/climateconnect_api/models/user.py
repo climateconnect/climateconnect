@@ -2,6 +2,7 @@ from django.db import models
 from climateconnect_api.models.common import (
     Availability, Skill
 )
+from location.models import Location
 
 
 def profile_image_path(instance, filename):
@@ -55,6 +56,7 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     country = models.CharField(
         help_text="User's country",
         verbose_name="Country",
@@ -63,6 +65,7 @@ class UserProfile(models.Model):
         null=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     state = models.CharField(
         help_text="User's state",
         verbose_name="State",
@@ -71,6 +74,7 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     city = models.CharField(
         help_text="User's city",
         verbose_name="City",
@@ -79,26 +83,12 @@ class UserProfile(models.Model):
         blank=True
     )
 
-    location = models.CharField(
-        help_text='Location of user',
-        verbose_name='Location',
-        max_length=2048,
-        null=True,
-        blank=True
-    )
-
-    latitude = models.CharField(
-        help_text="Latitude of user's location",
-        verbose_name="Latitude",
-        max_length=512,
-        null=True,
-        blank=True
-    )
-
-    longitude = models.CharField(
-        help_text="Longitude of user's location",
-        verbose_name="Longitude",
-        max_length=512,
+    location = models.ForeignKey(
+        Location,
+        help_text="Points to the user's location",
+        verbose_name="Location",
+        related_name="user_profile_loc",
+        on_delete=models.CASCADE,
         null=True,
         blank=True
     )

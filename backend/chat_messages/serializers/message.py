@@ -51,7 +51,7 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
             return None
 
     def get_participants(self, obj):
-        participants = Participant.objects.filter(chat=obj)
+        participants = Participant.objects.filter(chat=obj, is_active=True)
         return ParticipantSerializer(participants, many=True).data
 
     def get_unread_count(self, obj):

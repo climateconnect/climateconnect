@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import WideLayout from "../src/components/layouts/WideLayout";
 import LandingTopBox from "../src/components/landingPage/LandingTopBox";
@@ -87,13 +87,13 @@ export default function Index({ projects, organizations, hubs }) {
     }
   });
 
-  const contentRef = React.useRef(null);
+  const contentRef = useRef(null);
 
   const scrollToContent = () => contentRef.current.scrollIntoView({ behavior: "smooth" });
 
   return (
     <WideLayout
-      title="Climate Connect - Global platform for climate change solutions"
+      title="Global Platform for Climate Change Solutions"
       hideTitle
       fixedHeader
       transparentHeader={pos === "top"}

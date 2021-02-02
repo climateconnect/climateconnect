@@ -1,9 +1,9 @@
 import { TextField } from "@material-ui/core";
-import React from "react"
+import React from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "axios";
 import { debounce } from "lodash";
-
+import { getNameFromLocation } from "../../../public/lib/locationOperations";
 
 export default function LocationSearchBar({
   label,
@@ -14,102 +14,66 @@ export default function LocationSearchBar({
   onSelect,
   className,
   value,
+  initialValue,
   onChange,
+  open,
+  handleSetOpen,
+  locationInputRef,
 }) {
-  const [open, setOpen] = React.useState(false);
-  const [options, setOptions] = React.useState([]);
-  const [searchValue, setSearchValue] = React.useState("");
-  const [inputValue, setInputValue] = React.useState("");
+  const getValue = (newValue) => {
+    if(!newValue){
+      return ""
+    }else if(typeof newValue === "object"){
+      return newValue.name ? newValue.name : newValue.simple_name
+    } else {
+      return newValue
+    }
+  } 
 
+  const [options, setOptions] = React.useState([]);
+  // If no 'open' prop is passed to the component, the component handles its 'open' state with this internal state
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false)
+  const [searchValue, setSearchValue] = React.useState("");
+  const [inputValue, setInputValue] = React.useState(getValue(initialValue));
+  const [loading, setLoading] = React.useState(false);
   React.useEffect(() => {
     let active = true;
 
     (async () => {
       if (searchValue) {
-        console.log("searching for " + searchValue)
+        console.log("searching for " + searchValue);
         const config = {
-          method: 'GET',
-          mode: 'no-cors',
-          referrerPolicy: 'origin'
-        }
-        const response = await axios(`https://nominatim.openstreetmap.org/search?q=${searchValue}&format=json&addressdetails=1`, config)   
-        console.log(response.data)
+          method: "GET",
+          mode: "no-cors",
+          referrerPolicy: "origin",
+        };
+        const response = await axios(
+          `https://nominatim.openstreetmap.org/search?q=${searchValue}&format=json&addressdetails=1&polygon_geojson=1`,
+          config
+        );
+        console.log(response.data);
+        const bannedClasses = ["landuse", "tourism", "railway"]
         if (active) {
-          const filteredData = response.data.filter(o=>o.importance > 0.5 && o.class !== "landuse")
-          console.log(filteredData)
-          const data = filteredData.length > 0 ? filteredData : response.data.slice(0,2).filter(o=>o.class !== "landuse")
-          setOptions(
-            data.map((o) => ({ ...o, simple_name: getName(o), key: o.place_id }))
+          const filteredData = response.data.filter(
+            (o) => {
+              return o.importance > 0.5 && !bannedClasses.includes(o.class) && o?.geojson?.type !== "Point"
+            }
           );
-        } 
+          console.log(filteredData);
+          const data =
+            filteredData.length > 0
+              ? filteredData
+              : response.data.slice(0, 2).filter((o) => !bannedClasses.includes(o.class));
+          setOptions(
+            data.map((o) => ({ ...o, simple_name: getNameFromLocation(o).name, key: o.place_id }))
+          );
+          setLoading(false);
+        }
       } else {
-        console.log("setting options to nothing!")
+        console.log("setting options to nothing!");
         setOptions([]);
       }
     })();
-
-    const getName = location => {
-      if(!location.address || !location.address.country)
-        return location.display_name
-      const firstPartOrder = [
-        "village", 
-        "town", 
-        "city_district", 
-        "district",
-        "suburb",
-        "borough",        
-        "subdivision",
-        "neighbourhood",
-        "place",
-        "city", 
-        "municipality", 
-        "county", 
-        "state_district", 
-        "province", 
-        "state", 
-        "region"
-      ];
-      const middlePartOrder = [
-        "city_district", 
-        "district",
-        "suburb",
-        "borough",        
-        "subdivision",
-        "neighbourhood",
-        "town"
-      ];
-      const middlePartSuffixes = [
-        "city",
-        "state"
-      ]
-      const firstPart = getFirstPart(location.address, firstPartOrder)
-      const middlePart = getMiddlePart(location.address, middlePartOrder, middlePartSuffixes)
-      return firstPart + middlePart + location.address.country
-    }
-
-    const getFirstPart = (address, order) => {
-      for(const el of order){
-        if(address[el]){
-          if(el === "state")
-            return address[el] + " (state), "
-          return address[el] + ", "
-        }
-      }
-      return ""
-    }
-
-    const getMiddlePart = (address, order, suffixes) => {
-      for(const el of order){
-        if(address[el]){
-          for(const suffix of suffixes){
-            if(address[suffix]){
-              return `${address[suffix]}, `
-            }
-          }
-        }
-      }
-      return ""
-    }
 
     return () => {
       active = false;
@@ -120,15 +84,24 @@ export default function LocationSearchBar({
     setOpen(false);
   };
 
+  const setOpen = newOpenValue => {
+    if(open === undefined)
+      setUncontrolledOpen(newOpenValue)
+    else
+      handleSetOpen(newOpenValue)
+  }
+
   const renderSearchOption = (option) => {
     return <React.Fragment>{option}</React.Fragment>;
   };
 
   const handleInputChange = (event) => {
-    if(value && onChange)
-      onChange(event.target.value)
-    else
-      setInputValue(event.target.value);
+    if (!loading) setLoading(true);
+    if (options?.length > 0) setOptions([]);
+    if ((event.target.value || event.target.value === "") && onChange) {
+      onChange(event.target.value);
+    }
+    setInputValue(event.target.value);
     setSearchValueThrottled(event.target.value);
   };
 
@@ -142,40 +115,42 @@ export default function LocationSearchBar({
 
   const handleChange = (event, value, reason) => {
     if (reason === "select-option") {
+      console.log(options.filter((o) => o.simple_name === value)[0]);
       setInputValue(value);
-      if(onSelect){
-        onSelect(options.filter(o=>o.simple_name === value)[0])
+      if (onSelect) {
+        onSelect(options.filter((o) => o.simple_name === value)[0]);
       }
     }
   };
 
-  const handleGetOptionDisabled = option => {
-    console.log(option)
-    return false
-  }
+  const handleGetOptionDisabled = (option) => {
+    console.log(option);
+    return false;
+  };
 
-  const handleFilterOptions = (options) =>  {
-    return options
-  }
+  const handleFilterOptions = (options) => {
+    return options;
+  };  
 
+  console.log(options);
   return (
     <Autocomplete
       className={`${className} ${inputClassName}`}
-      open={open}
+      open={open === undefined ? uncontrolledOpen : open}
       onOpen={() => {
         setOpen(true);
       }}
       handleHomeEndKeys
       disableClearable
-      freeSolo
+      loading={loading}
       onClose={handleClose}
       onChange={handleChange}
-      options={options.map(o=>o.simple_name)}
-      inputValue={value ? value : inputValue}
+      options={options.map((o) => o.simple_name)}
+      inputValue={value ? getValue(value) : inputValue}
       filterOptions={handleFilterOptions}
       getOptionDisabled={handleGetOptionDisabled}
       renderOption={renderSearchOption}
-      noOptionsText={!searchValue && !inputValue ? "Start typing" : "Loading..."}
+      noOptionsText="No options"
       renderInput={(params) => (
         <TextField
           {...params}
@@ -185,6 +160,7 @@ export default function LocationSearchBar({
           onChange={handleInputChange}
           helperText={helperText}
           size={smallInput && "small"}
+          inputRef={locationInputRef}
           InputProps={{
             ...params.InputProps,
             endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
@@ -192,5 +168,5 @@ export default function LocationSearchBar({
         />
       )}
     />
-  )
+  );
 }
