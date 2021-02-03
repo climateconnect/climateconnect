@@ -3,7 +3,10 @@ from location.models import Location
 from django.contrib.gis.geos import (
     MultiPolygon, Polygon, GEOSGeometry, LinearRing, Point
 )
-
+import json
+import requests
+from django.db.models import Q
+from django.contrib.gis.measure import D
 
 def get_location(location_object):
     required_params = [
@@ -79,3 +82,128 @@ def get_polygon_with_switched_coordinates(polygon):
         switched_poly.append(LinearRing(switched_ring))
 
     return Polygon(*switched_poly)
+
+
+# Commenter: Chris
+# The code for formatting a location is the same code as in the frontend pythonized.
+# The reason why we have it here as well is to format locations that we retrieved
+# with direct requests from the backend to nominatim.
+# This means changes made here or in the equivelant function in the frontend also need to 
+# be applied to the other function so they stay consistent
+# This whole setup is less than ideal and should be changed in the future.
+
+def format_location(location_string):
+    location_object = json.loads(location_string)[0]
+    location_name = format_location_name(location_object)
+    return {
+        'type': location_object['geojson']['type'],
+        'place_id': location_object['place_id'],
+        'osm_id': location_object['osm_id'],
+        'name': location_name['name'],
+        'city': location_name['city'],
+        'state': location_name['state'],
+        'country': location_name['country'],
+        'geojson': location_object['geojson'],
+        'coordinates': location_object['geojson']['coordinates']
+    }
+
+def format_location_name(location):
+    first_part_order = [
+        "village",
+        "town",
+        "city_district",
+        "district",
+        "suburb",
+        "borough",
+        "subdivision",
+        "neighbourhood",
+        "place",
+        "city",
+        "municipality",
+        "county",
+        "state_district",
+        "province",
+        "state",
+        "region"
+    ]
+    middle_part_order = [
+        "city_district",
+        "district",
+        "suburb",
+        "borough",
+        "subdivision",
+        "neighbourhood",
+        "town",
+        "village"
+    ]
+    if is_country(location):
+        return {
+            'country': location['address']['country'],
+            'city': "",
+            'state': "",
+            'name': location['display_name']
+        }
+    
+    middle_part_suffixes = ["city", "state"]
+    first_part = get_first_part(location['address'], first_part_order)
+    middle_part = get_middle_part(location['address'], middle_part_order, middle_part_suffixes)
+    return {
+        'city': first_part,
+        'state': middle_part,
+        'country': location['address']['country'],
+        'name': first_part + ", " + middle_part + (", " if len(middle_part) > 0 else "") + location['address']['country'],
+    }
+
+def is_country(location):
+    if location['type'] != "administrative":
+        return False
+    # short circuit if the address contains any information other than country and country code
+    for key in location['address'].keys():
+        if key not in ["country", "country_code"]:
+            return False       
+    return True
+
+def get_first_part(address, order):
+    for el in order:
+        if el in address.keys():
+            if el == "state":
+                return address[el] + " (state)"
+            return address[el]       
+    return ""
+
+def get_middle_part(address, order, suffixes):
+    for el in order:
+        if el in address.keys():
+            for suffix in suffixes:
+                if suffix in address.keys():
+                    return address[suffix]
+    return ""
+
+def get_location_ids_in_range(query_params): 
+    filter_place_id = query_params.get('place')
+    locations = Location.objects.filter(place_id=filter_place_id)
+        # shrink polygon by 1 meter to exclude places that share a border
+    # Example: Don't show projects from the USA when searching for Mexico
+    distance = -1 # distance in meter
+    buffer_width = distance / 40000000.0 * 360.0            
+    if not locations.exists():
+        url_root = "https://nominatim.openstreetmap.org/lookup?osm_ids="
+        # Append osm_id to first letter of osm_type as uppercase letter 
+        osm_id_param = query_params.get('loc_type')[0].upper()+query_params.get('osm')
+        params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9"
+        url = url_root+osm_id_param+params
+        response = requests.get(url)
+        location = get_location(format_location(response.text))
+        location_in_db = location.multi_polygon.buffer(buffer_width)
+    else:        
+        location_in_db = locations[0].multi_polygon.buffer(buffer_width)
+    radius = 0
+    if 'radius' in query_params:
+        radius_value = query_params.get('radius')
+        radius = D(km=radius_value) 
+    locations_in_range = Location.objects.filter(
+        Q(multi_polygon__distance_lte=(location_in_db, radius))
+        |
+        Q(centre_point__distance_lte=(location_in_db, radius))
+    )
+    return list(map((lambda loc: loc.id), locations_in_range))

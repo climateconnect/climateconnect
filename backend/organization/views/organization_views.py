@@ -1,4 +1,4 @@
-from location.utility import get_location
+from location.utility import get_location, get_location_ids_in_range
 from hubs.models.hub import Hub
 from organization.models.tags import ProjectTags
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -39,7 +39,7 @@ class ListOrganizationsAPIView(ListAPIView):
     filter_backends = [SearchFilter, DjangoFilterBackend]
     pagination_class = OrganizationsPagination
     search_fields = ['name']
-    filterset_fields = ['city', 'country']
+    
 
     def get_serializer_class(self):
         return OrganizationCardSerializer
@@ -63,6 +63,10 @@ class ListOrganizationsAPIView(ListAPIView):
             organization_types = OrganizationTags.objects.filter(name__in=organization_type_names)
             organization_taggings = OrganizationTagging.objects.filter(organization_tag__in=organization_types)
             organizations = organizations.filter(tag_organization__in=organization_taggings).distinct('id')
+
+        if 'place' in self.request.query_params and 'osm' in self.request.query_params:
+            location_ids_in_range = get_location_ids_in_range(self.request.query_params)
+            organizations = organizations.filter(location__in=location_ids_in_range)
 
         return organizations
 

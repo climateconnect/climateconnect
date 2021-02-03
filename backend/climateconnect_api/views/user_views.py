@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.exceptions import NotFound
-from location.utility import get_location
+from location.utility import get_location, get_location_ids_in_range
 from rest_framework.filters import SearchFilter
 
 from rest_framework.exceptions import ValidationError
@@ -134,7 +134,7 @@ class ListMemberProfilesView(ListAPIView):
     permission_classes = [AllowAny]
     pagination_class = MembersPagination
     filter_backends = [SearchFilter, DjangoFilterBackend]
-    filterset_fields = ['name', 'country', 'city']
+    filterset_fields = ['name']
     search_fields = ['name']
     serializer_class = UserProfileStubSerializer
 
@@ -147,6 +147,9 @@ class ListMemberProfilesView(ListAPIView):
             skill_names = self.request.query_params.get('skills').split(',')
             skills = Skill.objects.filter(name__in=skill_names)
             user_profiles = user_profiles.filter(skills__in=skills).distinct('id')
+        if 'place' in self.request.query_params and 'osm' in self.request.query_params:
+            location_ids_in_range = get_location_ids_in_range(self.request.query_params)
+            user_profiles = user_profiles.filter(location__in=location_ids_in_range)
         return user_profiles
 
 

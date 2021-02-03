@@ -1,4 +1,5 @@
-from location.utility import get_location
+from django.contrib.gis.geos.geometry import GEOSGeometry
+from location.utility import format_location, get_location, get_location_ids_in_range
 from location.models import Location
 from hubs.models.hub import Hub
 from dateutil.parser import parse
@@ -74,7 +75,6 @@ class ListProjectsView(ListAPIView):
                 tag_project__project_tag__in=project_tags_with_children
             ).distinct()
 
-
         if 'collaboration' in self.request.query_params:
             collaborators_welcome = self.request.query_params.get('collaboration')
             if collaborators_welcome == 'yes':
@@ -110,6 +110,10 @@ class ListProjectsView(ListAPIView):
             organization_taggings = OrganizationTagging.objects.filter(organization_tag__in=organization_types)
             project_parents = ProjectParents.objects.filter(parent_organization__tag_organization__in=organization_taggings)
             projects = projects.filter(project_parent__in=project_parents)
+        
+        if 'place' in self.request.query_params and 'osm' in self.request.query_params:
+            location_ids_in_range = get_location_ids_in_range(self.request.query_params)
+            projects = projects.filter(loc__in=location_ids_in_range)
 
         return projects
 
