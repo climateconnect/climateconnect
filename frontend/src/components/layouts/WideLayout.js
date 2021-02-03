@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   alert: {
     textAlign: "center",
     margin: "0 auto",
-    zIndex: 10,
+    zIndex: 100,
     maxWidth: 1280,
   },
   alertFixed: {
