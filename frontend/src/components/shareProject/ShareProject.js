@@ -140,19 +140,20 @@ export default function Share({
       return
     }
     const loc = parseLocation(values.loc)
-    if (!values.parent_organization)
+    if (!values.parent_organization){
       handleSetProjectData({
         ...values,
         loc: loc,
         isPersonalProject: true,
       });
-    else
+    }else{
       handleSetProjectData({
         ...values,
         loc: loc,
         parent_organization: getOrgObject(values.parent_organization),
         isPersonalProject: false,
       });
+    }
     goToNextStep();
   };
   return (

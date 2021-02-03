@@ -49,6 +49,13 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     })
   }
 
+  const handleSetDetailledErrorMessage = (newMessage) => {
+    handleSetErrorMessages({
+      ...errorMessages,
+      detailledOrganizationInfo: newMessage
+    })
+  }
+
   const handleBasicInfoSubmit = async (event, values) => {
     event.preventDefault();
     try {
@@ -110,6 +117,10 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
 
   const handleDetailledInfoSubmit = (account) => {
     const organizationToSubmit = parseOrganizationForRequest(account, user, rolesOptions);
+    if(!isLocationValid(organizationToSubmit.location)){
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetDetailledErrorMessage)
+      return
+    }
     for (const prop of Object.keys(requiredPropErrors)) {
       if (
         !organizationToSubmit[prop] ||
@@ -121,7 +132,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         });
         return;
       }
-    }
+    }    
     axios
       .post(
         process.env.API_URL + "/api/create_organization/",
@@ -174,6 +185,9 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
           handleSubmit={handleDetailledInfoSubmit}
           organizationInfo={organizationInfo}
           tagOptions={tagOptions}
+          locationInputRef={locationInputRef}
+          locationOptionsOpen={locationOptionsOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
         />
       </WideLayout>
     );

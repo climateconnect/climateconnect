@@ -26,7 +26,14 @@ export function getNameFromLocation(location) {
     "subdivision",
     "neighbourhood",
     "town",
+    "village"
   ];
+  if(isCountry(location)){
+    return {
+      country: location.address.country,
+      name: location.display_name
+    }
+  }
   const middlePartSuffixes = ["city", "state"];
   const firstPart = getFirstPart(location.address, firstPartOrder);
   const middlePart = getMiddlePart(location.address, middlePartOrder, middlePartSuffixes);
@@ -61,6 +68,19 @@ const getMiddlePart = (address, order, suffixes) => {
   return "";
 };
 
+const isCountry = (location) => {
+  if(location.type !== "administrative"){
+    return false;
+  }
+  //short circuit if the address contains any information other than country and country code
+  for(const key of Object.keys(location.address)) {
+    if(!["country", "country_code"].includes(key)) {
+      return false
+    }
+  }
+  return true
+}
+
 export function isLocationValid(location) {
   if (!location || typeof location == "string") return false;
   else return true;
@@ -68,6 +88,10 @@ export function isLocationValid(location) {
 
 export function parseLocation(location) {
   const location_object = getNameFromLocation(location);
+  //don't do anything if location is already parsed
+  if(typeof location === "object" && alreadyParsed(location)){
+    return location
+  }
   return {
     type: location?.geojson?.type,
     coordinates: location?.geojson?.coordinates,
@@ -79,6 +103,16 @@ export function parseLocation(location) {
     state: location_object.state,
     country: location_object.country,
   }
+}
+
+const props = ["type", "coordinates", "geojson", "place_id", "name", "city", "state", "country"]
+const alreadyParsed = (location) => {
+  for(const prop of props){
+    if(!Object.keys(location).includes(prop)){
+      return false
+    }
+  }
+  return true
 }
 
 export function indicateWrongLocation(
