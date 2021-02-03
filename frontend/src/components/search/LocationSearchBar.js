@@ -19,6 +19,7 @@ export default function LocationSearchBar({
   open,
   handleSetOpen,
   locationInputRef,
+  textFieldClassName,
 }) {
   const getValue = (newValue) => {
     if(!newValue){
@@ -50,11 +51,33 @@ export default function LocationSearchBar({
           `https://nominatim.openstreetmap.org/search?q=${searchValue}&format=json&addressdetails=1&polygon_geojson=1`,
           config
         );
-        const bannedClasses = ["landuse", "tourism", "railway"]
+        const bannedClasses = [
+          "landuse", 
+          "tourism", 
+          "railway",
+          "waterway",
+          "natural",
+          "shop",
+          "leisure",
+          "amenity",
+          "highway",
+          "aeroway",
+          "historic"
+        ]
+        const bannedTypes = [
+          "claimed_administrative", 
+          "hamlet", 
+          "isolated_dwelling", 
+          "croft"
+        ]
+        const bannedOsmTypes = ["way"]
         if (active) {
           const filteredData = response.data.filter(
             (o) => {
-              return o.importance > 0.5 && !bannedClasses.includes(o.class) && o?.geojson?.type !== "Point"
+              return o.importance > 0.5 && 
+                !bannedClasses.includes(o.class) && 
+                !bannedTypes.includes(o.type) &&
+                !bannedOsmTypes.includes(o.osm_type)
             }
           );
           const data =
@@ -157,6 +180,7 @@ export default function LocationSearchBar({
           InputProps={{
             ...params.InputProps,
             endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
+            className: textFieldClassName
           }}
         />
       )}
