@@ -49,41 +49,50 @@ export default function EditProjectRoot({
     setLocationOptionsOpen(bool);
   };
 
-  const onSaveDraft = async () => {
-    if (project.loc && !isLocationValid(project.loc)) {
+  const checkIfProjectValid = (isDraft) => {
+    if (project?.loc && oldProject?.loc !== project.loc && !isLocationValid(project.loc)) {
       overviewInputsRef.current.scrollIntoView();
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetErrorMessage)
-      return;
+      return false;
     }
-    if (Object.keys(draftReqiredProperties).filter((key) => !project[key]).length > 0)
+    if (isDraft && Object.keys(draftReqiredProperties).filter((key) => !project[key]).length > 0){
       Object.keys(draftReqiredProperties).map((key) => {
         if (!project[key]) {
           alert(
             "Your project draft is missing the following reqired property: " +
               draftReqiredProperties[key]
           );
+          return false
         }
       });
-    else {
-      axios
-        .patch(
-          process.env.API_URL + "/api/projects/" + project.url_slug + "/",
-          await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
-          tokenConfig(token)
-        )
-        .then(function () {
-          Router.push({
-            pathname: "/profiles/" + user.url_slug,
-            query: {
-              message: "You have successfully edited your project.",
-            },
-          });
-        })
-        .catch(function (error) {
-          console.log(error);
-          if (error) console.log(error.response);
-        });
     }
+    return true
+  }
+
+  const onSaveDraft = async () => {
+    const valid = checkIfProjectValid(true)
+    //short circuit if there is problems with the project
+    if(!valid){
+      return false
+    }    
+    axios
+      .patch(
+        process.env.API_URL + "/api/projects/" + project.url_slug + "/",
+        await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
+        tokenConfig(token)
+      )
+      .then(function () {
+        Router.push({
+          pathname: "/profiles/" + user.url_slug,
+          query: {
+            message: "You have successfully edited your project.",
+          },
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error) console.log(error.response);
+      });
   };
 
   const additionalButtons = [
@@ -100,6 +109,11 @@ export default function EditProjectRoot({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const valid = checkIfProjectValid(false)
+    //short circuit if there is problems with the project
+    if(!valid){
+      return false
+    }    
     const projectToSubmit = project;
     let was_draft = false;
     if (project.is_draft) {

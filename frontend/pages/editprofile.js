@@ -46,8 +46,8 @@ export default function EditProfilePage({
   }
   const profile = user ? parseProfile(user, true /*true*/) : null;
   const saveChanges = (editedAccount) => {
-    if (editedAccount?.info?.location && !isLocationValid(editedAccount?.info?.location)) {
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage)
+    if ((editedAccount?.info?.location === user?.info?.location) && !isLocationValid(editedAccount?.info?.location)) {
+      indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, setErrorMessage)
       return;
     }
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
