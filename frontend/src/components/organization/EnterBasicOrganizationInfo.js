@@ -68,7 +68,7 @@ export default function EnterBasicOrganizationInfo({
       value: organizationInfo["location"],
       ref: locationInputRef,
       locationOptionsOpen: locationOptionsOpen,
-      handleSetLocationOptionsOpen: handleSetLocationOptionsOpen
+      handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
     },
     {
       required: true,

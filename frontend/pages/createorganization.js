@@ -9,7 +9,11 @@ import tokenConfig from "../public/config/tokenConfig";
 import LoginNudge from "../src/components/general/LoginNudge";
 import UserContext from "../src/components/context/UserContext";
 import Router from "next/router";
-import { isLocationValid, indicateWrongLocation, parseLocation } from "../public/lib/locationOperations";
+import {
+  isLocationValid,
+  indicateWrongLocation,
+  parseLocation,
+} from "../public/lib/locationOperations";
 
 export default function CreateOrganization({ tagOptions, token, rolesOptions }) {
   const [errorMessages, setErrorMessages] = React.useState({
@@ -35,32 +39,32 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
   const { user } = useContext(UserContext);
   const steps = ["basicorganizationinfo", "detailledorganizationinfo"];
   const [curStep, setCurStep] = React.useState(steps[0]);
-  const locationInputRef = useRef(null)
-  const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false)
+  const locationInputRef = useRef(null);
+  const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
 
   const handleSetLocationOptionsOpen = (bool) => {
-    setLocationOptionsOpen(bool)
-  }
+    setLocationOptionsOpen(bool);
+  };
 
   const handleSetLocationErrorMessage = (newMessage) => {
     handleSetErrorMessages({
       ...errorMessages,
-      basicOrganizationInfo: newMessage
-    })
-  }
+      basicOrganizationInfo: newMessage,
+    });
+  };
 
   const handleSetDetailledErrorMessage = (newMessage) => {
     handleSetErrorMessages({
       ...errorMessages,
-      detailledOrganizationInfo: newMessage
-    })
-  }
+      detailledOrganizationInfo: newMessage,
+    });
+  };
 
   const handleBasicInfoSubmit = async (event, values) => {
     event.preventDefault();
     try {
       //Short circuit if there is no parent organization
-      if (values.hasparentorganization && !values.parentOrganization){
+      if (values.hasparentorganization && !values.parentOrganization) {
         handleSetErrorMessages({
           ...errorMessages,
           basicOrganizationInfo:
@@ -70,17 +74,18 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       }
 
       //short circuit if the location is invalid
-      if(!isLocationValid(values.location)){
-        indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetLocationErrorMessage)
+      if (!isLocationValid(values.location)) {
+        indicateWrongLocation(
+          locationInputRef,
+          setLocationOptionsOpen,
+          handleSetLocationErrorMessage
+        );
         return;
       }
       const resp = await axios.get(
         process.env.API_URL + "/api/organizations/?search=" + values.organizationname
       );
-      if (
-        resp.data.results &&
-        resp.data.results.find((r) => r.name === values.organizationname)
-      ) {
+      if (resp.data.results && resp.data.results.find((r) => r.name === values.organizationname)) {
         const org = resp.data.results.find((r) => r.name === values.organizationname);
         handleSetErrorMessages({
           errorMessages,
@@ -117,9 +122,13 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
 
   const handleDetailledInfoSubmit = (account) => {
     const organizationToSubmit = parseOrganizationForRequest(account, user, rolesOptions);
-    if(!isLocationValid(organizationToSubmit.location)){
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetDetailledErrorMessage)
-      return
+    if (!isLocationValid(organizationToSubmit.location)) {
+      indicateWrongLocation(
+        locationInputRef,
+        setLocationOptionsOpen,
+        handleSetDetailledErrorMessage
+      );
+      return;
     }
     for (const prop of Object.keys(requiredPropErrors)) {
       if (
@@ -132,7 +141,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         });
         return;
       }
-    }    
+    }
     axios
       .post(
         process.env.API_URL + "/api/create_organization/",

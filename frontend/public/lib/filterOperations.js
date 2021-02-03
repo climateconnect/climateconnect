@@ -4,7 +4,7 @@ const getLocationFilterUrl = (location) => {
   return `place=${location.place_id}&osm=${location.osm_id}&loc_type=${location.osm_type}&`;
 };
 
-export function buildUrlEndingFromFilters(filters){
+export function buildUrlEndingFromFilters(filters) {
   let url = "&";
   Object.keys(filters).map((filterKey) => {
     if (
@@ -14,8 +14,7 @@ export function buildUrlEndingFromFilters(filters){
       //only use location filter if we have selected a location
       if (filterKey === "location" && typeof filters[filterKey] === "object") {
         url += getLocationFilterUrl(filters[filterKey]);
-      }
-      else if (Array.isArray(filters[filterKey]))
+      } else if (Array.isArray(filters[filterKey]))
         url += encodeURI(filterKey + "=" + filters[filterKey].join()) + "&";
       else url += encodeURI(filterKey + "=" + filters[filterKey] + "&");
     }

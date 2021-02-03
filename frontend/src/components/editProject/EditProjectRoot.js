@@ -52,29 +52,29 @@ export default function EditProjectRoot({
   const checkIfProjectValid = (isDraft) => {
     if (project?.loc && oldProject?.loc !== project.loc && !isLocationValid(project.loc)) {
       overviewInputsRef.current.scrollIntoView();
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetErrorMessage)
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetErrorMessage);
       return false;
     }
-    if (isDraft && Object.keys(draftReqiredProperties).filter((key) => !project[key]).length > 0){
+    if (isDraft && Object.keys(draftReqiredProperties).filter((key) => !project[key]).length > 0) {
       Object.keys(draftReqiredProperties).map((key) => {
         if (!project[key]) {
           alert(
             "Your project draft is missing the following reqired property: " +
               draftReqiredProperties[key]
           );
-          return false
+          return false;
         }
       });
     }
-    return true
-  }
+    return true;
+  };
 
   const onSaveDraft = async () => {
-    const valid = checkIfProjectValid(true)
+    const valid = checkIfProjectValid(true);
     //short circuit if there is problems with the project
-    if(!valid){
-      return false
-    }    
+    if (!valid) {
+      return false;
+    }
     axios
       .patch(
         process.env.API_URL + "/api/projects/" + project.url_slug + "/",
@@ -109,11 +109,11 @@ export default function EditProjectRoot({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const valid = checkIfProjectValid(false)
+    const valid = checkIfProjectValid(false);
     //short circuit if there is problems with the project
-    if(!valid){
-      return false
-    }    
+    if (!valid) {
+      return false;
+    }
     const projectToSubmit = project;
     let was_draft = false;
     if (project.is_draft) {

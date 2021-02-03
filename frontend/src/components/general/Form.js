@@ -146,7 +146,7 @@ export default function Form({
   }
 
   function handleLocationChange(newLocation, key) {
-    setValues({...values, [key]: newLocation})
+    setValues({ ...values, [key]: newLocation });
   }
 
   function handleBlur() {
@@ -260,9 +260,9 @@ export default function Form({
             );
           } else if (field.type === "location") {
             return (
-              <LocationSearchBar 
-                label={field.label} 
-                required={field.required} 
+              <LocationSearchBar
+                label={field.label}
+                required={field.required}
                 onSelect={(value) => handleLocationChange(value, field.key)}
                 onChange={(value) => handleLocationChange(value, field.key)}
                 initialValue={field.value}
@@ -271,7 +271,7 @@ export default function Form({
                 open={field.locationOptionsOpen}
                 className={`${classes.blockElement} ${fieldClassName}`}
               />
-              )
+            );
           } else if (
             (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) &&
             field.type === "autocomplete"

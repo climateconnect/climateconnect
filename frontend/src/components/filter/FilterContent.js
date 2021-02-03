@@ -35,7 +35,7 @@ export default function FilterContent({
     }, {})
   );
 
-  console.log(currentFilters)
+  console.log(currentFilters);
 
   const [open, setOpen] = React.useState({});
 

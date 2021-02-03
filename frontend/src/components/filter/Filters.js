@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => {
     }),
     verticalFlexContainer: {
       flexDirection: "column",
-      marginTop: theme.spacing(2)
+      marginTop: theme.spacing(2),
     },
     iconLabel: {
       display: "flex",
@@ -28,23 +28,23 @@ const useStyles = makeStyles((theme) => {
       width: 290,
       display: "flex",
       borderRadius: 0,
-      marginRight: theme.spacing(1)
+      marginRight: theme.spacing(1),
     },
     locationField: {
       borderTopRightRadius: 0,
       borderBottomRightRadius: 0,
-      borderRight: 0
+      borderRight: 0,
     },
     overlayLocationField: {
-      flexGrow: 1
+      flexGrow: 1,
     },
     radiusField: {
-      width: 110      
+      width: 110,
     },
     radiusInput: {
       borderTopLeftRadius: 0,
       borderBottomLeftRadius: 0,
-      borderLeft: 0
+      borderLeft: 0,
     },
     filterElement: (props) => ({
       marginRight: theme.spacing(props.filterElementMargin),
@@ -68,8 +68,8 @@ const useStyles = makeStyles((theme) => {
     },
     errorMessageWrapper: {
       textAlign: "center",
-      marginBottom: theme.spacing(1)
-    }
+      marginBottom: theme.spacing(1),
+    },
   };
 });
 
@@ -199,8 +199,11 @@ export default function Filters({
               handleValueChange(filter.key, location);
             };
             return (
-              <div className={`${classes.locationFieldWrapper} ${isInOverlay && classes.overlayField}`} key={filter.key}>
-                <LocationSearchBar                  
+              <div
+                className={`${classes.locationFieldWrapper} ${isInOverlay && classes.overlayField}`}
+                key={filter.key}
+              >
+                <LocationSearchBar
                   smallInput
                   onSelect={handleLocationSelect}
                   inputClassName={!isInOverlay ? classes.field : classes.overlayLocationField}

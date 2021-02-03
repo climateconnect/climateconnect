@@ -65,8 +65,11 @@ export default function LayoutWrapper({
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
         />
-        <meta property="og:image" content="https://climateconnect.earth/images/landing_image.jpg"/>
-        <meta property="og:title" content="Global Platform for Climate Change Solutions | Climate Connect" />
+        <meta property="og:image" content="https://climateconnect.earth/images/landing_image.jpg" />
+        <meta
+          property="og:title"
+          content="Global Platform for Climate Change Solutions | Climate Connect"
+        />
         <meta property="og:type" content="website" />
 
         <meta name="description" content={description ? description : defaultDescription} />

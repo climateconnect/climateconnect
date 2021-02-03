@@ -155,10 +155,14 @@ function ProfileLayout({
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
   const contentRef = React.useRef(null);
-  const scrollDownToProject = () => { contentRef.current.scrollIntoView({ behavior: "smooth" }); };
+  const scrollDownToProject = () => {
+    contentRef.current.scrollIntoView({ behavior: "smooth" });
+  };
   React.useEffect(() => {
     const URL = window.location.href;
-    if (URL.slice(-9) == "#projects") { scrollDownToProject(); }
+    if (URL.slice(-9) == "#projects") {
+      scrollDownToProject();
+    }
   }, []);
   return (
     <AccountPage

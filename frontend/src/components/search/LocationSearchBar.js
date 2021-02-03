@@ -22,18 +22,18 @@ export default function LocationSearchBar({
   textFieldClassName,
 }) {
   const getValue = (newValue) => {
-    if(!newValue){
-      return ""
-    }else if(typeof newValue === "object"){
-      return newValue.name ? newValue.name : newValue.simple_name
+    if (!newValue) {
+      return "";
+    } else if (typeof newValue === "object") {
+      return newValue.name ? newValue.name : newValue.simple_name;
     } else {
-      return newValue
+      return newValue;
     }
-  } 
+  };
 
   const [options, setOptions] = React.useState([]);
   // If no 'open' prop is passed to the component, the component handles its 'open' state with this internal state
-  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false)
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState("");
   const [inputValue, setInputValue] = React.useState(getValue(initialValue));
   const [loading, setLoading] = React.useState(false);
@@ -52,8 +52,8 @@ export default function LocationSearchBar({
           config
         );
         const bannedClasses = [
-          "landuse", 
-          "tourism", 
+          "landuse",
+          "tourism",
           "railway",
           "waterway",
           "natural",
@@ -62,24 +62,19 @@ export default function LocationSearchBar({
           "amenity",
           "highway",
           "aeroway",
-          "historic"
-        ]
-        const bannedTypes = [
-          "claimed_administrative", 
-          "hamlet", 
-          "isolated_dwelling", 
-          "croft"
-        ]
-        const bannedOsmTypes = ["way"]
+          "historic",
+        ];
+        const bannedTypes = ["claimed_administrative", "hamlet", "isolated_dwelling", "croft"];
+        const bannedOsmTypes = ["way"];
         if (active) {
-          const filteredData = response.data.filter(
-            (o) => {
-              return o.importance > 0.5 && 
-                !bannedClasses.includes(o.class) && 
-                !bannedTypes.includes(o.type) &&
-                !bannedOsmTypes.includes(o.osm_type)
-            }
-          );
+          const filteredData = response.data.filter((o) => {
+            return (
+              o.importance > 0.5 &&
+              !bannedClasses.includes(o.class) &&
+              !bannedTypes.includes(o.type) &&
+              !bannedOsmTypes.includes(o.osm_type)
+            );
+          });
           const data =
             filteredData.length > 0
               ? filteredData
@@ -103,12 +98,10 @@ export default function LocationSearchBar({
     setOpen(false);
   };
 
-  const setOpen = newOpenValue => {
-    if(open === undefined)
-      setUncontrolledOpen(newOpenValue)
-    else
-      handleSetOpen(newOpenValue)
-  }
+  const setOpen = (newOpenValue) => {
+    if (open === undefined) setUncontrolledOpen(newOpenValue);
+    else handleSetOpen(newOpenValue);
+  };
 
   const renderSearchOption = (option) => {
     return <React.Fragment>{option}</React.Fragment>;
@@ -147,7 +140,7 @@ export default function LocationSearchBar({
 
   const handleFilterOptions = (options) => {
     return options;
-  };  
+  };
 
   return (
     <Autocomplete
@@ -180,7 +173,7 @@ export default function LocationSearchBar({
           InputProps={{
             ...params.InputProps,
             endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
-            className: textFieldClassName
+            className: textFieldClassName,
           }}
         />
       )}

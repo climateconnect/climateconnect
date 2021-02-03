@@ -12,7 +12,7 @@ const parseProjects = (projects) => {
 };
 
 const parseMembers = (members) => {
-  return members
+  return members;
 };
 
 const parseOrganizations = (organizations) => {

@@ -16,7 +16,7 @@ import tokenConfig from "../../../public/config/tokenConfig";
 import Axios from "axios";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import { getParams } from "../../../public/lib/generalOperations";
-import EmailIcon from '@material-ui/icons/Email';
+import EmailIcon from "@material-ui/icons/Email";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -48,8 +48,8 @@ const useStyles = makeStyles((theme) => ({
   infoBottomBar: {
     display: "flex",
     marginTop: theme.spacing(3),
-    justifyContent: "space-between"
-  }
+    justifyContent: "space-between",
+  },
 }));
 
 const componentDecorator = (href, text, key) => (

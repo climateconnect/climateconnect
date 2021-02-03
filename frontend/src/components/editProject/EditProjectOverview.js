@@ -227,10 +227,7 @@ const InputLocation = ({
 }) => {
   const classes = useStyles();
   const handleChangeLocation = (location) => {
-    handleChangeProject(
-      parseLocation(location),
-      "loc"
-    );
+    handleChangeProject(parseLocation(location), "loc");
   };
   return (
     <div className={classes.projectInfoEl}>

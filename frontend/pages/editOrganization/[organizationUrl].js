@@ -16,12 +16,12 @@ import { indicateWrongLocation, isLocationValid } from "../../public/lib/locatio
 
 export default function EditOrganizationPage({ organization, tagOptions, token }) {
   const [errorMessage, setErrorMessage] = useState("");
-  const locationInputRef = useRef(null)
-  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false)
-  
+  const locationInputRef = useRef(null);
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
+
   const handleSetLocationOptionsOpen = (newValue) => {
-    setLocationOptionsOpen(newValue)
-  }
+    setLocationOptionsOpen(newValue);
+  };
 
   const infoMetadata = {
     ...organization_info_metadata,
@@ -29,10 +29,9 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
       ...organization_info_metadata.location,
       locationOptionsOpen: locationOptionsOpen,
       setLocationOptionsOpen: handleSetLocationOptionsOpen,
-      locationInputRef: locationInputRef
+      locationInputRef: locationInputRef,
     },
-  }
-  
+  };
 
   const handleSetErrorMessage = (msg) => {
     setErrorMessage(msg);
@@ -42,8 +41,11 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
   const saveChanges = (editedOrg) => {
     const error = verifyChanges(editedOrg).error;
     //verify location is valid and notify user if it's not
-    if(editedOrg?.info?.location !== organization?.info?.location && !isLocationValid(editedOrg?.info?.location))
-      indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, handleSetErrorMessage)
+    if (
+      editedOrg?.info?.location !== organization?.info?.location &&
+      !isLocationValid(editedOrg?.info?.location)
+    )
+      indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, handleSetErrorMessage);
     if (error) {
       handleSetErrorMessage(error);
     } else {

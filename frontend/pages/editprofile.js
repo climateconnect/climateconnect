@@ -22,32 +22,35 @@ export default function EditProfilePage({
   token,
 }) {
   const { user } = useContext(UserContext);
-  const [errorMessage, setErrorMessage] = useState("")
-  const locationInputRef = useRef(null)
-  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false)
-  
+  const [errorMessage, setErrorMessage] = useState("");
+  const locationInputRef = useRef(null);
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
+
   const handleSetLocationOptionsOpen = (newValue) => {
-    setLocationOptionsOpen(newValue)
-  }
+    setLocationOptionsOpen(newValue);
+  };
 
   //add dynamic data to the data retrieved from profile_info_metadata.js
   infoMetadata = {
     ...infoMetadata,
     availability: {
       ...infoMetadata.availability,
-      options: availabilityOptions
+      options: availabilityOptions,
     },
     location: {
       ...infoMetadata.location,
       locationOptionsOpen: locationOptionsOpen,
       setLocationOptionsOpen: handleSetLocationOptionsOpen,
-      locationInputRef: locationInputRef
-    }
-  }
+      locationInputRef: locationInputRef,
+    },
+  };
   const profile = user ? parseProfile(user, true /*true*/) : null;
   const saveChanges = (editedAccount) => {
-    if ((editedAccount?.info?.location === user?.info?.location) && !isLocationValid(editedAccount?.info?.location)) {
-      indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, setErrorMessage)
+    if (
+      editedAccount?.info?.location === user?.info?.location &&
+      !isLocationValid(editedAccount?.info?.location)
+    ) {
+      indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, setErrorMessage);
       return;
     }
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
@@ -81,9 +84,9 @@ export default function EditProfilePage({
     );
   else
     return (
-      <WideLayout 
-        title={"Edit Profile"} 
-        message={errorMessage} 
+      <WideLayout
+        title={"Edit Profile"}
+        message={errorMessage}
         messageType={errorMessage && "error"}
       >
         {profile ? (
@@ -126,17 +129,17 @@ function ProfileLayout({
   skillsOptions,
 }) {
   return (
-    <EditAccountPage      
-      account={profile}   
-      deleteEmail="support@climateconnect.earth"   
+    <EditAccountPage
+      account={profile}
+      deleteEmail="support@climateconnect.earth"
       handleCancel={handleCancel}
-      handleSubmit={handleSubmit}    
+      handleSubmit={handleSubmit}
       infoMetadata={infoMetadata}
       maxAccountTypes={maxAccountTypes}
       possibleAccountTypes={profileTypes}
       skillsOptions={skillsOptions}
       splitName
-      type="profile"      
+      type="profile"
     />
   );
 }

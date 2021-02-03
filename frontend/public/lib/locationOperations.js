@@ -26,13 +26,13 @@ export function getNameFromLocation(location) {
     "subdivision",
     "neighbourhood",
     "town",
-    "village"
+    "village",
   ];
-  if(isCountry(location)){
+  if (isCountry(location)) {
     return {
       country: location.address.country,
-      name: location.display_name
-    }
+      name: location.display_name,
+    };
   }
   const middlePartSuffixes = ["city", "state"];
   const firstPart = getFirstPart(location.address, firstPartOrder);
@@ -41,7 +41,12 @@ export function getNameFromLocation(location) {
     city: firstPart,
     state: middlePart,
     country: location.address.country,
-    name: firstPart + ", " + middlePart + (middlePart?.length > 0 ? ", " : "") + location.address.country,
+    name:
+      firstPart +
+      ", " +
+      middlePart +
+      (middlePart?.length > 0 ? ", " : "") +
+      location.address.country,
   };
 }
 
@@ -69,17 +74,17 @@ const getMiddlePart = (address, order, suffixes) => {
 };
 
 const isCountry = (location) => {
-  if(location.type !== "administrative"){
+  if (location.type !== "administrative") {
     return false;
   }
   //short circuit if the address contains any information other than country and country code
-  for(const key of Object.keys(location.address)) {
-    if(!["country", "country_code"].includes(key)) {
-      return false
+  for (const key of Object.keys(location.address)) {
+    if (!["country", "country_code"].includes(key)) {
+      return false;
     }
   }
-  return true
-}
+  return true;
+};
 
 export function isLocationValid(location) {
   if (!location || typeof location == "string") return false;
@@ -89,8 +94,8 @@ export function isLocationValid(location) {
 export function parseLocation(location) {
   const location_object = getNameFromLocation(location);
   //don't do anything if location is already parsed
-  if(typeof location === "object" && alreadyParsed(location)){
-    return location
+  if (typeof location === "object" && alreadyParsed(location)) {
+    return location;
   }
   return {
     type: location?.geojson?.type,
@@ -102,24 +107,20 @@ export function parseLocation(location) {
     city: location_object.city,
     state: location_object.state,
     country: location_object.country,
-  }
+  };
 }
 
-const props = ["type", "coordinates", "geojson", "place_id", "name", "city", "state", "country"]
+const props = ["type", "coordinates", "geojson", "place_id", "name", "city", "state", "country"];
 const alreadyParsed = (location) => {
-  for(const prop of props){
-    if(!Object.keys(location).includes(prop)){
-      return false
+  for (const prop of props) {
+    if (!Object.keys(location).includes(prop)) {
+      return false;
     }
   }
-  return true
-}
+  return true;
+};
 
-export function indicateWrongLocation(
-  locationInputRef, 
-  setLocationOptionsOpen, 
-  setErrorMessage
-) {
+export function indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage) {
   locationInputRef.current.focus();
   setLocationOptionsOpen(true);
   setErrorMessage("Please choose one of the location options");

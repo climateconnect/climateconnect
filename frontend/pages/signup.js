@@ -5,7 +5,11 @@ import axios from "axios";
 import Router from "next/router";
 import Layout from "../src/components/layouts/layout";
 import UserContext from "../src/components/context/UserContext";
-import { parseLocation, isLocationValid, indicateWrongLocation } from "../public/lib/locationOperations";
+import {
+  parseLocation,
+  isLocationValid,
+  indicateWrongLocation,
+} from "../public/lib/locationOperations";
 
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
@@ -22,12 +26,12 @@ export default function Signup() {
 
   const steps = ["basicinfo", "personalinfo"];
   const [curStep, setCurStep] = useState(steps[0]);
-  const [errorMessage, setErrorMessage] = useState("")
-  const locationInputRef = useRef(null)
-  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("");
+  const locationInputRef = useRef(null);
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const handleSetLocationOptionsOpen = (bool) => {
-    setLocationOptionsOpen(bool)
-  }
+    setLocationOptionsOpen(bool);
+  };
   const [errorMessages, setErrorMessages] = useState(
     steps.reduce((obj, step) => {
       obj[step] = null;
@@ -52,9 +56,9 @@ export default function Signup() {
 
   const handleAddInfoSubmit = (event, values) => {
     event.preventDefault();
-    if(!isLocationValid(values.location)){
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage)
-      return
+    if (!isLocationValid(values.location)) {
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage);
+      return;
     }
     setUserInfo({
       ...userInfo,
@@ -110,8 +114,8 @@ export default function Signup() {
   };
 
   return (
-    <Layout 
-      title="Sign Up" 
+    <Layout
+      title="Sign Up"
       isLoading={isLoading}
       message={errorMessage}
       messageType={errorMessage && "error"}

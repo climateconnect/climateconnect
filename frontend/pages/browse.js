@@ -33,20 +33,20 @@ export default function Browse({
     projects: {},
     members: {},
     organizations: {},
-  });  
-  const [errorMessage, setErrorMessage] = useState("")
+  });
+  const [errorMessage, setErrorMessage] = useState("");
 
   const applyNewFilters = async (type, newFilters, closeFilters, oldUrlEnding) => {
     if (filters === newFilters) {
       return;
-    }        
+    }
     //todo: throw error if user didn't choose a location from the list
     setFilters({ ...filters, [type]: newFilters });
     const newUrlEnding = buildUrlEndingFromFilters(newFilters);
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }
-    setErrorMessage(null)
+    setErrorMessage(null);
     try {
       const filteredItemsObject = await getDataFromServer({
         type: type,
@@ -56,7 +56,7 @@ export default function Browse({
       });
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
-      }      
+      }
       return {
         closeFilters: closeFilters,
         filteredItemsObject: filteredItemsObject,
@@ -121,8 +121,8 @@ export default function Browse({
   const atTopOfPage = TopOfPage({ initTopOfPage: true });
   const showOnScrollUp = isScrollingUp && !atTopOfPage;
   const handleSetErrorMessage = (newMessage) => {
-    setErrorMessage(newMessage)
-  }
+    setErrorMessage(newMessage);
+  };
   return (
     <>
       <WideLayout

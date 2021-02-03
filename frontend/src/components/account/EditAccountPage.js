@@ -356,18 +356,19 @@ export default function EditAccountPage({
         setEditedAccount({
           ...editedAccount,
           info: { ...editedAccount.info, [key]: newLocationString },
-        })
-      }
+        });
+      };
 
       //set account.info.location to object when user selects a location
       const handleChangeLocation = (location) => {
         setEditedAccount({
           ...editedAccount,
           info: {
-            ...editedAccount.info, [key]:parseLocation(location)
-          }          
-        })
-      }
+            ...editedAccount.info,
+            [key]: parseLocation(location),
+          },
+        });
+      };
 
       const handleSetParentOrganization = (newOrg) => {
         setEditedAccount({
@@ -447,8 +448,8 @@ export default function EditAccountPage({
       } else if (i.type === "location") {
         return (
           <div className={classes.infoElement}>
-            <LocationSearchBar 
-              label={i.name} 
+            <LocationSearchBar
+              label={i.name}
               required
               value={editedAccount.info.location}
               onChange={handleChangeLocationString}
@@ -553,9 +554,9 @@ export default function EditAccountPage({
   };
 
   const handleFormSubmit = (event) => {
-    event.preventDefault()
-    handleSubmit(editedAccount)
-  }
+    event.preventDefault();
+    handleSubmit(editedAccount);
+  };
   console.log(editedAccount);
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
@@ -760,7 +761,7 @@ export default function EditAccountPage({
         text="Do you really want to exit without saving?"
         cancelText="No"
         confirmText="Yes"
-      />      
+      />
     </Container>
   );
 }

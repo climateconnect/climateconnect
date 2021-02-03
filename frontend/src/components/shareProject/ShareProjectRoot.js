@@ -94,14 +94,14 @@ export default function ShareProjectRoot({
 
   const goToNextStep = () => {
     setCurStep(steps[steps.indexOf(curStep) + 1]);
-    setMessage("")
+    setMessage("");
     //scroll to top when navigating to another step
     window.scrollTo(0, 0);
   };
 
   const goToPreviousStep = () => {
     setCurStep(steps[steps.indexOf(curStep) - 1]);
-    setMessage("")
+    setMessage("");
     //scroll to top when navigating to another step
     window.scrollTo(0, 0);
   };

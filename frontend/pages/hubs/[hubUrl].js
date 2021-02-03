@@ -65,10 +65,10 @@ export default function Hub({
     members: {},
     organizations: {},
   });
-  const [errorMessage, setErrorMessage] = useState("")
+  const [errorMessage, setErrorMessage] = useState("");
   const handleSetErrorMessage = (newMessage) => {
-    setErrorMessage(newMessage)
-  }
+    setErrorMessage(newMessage);
+  };
   const contentRef = useRef(null);
   const scrollToSolutions = () => contentRef.current.scrollIntoView({ behavior: "smooth" });
 
@@ -109,7 +109,7 @@ export default function Hub({
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }
-    handleSetErrorMessage("")
+    handleSetErrorMessage("");
     try {
       const filteredItemsObject = await getDataFromServer({
         type: type,
@@ -160,11 +160,7 @@ export default function Hub({
   };
 
   return (
-    <WideLayout 
-      title={headline} 
-      fixedHeader 
-      headerBackground="#FFF"
-    >
+    <WideLayout title={headline} fixedHeader headerBackground="#FFF">
       <div className={classes.contentUnderHeader}>
         <NavigationSubHeader hubName={name} />
         {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}

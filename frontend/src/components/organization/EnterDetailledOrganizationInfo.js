@@ -41,9 +41,9 @@ export default function EnterDetailledOrganizationInfo({
       ...organization_info_metadata.location,
       locationOptionsOpen: locationOptionsOpen,
       setLocationOptionsOpen: handleSetLocationOptionsOpen,
-      locationInputRef: locationInputRef
+      locationInputRef: locationInputRef,
     },
-  }
+  };
   const classes = useStyles();
 
   const handleCancel = () => {
@@ -68,7 +68,7 @@ export default function EnterDetailledOrganizationInfo({
         handleSubmit={handleSubmit}
         submitMessage="Create"
         handleCancel={handleCancel}
-        errorMessage={errorMessage}        
+        errorMessage={errorMessage}
       />
     </div>
   );

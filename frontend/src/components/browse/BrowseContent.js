@@ -77,12 +77,12 @@ export default function BrowseContent({
   const locationInputRefs = {
     projects: useRef(null),
     organizations: useRef(null),
-    members: useRef(null)
-  }
-  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false)
+    members: useRef(null),
+  };
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const handleSetLocationOptionsOpen = (bool) => {
-    setLocationOptionsOpen(bool)
-  }
+    setLocationOptionsOpen(bool);
+  };
 
   // We have 2 distinct loading states: filtering, and loading more data. For
   // each state, we want to treat the loading spinner a bit differently, hence
@@ -159,13 +159,13 @@ export default function BrowseContent({
    * state.
    */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
-    if(newFilters.location && !isLocationValid(newFilters.location)){
-      indicateWrongLocation(locationInputRefs[type], setLocationOptionsOpen, handleSetErrorMessage)
-      return
+    if (newFilters.location && !isLocationValid(newFilters.location)) {
+      indicateWrongLocation(locationInputRefs[type], setLocationOptionsOpen, handleSetErrorMessage);
+      return;
     }
-    handleSetErrorMessage("")
+    handleSetErrorMessage("");
     setIsFiltering(true);
-    unexpandFilters()
+    unexpandFilters();
     const res = await applyNewFilters(type, newFilters, closeFilters, state.urlEnding[type]);
     if (res?.closeFilters) setFiltersExpanded(false);
     if (res?.filteredItemsObject) {

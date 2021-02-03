@@ -6,18 +6,18 @@ const useStyles = makeStyles(() => {
   return {
     checkboxLabels: {
       fontSize: 14,
-    }
+    },
   };
 });
 
-export default function AddInfo({ 
-  handleSubmit, 
-  errorMessage, 
-  values, 
-  handleGoBack ,
+export default function AddInfo({
+  handleSubmit,
+  errorMessage,
+  values,
+  handleGoBack,
   locationInputRef,
   locationOptionsOpen,
-  handleSetLocationOptionsOpen
+  handleSetLocationOptionsOpen,
 }) {
   const classes = useStyles();
   const fields = [
@@ -43,7 +43,7 @@ export default function AddInfo({
       value: values["location"],
       ref: locationInputRef,
       locationOptionsOpen: locationOptionsOpen,
-      handleSetLocationOptionsOpen: handleSetLocationOptionsOpen
+      handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
     },
     {
       required: false,
