@@ -134,7 +134,7 @@ export default function LocationSearchBar({
     }
   };
 
-  const handleGetOptionDisabled = (option) => {
+  const handleGetOptionDisabled = (/*option*/) => {
     return false;
   };
 
