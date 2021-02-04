@@ -140,8 +140,9 @@ def create_project_test_data(number_of_rows: int):
             # sense of older projects. This originated out of
             # fixing a bug around the "timeago" utility, where
             # timeago would round up to 2 years, when a project
-            # is only 1 year and 1 day old:
-            over_a_year_ago = timezone.now() - timezone.timedelta(days = 366)
+            # is only 1 year and 1 day old. This should create the
+            # UTC timestamp, e.g. 2020-02-04T01:33:45.276997Z
+            one_year_and_one_day_ago = timezone.now() - timezone.timedelta(days = 366)
 
             project = Project.objects.create(
                 name=name,
@@ -149,7 +150,7 @@ def create_project_test_data(number_of_rows: int):
                 collaborators_welcome=True,
                 country="Germany",
                 short_description="This is a test project.",
-                start_date=over_a_year_ago,
+                start_date=one_year_and_one_day_ago,
                 status=ProjectStatus.objects.get(name="In Progress"),
                 url_slug=url_slug,
             )
