@@ -7,9 +7,10 @@ from django.contrib.auth.models import User
 from climateconnect_api.models import (
     Availability, Role, UserProfile
 )
-from organization.models import (
-    ProjectStatus, Project, Organization
-)
+# from organization.models import (
+#     ProjectStatus, Project, Organization
+# )
+
 
 
 def create_test_user_data(number_of_rows: int):
@@ -18,6 +19,7 @@ def create_test_user_data(number_of_rows: int):
         username = "test{}@test.com".format(i)
         name = "test {}".format(i)
         url_slug = name.replace(" ", "")
+
         if not User.objects.filter(email=username).exists():
             user = User.objects.create(
                 username=username, email=username,
@@ -111,14 +113,14 @@ def create_project_tags_test_data():
         food_tag = ProjectTags.objects.create(name='Food', key='food')
         if not ProjectTags.objects.filter(name='Lowering Food waste').exists():
             ProjectTags.objects.create(
-                name='Lowering Food waste', 
-                key='loweringfoodwaste', 
+                name='Lowering Food waste',
+                key='loweringfoodwaste',
                 parent_tag=food_tag
             )
         if not ProjectTags.objects.filter(name='Encouraging a plant-based lifestyle').exists():
             ProjectTags.objects.create(
-                name='Encouraging a plant-based lifestyle', 
-                key='encouragingaplantbasedlifestyle', 
+                name='Encouraging a plant-based lifestyle',
+                key='encouragingaplantbasedlifestyle',
                 parent_tag=food_tag
             )
     if not ProjectTags.objects.filter(name='Transportation').exists():

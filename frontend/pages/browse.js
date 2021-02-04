@@ -220,7 +220,9 @@ async function getMembers(page, token, urlEnding) {
 
 async function getDataFromServer({ type, page, token, urlEnding }) {
   let url = `${process.env.API_URL}/api/${type}/?page=${page}`;
-  if (urlEnding) url += urlEnding;
+  if (urlEnding) {
+    url += urlEnding;
+  }
 
   try {
     console.log(`Getting data for ${type} at ${url}`);
@@ -235,6 +237,7 @@ async function getDataFromServer({ type, page, token, urlEnding }) {
       };
     }
   } catch (err) {
+    console.log("test");
     if (err.response && err.response.data) {
       console.log("Error: ");
       console.log(err.response.data);
