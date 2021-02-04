@@ -50,7 +50,6 @@ const yearAndDayFormatter = (
     }
 
     // Case: plural "years" and "days"
-    // Case: plural "years" and "days"
     const pluralizeUnit = (value, unit) => {
       return value !== 1 ? `${unit}s` : unit;
     };
