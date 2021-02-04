@@ -342,9 +342,7 @@ export default function EditAccountPage({
   };
 
   const displayAccountInfo = (info) => {
-    console.log(info);
     return Object.keys(info).map((key) => {
-      console.log(key);
       const handleChange = (event) => {
         setEditedAccount({
           ...editedAccount,
@@ -557,7 +555,6 @@ export default function EditAccountPage({
     event.preventDefault();
     handleSubmit(editedAccount);
   };
-  console.log(editedAccount);
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <form onSubmit={handleFormSubmit}>
