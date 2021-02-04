@@ -13,7 +13,15 @@
  * See more on the formatting options, here:
  * https://github.com/nmn/react-timeago#formatter-optional
  */
-const yearAndDayFormatter = (value, unit, suffix, elapsedMilliseconds) => {
+const yearAndDayFormatter = (
+  value,
+  unit,
+  suffix,
+  elapsedMilliseconds,
+  /* eslint-disable-next-line no-unused-vars */
+  defaultFormatter,
+  now
+) => {
   // Only apply custom logic for the year case
   if (unit === "year") {
     // The days calculation comes directly from react-timeago:
@@ -25,7 +33,13 @@ const yearAndDayFormatter = (value, unit, suffix, elapsedMilliseconds) => {
     // Number of hours in a day: 24
     // Should be 86,400,000
     const msInDays = 1000 * 60 * 60 * 24;
-    const elapsedDaysSinceEpoch = Math.round(elapsedMilliseconds / msInDays);
+
+    // We want the time that's elapsed between
+    // date we're tring to format (elapsedMiliseconds), and Date.now(). We then
+    // convert that to the total number of days since epoch, and account
+    // for overflow with 365 days in a year.
+    const differenceInMiliseconds = now() - elapsedMilliseconds;
+    const elapsedDaysSinceEpoch = Math.round(differenceInMiliseconds / msInDays);
     const dayWithinYear = elapsedDaysSinceEpoch % 365;
 
     // With the number of days, we can just append the remaining
