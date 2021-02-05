@@ -27,11 +27,7 @@ const yearAndDayFormatter = (
     // The days calculation comes directly from react-timeago:
     // https://github.com/nmn/react-timeago/blob/master/src/formatters/buildFormatter.js#L84-L86
 
-    // Number of ms in a second: 1000
-    // Number of seconds in a minute: 60
-    // Number of minutes in an hour: 60
-    // Number of hours in a day: 24
-    // Should be 86,400,000
+    // Should be 86,400,000: (1000ms, 60 seconds, 60 minutes, 24 hours)
     const msInDays = 1000 * 60 * 60 * 24;
 
     // We want the time that's elapsed between
