@@ -190,27 +190,15 @@ const SiteLinks = () => {
           <Link underline="none" href="/donate">
             <Typography className={classes.li}>Donate</Typography>
           </Link>
+          <FeedbackButton justLink>
+            <Typography className={classes.li}>Leave feedback</Typography>
+          </FeedbackButton>
           <Link underline="none" href="/about">
             <Typography className={classes.li}>About</Typography>
           </Link>
         </div>
       </div>
-      <div className={classes.linksSection}>
-        <Typography color="primary" component="h3" className={classes.headline}>
-          Contact
-        </Typography>
-        <div className={classes.links}>
-          <Link underline="none" href="mailto:contact@climateconnect.earth">
-            <Typography className={classes.li}>contact@climateconnect.earth</Typography>
-          </Link>
-          <Link underline="none" href="tel:+4915730101056">
-            <Typography className={classes.li}>+4915730101056</Typography>
-          </Link>
-          <FeedbackButton justLink>
-            <Typography className={classes.li}>Leave feedback</Typography>
-          </FeedbackButton>
-        </div>
-      </div>
+
       <div className={classes.linksSection}>
         <Typography color="primary" component="h3" className={classes.headline}>
           Browse
@@ -230,11 +218,15 @@ const SiteLinks = () => {
           </Link>
         </div>
       </div>
+
       <div className={classes.linksSection}>
         <Typography color="primary" component="h3" className={classes.headline}>
           Legal
         </Typography>
         <div className={classes.links}>
+          <Link underline="none" href="mailto:contact@climateconnect.earth">
+            <Typography className={classes.li}>Send email</Typography>
+          </Link>
           <Link underline="none" href="/imprint">
             <Typography className={classes.li}>Imprint</Typography>
           </Link>
@@ -246,6 +238,7 @@ const SiteLinks = () => {
           </Link>
         </div>
       </div>
+
       <div className={`${classes.newsLetterBox} ${classes.linksSection}`}>
         <Typography color="primary" component="h3" className={classes.headline}>
           Newsletter
