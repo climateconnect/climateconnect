@@ -33,7 +33,11 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("md")]: {
       fontSize: 14,
     },
+    "&:hover": {
+      color: theme.palette.primary.main,
+    },
   },
+
   headline: {
     fontSize: 25,
     marginBottom: theme.spacing(2),
@@ -87,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 30,
     color: "black",
     "&:hover": {
-      color: "blue",
+      color: theme.palette.primary.main,
     },
   },
   socialIconsContainer: {
