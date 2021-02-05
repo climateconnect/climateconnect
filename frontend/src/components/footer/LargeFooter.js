@@ -225,6 +225,9 @@ const SiteLinks = () => {
           <Link underline="none" href="/browse#members">
             <Typography className={classes.li}>Members</Typography>
           </Link>
+          <Link underline="none" href="/hubs">
+            <Typography className={classes.li}>Hubs</Typography>
+          </Link>
         </div>
       </div>
       <div className={classes.linksSection}>
