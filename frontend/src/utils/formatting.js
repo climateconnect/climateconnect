@@ -1,6 +1,6 @@
 /**
  * This is thin wrapper on top of the formatter that's passed to
- * reat-timeago. The desired date is a format that's something like
+ * react-timeago. The desired date is a format that's something like
  *
  * "X years and X days"
  *
