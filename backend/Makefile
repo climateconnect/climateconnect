@@ -21,11 +21,13 @@ docker:
 all: docker start
 
 
-# database migrations and test data creation
+#
+# Database migrations and test data creation:
+#
+
 migrate:
 	python3 manage.py migrate
 
-# just an alias for migrate
 migrations: migrate
 
 test-data:

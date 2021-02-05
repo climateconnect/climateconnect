@@ -4,6 +4,7 @@ import humanizeDuration from "humanize-duration";
 import { Typography, Button, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
+import { yearAndDayFormatter } from "../../utils/formatting";
 import DateDisplay from "./../general/DateDisplay";
 import Posts from "./../communication/Posts.js";
 import ProjectStatus from "./ProjectStatus";
@@ -133,6 +134,7 @@ export default function ProjectContent({ project, leaveProject }) {
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
       : null;
+
   return (
     <div>
       <div className={classes.contentBlock}>
@@ -158,12 +160,14 @@ export default function ProjectContent({ project, leaveProject }) {
               )}
             </div>
           )}
+          {/* Note: created date is not the same as the start date, for projects */}
           <Typography>
             Created: <DateDisplay date={new Date(project.creation_date)} />
           </Typography>
           <div>
             <Typography component="span">
-              Started <TimeAgo date={new Date(project.start_date)} /> by
+              Started{" "}
+              <TimeAgo date={new Date(project.start_date)} formatter={yearAndDayFormatter} /> by
             </Typography>
             {project.isPersonalProject ? (
               <MiniProfilePreview
