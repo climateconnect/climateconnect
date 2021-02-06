@@ -27,17 +27,21 @@ const useStyles = makeStyles((theme) => ({
       justifyContent: "center",
     },
   },
-  li: {
+  newsletterBlurb: {
     color: "white",
+  },
+  li: {
     fontWeight: 600,
     [theme.breakpoints.down("md")]: {
       fontSize: 14,
     },
+  },
+  footerLink: {
+    color: "white",
     "&:hover": {
       color: theme.palette.primary.main,
     },
   },
-
   headline: {
     fontSize: 25,
     marginBottom: theme.spacing(2),
@@ -89,9 +93,9 @@ const useStyles = makeStyles((theme) => ({
   },
   socialIcon: {
     fontSize: 30,
-    color: "black",
+    color: theme.palette.primary.main,
     "&:hover": {
-      color: theme.palette.primary.main,
+      color: theme.palette.secondary.main,
     },
   },
   socialIconsContainer: {
@@ -130,6 +134,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const FooterLink = ({ children, href }) => {
+  const classes = useStyles();
+  return (
+    <Link underline="none" href={href} className={classes.footerLink}>
+      <Typography className={classes.li}>{children}</Typography>
+    </Link>
+  );
+};
+
 export default function LargeFooter({ className }) {
   const classes = useStyles();
   return (
@@ -158,7 +171,7 @@ const SocialLinks = () => {
   return (
     <div className={classes.socialIconsContainer}>
       <Link target="_blank" href="https://www.instagram.com/climate_connect.earth/">
-        <InstagramIcon color="primary" className={classes.socialIcon} />
+        <InstagramIcon color="main" className={classes.socialIcon} />
       </Link>
       <Link target="_blank" href="https://github.com/climateconnect/climateconnect">
         <GitHubIcon className={classes.socialIcon} />
@@ -188,18 +201,12 @@ const SiteLinks = () => {
           General
         </Typography>
         <div className={classes.links}>
-          <Link underline="none" href="/faq">
-            <Typography className={classes.li}>FAQ</Typography>
-          </Link>
-          <Link underline="none" href="/donate">
-            <Typography className={classes.li}>Donate</Typography>
-          </Link>
+          <FooterLink href="/faq">FAQ</FooterLink>
+          <FooterLink href="/donate">Donate</FooterLink>
           <FeedbackButton justLink>
             <Typography className={classes.li}>Leave feedback</Typography>
           </FeedbackButton>
-          <Link underline="none" href="/about">
-            <Typography className={classes.li}>About</Typography>
-          </Link>
+          <FooterLink href="/about">About</FooterLink>
         </div>
       </div>
 
@@ -208,18 +215,10 @@ const SiteLinks = () => {
           Browse
         </Typography>
         <div className={classes.links}>
-          <Link underline="none" href="/browse">
-            <Typography className={classes.li}>Projects</Typography>
-          </Link>
-          <Link underline="none" href="/browse#organizations">
-            <Typography className={classes.li}>Organizations</Typography>
-          </Link>
-          <Link underline="none" href="/browse#members">
-            <Typography className={classes.li}>Members</Typography>
-          </Link>
-          <Link underline="none" href="/hubs">
-            <Typography className={classes.li}>Hubs</Typography>
-          </Link>
+          <FooterLink href="/browse">Projects</FooterLink>
+          <FooterLink href="/browse#organizations">Organizations</FooterLink>
+          <FooterLink href="/browse#members">Members</FooterLink>
+          <FooterLink href="/hubs">Hubs</FooterLink>
         </div>
       </div>
 
@@ -228,18 +227,10 @@ const SiteLinks = () => {
           Legal
         </Typography>
         <div className={classes.links}>
-          <Link underline="none" href="mailto:contact@climateconnect.earth">
-            <Typography className={classes.li}>Send email</Typography>
-          </Link>
-          <Link underline="none" href="/imprint">
-            <Typography className={classes.li}>Imprint</Typography>
-          </Link>
-          <Link underline="none" href="/privacy">
-            <Typography className={classes.li}>Privacy</Typography>
-          </Link>
-          <Link underline="none" href="/terms">
-            <Typography className={classes.li}>Terms</Typography>
-          </Link>
+          <FooterLink href="mailto:contact@climateconnect.earth">Send email</FooterLink>
+          <FooterLink href="/imprint">Imprint</FooterLink>
+          <FooterLink href="/privacy">Privacy</FooterLink>
+          <FooterLink href="/terms">Terms</FooterLink>
         </div>
       </div>
 
@@ -247,7 +238,7 @@ const SiteLinks = () => {
         <Typography color="primary" component="h3" className={classes.headline}>
           Newsletter
         </Typography>
-        <Typography className={classes.li}>
+        <Typography className={`${classes.li} ${classes.newsletterBlurb}`}>
           Sign up to get updates about Climate Connect and a summary of highlight projects every
           month!
         </Typography>
