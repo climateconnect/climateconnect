@@ -171,7 +171,7 @@ const SocialLinks = () => {
   return (
     <div className={classes.socialIconsContainer}>
       <Link target="_blank" href="https://www.instagram.com/climate_connect.earth/">
-        <InstagramIcon color="main" className={classes.socialIcon} />
+        <InstagramIcon color="primary" className={classes.socialIcon} />
       </Link>
       <Link target="_blank" href="https://github.com/climateconnect/climateconnect">
         <GitHubIcon className={classes.socialIcon} />
