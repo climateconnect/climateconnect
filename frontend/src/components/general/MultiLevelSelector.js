@@ -271,23 +271,33 @@ function ListToChooseWrapper({
   const handleSearchBarChange = (type, value) => setSearchValue(value);
 
   function filteredLists({ searchValue, itemsToSelectFrom }) {
+    console.log(itemsToSelectFrom);
+    searchValue = "e";
     if (searchValue == "" || searchValue == null) {
       return itemsToSelectFrom;
     }
-    console.log(itemsToSelectFrom);
     itemsToSelectFrom
       // remove all inner items that do not match the search query
       .forEach((item) => {
-        item.subcategories.filter((innerItem) => {
-          innerItem.name.toLowerCase().includes(searchValue.toLowerCase());
-        });
+        Object.assign(
+          item.subcategories,
+          item.subcategories.filter((innerItem) => {
+            innerItem.name.toLowerCase().includes(searchValue.toLowerCase());
+          })
+        );
       });
-    console.log(itemsToSelectFrom);
-    const items = itemsToSelectFrom
-      // remove all items who do not match the search, or have no inner matches
-      .filter((item) => {
-        item.name.toLowerCase().includes(searchValue.toLowerCase()) || item.subcategories != [];
-      });
+    let items = [];
+    Object.assign(
+      items,
+      itemsToSelectFrom
+        // remove all items who do not match the search, or have no inner matches
+        .filter((item) => {
+          return (
+            item.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+            item.subcategories.length > 0
+          );
+        })
+    );
     console.log(items);
     return items;
   }
