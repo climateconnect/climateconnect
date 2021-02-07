@@ -31,7 +31,7 @@ def create_email_notification(receiver, chat, message_content, sender, notificat
         'email_on_group_chat_message'
     )[0]
     if not email_notification_object.exists():
-        number_of_participants = Participant.objects.filter(chat=chat).count()
+        number_of_participants = Participant.objects.filter(chat=chat, is_active=True).count()
         is_group_chat = number_of_participants > 2
         if is_group_chat:
             if email_settings['email_on_group_chat_message'] == True:

@@ -151,6 +151,13 @@ class Project(models.Model):
         default=100
     )
 
+    is_active = models.BooleanField(
+        help_text="Flags if the project is still publically active or not",
+        verbose_name="Is an Active Project",
+        default=True,
+        null=False
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Project"

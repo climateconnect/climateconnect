@@ -1,9 +1,10 @@
 import React from "react";
-import { IconButton, makeStyles, Link } from "@material-ui/core";
+import { IconButton, makeStyles, Link, Tooltip } from "@material-ui/core";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import ChatTitle from "../../communication/chat/ChatTitle";
 import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
@@ -16,10 +17,12 @@ const useStyles = makeStyles((theme) => ({
   backIcon: {
     float: "left",
     left: theme.spacing(1),
+    top: theme.spacing(0.75)
   },
   manageMembersButton: {
     float: "right",
     right: theme.spacing(1),
+    top: theme.spacing(0.75)
   },
   showParticipantsButton: {
     cursor: "pointer",
@@ -37,23 +40,40 @@ export default function ChatHeader({
   canEditMembers,
   handleToggleMemberManagementExpanded,
   memberManagementExpanded,
+  leaveChat,
 }) {
   const classes = useStyles();
   return (
     <div className={`${classes.topBar} ${className}`}>
-      {!memberManagementExpanded && (
-        <IconButton className={classes.backIcon} href="/inbox">
-          <KeyboardArrowLeftIcon />
-        </IconButton>
+      {!memberManagementExpanded && (  
+        <Tooltip title="Back to inbox">     
+          <IconButton className={classes.backIcon} href="/inbox">
+            <KeyboardArrowLeftIcon />
+          </IconButton>
+        </Tooltip> 
       )}
+      {
+        !isPrivateChat && (
+          <Tooltip title="Leave group chat">  
+            <IconButton 
+              className={classes.manageMembersButton}
+              onClick={leaveChat}
+            >
+              <ExitToAppIcon />
+            </IconButton>
+          </Tooltip>
+        )
+      }
       {!isPrivateChat && !showChatParticipants && canEditMembers && !memberManagementExpanded && (
-        <IconButton
-          className={classes.manageMembersButton}
-          onClick={handleToggleMemberManagementExpanded}
-        >
-          <GroupAddIcon />
-        </IconButton>
-      )}
+        <Tooltip title="Manage chat members">
+          <IconButton
+            className={classes.manageMembersButton}
+            onClick={handleToggleMemberManagementExpanded}
+          >
+            <GroupAddIcon />
+          </IconButton>
+        </Tooltip>
+      )}      
       {isPrivateChat ? (
         <MiniProfilePreview profile={chatting_partner} />
       ) : (

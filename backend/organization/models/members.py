@@ -47,6 +47,11 @@ class ProjectMember(models.Model):
         help_text="Time when project members were updated", verbose_name="Updated At",
         auto_now=True
     )
+    
+    is_active = models.BooleanField(
+        help_text="Indicates whether the user is still assigned to the project ", verbose_name="Active",
+        null=False, blank=False,default=True
+    )
 
     class Meta:
         app_label = "organization"

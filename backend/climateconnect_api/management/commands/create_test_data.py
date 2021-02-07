@@ -1,6 +1,7 @@
 from organization.models.tags import ProjectTagging, ProjectTags
 from organization.models.project import ProjectParents
 from django.core.management.base import BaseCommand
+
 from django.utils import timezone
 from django.contrib.auth.models import User
 
@@ -111,14 +112,14 @@ def create_project_tags_test_data():
         food_tag = ProjectTags.objects.create(name='Food', key='food')
         if not ProjectTags.objects.filter(name='Lowering Food waste').exists():
             ProjectTags.objects.create(
-                name='Lowering Food waste', 
-                key='loweringfoodwaste', 
+                name='Lowering food waste',
+                key='loweringfoodwaste',
                 parent_tag=food_tag
             )
         if not ProjectTags.objects.filter(name='Encouraging a plant-based lifestyle').exists():
             ProjectTags.objects.create(
-                name='Encouraging a plant-based lifestyle', 
-                key='encouragingaplantbasedlifestyle', 
+                name='Encouraging a plant-based lifestyle',
+                key='encouragingaplantbasedlifestyle',
                 parent_tag=food_tag
             )
     if not ProjectTags.objects.filter(name='Transportation').exists():
@@ -135,21 +136,31 @@ def create_project_test_data(number_of_rows: int):
         url_slug = name.replace(" ", "")
 
         if not Project.objects.filter(name=name).exists():
+            # Buffer some start date to create more
+            # sense of older projects. This originated out of
+            # fixing a bug around the "timeago" utility, where
+            # timeago would round up to 2 years, when a project
+            # is only 1 year and 1 day old. This should create the
+            # UTC timestamp, e.g. 2020-02-04T01:33:45.276997Z
+            one_year_and_one_day_ago = timezone.now() - timezone.timedelta(days = 366)
+
             project = Project.objects.create(
                 name=name,
                 city="Test {}".format(i),
                 collaborators_welcome=True,
                 country="Germany",
                 short_description="This is a test project.",
-                start_date=timezone.now(),
+                start_date=one_year_and_one_day_ago,
                 status=ProjectStatus.objects.get(name="In Progress"),
                 url_slug=url_slug,
             )
+
             parent_user = User.objects.all()[i]
             ProjectParents.objects.create(
                 project=project,
                 parent_user=parent_user
             )
+
             number_of_test_project_tags = 5
             ProjectTagging.objects.create(
                 project=project,
@@ -169,9 +180,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options) -> str:
         number_of_rows = options['number_of_rows']
+
         create_test_user_data(number_of_rows=number_of_rows)
         create_availability_test_data(number_of_rows=number_of_rows)
         create_roles_test_data()
         create_project_status_test_data()
         create_organization_test_data(number_of_rows=number_of_rows)
+        create_project_tags_test_data()
         create_project_test_data(number_of_rows=number_of_rows)

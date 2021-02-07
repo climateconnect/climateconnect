@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+    ##only for dev
+    backenddb:
+        image: postgres:13
+        environment:
+            - POSTGRES_USER=backend
+            - POSTGRES_PASSWORD=backend
+            - POSTGRES_DB=backend
+        ports:
+            - "5499:5432"

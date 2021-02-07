@@ -65,10 +65,14 @@ export default function LayoutWrapper({
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
         />
+        <meta property="og:image" content="https://climateconnect.earth/images/landing_image.jpg"/>
+        <meta property="og:title" content="Global Platform for Climate Change Solutions | Climate Connect" />
+        <meta property="og:type" content="website" />
+
         <meta name="description" content={description ? description : defaultDescription} />
       </Head>
       {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
-      <ThemeProvider theme={theme || {}}>
+      <ThemeProvider theme={theme}>
         {loading ? (
           <div className={classes.spinnerContainer}>
             <div>

@@ -4,6 +4,7 @@ import humanizeDuration from "humanize-duration";
 import { Typography, Button, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
+import { yearAndDayFormatter } from "../../utils/formatting";
 import DateDisplay from "./../general/DateDisplay";
 import Posts from "./../communication/Posts.js";
 import ProjectStatus from "./ProjectStatus";
@@ -107,12 +108,24 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     fontWeight: "bold",
   },
-  editProjectButton: {
+  memberButtons: {
     float: "right",
+    display: "flex",
+    flexDirection: "column",
+  },
+  editProjectButton: {
+    marginTop: theme.spacing(1),
+  },
+  leaveProjectButton: {
+    background: theme.palette.error.main,
+    color: "white",
+    ["&:hover"]: {
+      backgroundColor: theme.palette.error.main,
+    },
   },
 }));
 
-export default function ProjectContent({ project }) {
+export default function ProjectContent({ project, leaveProject }) {
   const classes = useStyles();
   const { user } = useContext(UserContext);
   const [showFullDescription, setShowFullDescription] = React.useState(false);
@@ -121,26 +134,40 @@ export default function ProjectContent({ project }) {
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
       : null;
+
   return (
     <div>
       <div className={classes.contentBlock}>
         <div className={classes.createdBy}>
-          {user_permission && ["Creator", "Administrator"].includes(user_permission) && (
-            <Button
-              className={classes.editProjectButton}
-              variant="contained"
-              color="primary"
-              href={"/editProject/" + project.url_slug}
-            >
-              {project.is_draft ? "Edit Draft" : "Edit Project"}
-            </Button>
+          {user && project.team && project.team.find((m) => m.id === user.id) && (
+            <div className={classes.memberButtons}>
+              <Button
+                className={classes.leaveProjectButton}
+                variant="contained"
+                onClick={leaveProject}
+              >
+                Leave project
+              </Button>
+              {user_permission && ["Creator", "Administrator"].includes(user_permission) && (
+                <Button
+                  className={classes.editProjectButton}
+                  variant="contained"
+                  color="primary"
+                  href={"/editProject/" + project.url_slug}
+                >
+                  {project.is_draft ? "Edit Draft" : "Edit Project"}
+                </Button>
+              )}
+            </div>
           )}
+          {/* Note: created date is not the same as the start date, for projects */}
           <Typography>
             Created: <DateDisplay date={new Date(project.creation_date)} />
           </Typography>
           <div>
             <Typography component="span">
-              Started <TimeAgo date={new Date(project.start_date)} /> by
+              Started{" "}
+              <TimeAgo date={new Date(project.start_date)} formatter={yearAndDayFormatter} /> by
             </Typography>
             {project.isPersonalProject ? (
               <MiniProfilePreview

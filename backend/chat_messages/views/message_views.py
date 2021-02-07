@@ -32,10 +32,15 @@ class GetChatView(APIView):
     def get(self, request, chat_uuid, format=None):
         try:
             chat_object = MessageParticipants.objects.filter(chat_uuid=chat_uuid)
+            participant = Participant.objects.get(chat=chat_object[0], user=request.user, is_active=True)
         except MessageParticipants.DoesNotExist:
             return Response({
                 'message': "Chat not found."
             }, status=status.HTTP_404_NOT_FOUND)
+        except Participant.DoesNotExist:
+                return Response({
+                    'message': "Chat not found!"
+                }, status=status.HTTP_404_NOT_FOUND)
         serializer = MessageParticipantSerializer(chat_object[0], context={'request': request})
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -57,8 +62,8 @@ class StartPrivateChat(APIView):
         chatting_partner_user = user_profile.user
         participants = [request.user, chatting_partner_user]
 
-        chats_with_creator = Participant.objects.filter(user=request.user).values_list('chat', flat=True)
-        chats_with_both_users = Participant.objects.filter(user=chatting_partner_user, chat__in=chats_with_creator).values_list('chat', flat=True)
+        chats_with_creator = Participant.objects.filter(user=request.user, is_active=True).values_list('chat', flat=True)
+        chats_with_both_users = Participant.objects.filter(user=chatting_partner_user, chat__in=chats_with_creator, is_active=True).values_list('chat', flat=True)
         
         private_chat_with_both_users = MessageParticipants.objects.annotate(
             num_participants=Count('participant_participants')
@@ -119,7 +124,7 @@ class GetChatsView(ListAPIView):
 
     def get_queryset(self):
         chat_ids = Participant.objects.filter(
-            user=self.request.user
+            user=self.request.user, is_active=True
         ).values_list('chat', flat=True)
         chats = MessageParticipants.objects.filter(
             id__in=chat_ids
@@ -127,7 +132,7 @@ class GetChatsView(ListAPIView):
         if chats.exists():
             filtered_chats = chats
             for chat in chats:
-                number_of_participants = Participant.objects.filter(chat=chat).count()
+                number_of_participants = Participant.objects.filter(chat=chat, is_active=True).count()
                 if not chat.name and not Message.objects.filter(message_participant=chat).exists() and number_of_participants == 2:
                     filtered_chats = filtered_chats.exclude(id=chat.id)
             return filtered_chats
@@ -149,7 +154,7 @@ class GetChatMessages(ListAPIView):
             chat = MessageParticipants.objects.get(           
                 chat_uuid=chat_uuid
             )
-            Participant.objects.get(user=user, chat=chat)
+            Participant.objects.get(user=user, chat=chat, is_active=True)
         except Participant.DoesNotExist:
             raise NotFound('You are not a participant of this chat.')
         if chat:
@@ -157,7 +162,7 @@ class GetChatMessages(ListAPIView):
                 message_participant=chat
             )
             if messages: 
-                number_of_participants = Participant.objects.filter(chat=chat).count()
+                number_of_participants = Participant.objects.filter(chat=chat, is_active=True).count()
                 set_read(messages.exclude(sender=user), user, number_of_participants==2)
             return messages
 
@@ -175,7 +180,7 @@ class GetChatMessage(APIView):
             chat = MessageParticipants.objects.get(           
                 chat_uuid=message.message_participant.chat_uuid
             )
-            Participant.objects.get(user=request.user, chat=chat)
+            Participant.objects.get(user=request.user, chat=chat, is_active=True)
         except Participant.DoesNotExist:
             raise NotFound('You are not a participant of this chat.')
         if not message.sender == request.user:
@@ -189,7 +194,7 @@ class UpdateChatMemberView(RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         chat = MessageParticipants.objects.get(chat_uuid=str(self.kwargs['chat_uuid']))
-        return Participant.objects.filter(id=int(self.kwargs['pk']), chat=chat)
+        return Participant.objects.filter(id=int(self.kwargs['pk']), chat=chat, is_active=True)
 
     def perform_destroy(self, instance):
         instance.delete()
@@ -223,9 +228,15 @@ class AddChatMembersView(APIView):
                 continue
             user_role = roles.filter(id=int(member['permission_type_id'])).first()
             if user:
-                Participant.objects.create(
-                    chat=chat, user=user, role=user_role
-                )
+                old_participant = Participant.objects.filter(chat=chat, user=user)
+                if old_participant.exists():
+                    old_participant.is_active = True
+                    old_participant.role=user_role
+                    old_participant.save()
+                else:
+                    Participant.objects.create(
+                        chat=chat, user=user, role=user_role
+                    )
                     
                 logger.info("Participant object created for user {}".format(user.id))
 
@@ -251,9 +262,14 @@ class ChangeChatCreatorView(APIView):
 
         chat = MessageParticipants.objects.get(chat_uuid=chat_uuid)
         roles = Role.objects.all()     
-        if Participant.objects.filter(user=new_creator_user, chat = chat).exists():
+        if Participant.objects.filter(user=new_creator_user, chat = chat, is_active=True).exists():
             # update old creator profile and new creator profile
-            new_creator = Participant.objects.filter(user=request.data['user'], chat = chat, id = request.data['id'])[0]
+            new_creator = Participant.objects.filter(
+                user=request.data['user'], 
+                chat = chat, 
+                id = request.data['id'], 
+                is_active=True
+            )[0]
             new_creator.role = roles.filter(role_type=Role.ALL_TYPE)[0]
             new_creator.save()
         else:
@@ -264,7 +280,11 @@ class ChangeChatCreatorView(APIView):
                 user = new_creator_user
             )
             new_creator.save()
-        old_creator = Participant.objects.filter(user=request.user, chat = chat)[0]
+        old_creator = Participant.objects.filter(
+            user=request.user, 
+            chat = chat, 
+            is_active=True
+        )[0]
         old_creator.role = roles.filter(role_type=Role.READ_WRITE_TYPE)[0]
         old_creator.save()
 
@@ -281,11 +301,11 @@ class SendChatMessage(APIView):
             chat = MessageParticipants.objects.get(           
                 chat_uuid=chat_uuid
             )
-            Participant.objects.get(user=user, chat=chat)
+            Participant.objects.get(user=user, chat=chat, is_active=True)
         except Participant.DoesNotExist:
             raise NotFound('You are not a participant of this chat.')
         if chat:
-            receiver_user_ids = Participant.objects.filter(chat=chat).values_list('user', flat=True)
+            receiver_user_ids = Participant.objects.filter(chat=chat, is_active=True).values_list('user', flat=True)
             receiver_users = User.objects.filter(id__in=receiver_user_ids)
             message = Message.objects.create(
                 content=request.data['message_content'], sender=user,
@@ -304,3 +324,29 @@ class SendChatMessage(APIView):
                     create_email_notification(receiver, chat, request.data['message_content'], user, notification)
                     create_user_notification(receiver, notification)
         return Response({'message': 'Message sent'}, status=status.HTTP_201_CREATED)
+
+class LeaveChatView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, chat_uuid):
+        user = request.user
+        try:
+            chat = MessageParticipants.objects.get(           
+                chat_uuid=chat_uuid
+            )
+            roles = Role.objects.all()
+            creator_role = roles.filter(role_type=Role.ALL_TYPE)[0]
+            chat_member = Participant.objects.get(user=user, chat=chat, is_active=True)
+        except Participant.DoesNotExist:
+            raise NotFound('You are not a participant of this chat.')
+        member_role = chat_member.role
+        chat_member.is_active = False
+        chat_member.role = roles.get(role_type=Role.READ_ONLY_TYPE)
+        chat_member.save()
+        if member_role == creator_role:
+            other_members = Participant.objects.filter(~Q(user=user), chat=chat)
+            if other_members.exists():
+                new_creator = other_members[0]
+                new_creator.role = creator_role
+                new_creator.save()        
+        return Response({'message': 'You successfully left the chat.'}, status=status.HTTP_200_OK)
