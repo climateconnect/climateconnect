@@ -253,12 +253,6 @@ export default function MultiLevelSelector({
     </>
   );
 }
-function FilteredLists({ searchValue, allValues }) {
-  return null;
-}
-function UnfilteredLists({ allValues }) {
-  return null;
-}
 
 function ListToChooseWrapper({
   itemsToSelectFrom,
@@ -275,38 +269,50 @@ function ListToChooseWrapper({
   // The first section should be the initial tab value
   const [searchValue, setSearchValue] = React.useState("");
   const handleSearchBarChange = (type, value) => setSearchValue(value);
-  const allValues = ["foo", "bar"];
+
+  function filteredLists({ searchValue, itemsToSelectFrom }) {
+    if (searchValue == "" || searchValue == null) {
+      return itemsToSelectFrom;
+    }
+    console.log(itemsToSelectFrom);
+    itemsToSelectFrom
+      // remove all inner items that do not match the search query
+      .forEach((item) => {
+        item.subcategories.filter((innerItem) => {
+          innerItem.name.toLowerCase().includes(searchValue.toLowerCase());
+        });
+      });
+    console.log(itemsToSelectFrom);
+    const items = itemsToSelectFrom
+      // remove all items who do not match the search, or have no inner matches
+      .filter((item) => {
+        item.name.toLowerCase().includes(searchValue.toLowerCase()) || item.subcategories != [];
+      });
+    console.log(items);
+    return items;
+  }
 
   return (
-    <div className={className}>
-      <Container>
-        <div className={classes.searchBarContainer}>
-          <FilterSearchBar
-            label="Search for keywords"
-            className={classes.searchBar}
-            onChange={handleSearchBarChange}
-            value={searchValue}
-          />
-        </div>
-
-        {searchValue ? (
-          <FilteredLists searchValue={searchValue} allValues={allValues} />
-        ) : (
-          <UnfilteredLists allValues={allValues} />
-        )}
-      </Container>
-
-      <ListToChooseFrom
-        itemsToSelectFrom={itemsToSelectFrom}
-        onClickExpand={onClickExpand}
-        expanded={expanded}
-        onClickSelect={onClickSelect}
-        selected={selected}
-        className={`${(isNarrowScreen || isInPopup) && classes.narrowScreenListWrapper}`}
-        isInPopup={isInPopup}
-        isNarrowScreen={isNarrowScreen}
-      />
-    </div>
+    <Container>
+      <div className={classes.searchBarContainer}>
+        <FilterSearchBar
+          label="Search for keywords"
+          className={classes.searchBar}
+          onChange={handleSearchBarChange}
+          value={searchValue}
+        />
+        <ListToChooseFrom
+          itemsToSelectFrom={filteredLists({ searchValue, itemsToSelectFrom })}
+          onClickExpand={onClickExpand}
+          expanded={expanded}
+          onClickSelect={onClickSelect}
+          selected={selected}
+          className={`${(isNarrowScreen || isInPopup) && classes.narrowScreenListWrapper}`}
+          isInPopup={isInPopup}
+          isNarrowScreen={isNarrowScreen}
+        />
+      </div>
+    </Container>
   );
 }
 
