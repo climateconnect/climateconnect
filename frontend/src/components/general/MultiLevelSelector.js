@@ -1,13 +1,21 @@
-import React from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-
-import { List, ListItem, ListItemText, ListItemIcon, Typography, Divider } from "@material-ui/core";
+import {
+  Container,
+  Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import CloseIcon from "@material-ui/icons/Close";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import React from "react";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import FilterSearchBar from "../filter/FilterSearchBar";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -245,6 +253,12 @@ export default function MultiLevelSelector({
     </>
   );
 }
+function FilteredLists({ searchValue, allValues }) {
+  return null;
+}
+function UnfilteredLists({ allValues }) {
+  return null;
+}
 
 function ListToChooseWrapper({
   itemsToSelectFrom,
@@ -257,8 +271,31 @@ function ListToChooseWrapper({
   isNarrowScreen,
 }) {
   const classes = useStyles();
+
+  // The first section should be the initial tab value
+  const [searchValue, setSearchValue] = React.useState("");
+  const handleSearchBarChange = (type, value) => setSearchValue(value);
+  const allValues = ["foo", "bar"];
+
   return (
     <div className={className}>
+      <Container>
+        <div className={classes.searchBarContainer}>
+          <FilterSearchBar
+            label="Search for keywords"
+            className={classes.searchBar}
+            onChange={handleSearchBarChange}
+            value={searchValue}
+          />
+        </div>
+
+        {searchValue ? (
+          <FilteredLists searchValue={searchValue} allValues={allValues} />
+        ) : (
+          <UnfilteredLists allValues={allValues} />
+        )}
+      </Container>
+
       <ListToChooseFrom
         itemsToSelectFrom={itemsToSelectFrom}
         onClickExpand={onClickExpand}
