@@ -90,7 +90,9 @@ export default function Faq({ questionsBySection, questions }) {
   // The first section should be the initial tab value
   const [searchValue, setSearchValue] = React.useState("");
 
-  const handleSearchBarChange = (type, value) => setSearchValue(value);
+  const handleSearchBarChange = (event) => {
+    setSearchValue(event.target.value);
+  }
 
   return (
     <div>
