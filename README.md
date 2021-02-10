@@ -53,7 +53,7 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
     - For the [Django `SECRET_KEY`](https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-SECRET_KEY), run `openssl rand -base64 32` to create a 32 char random secret.
 1.  Run `python manage.py migrate` to run Django migrations.
     - Note: This command is used for when you first start, or whenever you are adding or updating database models.
-1.  Create supersuer using `python manage.py createsuperuser`
+1.  Create a superuser using `python manage.py createsuperuser`
     - You can then access your admin panel via <API_URL>/admin/
 
 #### Continual Development
