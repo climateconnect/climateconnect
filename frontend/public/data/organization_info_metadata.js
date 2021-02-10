@@ -3,7 +3,7 @@ import DescriptionIcon from "@material-ui/icons/Description";
 import SchoolIcon from "@material-ui/icons/School";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
-import LanguageIcon from '@material-ui/icons/Language';
+import LanguageIcon from "@material-ui/icons/Language";
 import countries from "./countries.json";
 
 export default {
@@ -38,8 +38,8 @@ export default {
     name: "Location",
     type: "location",
     key: "location",
-    weight: 0
-  },  
+    weight: 0,
+  },
   school: {
     icon: SchoolIcon,
     iconName: "SchoolIcon",
