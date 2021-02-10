@@ -12,12 +12,11 @@ The code for https://climateconnect.earth.
 
 You will connect to this for your local backend project.
 
-* Create a new superuser
-* Alter your new user's password
-* Create a new database 
+- Create a new superuser
+- Alter your new user's password
+- Create a new database
 
 Supply these values to your local `backend/.backend_env`.
-
 
 ### Docker
 
@@ -69,9 +68,11 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
 1.  Run Celery using `celery -A climateconnect_main worker -l INFO`
 
 #### Creating and Removing Test Data
-* If test data is needed, run this command: `python manage.py create_test_data --number_of_rows 4`
-* If you need to wipe your local database and start over:
+
+- If test data is needed, run this command: `python manage.py create_test_data --number_of_rows 4`
+- If you need to wipe your local database and start over:
   `$ sudo -u postgres psql`
+
   ```sql
   postgres-# \connect $DATABASE_NAME
   $DATABASE_NAME-# \dt
@@ -102,14 +103,27 @@ python manage.py test <file_path> or <file_path + class_name>
 1. `yarn install` to download all npm packages
 1. Add a `.env` file for frontend environment variables. You can find variables you need to set in [`/frontend/next.config.js/`](https://github.com/climateconnect/climateconnect/blob/master/frontend/next.config.js)
 
-  For local development, use the following contents for `.env`:
-  ```sh
-    API_HOST="localhost"
-    API_URL="http://127.0.0.1:8000"
-    BASE_URL_HOST=""
-    SOCKET_URL="ws://api.climateconnect.earth"
-  ```
+For local development, use the following contents for `.env`:
+
+```sh
+  API_HOST="localhost"
+  API_URL="http://127.0.0.1:8000"
+  BASE_URL_HOST=""
+  SOCKET_URL="ws://api.climateconnect.earth"
+```
+
 1. `yarn dev` to start developing
+
+#### Testing
+
+We use Jest as our testing framework write to tests for the FE code. Write
+test files with `.test.js` and execute them directly with
+
+```sh
+yarn jest path/to/testfile.test.js
+```
+
+See npm scripts in `package.json`.
 
 ## To Deploy
 

@@ -1,9 +1,10 @@
 import React from "react";
-import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import { Button, IconButton, TextField, makeStyles, Tooltip } from "@material-ui/core";
-import Messages from "./Messages";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import SendIcon from "@material-ui/icons/Send";
+
+import MiniProfilePreview from "../../profile/MiniProfilePreview";
+import Messages from "./Messages";
 
 const useStyles = makeStyles((theme) => ({
   chatParticipantsContainer: {

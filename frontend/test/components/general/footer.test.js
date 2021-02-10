@@ -1,8 +1,9 @@
 import React from "react";
 import { shallow } from "enzyme";
+
 import Footer from "../../../src/components/general/Footer";
 
-describe("Footer Component Tests", () => {
+describe("Footer", () => {
   it("contains a copyright symbol and the current year", () => {
     const text = shallow(<Footer />).text();
     expect(text).toContain("©");
