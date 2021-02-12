@@ -36,8 +36,8 @@ export default function StatBox({ title, stats }) {
       ))}
       <Typography className={classes.source}>
         Source:{" "}
-        <Link className={classes.link} target="_blank" href={stats[0].source_link}>
-          {stats[0].source_name}
+        <Link className={classes.link} target="_blank" href={stats[0]?.source_link}>
+          {stats[0]?.source_name}
         </Link>
       </Typography>
     </div>
