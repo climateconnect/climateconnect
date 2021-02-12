@@ -113,15 +113,6 @@ class Project(models.Model):
         blank=True
     )
 
-    # Field not in use. Keeping temporarily for backwards compatibility
-    location = models.CharField(
-        help_text="Project location",
-        verbose_name="Location",
-        max_length=2048,
-        null=True,
-        blank=True
-    )
-
     loc = models.ForeignKey(
         Location,
         help_text="Points to the project's location",

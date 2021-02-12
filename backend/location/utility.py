@@ -191,16 +191,16 @@ def is_country(location):
     return True
 
 def get_first_part(address, order):
-    for el in order:
-        if el in address.keys():
-            if el == "state":
-                return address[el] + " (state)"
-            return address[el]       
+    for loc_type_descriptor in order:
+        if loc_type_descriptor in address.keys():
+            if loc_type_descriptor == "state":
+                return address[loc_type_descriptor] + " (state)"
+            return address[loc_type_descriptor]       
     return ""
 
 def get_middle_part(address, order, suffixes):
-    for el in order:
-        if el in address.keys():
+    for loc_type_descriptor in order:
+        if loc_type_descriptor in address.keys():
             for suffix in suffixes:
                 if suffix in address.keys():
                     return address[suffix]
