@@ -260,6 +260,11 @@ const getLoggedInLinks = ({ loggedInUser }) => {
       iconForDrawer: GroupWorkIcon,
     },
     {
+      href: "/profiles/" + loggedInUser.url_slug + "/#organizations",
+      text: "My Organizations",
+      iconForDrawer: GroupWorkIcon,
+    },
+    {
       href: "/settings",
       text: "Settings",
       iconForDrawer: SettingsIcon,
