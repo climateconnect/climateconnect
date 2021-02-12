@@ -159,7 +159,7 @@ export default function LocationSearchBar({
       filterOptions={handleFilterOptions}
       getOptionDisabled={handleGetOptionDisabled}
       renderOption={renderSearchOption}
-      noOptionsText="No options"
+      noOptionsText={!searchValue && !inputValue ? "Start typing..." : "No options"}
       renderInput={(params) => (
         <TextField
           {...params}

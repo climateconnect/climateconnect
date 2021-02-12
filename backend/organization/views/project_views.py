@@ -59,7 +59,7 @@ class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter, DjangoFilterBackend, ProjectsOrderingFilter]
     search_fields = ['url_slug']
-    filterset_fields = ['collaborators_welcome', 'country', 'city']
+    filterset_fields = ['collaborators_welcome']
     pagination_class = ProjectsPagination
     serializer_class = ProjectStubSerializer
     queryset = Project.objects.filter(is_draft=False,is_active=True)
@@ -114,6 +114,25 @@ class ListProjectsView(ListAPIView):
         if 'place' in self.request.query_params and 'osm' in self.request.query_params:
             location_ids_in_range = get_location_ids_in_range(self.request.query_params)
             projects = projects.filter(loc__in=location_ids_in_range)
+        
+        if 'country' and 'city' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                country=self.request.query_params.get('country'),
+                city=self.request.query_params.get('city')
+            )
+            projects = projects.filter(loc__in=location_ids)
+
+        if 'city' in self.request.query_params and not 'country' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                city=self.request.query_params.get('city')
+            )
+            projects = projects.filter(loc__in=location_ids)
+        
+        if 'country' in self.request.query_params and not 'city' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                country=self.request.query_params.get('country')
+            )
+            projects = projects.filter(loc__in=location_ids)
 
         return projects
 

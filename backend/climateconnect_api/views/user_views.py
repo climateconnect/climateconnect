@@ -1,3 +1,4 @@
+from location.models import Location
 import uuid
 from django.contrib.auth import (authenticate, login)
 import datetime
@@ -143,13 +144,35 @@ class ListMemberProfilesView(ListAPIView):
             .filter(is_profile_verified=True)\
             .annotate(is_image_null=Count("image", filter=Q(image="")))\
             .order_by("is_image_null", "-id")
+
         if 'skills' in self.request.query_params:
             skill_names = self.request.query_params.get('skills').split(',')
             skills = Skill.objects.filter(name__in=skill_names)
             user_profiles = user_profiles.filter(skills__in=skills).distinct('id')
+
         if 'place' in self.request.query_params and 'osm' in self.request.query_params:
             location_ids_in_range = get_location_ids_in_range(self.request.query_params)
             user_profiles = user_profiles.filter(location__in=location_ids_in_range)
+        
+        if 'country' and 'city' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                country=self.request.query_params.get('country'),
+                city=self.request.query_params.get('city')
+            )
+            user_profiles = user_profiles.filter(location__in=location_ids)
+
+        if 'city' in self.request.query_params and not 'country' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                city=self.request.query_params.get('city')
+            )
+            user_profiles = user_profiles.filter(location__in=location_ids)
+        
+        if 'country' in self.request.query_params and not 'city' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                country=self.request.query_params.get('country')
+            )
+            user_profiles = user_profiles.filter(location__in=location_ids)
+            
         return user_profiles
 
 

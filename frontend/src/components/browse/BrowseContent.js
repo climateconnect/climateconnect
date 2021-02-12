@@ -66,6 +66,7 @@ export default function BrowseContent({
       members: "",
     },
   };
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true"
   const classes = useStyles();
   const TYPES_BY_TAB_VALUE = hideMembers
     ? ["projects", "organizations"]
@@ -159,15 +160,16 @@ export default function BrowseContent({
    * state.
    */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
-    if (newFilters.location && !isLocationValid(newFilters.location)) {
+    if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
       indicateWrongLocation(locationInputRefs[type], setLocationOptionsOpen, handleSetErrorMessage);
       return;
     }
     handleSetErrorMessage("");
     setIsFiltering(true);
-    unexpandFilters();
     const res = await applyNewFilters(type, newFilters, closeFilters, state.urlEnding[type]);
-    if (res?.closeFilters) setFiltersExpanded(false);
+    if (res?.closeFilters) {
+      setFiltersExpanded(false);
+    }
     if (res?.filteredItemsObject) {
       setState({
         ...state,

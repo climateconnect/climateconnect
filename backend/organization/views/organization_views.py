@@ -1,3 +1,4 @@
+from location.models import Location
 from location.utility import get_location, get_location_ids_in_range
 from hubs.models.hub import Hub
 from organization.models.tags import ProjectTags
@@ -67,6 +68,25 @@ class ListOrganizationsAPIView(ListAPIView):
         if 'place' in self.request.query_params and 'osm' in self.request.query_params:
             location_ids_in_range = get_location_ids_in_range(self.request.query_params)
             organizations = organizations.filter(location__in=location_ids_in_range)
+        
+        if 'country' and 'city' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                country=self.request.query_params.get('country'),
+                city=self.request.query_params.get('city')
+            )
+            organizations = organizations.filter(location__in=location_ids)
+
+        if 'city' in self.request.query_params and not 'country' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                city=self.request.query_params.get('city')
+            )
+            organizations = organizations.filter(location__in=location_ids)
+        
+        if 'country' in self.request.query_params and not 'city' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                country=self.request.query_params.get('country')
+            )
+            organizations = organizations.filter(location__in=location_ids)
 
         return organizations
 
