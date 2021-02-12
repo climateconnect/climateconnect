@@ -7,6 +7,8 @@ import {
   isLocationValid,
   parseLocation,
   indicateWrongLocation,
+  getLocationFields,
+  getLocationValue,
 } from "../../../public/lib/locationOperations";
 
 const useStyles = makeStyles((theme) => ({
@@ -71,6 +73,7 @@ export default function Share({
       ? project.parent_organization.name
       : project.parent_organization
     : "";
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT;
   const fields = [
     {
       falseLabel: "Personal Project",
@@ -113,16 +116,14 @@ export default function Share({
         </Typography>
       ),
     },
-    {
-      required: true,
-      label: "Location",
-      type: "location",
-      key: "loc",
-      value: project.loc,
-      ref: locationInputRef,
+    ...getLocationFields({
+      locationInputRef: locationInputRef,
       locationOptionsOpen: locationOptionsOpen,
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
-    },
+      legacyModeEnabled: legacyModeEnabled === "true",
+      values: project,
+      locationKey: "loc"
+    }),
   ];
   const messages = {
     submitMessage: "Next Step",
@@ -141,12 +142,13 @@ export default function Share({
             ? values[k].trim()
             : values[k])
     );
-    //Short circuit if the location is not valid
-    if (!isLocationValid(values.loc)) {
+    //Short circuit if the location is not valid and we're not in legacy mode
+    if (!legacyModeEnabled && !isLocationValid(values.loc)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage);
       return;
     }
-    const loc = parseLocation(values.loc);
+    const loc_value = getLocationValue(values, "loc")
+    const loc = parseLocation(loc_value, legacyModeEnabled);
     if (!values.parent_organization) {
       handleSetProjectData({
         ...values,

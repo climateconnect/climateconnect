@@ -7,8 +7,35 @@ import json
 import requests
 from django.db.models import Q
 from django.contrib.gis.measure import D
+from django.conf import settings
+
+def get_legacy_location(location_object):
+    required_params = ['city', 'country']
+
+    for param in required_params:
+        if param not in location_object:
+            raise ValidationError('Required parameter is missing:'+param)
+    
+    loc = Location.objects.filter(
+        city=location_object['city'], 
+        country=location_object['country']
+    )
+    if loc.exists():
+        return loc[0] 
+    else:
+        loc = Location.objects.create(
+            city=location_object['city'],
+            country=location_object['country'],
+            name= location_object['city'] + ", " + location_object['country']
+        )
+        return loc
+    
+
 
 def get_location(location_object):
+    if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
+        return get_legacy_location(location_object)
+
     required_params = [
         'osm_id', 
         'place_id', 
@@ -187,7 +214,7 @@ def get_location_ids_in_range(query_params):
     distance = -1 # distance in meter
     buffer_width = distance / 40000000.0 * 360.0            
     if not locations.exists():
-        url_root = "https://nominatim.openstreetmap.org/lookup?osm_ids="
+        url_root = settings.LOCATION_SERVICE_BASE_URL + "/lookup?osm_ids="
         # Append osm_id to first letter of osm_type as uppercase letter 
         osm_id_param = query_params.get('loc_type')[0].upper()+query_params.get('osm')
         params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9"

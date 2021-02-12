@@ -1,4 +1,6 @@
-export function getNameFromLocation(location) {
+export function getNameFromLocation(location, legacyModeEnabled) {
+  if(legacyModeEnabled)
+    return location.city + "" + location.country
   if (!location.address || !location.address.country) return location.display_name;
   const firstPartOrder = [
     "village",
@@ -86,13 +88,20 @@ const isCountry = (location) => {
   return true;
 };
 
-export function isLocationValid(location) {
+export function isLocationValid(location, legacyModeEnabled) {
+  //In legacy mode form control handles validation
+  if(legacyModeEnabled)
+    return true;
   if (!location || typeof location == "string") return false;
   else return true;
 }
 
-export function parseLocation(location) {
-  const location_object = getNameFromLocation(location);
+export function parseLocation(location, legacyModeEnabled) {
+  const location_object = getNameFromLocation(location, legacyModeEnabled);
+  //don't return anything if in legacy mode
+  if(legacyModeEnabled) {
+    return location;
+  }
   //don't do anything if location is already parsed
   if (typeof location === "object" && alreadyParsed(location)) {
     return location;
@@ -124,4 +133,54 @@ export function indicateWrongLocation(locationInputRef, setLocationOptionsOpen, 
   locationInputRef.current.focus();
   setLocationOptionsOpen(true);
   setErrorMessage("Please choose one of the location options");
+}
+
+export function getLocationFields({
+  locationInputRef,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
+  legacyModeEnabled,
+  values,
+  locationKey
+}) {
+  //in legacy mode, return a city and a country field
+  if(legacyModeEnabled) {
+    return [
+      {
+        required: true,
+        label: "City",
+        type: "text",
+        key: "city",
+        value: values[locationKey].city,
+      },
+      {
+        required: true,
+        label: "Country",
+        type: "text",
+        key: "country",
+        value: values[locationKey].country,
+      },
+    ]
+  }
+  //normally, just return a location field
+  return [{
+    required: true,
+    label: "Location",
+    type: "location",
+    key: "location",
+    value: values[locationKey],
+    ref: locationInputRef,
+    locationOptionsOpen: locationOptionsOpen,
+    handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
+  }]
+}
+
+export function getLocationValue(values, legacyModeEnabled, locationKey){
+  if(legacyModeEnabled) {
+    return {
+      country: values.country,
+      city: values.city,
+    }
+  }
+  return values[locationKey]
 }

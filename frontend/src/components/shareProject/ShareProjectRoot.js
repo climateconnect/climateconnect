@@ -222,7 +222,7 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
     skills: [],
     helpful_connections: [],
     collaborating_organizations: [],
-    country: countries[0],
+    loc: {},
     parent_organization: userOrganizations ? userOrganizations[0] : null,
     isPersonalProject: !(userOrganizations && userOrganizations.length > 0),
     is_organization_project: userOrganizations && userOrganizations.length > 0,

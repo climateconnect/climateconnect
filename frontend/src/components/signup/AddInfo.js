@@ -1,6 +1,7 @@
 import React from "react";
 import Form from "./../general/Form";
 import { makeStyles } from "@material-ui/core/styles";
+import { getLocationFields } from "../../../public/lib/locationOperations";
 
 const useStyles = makeStyles(() => {
   return {
@@ -20,6 +21,7 @@ export default function AddInfo({
   handleSetLocationOptionsOpen,
 }) {
   const classes = useStyles();
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT;
   const fields = [
     {
       required: true,
@@ -35,16 +37,14 @@ export default function AddInfo({
       key: "last_name",
       value: values["last_name"],
     },
-    {
-      required: true,
-      label: "Location",
-      type: "location",
-      key: "location",
-      value: values["location"],
-      ref: locationInputRef,
+    ...getLocationFields({
+      locationInputRef: locationInputRef,
       locationOptionsOpen: locationOptionsOpen,
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
-    },
+      legacyModeEnabled: legacyModeEnabled === "true",
+      values: values,
+      locationKey: "location"
+    }),
     {
       required: false,
       label: (

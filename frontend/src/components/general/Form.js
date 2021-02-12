@@ -261,6 +261,7 @@ export default function Form({
           } else if (field.type === "location") {
             return (
               <LocationSearchBar
+                key={field.key}
                 label={field.label}
                 required={field.required}
                 onSelect={(value) => handleLocationChange(value, field.key)}

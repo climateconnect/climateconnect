@@ -9,6 +9,7 @@ import {
   parseLocation,
   isLocationValid,
   indicateWrongLocation,
+  getLocationValue,
 } from "../public/lib/locationOperations";
 
 export default function Signup() {
@@ -20,13 +21,14 @@ export default function Signup() {
     repeatpassword: "",
     first_name: "",
     last_name: "",
-    location: "",
+    location: {},
     newsletter: "",
   });
 
   const steps = ["basicinfo", "personalinfo"];
   const [curStep, setCurStep] = useState(steps[0]);
   const [errorMessage, setErrorMessage] = useState("");
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT;
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const handleSetLocationOptionsOpen = (bool) => {
@@ -55,16 +57,17 @@ export default function Signup() {
   };
 
   const handleAddInfoSubmit = (event, values) => {
-    event.preventDefault();
-    if (!isLocationValid(values.location)) {
+    event.preventDefault();    
+    if (!isLocationValid(values.location, legacyModeEnabled)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage);
       return;
     }
+    const location = getLocationValue(values, legacyModeEnabled, "location")
     setUserInfo({
       ...userInfo,
       first_name: values.first_name,
       last_name: values.last_name,
-      location: values.location,
+      location: location,
       sendNewsletter: values.sendNewsletter,
     });
     const payload = {
@@ -72,7 +75,7 @@ export default function Signup() {
       password: userInfo.password,
       first_name: values.first_name.trim(),
       last_name: values.last_name.trim(),
-      location: parseLocation(values.location),
+      location: parseLocation(location, legacyModeEnabled),
       send_newsletter: values.sendNewsletter,
     };
     const config = {
@@ -81,7 +84,7 @@ export default function Signup() {
         "Content-Type": "application/json",
       },
     };
-    setIsLoading(true);
+    setIsLoading(true);    
     axios
       .post(process.env.API_URL + "/signup/", payload, config)
       .then(function () {
@@ -108,7 +111,7 @@ export default function Signup() {
       ...userInfo,
       first_name: values.first_name,
       last_name: values.last_name,
-      location: values.location,
+      location: getLocationValue(values, legacyModeEnabled, "location"),
     });
     setCurStep(steps[0]);
   };

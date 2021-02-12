@@ -46,12 +46,21 @@ class Location(models.Model):
 
     osm_id = models.PositiveIntegerField(
         help_text="The internal id of this location openstreetmaps",
-        verbose_name="OSM ID"
+        verbose_name="OSM ID",
+        blank=True,
+        null=True
     )
 
     place_id = models.PositiveIntegerField(
         help_text="Nominatim's place id of this location",
-        verbose_name="Place ID"
+        verbose_name="Place ID",
+        blank=True,
+        null=True
+    )
+
+    is_stub = models.BooleanField(
+        help_text="Check if this location was created without geocoordinates",
+        verbose_name="Is Stub?", default=False
     )
 
     class Meta:
