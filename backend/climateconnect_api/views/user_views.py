@@ -28,7 +28,7 @@ from climateconnect_api.models import UserProfile, Availability, Skill
 
 # Serializer imports
 from climateconnect_api.serializers.user import (
-    UserProfileSerializer, PersonalProfileSerializer, UserProfileStubSerializer, 
+    EditUserProfileSerializer, UserProfileSerializer, PersonalProfileSerializer, UserProfileStubSerializer, 
     UserProfileMinimalSerializer, UserProfileSitemapEntrySerializer
 )
 from organization.serializers.project import ProjectFromProjectMemberSerializer
@@ -214,7 +214,7 @@ class EditUserProfile(APIView):
         except UserProfile.DoesNotExist:
             raise NotFound('User not found.')
 
-        serializer = UserProfileSerializer(user_profile)
+        serializer = EditUserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):

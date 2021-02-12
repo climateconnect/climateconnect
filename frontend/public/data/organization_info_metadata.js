@@ -4,7 +4,6 @@ import SchoolIcon from "@material-ui/icons/School";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
 import LanguageIcon from "@material-ui/icons/Language";
-import countries from "./countries.json";
 
 export default {
   shortdescription: {
@@ -12,26 +11,11 @@ export default {
     iconName: "DescriptionIcon",
     name: "Description",
     key: "shortdescription",
-    type: "bio",
+    type: "text",
     weight: 1,
     helptext:
       "Describe what your organization is doing, how you work and what impact you have on climate change. Please only use english!",
-  },
-  city: {
-    icon: PlaceIcon,
-    iconName: "PlaceIcon",
-    name: "City",
-    type: "location",
-    key: "city",
-  },
-  country: {
-    icon: PlaceIcon,
-    iconName: "PlaceIcon",
-    name: "Country",
-    key: "country",
-    type: "select",
-    options: countries.map((c) => ({ key: c.toLowerCase(), name: c })),
-  },
+  },  
   location: {
     icon: PlaceIcon,
     iconName: "PlaceIcon",
@@ -39,6 +23,22 @@ export default {
     type: "location",
     key: "location",
     weight: 0,
+    legacy: {
+      city: {
+        icon: PlaceIcon,
+        iconName: "PlaceIcon",
+        name: "City",
+        type: "text",
+        key: "city",
+      },
+      country: {
+        icon: PlaceIcon,
+        iconName: "PlaceIcon",
+        name: "Country",
+        key: "country",
+        type: "text",
+      },
+    }
   },
   school: {
     icon: SchoolIcon,

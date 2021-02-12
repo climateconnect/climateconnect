@@ -13,7 +13,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from django.contrib.auth.models import User
 from organization.serializers.organization import (
-    OrganizationSerializer, OrganizationMinimalSerializer, OrganizationMemberSerializer, 
+    EditOrganizationSerializer, OrganizationSerializer, OrganizationMinimalSerializer, OrganizationMemberSerializer, 
     UserOrganizationSerializer, OrganizationCardSerializer, OrganizationSitemapEntrySerializer
 )
 from organization.serializers.project import (ProjectFromProjectParentsSerializer,)
@@ -148,7 +148,6 @@ class CreateOrganizationView(APIView):
                 'message': 'Organization with name {} already exists'.format(request.data['name'])
             }, status=status.HTTP_400_BAD_REQUEST)
 
-
 class OrganizationAPIView(APIView):
     permission_classes = [OrganizationReadWritePermission]
     lookup_field = 'url_slug'
@@ -158,7 +157,10 @@ class OrganizationAPIView(APIView):
             organization = Organization.objects.get(url_slug=str(url_slug))            
         except Organization.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
-        serializer = OrganizationSerializer(organization, many=False)
+        if('edit_view' in request.query_params):
+            serializer = EditOrganizationSerializer(organization, many=False)
+        else:
+            serializer = OrganizationSerializer(organization, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, url_slug, format=None):

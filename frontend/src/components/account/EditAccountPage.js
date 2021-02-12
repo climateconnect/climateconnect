@@ -199,7 +199,7 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
     justifyContent: "center",
     marginTop: theme.spacing(10),
-  },
+  }
 }));
 
 export default function EditAccountPage({
@@ -219,6 +219,7 @@ export default function EditAccountPage({
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT;
   const classes = useStyles(editedAccount);
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
@@ -368,6 +369,19 @@ export default function EditAccountPage({
         });
       };
 
+      const handleChangeLegacyLocation = (key, event) => {
+        setEditedAccount({
+          ...editedAccount,
+          info: {
+            ...editedAccount.info,
+            location: {
+              ...editedAccount.info.location,
+              [key]:event.target.value
+            }
+          }
+        })
+      }
+
       const handleSetParentOrganization = (newOrg) => {
         setEditedAccount({
           ...editedAccount,
@@ -444,11 +458,33 @@ export default function EditAccountPage({
           </div>
         );
       } else if (i.type === "location") {
+        //return legacy field options (city, country) instead of the location field when location legacy mode is enabled
+        if(legacyModeEnabled) {
+          return (
+            <>
+              {Object.keys(i.legacy).map(k => {
+                const field = i.legacy[k]
+                return (
+                  <div key={field.key} className={classes.infoElement}>
+                    <TextField 
+                      label={field.name}
+                      variant="outlined"
+                      required
+                      onChange={(event) => handleChangeLegacyLocation(field.key, event)}
+                      value={editedAccount?.info?.location[field.key]}
+                    />
+                  </div>
+                )
+              })}
+            </>
+          )
+        }
         return (
           <div className={classes.infoElement}>
             <LocationSearchBar
               label={i.name}
               required
+              key={i.key}
               value={editedAccount.info.location}
               onChange={handleChangeLocationString}
               onSelect={handleChangeLocation}
@@ -458,7 +494,7 @@ export default function EditAccountPage({
             />
           </div>
         );
-      } else if (key != "parent_organization") {
+      } else if (key != "parent_organization" && i.type === "text") {
         return (
           <div key={key} className={classes.infoElement}>
             <Typography className={classes.subtitle}>

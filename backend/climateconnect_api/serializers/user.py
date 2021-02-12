@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.conf import settings
 
 from climateconnect_api.models import UserProfile
 from climateconnect_api.serializers.common import (
@@ -72,6 +73,17 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if obj.location == None:
             return None
         return obj.location.name
+
+class EditUserProfileSerializer(UserProfileSerializer):
+    location = serializers.SerializerMethodField()
+    def get_location(self, obj):
+        if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
+            return {
+                "city": obj.location.city,
+                "country": obj.location.country
+            }
+    class Meta(UserProfileSerializer.Meta):
+        fields = UserProfileSerializer.Meta.fields + ('location',)
 
 
 class UserProfileMinimalSerializer(serializers.ModelSerializer):

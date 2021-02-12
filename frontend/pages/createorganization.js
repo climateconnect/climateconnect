@@ -13,6 +13,7 @@ import {
   isLocationValid,
   indicateWrongLocation,
   parseLocation,
+  getLocationValue,
 } from "../public/lib/locationOperations";
 
 export default function CreateOrganization({ tagOptions, token, rolesOptions }) {
@@ -20,6 +21,8 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     basicOrganizationInfo: "",
     detailledOrganizationInfo: "",
   });
+
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT;
 
   const handleSetErrorMessages = (newErrorMessages) => {
     setErrorMessages(newErrorMessages);
@@ -73,8 +76,8 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         return;
       }
 
-      //short circuit if the location is invalid
-      if (!isLocationValid(values.location)) {
+      //short circuit if the location is invalid and we're not in legacy mode
+      if (!legacyModeEnabled && !isLocationValid(values.location)) {
         indicateWrongLocation(
           locationInputRef,
           setLocationOptionsOpen,
@@ -97,11 +100,12 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
           ),
         });
       } else {
+        const location = getLocationValue(values, legacyModeEnabled, "location")
         setOrganizationInfo({
           ...organizationInfo,
           name: values.organizationname,
           parentorganization: values.parentorganizationname,
-          location: parseLocation(values.location),
+          location: parseLocation(location, legacyModeEnabled),
         });
         setCurStep(steps[1]);
       }
@@ -122,7 +126,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
 
   const handleDetailledInfoSubmit = (account) => {
     const organizationToSubmit = parseOrganizationForRequest(account, user, rolesOptions);
-    if (!isLocationValid(organizationToSubmit.location)) {
+    if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
         locationInputRef,
         setLocationOptionsOpen,

@@ -38,12 +38,15 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
     window.scrollTo(0, 0);
   };
 
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT;
+
   const saveChanges = (editedOrg) => {
     const error = verifyChanges(editedOrg).error;
     //verify location is valid and notify user if it's not
     if (
       editedOrg?.info?.location !== organization?.info?.location &&
-      !isLocationValid(editedOrg?.info?.location)
+      !isLocationValid(editedOrg?.info?.location) && 
+      !legacyModeEnabled
     )
       indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, handleSetErrorMessage);
     if (error) {
@@ -143,7 +146,7 @@ EditOrganizationPage.getInitialProps = async (ctx) => {
 async function getOrganizationByUrlIfExists(organizationUrl, token) {
   try {
     const resp = await axios.get(
-      process.env.API_URL + "/api/organizations/" + organizationUrl + "/",
+      process.env.API_URL + "/api/organizations/" + organizationUrl + "/?edit_view=true",
       tokenConfig(token)
     );
     return parseOrganization(resp.data);

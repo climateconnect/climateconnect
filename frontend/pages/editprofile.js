@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Router from "next/router";
 import WideLayout from "../src/components/layouts/WideLayout";
 import EditAccountPage from "./../src/components/account/EditAccountPage";
@@ -8,7 +8,6 @@ import { parseOptions } from "../public/lib/selectOptionsOperations";
 import { getImageUrl } from "../public/lib/imageOperations";
 
 import profile_info_metadata from "./../public/data/profile_info_metadata";
-import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
 import axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
@@ -19,9 +18,9 @@ export default function EditProfilePage({
   skillsOptions,
   availabilityOptions,
   infoMetadata,
+  user,
   token,
 }) {
-  const { user } = useContext(UserContext);
   const [errorMessage, setErrorMessage] = useState("");
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
@@ -44,11 +43,13 @@ export default function EditProfilePage({
       locationInputRef: locationInputRef,
     },
   };
-  const profile = user ? parseProfile(user, true /*true*/) : null;
+  const profile = user ? parseProfile(user, true) : null;
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT;
   const saveChanges = (editedAccount) => {
     if (
       editedAccount?.info?.location === user?.info?.location &&
-      !isLocationValid(editedAccount?.info?.location)
+      !isLocationValid(editedAccount?.info?.location) &&
+      !legacyModeEnabled
     ) {
       indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, setErrorMessage);
       return;
@@ -106,16 +107,18 @@ export default function EditProfilePage({
 
 EditProfilePage.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
-  const [skillsOptions, infoMetadata, availabilityOptions] = await Promise.all([
+  const [skillsOptions, infoMetadata, availabilityOptions, userProfile] = await Promise.all([
     getSkillsOptions(token),
     getProfileInfoMetadata(token),
     getAvailabilityOptions(token),
+    getUserProfile(token)
   ]);
   return {
     skillsOptions: skillsOptions,
     infoMetadata: infoMetadata,
     availabilityOptions: availabilityOptions,
     token: token,
+    user: userProfile
   };
 };
 
@@ -165,6 +168,17 @@ async function getAvailabilityOptions(token) {
     else {
       return resp.data.results;
     }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+async function getUserProfile(token) {
+  try {
+    const resp = await axios.get(process.env.API_URL + "/api/edit_profile/", tokenConfig(token));
+    return resp.data;
   } catch (err) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);

@@ -2,6 +2,7 @@ from organization.models import Organization, OrganizationMember
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.serializers.role import RoleSerializer
 from organization.serializers.tags import OrganizationTaggingSerializer
+from django.conf import settings
 
 from rest_framework import serializers
 
@@ -30,6 +31,17 @@ class OrganizationSerializer(serializers.ModelSerializer):
         if obj.location == None:
             return None
         return obj.location.name
+
+class EditOrganizationSerializer(OrganizationSerializer):
+    location = serializers.SerializerMethodField()
+    def get_location(self, obj):
+        if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
+            return {
+                "city": obj.location.city,
+                "country": obj.location.country
+            }
+    class Meta(OrganizationSerializer.Meta):
+        fields = OrganizationSerializer.Meta.fields + ('location',)
 
 
 class OrganizationMinimalSerializer(serializers.ModelSerializer):

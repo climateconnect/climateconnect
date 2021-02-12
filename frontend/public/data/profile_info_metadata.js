@@ -37,5 +37,21 @@ export default {
     missingMessage: "This user hasn't specified their location yet.",
     type: "location",
     weight: 0,
+    legacy: {
+      city: {
+        icon: PlaceIcon,
+        iconName: "PlaceIcon",
+        name: "City",
+        type: "text",
+        key: "city",
+      },
+      country: {
+        icon: PlaceIcon,
+        iconName: "PlaceIcon",
+        name: "Country",
+        key: "country",
+        type: "text",
+      },
+    }
   },
 };

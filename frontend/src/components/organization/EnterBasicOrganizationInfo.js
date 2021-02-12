@@ -2,6 +2,7 @@ import React from "react";
 import Form from "./../general/Form";
 import { IconButton } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import { getLocationFields } from "../../../public/lib/locationOperations";
 
 const renderSearchOption = (option) => {
   return (
@@ -27,6 +28,7 @@ export default function EnterBasicOrganizationInfo({
     if (parentOrganization) setParentOrganization(null);
   };
   const getOptionLabel = (option) => option.name;
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT;
   const fields = [
     {
       required: true,
@@ -60,16 +62,14 @@ export default function EnterBasicOrganizationInfo({
       onlyShowIfChecked: "hasparentorganization",
       value: organizationInfo["parentorganizationname"],
     },
-    {
-      required: true,
-      label: "Location",
-      key: "location",
-      type: "location",
-      value: organizationInfo["location"],
-      ref: locationInputRef,
+    ...getLocationFields({
+      locationInputRef: locationInputRef,
       locationOptionsOpen: locationOptionsOpen,
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
-    },
+      legacyModeEnabled: legacyModeEnabled === "true",
+      values: organizationInfo,
+      locationKey: "location"
+    }),
     {
       required: true,
       label: `I verify that I am an authorized representative of this organization and have the right to act on its behalf in the creation and management of this page.`,

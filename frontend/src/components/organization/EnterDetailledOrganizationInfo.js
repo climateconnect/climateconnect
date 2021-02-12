@@ -34,7 +34,6 @@ export default function EnterDetailledOrganizationInfo({
   handleSetLocationOptionsOpen,
 }) {
   const organization = parseOrganizationInfo(organizationInfo);
-
   const infoMetadata = {
     ...organization_info_metadata,
     location: {
