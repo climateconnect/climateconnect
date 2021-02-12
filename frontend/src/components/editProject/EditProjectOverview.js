@@ -229,6 +229,39 @@ const InputLocation = ({
   const handleChangeLocation = (location) => {
     handleChangeProject(parseLocation(location), "loc");
   };
+  const handleChangeLegacyLocationElement = (key, value) => {
+    handleChangeProject({...project.loc, [key]: value}, "loc")
+  }
+  if(process.env.ENABLE_LEGACY_LOCATION_FORMAT) {
+    return (
+      <>
+        <TextField
+          label="City"
+          variant="outlined"
+          fullWidth
+          className={classes.projectInfoEl}
+          value={project?.loc?.city}
+          type="text"
+          onChange={(event) =>
+            handleChangeLegacyLocationElement("city", event.target.value)
+          }
+          required
+        />
+        <TextField
+          label="Country"
+          className={classes.projectInfoEl}
+          variant="outlined"
+          fullWidth
+          value={project?.loc?.country}
+          type="text"
+          onChange={(event) =>
+            handleChangeLegacyLocationElement("country", event.target.value)
+          }
+          required
+        />
+      </>
+    )
+  }
   return (
     <div className={classes.projectInfoEl}>
       <LocationSearchBar

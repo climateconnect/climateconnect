@@ -154,7 +154,7 @@ EditProjectPage.getInitialProps = async (ctx) => {
 async function getProjectByIdIfExists(projectUrl, token) {
   try {
     const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/",
+      process.env.API_URL + "/api/projects/" + projectUrl + "/?edit_view=true",
       tokenConfig(token)
     );
     if (resp.data.length === 0) return null;

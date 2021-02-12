@@ -1,3 +1,4 @@
+from django.conf import settings
 from location.models import Location
 from location.serializers import LocationStubSerializer
 from rest_framework import serializers
@@ -65,6 +66,16 @@ class ProjectSerializer(serializers.ModelSerializer):
             return None
         return obj.loc.name
 
+class EditProjectSerializer(ProjectSerializer):
+    loc = serializers.SerializerMethodField()
+    def get_loc(self, obj):
+        if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
+            return {
+                "city": obj.loc.city,
+                "country": obj.loc.country
+            }
+    class Meta(ProjectSerializer.Meta):
+        fields = ProjectSerializer.Meta.fields + ('loc',)
 
 class ProjectParentsSerializer(serializers.ModelSerializer):
     parent_organization = serializers.SerializerMethodField()

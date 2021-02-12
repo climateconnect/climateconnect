@@ -19,7 +19,7 @@ from organization.models import (
     ProjectStatus, ProjectCollaborators, ProjectFollower, OrganizationTags, OrganizationTagging
 )
 from organization.serializers.project import (
-    ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer,
+    EditProjectSerializer, ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer,
  InsertProjectMemberSerializer, ProjectSitemapEntrySerializer, ProjectFollowerSerializer
 )
 from organization.serializers.status import ProjectStatusSerializer
@@ -217,7 +217,10 @@ class ProjectAPIView(APIView):
             project = Project.objects.get(url_slug=str(url_slug))
         except Project.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
-        serializer = ProjectSerializer(project, many=False)
+        if('edit_view' in request.query_params):
+            serializer = EditProjectSerializer(project, many=False)
+        else:
+            serializer = ProjectSerializer(project, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, url_slug, format=None):
