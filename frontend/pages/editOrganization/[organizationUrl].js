@@ -38,7 +38,7 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
     window.scrollTo(0, 0);
   };
 
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT;
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
 
   const saveChanges = (editedOrg) => {
     const error = verifyChanges(editedOrg).error;

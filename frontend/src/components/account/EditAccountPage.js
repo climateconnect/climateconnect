@@ -219,7 +219,7 @@ export default function EditAccountPage({
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT;
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({

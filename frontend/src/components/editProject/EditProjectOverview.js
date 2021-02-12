@@ -232,7 +232,7 @@ const InputLocation = ({
   const handleChangeLegacyLocationElement = (key, value) => {
     handleChangeProject({...project.loc, [key]: value}, "loc")
   }
-  if(process.env.ENABLE_LEGACY_LOCATION_FORMAT) {
+  if(process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return (
       <>
         <TextField

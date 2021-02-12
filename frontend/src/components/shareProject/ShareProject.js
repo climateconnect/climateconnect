@@ -73,7 +73,7 @@ export default function Share({
       ? project.parent_organization.name
       : project.parent_organization
     : "";
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT;
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const fields = [
     {
       falseLabel: "Personal Project",
@@ -120,7 +120,7 @@ export default function Share({
       locationInputRef: locationInputRef,
       locationOptionsOpen: locationOptionsOpen,
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
-      legacyModeEnabled: legacyModeEnabled === "true",
+      legacyModeEnabled: legacyModeEnabled,
       values: project,
       locationKey: "loc"
     }),

@@ -44,7 +44,7 @@ export default function EditProfilePage({
     },
   };
   const profile = user ? parseProfile(user, true) : null;
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT;
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const saveChanges = (editedAccount) => {
     if (
       editedAccount?.info?.location === user?.info?.location &&

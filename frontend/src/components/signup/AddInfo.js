@@ -21,7 +21,7 @@ export default function AddInfo({
   handleSetLocationOptionsOpen,
 }) {
   const classes = useStyles();
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT;
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const fields = [
     {
       required: true,
@@ -41,7 +41,7 @@ export default function AddInfo({
       locationInputRef: locationInputRef,
       locationOptionsOpen: locationOptionsOpen,
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
-      legacyModeEnabled: legacyModeEnabled === "true",
+      legacyModeEnabled: legacyModeEnabled,
       values: values,
       locationKey: "location"
     }),

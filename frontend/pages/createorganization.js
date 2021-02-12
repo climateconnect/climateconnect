@@ -22,7 +22,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     detailledOrganizationInfo: "",
   });
 
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT;
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
 
   const handleSetErrorMessages = (newErrorMessages) => {
     setErrorMessages(newErrorMessages);
