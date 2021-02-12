@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import NextCookies from "next-cookies";
+import { useRouter } from "next/router";
 import axios from "axios";
 
 import {
@@ -119,6 +120,19 @@ export default function Browse({
   });
   const atTopOfPage = TopOfPage({ initTopOfPage: true });
   const showOnScrollUp = isScrollingUp && !atTopOfPage;
+
+  /**
+   * Support the functionality of a user entering
+   * a provided URL, that already has URL encoded
+   * query params from a filter in it. In this use
+   * case, we should automatically set the filters
+   * dynamically.
+   */
+  const router = useRouter();
+  if (router.query) {
+    // Apply new filters with the query object immediately:
+    // applyNewFilters
+  }
 
   return (
     <>
