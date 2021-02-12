@@ -53,9 +53,11 @@ export default function Browse({
         token: token,
         urlEnding: newUrlEnding,
       });
+
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
       }
+
       return {
         closeFilters: closeFilters,
         filteredItemsObject: filteredItemsObject,
@@ -130,13 +132,13 @@ export default function Browse({
       >
         <MainHeadingContainerMobile />
         <BrowseContent
-          initialProjects={projectsObject}
-          initialOrganizations={organizationsObject}
-          initialMembers={membersObject}
           applyNewFilters={applyNewFilters}
-          filterChoices={filterChoices}
-          loadMoreData={loadMoreData}
           applySearch={applySearch}
+          filterChoices={filterChoices}
+          initialMembers={membersObject}
+          initialOrganizations={organizationsObject}
+          initialProjects={projectsObject}
+          loadMoreData={loadMoreData}
         />
       </WideLayout>
     </>

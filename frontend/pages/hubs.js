@@ -1,9 +1,10 @@
 import React from "react";
+import axios from "axios";
+import { Typography, Container, makeStyles, useMediaQuery } from "@material-ui/core";
+
 import WideLayout from "../src/components/layouts/WideLayout";
 import HubHeaderImage from "../src/components/hub/HubHeaderImage";
-import { Typography, Container, makeStyles, useMediaQuery } from "@material-ui/core";
 import NavigationSubHeader from "../src/components/hub/NavigationSubHeader";
-import axios from "axios";
 import HubPreviews from "../src/components/hub/HubPreviews";
 import theme from "../src/themes/theme";
 

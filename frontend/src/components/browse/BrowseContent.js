@@ -31,15 +31,15 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default function BrowseContent({
+  applyNewFilters,
+  applySearch,
+  customSearchBarLabels,
+  filterChoices,
+  hideMembers,
   initialMembers,
   initialOrganizations,
   initialProjects,
-  applyNewFilters,
-  filterChoices,
   loadMoreData,
-  applySearch,
-  hideMembers,
-  customSearchBarLabels,
 }) {
   const initialState = {
     items: {
