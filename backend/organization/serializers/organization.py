@@ -40,6 +40,10 @@ class EditOrganizationSerializer(OrganizationSerializer):
                 "city": obj.location.city,
                 "country": obj.location.country
             }
+        else:
+            if obj.location == None:
+                return None
+            return obj.location.name
     class Meta(OrganizationSerializer.Meta):
         fields = OrganizationSerializer.Meta.fields + ('location',)
 

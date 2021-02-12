@@ -82,6 +82,10 @@ class EditUserProfileSerializer(UserProfileSerializer):
                 "city": obj.location.city,
                 "country": obj.location.country
             }
+        else:
+            if obj.location == None:
+                return None
+            return obj.location.name
     class Meta(UserProfileSerializer.Meta):
         fields = UserProfileSerializer.Meta.fields + ('location',)
 

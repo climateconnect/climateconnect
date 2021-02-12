@@ -74,6 +74,10 @@ class EditProjectSerializer(ProjectSerializer):
                 "city": obj.loc.city,
                 "country": obj.loc.country
             }
+        else:
+            if obj.loc == None:
+                return None
+            return obj.loc.name
     class Meta(ProjectSerializer.Meta):
         fields = ProjectSerializer.Meta.fields + ('loc',)
 
