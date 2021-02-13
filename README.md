@@ -106,6 +106,7 @@ For local development, use the following contents for `.env`:
   API_URL="http://127.0.0.1:8000"
   BASE_URL_HOST=""
   SOCKET_URL="ws://api.climateconnect.earth"
+  ENVIRONMENT="development"
 ```
 
 1. `yarn dev` to start developing
