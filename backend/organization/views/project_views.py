@@ -1,5 +1,5 @@
 from django.contrib.gis.geos.geometry import GEOSGeometry
-from location.utility import format_location, get_location, get_location_ids_in_range
+from location.utility import get_location, get_location_ids_in_range
 from location.models import Location
 from hubs.models.hub import Hub
 from dateutil.parser import parse

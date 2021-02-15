@@ -119,8 +119,11 @@ def get_polygon_with_switched_coordinates(polygon):
 # be applied to the other function so they stay consistent
 # This whole setup is less than ideal and should be changed in the future.
 
-def format_location(location_string):
-    location_object = json.loads(location_string)[0]
+def format_location(location_string, already_loaded):
+    if already_loaded:
+        location_object = location_string
+    else:
+        location_object = json.loads(location_string)[0]
     location_name = format_location_name(location_object)
     return {
         'type': location_object['geojson']['type'],
@@ -220,7 +223,7 @@ def get_location_ids_in_range(query_params):
         params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9"
         url = url_root+osm_id_param+params
         response = requests.get(url)
-        location = get_location(format_location(response.text))
+        location = get_location(format_location(response.text, False))
         location_in_db = location.multi_polygon.buffer(buffer_width)
     else:        
         location_in_db = locations[0].multi_polygon.buffer(buffer_width)
