@@ -2,13 +2,22 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import SelectField from "../general/SelectField";
 import DatePicker from "../general/DatePicker";
-import { Switch, Typography, TextField, List, Chip, Button } from "@material-ui/core";
+import {
+  Switch,
+  Typography,
+  TextField,
+  List,
+  Chip,
+  Button,
+  useMediaQuery,
+} from "@material-ui/core";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import collaborationTexts from "../../../public/data/collaborationTexts";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import EnterTextDialog from "../dialogs/EnterTextDialog";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
+import DeleteProjectButton from "./DeleteProjectButton";
 
 const useStyles = makeStyles((theme) => ({
   select: {
@@ -49,14 +58,6 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(3),
     marginTop: theme.spacing(2),
   },
-  deleteProjectButton: {
-    float: "right",
-    backgroundColor: theme.palette.error.main,
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#ea6962",
-    },
-  },
 }));
 
 export default function EditProjectContent({
@@ -72,6 +73,7 @@ export default function EditProjectContent({
   const [selectedItems, setSelectedItems] = React.useState(
     project.skills ? [...project.skills] : []
   );
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
   const [open, setOpen] = React.useState({ skills: false, connections: false, delete: false });
   const statusesWithStartDate = statusOptions.filter((s) => s.has_start_date).map((s) => s.id);
   const statusesWithEndDate = statusOptions.filter((s) => s.has_end_date).map((s) => s.id);
@@ -153,7 +155,9 @@ export default function EditProjectContent({
     <div>
       <div className={classes.block}>
         <div className={classes.block}>
-          <Typography component="span">Personal Project</Typography>
+          <Typography component="span">
+            {isNarrowScreen ? "Personal" : "Personal Project"}
+          </Typography>
           <Switch
             checked={!project.is_personal_project}
             onChange={handleSwitchChange}
@@ -163,18 +167,11 @@ export default function EditProjectContent({
           />
           <Typography component="span">{"Organization's project"}</Typography>
         </div>
-        {user_role.name === "Creator" && (
-          <Button
-            classes={{
-              root: classes.deleteProjectButton,
-              focusVisible: classes.deleteProjectButtonFocus,
-            }}
-            variant="contained"
-            color="error"
-            onClick={handleClickDeleteProjectPopup}
-          >
-            {project.is_draft ? "Delete Draft" : "Delete Project"}
-          </Button>
+        {!isNarrowScreen && user_role.name === "Creator" && (
+          <DeleteProjectButton
+            project={project}
+            handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}
+          />
         )}
         <div className={classes.block}>
           {project.is_personal_project ? (

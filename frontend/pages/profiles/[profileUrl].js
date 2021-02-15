@@ -154,14 +154,21 @@ function ProfileLayout({
     const chat = await startPrivateChat(profile, token);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
-  const contentRef = React.useRef(null);
-  const scrollDownToProject = () => {
-    contentRef.current.scrollIntoView({ behavior: "smooth" });
+  const projectsRef = React.useRef(null);
+  const organizationsRef = React.useRef(null)
+  const scrollDownToProjects = () => {
+    projectsRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+  const scrollDownToOrganizations = () => {
+    organizationsRef.current.scrollIntoView({ behavior: "smooth" });
   };
   React.useEffect(() => {
     const URL = window.location.href;
     if (URL.slice(-9) == "#projects") {
-      scrollDownToProject();
+      scrollDownToProjects();
+    }
+    if (URL.slice(-14) == "#organizations") {
+      scrollDownToOrganizations();
     }
   }, []);
   return (
@@ -177,7 +184,7 @@ function ProfileLayout({
       {!user && (
         <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
       )}
-      <Container className={classes.container} ref={contentRef}>
+      <Container className={classes.container} ref={projectsRef}>
         {user && user.url_slug !== profile.url_slug && (
           <Button variant="contained" color="primary" onClick={handleConnectBtn}>
             Message
@@ -202,7 +209,7 @@ function ProfileLayout({
           </Typography>
         )}
       </Container>
-      <Container className={classes.container}>
+      <Container className={classes.container} ref={organizationsRef}>
         <h2>
           {isOwnAccount ? "Your organizations" : "This user's organizations:"}
           <Button
@@ -290,7 +297,7 @@ function parseProjectStubs(projects) {
     const project = p.project;
     return {
       ...project,
-      location: project.city ? project.city + ", " + project.country : project.country,
+      location: project.location,
     };
   });
 }
@@ -300,9 +307,7 @@ function parseOrganizationStubs(organizations) {
     ...o.organization,
     types: o.organization.types.map((type) => type.organization_tag),
     info: {
-      location: o.organization.city
-        ? o.organization.city + ", " + o.organization.country
-        : o.organization.country,
+      location: o.organization.location,
     },
   }));
 }
