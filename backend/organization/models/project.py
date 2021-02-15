@@ -118,7 +118,7 @@ class Project(models.Model):
         help_text="Points to the project's location",
         verbose_name="Location",
         related_name="project_loc",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True
     )

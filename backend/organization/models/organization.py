@@ -100,7 +100,7 @@ class Organization(models.Model):
         help_text="Points to the organization's location",
         verbose_name="Location",
         related_name="organization_loc",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True
     )

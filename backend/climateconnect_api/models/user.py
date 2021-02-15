@@ -88,7 +88,7 @@ class UserProfile(models.Model):
         help_text="Points to the user's location",
         verbose_name="Location",
         related_name="user_profile_loc",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True
     )
