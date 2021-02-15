@@ -12,7 +12,6 @@ import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
 import Router from "next/router";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
-import countries from "./../../../public/data/countries.json";
 
 const useStyles = makeStyles((theme) => {
   return {

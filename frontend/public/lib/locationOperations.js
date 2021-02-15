@@ -1,5 +1,5 @@
-export function getNameFromLocation(location, legacyModeEnabled) {
-  if(legacyModeEnabled)
+export function getNameFromLocation(location) {
+  if(process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true")
     return location.city + "" + location.country
   if (!location.address || !location.address.country) return location.display_name;
   const firstPartOrder = [
@@ -88,18 +88,18 @@ const isCountry = (location) => {
   return true;
 };
 
-export function isLocationValid(location, legacyModeEnabled) {
+export function isLocationValid(location) {
   //In legacy mode form control handles validation
-  if(legacyModeEnabled)
+  if(process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true")
     return true;
   if (!location || typeof location == "string") return false;
   else return true;
 }
 
-export function parseLocation(location, legacyModeEnabled) {
-  const location_object = getNameFromLocation(location, legacyModeEnabled);
+export function parseLocation(location) {
+  const location_object = getNameFromLocation(location);
   //don't return anything if in legacy mode
-  if(legacyModeEnabled) {
+  if(process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return location;
   }
   //don't do anything if location is already parsed
@@ -139,12 +139,11 @@ export function getLocationFields({
   locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
-  legacyModeEnabled,
   values,
   locationKey
 }) {
   //in legacy mode, return a city and a country field
-  if(legacyModeEnabled) {
+  if(process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return [
       {
         required: true,
@@ -167,7 +166,7 @@ export function getLocationFields({
     required: true,
     label: "Location",
     type: "location",
-    key: "location",
+    key: locationKey ? locationKey : "location",
     value: values[locationKey],
     ref: locationInputRef,
     locationOptionsOpen: locationOptionsOpen,
@@ -175,8 +174,8 @@ export function getLocationFields({
   }]
 }
 
-export function getLocationValue(values, legacyModeEnabled, locationKey){
-  if(legacyModeEnabled) {
+export function getLocationValue(values, locationKey){
+  if(process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return {
       country: values.country,
       city: values.city,

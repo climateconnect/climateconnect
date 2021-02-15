@@ -58,11 +58,11 @@ export default function Signup() {
 
   const handleAddInfoSubmit = (event, values) => {
     event.preventDefault();    
-    if (!isLocationValid(values.location, legacyModeEnabled)) {
+    if (!isLocationValid(values.location)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage);
       return;
     }
-    const location = getLocationValue(values, legacyModeEnabled, "location")
+    const location = getLocationValue(values, "location")
     setUserInfo({
       ...userInfo,
       first_name: values.first_name,
@@ -75,7 +75,7 @@ export default function Signup() {
       password: userInfo.password,
       first_name: values.first_name.trim(),
       last_name: values.last_name.trim(),
-      location: parseLocation(location, legacyModeEnabled),
+      location: parseLocation(location),
       send_newsletter: values.sendNewsletter,
     };
     const config = {
@@ -111,7 +111,7 @@ export default function Signup() {
       ...userInfo,
       first_name: values.first_name,
       last_name: values.last_name,
-      location: getLocationValue(values, legacyModeEnabled, "location"),
+      location: getLocationValue(values, "location"),
     });
     setCurStep(steps[0]);
   };

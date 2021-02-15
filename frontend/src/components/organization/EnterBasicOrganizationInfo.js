@@ -28,7 +28,6 @@ export default function EnterBasicOrganizationInfo({
     if (parentOrganization) setParentOrganization(null);
   };
   const getOptionLabel = (option) => option.name;
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const fields = [
     {
       required: true,
@@ -66,7 +65,6 @@ export default function EnterBasicOrganizationInfo({
       locationInputRef: locationInputRef,
       locationOptionsOpen: locationOptionsOpen,
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
-      legacyModeEnabled: legacyModeEnabled,
       values: organizationInfo,
       locationKey: "location"
     }),

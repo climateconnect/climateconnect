@@ -100,12 +100,12 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
           ),
         });
       } else {
-        const location = getLocationValue(values, legacyModeEnabled, "location")
+        const location = getLocationValue(values, "location")
         setOrganizationInfo({
           ...organizationInfo,
           name: values.organizationname,
           parentorganization: values.parentorganizationname,
-          location: parseLocation(location, legacyModeEnabled),
+          location: parseLocation(location),
         });
         setCurStep(steps[1]);
       }

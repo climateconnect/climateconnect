@@ -21,9 +21,9 @@ export default function LocationSearchBar({
   locationInputRef,
   textFieldClassName,
 }) {
-  const getValue = (newValue) => {
+  const getValue = (newValue, inputValue) => {
     if (!newValue) {
-      return "";
+      return inputValue ? inputValue : "";
     } else if (typeof newValue === "object") {
       return newValue.name ? newValue.name : newValue.simple_name;
     } else {
@@ -35,7 +35,7 @@ export default function LocationSearchBar({
   // If no 'open' prop is passed to the component, the component handles its 'open' state with this internal state
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState("");
-  const [inputValue, setInputValue] = React.useState(getValue(initialValue));
+  const [inputValue, setInputValue] = React.useState(getValue(initialValue, ""));
   const [loading, setLoading] = React.useState(false);
   React.useEffect(() => {
     let active = true;
@@ -155,7 +155,7 @@ export default function LocationSearchBar({
       onClose={handleClose}
       onChange={handleChange}
       options={options.map((o) => o.simple_name)}
-      inputValue={value ? getValue(value) : inputValue}
+      inputValue={getValue(value, inputValue)}
       filterOptions={handleFilterOptions}
       getOptionDisabled={handleGetOptionDisabled}
       renderOption={renderSearchOption}

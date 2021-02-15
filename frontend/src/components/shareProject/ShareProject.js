@@ -120,7 +120,6 @@ export default function Share({
       locationInputRef: locationInputRef,
       locationOptionsOpen: locationOptionsOpen,
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
-      legacyModeEnabled: legacyModeEnabled,
       values: project,
       locationKey: "loc"
     }),
@@ -148,7 +147,7 @@ export default function Share({
       return;
     }
     const loc_value = getLocationValue(values, "loc")
-    const loc = parseLocation(loc_value, legacyModeEnabled);
+    const loc = parseLocation(loc_value);
     if (!values.parent_organization) {
       handleSetProjectData({
         ...values,

@@ -246,7 +246,7 @@ export default function Form({
                   color="primary"
                   name="checkedA"
                   inputProps={{ "aria-label": "secondary checkbox" }}
-                  onChange={() => handleValueChange(event, field.key, field.type)}
+                  onChange={(event) => handleValueChange(event, field.key, field.type)}
                 />
                 <span className={classes.switchTextContainer}>
                   <Typography
