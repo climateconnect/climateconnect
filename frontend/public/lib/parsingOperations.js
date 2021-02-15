@@ -7,12 +7,15 @@ export function parseData({ type, data }) {
 const parseProjects = (projects) => {
   return projects.map((project) => ({
     ...project,
-    location: project.location,
+    location: project.city ? project.city + ", " + project.country : project.country,
   }));
 };
 
 const parseMembers = (members) => {
-  return members;
+  return members.map((member) => ({
+    ...member,
+    location: members.city ? member.city + ", " + member.country : member.country,
+  }));
 };
 
 const parseOrganizations = (organizations) => {
@@ -20,7 +23,9 @@ const parseOrganizations = (organizations) => {
     ...organization,
     types: organization.types.map((type) => type.organization_tag),
     info: {
-      location: organization.location,
+      location: organization.city
+        ? organization.city + ", " + organization.country
+        : organization.country,
     },
   }));
 };

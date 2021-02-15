@@ -1,16 +1,10 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext } from "react";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
 import axios from "axios";
 import Router from "next/router";
 import Layout from "../src/components/layouts/layout";
 import UserContext from "../src/components/context/UserContext";
-import {
-  parseLocation,
-  isLocationValid,
-  indicateWrongLocation,
-  getLocationValue,
-} from "../public/lib/locationOperations";
 
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
@@ -21,26 +15,20 @@ export default function Signup() {
     repeatpassword: "",
     first_name: "",
     last_name: "",
-    location: {},
+    country: "",
+    city: "",
     newsletter: "",
   });
 
   const steps = ["basicinfo", "personalinfo"];
-  const [curStep, setCurStep] = useState(steps[0]);
-  const [errorMessage, setErrorMessage] = useState("");
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
-  const locationInputRef = useRef(null);
-  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
-  const handleSetLocationOptionsOpen = (bool) => {
-    setLocationOptionsOpen(bool);
-  };
-  const [errorMessages, setErrorMessages] = useState(
+  const [curStep, setCurStep] = React.useState(steps[0]);
+  const [errorMessages, setErrorMessages] = React.useState(
     steps.reduce((obj, step) => {
       obj[step] = null;
       return obj;
     }, {})
   );
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleBasicInfoSubmit = (event, values) => {
     event.preventDefault();
@@ -57,17 +45,13 @@ export default function Signup() {
   };
 
   const handleAddInfoSubmit = (event, values) => {
-    event.preventDefault();    
-    if (!isLocationValid(values.location)) {
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage);
-      return;
-    }
-    const location = getLocationValue(values, "location")
+    event.preventDefault();
     setUserInfo({
       ...userInfo,
       first_name: values.first_name,
       last_name: values.last_name,
-      location: location,
+      country: values.country,
+      city: values.city,
       sendNewsletter: values.sendNewsletter,
     });
     const payload = {
@@ -75,7 +59,8 @@ export default function Signup() {
       password: userInfo.password,
       first_name: values.first_name.trim(),
       last_name: values.last_name.trim(),
-      location: parseLocation(location),
+      country: values.country.trim(),
+      city: values.city.trim(),
       send_newsletter: values.sendNewsletter,
     };
     const config = {
@@ -84,7 +69,7 @@ export default function Signup() {
         "Content-Type": "application/json",
       },
     };
-    setIsLoading(true);    
+    setIsLoading(true);
     axios
       .post(process.env.API_URL + "/signup/", payload, config)
       .then(function () {
@@ -111,18 +96,14 @@ export default function Signup() {
       ...userInfo,
       first_name: values.first_name,
       last_name: values.last_name,
-      location: getLocationValue(values, "location"),
+      country: values.country,
+      city: values.city,
     });
     setCurStep(steps[0]);
   };
 
   return (
-    <Layout
-      title="Sign Up"
-      isLoading={isLoading}
-      message={errorMessage}
-      messageType={errorMessage && "error"}
-    >
+    <Layout title="Sign Up" isLoading={isLoading}>
       {curStep === "basicinfo" ? (
         <BasicInfo
           values={userInfo}
@@ -136,9 +117,6 @@ export default function Signup() {
             handleSubmit={handleAddInfoSubmit}
             errorMessage={errorMessages[steps[1]]}
             handleGoBack={handleGoBackFromAddInfo}
-            locationInputRef={locationInputRef}
-            locationOptionsOpen={locationOptionsOpen}
-            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           />
         )
       )}

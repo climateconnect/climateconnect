@@ -19,7 +19,6 @@ import TopOfPage from "../src/components/hooks/TopOfPage";
 import BrowseContent from "../src/components/browse/BrowseContent";
 import { parseData } from "../public/lib/parsingOperations";
 import HubsSubHeader from "../src/components/indexPage/HubsSubHeader";
-import { buildUrlEndingFromFilters } from "../public/lib/filterOperations";
 
 export default function Browse({
   projectsObject,
@@ -34,19 +33,18 @@ export default function Browse({
     members: {},
     organizations: {},
   });
-  const [errorMessage, setErrorMessage] = useState("");
 
   const applyNewFilters = async (type, newFilters, closeFilters, oldUrlEnding) => {
     if (filters === newFilters) {
       return;
     }
-    //todo: throw error if user didn't choose a location from the list
+
     setFilters({ ...filters, [type]: newFilters });
     const newUrlEnding = buildUrlEndingFromFilters(newFilters);
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }
-    setErrorMessage(null);
+
     try {
       const filteredItemsObject = await getDataFromServer({
         type: type,
@@ -120,9 +118,7 @@ export default function Browse({
   });
   const atTopOfPage = TopOfPage({ initTopOfPage: true });
   const showOnScrollUp = isScrollingUp && !atTopOfPage;
-  const handleSetErrorMessage = (newMessage) => {
-    setErrorMessage(newMessage);
-  };
+
   return (
     <>
       <WideLayout
@@ -140,13 +136,23 @@ export default function Browse({
           filterChoices={filterChoices}
           loadMoreData={loadMoreData}
           applySearch={applySearch}
-          handleSetErrorMessage={handleSetErrorMessage}
-          errorMessage={errorMessage}
         />
       </WideLayout>
     </>
   );
 }
+
+const buildUrlEndingFromFilters = (filters) => {
+  let url = "&";
+  Object.keys(filters).map((filterKey) => {
+    if (filters[filterKey] && filters[filterKey].length > 0) {
+      if (Array.isArray(filters[filterKey]))
+        url += encodeURI(filterKey + "=" + filters[filterKey].join()) + "&";
+      else url += encodeURI(filterKey + "=" + filters[filterKey] + "&");
+    }
+  });
+  return url;
+};
 
 Browse.getInitialProps = async (ctx) => {
   const { token, hideInfo } = NextCookies(ctx);

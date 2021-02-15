@@ -12,6 +12,7 @@ import axios from "axios";
 import tokenConfig from "../../../public/config/tokenConfig";
 import Router from "next/router";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
+import countries from "./../../../public/data/countries.json";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -57,7 +58,6 @@ export default function ShareProjectRoot({
   user,
   statusOptions,
   token,
-  setMessage,
 }) {
   const classes = useStyles();
   const [project, setProject] = React.useState(
@@ -93,14 +93,12 @@ export default function ShareProjectRoot({
 
   const goToNextStep = () => {
     setCurStep(steps[steps.indexOf(curStep) + 1]);
-    setMessage("");
     //scroll to top when navigating to another step
     window.scrollTo(0, 0);
   };
 
   const goToPreviousStep = () => {
     setCurStep(steps[steps.indexOf(curStep) - 1]);
-    setMessage("");
     //scroll to top when navigating to another step
     window.scrollTo(0, 0);
   };
@@ -165,7 +163,6 @@ export default function ShareProjectRoot({
               handleSetProjectData={handleSetProject}
               goToNextStep={goToNextStep}
               userOrganizations={userOrganizations}
-              setMessage={setMessage}
             />
           )}
           {curStep.key === "selectCategory" && (
@@ -221,7 +218,7 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
     skills: [],
     helpful_connections: [],
     collaborating_organizations: [],
-    loc: {},
+    country: countries[0],
     parent_organization: userOrganizations ? userOrganizations[0] : null,
     isPersonalProject: !(userOrganizations && userOrganizations.length > 0),
     is_organization_project: userOrganizations && userOrganizations.length > 0,

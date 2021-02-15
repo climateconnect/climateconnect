@@ -1,5 +1,3 @@
-from location.models import Location
-from location.utility import get_location, get_location_ids_in_range
 from hubs.models.hub import Hub
 from organization.models.tags import ProjectTags
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -14,17 +12,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from django.contrib.auth.models import User
 from organization.serializers.organization import (
-    EditOrganizationSerializer, OrganizationSerializer, OrganizationMinimalSerializer, OrganizationMemberSerializer, 
+    OrganizationSerializer, OrganizationMinimalSerializer, OrganizationMemberSerializer, 
     UserOrganizationSerializer, OrganizationCardSerializer, OrganizationSitemapEntrySerializer
 )
 from organization.serializers.project import (ProjectFromProjectParentsSerializer,)
 from organization.serializers.tags import (OrganizationTagsSerializer)
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from organization.models import Organization, OrganizationMember, ProjectParents, OrganizationTags, OrganizationTagging
-from organization.permissions import (
-    AddOrganizationMemberPermission, ChangeOrganizationCreatorPermission,
-    OrganizationReadWritePermission, OrganizationReadWritePermission, OrganizationMemberReadWritePermission
-)
+from organization.permissions import (OrganizationReadWritePermission, OrganizationReadWritePermission, OrganizationMemberReadWritePermission, AddOrganizationMemberPermission, ChangeOrganizationCreatorPermission)
 from climateconnect_api.models import Role, UserProfile
 from organization.pagination import (OrganizationsPagination, ProjectsPagination)
 from climateconnect_api.pagination import MembersPagination
@@ -40,7 +35,7 @@ class ListOrganizationsAPIView(ListAPIView):
     filter_backends = [SearchFilter, DjangoFilterBackend]
     pagination_class = OrganizationsPagination
     search_fields = ['name']
-    
+    filterset_fields = ['city', 'country']
 
     def get_serializer_class(self):
         return OrganizationCardSerializer
@@ -65,29 +60,6 @@ class ListOrganizationsAPIView(ListAPIView):
             organization_taggings = OrganizationTagging.objects.filter(organization_tag__in=organization_types)
             organizations = organizations.filter(tag_organization__in=organization_taggings).distinct('id')
 
-        if 'place' in self.request.query_params and 'osm' in self.request.query_params:
-            location_ids_in_range = get_location_ids_in_range(self.request.query_params)
-            organizations = organizations.filter(location__in=location_ids_in_range)
-        
-        if 'country' and 'city' in self.request.query_params:
-            location_ids = Location.objects.filter(
-                country=self.request.query_params.get('country'),
-                city=self.request.query_params.get('city')
-            )
-            organizations = organizations.filter(location__in=location_ids)
-
-        if 'city' in self.request.query_params and not 'country' in self.request.query_params:
-            location_ids = Location.objects.filter(
-                city=self.request.query_params.get('city')
-            )
-            organizations = organizations.filter(location__in=location_ids)
-        
-        if 'country' in self.request.query_params and not 'city' in self.request.query_params:
-            location_ids = Location.objects.filter(
-                country=self.request.query_params.get('country')
-            )
-            organizations = organizations.filter(location__in=location_ids)
-
         return organizations
 
 
@@ -95,7 +67,7 @@ class CreateOrganizationView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        required_params = ['name', 'team_members', 'location', 'image', 'organization_tags']
+        required_params = ['name', 'team_members', 'city', 'country', 'image', 'organization_tags']
         for param in required_params:
             if param not in request.data:
                 return Response({
@@ -122,10 +94,12 @@ class CreateOrganizationView(APIView):
 
                 organization.parent_organization = parent_org
 
-
-            # Get accurate location from google maps.
-            if 'location' in request.data:
-                organization.location = get_location(request.data['location'])
+            if 'country' in request.data:
+                organization.country = request.data['country']
+            if 'state' in request.data:
+                organization.state = request.data['state']
+            if 'city' in request.data:
+                organization.city = request.data['city']
             if 'short_description' in request.data:
                 organization.short_description = request.data['short_description']
             if 'website' in request.data:
@@ -168,6 +142,7 @@ class CreateOrganizationView(APIView):
                 'message': 'Organization with name {} already exists'.format(request.data['name'])
             }, status=status.HTTP_400_BAD_REQUEST)
 
+
 class OrganizationAPIView(APIView):
     permission_classes = [OrganizationReadWritePermission]
     lookup_field = 'url_slug'
@@ -177,10 +152,7 @@ class OrganizationAPIView(APIView):
             organization = Organization.objects.get(url_slug=str(url_slug))            
         except Organization.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
-        if('edit_view' in request.query_params):
-            serializer = EditOrganizationSerializer(organization, many=False)
-        else:
-            serializer = OrganizationSerializer(organization, many=False)
+        serializer = OrganizationSerializer(organization, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, url_slug, format=None):
@@ -188,13 +160,10 @@ class OrganizationAPIView(APIView):
             organization = Organization.objects.get(url_slug=str(url_slug))            
         except Organization.DoesNotExist:
             return Response({'message': 'Organization not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
-        pass_through_params = ['name', 'short_description', 'school', 'organ', 'website']
+        pass_through_params = ['name', 'state', 'city', 'country', 'short_description', 'school', 'organ', 'website']
         for param in pass_through_params:
             if param in request.data:
                 setattr(organization, param, request.data[param])
-        
-        if 'location' in request.data:
-            organization.location = get_location(request.data['location'])
         if 'image' in request.data:
             organization.image = get_image_from_data_url(request.data['image'])[0]
         if 'background_image' in request.data:
@@ -296,7 +265,6 @@ class AddOrganizationMembersView(APIView):
 
         return Response({'message': 'Member added to the organization'}, status=status.HTTP_201_CREATED)
 
-
 class ChangeOrganizationCreator(APIView):
     permission_classes = [ChangeOrganizationCreatorPermission]
 
@@ -378,7 +346,6 @@ class ListOrganizationMembersAPIView(ListAPIView):
             organization__url_slug=self.kwargs['url_slug'],
         ).order_by('id')
 
-
 class ListOrganizationTags(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = OrganizationTagsSerializer
@@ -386,14 +353,12 @@ class ListOrganizationTags(ListAPIView):
     def get_queryset(self):
         return OrganizationTags.objects.all()
 
-
 class ListFeaturedOrganizations(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = OrganizationCardSerializer
 
     def get_queryset(self):
         return Organization.objects.filter(rating__lte=99)[0:4]
-
 
 class ListOrganizationsForSitemap(ListAPIView):
     permission_classes = [AllowAny]

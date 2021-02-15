@@ -10,7 +10,9 @@ export function parseOrganization(organization, reduceTypes) {
       ? organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id }))
       : [],
     info: {
-      location: organization.location,
+      location: organization.city
+        ? organization.city + ", " + organization.country
+        : organization.country,
       shortdescription: organization.short_description,
       website: organization.website,
     },

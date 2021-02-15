@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useContext } from "react";
 import Router from "next/router";
 import WideLayout from "../src/components/layouts/WideLayout";
 import EditAccountPage from "./../src/components/account/EditAccountPage";
@@ -7,53 +7,24 @@ import Cookies from "next-cookies";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
 import { getImageUrl } from "../public/lib/imageOperations";
 
-import profile_info_metadata from "./../public/data/profile_info_metadata";
+//temporary fake data
+import TEMP_INFOMETADATA from "./../public/data/profile_info_metadata";
+import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
 import axios from "axios";
 import tokenConfig from "../public/config/tokenConfig";
 import PageNotFound from "../src/components/general/PageNotFound";
-import { isLocationValid, indicateWrongLocation } from "../public/lib/locationOperations";
 
 export default function EditProfilePage({
   skillsOptions,
   availabilityOptions,
   infoMetadata,
-  user,
   token,
 }) {
-  const [errorMessage, setErrorMessage] = useState("");
-  const locationInputRef = useRef(null);
-  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
-
-  const handleSetLocationOptionsOpen = (newValue) => {
-    setLocationOptionsOpen(newValue);
-  };
-
-  //add dynamic data to the data retrieved from profile_info_metadata.js
-  infoMetadata = {
-    ...infoMetadata,
-    availability: {
-      ...infoMetadata.availability,
-      options: availabilityOptions,
-    },
-    location: {
-      ...infoMetadata.location,
-      locationOptionsOpen: locationOptionsOpen,
-      setLocationOptionsOpen: handleSetLocationOptionsOpen,
-      locationInputRef: locationInputRef,
-    },
-  };
-  const profile = user ? parseProfile(user, true) : null;
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
-  const saveChanges = (editedAccount) => {
-    if (
-      editedAccount?.info?.location === user?.info?.location &&
-      !isLocationValid(editedAccount?.info?.location) &&
-      !legacyModeEnabled
-    ) {
-      indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, setErrorMessage);
-      return;
-    }
+  const { user } = useContext(UserContext);
+  infoMetadata.availability.options = availabilityOptions;
+  const profile = user ? parseProfile(user, true, true) : null;
+  const saveChanges = (event, editedAccount) => {
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
     axios
       .post(
@@ -77,6 +48,7 @@ export default function EditProfilePage({
   const handleCancel = () => {
     Router.push("/profiles/" + profile.url_slug);
   };
+
   if (!profile)
     return (
       <WideLayout title="Please Log In to Edit your Profile" hideHeadline={true}>
@@ -85,11 +57,7 @@ export default function EditProfilePage({
     );
   else
     return (
-      <WideLayout
-        title={"Edit Profile"}
-        message={errorMessage}
-        messageType={errorMessage && "error"}
-      >
+      <WideLayout title={"Edit Profile"}>
         {profile ? (
           <ProfileLayout
             profile={profile}
@@ -107,18 +75,16 @@ export default function EditProfilePage({
 
 EditProfilePage.getInitialProps = async (ctx) => {
   const { token } = Cookies(ctx);
-  const [skillsOptions, infoMetadata, availabilityOptions, userProfile] = await Promise.all([
+  const [skillsOptions, infoMetadata, availabilityOptions] = await Promise.all([
     getSkillsOptions(token),
     getProfileInfoMetadata(token),
     getAvailabilityOptions(token),
-    getUserProfile(token)
   ]);
   return {
     skillsOptions: skillsOptions,
     infoMetadata: infoMetadata,
     availabilityOptions: availabilityOptions,
     token: token,
-    user: userProfile
   };
 };
 
@@ -133,16 +99,16 @@ function ProfileLayout({
 }) {
   return (
     <EditAccountPage
+      type="profile"
       account={profile}
-      deleteEmail="support@climateconnect.earth"
-      handleCancel={handleCancel}
-      handleSubmit={handleSubmit}
+      possibleAccountTypes={profileTypes}
       infoMetadata={infoMetadata}
       maxAccountTypes={maxAccountTypes}
-      possibleAccountTypes={profileTypes}
+      handleSubmit={handleSubmit}
+      handleCancel={handleCancel}
       skillsOptions={skillsOptions}
       splitName
-      type="profile"
+      deleteEmail="support@climateconnect.earth"
     />
   );
 }
@@ -175,19 +141,8 @@ async function getAvailabilityOptions(token) {
   }
 }
 
-async function getUserProfile(token) {
-  try {
-    const resp = await axios.get(process.env.API_URL + "/api/edit_profile/", tokenConfig(token));
-    return resp.data;
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}
-
 async function getProfileInfoMetadata() {
-  return profile_info_metadata;
+  return TEMP_INFOMETADATA;
 }
 
 const parseProfileForRequest = (profile, availabilityOptions, user) => {
@@ -198,7 +153,7 @@ const parseProfileForRequest = (profile, availabilityOptions, user) => {
     image: profile.image,
     background_image: profile.background_image,
     country: profile.info.country,
-    location: profile.info.location,
+    city: profile.info.city,
     biography: profile.info.bio,
     availability: availability ? availability.id : user.availability ? user.availability.id : null,
     skills: profile.info.skills.map((s) => s.id),

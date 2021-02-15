@@ -1,15 +1,9 @@
-import React, { useRef } from "react";
+import React from "react";
 import Form from "../general/Form";
 import { Typography, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import countries from "./../../../public/data/countries.json";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import {
-  isLocationValid,
-  parseLocation,
-  indicateWrongLocation,
-  getLocationFields,
-  getLocationValue,
-} from "../../../public/lib/locationOperations";
 
 const useStyles = makeStyles((theme) => ({
   orgBottomLink: {
@@ -44,21 +38,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Share({
-  project,
-  handleSetProjectData,
-  goToNextStep,
-  userOrganizations,
-  setMessage,
-}) {
+export default function Share({ project, handleSetProjectData, goToNextStep, userOrganizations }) {
   const classes = useStyles();
-  const locationInputRef = useRef(null);
-  const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
-
-  const handleSetLocationOptionsOpen = (bool) => {
-    setLocationOptionsOpen(bool);
-  };
-
   const organizations = !userOrganizations
     ? []
     : userOrganizations.map((org) => {
@@ -73,7 +54,6 @@ export default function Share({
       ? project.parent_organization.name
       : project.parent_organization
     : "";
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const fields = [
     {
       falseLabel: "Personal Project",
@@ -116,13 +96,24 @@ export default function Share({
         </Typography>
       ),
     },
-    ...getLocationFields({
-      locationInputRef: locationInputRef,
-      locationOptionsOpen: locationOptionsOpen,
-      handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
-      values: project,
-      locationKey: "loc"
-    }),
+    {
+      required: true,
+      label: "Location",
+      type: "text",
+      key: "city",
+      value: project.city,
+    },
+    {
+      required: true,
+      label: "Country",
+      select: {
+        values: countries.map((country) => {
+          return { key: country, name: country };
+        }),
+        defaultValue: project.country,
+      },
+      key: "country",
+    },
   ];
   const messages = {
     submitMessage: "Next Step",
@@ -135,33 +126,19 @@ export default function Share({
   const onSubmit = (event, values) => {
     event.preventDefault();
     Object.keys(values).map(
-      (k) =>
-        (values[k] =
-          values[k] && values[k] != true && typeof values[k] !== "object"
-            ? values[k].trim()
-            : values[k])
+      (k) => (values[k] = values[k] && values[k] != true ? values[k].trim() : values[k])
     );
-    //Short circuit if the location is not valid and we're not in legacy mode
-    if (!legacyModeEnabled && !isLocationValid(values.loc)) {
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage);
-      return;
-    }
-    const loc_value = getLocationValue(values, "loc")
-    const loc = parseLocation(loc_value);
-    if (!values.parent_organization) {
+    if (!values.parent_organization)
       handleSetProjectData({
         ...values,
-        loc: loc,
         isPersonalProject: true,
       });
-    } else {
+    else
       handleSetProjectData({
         ...values,
-        loc: loc,
         parent_organization: getOrgObject(values.parent_organization),
         isPersonalProject: false,
       });
-    }
     goToNextStep();
   };
   return (

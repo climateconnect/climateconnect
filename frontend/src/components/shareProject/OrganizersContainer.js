@@ -2,7 +2,7 @@ import React from "react";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import { Typography, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
+import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 

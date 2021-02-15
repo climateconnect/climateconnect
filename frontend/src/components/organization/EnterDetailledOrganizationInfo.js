@@ -29,20 +29,8 @@ export default function EnterDetailledOrganizationInfo({
   organizationInfo,
   handleSubmit,
   tagOptions,
-  locationInputRef,
-  locationOptionsOpen,
-  handleSetLocationOptionsOpen,
 }) {
   const organization = parseOrganizationInfo(organizationInfo);
-  const infoMetadata = {
-    ...organization_info_metadata,
-    location: {
-      ...organization_info_metadata.location,
-      locationOptionsOpen: locationOptionsOpen,
-      setLocationOptionsOpen: handleSetLocationOptionsOpen,
-      locationInputRef: locationInputRef,
-    },
-  };
   const classes = useStyles();
 
   const handleCancel = () => {
@@ -61,7 +49,7 @@ export default function EnterDetailledOrganizationInfo({
         type="organization"
         account={organization}
         possibleAccountTypes={[...tagOptions]}
-        infoMetadata={infoMetadata}
+        infoMetadata={organization_info_metadata}
         maxAccountTypes={2}
         accountHref={"/organizations/" + organization.url_slug}
         handleSubmit={handleSubmit}

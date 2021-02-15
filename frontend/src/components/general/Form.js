@@ -13,8 +13,7 @@ import {
 import SelectField from "./SelectField";
 import { makeStyles } from "@material-ui/core/styles";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
-import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
-import LocationSearchBar from "../search/LocationSearchBar";
+import AutoCompleteSearchBar from "./AutoCompleteSearchBar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,6 +60,13 @@ const useStyles = makeStyles((theme) => ({
   backButton: {
     float: "left",
   },
+  inputField: {
+    borderRadius: 2,
+    borderWidth: 5,
+  },
+  notchedOutline: {
+    borderWidth: 2,
+  },
   rightAlignedButton: {
     float: "right",
     marginTop: theme.spacing(4),
@@ -104,6 +110,7 @@ export default function Form({
   fieldClassName,
 }) {
   const classes = useStyles();
+
   const [curPercentage, setCurPercentage] = React.useState(percentage);
   const [values, setValues] = React.useState(
     fields.reduce((obj, field) => {
@@ -143,10 +150,6 @@ export default function Form({
     setValues(newValues);
     //setValues doesn't apply instantly, so we pass the new values to the updatePercentage function
     if (updateInstantly) updatePercentage(newValues);
-  }
-
-  function handleLocationChange(newLocation, key) {
-    setValues({ ...values, [key]: newLocation });
   }
 
   function handleBlur() {
@@ -208,6 +211,12 @@ export default function Form({
                   className={`${classes.blockElement} ${fieldClassName}`}
                   key={field.label + fields.indexOf(field)}
                   onChange={() => handleValueChange(event, field.key, field.type, true)}
+                  InputProps={{
+                    classes: {
+                      root: classes.inputField,
+                      notchedOutline: classes.notchedOutline,
+                    },
+                  }}
                 />
                 {field.bottomLink && field.bottomLink}
               </React.Fragment>
@@ -246,7 +255,7 @@ export default function Form({
                   color="primary"
                   name="checkedA"
                   inputProps={{ "aria-label": "secondary checkbox" }}
-                  onChange={(event) => handleValueChange(event, field.key, field.type)}
+                  onChange={() => handleValueChange(event, field.key, field.type)}
                 />
                 <span className={classes.switchTextContainer}>
                   <Typography
@@ -257,21 +266,6 @@ export default function Form({
                   </Typography>
                 </span>
               </div>
-            );
-          } else if (field.type === "location") {
-            return (
-              <LocationSearchBar
-                key={field.key}
-                label={field.label}
-                required={field.required}
-                onSelect={(value) => handleLocationChange(value, field.key)}
-                onChange={(value) => handleLocationChange(value, field.key)}
-                initialValue={field.value}
-                locationInputRef={field.ref}
-                handleSetOpen={field.handleSetLocationOptionsOpen}
-                open={field.locationOptionsOpen}
-                className={`${classes.blockElement} ${fieldClassName}`}
-              />
             );
           } else if (
             (!field.onlyShowIfChecked || values[field.onlyShowIfChecked] === true) &&
@@ -308,6 +302,12 @@ export default function Form({
                   className={`${classes.blockElement} ${fieldClassName}`}
                   onBlur={handleBlur}
                   onChange={() => handleValueChange(event, field.key, field.type)}
+                  InputProps={{
+                    classes: {
+                      root: classes.inputField,
+                      notchedOutline: classes.notchedOutline,
+                    },
+                  }}
                 />
                 {field.bottomLink && field.bottomLink}
               </React.Fragment>

@@ -151,7 +151,7 @@ function parseProjectMembers(members) {
       role: m.role,
       availability: m.availability,
       role_in_project: m.role_in_project ? m.role_in_project : "",
-      location: member.location,
+      location: member.city ? member.city + ", " + member.country : member.country,
       isCreator: m.role.role_type === 2,
     };
   });
@@ -164,7 +164,7 @@ function parseProject(project) {
     url_slug: project.url_slug,
     image: project.image,
     status: project.status,
-    location: project.location,
+    location: project.city + ", " + project.country,
     description: project.description,
     shortdescription: project.short_description,
     collaborators_welcome: project.collaborators_welcome,

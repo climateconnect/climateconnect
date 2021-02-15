@@ -260,11 +260,6 @@ const getLoggedInLinks = ({ loggedInUser }) => {
       iconForDrawer: GroupWorkIcon,
     },
     {
-      href: "/profiles/" + loggedInUser.url_slug + "/#organizations",
-      text: "My Organizations",
-      iconForDrawer: GroupWorkIcon,
-    },
-    {
       href: "/settings",
       text: "Settings",
       iconForDrawer: SettingsIcon,
@@ -682,7 +677,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader }) => {
                       component="button"
                       className={classes.loggedInLink}
                       onClick={link.isLogoutButton && handleLogout}
-                      href={!link.isLogoutButton ? link.href : undefined}
+                      href={!link.isLogoutButton && link.href}
                     >
                       {link.text}
                     </MenuItem>

@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext } from "react";
 import EnterDetailledOrganizationInfo from "./../src/components/organization/EnterDetailledOrganizationInfo";
 import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
 import Layout from "./../src/components/layouts/layout";
@@ -9,20 +9,12 @@ import tokenConfig from "../public/config/tokenConfig";
 import LoginNudge from "../src/components/general/LoginNudge";
 import UserContext from "../src/components/context/UserContext";
 import Router from "next/router";
-import {
-  isLocationValid,
-  indicateWrongLocation,
-  parseLocation,
-  getLocationValue,
-} from "../public/lib/locationOperations";
 
 export default function CreateOrganization({ tagOptions, token, rolesOptions }) {
   const [errorMessages, setErrorMessages] = React.useState({
     basicOrganizationInfo: "",
     detailledOrganizationInfo: "",
   });
-
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
 
   const handleSetErrorMessages = (newErrorMessages) => {
     setErrorMessages(newErrorMessages);
@@ -33,7 +25,8 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     organizationname: "",
     hasparentorganization: false,
     parentorganization: "",
-    location: "",
+    city: "",
+    country: "",
     verified: false,
     shortdescription: "",
     website: "",
@@ -42,72 +35,45 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
   const { user } = useContext(UserContext);
   const steps = ["basicorganizationinfo", "detailledorganizationinfo"];
   const [curStep, setCurStep] = React.useState(steps[0]);
-  const locationInputRef = useRef(null);
-  const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
-
-  const handleSetLocationOptionsOpen = (bool) => {
-    setLocationOptionsOpen(bool);
-  };
-
-  const handleSetLocationErrorMessage = (newMessage) => {
-    handleSetErrorMessages({
-      ...errorMessages,
-      basicOrganizationInfo: newMessage,
-    });
-  };
-
-  const handleSetDetailledErrorMessage = (newMessage) => {
-    handleSetErrorMessages({
-      ...errorMessages,
-      detailledOrganizationInfo: newMessage,
-    });
-  };
 
   const handleBasicInfoSubmit = async (event, values) => {
     event.preventDefault();
+    //TODO: actually check if organization name is available
     try {
-      //Short circuit if there is no parent organization
-      if (values.hasparentorganization && !values.parentOrganization) {
+      if (values.hasparentorganization && !values.parentOrganization)
         handleSetErrorMessages({
-          ...errorMessages,
+          errorMessages,
           basicOrganizationInfo:
             "You have not selected a parent organization. Either untick the sub-organization field or choose/create your parent organization.",
         });
-        return;
-      }
-
-      //short circuit if the location is invalid and we're not in legacy mode
-      if (!legacyModeEnabled && !isLocationValid(values.location)) {
-        indicateWrongLocation(
-          locationInputRef,
-          setLocationOptionsOpen,
-          handleSetLocationErrorMessage
+      else {
+        const resp = await axios.get(
+          process.env.API_URL + "/api/organizations/?search=" + values.organizationname
         );
-        return;
-      }
-      const resp = await axios.get(
-        process.env.API_URL + "/api/organizations/?search=" + values.organizationname
-      );
-      if (resp.data.results && resp.data.results.find((r) => r.name === values.organizationname)) {
-        const org = resp.data.results.find((r) => r.name === values.organizationname);
-        handleSetErrorMessages({
-          errorMessages,
-          basicOrganizationInfo: (
-            <div>
-              An organization with this name already exists. Click{" "}
-              <a href={"/organizations/" + org.url_slug}>here</a> to see it.
-            </div>
-          ),
-        });
-      } else {
-        const location = getLocationValue(values, "location")
-        setOrganizationInfo({
-          ...organizationInfo,
-          name: values.organizationname,
-          parentorganization: values.parentorganizationname,
-          location: parseLocation(location),
-        });
-        setCurStep(steps[1]);
+        if (
+          resp.data.results &&
+          resp.data.results.find((r) => r.name === values.organizationname)
+        ) {
+          const org = resp.data.results.find((r) => r.name === values.organizationname);
+          handleSetErrorMessages({
+            errorMessages,
+            basicOrganizationInfo: (
+              <div>
+                An organization with this name already exists. Click{" "}
+                <a href={"/organizations/" + org.url_slug}>here</a> to see it.
+              </div>
+            ),
+          });
+        } else {
+          setOrganizationInfo({
+            ...organizationInfo,
+            name: values.organizationname,
+            parentorganization: values.parentorganizationname,
+            city: values.city,
+            country: values.country,
+          });
+          setCurStep(steps[1]);
+        }
       }
     } catch (err) {
       console.log(err);
@@ -121,19 +87,12 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     organization_tags:
       'Please choose at least one organization type by clicking the "Add Type" button under the avatar.',
     name: "Please type your organization name under the avatar image",
-    location: "Please specify your location",
+    city: "Please specify your city",
+    country: "Please specify your country",
   };
 
-  const handleDetailledInfoSubmit = (account) => {
+  const handleDetailledInfoSubmit = (event, account) => {
     const organizationToSubmit = parseOrganizationForRequest(account, user, rolesOptions);
-    if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
-      indicateWrongLocation(
-        locationInputRef,
-        setLocationOptionsOpen,
-        handleSetDetailledErrorMessage
-      );
-      return;
-    }
     for (const prop of Object.keys(requiredPropErrors)) {
       if (
         !organizationToSubmit[prop] ||
@@ -163,11 +122,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       })
       .catch(function (error) {
         console.log(error);
-        if (error) console.log(error.response.data);
-        handleSetErrorMessages({
-          errorMessages,
-          detailledOrganizationInfo: error?.response?.data,
-        });
+        if (error) console.log(error.response);
       });
   };
 
@@ -184,9 +139,6 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
           errorMessage={errorMessages.basicOrganizationInfo}
           handleSubmit={handleBasicInfoSubmit}
           organizationInfo={organizationInfo}
-          locationInputRef={locationInputRef}
-          locationOptionsOpen={locationOptionsOpen}
-          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
         />
       </Layout>
     );
@@ -198,9 +150,6 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
           handleSubmit={handleDetailledInfoSubmit}
           organizationInfo={organizationInfo}
           tagOptions={tagOptions}
-          locationInputRef={locationInputRef}
-          locationOptionsOpen={locationOptionsOpen}
-          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
         />
       </WideLayout>
     );
@@ -260,7 +209,8 @@ const parseOrganizationForRequest = (o, user, rolesOptions) => {
     name: o.name,
     background_image: o.background_image,
     image: o.image,
-    location: o.info.location,
+    city: o.info.city,
+    country: o.info.country,
     website: o.info.website,
     short_description: o.info.shortdescription,
     organization_tags: o.types,

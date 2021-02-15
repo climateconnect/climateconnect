@@ -21,8 +21,12 @@ export default function BrowseExplainer() {
     <Container>
       <Typography component="div" className={classes.browseExplainer}>
         <Typography component="h1" className={classes.headline}>
-          Find impactful climate change solutions created by Climate Connect users
+          Find impactful climate change solutions created by Climate Connect users.
         </Typography>
+        Knowing the facts is important but taking action is what matters! The clock is ticking and
+        every tenth of an degree matters.
+        <br /> Get involved with the solutions or spread them to your home town. Contact the{" "}
+        {"solutions'"} creators direcly on the project page to start a conversation!
       </Typography>
     </Container>
   );

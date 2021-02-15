@@ -1,5 +1,3 @@
-from django.conf import settings
-
 from climateconnect_api.models.user import UserProfile
 from climateconnect_api.models.notification import UserNotification, EmailNotification
 from chat_messages.models import Participant
@@ -36,7 +34,7 @@ def create_email_notification(receiver, chat, message_content, sender, notificat
         number_of_participants = Participant.objects.filter(chat=chat, is_active=True).count()
         is_group_chat = number_of_participants > 2
         if is_group_chat:
-            if email_settings['email_on_group_chat_message'] == True and settings.GROUP_MESSAGE_TEMPLATE_ID is not None:
+            if email_settings['email_on_group_chat_message'] == True:
                 send_group_chat_message_notification_email(receiver, message_content, chat.chat_uuid, sender_name, chat.name)
                 email_notification = EmailNotification.objects.create(
                     user=receiver, 
@@ -46,7 +44,7 @@ def create_email_notification(receiver, chat, message_content, sender, notificat
             else:
                 return
         else:
-            if email_settings['email_on_private_chat_message'] == True and settings.PRIVATE_MESSAGE_TEMPLATE_ID is not None:
+            if email_settings['email_on_private_chat_message'] == True:
                 send_private_chat_message_notification_email(receiver, message_content, chat.chat_uuid, sender_name)
                 email_notification = EmailNotification.objects.create(
                     user=receiver, 

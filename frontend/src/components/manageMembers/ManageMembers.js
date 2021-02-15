@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles, IconButton } from "@material-ui/core";
-import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
+import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import MiniProfileInput from "../profile/MiniProfileInput";
 

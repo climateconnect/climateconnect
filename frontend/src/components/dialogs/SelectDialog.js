@@ -50,7 +50,7 @@ export default function SelectDialog({
   };
 
   const handleSelectChange = (event) => {
-    setElement(values.filter((x) => x.name === event.target.value)[0]?.key);
+    setElement(values.filter((x) => x.name === event.target.value)[0].key);
     if (supportAdditionalInfo) {
       const value = values.filter((val) => val.name === event.target.value)[0];
       if (value.additionalInfo.length > 0) {

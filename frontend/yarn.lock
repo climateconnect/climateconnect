@@ -1319,11 +1319,6 @@
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.8.0.tgz#bbbff68978fefdbe68ccb533bc8cbe1d1afb5413"
   integrity sha512-kBJtf7PH6aWwZ6fka3zQ0p6SBYzx4fl1LoZXE2RrnYST9Xljm7WfKJrU4g/Xr3Beg72MLrp1AWNUmuYJTL7Cow==
 
-"@googlemaps/js-api-loader@1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@googlemaps/js-api-loader/-/js-api-loader-1.6.0.tgz#351c904ca31bcc7d961aa115373d5cd411ebee80"
-  integrity sha512-amuilneCf7q5A/jDUE3ml83c9NjW/3DzIqiBDFIKZcraD0JSKbetkEQa5s57Z6QY7jxcequXgoL9CKJUY1xZ5A==
-
 "@hapi/accept@5.0.1":
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/@hapi/accept/-/accept-5.0.1.tgz#068553e867f0f63225a506ed74e899441af53e10"
@@ -1683,26 +1678,6 @@
   integrity sha512-Uv6h1sT+0DrblvIrolFtbvM1FgWm+/sy4B3pvLp67Zys+thcukzS5ekn7HsZFGpWP4Q3fYJCljbWQE/XivMRLw==
   dependencies:
     mkdirp "^1.0.4"
-
-"@react-google-maps/api@^1.13.0":
-  version "1.13.0"
-  resolved "https://registry.yarnpkg.com/@react-google-maps/api/-/api-1.13.0.tgz#9fb25e9f8f0e54d9ed2bb5e5e0cf49bb717db7ab"
-  integrity sha512-mKwXziG5MbOvvcWG53FyZVZ8zjAuPNYkcS/+nYX9STMFNrI96AFq5l/zUn2QifRJnPzE8iO4V1vyMM+Ie9LpGg==
-  dependencies:
-    "@googlemaps/js-api-loader" "1.6.0"
-    "@react-google-maps/infobox" "1.12.1"
-    "@react-google-maps/marker-clusterer" "1.12.1"
-    invariant "2.2.4"
-
-"@react-google-maps/infobox@1.12.1":
-  version "1.12.1"
-  resolved "https://registry.yarnpkg.com/@react-google-maps/infobox/-/infobox-1.12.1.tgz#6c0354b6cfc52c8689f99ee5ce1fb5668fa78697"
-  integrity sha512-tD/xijqRtKK/LNRzuerzuyvybnRaD8SLgCA064len4/enTo1abhQN215ZYqwbTOn7RgYt9qMgNnwoX//u3xoWw==
-
-"@react-google-maps/marker-clusterer@1.12.1":
-  version "1.12.1"
-  resolved "https://registry.yarnpkg.com/@react-google-maps/marker-clusterer/-/marker-clusterer-1.12.1.tgz#fcf8df395a102b56258601c9b85d671dcd03d7cf"
-  integrity sha512-JBSO5VJuouP/boBnSdRDCWq0UKO7jr3HvZVhis3ew+VGJ/BoCPu3lpU0HDsjjulfng+xwqLfVOIzP3QnvBPdCA==
 
 "@sinonjs/commons@^1.7.0":
   version "1.8.1"
@@ -4941,7 +4916,7 @@ internal-slot@^1.0.2:
     has "^1.0.3"
     side-channel "^1.0.2"
 
-invariant@2.2.4, invariant@^2.2.2, invariant@^2.2.4:
+invariant@^2.2.2, invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.4.tgz#610f3c92c9359ce1db616e538008d23ff35158e6"
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==

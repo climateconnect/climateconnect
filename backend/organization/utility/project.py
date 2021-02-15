@@ -1,11 +1,13 @@
-from location.utility import get_location
-from typing import Dict
-from organization.models import Project
+from typing import (Dict, Optional)
+from rest_framework import status
+from rest_framework.response import Response
+from organization.models import (
+    Project, Organization
+)
 from climateconnect_api.models import (Skill,)
+from organization.models import (ProjectStatus, ProjectTags)
 from climateconnect_main.utility.general import get_image_from_data_url
 
-import logging
-logger = logging.getLogger(__name__)
 
 
 def create_new_project(data: Dict) -> Project:
@@ -18,9 +20,6 @@ def create_new_project(data: Dict) -> Project:
     # Add all non required parameters if they exists in the request.
     if 'start_date' in data:
         project.start_date = data['start_date']
-    if 'loc' in data:
-        location = get_location(data['loc'])
-        project.loc = location
     if 'country' in data:
         project.country = data['country']
     if 'city' in data:

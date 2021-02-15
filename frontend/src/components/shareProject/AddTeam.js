@@ -1,6 +1,6 @@
 import React from "react";
 import { Container, IconButton } from "@material-ui/core";
-import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
+import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
 import { makeStyles } from "@material-ui/core/styles";
 import OrganizersContainer from "./OrganizersContainer";
 import BottomNavigation from "../general/BottomNavigation";

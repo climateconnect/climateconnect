@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 import WideLayout from "../src/components/layouts/WideLayout";
 import LandingTopBox from "../src/components/landingPage/LandingTopBox";
@@ -87,7 +87,7 @@ export default function Index({ projects, organizations, hubs }) {
     }
   });
 
-  const contentRef = useRef(null);
+  const contentRef = React.useRef(null);
 
   const scrollToContent = () => contentRef.current.scrollIntoView({ behavior: "smooth" });
 
@@ -188,7 +188,7 @@ const getOrganizations = async (token) => {
 const parseProjects = (projects) => {
   return projects.map((project) => ({
     ...project,
-    location: project.location,
+    location: project.city + ", " + project.country,
   }));
 };
 
@@ -197,7 +197,9 @@ const parseOrganizations = (organizations) => {
     ...organization,
     types: organization.types.map((type) => type.organization_tag),
     info: {
-      location: organization.location,
+      location: organization.city
+        ? organization.city + ", " + organization.country
+        : organization.country,
     },
   }));
 };

@@ -11,7 +11,7 @@ const projectOverviewStyles = (theme) => {
     },
     projectInfoEl: {
       textAlign: "left",
-      marginTop: theme.spacing(1),
+      paddingTop: theme.spacing(1),
     },
     icon: {
       verticalAlign: "bottom",

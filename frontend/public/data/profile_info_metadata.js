@@ -1,3 +1,4 @@
+import countries from "./countries.json";
 import PlaceIcon from "@material-ui/icons/Place";
 
 export default {
@@ -30,6 +31,21 @@ export default {
     maxLength: 240,
     linkify: true,
   },
+  city: {
+    name: "City",
+    key: "city",
+    missingMessage: "This user hasn't specified their city yet.",
+    type: "location",
+    order: 1,
+  },
+  country: {
+    name: "Country",
+    key: "country",
+    missingMessage: "This user hasn't specified their country yet.",
+    type: "select",
+    order: 0,
+    options: countries.map((c) => ({ key: c.toLowerCase(), name: c })),
+  },
   location: {
     name: "Location",
     key: "location",
@@ -37,21 +53,5 @@ export default {
     missingMessage: "This user hasn't specified their location yet.",
     type: "location",
     weight: 0,
-    legacy: {
-      city: {
-        icon: PlaceIcon,
-        iconName: "PlaceIcon",
-        name: "City",
-        type: "text",
-        key: "city",
-      },
-      country: {
-        icon: PlaceIcon,
-        iconName: "PlaceIcon",
-        name: "Country",
-        key: "country",
-        type: "text",
-      },
-    }
   },
 };
