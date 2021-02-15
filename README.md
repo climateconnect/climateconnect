@@ -47,6 +47,7 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
 #### First Time Setup
 
 1.  Go to backend directory: `cd backend`
+1.  create 2 new empty directories that will contain static and media files. `mkdir static & mkdir media` 
 1.  Run `pip install -r requirements.txt` to install all backend libraries.
 1.  Create `.backend_env` to set environment variables.
     - You can find up-to-date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md).
