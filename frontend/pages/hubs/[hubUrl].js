@@ -96,38 +96,10 @@ export default function Hub({
     }
   };
 
-  /**
-   * For example when filtering by location="San Francisco", the url should
-   * automatically change to active filters. This enables filtered searches
-   * to persist, so that they can be easily shareable to other users.
-   *
-   * Builds a URL and updates window state. E.g. something like:
-   * http://localhost:3000/browse?&country=Austria&city=vienna&
-   */
-  const persistFiltersInURL = (activeFilters) => {
-    // Build query params, include the `?` but ignore
-    // the standalone 'ampersand' case when no active filters are present.
-    const filteredParams = buildUrlEndingFromFilters(activeFilters);
-    const filteredQueryParams = filteredParams !== "&" ? `?${filteredParams}` : "";
-
-    // Build a URL with properties. E.g., /browse?...
-    const origin = window?.location?.origin;
-    const pathname = window?.location?.pathname;
-    const newUrl = `${origin}${pathname}${filteredQueryParams}`;
-
-    // Only push state if there's a URL change
-    if (newUrl !== window?.location?.href) {
-      window.history.pushState({}, "", newUrl);
-    }
-  };
-
   const applyNewFilters = async (type, newFilters, closeFilters, oldUrlEnding) => {
     if (filters === newFilters) {
       return;
     }
-
-    // Save these filters as query params to the URL
-    persistFiltersInURL(newFilters);
 
     setFilters({ ...filters, [type]: newFilters });
     const newUrlEnding = buildUrlEndingFromFilters(newFilters);
