@@ -1,9 +1,9 @@
-import { buildUrlEndingFromFilters } from "../../public/lib/urlParsing";
+import { encodeQueryParamsFromFilters } from "../../public/lib/urlParsing";
 
 describe.only("lib", () => {
-  describe("buildUrlEndingFromFilters", () => {
+  describe("encodeQueryParamsFromFilters", () => {
     it("doesn't build an empty filter", () => {
-      expect(buildUrlEndingFromFilters({})).toBeUndefined;
+      expect(encodeQueryParamsFromFilters({})).toBeUndefined;
     });
 
     it("builds basic query param", () => {
@@ -16,7 +16,7 @@ describe.only("lib", () => {
         collaboration: "",
         skills: ["Crafts", "Storytelling"],
       };
-      const queryParam = buildUrlEndingFromFilters(stubFilters);
+      const queryParam = encodeQueryParamsFromFilters(stubFilters);
       expect(queryParam).toBe(
         "&country%3DAfghanistan%26status%3DIn%20Progress%26skills%3DCrafts%2CStorytelling%26"
       );
@@ -26,7 +26,7 @@ describe.only("lib", () => {
       const stubFilters = {
         category: ["Gastronomy/Catering/Test"],
       };
-      const queryParam = buildUrlEndingFromFilters(stubFilters);
+      const queryParam = encodeQueryParamsFromFilters(stubFilters);
       expect(queryParam).toBe("&category%3DGastronomy%2FCatering%2FTest%26");
     });
 
@@ -34,7 +34,7 @@ describe.only("lib", () => {
       const stubFilters = {
         category: ["Gastronomy/Catering/Test&More"],
       };
-      const queryParam = buildUrlEndingFromFilters(stubFilters);
+      const queryParam = encodeQueryParamsFromFilters(stubFilters);
       expect(queryParam).toBe("&category%3DGastronomy%2FCatering%2FTest%26More%26");
     });
   });

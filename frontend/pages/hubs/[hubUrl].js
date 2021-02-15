@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import NextCookies from "next-cookies";
 
-import { buildUrlEndingFromFilters } from "../../public/lib/urlParsing";
+import { encodeQueryParamsFromFilters } from "../../public/lib/urlParsing";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import HubHeaderImage from "../../src/components/hub/HubHeaderImage";
@@ -102,7 +102,7 @@ export default function Hub({
     }
 
     setFilters({ ...filters, [type]: newFilters });
-    const newUrlEnding = buildUrlEndingFromFilters(newFilters);
+    const newUrlEnding = encodeQueryParamsFromFilters(newFilters);
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }

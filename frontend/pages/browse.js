@@ -10,7 +10,7 @@ import {
   membersWithAdditionalInfo,
 } from "../public/lib/getOptions";
 
-import { buildUrlEndingFromFilters } from "../public/lib/urlParsing";
+import { encodeQueryParamsFromFilters } from "../public/lib/urlParsing";
 import tokenConfig from "../public/config/tokenConfig";
 
 import WideLayout from "../src/components/layouts/WideLayout";
@@ -41,7 +41,7 @@ export default function Browse({
     }
 
     setFilters({ ...filters, [type]: newFilters });
-    const newUrlEnding = buildUrlEndingFromFilters(newFilters);
+    const newUrlEnding = encodeQueryParamsFromFilters(newFilters);
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }

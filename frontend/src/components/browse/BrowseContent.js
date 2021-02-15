@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Container, Tabs, Tab, Divider, useMediaQuery, makeStyles } from "@material-ui/core";
 
-import { buildUrlEndingFromFilters } from "../../../public/lib/urlParsing";
+import { encodeQueryParamsFromFilters } from "../../../public/lib/urlParsing";
 import FilterSection from "../indexPage/FilterSection";
 import FilterContent from "../filter/FilterContent";
 import ProjectPreviews from "../project/ProjectPreviews";
@@ -151,10 +151,8 @@ export default function BrowseContent({
    * http://localhost:3000/browse?&country=Austria&city=vienna&
    */
   const persistFiltersInURL = (activeFilters) => {
-    // Build query params, include the `?` but ignore
-    // the standalone 'ampersand' case when no active filters are present.
-    const filteredParams = buildUrlEndingFromFilters(activeFilters);
-    const filteredQueryParams = filteredParams !== "&" ? `?${filteredParams}` : "";
+    const filteredParams = encodeQueryParamsFromFilters(activeFilters);
+    const filteredQueryParams = `?${filteredParams}`;
 
     // Build a URL with properties. E.g., /browse?...
     const origin = window?.location?.origin;

@@ -1,9 +1,9 @@
 /**
- * Used to build query params to the
- * end of a URL. Originally used in places like
- * applying filters from search categories as query params.
+ * Used to build query params to the end of a URL.
+ * Originally used in places like applying filters from
+ * search categories.
  */
-const buildUrlEndingFromFilters = (filters) => {
+const encodeQueryParamsFromFilters = (filters) => {
   if (!filters || Object.entries(filters).length === 0) {
     return;
   }
@@ -27,4 +27,4 @@ const buildUrlEndingFromFilters = (filters) => {
   return queryParamFragment;
 };
 
-export { buildUrlEndingFromFilters };
+export { encodeQueryParamsFromFilters };
