@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+from climateconnect_main.utility.general import get_allowed_hosts
 import os
 from dotenv import find_dotenv, load_dotenv
 from datetime import timedelta
@@ -31,14 +32,7 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 # DEBUG = True
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    'api.climateconnect.earth',
-    'climateconnect-backend.azurewebsites.net',
-    'climateconnect-frontend.azurewebsites.net',
-    'api.cc-test-domain.com'
-]
+ALLOWED_HOSTS = get_allowed_hosts(env('ALLOWED_HOSTS'))
 
 AUTO_VERIFY = env('AUTO_VERIFY')
 
