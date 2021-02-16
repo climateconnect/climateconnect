@@ -1,7 +1,5 @@
 import React from "react";
 import { makeStyles, Typography, Link, Button, Container } from "@material-ui/core";
-import FeedbackButton from "../feedback/FeedbackButton";
-
 import InstagramIcon from "@material-ui/icons/Instagram";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import TwitterIcon from "@material-ui/icons/Twitter";
@@ -9,6 +7,8 @@ import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import FavoriteIcon from "@material-ui/icons/Favorite";
+
+import FeedbackButton from "../feedback/FeedbackButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,6 +38,8 @@ const useStyles = makeStyles((theme) => ({
   },
   footerLink: {
     color: "white",
+    display: "block",
+    "margin-bottom": theme.spacing(1),
     "&:hover": {
       color: theme.palette.primary.main,
     },
@@ -52,9 +54,6 @@ const useStyles = makeStyles((theme) => ({
   },
   links: {
     height: 110,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
   },
   newsLetterBox: {
     maxWidth: 250,
@@ -203,10 +202,22 @@ const SiteLinks = () => {
         <div className={classes.links}>
           <FooterLink href="/faq">FAQ</FooterLink>
           <FooterLink href="/donate">Donate</FooterLink>
+          <FooterLink href="/about">About</FooterLink>
+        </div>
+      </div>
+
+      <div className={classes.linksSection}>
+        <Typography color="primary" component="h3" className={classes.headline}>
+          Contact
+        </Typography>
+        <div className={classes.links}>
+          <FooterLink href="mailto:contact@climateconnect.earth">
+            contact@climateconnect.earth
+          </FooterLink>
+          <FooterLink href="tel:+4915730101056">+4915730101056</FooterLink>
           <FeedbackButton justLink>
             <Typography className={classes.li}>Leave feedback</Typography>
           </FeedbackButton>
-          <FooterLink href="/about">About</FooterLink>
         </div>
       </div>
 
@@ -227,7 +238,6 @@ const SiteLinks = () => {
           Legal
         </Typography>
         <div className={classes.links}>
-          <FooterLink href="mailto:contact@climateconnect.earth">Send email</FooterLink>
           <FooterLink href="/imprint">Imprint</FooterLink>
           <FooterLink href="/privacy">Privacy</FooterLink>
           <FooterLink href="/terms">Terms</FooterLink>
