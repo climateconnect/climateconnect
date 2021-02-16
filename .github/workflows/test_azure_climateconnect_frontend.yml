@@ -43,6 +43,8 @@ jobs:
         cd frontend
         yarn --production
         yarn build
+      env:
+        ENVIRONMENT: 'production' 
     - name: 'Deploy to Azure WebApp'
       uses: azure/webapps-deploy@v2
       with:
