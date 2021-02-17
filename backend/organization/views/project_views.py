@@ -1,3 +1,6 @@
+from django.contrib.gis.geos.geometry import GEOSGeometry
+from location.utility import get_location, get_location_ids_in_range
+from location.models import Location
 from hubs.models.hub import Hub
 from dateutil.parser import parse
 from rest_framework.generics import ListAPIView,RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
@@ -16,7 +19,7 @@ from organization.models import (
     ProjectStatus, ProjectCollaborators, ProjectFollower, OrganizationTags, OrganizationTagging
 )
 from organization.serializers.project import (
-    ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer,
+    EditProjectSerializer, ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer,
  InsertProjectMemberSerializer, ProjectSitemapEntrySerializer, ProjectFollowerSerializer
 )
 from organization.serializers.status import ProjectStatusSerializer
@@ -56,14 +59,13 @@ class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter, DjangoFilterBackend, ProjectsOrderingFilter]
     search_fields = ['url_slug']
-    filterset_fields = ['collaborators_welcome', 'country', 'city']
+    filterset_fields = ['collaborators_welcome']
     pagination_class = ProjectsPagination
     serializer_class = ProjectStubSerializer
     queryset = Project.objects.filter(is_draft=False,is_active=True)
 
     def get_queryset(self):
         projects = Project.objects.filter(is_draft=False,is_active=True)
-
         if 'hub' in self.request.query_params:
             project_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
             project_category_ids = list(map(lambda c: c.id, project_category))
@@ -72,7 +74,6 @@ class ListProjectsView(ListAPIView):
             projects = projects.filter(
                 tag_project__project_tag__in=project_tags_with_children
             ).distinct()
-
 
         if 'collaboration' in self.request.query_params:
             collaborators_welcome = self.request.query_params.get('collaboration')
@@ -109,8 +110,32 @@ class ListProjectsView(ListAPIView):
             organization_taggings = OrganizationTagging.objects.filter(organization_tag__in=organization_types)
             project_parents = ProjectParents.objects.filter(parent_organization__tag_organization__in=organization_taggings)
             projects = projects.filter(project_parent__in=project_parents)
+        
+        if 'place' in self.request.query_params and 'osm' in self.request.query_params:
+            location_ids_in_range = get_location_ids_in_range(self.request.query_params)
+            projects = projects.filter(loc__in=location_ids_in_range)
+        
+        if 'country' and 'city' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                country=self.request.query_params.get('country'),
+                city=self.request.query_params.get('city')
+            )
+            projects = projects.filter(loc__in=location_ids)
+
+        if 'city' in self.request.query_params and not 'country' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                city=self.request.query_params.get('city')
+            )
+            projects = projects.filter(loc__in=location_ids)
+        
+        if 'country' in self.request.query_params and not 'city' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                country=self.request.query_params.get('country')
+            )
+            projects = projects.filter(loc__in=location_ids)
 
         return projects
+
 
 class CreateProjectView(APIView):
     permission_classes = [IsAuthenticated]
@@ -124,7 +149,7 @@ class CreateProjectView(APIView):
         required_params = [
             'name', 'status', 'short_description',
             'collaborators_welcome', 'team_members',
-            'project_tags', 'city', 'country', 'image'
+            'project_tags', 'loc', 'image'
         ]
         for param in required_params:
             if param not in request.data:
@@ -211,7 +236,10 @@ class ProjectAPIView(APIView):
             project = Project.objects.get(url_slug=str(url_slug))
         except Project.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
-        serializer = ProjectSerializer(project, many=False)
+        if('edit_view' in request.query_params):
+            serializer = EditProjectSerializer(project, many=False)
+        else:
+            serializer = ProjectSerializer(project, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, url_slug, format=None):
@@ -219,6 +247,13 @@ class ProjectAPIView(APIView):
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Author: Dip
+        # Code formatting here. So fields are just pass through so combing them and using setattr method insted.
+        pass_through_params = ['collaborators_welcome', 'description', 'helpful_connections','short_description', 'website']
+        for param in pass_through_params:
+            if param in request.data:
+                setattr(project, param, request.data[param])
 
         if 'name' in request.data and request.data['name'] != project.name:
             project.name = request.data['name']
@@ -274,22 +309,13 @@ class ProjectAPIView(APIView):
             project.start_date = parse(request.data['start_date'])
         if 'end_date' in request.data:
             project.end_date = parse(request.data['end_date'])
-        if 'short_description' in request.data:
-            project.short_description = request.data['short_description']
-        if 'description' in request.data:
-            project.description = request.data['description']
-        if 'country' in request.data:
-            project.country = request.data['country']
-        if 'city' in request.data:
-            project.city = request.data['city']
+        if 'location' in request.data:
+            project.location = request.data['location']
+        if 'loc' in request.data:
+            location = get_location(request.data['loc'])
+            project.loc = location
         if 'is_draft' in request.data:
             project.is_draft = False
-        if 'website' in request.data:
-            project.website = request.data['website']
-        if 'collaborators_welcome' in request.data:
-            project.collaborators_welcome = request.data['collaborators_welcome']
-        if 'helpful_connections' in request.data:
-            project.helpful_connections = request.data['helpful_connections']
         if 'is_personal_project' in request.data:
             if request.data['is_personal_project'] == True:
                 project_parents = ProjectParents.objects.get(project=project)
@@ -300,7 +326,9 @@ class ProjectAPIView(APIView):
             try:
                 organization = Organization.objects.get(id=request.data['parent_organization'])
             except Organization.DoesNotExist:
+                organization = None
                 logger.error("Passed parent organization id {} does not exist")
+            
             project_parents.parent_organization = organization
             project_parents.save()
 
@@ -409,6 +437,7 @@ class UpdateProjectMemberView(RetrieveUpdateDestroyAPIView):
         serializer.save()
         return serializer.data
 
+
 class ChangeProjectCreator(APIView):
     permission_classes = [ChangeProjectCreatorPermission]
 
@@ -491,6 +520,7 @@ class ListProjectStatus(ListAPIView):
     def get_queryset(self):
         return ProjectStatus.objects.all()
 
+
 class SetFollowView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -526,6 +556,7 @@ class SetFollowView(APIView):
                 'message': 'Invalid value for variable "following"'
             }, status=status.HTTP_400_BAD_REQUEST)
 
+
 class IsUserFollowing(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -536,6 +567,7 @@ class IsUserFollowing(APIView):
             raise NotFound(detail="Project not found:"+url_slug, code=status.HTTP_404_NOT_FOUND)
         is_following = ProjectFollower.objects.filter(user=request.user, project=project).exists()
         return Response({'is_following': is_following}, status=status.HTTP_200_OK)
+
 
 class ProjectCommentView(APIView):
     permission_classes = [IsAuthenticated]
@@ -580,6 +612,7 @@ class ProjectCommentView(APIView):
         comment.delete()
         return Response(status=status.HTTP_200_OK)
 
+
 class ListFeaturedProjects(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectStubSerializer
@@ -587,12 +620,14 @@ class ListFeaturedProjects(ListAPIView):
     def get_queryset(self):
         return Project.objects.filter(rating__lte=99, is_draft=False,is_active=True)[0:4]
 
+
 class ListProjectsForSitemap(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectSitemapEntrySerializer
 
     def get_queryset(self):
         return Project.objects.filter(is_draft=False,is_active=True)
+
 
 class ListProjectFollowersView(ListAPIView):
     permission_classes = [IsAuthenticated]
