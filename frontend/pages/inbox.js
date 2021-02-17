@@ -9,7 +9,7 @@ import AddIcon from "@material-ui/icons/Add";
 import tokenConfig from "../public/config/tokenConfig";
 import UserContext from "../src/components/context/UserContext";
 import LoadingContainer from "../src/components/general/LoadingContainer";
-import AutoCompleteSearchBar from "../src/components/general/AutoCompleteSearchBar";
+import AutoCompleteSearchBar from "../src/components/search/AutoCompleteSearchBar";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import MiniProfilePreview from "../src/components/profile/MiniProfilePreview";
 import Router from "next/router";

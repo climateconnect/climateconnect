@@ -19,13 +19,18 @@ const useStyles = makeStyles((theme) => ({
   }),
   alert: {
     textAlign: "center",
-    maxWidth: 1280,
     margin: "0 auto",
+    zIndex: 100,
+    maxWidth: 1280,
   },
   alertFixed: {
     top: 0,
     position: "fixed",
     width: "100%",
+    [theme.breakpoints.up("lg")]: {
+      left: "50%",
+      marginLeft: -640,
+    },
   },
 }));
 
@@ -61,6 +66,9 @@ export default function WideLayout({
       setInitialMessageType("error");
     }
   }, []);
+  useEffect(() => {
+    setAlertOpen(true);
+  }, [message]);
   return (
     <LayoutWrapper
       title={title}
