@@ -1,7 +1,5 @@
 import React from "react";
 import { makeStyles, Typography, Link, Button, Container } from "@material-ui/core";
-import FeedbackButton from "../feedback/FeedbackButton";
-
 import InstagramIcon from "@material-ui/icons/Instagram";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import TwitterIcon from "@material-ui/icons/Twitter";
@@ -9,6 +7,8 @@ import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import FavoriteIcon from "@material-ui/icons/Favorite";
+
+import FeedbackButton from "../feedback/FeedbackButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,11 +27,21 @@ const useStyles = makeStyles((theme) => ({
       justifyContent: "center",
     },
   },
-  li: {
+  newsletterBlurb: {
     color: "white",
+  },
+  li: {
     fontWeight: 600,
     [theme.breakpoints.down("md")]: {
       fontSize: 14,
+    },
+  },
+  footerLink: {
+    color: "white",
+    display: "block",
+    "margin-bottom": theme.spacing(1),
+    "&:hover": {
+      color: theme.palette.primary.main,
     },
   },
   headline: {
@@ -44,9 +54,6 @@ const useStyles = makeStyles((theme) => ({
   },
   links: {
     height: 110,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
   },
   newsLetterBox: {
     maxWidth: 250,
@@ -85,9 +92,9 @@ const useStyles = makeStyles((theme) => ({
   },
   socialIcon: {
     fontSize: 30,
-    color: "black",
+    color: theme.palette.primary.main,
     "&:hover": {
-      color: "blue",
+      color: theme.palette.secondary.main,
     },
   },
   socialIconsContainer: {
@@ -125,6 +132,15 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+
+const FooterLink = ({ children, href }) => {
+  const classes = useStyles();
+  return (
+    <Link underline="none" href={href} className={classes.footerLink}>
+      <Typography className={classes.li}>{children}</Typography>
+    </Link>
+  );
+};
 
 export default function LargeFooter({ className }) {
   const classes = useStyles();
@@ -184,70 +200,55 @@ const SiteLinks = () => {
           General
         </Typography>
         <div className={classes.links}>
-          <Link underline="none" href="/faq">
-            <Typography className={classes.li}>FAQ</Typography>
-          </Link>
-          <Link underline="none" href="/donate">
-            <Typography className={classes.li}>Donate</Typography>
-          </Link>
-          <Link underline="none" href="/about">
-            <Typography className={classes.li}>About</Typography>
-          </Link>
+          <FooterLink href="/faq">FAQ</FooterLink>
+          <FooterLink href="/donate">Donate</FooterLink>
+          <FooterLink href="/about">About</FooterLink>
         </div>
       </div>
+
       <div className={classes.linksSection}>
         <Typography color="primary" component="h3" className={classes.headline}>
           Contact
         </Typography>
         <div className={classes.links}>
-          <Link underline="none" href="mailto:contact@climateconnect.earth">
-            <Typography className={classes.li}>contact@climateconnect.earth</Typography>
-          </Link>
-          <Link underline="none" href="tel:+4915730101056">
-            <Typography className={classes.li}>+4915730101056</Typography>
-          </Link>
+          <FooterLink href="mailto:contact@climateconnect.earth">
+            contact@climateconnect.earth
+          </FooterLink>
+          <FooterLink href="tel:+4915730101056">+4915730101056</FooterLink>
           <FeedbackButton justLink>
             <Typography className={classes.li}>Leave feedback</Typography>
           </FeedbackButton>
         </div>
       </div>
+
       <div className={classes.linksSection}>
         <Typography color="primary" component="h3" className={classes.headline}>
           Browse
         </Typography>
         <div className={classes.links}>
-          <Link underline="none" href="/browse">
-            <Typography className={classes.li}>Projects</Typography>
-          </Link>
-          <Link underline="none" href="/browse#organizations">
-            <Typography className={classes.li}>Organizations</Typography>
-          </Link>
-          <Link underline="none" href="/browse#members">
-            <Typography className={classes.li}>Members</Typography>
-          </Link>
+          <FooterLink href="/browse">Projects</FooterLink>
+          <FooterLink href="/browse#organizations">Organizations</FooterLink>
+          <FooterLink href="/browse#members">Members</FooterLink>
+          <FooterLink href="/hubs">Hubs</FooterLink>
         </div>
       </div>
+
       <div className={classes.linksSection}>
         <Typography color="primary" component="h3" className={classes.headline}>
           Legal
         </Typography>
         <div className={classes.links}>
-          <Link underline="none" href="/imprint">
-            <Typography className={classes.li}>Imprint</Typography>
-          </Link>
-          <Link underline="none" href="/privacy">
-            <Typography className={classes.li}>Privacy</Typography>
-          </Link>
-          <Link underline="none" href="/terms">
-            <Typography className={classes.li}>Terms</Typography>
-          </Link>
+          <FooterLink href="/imprint">Imprint</FooterLink>
+          <FooterLink href="/privacy">Privacy</FooterLink>
+          <FooterLink href="/terms">Terms</FooterLink>
         </div>
       </div>
+
       <div className={`${classes.newsLetterBox} ${classes.linksSection}`}>
         <Typography color="primary" component="h3" className={classes.headline}>
           Newsletter
         </Typography>
-        <Typography className={classes.li}>
+        <Typography className={`${classes.li} ${classes.newsletterBlurb}`}>
           Sign up to get updates about Climate Connect and a summary of highlight projects every
           month!
         </Typography>
