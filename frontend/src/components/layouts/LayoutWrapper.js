@@ -36,6 +36,7 @@ export default function LayoutWrapper({
   noFeedbackButton,
   noSpaceForFooter,
   description,
+  keywords,
 }) {
   const classes = useStyles();
   const [initialized, setInitialized] = React.useState(false);
@@ -53,6 +54,8 @@ export default function LayoutWrapper({
   });
   const defaultDescription =
     "Free and non-profit climate action platform. Share, find and work on impactful, innovative and inspiring solutions to reduce and stop global warming. Join #teamclimate now!";
+  const defaultKeywords = 
+  "Climate Connect, Climate Change Awareness, Climate Change Solutions, Climate Action Platform, Climate Change Community, Connect Climate Action, Climate Action Network, How to Stop Climate Change, Sustainability";
   return (
     <>
       <Head>
@@ -70,6 +73,7 @@ export default function LayoutWrapper({
         <meta property="og:type" content="website" />
 
         <meta name="description" content={description ? description : defaultDescription} />
+        <meta name="keywords" content={keywords ? keywords : defaultKeywords} />
       </Head>
       {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
       <ThemeProvider theme={theme}>

@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
 export default function WideLayout({
   children,
   title,
+  keywords,
   message,
   messageType,
   isLoading,
@@ -64,6 +65,7 @@ export default function WideLayout({
   return (
     <LayoutWrapper
       title={title}
+      keywords={keywords}
       noFeedbackButton={noFeedbackButton}
       noSpaceForFooter={noSpaceBottom}
       description={description}
