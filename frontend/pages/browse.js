@@ -20,6 +20,7 @@ import TopOfPage from "../src/components/hooks/TopOfPage";
 import BrowseContent from "../src/components/browse/BrowseContent";
 import { parseData } from "../public/lib/parsingOperations";
 import HubsSubHeader from "../src/components/indexPage/HubsSubHeader";
+import { buildUrlEndingFromFilters } from "../public/lib/filterOperations";
 
 export default function Browse({
   projectsObject,
@@ -34,18 +35,19 @@ export default function Browse({
     members: {},
     organizations: {},
   });
+  const [errorMessage, setErrorMessage] = useState("");
 
   const applyNewFilters = async (type, newFilters, closeFilters, oldUrlEnding) => {
     if (filters === newFilters) {
       return;
     }
-
+    //todo: throw error if user didn't choose a location from the list
     setFilters({ ...filters, [type]: newFilters });
     const newUrlEnding = encodeQueryParamsFromFilters(newFilters);
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }
-
+    setErrorMessage(null);
     try {
       const filteredItemsObject = await getDataFromServer({
         type: type,
@@ -121,7 +123,9 @@ export default function Browse({
   });
   const atTopOfPage = TopOfPage({ initTopOfPage: true });
   const showOnScrollUp = isScrollingUp && !atTopOfPage;
-
+  const handleSetErrorMessage = (newMessage) => {
+    setErrorMessage(newMessage);
+  };
   return (
     <>
       <WideLayout
@@ -139,6 +143,9 @@ export default function Browse({
           initialOrganizations={organizationsObject}
           initialProjects={projectsObject}
           loadMoreData={loadMoreData}
+          applySearch={applySearch}
+          handleSetErrorMessage={handleSetErrorMessage}
+          errorMessage={errorMessage}
         />
       </WideLayout>
     </>

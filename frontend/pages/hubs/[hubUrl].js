@@ -24,6 +24,7 @@ import { makeStyles, Typography } from "@material-ui/core";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
 import FashionDescription from "../../src/components/hub/description/FashionDescription";
+import { buildUrlEndingFromFilters } from "../../public/lib/filterOperations";
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -65,6 +66,10 @@ export default function Hub({
     members: {},
     organizations: {},
   });
+  const [errorMessage, setErrorMessage] = useState("");
+  const handleSetErrorMessage = (newMessage) => {
+    setErrorMessage(newMessage);
+  };
   const contentRef = useRef(null);
   const scrollToSolutions = () => contentRef.current.scrollIntoView({ behavior: "smooth" });
 
@@ -106,6 +111,7 @@ export default function Hub({
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }
+    handleSetErrorMessage("");
     try {
       const filteredItemsObject = await getDataFromServer({
         type: type,
@@ -180,11 +186,8 @@ export default function Hub({
             applyNewFilters={applyNewFilters}
             applySearch={applySearch}
             customSearchBarLabels={customSearchBarLabels}
-            filterChoices={filterChoices}
-            hideMembers
-            initialOrganizations={initialOrganizations}
-            initialProjects={initialProjects}
-            loadMoreData={loadMoreData}
+            handleSetErrorMessage={handleSetErrorMessage}
+            errorMessage={errorMessage}
           />
         </div>
       </div>

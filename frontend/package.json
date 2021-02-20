@@ -33,6 +33,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/pickers": "^3.2.10",
+    "@react-google-maps/api": "^1.13.0",
     "@zeit/next-css": "^1.0.1",
     "axios": "^0.21.1",
     "browser-image-compression": "^1.0.12",
