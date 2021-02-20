@@ -23,7 +23,6 @@ export default function ProfilePreviews({
   showAdditionalInfo,
 }) {
   const classes = useStyles();
-
   const toProfilePreviews = (profiles) =>
     profiles.map((p) => (
       <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />

@@ -21,7 +21,7 @@ click-didyoumean==0.0.3
 click-plugins==1.1.1
 click-repl==0.1.6
 constantly==15.1.0
-cryptography==3.2
+cryptography==3.3.2
 daphne==2.5.0
 Django==2.2.13
 django-cors-headers==3.2.1

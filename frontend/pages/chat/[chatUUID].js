@@ -29,8 +29,8 @@ export default function Chat({
     nextLink: nextLink,
     hasMore: hasMore,
   });
-  const [errorMessage, setErrorMessage] = React.useState("")
-  const [dialogOpen, setDialogOpen] = React.useState(false)
+  const [errorMessage, setErrorMessage] = React.useState("");
+  const [dialogOpen, setDialogOpen] = React.useState(false);
   const handleChatWindowClose = (e) => {
     if (state.messages.filter((m) => m.unconfirmed).length > 0) {
       e.preventDefault();
@@ -155,34 +155,32 @@ export default function Chat({
     }
   };
 
-  const requestLeaveChat = ()  => {
-    setDialogOpen(true)
-  }
+  const requestLeaveChat = () => {
+    setDialogOpen(true);
+  };
 
   const onDialogClose = async (confirmed) => {
-    if(confirmed)
-      await leaveChat()
-    setDialogOpen(false)
-  }
+    if (confirmed) await leaveChat();
+    setDialogOpen(false);
+  };
 
   const leaveChat = async () => {
-    if(!title)
-      setErrorMessage("You can only leave group chats")
-    try{
+    if (!title) setErrorMessage("You can only leave group chats");
+    try {
       const res = await axios.post(
         process.env.API_URL + "/api/chat/" + chatUUID + "/leave/",
         {},
         tokenConfig(token)
-      )
-      console.log(res)
+      );
+      console.log(res);
       redirect("/inbox", {
-        message: `You successfully left the group chat ${title}`
-      })
-    } catch(e) {
-      console.log(e.response.data.detail)
-      setErrorMessage(e?.response?.data?.detail)
+        message: `You successfully left the group chat ${title}`,
+      });
+    } catch (e) {
+      console.log(e.response.data.detail);
+      setErrorMessage(e?.response?.data?.detail);
     }
-  }
+  };
 
   return (
     <FixedHeightLayout
@@ -214,7 +212,7 @@ export default function Chat({
           leaveChat={requestLeaveChat}
         />
       ) : (
-        <PageNotFound itemName="Chat" returnText="Return to inbox" returnLink="/inbox"/>
+        <PageNotFound itemName="Chat" returnText="Return to inbox" returnLink="/inbox" />
       )}
       <ConfirmDialog
         open={dialogOpen}
@@ -241,8 +239,8 @@ Chat.getInitialProps = async (ctx) => {
   ]);
   if (!chat) {
     return {
-      chat_id: null
-    }
+      chat_id: null,
+    };
   }
   return {
     token: token,
@@ -276,8 +274,8 @@ async function getChat(chat_uuid, token) {
       title: resp.data.name,
       id: resp.data.id,
     };
-  } catch(e) {
-    console.log(e?.response)
+  } catch (e) {
+    console.log(e?.response);
   }
 }
 

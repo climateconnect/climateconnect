@@ -298,13 +298,18 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
           text={
             <>
               <Typography>
-                We are an official non-profit company registered in Germany (Climate Connect gUG (haftungsbeschränkt).
-                This means we can issue tax deductible donations receipts. For german citizens with accumulated donations
-                of less than 300€ per year a simplified proof of grant is sufficient. You can find a document explaining
-                a simplified proof of grant and confirming our nonprofit status{" "}
-                <Link target="_blank" href="/documents/nonprofit_status_confirmation.pdf">here (PDF in german language)</Link>.<br />
+                We are an official non-profit company registered in Germany (Climate Connect gUG
+                (haftungsbeschränkt). This means we can issue tax deductible donations receipts. For
+                german citizens with accumulated donations of less than 300€ per year a simplified
+                proof of grant is sufficient. You can find a document explaining a simplified proof
+                of grant and confirming our nonprofit status{" "}
+                <Link target="_blank" href="/documents/nonprofit_status_confirmation.pdf">
+                  here (PDF in german language)
+                </Link>
+                .<br />
                 For donors who donate over 300€ per year we issue a donation receipt.{" "}
-                <Link href="mailto:contact@climateconnect.earth">Contact us</Link> if you need any other documents.
+                <Link href="mailto:contact@climateconnect.earth">Contact us</Link> if you need any
+                other documents.
               </Typography>
             </>
           }

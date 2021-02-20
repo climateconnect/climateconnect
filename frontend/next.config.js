@@ -14,6 +14,7 @@ module.exports = {
     "LATEST_NEWSLETTER_LINK",
     "SOCKET_URL",
     "LETS_ENCRYPT_FILE_CONTENT",
+    "ENABLE_LEGACY_LOCATION_FORMAT",
   ]),
 
   exportPathMap: async function (defaultPathMap) {

@@ -45,8 +45,12 @@ export default function EditProjectPage({
     ...project,
     status: statusOptions.find((s) => s.name === project.status),
   };
+  const [errorMessage, setErrorMessage] = React.useState("");
   const { user } = useContext(UserContext);
 
+  const handleSetErrorMessage = (newErrorMessage) => {
+    setErrorMessage(newErrorMessage);
+  };
   const handleSetProject = (newProject) => {
     setCurProject({ ...newProject });
   };
@@ -89,7 +93,13 @@ export default function EditProjectPage({
   else {
     const user_role = members.find((m) => m.user && m.user.id === user.id).role;
     return (
-      <WideLayout className={classes.root} title={"Edit Solution " + project.name} hideHeadline>
+      <WideLayout
+        className={classes.root}
+        title={"Edit Solution " + project.name}
+        hideHeadline
+        message={errorMessage}
+        messageType={errorMessage && "error"}
+      >
         <EditProjectRoot
           oldProject={project}
           project={curProject}
@@ -101,6 +111,7 @@ export default function EditProjectPage({
           token={token}
           user={user}
           user_role={user_role}
+          handleSetErrorMessage={handleSetErrorMessage}
         />
       </WideLayout>
     );
@@ -143,7 +154,7 @@ EditProjectPage.getInitialProps = async (ctx) => {
 async function getProjectByIdIfExists(projectUrl, token) {
   try {
     const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/",
+      process.env.API_URL + "/api/projects/" + projectUrl + "/?edit_view=true",
       tokenConfig(token)
     );
     if (resp.data.length === 0) return null;

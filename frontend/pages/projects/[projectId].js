@@ -369,7 +369,6 @@ async function getProjectByIdIfExists(projectUrl, token) {
     );
     if (resp.data.length === 0) return null;
     else {
-      //TODO: get comments and timeline posts and project taggings
       return parseProject(resp.data);
     }
   } catch (err) {
@@ -450,7 +449,7 @@ function parseProject(project) {
     url_slug: project.url_slug,
     image: project.image,
     status: project.status,
-    location: project.city + ", " + project.country,
+    location: project.location,
     description: project.description,
     shortdescription: project.short_description,
     collaborators_welcome: project.collaborators_welcome,
@@ -482,7 +481,7 @@ function parseProjectMembers(projectMembers) {
       permission: m.role.name,
       availability: m.availability,
       name: m.user.first_name + " " + m.user.last_name,
-      location: m.user.city ? m.user.city + ", " + m.user.country : m.user.country,
+      location: m.user.location,
     };
   });
 }

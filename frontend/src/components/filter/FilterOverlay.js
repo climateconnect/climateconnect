@@ -16,6 +16,10 @@ export default function FilterOverlay({
   handleUnselectFilter,
   selectedItems,
   setSelectedItems,
+  locationInputRef,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
+  errorMessage,
 }) {
   const onClose = () => {
     unexpandFilters();
@@ -42,6 +46,10 @@ export default function FilterOverlay({
         isInOverlay
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}
+        locationInputRef={locationInputRef}
+        locationOptionsOpen={locationOptionsOpen}
+        handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+        errorMessage={errorMessage}
       />
       <SelectedFilters
         currentFilters={currentFilters}

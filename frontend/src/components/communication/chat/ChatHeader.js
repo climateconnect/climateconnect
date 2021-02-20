@@ -4,7 +4,7 @@ import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import ChatTitle from "../../communication/chat/ChatTitle";
 import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
@@ -17,12 +17,12 @@ const useStyles = makeStyles((theme) => ({
   backIcon: {
     float: "left",
     left: theme.spacing(1),
-    top: theme.spacing(0.75)
+    top: theme.spacing(0.75),
   },
   manageMembersButton: {
     float: "right",
     right: theme.spacing(1),
-    top: theme.spacing(0.75)
+    top: theme.spacing(0.75),
   },
   showParticipantsButton: {
     cursor: "pointer",
@@ -45,25 +45,20 @@ export default function ChatHeader({
   const classes = useStyles();
   return (
     <div className={`${classes.topBar} ${className}`}>
-      {!memberManagementExpanded && (  
-        <Tooltip title="Back to inbox">     
+      {!memberManagementExpanded && (
+        <Tooltip title="Back to inbox">
           <IconButton className={classes.backIcon} href="/inbox">
             <KeyboardArrowLeftIcon />
           </IconButton>
-        </Tooltip> 
+        </Tooltip>
       )}
-      {
-        !isPrivateChat && (
-          <Tooltip title="Leave group chat">  
-            <IconButton 
-              className={classes.manageMembersButton}
-              onClick={leaveChat}
-            >
-              <ExitToAppIcon />
-            </IconButton>
-          </Tooltip>
-        )
-      }
+      {!isPrivateChat && (
+        <Tooltip title="Leave group chat">
+          <IconButton className={classes.manageMembersButton} onClick={leaveChat}>
+            <ExitToAppIcon />
+          </IconButton>
+        </Tooltip>
+      )}
       {!isPrivateChat && !showChatParticipants && canEditMembers && !memberManagementExpanded && (
         <Tooltip title="Manage chat members">
           <IconButton
@@ -73,7 +68,7 @@ export default function ChatHeader({
             <GroupAddIcon />
           </IconButton>
         </Tooltip>
-      )}      
+      )}
       {isPrivateChat ? (
         <MiniProfilePreview profile={chatting_partner} />
       ) : (

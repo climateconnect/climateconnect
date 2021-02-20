@@ -148,7 +148,7 @@ function parseOrganizationMembers(members) {
       role: m.permission,
       time_per_week: m.time_per_week,
       role_in_organization: m.role_in_organization ? m.role_in_organization : "",
-      location: member.city ? member.city + ", " + member.country : member.country,
+      location: member.location,
       isCreator: m.permission.role_type === 2,
     };
   });
@@ -162,9 +162,7 @@ function parseOrganization(organization) {
     image: organization.image,
     types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
     info: {
-      location: organization.city
-        ? organization.city + ", " + organization.country
-        : organization.country,
+      location: organization.location,
       shortdescription: organization.short_description,
       school: organization.school,
       organ: organization.organ,

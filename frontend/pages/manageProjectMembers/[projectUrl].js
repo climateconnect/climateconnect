@@ -35,13 +35,19 @@ export default function manageProjectMembers({
   );
   if (!user)
     return (
-      <WideLayout title="Please Log In to Manage the Members of this Climate Solution" hideHeadline={true}>
+      <WideLayout
+        title="Please Log In to Manage the Members of this Climate Solution"
+        hideHeadline={true}
+      >
         <LoginNudge fullPage whatToDo="manage the members of this project" />
       </WideLayout>
     );
   else if (!members.find((m) => m.id === user.id))
     return (
-      <WideLayout title="Please Log In to Manage the Members of an Climate Solution" hideHeadline={true}>
+      <WideLayout
+        title="Please Log In to Manage the Members of an Climate Solution"
+        hideHeadline={true}
+      >
         <Typography variant="h4" color="primary" className={classes.headline}>
           You are not a member of this project. Go to{" "}
           <a href={"/projects/" + project.url_slug}>the project page</a> and click join to join it.
@@ -53,7 +59,10 @@ export default function manageProjectMembers({
     members.find((m) => m.id === user.id).role.name != "Administrator"
   )
     return (
-      <WideLayout title="No Permission to Manage Members of this Climate Solution" hideHeadline={true}>
+      <WideLayout
+        title="No Permission to Manage Members of this Climate Solution"
+        hideHeadline={true}
+      >
         <Typography variant="h4" color="primary" className={classes.headline}>
           You need to be an administrator of the project to manage project members.
         </Typography>
@@ -142,7 +151,7 @@ function parseProjectMembers(members) {
       role: m.role,
       availability: m.availability,
       role_in_project: m.role_in_project ? m.role_in_project : "",
-      location: member.city ? member.city + ", " + member.country : member.country,
+      location: member.location,
       isCreator: m.role.role_type === 2,
     };
   });
@@ -155,7 +164,7 @@ function parseProject(project) {
     url_slug: project.url_slug,
     image: project.image,
     status: project.status,
-    location: project.city + ", " + project.country,
+    location: project.location,
     description: project.description,
     shortdescription: project.short_description,
     collaborators_welcome: project.collaborators_welcome,
