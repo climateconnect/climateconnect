@@ -268,11 +268,11 @@ function ListToChooseWrapper({
 
   // The first section should be the initial tab value
   const [searchValue, setSearchValue] = React.useState("");
-  const handleSearchBarChange = (type, value) => setSearchValue(value);
+  const handleSearchBarChange = (event) => setSearchValue(event?.target?.value);
 
   function filteredLists({ searchValue, itemsToSelectFrom }) {
     console.log(itemsToSelectFrom);
-    searchValue = "e";
+    //searchValue = "e";
     if (searchValue == "" || searchValue == null) {
       return itemsToSelectFrom;
     }
