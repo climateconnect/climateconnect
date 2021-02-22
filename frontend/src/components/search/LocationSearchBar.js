@@ -48,7 +48,7 @@ export default function LocationSearchBar({
           referrerPolicy: "origin",
         };
         const response = await axios(
-          `https://nominatim.openstreetmap.org/search?q=${searchValue}&format=json&addressdetails=1&polygon_geojson=1`,
+          `https://nominatim.openstreetmap.org/search?q=${searchValue}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`,
           config
         );
         const bannedClasses = [
@@ -64,7 +64,7 @@ export default function LocationSearchBar({
           "aeroway",
           "historic",
         ];
-        const bannedTypes = ["claimed_administrative", "hamlet", "isolated_dwelling", "croft"];
+        const bannedTypes = ["claimed_administrative", "isolated_dwelling", "croft"];
         const bannedOsmTypes = ["way"];
         if (active) {
           const filteredData = response.data.filter((o) => {

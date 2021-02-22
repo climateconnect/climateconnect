@@ -113,13 +113,15 @@ export function parseLocation(location) {
     place_id: location?.place_id,
     osm_id: location?.osm_id,
     name: location_object.name,
+    lon: location?.lon,
+    lat: location?.lat,
     city: location_object.city,
     state: location_object.state,
     country: location_object.country,
   };
 }
 
-const props = ["type", "coordinates", "geojson", "place_id", "name", "city", "state", "country"];
+const props = ["type", "coordinates", "geojson", "place_id", "name", "city", "state", "country", "lon", "lat"];
 const alreadyParsed = (location) => {
   for (const prop of props) {
     if (!Object.keys(location).includes(prop)) {

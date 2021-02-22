@@ -43,7 +43,9 @@ def get_location(location_object):
         'state',
         'country',
         'name',
-        'type'
+        'type',
+        'lon',
+        'lat'
     ]
     for param in required_params:
         if param not in location_object:
@@ -63,10 +65,12 @@ def get_location(location_object):
             country=location_object['country'],
             name=location_object['name'],
             centre_point=switched_point,
+            is_formatted=True
         )
         return loc
     else:
         multipolygon = get_multipolygon_from_geojson(location_object['geojson'])
+        centre_point = Point(float(location_object['lon']), float(location_object['lat']))
         loc = Location.objects.create(
             osm_id=location_object['osm_id'],
             place_id=location_object['place_id'],
@@ -75,6 +79,8 @@ def get_location(location_object):
             country=location_object['country'],
             name=location_object['name'],
             multi_polygon=multipolygon,
+            is_formatted=True,
+            centre_point = centre_point
         )
         return loc
 
@@ -104,7 +110,7 @@ def get_polygon_with_switched_coordinates(polygon):
         switched_ring = []
         points = list(ring)
         for point in points:
-            switched_point = (point[1], point[0])
+            switched_point = (point[0], point[1])
             switched_ring.append(switched_point)
         switched_poly.append(LinearRing(switched_ring))
 
@@ -134,7 +140,9 @@ def format_location(location_string, already_loaded):
         'state': location_name['state'],
         'country': location_name['country'],
         'geojson': location_object['geojson'],
-        'coordinates': location_object['geojson']['coordinates']
+        'coordinates': location_object['geojson']['coordinates'],
+        'lon': location_object['lon'],
+        'lat': location_object['lat']
     }
 
 def format_location_name(location):
@@ -220,20 +228,21 @@ def get_location_ids_in_range(query_params):
         url_root = settings.LOCATION_SERVICE_BASE_URL + "/lookup?osm_ids="
         # Append osm_id to first letter of osm_type as uppercase letter 
         osm_id_param = query_params.get('loc_type')[0].upper()+query_params.get('osm')
-        params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9"
+        params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9&polygon_threshold=0.001"
         url = url_root+osm_id_param+params
         response = requests.get(url)
+        location_object = json.loads(response.text)[0]
         location = get_location(format_location(response.text, False))
         location_in_db = location.multi_polygon.buffer(buffer_width)
     else:        
-        location_in_db = locations[0].multi_polygon.buffer(buffer_width)
+        location = locations[0]
+        location_in_db = location.multi_polygon.buffer(buffer_width)
     radius = 0
     if 'radius' in query_params:
         radius_value = query_params.get('radius')
         radius = D(km=radius_value) 
-    locations_in_range = Location.objects.filter(
-        Q(multi_polygon__distance_lte=(location_in_db, radius))
-        |
-        Q(centre_point__distance_lte=(location_in_db, radius))
-    )
-    return list(map((lambda loc: loc.id), locations_in_range))
+    return {
+        'location': location_in_db,
+        'radius': radius,
+        'country': location.country
+    }
