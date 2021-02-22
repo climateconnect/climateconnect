@@ -69,7 +69,7 @@ export default function Born({ className, headlineClass }) {
           </Typography>
           <Typography className={classes.textBlock}>
             The idea of Climate Connect was born after a local networking event in Chris and Tobis
-            home town Erlangen, Germany. After the event it was very obivous that not a lot of
+            home town Erlangen, Germany. After the event it was very obvious that not a lot of
             people knew each other or worked together before. The idea was born to bring this
             approach to a global level, and to include as many people as possible to fight climate
             change together.
