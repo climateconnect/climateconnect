@@ -35,7 +35,6 @@ def get_legacy_location(location_object):
 def get_location(location_object):
     if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
         return get_legacy_location(location_object)
-
     required_params = [
         'osm_id', 
         'place_id', 
@@ -50,7 +49,7 @@ def get_location(location_object):
     for param in required_params:
         if param not in location_object:
             raise ValidationError('Required parameter is missing:'+param)
-    loc = Location.objects.filter(place_id=location_object['place_id'])
+    loc = Location.objects.filter(place_id=location_object['place_id'])    
     if loc.exists():
         return loc[0]
     elif location_object['type'] == "Point":
@@ -67,6 +66,9 @@ def get_location(location_object):
             centre_point=switched_point,
             is_formatted=True
         )
+        return loc
+    elif location_object['type'] == "global":
+        loc = get_global_location()
         return loc
     else:
         multipolygon = get_multipolygon_from_geojson(location_object['geojson'])
@@ -246,3 +248,11 @@ def get_location_ids_in_range(query_params):
         'radius': radius,
         'country': location.country
     }
+
+def get_global_location():
+        global_location = Location.objects.filter(name="Global")
+        if global_location.exists():
+            return global_location[0]
+        else:
+            global_location = Location.objects.create(name="Global", city="global", country="global", place_id=1, is_formatted=True)
+            return global_location

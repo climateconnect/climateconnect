@@ -88,6 +88,8 @@ class SignUpView(APIView):
         if User.objects.filter(username=request.data['email']).exists():
             raise ValidationError("Email already in use.")
 
+        location = get_location(request.data['location'])
+
         user = User.objects.create(
             username=request.data['email'],
             email=request.data['email'], first_name=request.data['first_name'],
@@ -100,7 +102,7 @@ class SignUpView(APIView):
         url_slug = (user.first_name + user.last_name).lower() + str(user.id)
         # Get location
         user_profile = UserProfile.objects.create(
-            user=user, location=get_location(request.data['location']),
+            user=user, location=location,
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
             verification_key=uuid.uuid4(), send_newsletter=request.data['send_newsletter']
         )

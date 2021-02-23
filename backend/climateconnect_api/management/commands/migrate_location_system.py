@@ -1,5 +1,5 @@
 from django.contrib.gis.geos.point import Point
-from location.utility import get_multipolygon_from_geojson
+from location.utility import get_global_location, get_multipolygon_from_geojson
 from location.utility import format_location, get_location
 from typing import Any
 from django.conf import settings
@@ -111,19 +111,10 @@ def get_location_results(res):
             location_results.append(format_location(loc, True))
     return location_results
 
-    
-def get_global_location():
-        global_location = Location.objects.filter(name="Global")
-        if global_location.exists():
-            return global_location[0]
-        else:
-            global_location = Location.objects.create(name="Global", city="global", country="global")
-            return global_location
-
 def get_unknown_location():
         unknown_location = Location.objects.filter(name="Unknown")
         if unknown_location.exists():
             return unknown_location[0]
         else:
-            unknown_location = Location.objects.create(name="Unknown", city="unknown", country="unknown")
+            unknown_location = Location.objects.create(name="Unknown", city="unknown", country="unknown", place_id=2, is_formatted=True)
             return unknown_location

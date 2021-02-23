@@ -1,4 +1,11 @@
 export function getNameFromLocation(location) {
+  if(location.added_manually)
+    return { 
+      name: location.name,
+      city: location.city,
+      state: location.state,
+      country: location.country,
+    }
   if(process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true")
     return location.city + "" + location.country
   if (!location.address || !location.address.country) return location.display_name;
@@ -107,7 +114,7 @@ export function parseLocation(location) {
     return location;
   }
   return {
-    type: location?.geojson?.type,
+    type: location.added_manually ? location.type : location?.geojson?.type,
     coordinates: location?.geojson?.coordinates,
     geojson: location?.geojson,
     place_id: location?.place_id,

@@ -64,6 +64,21 @@ export default function LocationSearchBar({
           "aeroway",
           "historic",
         ];
+        const additionalOptions = [
+          {
+            simple_name: "Global",
+            name: "Global",
+            type: "global",
+            added_manually: "true",
+            city: "",
+            country: "Global",
+            state: "",
+            place_id: 1,
+            osm_id: -1,
+            lon: -1,
+            lat: -1
+          }
+        ]
         const bannedTypes = ["claimed_administrative", "isolated_dwelling", "croft"];
         const bannedOsmTypes = ["way"];
         if (active) {
@@ -79,6 +94,11 @@ export default function LocationSearchBar({
             filteredData.length > 0
               ? filteredData
               : response.data.slice(0, 2).filter((o) => !bannedClasses.includes(o.class));
+          for(const option of additionalOptions) {
+            if(option.simple_name.toLowerCase().includes(searchValue.toLowerCase())){
+              data.push(option)
+            }
+          }
           setOptions(
             data.map((o) => ({ ...o, simple_name: getNameFromLocation(o).name, key: o.place_id }))
           );
