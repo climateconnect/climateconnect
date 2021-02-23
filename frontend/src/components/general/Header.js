@@ -86,9 +86,9 @@ const useStyles = makeStyles((theme) => {
       marginRight: theme.spacing(3),
     },
     loggedInRoot: {
-      display: "inline-block",
       verticalAlign: "middle",
       marginLeft: theme.spacing(2),
+      zIndex: 101
     },
     loggedInAvatar: {
       height: 30,
@@ -167,6 +167,9 @@ const useStyles = makeStyles((theme) => {
     loggedInLinksFixedHeader: {
       zIndex: 30,
     },
+    loggedInPopper: {
+      zIndex: 30
+    }
   };
 });
 
@@ -663,6 +666,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader }) => {
         open={menuOpen}
         anchorEl={anchorRef.current}
         className={fixedHeader && classes.loggedInLinksFixedHeader}
+        className={classes.loggedInPopper}
       >
         <ClickAwayListener onClickAway={handleCloseMenu}>
           <Paper>
