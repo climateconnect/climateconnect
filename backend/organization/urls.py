@@ -100,5 +100,6 @@ urlpatterns = [
     path('projectstatus/', project_views.ListProjectStatus.as_view(), name='list-project-status'),
     path('sitemap/organizations/', organization_views.ListOrganizationsForSitemap.as_view(), name='list-organizations-for-sitemap'),
     path('sitemap/projects/', project_views.ListProjectsForSitemap.as_view(), name='list-projects-for-sitemap'),
-    path('projects/<str:url_slug>/leave/',project_views.LeaveProject.as_view(), name='leave-project')
+    path('projects/<str:url_slug>/leave/',project_views.LeaveProject.as_view(), name='leave-project'),
+    path('projects/<str:project_slug>/request_membership/<str:user_slug>/', project_views.RequestJoinProject.as_view(), name = 'request-join-entity')
 ]
