@@ -7,13 +7,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
-
+from django.utils import timezone
 from django.contrib.auth.models import User
 import traceback
 
 from organization.models import (
     Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging,
-    ProjectStatus, ProjectCollaborators, ProjectFollower, OrganizationTags, OrganizationTagging
+    ProjectStatus, ProjectCollaborators, ProjectFollower, OrganizationTags, OrganizationTagging, MembershipRequests,MembershipTarget,RequestStatus
 )
 from organization.serializers.project import (
     ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer,
@@ -648,3 +648,52 @@ class LeaveProject(RetrieveUpdateAPIView):
             ##Send E to dev
             E = traceback.format_exc()
             return Response(data={'message':f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class RequestJoinProject(RetrieveUpdateAPIView):
+    """
+    A view that enables a user to request to join a project 
+    """
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, user_slug,project_slug):
+        required_params = ['user_availability','message']
+        missing_param = any([param not in request.data for param in required_params])
+        if missing_param: return Response({
+                            'message': 'Missing required parameters'
+                            }, status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+        project = Project.objects.get(url_slug=project_slug)
+        user_availability = Availability.objects.filter(id=request.data['user_availability']).first()
+        n = MembershipRequests.objects.filter(user=user
+                                          ,target_membership_type=MembershipTarget.PROJECT.value
+                                          ,target_project_id=project
+                                          ,target_organization_id=None).count() 
+        exists = False if n == 0 else True
+
+        if exists:
+            return Response({
+                            'message': 'Request already exists'
+                            }, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            
+            try:
+                request_obj = MembershipRequests.objects.create(user=user
+                                                        ,target_membership_type=MembershipTarget.PROJECT.value
+                                                        ,target_project=project
+                                                        ,availability=user_availability
+                                                        ,requested_at=timezone.now()
+                                                        ,message=request.data['message']
+                                                        ,request_status=RequestStatus.PENDING.value                                                    
+                )
+                request_id = request_obj.id
+                return Response({"requestId":request_id}, status=status.HTTP_201_CREATED)
+            except:
+                return Response({
+                            'message': 'Internal Server Error'
+                            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        
+
+        
