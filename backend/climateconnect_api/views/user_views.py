@@ -1,3 +1,4 @@
+from django.contrib.gis.db.models.functions import Distance
 from location.models import Location
 import uuid
 from django.contrib.auth import (authenticate, login)
@@ -15,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.exceptions import NotFound
-from location.utility import get_location, get_location_ids_in_range
+from location.utility import get_location, get_location_with_range
 from rest_framework.filters import SearchFilter
 
 from rest_framework.exceptions import ValidationError
@@ -153,8 +154,20 @@ class ListMemberProfilesView(ListAPIView):
             user_profiles = user_profiles.filter(skills__in=skills).distinct('id')
 
         if 'place' in self.request.query_params and 'osm' in self.request.query_params:
-            location_ids_in_range = get_location_ids_in_range(self.request.query_params)
-            user_profiles = user_profiles.filter(location__in=location_ids_in_range)
+            location_data = get_location_with_range(self.request.query_params)
+            user_profiles = user_profiles.filter(
+                Q(location__country=location_data['country']) 
+                &
+                (
+                    Q(location__multi_polygon__distance_lte=(location_data['location'], location_data['radius']))
+                    |
+                    Q(location__centre_point__distance_lte=(location_data['location'], location_data['radius']))
+                )
+            ).annotate(
+                distance=Distance("location__centre_point", location_data['location'])
+            ).order_by(
+                '-distance'
+            )
         
         if 'country' and 'city' in self.request.query_params:
             location_ids = Location.objects.filter(

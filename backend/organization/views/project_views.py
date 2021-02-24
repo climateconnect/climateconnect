@@ -1,5 +1,6 @@
 from django.contrib.gis.geos.geometry import GEOSGeometry
-from location.utility import get_location, get_location_ids_in_range
+from django.contrib.gis.db.models.functions import Distance
+from location.utility import get_location, get_location_with_range
 from location.models import Location
 from hubs.models.hub import Hub
 from dateutil.parser import parse
@@ -62,7 +63,6 @@ class ListProjectsView(ListAPIView):
     filterset_fields = ['collaborators_welcome']
     pagination_class = ProjectsPagination
     serializer_class = ProjectStubSerializer
-    queryset = Project.objects.filter(is_draft=False,is_active=True)
 
     def get_queryset(self):
         projects = Project.objects.filter(is_draft=False,is_active=True)
@@ -112,8 +112,20 @@ class ListProjectsView(ListAPIView):
             projects = projects.filter(project_parent__in=project_parents)
         
         if 'place' in self.request.query_params and 'osm' in self.request.query_params:
-            location_ids_in_range = get_location_ids_in_range(self.request.query_params)
-            projects = projects.filter(loc__in=location_ids_in_range)
+            location_data = get_location_with_range(self.request.query_params)
+            projects = projects.filter(
+                Q(loc__country=location_data['country']) 
+                &
+                (
+                    Q(loc__multi_polygon__distance_lte=(location_data['location'], location_data['radius']))
+                    |
+                    Q(loc__centre_point__distance_lte=(location_data['location'], location_data['radius']))
+                )
+            ).annotate(
+                distance=Distance("loc__centre_point", location_data['location'])
+            ).order_by(
+                '-distance'
+            )
         
         if 'country' and 'city' in self.request.query_params:
             location_ids = Location.objects.filter(
@@ -133,7 +145,6 @@ class ListProjectsView(ListAPIView):
                 country=self.request.query_params.get('country')
             )
             projects = projects.filter(loc__in=location_ids)
-
         return projects
 
 
