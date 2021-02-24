@@ -124,7 +124,7 @@ class ListProjectsView(ListAPIView):
             ).annotate(
                 distance=Distance("loc__centre_point", location_data['location'])
             ).order_by(
-                '-distance'
+                'distance'
             )
         
         if 'country' and 'city' in self.request.query_params:
