@@ -308,7 +308,7 @@ function LargeScreenOverview({
                   onClick={handleClickContact}
                   startIcon={<EmailIcon />}
                 >
-                  Contact organizer
+                  Contact creator
                 </Button>
               </Tooltip>
             )}
