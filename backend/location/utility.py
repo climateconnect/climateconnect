@@ -10,14 +10,18 @@ from django.contrib.gis.measure import D
 from django.conf import settings
 
 def get_legacy_location(location_object):
-    required_params = ['city', 'country']
+    required_params = ['country']
 
     for param in required_params:
         if param not in location_object:
             raise ValidationError('Required parameter is missing:'+param)
     
+    if 'city' in location_object:
+        city = location_object['city']
+    else:
+        city = ""
     loc = Location.objects.filter(
-        city=location_object['city'], 
+        city=city, 
         country=location_object['country']
     )
     if loc.exists():
@@ -38,8 +42,6 @@ def get_location(location_object):
     required_params = [
         'osm_id', 
         'place_id', 
-        'city',
-        'state',
         'country',
         'name',
         'type',
@@ -49,7 +51,15 @@ def get_location(location_object):
     for param in required_params:
         if param not in location_object:
             raise ValidationError('Required parameter is missing:'+param)
-    loc = Location.objects.filter(place_id=location_object['place_id'])    
+    loc = Location.objects.filter(place_id=location_object['place_id']) 
+    if 'city' in location_object:
+        city = location_object['city']
+    else:
+        city = ""   
+    if 'state' in location_object:
+        state = location_object['state']
+    else:
+        state = ""   
     if loc.exists():
         return loc[0]
     elif location_object['type'] == "Point":
@@ -59,8 +69,8 @@ def get_location(location_object):
         loc = Location.objects.create(
             osm_id=location_object['osm_id'],
             place_id=location_object['place_id'],
-            city=location_object['city'],
-            state=location_object['state'],
+            city=city,
+            state=state,
             country=location_object['country'],
             name=location_object['name'],
             centre_point=switched_point,
@@ -76,8 +86,8 @@ def get_location(location_object):
         loc = Location.objects.create(
             osm_id=location_object['osm_id'],
             place_id=location_object['place_id'],
-            city=location_object['city'],
-            state=location_object['state'],
+            city=city,
+            state=state,
             country=location_object['country'],
             name=location_object['name'],
             multi_polygon=multipolygon,
