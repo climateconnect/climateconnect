@@ -72,7 +72,7 @@ def get_location(location_object):
         return loc
     else:
         multipolygon = get_multipolygon_from_geojson(location_object['geojson'])
-        centre_point = Point(float(location_object['lon']), float(location_object['lat']))
+        centre_point = Point(float(location_object['lat']), float(location_object['lon']))
         loc = Location.objects.create(
             osm_id=location_object['osm_id'],
             place_id=location_object['place_id'],
@@ -112,7 +112,7 @@ def get_polygon_with_switched_coordinates(polygon):
         switched_ring = []
         points = list(ring)
         for point in points:
-            switched_point = (point[0], point[1])
+            switched_point = (point[1], point[0])
             switched_ring.append(switched_point)
         switched_poly.append(LinearRing(switched_ring))
 
@@ -219,7 +219,7 @@ def get_middle_part(address, order, suffixes):
                     return address[suffix]
     return ""
 
-def get_location_ids_in_range(query_params): 
+def get_location_with_range(query_params): 
     filter_place_id = query_params.get('place')
     locations = Location.objects.filter(place_id=filter_place_id)
         # shrink polygon by 1 meter to exclude places that share a border
@@ -234,7 +234,7 @@ def get_location_ids_in_range(query_params):
         url = url_root+osm_id_param+params
         response = requests.get(url)
         location_object = json.loads(response.text)[0]
-        location = get_location(format_location(response.text, False))
+        location = get_location(format_location(location_object, False))
         location_in_db = location.multi_polygon.buffer(buffer_width)
     else:        
         location = locations[0]
