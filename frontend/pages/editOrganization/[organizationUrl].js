@@ -45,7 +45,7 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
     //verify location is valid and notify user if it's not
     if (
       editedOrg?.info?.location !== organization?.info?.location &&
-      !isLocationValid(editedOrg?.info?.location) && 
+      !isLocationValid(editedOrg?.info?.location) &&
       !legacyModeEnabled
     )
       indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, handleSetErrorMessage);

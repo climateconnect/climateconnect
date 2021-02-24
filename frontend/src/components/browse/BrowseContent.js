@@ -66,7 +66,7 @@ export default function BrowseContent({
       members: "",
     },
   };
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true"
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
   const TYPES_BY_TAB_VALUE = hideMembers
     ? ["projects", "organizations"]

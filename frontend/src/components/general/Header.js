@@ -88,7 +88,7 @@ const useStyles = makeStyles((theme) => {
     loggedInRoot: {
       verticalAlign: "middle",
       marginLeft: theme.spacing(2),
-      zIndex: 101
+      zIndex: 101,
     },
     loggedInAvatar: {
       height: 30,
@@ -168,8 +168,8 @@ const useStyles = makeStyles((theme) => {
       zIndex: 30,
     },
     loggedInPopper: {
-      zIndex: 30
-    }
+      zIndex: 30,
+    },
   };
 });
 

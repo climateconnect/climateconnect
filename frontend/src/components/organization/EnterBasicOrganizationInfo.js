@@ -66,7 +66,7 @@ export default function EnterBasicOrganizationInfo({
       locationOptionsOpen: locationOptionsOpen,
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
       values: organizationInfo,
-      locationKey: "location"
+      locationKey: "location",
     }),
     {
       required: true,

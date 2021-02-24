@@ -155,7 +155,7 @@ function ProfileLayout({
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
   const projectsRef = React.useRef(null);
-  const organizationsRef = React.useRef(null)
+  const organizationsRef = React.useRef(null);
   const scrollDownToProjects = () => {
     projectsRef.current.scrollIntoView({ behavior: "smooth" });
   };

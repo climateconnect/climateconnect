@@ -57,12 +57,12 @@ export default function Signup() {
   };
 
   const handleAddInfoSubmit = (event, values) => {
-    event.preventDefault();    
+    event.preventDefault();
     if (!isLocationValid(values.location)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage);
       return;
     }
-    const location = getLocationValue(values, "location")
+    const location = getLocationValue(values, "location");
     setUserInfo({
       ...userInfo,
       first_name: values.first_name,
@@ -84,7 +84,7 @@ export default function Signup() {
         "Content-Type": "application/json",
       },
     };
-    setIsLoading(true);    
+    setIsLoading(true);
     axios
       .post(process.env.API_URL + "/signup/", payload, config)
       .then(function () {
