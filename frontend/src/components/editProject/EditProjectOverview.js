@@ -230,9 +230,9 @@ const InputLocation = ({
     handleChangeProject(parseLocation(location), "loc");
   };
   const handleChangeLegacyLocationElement = (key, value) => {
-    handleChangeProject({...project.loc, [key]: value}, "loc")
-  }
-  if(process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
+    handleChangeProject({ ...project.loc, [key]: value }, "loc");
+  };
+  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return (
       <>
         <TextField
@@ -242,9 +242,7 @@ const InputLocation = ({
           className={classes.projectInfoEl}
           value={project?.loc?.city}
           type="text"
-          onChange={(event) =>
-            handleChangeLegacyLocationElement("city", event.target.value)
-          }
+          onChange={(event) => handleChangeLegacyLocationElement("city", event.target.value)}
           required
         />
         <TextField
@@ -254,13 +252,11 @@ const InputLocation = ({
           fullWidth
           value={project?.loc?.country}
           type="text"
-          onChange={(event) =>
-            handleChangeLegacyLocationElement("country", event.target.value)
-          }
+          onChange={(event) => handleChangeLegacyLocationElement("country", event.target.value)}
           required
         />
       </>
-    )
+    );
   }
   return (
     <div className={classes.projectInfoEl}>

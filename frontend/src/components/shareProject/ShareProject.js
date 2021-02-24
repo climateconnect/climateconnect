@@ -121,7 +121,7 @@ export default function Share({
       locationOptionsOpen: locationOptionsOpen,
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
       values: project,
-      locationKey: "loc"
+      locationKey: "loc",
     }),
   ];
   const messages = {
@@ -146,7 +146,7 @@ export default function Share({
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage);
       return;
     }
-    const loc_value = getLocationValue(values, "loc")
+    const loc_value = getLocationValue(values, "loc");
     const loc = parseLocation(loc_value);
     if (!values.parent_organization) {
       handleSetProjectData({

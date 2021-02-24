@@ -44,14 +44,14 @@ class Location(models.Model):
         null=True
     )
 
-    osm_id = models.PositiveIntegerField(
+    osm_id = models.BigIntegerField(
         help_text="The internal id of this location openstreetmaps",
         verbose_name="OSM ID",
         blank=True,
         null=True
     )
 
-    place_id = models.PositiveIntegerField(
+    place_id = models.BigIntegerField(
         help_text="Nominatim's place id of this location",
         verbose_name="Place ID",
         blank=True,
@@ -61,6 +61,11 @@ class Location(models.Model):
     is_stub = models.BooleanField(
         help_text="Check if this location was created without geocoordinates",
         verbose_name="Is Stub?", default=False
+    )
+
+    is_formatted = models.BooleanField(
+        help_text="helper column after migration inserted wrong languages and location shapes",
+        verbose_name="Is Formatted?", default=False
     )
 
     class Meta:

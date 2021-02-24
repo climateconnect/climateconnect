@@ -111,14 +111,14 @@ EditProfilePage.getInitialProps = async (ctx) => {
     getSkillsOptions(token),
     getProfileInfoMetadata(token),
     getAvailabilityOptions(token),
-    getUserProfile(token)
+    getUserProfile(token),
   ]);
   return {
     skillsOptions: skillsOptions,
     infoMetadata: infoMetadata,
     availabilityOptions: availabilityOptions,
     token: token,
-    user: userProfile
+    user: userProfile,
   };
 };
 

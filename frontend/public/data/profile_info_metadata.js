@@ -52,6 +52,6 @@ export default {
         key: "country",
         type: "text",
       },
-    }
+    },
   },
 };

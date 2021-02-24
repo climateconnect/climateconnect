@@ -41,7 +41,7 @@ export default function AddInfo({
       locationOptionsOpen: locationOptionsOpen,
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
       values: values,
-      locationKey: "location"
+      locationKey: "location",
     }),
     {
       required: false,

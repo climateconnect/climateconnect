@@ -199,7 +199,7 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
     justifyContent: "center",
     marginTop: theme.spacing(10),
-  }
+  },
 }));
 
 export default function EditAccountPage({
@@ -376,11 +376,11 @@ export default function EditAccountPage({
             ...editedAccount.info,
             location: {
               ...editedAccount.info.location,
-              [key]:event.target.value
-            }
-          }
-        })
-      }
+              [key]: event.target.value,
+            },
+          },
+        });
+      };
 
       const handleSetParentOrganization = (newOrg) => {
         setEditedAccount({
@@ -459,14 +459,14 @@ export default function EditAccountPage({
         );
       } else if (i.type === "location") {
         //return legacy field options (city, country) instead of the location field when location legacy mode is enabled
-        if(legacyModeEnabled) {
+        if (legacyModeEnabled) {
           return (
             <>
-              {Object.keys(i.legacy).map(k => {
-                const field = i.legacy[k]
+              {Object.keys(i.legacy).map((k) => {
+                const field = i.legacy[k];
                 return (
                   <div key={field.key} className={classes.infoElement}>
-                    <TextField 
+                    <TextField
                       label={field.name}
                       variant="outlined"
                       required
@@ -474,10 +474,10 @@ export default function EditAccountPage({
                       value={editedAccount?.info?.location[field.key]}
                     />
                   </div>
-                )
+                );
               })}
             </>
-          )
+          );
         }
         return (
           <div className={classes.infoElement}>

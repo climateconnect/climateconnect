@@ -1,5 +1,6 @@
+from django.contrib.gis.db.models.functions import Distance
 from location.models import Location
-from location.utility import get_location, get_location_ids_in_range
+from location.utility import get_location, get_location_with_range
 from hubs.models.hub import Hub
 from organization.models.tags import ProjectTags
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -66,8 +67,20 @@ class ListOrganizationsAPIView(ListAPIView):
             organizations = organizations.filter(tag_organization__in=organization_taggings).distinct('id')
 
         if 'place' in self.request.query_params and 'osm' in self.request.query_params:
-            location_ids_in_range = get_location_ids_in_range(self.request.query_params)
-            organizations = organizations.filter(location__in=location_ids_in_range)
+            location_data = get_location_with_range(self.request.query_params)
+            organizations = organizations.filter(
+                Q(location__country=location_data['country']) 
+                &
+                (
+                    Q(location__multi_polygon__coveredby=(location_data['location']))
+                    |
+                    Q(location__centre_point__coveredby=(location_data['location']))
+                )
+            ).annotate(
+                distance=Distance("location__centre_point", location_data['location'])
+            ).order_by(
+                'distance'
+            )
         
         if 'country' and 'city' in self.request.query_params:
             location_ids = Location.objects.filter(
