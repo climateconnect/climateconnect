@@ -199,7 +199,7 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
     justifyContent: "center",
     marginTop: theme.spacing(10),
-  },
+  }
 }));
 
 export default function EditAccountPage({
