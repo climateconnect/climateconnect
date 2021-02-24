@@ -83,7 +83,7 @@ export default function Signup() {
         "Content-Type": "application/json",
       },
     };
-    setIsLoading(true);    
+    setIsLoading(true);
     axios
       .post(process.env.API_URL + "/signup/", payload, config)
       .then(function () {

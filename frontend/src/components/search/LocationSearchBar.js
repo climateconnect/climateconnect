@@ -124,7 +124,8 @@ export default function LocationSearchBar({
         if (
           cur !== o &&
           cur.simple_name === o.simple_name &&
-          (type_hierarchy.indexOf(cur.type) > -1 && type_hierarchy.indexOf(o.type) < type_hierarchy.indexOf(cur.type))
+          type_hierarchy.indexOf(cur.type) > -1 &&
+          type_hierarchy.indexOf(o.type) < type_hierarchy.indexOf(cur.type)
         ) {
           return false;
         }
