@@ -52,7 +52,6 @@ export default function LocationSearchBar({
           config
         );
         const bannedClasses = [
-          "landuse",
           "tourism",
           "railway",
           "waterway",
@@ -76,32 +75,33 @@ export default function LocationSearchBar({
             place_id: 1,
             osm_id: -1,
             lon: -1,
-            lat: -1
-          }
-        ]
+            lat: -1,
+          },
+        ];
         const bannedTypes = ["claimed_administrative", "isolated_dwelling", "croft"];
-        const bannedOsmTypes = ["way"];
         if (active) {
           const filteredData = response.data.filter((o) => {
             return (
               o.importance > 0.5 &&
               !bannedClasses.includes(o.class) &&
-              !bannedTypes.includes(o.type) &&
-              !bannedOsmTypes.includes(o.osm_type)
+              !bannedTypes.includes(o.type)
             );
           });
           const data =
             filteredData.length > 0
               ? filteredData
               : response.data.slice(0, 2).filter((o) => !bannedClasses.includes(o.class));
-          for(const option of additionalOptions) {
-            if(option.simple_name.toLowerCase().includes(searchValue.toLowerCase())){
-              data.push(option)
+          for (const option of additionalOptions) {
+            if (option.simple_name.toLowerCase().includes(searchValue.toLowerCase())) {
+              data.push(option);
             }
           }
-          setOptions(
-            data.map((o) => ({ ...o, simple_name: getNameFromLocation(o).name, key: o.place_id }))
-          );
+          const options = data.map((o) => ({
+            ...o,
+            simple_name: getNameFromLocation(o).name,
+            key: o.place_id,
+          }));
+          setOptions(getOptionsWithoutRedundancies(options));
           setLoading(false);
         }
       } else {
@@ -113,6 +113,25 @@ export default function LocationSearchBar({
       active = false;
     };
   }, [searchValue]);
+
+  const getOptionsWithoutRedundancies = (options) => {
+    const type_hierarchy = ["administrative", "county"];
+    console.log(options);
+    //If there is multiple locations with the same name, only let the one with the "strongest" type in.
+    //e.g. don't display both a city and a county if their names are identical
+    return options.filter((cur) => {
+      for (const o of options) {
+        if (
+          cur !== o &&
+          cur.simple_name === o.simple_name &&
+          (type_hierarchy.indexOf(cur.type) > -1 && type_hierarchy.indexOf(o.type) < type_hierarchy.indexOf(cur.type))
+        ) {
+          return false;
+        }
+      }
+      return true;
+    });
+  };
 
   const handleClose = () => {
     setOpen(false);
