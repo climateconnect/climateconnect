@@ -100,14 +100,12 @@ def get_location_results(res):
 
     banned_types = ["claimed_administrative", "isolated_dwelling", "croft"]
 
-    banned_osm_types = ["way"]
     raw_location_results = json.loads(res)
     location_results = []
     for loc in raw_location_results:
         if (loc['importance'] > 0.5 and 
         loc['class'] not in banned_classes and 
-        loc['type'] not in banned_types and 
-        'osm_type' in loc and loc['osm_type'] not in banned_osm_types):
+        loc['type'] not in banned_types):
             location_results.append(format_location(loc, True))
     return location_results
 
