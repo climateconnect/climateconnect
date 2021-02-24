@@ -665,8 +665,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader }) => {
       <Popper
         open={menuOpen}
         anchorEl={anchorRef.current}
-        className={fixedHeader && classes.loggedInLinksFixedHeader}
-        className={classes.loggedInPopper}
+        className={`${fixedHeader && classes.loggedInLinksFixedHeader} ${classes.loggedInPopper}`}
       >
         <ClickAwayListener onClickAway={handleCloseMenu}>
           <Paper>
