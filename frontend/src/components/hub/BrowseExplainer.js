@@ -20,7 +20,7 @@ export default function BrowseExplainer() {
   return (
     <Container>
       <Typography component="div" className={classes.browseExplainer}>
-        <Typography component="h1" className={classes.headline}>
+        <Typography component="h2" className={classes.headline}>
           Find impactful climate change solutions created by Climate Connect users.
         </Typography>
         Knowing the facts is important but taking action is what matters! The clock is ticking and
