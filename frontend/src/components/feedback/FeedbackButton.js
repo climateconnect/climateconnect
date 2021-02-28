@@ -24,7 +24,11 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 1280,
   },
   link: {
+    color: "white",
     cursor: "pointer",
+    "&:hover": {
+      color: theme.palette.primary.main,
+    },
   },
 }));
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Container, Tabs, Tab, Divider, useMediaQuery, makeStyles } from "@material-ui/core";
 
 import FilterSection from "../indexPage/FilterSection";
@@ -11,6 +11,7 @@ import NoItemsFound from "./NoItemsFound";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import LoadingSpinner from "../general/LoadingSpinner";
 import LoadingContext from "../context/LoadingContext";
+import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -39,6 +40,8 @@ export default function BrowseContent({
   applySearch,
   hideMembers,
   customSearchBarLabels,
+  handleSetErrorMessage,
+  errorMessage,
 }) {
   const initialState = {
     items: {
@@ -63,6 +66,7 @@ export default function BrowseContent({
       members: "",
     },
   };
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
   const TYPES_BY_TAB_VALUE = hideMembers
     ? ["projects", "organizations"]
@@ -71,6 +75,15 @@ export default function BrowseContent({
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
   const [filtersExpanded, setFiltersExpanded] = useState(false);
   const [state, setState] = useState(initialState);
+  const locationInputRefs = {
+    projects: useRef(null),
+    organizations: useRef(null),
+    members: useRef(null),
+  };
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
+  const handleSetLocationOptionsOpen = (bool) => {
+    setLocationOptionsOpen(bool);
+  };
 
   // We have 2 distinct loading states: filtering, and loading more data. For
   // each state, we want to treat the loading spinner a bit differently, hence
@@ -147,10 +160,16 @@ export default function BrowseContent({
    * state.
    */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
+    if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
+      indicateWrongLocation(locationInputRefs[type], setLocationOptionsOpen, handleSetErrorMessage);
+      return;
+    }
+    handleSetErrorMessage("");
     setIsFiltering(true);
     const res = await applyNewFilters(type, newFilters, closeFilters, state.urlEnding[type]);
-
-    if (res?.closeFilters) setFiltersExpanded(false);
+    if (res?.closeFilters) {
+      setFiltersExpanded(false);
+    }
     if (res?.filteredItemsObject) {
       setState({
         ...state,
@@ -222,8 +241,12 @@ export default function BrowseContent({
                 type={TYPES_BY_TAB_VALUE[0]}
                 applyFilters={handleApplyNewFilters}
                 filtersExpanded={filtersExpanded}
+                errorMessage={errorMessage}
                 unexpandFilters={unexpandFilters}
                 possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[0], filterChoices)}
+                locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[0]]}
+                locationOptionsOpen={locationOptionsOpen}
+                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
               />
             )}
             {/*
@@ -252,9 +275,13 @@ export default function BrowseContent({
                 className={classes.tabContent}
                 type={TYPES_BY_TAB_VALUE[1]}
                 applyFilters={handleApplyNewFilters}
+                errorMessage={errorMessage}
                 filtersExpanded={filtersExpanded}
                 unexpandFilters={unexpandFilters}
                 possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[1], filterChoices)}
+                locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[1]]}
+                locationOptionsOpen={locationOptionsOpen}
+                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
               />
             )}
 
@@ -287,8 +314,12 @@ export default function BrowseContent({
                   type={TYPES_BY_TAB_VALUE[2]}
                   applyFilters={handleApplyNewFilters}
                   filtersExpanded={filtersExpanded}
+                  errorMessage={errorMessage}
                   unexpandFilters={unexpandFilters}
                   possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[2], filterChoices)}
+                  locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[2]]}
+                  locationOptionsOpen={locationOptionsOpen}
+                  handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 />
               )}
 

@@ -86,9 +86,9 @@ const useStyles = makeStyles((theme) => {
       marginRight: theme.spacing(3),
     },
     loggedInRoot: {
-      display: "inline-block",
       verticalAlign: "middle",
       marginLeft: theme.spacing(2),
+      zIndex: 101,
     },
     loggedInAvatar: {
       height: 30,
@@ -165,6 +165,9 @@ const useStyles = makeStyles((theme) => {
       textAlign: "center",
     },
     loggedInLinksFixedHeader: {
+      zIndex: 30,
+    },
+    loggedInPopper: {
       zIndex: 30,
     },
   };
@@ -257,6 +260,11 @@ const getLoggedInLinks = ({ loggedInUser }) => {
     {
       href: "/profiles/" + loggedInUser.url_slug + "/#projects",
       text: "My Projects",
+      iconForDrawer: GroupWorkIcon,
+    },
+    {
+      href: "/profiles/" + loggedInUser.url_slug + "/#organizations",
+      text: "My Organizations",
       iconForDrawer: GroupWorkIcon,
     },
     {
@@ -657,7 +665,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader }) => {
       <Popper
         open={menuOpen}
         anchorEl={anchorRef.current}
-        className={fixedHeader && classes.loggedInLinksFixedHeader}
+        className={`${fixedHeader && classes.loggedInLinksFixedHeader} ${classes.loggedInPopper}`}
       >
         <ClickAwayListener onClickAway={handleCloseMenu}>
           <Paper>
@@ -677,7 +685,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader }) => {
                       component="button"
                       className={classes.loggedInLink}
                       onClick={link.isLogoutButton && handleLogout}
-                      href={!link.isLogoutButton && link.href}
+                      href={!link.isLogoutButton ? link.href : undefined}
                     >
                       {link.text}
                     </MenuItem>

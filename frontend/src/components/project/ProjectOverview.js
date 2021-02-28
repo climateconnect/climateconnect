@@ -1,22 +1,23 @@
-import React, { useContext, useEffect } from "react";
-import { Container, Typography, Button, Tooltip, Link, CircularProgress } from "@material-ui/core";
+import { Button, CircularProgress, Container, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import PlaceIcon from "@material-ui/icons/Place";
+import EmailIcon from "@material-ui/icons/Email";
 import ExploreIcon from "@material-ui/icons/Explore";
-import { getImageUrl } from "./../../../public/lib/imageOperations";
-import MessageContent from "../communication/MessageContent";
-import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import LanguageIcon from "@material-ui/icons/Language";
+import PlaceIcon from "@material-ui/icons/Place";
+import Axios from "axios";
+import Router from "next/router";
+import React, { useContext, useEffect } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
-import { startPrivateChat } from "../../../public/lib/messagingOperations";
-import Router from "next/router";
-import UserContext from "../context/UserContext";
 import tokenConfig from "../../../public/config/tokenConfig";
-import Axios from "axios";
-import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
+import { redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
-import EmailIcon from '@material-ui/icons/Email';
+import { startPrivateChat } from "../../../public/lib/messagingOperations";
+import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
+import MessageContent from "../communication/MessageContent";
+import UserContext from "../context/UserContext";
+import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
+import { getImageUrl } from "./../../../public/lib/imageOperations";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -48,11 +49,11 @@ const useStyles = makeStyles((theme) => ({
   infoBottomBar: {
     display: "flex",
     marginTop: theme.spacing(3),
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   smallScreenHeader: {
-    fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))"
-  }
+    fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))",
+  },
 }));
 
 const componentDecorator = (href, text, key) => (
@@ -84,6 +85,12 @@ export default function ProjectOverview({
   const handleClickContact = async (event) => {
     event.preventDefault();
     const creator = project.team.filter((m) => m.permission === "Creator")[0];
+    if(!user) {
+      return redirect("/signin", {
+        redirect: window.location.pathname + window.location.search,
+        errorMessage: "Please create an account or log in to contact a project's organizer.",
+      });      
+    }
     const chat = await startPrivateChat(creator, token);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
@@ -301,7 +308,7 @@ function LargeScreenOverview({
                   onClick={handleClickContact}
                   startIcon={<EmailIcon />}
                 >
-                  Contact organizer
+                  Contact creator
                 </Button>
               </Tooltip>
             )}

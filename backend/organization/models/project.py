@@ -1,3 +1,4 @@
+from location.models import Location
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
@@ -94,6 +95,7 @@ class Project(models.Model):
         max_length=4800
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     country = models.CharField(
         help_text="Points to a country of the project",
         verbose_name="Country",
@@ -102,10 +104,21 @@ class Project(models.Model):
         blank=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     city = models.CharField(
         help_text="Points to a city of the project",
         verbose_name="City",
         max_length=512,
+        null=True,
+        blank=True
+    )
+
+    loc = models.ForeignKey(
+        Location,
+        help_text="Points to the project's location",
+        verbose_name="Location",
+        related_name="project_loc",
+        on_delete=models.SET_NULL,
         null=True,
         blank=True
     )

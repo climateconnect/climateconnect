@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import Router from "next/router";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import EditAccountPage from "../../src/components/account/EditAccountPage";
@@ -10,19 +10,45 @@ import { getImageUrl } from "./../../public/lib/imageOperations";
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
 import PageNotFound from "../../src/components/general/PageNotFound";
 import { sendToLogin } from "../../public/lib/apiOperations";
+import { indicateWrongLocation, isLocationValid } from "../../public/lib/locationOperations";
 
 //This route should only be accessible to admins of the organization
 
 export default function EditOrganizationPage({ organization, tagOptions, token }) {
-  const [errorMessage, setErrorMessage] = React.useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const locationInputRef = useRef(null);
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
+
+  const handleSetLocationOptionsOpen = (newValue) => {
+    setLocationOptionsOpen(newValue);
+  };
+
+  const infoMetadata = {
+    ...organization_info_metadata,
+    location: {
+      ...organization_info_metadata.location,
+      locationOptionsOpen: locationOptionsOpen,
+      setLocationOptionsOpen: handleSetLocationOptionsOpen,
+      locationInputRef: locationInputRef,
+    },
+  };
 
   const handleSetErrorMessage = (msg) => {
     setErrorMessage(msg);
     window.scrollTo(0, 0);
   };
 
-  const saveChanges = (event, editedOrg) => {
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
+
+  const saveChanges = (editedOrg) => {
     const error = verifyChanges(editedOrg).error;
+    //verify location is valid and notify user if it's not
+    if (
+      editedOrg?.info?.location !== organization?.info?.location &&
+      !isLocationValid(editedOrg?.info?.location) &&
+      !legacyModeEnabled
+    )
+      indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, handleSetErrorMessage);
     if (error) {
       handleSetErrorMessage(error);
     } else {
@@ -84,7 +110,7 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
           type="organization"
           account={organization}
           possibleAccountTypes={tagOptions}
-          infoMetadata={organization_info_metadata}
+          infoMetadata={infoMetadata}
           accountHref={"/organizations/" + organization.url_slug}
           maxAccountTypes={2}
           handleSubmit={saveChanges}
@@ -120,7 +146,7 @@ EditOrganizationPage.getInitialProps = async (ctx) => {
 async function getOrganizationByUrlIfExists(organizationUrl, token) {
   try {
     const resp = await axios.get(
-      process.env.API_URL + "/api/organizations/" + organizationUrl + "/",
+      process.env.API_URL + "/api/organizations/" + organizationUrl + "/?edit_view=true",
       tokenConfig(token)
     );
     return parseOrganization(resp.data);
@@ -139,8 +165,7 @@ function parseOrganization(organization) {
     image: getImageUrl(organization.image),
     types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
     info: {
-      city: organization.city,
-      country: organization.country,
+      location: organization.location,
       shortdescription: organization.short_description,
       website: organization.website,
     },
@@ -183,8 +208,7 @@ const verifyChanges = (newOrg) => {
     name: "Please type your organization name under the avatar image",
   };
   const requiredInfoPropErrors = {
-    city: "Please specify your city",
-    country: "Please specify your country",
+    location: "Please specify your location",
   };
   for (const prop of Object.keys(requiredPropErrors)) {
     if (!newOrg[prop] || (Array.isArray(newOrg[prop]) && newOrg[prop].length <= 0)) {
