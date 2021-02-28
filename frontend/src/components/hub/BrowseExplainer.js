@@ -20,8 +20,8 @@ export default function BrowseExplainer() {
   return (
     <Container>
       <Typography component="div" className={classes.browseExplainer}>
-        <Typography component="h1" className={classes.headline}>
-          Find impactful climate change solutions created by Climate Connect users
+        <Typography component="h2" className={classes.headline}>
+          Find impactful climate change solutions created by Climate Connect users.
         </Typography>
       </Typography>
     </Container>
