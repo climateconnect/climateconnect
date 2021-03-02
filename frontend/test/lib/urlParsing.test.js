@@ -6,7 +6,7 @@ describe.only("lib", () => {
       expect(encodeQueryParamsFromFilters({})).toBeUndefined;
     });
 
-    it("builds basic query param", () => {
+    it("does not escape equals", () => {
       const stubFilters = {
         country: "Afghanistan",
         city: "",
@@ -18,7 +18,7 @@ describe.only("lib", () => {
       };
       const queryParam = encodeQueryParamsFromFilters(stubFilters);
       expect(queryParam).toBe(
-        "&country%3DAfghanistan%26status%3DIn%20Progress%26skills%3DCrafts%2CStorytelling%26"
+        "&country=Afghanistan&status=In%20Progress&skills=Crafts%2CStorytelling&"
       );
     });
 
@@ -27,7 +27,7 @@ describe.only("lib", () => {
         category: ["Gastronomy/Catering/Test"],
       };
       const queryParam = encodeQueryParamsFromFilters(stubFilters);
-      expect(queryParam).toBe("&category%3DGastronomy%2FCatering%2FTest%26");
+      expect(queryParam).toBe("&category=Gastronomy%2FCatering%2FTest&");
     });
 
     it("properly escapes entries with forward slashes (/) and ampersands (&)", () => {
@@ -35,7 +35,7 @@ describe.only("lib", () => {
         category: ["Gastronomy/Catering/Test&More"],
       };
       const queryParam = encodeQueryParamsFromFilters(stubFilters);
-      expect(queryParam).toBe("&category%3DGastronomy%2FCatering%2FTest%26More%26");
+      expect(queryParam).toBe("&category=Gastronomy%2FCatering%2FTest%26More&");
     });
   });
 });
