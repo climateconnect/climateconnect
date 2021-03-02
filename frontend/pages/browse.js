@@ -144,8 +144,16 @@ export default function Browse({
   if (router.query) {
     debugger;
 
+    // TODO: ensure this isn't called on every render, maybe useEffect
+
     // TODO(piper): differentiate between URL window state, and
     // the HTTP request
+
+    // TODO:
+    // Update the state of the visual filters, like Select, Dialog, etc
+
+    // Then actually fetch the data
+    // applyFilters(type, updatedFilters, isSmallScreen);
 
     console.log(`Router query: ${JSON.stringify(router.query)}`);
     // Apply new filters with the query object immediately:
