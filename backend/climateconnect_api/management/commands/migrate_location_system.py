@@ -1,3 +1,5 @@
+from django.contrib.gis.geos.point import Point
+from location.utility import get_global_location, get_multipolygon_from_geojson
 from location.utility import format_location, get_location
 from typing import Any
 from django.conf import settings
@@ -18,14 +20,14 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:
         get_global_location()
         unknown_location = get_unknown_location()
-        num_user_profiles = UserProfile.objects.filter(location_id=None).count()
-        user_profiles = UserProfile.objects.filter(location_id=None)
+        num_user_profiles = UserProfile.objects.filter(location__is_formatted=False).count()
+        user_profiles = UserProfile.objects.filter(location__is_formatted=False)
         migrate_table("profiles", num_user_profiles, user_profiles, "location", unknown_location)
-        num_organizations = Organization.objects.filter(location_id=None).count()
-        organizations = Organization.objects.filter(location_id=None)
+        num_organizations = Organization.objects.filter(location__is_formatted=False).count()
+        organizations = Organization.objects.filter(location__is_formatted=False)
         migrate_table("organizations", num_organizations, organizations, "location", unknown_location)
-        num_projects = Project.objects.filter(loc_id=None).count()
-        projects = Project.objects.filter(loc_id=None)
+        num_projects = Project.objects.filter(loc__is_formatted=False).count()
+        projects = Project.objects.filter(loc__is_formatted=False)
         migrate_table("projects", num_projects, projects, "loc", unknown_location)
 
 def migrate_table(name, num_elements, elements, location_key, unknown_location):
@@ -33,9 +35,10 @@ def migrate_table(name, num_elements, elements, location_key, unknown_location):
     counter = 0
     for element in elements:      
         print("City:"+ str(element.city) + " country:" + str(element.country))
-        location = Location.objects.filter(city=element.city, country=element.country)
-        if location.exists():
-            setattr(element, location_key, location[0])
+        locations = Location.objects.filter(city=element.city, country=element.country)
+        if locations.exists() and locations[0].is_formatted == True:
+            print("it exists and is formatted!")
+            setattr(element, location_key, locations[0])
             element.save()
         elif element.city == None or element.country == None:
             setattr(element, location_key, unknown_location)
@@ -43,7 +46,7 @@ def migrate_table(name, num_elements, elements, location_key, unknown_location):
             element.save()
         else:
             url_root = settings.LOCATION_SERVICE_BASE_URL + "/search?q="
-            url_ending = "&format=json&addressdetails=1&polygon_geojson=1"
+            url_ending = "&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.01&accept-language=en-US,en;q=0.9"
             query = element.city + ", " + element.country
             url = url_root + query + url_ending
             response = requests.get(url)
@@ -53,8 +56,23 @@ def migrate_table(name, num_elements, elements, location_key, unknown_location):
                 print("assigning unknown location for user "+element.url_slug)
                 element.save()     
             else:
-                print("assigning location:" + location_results[0]['name'] + " for user "+element.url_slug)
-                setattr(element, location_key, get_location(location_results[0]))
+                location_object = location_results[0]
+                location = get_location(location_object)
+                if location.is_formatted == False:      
+                    print(location)           
+                    print("formatting location "+location_object['name'])
+                    if not location_object['type'] == "Point":
+                        multipolygon = get_multipolygon_from_geojson(location_object['geojson'])
+                        location.multi_polygon = multipolygon
+                    location.city = location_object['city']
+                    location.country = location_object['country']
+                    location.state = location_object['state']
+                    location.name = location_object['name']
+                    location.is_formatted = True
+                    location.centre_point = Point(float(location_object['lat']), float(location_object['lon']))
+                    location.save()
+                print("assigning location:" + location_object['name'] + " for user "+element.url_slug)
+                setattr(element, location_key, location)
                 element.save()
         counter = counter + 1
         print("{counter}/{total} {name} updated ({percentage}%)".format(
@@ -80,33 +98,21 @@ def get_location_results(res):
         "historic",
     ]
 
-    banned_types = ["claimed_administrative", "hamlet", "isolated_dwelling", "croft"]
-
-    banned_osm_types = ["way"]
+    banned_types = ["claimed_administrative", "isolated_dwelling", "croft"]
 
     raw_location_results = json.loads(res)
     location_results = []
     for loc in raw_location_results:
         if (loc['importance'] > 0.5 and 
         loc['class'] not in banned_classes and 
-        loc['type'] not in banned_types and 
-        loc['osm_type'] not in banned_osm_types):
+        loc['type'] not in banned_types):
             location_results.append(format_location(loc, True))
     return location_results
-
-    
-def get_global_location():
-        global_location = Location.objects.filter(name="Global")
-        if global_location.exists():
-            return global_location[0]
-        else:
-            global_location = Location.objects.create(name="Global", city="global", country="global")
-            return global_location
 
 def get_unknown_location():
         unknown_location = Location.objects.filter(name="Unknown")
         if unknown_location.exists():
             return unknown_location[0]
         else:
-            unknown_location = Location.objects.create(name="Unknown", city="unknown", country="unknown")
+            unknown_location = Location.objects.create(name="Unknown", city="unknown", country="unknown", place_id=2, is_formatted=True)
             return unknown_location

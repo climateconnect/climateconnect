@@ -34,6 +34,12 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = get_allowed_hosts(env('ALLOWED_HOSTS'))
 
+INTERNAL_IPS = [
+    # ...
+    '127.0.0.1',
+    # ...
+]
+
 AUTO_VERIFY = True if env('AUTO_VERIFY') in ['True', 'true', 'TRUE'] else False
 
 # Application definition
@@ -58,13 +64,27 @@ LIBRARY_APPS = [
     'corsheaders',
     'channels',
     'django_filters',
-    'django.contrib.gis'
+    'django.contrib.gis',
 ]
 
-INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
+DEBUG_APPS = [
+    'debug_toolbar',
+]
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+if env('DEBUG') == "True":
+    INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS + DEBUG_APPS
+else:
+    INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
+
+SECURITY_MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',    
+]
+
+DEBUG_MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
+
+NORMAL_MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -73,6 +93,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if env('DEBUG') == "True":
+    MIDDLEWARE = SECURITY_MIDDLEWARE + DEBUG_MIDDLEWARE + NORMAL_MIDDLEWARE
+else:
+    MIDDLEWARE = SECURITY_MIDDLEWARE + NORMAL_MIDDLEWARE
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",

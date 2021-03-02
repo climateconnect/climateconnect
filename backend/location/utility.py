@@ -10,14 +10,18 @@ from django.contrib.gis.measure import D
 from django.conf import settings
 
 def get_legacy_location(location_object):
-    required_params = ['city', 'country']
+    required_params = ['country']
 
     for param in required_params:
         if param not in location_object:
             raise ValidationError('Required parameter is missing:'+param)
     
+    if 'city' in location_object:
+        city = location_object['city']
+    else:
+        city = ""
     loc = Location.objects.filter(
-        city=location_object['city'], 
+        city=city, 
         country=location_object['country']
     )
     if loc.exists():
@@ -35,20 +39,27 @@ def get_legacy_location(location_object):
 def get_location(location_object):
     if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
         return get_legacy_location(location_object)
-
     required_params = [
         'osm_id', 
         'place_id', 
-        'city',
-        'state',
         'country',
         'name',
-        'type'
+        'type',
+        'lon',
+        'lat'
     ]
     for param in required_params:
         if param not in location_object:
             raise ValidationError('Required parameter is missing:'+param)
-    loc = Location.objects.filter(place_id=location_object['place_id'])
+    loc = Location.objects.filter(place_id=location_object['place_id']) 
+    if 'city' in location_object:
+        city = location_object['city']
+    else:
+        city = ""   
+    if 'state' in location_object:
+        state = location_object['state']
+    else:
+        state = ""   
     if loc.exists():
         return loc[0]
     elif location_object['type'] == "Point":
@@ -58,23 +69,30 @@ def get_location(location_object):
         loc = Location.objects.create(
             osm_id=location_object['osm_id'],
             place_id=location_object['place_id'],
-            city=location_object['city'],
-            state=location_object['state'],
+            city=city,
+            state=state,
             country=location_object['country'],
             name=location_object['name'],
             centre_point=switched_point,
+            is_formatted=True
         )
+        return loc
+    elif location_object['type'] == "global":
+        loc = get_global_location()
         return loc
     else:
         multipolygon = get_multipolygon_from_geojson(location_object['geojson'])
+        centre_point = Point(float(location_object['lat']), float(location_object['lon']))
         loc = Location.objects.create(
             osm_id=location_object['osm_id'],
             place_id=location_object['place_id'],
-            city=location_object['city'],
-            state=location_object['state'],
+            city=city,
+            state=state,
             country=location_object['country'],
             name=location_object['name'],
             multi_polygon=multipolygon,
+            is_formatted=True,
+            centre_point = centre_point
         )
         return loc
 
@@ -134,21 +152,23 @@ def format_location(location_string, already_loaded):
         'state': location_name['state'],
         'country': location_name['country'],
         'geojson': location_object['geojson'],
-        'coordinates': location_object['geojson']['coordinates']
+        'coordinates': location_object['geojson']['coordinates'],
+        'lon': location_object['lon'],
+        'lat': location_object['lat']
     }
 
 def format_location_name(location):
     first_part_order = [
         "village",
         "town",
-        "city_district",
-        "district",
+        "city_district",        
         "suburb",
         "borough",
         "subdivision",
         "neighbourhood",
         "place",
         "city",
+        "district",
         "municipality",
         "county",
         "state_district",
@@ -209,7 +229,7 @@ def get_middle_part(address, order, suffixes):
                     return address[suffix]
     return ""
 
-def get_location_ids_in_range(query_params): 
+def get_location_with_range(query_params): 
     filter_place_id = query_params.get('place')
     locations = Location.objects.filter(place_id=filter_place_id)
         # shrink polygon by 1 meter to exclude places that share a border
@@ -220,20 +240,29 @@ def get_location_ids_in_range(query_params):
         url_root = settings.LOCATION_SERVICE_BASE_URL + "/lookup?osm_ids="
         # Append osm_id to first letter of osm_type as uppercase letter 
         osm_id_param = query_params.get('loc_type')[0].upper()+query_params.get('osm')
-        params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9"
+        params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9&polygon_threshold=0.001"
         url = url_root+osm_id_param+params
         response = requests.get(url)
-        location = get_location(format_location(response.text, False))
+        location_object = json.loads(response.text)[0]
+        location = get_location(format_location(location_object, False))
         location_in_db = location.multi_polygon.buffer(buffer_width)
     else:        
-        location_in_db = locations[0].multi_polygon.buffer(buffer_width)
+        location = locations[0]
+        location_in_db = location.multi_polygon.buffer(buffer_width)
     radius = 0
     if 'radius' in query_params:
         radius_value = query_params.get('radius')
         radius = D(km=radius_value) 
-    locations_in_range = Location.objects.filter(
-        Q(multi_polygon__distance_lte=(location_in_db, radius))
-        |
-        Q(centre_point__distance_lte=(location_in_db, radius))
-    )
-    return list(map((lambda loc: loc.id), locations_in_range))
+    return {
+        'location': location_in_db,
+        'radius': radius,
+        'country': location.country
+    }
+
+def get_global_location():
+        global_location = Location.objects.filter(name="Global")
+        if global_location.exists():
+            return global_location[0]
+        else:
+            global_location = Location.objects.create(name="Global", city="global", country="global", place_id=1, is_formatted=True)
+            return global_location

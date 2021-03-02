@@ -21,7 +21,7 @@ export default function getFilters(key, filterChoices) {
 }
 
 const getLocationFilters = () => {
-  if(process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
+  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return [
       {
         icon: LocationOnOutlinedIcon,
@@ -36,8 +36,8 @@ const getLocationFilters = () => {
         title: "Country",
         type: "text",
         key: "country",
-      }
-    ]
+      },
+    ];
   }
   return [
     {
@@ -46,9 +46,9 @@ const getLocationFilters = () => {
       title: "Location",
       type: "location",
       key: "location",
-    }
-  ]
-}
+    },
+  ];
+};
 
 const getMembersFilters = (filterChoices) => [
   ...getLocationFilters(),

@@ -100,7 +100,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
           ),
         });
       } else {
-        const location = getLocationValue(values, "location")
+        const location = getLocationValue(values, "location");
         setOrganizationInfo({
           ...organizationInfo,
           name: values.organizationname,
