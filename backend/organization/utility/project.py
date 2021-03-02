@@ -1,6 +1,6 @@
 from location.utility import get_location
 from typing import Dict
-from organization.models import Project
+from organization.models import Project, ProjectMember
 from climateconnect_api.models import (Skill,)
 from climateconnect_main.utility.general import get_image_from_data_url
 
@@ -53,3 +53,19 @@ def create_new_project(data: Dict) -> Project:
 
     project.save()
     return project
+
+def add_project_member(project,user,user_role,role_in_project,availability):
+    """
+    Adds a user to a project. Assumes valid data at input.
+
+
+    """
+
+    ProjectMember.objects.create(
+                        project=project
+                        ,user=user
+                        ,role=user_role
+                        ,role_in_project=role_in_project
+                        ,availability=availability
+                    )
+    return 
