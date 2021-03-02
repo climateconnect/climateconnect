@@ -10,7 +10,7 @@ import {
   membersWithAdditionalInfo,
 } from "../public/lib/getOptions";
 
-import { encodeQueryParamsFromFilters } from "../public/lib/urlParsing";
+import { encodeQueryParamsFromFilters } from "../public/lib/urlOperations";
 import tokenConfig from "../public/config/tokenConfig";
 
 import WideLayout from "../src/components/layouts/WideLayout";
@@ -41,13 +41,17 @@ export default function Browse({
     if (filters === newFilters) {
       return;
     }
+
     //todo: throw error if user didn't choose a location from the list
     setFilters({ ...filters, [type]: newFilters });
+
     const newUrlEnding = encodeQueryParamsFromFilters(newFilters);
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }
+
     setErrorMessage(null);
+
     try {
       const filteredItemsObject = await getDataFromServer({
         type: type,
@@ -218,7 +222,17 @@ async function getMembers(page, token, urlEnding) {
 
 async function getDataFromServer({ type, page, token, urlEnding }) {
   let url = `${process.env.API_URL}/api/${type}/?page=${page}`;
-  if (urlEnding) url += urlEnding;
+
+  // Handle query params as well
+  if (urlEnding) {
+    console.log(`Log: ${urlEnding}`);
+    // &category=Lowering%20food%20waste&
+    url += urlEnding;
+
+    console.log(`Full: ${url}`);
+
+    // Full: http://127.0.0.1:8000/api/projects/?page=1&status=In%20Progress&category=Lowering%20food%20waste&collaboration=no&
+  }
 
   try {
     console.log(`Getting data for ${type} at ${url}`);

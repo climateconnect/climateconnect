@@ -1,22 +1,24 @@
-import React from "react";
+import React, { useCallback } from "react";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
+import { persistFiltersInURL } from "../../../public/lib/urlOperations";
+import { remove } from "lodash";
 
 export default function FilterContent({
-  type,
-  className,
   applyFilters,
-  possibleFilters,
+  className,
+  errorMessage,
   filtersExpanded,
-  unexpandFilters,
+  handleSetLocationOptionsOpen,
   locationInputRef,
   locationOptionsOpen,
-  handleSetLocationOptionsOpen,
-  errorMessage,
+  possibleFilters,
+  type,
+  unexpandFilters,
 }) {
   const isMediumScreen = useMediaQuery(theme.breakpoints.between("xs", "md"));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
@@ -68,16 +70,27 @@ export default function FilterContent({
   };
 
   const handleUnselectFilter = (filterName, filterKey) => {
-    setCurrentFilters({
+    const updatedFilters = {
       ...currentFilters,
       [filterKey]: currentFilters[filterKey].filter((f) => f !== filterName),
-    });
-    if (selectedItems[filterKey])
+    };
+
+    // When dismissing a selected filter chip, we also want to update the
+    // window state to reflect the currently active filters, and fetch
+    // the updated data from the server
+    // persistFiltersInURL(updatedFilters);
+    applyFilters(type, updatedFilters, isSmallScreen);
+
+    setCurrentFilters(updatedFilters);
+
+    if (selectedItems[filterKey]) {
       setSelectedItems({
         ...selectedItems,
         [filterKey]: selectedItems[filterKey].filter((i) => i.name !== filterName),
       });
+    }
   };
+
   return (
     <div className={className}>
       {isSmallScreen ? (

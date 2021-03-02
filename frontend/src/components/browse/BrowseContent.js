@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Container, Tabs, Tab, Divider, useMediaQuery, makeStyles } from "@material-ui/core";
 
-import { encodeQueryParamsFromFilters } from "../../../public/lib/urlParsing";
+import { persistFiltersInURL } from "../../../public/lib/urlOperations";
 import FilterSection from "../indexPage/FilterSection";
 import FilterContent from "../filter/FilterContent";
 import ProjectPreviews from "../project/ProjectPreviews";
@@ -156,29 +156,6 @@ export default function BrowseContent({
   };
 
   /**
-   * For example when filtering by location="San Francisco", the url should
-   * automatically change to active filters. This enables filtered searches
-   * to persist, so that they can be easily shareable to other users.
-   *
-   * Builds a URL and updates window state. E.g. something like:
-   * http://localhost:3000/browse?&country=Austria&city=vienna&
-   */
-  const persistFiltersInURL = (activeFilters) => {
-    const filteredParams = encodeQueryParamsFromFilters(activeFilters);
-    const filteredQueryParams = `?${filteredParams}`;
-
-    // Build a URL with properties. E.g., /browse?...
-    const origin = window?.location?.origin;
-    const pathname = window?.location?.pathname;
-    const newUrl = `${origin}${pathname}${filteredQueryParams}`;
-
-    // Only push state if there's a URL change
-    if (newUrl !== window?.location?.href) {
-      window.history.pushState({}, "", newUrl);
-    }
-  };
-
-  /**
    * Sets loading state to true to until the results are
    * returned from applying the new filters. Then updates the
    * state.
@@ -191,12 +168,15 @@ export default function BrowseContent({
       indicateWrongLocation(locationInputRefs[type], setLocationOptionsOpen, handleSetErrorMessage);
       return;
     }
+
     handleSetErrorMessage("");
     setIsFiltering(true);
+
     const res = await applyNewFilters(type, newFilters, closeFilters, state.urlEnding[type]);
     if (res?.closeFilters) {
       setFiltersExpanded(false);
     }
+
     if (res?.filteredItemsObject) {
       setState({
         ...state,

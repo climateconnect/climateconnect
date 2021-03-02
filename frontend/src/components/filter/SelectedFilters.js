@@ -29,6 +29,7 @@ export default function SelectedFilters({ currentFilters, possibleFilters, handl
   return (
     <div>
       {hasFilters && <Typography>Selected Filters</Typography>}
+
       {Object.keys(currentFilters).map((key) => {
         if (
           currentFilters[key] &&

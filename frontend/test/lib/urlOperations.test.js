@@ -1,4 +1,4 @@
-import { encodeQueryParamsFromFilters } from "../../public/lib/urlParsing";
+import { encodeQueryParamsFromFilters } from "../../public/lib/urlOperations";
 
 describe.only("lib", () => {
   describe("encodeQueryParamsFromFilters", () => {
