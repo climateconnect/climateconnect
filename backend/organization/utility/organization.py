@@ -1,4 +1,4 @@
-from organization.models import Organization
+from organization.models import Organization, OrganizationMember
 
 
 def check_organization(organization_id: str) -> Organization:
@@ -7,3 +7,10 @@ def check_organization(organization_id: str) -> Organization:
     except Organization.DoesNotExist:
         organization = None
     return organization
+
+def add_organization_member(organization, user, user_role, role_in_organization):
+    OrganizationMember.objects.create(
+                    organization=organization, user=user, role=user_role, role_in_organization=role_in_organization
+                )
+                    
+    return
