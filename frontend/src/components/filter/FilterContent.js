@@ -6,7 +6,7 @@ import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
 import { persistFiltersInURL } from "../../../public/lib/urlOperations";
-import { remove } from "lodash";
+import { remove, update } from "lodash";
 
 export default function FilterContent({
   applyFilters,
@@ -55,14 +55,28 @@ export default function FilterContent({
   };
 
   const handleClickDialogClose = (prop, results) => {
+    // TODO(piper): on "Save" of the dialog, we should
+    // fetch new results, update URL, etc.
+
     if (results) {
-      setCurrentFilters({ ...currentFilters, [prop]: results.map((x) => x.name) });
+      const updatedFilters = { ...currentFilters, [prop]: results.map((x) => x.name) };
+      setCurrentFilters(updatedFilters);
+      // console.log(currentFilters);
+      console.log("here");
+      debugger;
+      console.log(currentFilters);
+      applyFilters(type, updatedFilters, isSmallScreen);
     }
+
     setOpen({ ...open, [prop]: false });
   };
 
   const handleValueChange = (key, newValue) => {
-    setCurrentFilters({ ...currentFilters, [key]: newValue });
+    // TODO(piper): we want to update and fetch data on any value change
+    const updatedFilters = { ...currentFilters, [key]: newValue };
+    debugger;
+    applyFilters(type, updatedFilters, isSmallScreen);
+    setCurrentFilters(updatedFilters);
   };
 
   const handleApplyFilters = () => {

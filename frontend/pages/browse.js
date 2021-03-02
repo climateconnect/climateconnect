@@ -142,6 +142,12 @@ export default function Browse({
    */
   const router = useRouter();
   if (router.query) {
+    debugger;
+
+    // TODO(piper): differentiate between URL window state, and
+    // the HTTP request
+
+    console.log(`Router query: ${JSON.stringify(router.query)}`);
     // Apply new filters with the query object immediately:
     // applyNewFilters
   }

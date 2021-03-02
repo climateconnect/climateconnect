@@ -1,6 +1,7 @@
 import React from "react";
 import { TextField, Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+
 import SelectField from "../general/SelectField";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import LocationSearchBar from "../search/LocationSearchBar";
@@ -103,6 +104,7 @@ export default function Filters({
           <Typography color="error">{errorMessage}</Typography>
         </div>
       )}
+      {/* TODO(piper): add this functionality to all elements where we apply new filters */}
       <div className={`${classes.flexContainer} ${isInOverlay && classes.verticalFlexContainer}`}>
         {possibleFilters.map((filter) => {
           if (filter.type === "text") {
@@ -239,7 +241,9 @@ export default function Filters({
             );
           }
         })}
-        {withApplyButton && (
+
+        {/* TODO(piper): remove apply button */}
+        {/* {withApplyButton && (
           <div className={applyButtonFixedWidth && classes.applyButtonContainer}>
             <Button
               color="primary"
@@ -250,7 +254,7 @@ export default function Filters({
               Apply
             </Button>
           </div>
-        )}
+        )} */}
       </div>
     </>
   );

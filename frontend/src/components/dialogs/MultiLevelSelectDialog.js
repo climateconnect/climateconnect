@@ -22,6 +22,9 @@ export default function MultiLevelSelectDialog({
     onClose();
   };
 
+  // When clicking "Save" to close the
+  // dialog, we want to apply the filters,
+  // update the persisted URL, and refectch the data
   const applySkills = () => {
     onClose(selectedItems);
   };
