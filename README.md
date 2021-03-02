@@ -51,7 +51,8 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
 #### First Time Setup
 
 1.  Go to backend directory: `cd backend`
-1.  Run `pip install -r requirements.txt` to install all backend libraries.
+1.  create 2 new empty directories that will contain static and media files. `mkdir static & mkdir media` 
+1.  Run `pip install -r dev-requirements.txt` to install all backend libraries in your dev environment or `requirements.txt`.
 1.  Create `.backend_env` to set environment variables.
     - You can find up-to-date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md).
     - For the [Django `SECRET_KEY`](https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-SECRET_KEY), run `openssl rand -base64 32` to create a 32 char random secret.
@@ -59,6 +60,10 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
     - Note: This command is used for when you first start, or whenever you are adding or updating database models.
 1.  Create supersuer using `python manage.py createsuperuser`
     - You can then access your admin panel via <API_URL>/admin/
+
+##### Notes:
+1. If you are running on Ubuntu, you will possibly need extra steps to install GDAL in your venv. Follow these instructions https://gist.github.com/cspanring/5680334
+1. To have Postgis running on a docker, simply run docker-compose.dev.yaml.
 
 #### Continual Development
 
