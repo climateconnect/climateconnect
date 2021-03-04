@@ -26,8 +26,9 @@ from organization.serializers.project import (
 from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
 from organization.serializers.tags import (ProjectTagsSerializer)
-from organization.utility.project import create_new_project
-from organization.permissions import (ReadSensibleProjectDataPermission, ProjectReadWritePermission, AddProjectMemberPermission, ProjectMemberReadWritePermission, ChangeProjectCreatorPermission)
+from organization.utility.project import create_new_project, get_project_admin_creators
+from organization.permissions import (ReadSensibleProjectDataPermission, ProjectReadWritePermission, AddProjectMemberPermission, ProjectMemberReadWritePermission
+    , ChangeProjectCreatorPermission, ApproveDenyProjectMemberRequest)
 from organization.pagination import (
     ProjectsPagination, MembersPagination, ProjectPostPagination, ProjectCommentPagination
 )
@@ -35,7 +36,8 @@ from organization.utility.organization import (
     check_organization,
 )
 from organization.utility.notification import (
-    create_project_comment_reply_notification, create_project_comment_notification, create_project_follower_notification
+    create_project_comment_reply_notification, create_project_comment_notification, create_project_follower_notification,create_project_join_request_notification,
+    create_project_join_request_approval_notification
 )
 from rest_framework.exceptions import ValidationError, NotFound
 from climateconnect_main.utility.general import get_image_from_data_url
@@ -733,32 +735,33 @@ class RequestJoinProject(RetrieveUpdateAPIView):
 
         if exists:
             return Response({
-                            'message': 'Request already exists'
-                            }, status=status.HTTP_400_BAD_REQUEST)
+                            'message': 'Request already exists'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             
             try:
                 request_id = request_manager.create_membership_request()
-                return Response({"requestId":request_id}, status=status.HTTP_201_CREATED)
+                project_admins = get_project_admin_creators(project)
+                create_project_join_request_notification(requester=user,project_admins=project_admins,project=project)
+
+
+                return Response({"requestId":request_id}, status=status.HTTP_200_OK)
             except:
                 logging.error(traceback.format_exc())
                 return Response({
-                            'message': 'Internal Server Error'
-                            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                            'message': f'Internal Server Error {traceback.format_exc()}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ManageJoinProject(RetrieveUpdateAPIView):
     """
     A view that enables a user to request to join a project 
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [ApproveDenyProjectMemberRequest]
 
       
     
     def post(self, request, project_slug, request_action,request_id):
         try:
-            logger.error(f"Got project_slug = {project_slug}")
             project = Project.objects.filter(url_slug=project_slug).first()
-            logger.error(project)
+
         except:
             return Response({
                             'message': 'Project Does Not Exist'
@@ -766,18 +769,25 @@ class ManageJoinProject(RetrieveUpdateAPIView):
 
 
         try:
+            request_manager = MembershipRequestsManager(membership_request_id = request_id,project=project)
+            if request_manager.corrupt_membership_request_id:
+                return Response({'message': 'Request Does Not Exist'}, status=status.HTTP_404_NOT_FOUND)
+            elif request_manager.validation_failed:
+                #request_manager.errors
+                return Response({'message': 'Operation Failed.'}, status=status.HTTP_400_BAD_REQUEST)
+
             if request_action == 'approve':
-                logger.error("Approving Now")
-                request_manager = MembershipRequestsManager(membership_request_id = request_id,project=project).approve_request()
+                request_manager.approve_request()
+                create_project_join_request_approval_notification(requester=request.user,project=project)
+
             elif request_action == 'reject':
-                request_manager = MembershipRequestsManager(membership_request_id = request_id,project=project).reject_request()
+                request_manager.reject_request()
             else:
                 raise NotImplementedError(f"membership request action <{request_action}> is not implemented ")
 
             return Response(data={'message':'Operation Succeeded'}, status=status.HTTP_200_OK)
         except:
             return Response({
-                            'message': f'Internal Server Error'
-                            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                            'message': f'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         
