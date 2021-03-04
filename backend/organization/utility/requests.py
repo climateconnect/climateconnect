@@ -25,10 +25,15 @@ class MembershipRequestsManager(object):
     Manages the project/org membership requests. 
     2 instantiations possible: 
     A. Either to create a new request. In that case, supply the paramn: user, membership_target, user_availability, project, organization, message
-    B. To manage an existing request, provide the request id only as a kwargs
+    B. To manage an existing request, provide the request id only as a kwargs. If project or organization are added, then the class check for the consistency of the supplied id 
+    and the corresponding project/ organization. If validation fails, property validation_failed will be True and errors property will contain a list of errors.
     """
     def __init__(self,**kwargs):
         
+        self.validation_failed = False
+        self.duplicate_request = False 
+        
+        self.errors = list()
         if 'membership_request_id' not in kwargs.keys(): #new request
             user = kwargs['user']
             membership_target = kwargs['membership_target']
@@ -41,9 +46,12 @@ class MembershipRequestsManager(object):
                 self.organization = kwargs['organization']  
                 self.project = None
             else:
-                raise NotImplementedError(f"{membership_target} is not implemented!")
+                self.validation_failed=True
+                self.errors.append(NotImplementedError(f"{membership_target} is not implemented!"))
             self.user = user
-            
+            self.user_availability = user_availability
+            self.message = kwargs['message'] 
+            self.membership_request = None         
 
 
             # check if the request exists already
@@ -54,24 +62,32 @@ class MembershipRequestsManager(object):
 
 
             
-            self.duplicate_request = True if n > 0 else False
-            self.user_availability = user_availability
-            self.message = kwargs['message'] 
-            self.membership_request = None
+            if n > 0:
+                self.validation_failed = True 
+                self.errors.append(Exception("Request Already Exists"))
+                self.duplicate_request = True
+
+
 
 
 
         else: #id of request is supplied
-            self._request_operation_invalid = False
-            self.membership_request = MembershipRequests.objects.get(id=int(kwargs['membership_request_id']))
-            self.membership_target = MembershipTarget(self.membership_request.target_membership_type)
-            self.user = self.membership_request.user
-            self.user_availability = self.membership_request.availability
-            self.project = self.membership_request.target_project
-            if 'project' in kwargs:
-                if kwargs['project'] != self.membership_request.target_project: self._request_operation_invalid = True
-
-
+            self.membership_request = MembershipRequests.objects.filter(id=int(kwargs['membership_request_id']))
+            if self.membership_request.count()!=1 :
+                self.corrupt_membership_request_id = True
+                self.validation_failed = True 
+                self.errors.append(Exception(f"More than a record or not a single record was found in membership requests for request id {int(kwargs['membership_request_id'])}"))
+            else:
+                self.membership_request = self.membership_request.first()
+                self.corrupt_membership_request_id = False
+                self.membership_target = MembershipTarget(self.membership_request.target_membership_type)
+                self.user = self.membership_request.user
+                self.user_availability = self.membership_request.availability
+                self.project = self.membership_request.target_project
+                if 'project' in kwargs:
+                    if kwargs['project'].id != self.membership_request.target_project.id: 
+                        self.validation_failed = True
+                        self.errors.append(Exception("Inconsistent Project and Request"))
 
         return
 
@@ -98,8 +114,7 @@ class MembershipRequestsManager(object):
 
 
     def approve_request(self,**kwargs):
-        if self.membership_request is None: raise Exception("Cannot approve request without having a request id")
-        if self._request_operation_invalid: raise Exception("The target project is inconsistent with the original request")
+
 
         self.membership_request.request_status = RequestStatus.APPROVED.value 
         self.membership_request.approved_at = timezone.now()
