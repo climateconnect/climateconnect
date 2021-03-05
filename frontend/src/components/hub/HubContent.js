@@ -1,18 +1,20 @@
 import {
-  Container,
-  Typography,
-  makeStyles,
   Button,
-  Collapse,
-  useMediaQuery,
+  Collapse, Container,
+
+  makeStyles, Typography,
+
+
+
+  useMediaQuery
 } from "@material-ui/core";
-import React from "react";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import StatBox from "./StatBox";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import React from "react";
+import theme from "../../themes/theme";
 import MessageContent from "../communication/MessageContent";
 import ElementOnScreen from "../hooks/ElementOnScreen";
-import theme from "../../themes/theme";
+import StatBox from "./StatBox";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -90,6 +92,8 @@ export default function HubContent({
   statBoxTitle,
   scrollToSolutions,
   subHeadline,
+  hubQuickInfoRef,
+  hubProjectsButtonRef,
 }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -124,7 +128,7 @@ export default function HubContent({
           <Typography component="h2" className={classes.textHeadline}>
             {subHeadline}
           </Typography>
-          <div className={classes.quickInfo}>
+          <div className={classes.quickInfo} ref={hubQuickInfoRef}>
             <MessageContent content={quickInfo} />
           </div>
           <div>
@@ -160,8 +164,9 @@ export default function HubContent({
           variant="contained"
           color="primary"
           onClick={scrollToSolutions}
+          ref={hubProjectsButtonRef}
         >
-          <ExpandMoreIcon /> Show Solutions
+          <ExpandMoreIcon /> Show Projects
         </Button>
       </div>
     </Container>

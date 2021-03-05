@@ -1,5 +1,5 @@
+import { Button, Container, Link, makeStyles, useMediaQuery } from "@material-ui/core";
 import React from "react";
-import { makeStyles, Link, Container, useMediaQuery, Button } from "@material-ui/core";
 import theme from "../../themes/theme";
 
 const useStyles = makeStyles((theme) => ({
@@ -28,11 +28,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubsSubHeader({ hubs }) {
+export default function HubsSubHeader({ hubs, subHeaderRef }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   return (
-    <div className={classes.root}>
+    <div className={classes.root} ref={subHeaderRef}>
       <Container className={classes.container}>
         {isNarrowScreen ? (
           <Button className={classes.viewHubsButton} variant="contained" href={`/hubs/`}>

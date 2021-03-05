@@ -1,22 +1,22 @@
-import React, { useContext, useEffect } from "react";
-import { Container, Typography, Button, Tooltip, Link, CircularProgress } from "@material-ui/core";
+import { Button, CircularProgress, Container, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import PlaceIcon from "@material-ui/icons/Place";
+import EmailIcon from "@material-ui/icons/Email";
 import ExploreIcon from "@material-ui/icons/Explore";
-import { getImageUrl } from "./../../../public/lib/imageOperations";
-import MessageContent from "../communication/MessageContent";
-import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import LanguageIcon from "@material-ui/icons/Language";
+import PlaceIcon from "@material-ui/icons/Place";
+import Axios from "axios";
+import Router from "next/router";
+import React, { useContext, useEffect } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
-import { startPrivateChat } from "../../../public/lib/messagingOperations";
-import Router from "next/router";
-import UserContext from "../context/UserContext";
 import tokenConfig from "../../../public/config/tokenConfig";
-import Axios from "axios";
-import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import { getParams } from "../../../public/lib/generalOperations";
-import EmailIcon from "@material-ui/icons/Email";
+import { startPrivateChat } from "../../../public/lib/messagingOperations";
+import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
+import MessageContent from "../communication/MessageContent";
+import UserContext from "../context/UserContext";
+import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
+import { getImageUrl } from "./../../../public/lib/imageOperations";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -74,6 +74,7 @@ export default function ProjectOverview({
   handleToggleFollowProject,
   isUserFollowing,
   followingChangePending,
+  contactProjectCreatorButtonRef,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -130,6 +131,7 @@ export default function ProjectOverview({
           hasAdminPermissions={hasAdminPermissions}
           toggleShowFollowers={toggleShowFollowers}
           followingChangePending={followingChangePending}
+          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
         />
       ) : (
         <LargeScreenOverview
@@ -140,6 +142,7 @@ export default function ProjectOverview({
           hasAdminPermissions={hasAdminPermissions}
           toggleShowFollowers={toggleShowFollowers}
           followingChangePending={followingChangePending}
+          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
         />
       )}
       <ProjectFollowersDialog
@@ -163,6 +166,7 @@ function SmallScreenOverview({
   hasAdminPermissions,
   toggleShowFollowers,
   followingChangePending,
+  contactProjectCreatorButtonRef,
 }) {
   const classes = useStyles();
   return (
@@ -219,6 +223,7 @@ function SmallScreenOverview({
               variant="contained"
               color="primary"
               onClick={handleClickContact}
+              ref={contactProjectCreatorButtonRef}
             >
               Contact
             </Button>
@@ -237,6 +242,7 @@ function LargeScreenOverview({
   hasAdminPermissions,
   toggleShowFollowers,
   followingChangePending,
+  contactProjectCreatorButtonRef,
 }) {
   const classes = useStyles();
   return (
@@ -300,6 +306,7 @@ function LargeScreenOverview({
                   color="primary"
                   onClick={handleClickContact}
                   startIcon={<EmailIcon />}
+                  ref={contactProjectCreatorButtonRef}
                 >
                   Contact organizer
                 </Button>

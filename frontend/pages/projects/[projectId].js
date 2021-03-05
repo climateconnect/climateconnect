@@ -1,21 +1,22 @@
-import React, { useEffect, useContext } from "react";
-import { Container, Tabs, Tab, Typography } from "@material-ui/core";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { Container, Tab, Tabs, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Cookies from "next-cookies";
-
-import WideLayout from "../../src/components/layouts/WideLayout";
-import ProjectOverview from "../../src/components/project/ProjectOverview";
-import ProjectContent from "../../src/components/project/ProjectContent";
-import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
-import ProjectCommentsContent from "../../src/components/project/ProjectCommentsContent";
-
-import tokenConfig from "../../public/config/tokenConfig";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import axios from "axios";
-import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
-import UserContext from "../../src/components/context/UserContext";
-import PageNotFound from "../../src/components/general/PageNotFound";
+import Cookies from "next-cookies";
+import React, { useContext, useEffect, useRef } from "react";
+import tokenConfig from "../../public/config/tokenConfig";
 import { redirect } from "../../public/lib/apiOperations";
+import UserContext from "../../src/components/context/UserContext";
+import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
+import PageNotFound from "../../src/components/general/PageNotFound";
+import WideLayout from "../../src/components/layouts/WideLayout";
+import ProjectCommentsContent from "../../src/components/project/ProjectCommentsContent";
+import ProjectContent from "../../src/components/project/ProjectContent";
+import ProjectOverview from "../../src/components/project/ProjectOverview";
+import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
+import Tutorial from "../../src/components/tutorial/Tutorial";
+
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -145,6 +146,12 @@ function ProjectLayout({
   const [hash, setHash] = React.useState(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({ follow: false, leave: false });
   const typesByTabValue = ["project", "team", "comments"];
+
+  //refs for tutorial
+  const projectDescriptionRef = useRef(null)
+  const collaborationSectionRef = useRef(null)
+  const contactProjectCreatorButtonRef = useRef(null)
+  const projectTabsRef = useRef(null)
 
   useEffect(() => {
     if (window.location.hash) {
@@ -284,10 +291,11 @@ function ProjectLayout({
         handleToggleFollowProject={handleToggleFollowProject}
         isUserFollowing={isUserFollowing}
         followingChangePending={followingChangePending}
+        contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
       />
 
       <Container className={classes.noPadding}>
-        <div className={classes.tabsWrapper}>
+        <div className={classes.tabsWrapper} ref={projectTabsRef}>
           <Tabs
             variant={isNarrowScreen ? "fullWidth" : "standard"}
             value={tabValue}
@@ -303,7 +311,12 @@ function ProjectLayout({
 
       <Container className={classes.tabContent}>
         <TabContent value={tabValue} index={0}>
-          <ProjectContent project={project} leaveProject={requestLeaveProject} />
+          <ProjectContent 
+            project={project} 
+            leaveProject={requestLeaveProject} 
+            projectDescriptionRef={projectDescriptionRef}
+            collaborationSectionRef={collaborationSectionRef}
+          />
         </TabContent>
         <TabContent value={tabValue} index={1}>
           <ProjectTeamContent project={project} leaveProject={requestLeaveProject} />
@@ -352,6 +365,15 @@ function ProjectLayout({
         }
         confirmText="Yes"
         cancelText="No"
+      />
+      <Tutorial
+        fixedPosition 
+        pointerRefs={{
+          projectDescriptionRef: projectDescriptionRef,
+          collaborationSectionRef: collaborationSectionRef,
+          contactProjectCreatorButtonRef: contactProjectCreatorButtonRef,
+          projectTabsRef: projectTabsRef
+        }}
       />
     </div>
   );
