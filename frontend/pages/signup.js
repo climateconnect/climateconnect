@@ -4,9 +4,15 @@ import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { getParams } from "../public/lib/generalOperations";
 import {
-  getLocationValue, indicateWrongLocation, isLocationValid, parseLocation
+  getLocationValue,
+  indicateWrongLocation,
+  isLocationValid,
+  parseLocation,
 } from "../public/lib/locationOperations";
-import { getLastCompletedTutorialStep, getLastStepBeforeSkip } from "../public/lib/tutorialOperations";
+import {
+  getLastCompletedTutorialStep,
+  getLastStepBeforeSkip,
+} from "../public/lib/tutorialOperations";
 import UserContext from "../src/components/context/UserContext";
 import Layout from "../src/components/layouts/layout";
 import BasicInfo from "../src/components/signup/BasicInfo";
@@ -27,12 +33,13 @@ export default function Signup() {
   const cookies = new Cookies();
 
   //Information about the completion state of the tutorial
-  const tutorialCookie = cookies.get("finishedTutorialSteps")
-  const isClimateActorCookie = cookies.get("tutorialVariables")
-  const curTutorialStep = getLastCompletedTutorialStep(tutorialCookie)
-  const lastCompletedTutorialStep = curTutorialStep === -1 ? 
-    getLastStepBeforeSkip(cookies.get("lastStepBeforeSkipTutorial")) : 
-    curTutorialStep
+  const tutorialCookie = cookies.get("finishedTutorialSteps");
+  const isClimateActorCookie = cookies.get("tutorialVariables");
+  const curTutorialStep = getLastCompletedTutorialStep(tutorialCookie);
+  const lastCompletedTutorialStep =
+    curTutorialStep === -1
+      ? getLastStepBeforeSkip(cookies.get("lastStepBeforeSkipTutorial"))
+      : curTutorialStep;
   const steps = ["basicinfo", "personalinfo"];
   const [curStep, setCurStep] = useState(steps[0]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -65,11 +72,11 @@ export default function Signup() {
 
   const handleAddInfoSubmit = (event, values) => {
     event.preventDefault();
-    const params = getParams(window?.location?.href)
+    const params = getParams(window?.location?.href);
     if (!isLocationValid(values.location)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage);
       return;
-    }    
+    }
     const location = getLocationValue(values, "location");
     setUserInfo({
       ...userInfo,
@@ -87,7 +94,7 @@ export default function Signup() {
       send_newsletter: values.sendNewsletter,
       from_tutorial: params?.from_tutorial === "true",
       is_activist: isClimateActorCookie?.isActivist,
-      last_completed_tutorial_step: lastCompletedTutorialStep
+      last_completed_tutorial_step: lastCompletedTutorialStep,
     };
     const config = {
       headers: {

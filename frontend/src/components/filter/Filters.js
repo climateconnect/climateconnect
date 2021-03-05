@@ -242,17 +242,16 @@ export default function Filters({
             );
           }
 
-          if(filter.tooltipText) {
+          if (filter.tooltipText) {
             return (
               <Tooltip arrow title={filter.tooltipText}>
                 {component}
               </Tooltip>
-            )
+            );
           } else {
-            return component
+            return component;
           }
-        }
-        )}
+        })}
         {withApplyButton && (
           <div className={applyButtonFixedWidth && classes.applyButtonContainer}>
             <Button

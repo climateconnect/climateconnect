@@ -16,8 +16,6 @@ import ProjectOverview from "../../src/components/project/ProjectOverview";
 import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
 import Tutorial from "../../src/components/tutorial/Tutorial";
 
-
-
 const useStyles = makeStyles((theme) => ({
   root: {
     textAlign: "center",
@@ -148,10 +146,10 @@ function ProjectLayout({
   const typesByTabValue = ["project", "team", "comments"];
 
   //refs for tutorial
-  const projectDescriptionRef = useRef(null)
-  const collaborationSectionRef = useRef(null)
-  const contactProjectCreatorButtonRef = useRef(null)
-  const projectTabsRef = useRef(null)
+  const projectDescriptionRef = useRef(null);
+  const collaborationSectionRef = useRef(null);
+  const contactProjectCreatorButtonRef = useRef(null);
+  const projectTabsRef = useRef(null);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -311,9 +309,9 @@ function ProjectLayout({
 
       <Container className={classes.tabContent}>
         <TabContent value={tabValue} index={0}>
-          <ProjectContent 
-            project={project} 
-            leaveProject={requestLeaveProject} 
+          <ProjectContent
+            project={project}
+            leaveProject={requestLeaveProject}
             projectDescriptionRef={projectDescriptionRef}
             collaborationSectionRef={collaborationSectionRef}
           />
@@ -367,12 +365,12 @@ function ProjectLayout({
         cancelText="No"
       />
       <Tutorial
-        fixedPosition 
+        fixedPosition
         pointerRefs={{
           projectDescriptionRef: projectDescriptionRef,
           collaborationSectionRef: collaborationSectionRef,
           contactProjectCreatorButtonRef: contactProjectCreatorButtonRef,
-          projectTabsRef: projectTabsRef
+          projectTabsRef: projectTabsRef,
         }}
       />
     </div>

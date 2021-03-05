@@ -13,8 +13,6 @@ import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
 import theme from "../src/themes/theme";
 
-
-
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
 export default function MyApp({
@@ -33,11 +31,11 @@ export default function MyApp({
   );
   const [acceptedNecessary, setAcceptedNecessary] = React.useState(
     cookies.get("acceptedNecessary")
-  )
+  );
   const updateCookies = () => {
     setAcceptedStatistics(cookies.get("acceptedStatistics"));
     setAcceptedNecessary(cookies.get("acceptedNecessary"));
-  }
+  };
   if (
     acceptedStatistics &&
     !gaInitialized &&

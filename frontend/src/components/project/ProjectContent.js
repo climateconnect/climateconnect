@@ -14,9 +14,6 @@ import Posts from "./../communication/Posts.js";
 import DateDisplay from "./../general/DateDisplay";
 import ProjectStatus from "./ProjectStatus";
 
-
-
-
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
 const useStyles = makeStyles((theme) => ({
@@ -125,11 +122,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectContent({ 
-  project, 
-  leaveProject, 
+export default function ProjectContent({
+  project,
+  leaveProject,
   projectDescriptionRef,
-  collaborationSectionRef
+  collaborationSectionRef,
 }) {
   const classes = useStyles();
   const { user } = useContext(UserContext);
@@ -220,8 +217,14 @@ export default function ProjectContent({
           <ProjectStatus status={project.status} />
         </div>
       </div>
-      <div className={classes.contentBlock} >
-        <Typography component="h2" variant="h6" color="primary" ref={projectDescriptionRef} className={classes.subHeader}>
+      <div className={classes.contentBlock}>
+        <Typography
+          component="h2"
+          variant="h6"
+          color="primary"
+          ref={projectDescriptionRef}
+          className={classes.subHeader}
+        >
           Project description
         </Typography>
         <Typography component="div">

@@ -6,11 +6,11 @@ import Cookies from "universal-cookie";
 import tokenConfig from "../../public/config/tokenConfig";
 import { buildUrlEndingFromFilters } from "../../public/lib/filterOperations";
 import {
-  getOrganizationTagsOptions, getProjectTagsOptions,
-
+  getOrganizationTagsOptions,
+  getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo
+  membersWithAdditionalInfo,
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { parseData } from "../../public/lib/parsingOperations";
@@ -69,17 +69,17 @@ export default function Hub({
   const handleSetErrorMessage = (newMessage) => {
     setErrorMessage(newMessage);
   };
-  const contentRef = useRef(null);  
+  const contentRef = useRef(null);
 
   //Refs and state for tutorial
-  const hubQuickInfoRef = useRef(null)
-  const hubProjectsButtonRef = useRef(null)
-  const [nextStepTriggeredBy, setNextStepTriggeredBy] = useState(false)
+  const hubQuickInfoRef = useRef(null);
+  const hubProjectsButtonRef = useRef(null);
+  const [nextStepTriggeredBy, setNextStepTriggeredBy] = useState(false);
 
   const scrollToSolutions = () => {
-    setNextStepTriggeredBy("showProjectsButton")
+    setNextStepTriggeredBy("showProjectsButton");
     contentRef.current.scrollIntoView({ behavior: "smooth" });
-  }
+  };
 
   const customSearchBarLabels = {
     projects: "Search for climate solutions in the food sector",

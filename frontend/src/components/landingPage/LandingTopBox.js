@@ -142,7 +142,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       height: 40,
       fontSize: 17,
-      marginTop: theme.spacing(1)
+      marginTop: theme.spacing(1),
     },
     ["@media (max-width: 400px)"]: {
       fontSize: 17,
@@ -173,7 +173,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LandingTopBox({ scrollToContent }) {
+export default function LandingTopBox() {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   return (
@@ -189,18 +189,18 @@ export default function LandingTopBox({ scrollToContent }) {
             </div>
             from around the world
           </Typography>
-          {!isNarrowScreen &&
+          {!isNarrowScreen && (
             <Typography component="h2" className={classes.titleTextSubHeader}>
               Join the global climate action network to connect all
               {!isNarrowScreen ? <br /> : " "}
               climate actors on our planet - the only one we have
             </Typography>
-          }
+          )}
           <div className={classes.exploreButtonContainer}>
             <LightBigButton href="/browse" className={classes.exploreButton}>
               {isNarrowScreen ? "Explore" : "Explore climate projects"}
             </LightBigButton>
-          </div>          
+          </div>
         </div>
       </Container>
     </div>

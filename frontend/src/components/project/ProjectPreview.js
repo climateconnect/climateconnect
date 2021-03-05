@@ -5,7 +5,6 @@ import Truncate from "react-truncate";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import ProjectMetaData from "./ProjectMetaData";
 
-
 const useStyles = makeStyles((theme) => {
   return {
     root: {
@@ -105,14 +104,14 @@ export default function ProjectPreview({ project, projectRef }) {
   return (
     <Link
       href={project.is_draft ? `/editProject/${project.url_slug}` : `/projects/${project.url_slug}`}
-      className={classes.noUnderline}      
+      className={classes.noUnderline}
     >
       <Card
         className={classes.root}
         variant="outlined"
         onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave} 
-        ref={projectRef}       
+        onMouseLeave={handleMouseLeave}
+        ref={projectRef}
       >
         <CardMedia
           className={classes.media}

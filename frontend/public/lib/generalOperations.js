@@ -10,8 +10,7 @@ export function getParams(url) {
 }
 
 export function isOnScreen(el) {
-  if(!el)
-    return false
+  if (!el) return false;
   else {
     const rect = el.getBoundingClientRect();
     return (

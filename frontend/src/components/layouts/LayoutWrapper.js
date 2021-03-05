@@ -6,7 +6,6 @@ import UserContext from "../context/UserContext";
 import FeedbackButton from "../feedback/FeedbackButton";
 import CookieBanner from "../general/CookieBanner";
 
-
 const useStyles = makeStyles((theme) => ({
   leaveSpaceForFooter: {
     position: "relative",

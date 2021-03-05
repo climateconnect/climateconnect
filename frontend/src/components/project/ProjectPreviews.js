@@ -5,8 +5,6 @@ import InfiniteScroll from "react-infinite-scroller";
 import LoadingSpinner from "../general/LoadingSpinner";
 import ProjectPreview from "./ProjectPreview";
 
-
-
 const useStyles = makeStyles({
   reset: {
     margin: 0,
@@ -17,15 +15,23 @@ const useStyles = makeStyles({
 });
 
 // This component is for display projects with the option to infinitely scroll to get more projects
-export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridItems, projects, firstProjectCardRef }) {
+export default function ProjectPreviews({
+  hasMore,
+  loadFunc,
+  parentHandlesGridItems,
+  projects,
+  firstProjectCardRef,
+}) {
   const classes = useStyles();
   const toProjectPreviews = (projects) =>
-    projects.map((p) => <GridItem 
-      key={p.url_slug} 
-      project={p} 
-      isFirstProject={projects.indexOf(p) === 0}
-      firstProjectCardRef={firstProjectCardRef}
-    />);
+    projects.map((p) => (
+      <GridItem
+        key={p.url_slug}
+        project={p}
+        isFirstProject={projects.indexOf(p) === 0}
+        firstProjectCardRef={firstProjectCardRef}
+      />
+    ));
 
   const [gridItems, setGridItems] = useState(toProjectPreviews(projects));
   const [isFetchingMore, setIsFetchingMore] = React.useState(false);
@@ -77,10 +83,10 @@ export default function ProjectPreviews({ hasMore, loadFunc, parentHandlesGridIt
 
 function GridItem({ project, isFirstProject, firstProjectCardRef }) {
   const projectPreviewProps = {
-    project: project
-  }
-  if(isFirstProject){
-    projectPreviewProps.projectRef = firstProjectCardRef
+    project: project,
+  };
+  if (isFirstProject) {
+    projectPreviewProps.projectRef = firstProjectCardRef;
   }
   return (
     <Grid key={project.url_slug} item xs={12} sm={6} md={4} lg={3} component="li">

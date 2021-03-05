@@ -9,7 +9,7 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo
+  membersWithAdditionalInfo,
 } from "../public/lib/getOptions";
 import { parseData } from "../public/lib/parsingOperations";
 import BrowseContent from "../src/components/browse/BrowseContent";
@@ -17,9 +17,6 @@ import TopOfPage from "../src/components/hooks/TopOfPage";
 import HubsSubHeader from "../src/components/indexPage/HubsSubHeader";
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
 import WideLayout from "../src/components/layouts/WideLayout";
-
-
-
 
 export default function Browse({
   projectsObject,
@@ -34,7 +31,7 @@ export default function Browse({
     members: {},
     organizations: {},
   });
-  const [errorMessage, setErrorMessage] = useState("");  
+  const [errorMessage, setErrorMessage] = useState("");
 
   const applyNewFilters = async (type, newFilters, closeFilters, oldUrlEnding) => {
     if (filters === newFilters) {
@@ -123,14 +120,14 @@ export default function Browse({
   const handleSetErrorMessage = (newMessage) => {
     setErrorMessage(newMessage);
   };
-  const hubsSubHeaderRef = useRef(null)
+  const hubsSubHeaderRef = useRef(null);
   return (
     <>
       <WideLayout
         title="Global Platform for Climate Change Solutions"
         hideHeadline
         showOnScrollUp={showOnScrollUp}
-        subHeader={<HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef}/>}
+        subHeader={<HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} />}
       >
         <MainHeadingContainerMobile />
         <BrowseContent
@@ -144,7 +141,7 @@ export default function Browse({
           handleSetErrorMessage={handleSetErrorMessage}
           errorMessage={errorMessage}
           hubsSubHeaderRef={hubsSubHeaderRef}
-        />        
+        />
       </WideLayout>
     </>
   );

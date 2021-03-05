@@ -4,7 +4,6 @@ import TuneIcon from "@material-ui/icons/Tune";
 import React from "react";
 import FilterSearchBar from "../filter/FilterSearchBar";
 
-
 const useStyles = makeStyles((theme) => {
   return {
     filterButton: {

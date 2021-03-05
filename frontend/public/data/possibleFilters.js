@@ -46,7 +46,7 @@ const getLocationFilters = () => {
       title: "Location",
       type: "location",
       key: "location",
-      tooltipText: "Only show projects within the selected radius of the location"
+      tooltipText: "Only show projects within the selected radius of the location",
     },
   ];
 };
@@ -85,7 +85,7 @@ const getProjectsFilters = (filterChoices) => [
     type: "multiselect",
     options: filterChoices?.project_statuses.map((s) => ({ ...s, key: s.id })),
     key: "status",
-    tooltipText: "Only show projects in the selected stage of completion"
+    tooltipText: "Only show projects in the selected stage of completion",
   },
   {
     icon: GroupIcon,
@@ -95,7 +95,7 @@ const getProjectsFilters = (filterChoices) => [
     type: "multiselect",
     options: filterChoices?.organization_types?.map((t) => ({ ...t, key: t.id })),
     key: "organization_type",
-    tooltipText: "Only shows projects created by organizations of the selected type"
+    tooltipText: "Only shows projects created by organizations of the selected type",
   },
   {
     icon: ExploreOutlinedIcon,
@@ -105,7 +105,7 @@ const getProjectsFilters = (filterChoices) => [
     key: "category",
     itemType: "project categories",
     itemsToChooseFrom: filterChoices?.project_categories?.map((c) => ({ ...c, key: c.id })),
-    tooltipText: "Only shows projects from selected fields"
+    tooltipText: "Only shows projects from selected fields",
   },
   {
     icon: GroupAddIcon,
@@ -123,7 +123,7 @@ const getProjectsFilters = (filterChoices) => [
         name: "no",
       },
     ],
-    tooltipText: "Filter by whether a project is open to collaborate"
+    tooltipText: "Filter by whether a project is open to collaborate",
   },
   {
     icon: GroupAddIcon,
@@ -133,6 +133,6 @@ const getProjectsFilters = (filterChoices) => [
     key: "skills",
     itemType: "skills",
     itemsToChooseFrom: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
-    tooltipText: "Filter by the skills a project is looking for"
+    tooltipText: "Filter by the skills a project is looking for",
   },
 ];

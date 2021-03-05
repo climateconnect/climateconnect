@@ -13,7 +13,6 @@ import ProjectPreviews from "../project/ProjectPreviews";
 import Tutorial from "../tutorial/Tutorial";
 import NoItemsFound from "./NoItemsFound";
 
-
 const useStyles = makeStyles((theme) => {
   return {
     tab: {
@@ -73,9 +72,9 @@ export default function BrowseContent({
     },
   };
   //saving these refs for the tutorial
-  const firstProjectCardRef = useRef(null)
-  const filterButtonRef = useRef(null)
-  const organizationsTabRef = useRef(null)
+  const firstProjectCardRef = useRef(null);
+  const filterButtonRef = useRef(null);
+  const organizationsTabRef = useRef(null);
 
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
@@ -242,10 +241,9 @@ export default function BrowseContent({
             const tabProps = {
               label: capitalizeFirstLetter(t),
               className: classes.tab,
-            }
-            if(index === 1)
-              tabProps.ref = organizationsTabRef
-            return <Tab {...tabProps} key={index}/>
+            };
+            if (index === 1) tabProps.ref = organizationsTabRef;
+            return <Tab {...tabProps} key={index} />;
           })}
         </Tabs>
 
@@ -366,14 +364,14 @@ export default function BrowseContent({
         </>
       </Container>
       <Tutorial
-        fixedPosition 
+        fixedPosition
         pointerRefs={{
           projectCardRef: firstProjectCardRef,
           filterButtonRef: filterButtonRef,
           organizationsTabRef: organizationsTabRef,
           hubsSubHeaderRef: hubsSubHeaderRef,
           hubQuickInfoRef: hubQuickInfoRef,
-          hubProjectsButtonRef: hubProjectsButtonRef
+          hubProjectsButtonRef: hubProjectsButtonRef,
         }}
         hubName={hubName}
         nextStepTriggeredBy={nextStepTriggeredBy}
