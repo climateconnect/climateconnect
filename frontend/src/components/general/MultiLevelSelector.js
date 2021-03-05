@@ -5,7 +5,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -260,7 +260,6 @@ function ListToChooseWrapper({
   expanded,
   onClickSelect,
   selected,
-  className,
   isInPopup,
   isNarrowScreen,
 }) {
@@ -278,7 +277,7 @@ function ListToChooseWrapper({
       itemsToSelectFrom
         // remove all inner items that do not match the search query
         .map((item) => {
-          let itemCopy = Object.assign({}, item);
+          const itemCopy = Object.assign({}, item);
           itemCopy.subcategories = item.subcategories.filter((innerItem) => {
             return innerItem.name.toLowerCase().includes(searchValue.toLowerCase());
           });
