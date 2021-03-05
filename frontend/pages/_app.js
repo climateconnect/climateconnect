@@ -1,19 +1,19 @@
-import React, { useEffect } from "react";
-import { ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
+import { ThemeProvider } from "@material-ui/core/styles";
 import axios from "axios";
-import Cookies from "universal-cookie";
 import NextCookies from "next-cookies";
+import React, { useEffect } from "react";
 import ReactGA from "react-ga";
-
-import theme from "../src/themes/theme";
-import UserContext from "../src/components/context/UserContext";
-
 //add global styles
 import "react-multi-carousel/lib/styles.css";
+import Cookies from "universal-cookie";
 import tokenConfig from "../public/config/tokenConfig";
-import WebSocketService from "../public/lib/webSockets";
 import { getCookieProps } from "../public/lib/cookieOperations";
+import WebSocketService from "../public/lib/webSockets";
+import UserContext from "../src/components/context/UserContext";
+import theme from "../src/themes/theme";
+
+
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
@@ -31,7 +31,13 @@ export default function MyApp({
   const [acceptedStatistics, setAcceptedStatistics] = React.useState(
     cookies.get("acceptedStatistics")
   );
-  const updateCookies = () => setAcceptedStatistics(cookies.get("acceptedStatistics"));
+  const [acceptedNecessary, setAcceptedNecessary] = React.useState(
+    cookies.get("acceptedNecessary")
+  )
+  const updateCookies = () => {
+    setAcceptedStatistics(cookies.get("acceptedStatistics"));
+    setAcceptedNecessary(cookies.get("acceptedNecessary"));
+  }
   if (
     acceptedStatistics &&
     !gaInitialized &&
@@ -169,6 +175,7 @@ export default function MyApp({
     updateCookies: updateCookies,
     socketConnectionState: socketConnectionState,
     donationGoal: donationGoal,
+    acceptedNecessary: acceptedNecessary,
   };
   return (
     <React.Fragment>
