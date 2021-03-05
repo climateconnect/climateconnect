@@ -115,7 +115,11 @@ export default function Challenge({ headlineClass, showContent, className }) {
       </Typography>
       <div>
         <div className={classes.imageContainer}>
-          <img src="/images/wildfire.jpg" alt="One firefighter fights against bog fire in the twilight" className={classes.img} />
+          <img
+            src="/images/wildfire.jpg"
+            alt="One firefighter fights against bog fire in the twilight"
+            className={classes.img}
+          />
         </div>
         <div className={classes.contentWrapper}>
           <Container>
