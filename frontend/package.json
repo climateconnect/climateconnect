@@ -61,6 +61,7 @@
     "react-text-loop": "^2.3.0",
     "react-timeago": "^4.4.0",
     "react-truncate": "^2.4.0",
+    "react-typist": "^2.0.5",
     "react-youtube": "^7.13.0",
     "universal-cookie": "^4.0.3",
     "youtube-regex": "^1.0.5"
