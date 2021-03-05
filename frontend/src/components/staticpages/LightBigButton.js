@@ -1,9 +1,9 @@
+import { Button, makeStyles } from "@material-ui/core";
 import React from "react";
-import { makeStyles, Button } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   button: {
-    background: "#D7F7F5",
+    background: theme.palette.primary.extraLight,
     color: theme.palette.primary.main,
     height: 55,
     paddingLeft: theme.spacing(4),
