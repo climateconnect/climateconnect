@@ -178,7 +178,7 @@ export default function LandingTopBox({ scrollToContent }) {
   return (
     <div>
       <div className={classes.imageContainer}>
-        <img src="/images/landing_image.jpg" className={classes.img} />
+        <img src="/images/landing_image.jpg" alt="Photo of earth from space at night with some connecting waypoints" className={classes.img} />
       </div>
       <Container className={classes.textContainerWrapper}>
         <div className={classes.textContainer}>
