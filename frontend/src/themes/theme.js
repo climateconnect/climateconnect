@@ -6,6 +6,7 @@ const coreTheme = createMuiTheme({
     primary: {
       main: "#207178",
       light: "#66BCB5",
+      extraLight: "#D7F7F5"
     },
     secondary: { main: "#484848" },
     yellow: {
