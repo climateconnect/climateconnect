@@ -10,6 +10,7 @@ import React, { useContext, useEffect } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
 import tokenConfig from "../../../public/config/tokenConfig";
+import { redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
@@ -85,6 +86,12 @@ export default function ProjectOverview({
   const handleClickContact = async (event) => {
     event.preventDefault();
     const creator = project.team.filter((m) => m.permission === "Creator")[0];
+    if(!user) {
+      return redirect("/signin", {
+        redirect: window.location.pathname + window.location.search,
+        errorMessage: "Please create an account or log in to contact a project's organizer.",
+      });      
+    }
     const chat = await startPrivateChat(creator, token);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
@@ -308,7 +315,7 @@ function LargeScreenOverview({
                   startIcon={<EmailIcon />}
                   ref={contactProjectCreatorButtonRef}
                 >
-                  Contact organizer
+                  Contact creator
                 </Button>
               </Tooltip>
             )}
