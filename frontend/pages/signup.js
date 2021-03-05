@@ -1,16 +1,16 @@
-import React, { useContext, useRef, useState } from "react";
-import BasicInfo from "../src/components/signup/BasicInfo";
-import AddInfo from "./../src/components/signup/AddInfo";
 import axios from "axios";
 import Router from "next/router";
-import Layout from "../src/components/layouts/layout";
-import UserContext from "../src/components/context/UserContext";
+import React, { useContext, useRef, useState } from "react";
+import Cookies from "universal-cookie";
+import { getParams } from "../public/lib/generalOperations";
 import {
-  parseLocation,
-  isLocationValid,
-  indicateWrongLocation,
-  getLocationValue,
+  getLocationValue, indicateWrongLocation, isLocationValid, parseLocation
 } from "../public/lib/locationOperations";
+import { getLastCompletedTutorialStep, getLastStepBeforeSkip } from "../public/lib/tutorialOperations";
+import UserContext from "../src/components/context/UserContext";
+import Layout from "../src/components/layouts/layout";
+import BasicInfo from "../src/components/signup/BasicInfo";
+import AddInfo from "./../src/components/signup/AddInfo";
 
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
@@ -24,7 +24,15 @@ export default function Signup() {
     location: {},
     newsletter: "",
   });
+  const cookies = new Cookies();
 
+  //Information about the completion state of the tutorial
+  const tutorialCookie = cookies.get("finishedTutorialSteps")
+  const isClimateActorCookie = cookies.get("tutorialVariables")
+  const curTutorialStep = getLastCompletedTutorialStep(tutorialCookie)
+  const lastCompletedTutorialStep = curTutorialStep === -1 ? 
+    getLastStepBeforeSkip(cookies.get("lastStepBeforeSkipTutorial")) : 
+    curTutorialStep
   const steps = ["basicinfo", "personalinfo"];
   const [curStep, setCurStep] = useState(steps[0]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -57,10 +65,11 @@ export default function Signup() {
 
   const handleAddInfoSubmit = (event, values) => {
     event.preventDefault();
+    const params = getParams(window?.location?.href)
     if (!isLocationValid(values.location)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage);
       return;
-    }
+    }    
     const location = getLocationValue(values, "location");
     setUserInfo({
       ...userInfo,
@@ -76,6 +85,9 @@ export default function Signup() {
       last_name: values.last_name.trim(),
       location: parseLocation(location),
       send_newsletter: values.sendNewsletter,
+      from_tutorial: params?.from_tutorial === "true",
+      is_activist: isClimateActorCookie?.isActivist,
+      last_completed_tutorial_step: lastCompletedTutorialStep
     };
     const config = {
       headers: {
