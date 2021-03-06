@@ -75,6 +75,8 @@ export default function Browse({
     }
   };
 
+  // In browse.js, work on parsing the query param filter and visually updating the filters
+
   const applySearch = async (type, searchValue, oldUrlEnding) => {
     const newSearchQueryParam = `&search=${searchValue}`;
     if (oldUrlEnding === newSearchQueryParam) {
@@ -142,22 +144,26 @@ export default function Browse({
    */
   const router = useRouter();
   if (router.query) {
-    debugger;
-
     // TODO: ensure this isn't called on every render, maybe useEffect
-
     // TODO(piper): differentiate between URL window state, and
     // the HTTP request
-
     // TODO:
     // Update the state of the visual filters, like Select, Dialog, etc
-
     // Then actually fetch the data
     // applyFilters(type, updatedFilters, isSmallScreen);
+    // console.log(`Router query: ${JSON.stringify(router.query)}`);
 
-    console.log(`Router query: ${JSON.stringify(router.query)}`);
+    // Parse query into correct filters, then
+    // TODO: add more filter parsing
+    let newFilters = { ...filters, ...router.query };
+
+    console.log("New filters:");
+    console.log(newFilters);
+
+    // applyNewFilters(undefined, newFilters, null, undefined);
+    // setFilters({ ...newFilters });
+
     // Apply new filters with the query object immediately:
-    // applyNewFilters
   }
 
   return (
@@ -172,14 +178,14 @@ export default function Browse({
         <BrowseContent
           applyNewFilters={applyNewFilters}
           applySearch={applySearch}
+          applySearch={applySearch}
+          errorMessage={errorMessage}
           filterChoices={filterChoices}
+          handleSetErrorMessage={handleSetErrorMessage}
           initialMembers={membersObject}
           initialOrganizations={organizationsObject}
           initialProjects={projectsObject}
           loadMoreData={loadMoreData}
-          applySearch={applySearch}
-          handleSetErrorMessage={handleSetErrorMessage}
-          errorMessage={errorMessage}
         />
       </WideLayout>
     </>
