@@ -143,6 +143,12 @@ export default function Browse({
    * dynamically.
    */
   const router = useRouter();
+  console.warn(router.query);
+
+  // If query params are present, persisted url
+  const hasQueryParams = Object.keys(router.query).length !== 0;
+  console.log(hasQueryParams);
+
   if (router.query) {
     // TODO: ensure this isn't called on every render, maybe useEffect
     // TODO(piper): differentiate between URL window state, and
@@ -178,10 +184,10 @@ export default function Browse({
         <BrowseContent
           applyNewFilters={applyNewFilters}
           applySearch={applySearch}
-          applySearch={applySearch}
           errorMessage={errorMessage}
           filterChoices={filterChoices}
           handleSetErrorMessage={handleSetErrorMessage}
+          initialFiltersExpanded={hasQueryParams}
           initialMembers={membersObject}
           initialOrganizations={organizationsObject}
           initialProjects={projectsObject}

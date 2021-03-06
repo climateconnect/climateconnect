@@ -82,7 +82,7 @@ const getProjectsFilters = (filterChoices) => [
     iconName: "DoneAllOutlinedIcon",
     title: "Status",
     type: "multiselect",
-    options: filterChoices?.project_statuses.map((s) => ({ ...s, key: s.id })),
+    options: filterChoices?.project_statuses?.map((s) => ({ ...s, key: s.id })),
     key: "status",
   },
   {

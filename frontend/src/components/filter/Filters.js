@@ -118,7 +118,8 @@ export default function Filters({
                   </div>
                 }
                 type={filter.type}
-                value={currentFilters[filter.key]}
+                value={"test"}
+                // value={currentFilters[filter.key]}
                 className={`${classes.field} ${classes.filterElement} ${
                   isInOverlay && classes.overlayField
                 }`}
@@ -134,6 +135,7 @@ export default function Filters({
             );
           }
           if (filter.type === "select" || filter.type === "multiselect") {
+            console.log("HERE");
             return (
               <SelectField
                 options={filter.options}
@@ -145,7 +147,7 @@ export default function Filters({
                 label={
                   <div className={classes.iconLabel}>
                     <filter.icon fontSize="inherit" />
-                    {filter.title}
+                    {filter.title} test
                   </div>
                 }
                 InputProps={{
@@ -159,7 +161,8 @@ export default function Filters({
                 key={filter.key}
                 size="small"
                 isInOverlay={isInOverlay}
-                defaultValues={currentFilters[filter.key]}
+                // defaultValues={currentFilters[filter.key]}
+                defaultValues={"test"}
                 onChange={(event) => {
                   handleValueChange(filter.key, event.target.value);
                 }}

@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { useRouter } from "next/router";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import theme from "../../themes/theme";
@@ -6,7 +7,7 @@ import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
 import { persistFiltersInURL } from "../../../public/lib/urlOperations";
-import { remove, update } from "lodash";
+import { remove, update, merge } from "lodash";
 
 export default function FilterContent({
   applyFilters,
@@ -29,13 +30,45 @@ export default function FilterContent({
     possibleFilters.length
   );
 
-  const [currentFilters, setCurrentFilters] = React.useState(
-    possibleFilters.reduce((map, obj) => {
-      if (obj.type === "multiselect") map[obj.key] = [];
-      else map[obj.key] = "";
-      return map;
-    }, {})
-  );
+  const router = useRouter();
+
+  // debugger;
+
+  // TODO(piper): we combine the filters together from the
+  // query param and.
+  // Some types are arrays, need to handle appropriately
+
+  const reducedPossibleFilters = possibleFilters.reduce((map, obj) => {
+    if (obj.type === "multiselect") {
+      map[obj.key] = [];
+    } else {
+      map[obj.key] = "";
+    }
+    return map;
+  }, {});
+
+  // for (key, value in Object.entries(reducedPossibleFilters))
+  //   if (key === )
+  // })
+
+  // TODO: order here matters? And need to respect array types.
+  let test = merge({}, reducedPossibleFilters);
+  let test2 = merge(test, router.query);
+
+  let initialFilters = test2;
+
+  // initialFilters["status"].push("In test progress");
+
+  //   // ...router.query,
+  //   ...reducedPossibleFilters,
+  // };
+
+  // console.warn("test");
+  // console.log(router.query);
+
+  const [currentFilters, setCurrentFilters] = React.useState(initialFilters);
+
+  console.warn("hi");
 
   console.log(currentFilters);
 
@@ -62,7 +95,7 @@ export default function FilterContent({
       const updatedFilters = { ...currentFilters, [prop]: results.map((x) => x.name) };
       setCurrentFilters(updatedFilters);
       // console.log(currentFilters);
-      console.log("here");
+      console.warn("here");
       debugger;
       console.log(currentFilters);
       applyFilters(type, updatedFilters, isSmallScreen);
@@ -74,7 +107,7 @@ export default function FilterContent({
   const handleValueChange = (key, newValue) => {
     // TODO(piper): we want to update and fetch data on any value change
     const updatedFilters = { ...currentFilters, [key]: newValue };
-    debugger;
+    // debugger;
     applyFilters(type, updatedFilters, isSmallScreen);
     setCurrentFilters(updatedFilters);
   };

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
 import { Container, Tabs, Tab, Divider, useMediaQuery, makeStyles } from "@material-ui/core";
 
 import { persistFiltersInURL } from "../../../public/lib/urlOperations";
@@ -39,6 +40,7 @@ export default function BrowseContent({
   filterChoices,
   handleSetErrorMessage,
   hideMembers,
+  initialFiltersExpanded,
   initialMembers,
   initialOrganizations,
   initialProjects,
@@ -67,21 +69,35 @@ export default function BrowseContent({
       members: "",
     },
   };
+
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
   const TYPES_BY_TAB_VALUE = hideMembers
     ? ["projects", "organizations"]
     : ["projects", "organizations", "members"];
+
   const [hash, setHash] = useState(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
-  const [filtersExpanded, setFiltersExpanded] = useState(false);
+
+  const router = useRouter();
+  const hasQueryParams = !!router.query;
+
+  console.warn(hasQueryParams);
+
+  // If persisted URL is shared with query param options for filters,
+  // then we force the filter to already be expanded.
+  const [filtersExpanded, setFiltersExpanded] = useState(initialFiltersExpanded);
+
   const [state, setState] = useState(initialState);
+
   const locationInputRefs = {
     projects: useRef(null),
     organizations: useRef(null),
     members: useRef(null),
   };
+
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
+
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
   };
@@ -98,6 +114,7 @@ export default function BrowseContent({
   };
 
   useEffect(() => {
+    // TODO: probably here...
     if (window.location.hash) {
       setHash(window.location.hash.replace("#", ""));
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(window.location.hash.replace("#", "")));
@@ -244,16 +261,16 @@ export default function BrowseContent({
           <TabContent value={tabValue} index={0}>
             {filtersExpanded && tabValue === 0 && (
               <FilterContent
-                className={classes.tabContent}
-                type={TYPES_BY_TAB_VALUE[0]}
                 applyFilters={handleApplyNewFilters}
-                filtersExpanded={filtersExpanded}
+                className={classes.tabContent}
                 errorMessage={errorMessage}
-                unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[0], filterChoices)}
+                filtersExpanded={filtersExpanded}
+                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[0]]}
                 locationOptionsOpen={locationOptionsOpen}
-                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[0], filterChoices)}
+                type={TYPES_BY_TAB_VALUE[0]}
+                unexpandFilters={unexpandFilters}
               />
             )}
             {/*
