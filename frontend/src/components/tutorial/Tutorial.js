@@ -5,7 +5,7 @@ import get_steps from "../../../public/data/tutorial_steps";
 import { isOnScreen } from "../../../public/lib/generalOperations";
 import {
   getLastCompletedTutorialStep,
-  getTutorialStepFromCookie,
+  getTutorialStepFromCookie
 } from "../../../public/lib/tutorialOperations";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
@@ -37,7 +37,7 @@ export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggered
   const classes = useStyles();
   const cookies = new Cookies();
   const tutorialCookie = cookies.get("finishedTutorialSteps");
-  const { acceptedNecessary } = useContext(UserContext);
+  const { acceptedNecessary, user } = useContext(UserContext);
   const tutorialSteps = get_steps(pointerRefs ? { ...pointerRefs, hubName: hubName } : {});
   const curStepRef = useRef(null);
 
@@ -68,7 +68,7 @@ export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggered
   const tutVarsCookie = cookies.get("tutorialVariables");
 
   const [step, setStep] = React.useState(
-    tutorialCookie ? getTutorialStepFromCookie(tutorialSteps, tutorialCookie) : 0
+    tutorialCookie ? getTutorialStepFromCookie(tutorialSteps, tutorialCookie, user) : 0
   );
   const [showTutorial, setShowTutorial] = React.useState(false);
   const [showMinimizedAlert, setShowMinimizedAlert] = React.useState(false);
@@ -135,7 +135,7 @@ export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggered
       expires: oneYearFromNow,
       sameSite: "lax",
     });
-    setStep(getTutorialStepFromCookie(tutorialSteps, newCookieValue));
+    setStep(getTutorialStepFromCookie(tutorialSteps, newCookieValue, user));
   };
 
   const handleClickBackward = () => {
@@ -145,7 +145,7 @@ export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggered
       expires: oneYearFromNow,
       sameSite: "lax",
     });
-    setStep(getTutorialStepFromCookie(tutorialSteps, newCookieValue));
+    setStep(getTutorialStepFromCookie(tutorialSteps, newCookieValue, user));
   };
 
   const forwardWithValue = ({ variable, value }) => {
@@ -163,7 +163,7 @@ export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggered
       sameSite: "lax",
     });
     setTutorialVariables(curTutorialVariables);
-    setStep(getTutorialStepFromCookie(tutorialSteps, getNewCookieValue("forward", step)));
+    setStep(getTutorialStepFromCookie(tutorialSteps, getNewCookieValue("forward", step), user));
   };
 
   if (!isNarrowScreen) {

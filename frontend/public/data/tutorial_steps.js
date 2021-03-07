@@ -1,10 +1,11 @@
 import { Button, Link, makeStyles } from "@material-ui/core";
 import React from "react";
+import { startPrivateChat } from "../lib/messagingOperations";
 
 const useStyles = makeStyles((theme) => ({
   buttonContainer: {
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "space-around",
     marginTop: theme.spacing(2),
   },
   signUpButton: {
@@ -18,6 +19,11 @@ const useStyles = makeStyles((theme) => ({
     color: "white",
     textDecoration: "underline",
   },
+  thomasImage: {
+    borderRadius: 20,
+    marginRight: theme.spacing(0.5),
+    height: 30
+  }
 }));
 
 export default function get_steps({
@@ -34,6 +40,13 @@ export default function get_steps({
   hubName,
 }) {
   const classes = useStyles();
+
+  const handleConnectBtn = async (e) => {
+    e.preventDefault();
+    const chat = await startPrivateChat({url_slug: "thomasbove4"}, token);
+    Router.push("/chat/" + chat.chat_uuid + "/");
+  };
+
   return [
     {
       step: 0,
@@ -338,6 +351,7 @@ export default function get_steps({
       step: 16,
       headline: "Are you ready to join team climate?",
       pages: ["/browse", "/hubs/", "/projects/"],
+      loggedIn: false,
       texts: {
         isActivist: {
           true: (
@@ -368,6 +382,34 @@ export default function get_steps({
         <div className={classes.buttonContainer}>
           <Button href="/signup?from_tutorial=true" className={classes.signUpButton} size="large">
             Sign up
+          </Button>
+        </div>
+      ),
+    },
+    {
+      step: 17,
+      headline: "That's it for this page!",
+      pages: ["/browse", "/hubs/", "/projects/"],
+      loggedIn: true,
+      text: (
+        <span>
+          Great to have you on team climate. We would love to help you with any problem related 
+          to climate action! Thomas, our community manager will gladly connect you to the right people in the
+          community!
+
+        </span>
+      ),
+      button: (
+        <div className={classes.buttonContainer}>
+          <Button 
+            className={classes.signUpButton}
+            onClick={handleConnectBtn}
+          >
+            <img src="../images/thomas_profile_image.jpg" className={classes.thomasImage} />
+            Message Thomas
+          </Button>
+          <Button href="/signup?from_tutorial=true" className={classes.signUpButton} size="large">
+            Finish
           </Button>
         </div>
       ),

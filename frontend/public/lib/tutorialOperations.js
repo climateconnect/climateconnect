@@ -1,4 +1,4 @@
-export function getTutorialStepFromCookie(tutorialSteps, cookieContent) {
+export function getTutorialStepFromCookie(tutorialSteps, cookieContent, user) {
   if (cookieContent) {
     const url = window.location.href;
     const completedSteps = cookieContent.split(",").map((s) => parseInt(s));
@@ -8,7 +8,8 @@ export function getTutorialStepFromCookie(tutorialSteps, cookieContent) {
         if (completedSteps.includes(step.step)) return false;
         for (const page of step.pages) {
           if (url.includes(page)) {
-            return true;
+            if(step.loggedIn === undefined || step.loggedIn === true && user || step.loggedIn === false && !user)
+              return true;
           }
         }
         return false;
