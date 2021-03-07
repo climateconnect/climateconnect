@@ -396,7 +396,7 @@ export default function get_steps({
     },
     {
       step: 17,
-      headline: "That's it for this page!",
+      headline: "Let's make an impact together!",
       pages: ["/browse", "/hubs/", "/projects/"],
       loggedIn: true,
       text: (
