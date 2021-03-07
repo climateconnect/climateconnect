@@ -1,5 +1,7 @@
-import { Button, Link, makeStyles } from "@material-ui/core";
+import { Button, CircularProgress, Link, makeStyles } from "@material-ui/core";
+import Router from "next/router";
 import React from "react";
+import Cookies from "universal-cookie";
 import { startPrivateChat } from "../lib/messagingOperations";
 
 const useStyles = makeStyles((theme) => ({
@@ -22,8 +24,8 @@ const useStyles = makeStyles((theme) => ({
   thomasImage: {
     borderRadius: 20,
     marginRight: theme.spacing(0.5),
-    height: 30
-  }
+    height: 30,
+  },
 }));
 
 export default function get_steps({
@@ -38,13 +40,19 @@ export default function get_steps({
   contactProjectCreatorButtonRef,
   projectTabsRef,
   hubName,
+  onClickForward,
 }) {
   const classes = useStyles();
+  const cookies = new Cookies();
+  const token = cookies.get("token");
+  const [loading, setLoading] = React.useState(false);
 
   const handleConnectBtn = async (e) => {
     e.preventDefault();
-    const chat = await startPrivateChat({url_slug: "thomasbove4"}, token);
-    Router.push("/chat/" + chat.chat_uuid + "/");
+    setLoading(true);
+    const chat = await startPrivateChat({ url_slug: "thomasbove4" }, token);
+    if (chat && chat.chat_uuid) Router.push("/chat/" + chat.chat_uuid + "/");
+    else setLoading(false);
   };
 
   return [
@@ -393,22 +401,24 @@ export default function get_steps({
       loggedIn: true,
       text: (
         <span>
-          Great to have you on team climate. We would love to help you with any problem related 
-          to climate action! Thomas, our community manager will gladly connect you to the right people in the
-          community!
-
+          Great to have you on team climate. We would love to help you with any problem related to
+          climate action! Thomas, our community manager will gladly connect you to the right people
+          in the community!
         </span>
       ),
       button: (
         <div className={classes.buttonContainer}>
-          <Button 
-            className={classes.signUpButton}
-            onClick={handleConnectBtn}
-          >
-            <img src="../images/thomas_profile_image.jpg" className={classes.thomasImage} />
-            Message Thomas
+          <Button className={classes.signUpButton} onClick={handleConnectBtn}>
+            {loading ? (
+              <CircularProgress size={24} className={classes.buttonProgress} />
+            ) : (
+              <>
+                <img src="../images/thomas_profile_image.jpg" className={classes.thomasImage} />
+                Message Thomas
+              </>
+            )}
           </Button>
-          <Button href="/signup?from_tutorial=true" className={classes.signUpButton} size="large">
+          <Button className={classes.signUpButton} size="large" onClick={onClickForward}>
             Finish
           </Button>
         </div>
