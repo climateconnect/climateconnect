@@ -1,5 +1,10 @@
+import Cookies from "universal-cookie";
+
 export function getTutorialStepFromCookie(tutorialSteps, cookieContent, user) {
   if (cookieContent) {
+    const now = new Date();
+    const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 1));
+    const cookies = new Cookies();
     const url = window.location.href;
     const completedSteps = cookieContent.split(",").map((s) => parseInt(s));
     const uncompletedStepsOnUrl = tutorialSteps
@@ -8,13 +13,25 @@ export function getTutorialStepFromCookie(tutorialSteps, cookieContent, user) {
         if (completedSteps.includes(step.step)) return false;
         for (const page of step.pages) {
           if (url.includes(page)) {
-            if(step.loggedIn === undefined || step.loggedIn === true && user || step.loggedIn === false && !user)
+            if (
+              step.loggedIn === undefined ||
+              (step.loggedIn === true && user) ||
+              (step.loggedIn === false && !user)
+            )
               return true;
           }
         }
         return false;
       })
       .sort((a, b) => a.step - b.step);
+    if (uncompletedStepsOnUrl?.length === 0) {
+      cookies.set("lastStepBeforeSkipTutorial", completedSteps[completedSteps.length - 1], {
+        path: "/",
+        expires: oneYearFromNow,
+        sameSite: "lax",
+      });
+      return -1;
+    }
     return uncompletedStepsOnUrl[0].step;
   } else {
     return 0;

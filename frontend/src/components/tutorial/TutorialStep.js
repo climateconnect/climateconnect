@@ -4,7 +4,6 @@ import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
 import CloseIcon from "@material-ui/icons/Close";
 import React, { useEffect } from "react";
-import Typist from "react-typist";
 import {
   default as get_steps,
   default as tutorial_steps,
@@ -26,12 +25,8 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 700,
     marginBottom: theme.spacing(2),
   },
-  textBox: {
-    position: "relative",
-  },
   text: {
     fontSize: 17.5,
-    position: "absolute",
   },
   buttonsContainer: {
     marginTop: theme.spacing(3),
@@ -120,7 +115,9 @@ export default function TutorialStep({
   hubName,
 }) {
   const classes = useStyles();
-  const curStep = get_steps(pointerRefs ? { ...pointerRefs, hubName: hubName } : {})[step];
+  const curStep = get_steps(
+    pointerRefs ? { ...pointerRefs, hubName: hubName, onClickForward: onClickForward } : {}
+  )[step];
   const isFinalStep = step == tutorial_steps?.length - 1;
 
   useEffect(() => {
@@ -204,7 +201,10 @@ const Step = ({
           <Button className={classes.backwardButton} onClick={onClickSkip}>
             No
           </Button>
-          <Button className={classes.forwardButton} onClick={onClickForward}>
+          <Button
+            className={classes.forwardButton}
+            onClick={() => onClickForward({ isStartingStep: true })}
+          >
             Yes!
           </Button>
         </div>
@@ -287,10 +287,7 @@ const StepText = ({ curStep, tutorialVariables }) => {
 
   return (
     <div className={classes.textBox}>
-      <Typist cursor={{ show: false }} stdTypingDelay={0} avgTypingDelay={20}>
-        <Typography className={classes.text}>{getTextFromStep()}</Typography>
-      </Typist>
-      <Typography className={classes.textPlaceHolder}>{getTextFromStep()}</Typography>
+      <Typography className={classes.text}>{getTextFromStep()}</Typography>
     </div>
   );
 };
