@@ -1,8 +1,8 @@
-import React from "react";
-import { TextField, Button, Typography } from "@material-ui/core";
+import { Button, TextField, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import SelectField from "../general/SelectField";
+import React from "react";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
+import SelectField from "../general/SelectField";
 import LocationSearchBar from "../search/LocationSearchBar";
 
 const useStyles = makeStyles((theme) => {
@@ -105,8 +105,9 @@ export default function Filters({
       )}
       <div className={`${classes.flexContainer} ${isInOverlay && classes.verticalFlexContainer}`}>
         {possibleFilters.map((filter) => {
+          let component;
           if (filter.type === "text") {
-            return (
+            component = (
               <TextField
                 key={filter.key}
                 label={
@@ -132,36 +133,38 @@ export default function Filters({
             );
           }
           if (filter.type === "select" || filter.type === "multiselect") {
-            return (
-              <SelectField
-                options={filter.options}
-                className={`${classes.field} ${classes.filterElement} ${
-                  isInOverlay && classes.overlayField
-                }`}
-                multiple={filter.type === "multiselect"}
-                values={filter.type === "multiselect" && currentFilters[filter.key]}
-                label={
-                  <div className={classes.iconLabel}>
-                    <filter.icon fontSize="inherit" />
-                    {filter.title}
-                  </div>
-                }
-                InputProps={{
-                  classes: {
-                    notchedOutline:
-                      currentFilters[filter.key] &&
-                      currentFilters[filter.key.length] &&
-                      classes.outlinedField,
-                  },
-                }}
-                key={filter.key}
-                size="small"
-                isInOverlay={isInOverlay}
-                defaultValues={currentFilters[filter.key]}
-                onChange={(event) => {
-                  handleValueChange(filter.key, event.target.value);
-                }}
-              />
+            component = (
+              <div>
+                <SelectField
+                  options={filter.options}
+                  className={`${classes.field} ${classes.filterElement} ${
+                    isInOverlay && classes.overlayField
+                  }`}
+                  multiple={filter.type === "multiselect"}
+                  values={filter.type === "multiselect" && currentFilters[filter.key]}
+                  label={
+                    <div className={classes.iconLabel}>
+                      <filter.icon fontSize="inherit" />
+                      {filter.title}
+                    </div>
+                  }
+                  InputProps={{
+                    classes: {
+                      notchedOutline:
+                        currentFilters[filter.key] &&
+                        currentFilters[filter.key.length] &&
+                        classes.outlinedField,
+                    },
+                  }}
+                  key={filter.key}
+                  size="small"
+                  isInOverlay={isInOverlay}
+                  defaultValues={currentFilters[filter.key]}
+                  onChange={(event) => {
+                    handleValueChange(filter.key, event.target.value);
+                  }}
+                />
+              </div>
             );
           }
 
@@ -171,7 +174,7 @@ export default function Filters({
               setSelectedItems({ ...selectedItems, [filter.key]: newSelectedItems });
             };
             if (!filter.showIf || currentFilters[filter.showIf.key] === filter.showIf.value) {
-              return (
+              component = (
                 <div key={filter.key}>
                   <Button
                     variant="outlined"
@@ -198,7 +201,7 @@ export default function Filters({
             const handleLocationSelect = (location) => {
               handleValueChange(filter.key, location);
             };
-            return (
+            component = (
               <div
                 className={`${classes.locationFieldWrapper} ${isInOverlay && classes.overlayField}`}
                 key={filter.key}
@@ -237,6 +240,16 @@ export default function Filters({
                 />
               </div>
             );
+          }
+
+          if (filter.tooltipText) {
+            return (
+              <Tooltip arrow title={filter.tooltipText} key={filter.key+"."}>
+                {component}
+              </Tooltip>
+            );
+          } else {
+            return component;
           }
         })}
         {withApplyButton && (

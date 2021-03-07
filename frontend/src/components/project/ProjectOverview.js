@@ -75,6 +75,7 @@ export default function ProjectOverview({
   handleToggleFollowProject,
   isUserFollowing,
   followingChangePending,
+  contactProjectCreatorButtonRef,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -85,11 +86,11 @@ export default function ProjectOverview({
   const handleClickContact = async (event) => {
     event.preventDefault();
     const creator = project.team.filter((m) => m.permission === "Creator")[0];
-    if(!user) {
+    if (!user) {
       return redirect("/signin", {
         redirect: window.location.pathname + window.location.search,
         errorMessage: "Please create an account or log in to contact a project's organizer.",
-      });      
+      });
     }
     const chat = await startPrivateChat(creator, token);
     Router.push("/chat/" + chat.chat_uuid + "/");
@@ -137,6 +138,7 @@ export default function ProjectOverview({
           hasAdminPermissions={hasAdminPermissions}
           toggleShowFollowers={toggleShowFollowers}
           followingChangePending={followingChangePending}
+          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
         />
       ) : (
         <LargeScreenOverview
@@ -147,6 +149,7 @@ export default function ProjectOverview({
           hasAdminPermissions={hasAdminPermissions}
           toggleShowFollowers={toggleShowFollowers}
           followingChangePending={followingChangePending}
+          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
         />
       )}
       <ProjectFollowersDialog
@@ -170,6 +173,7 @@ function SmallScreenOverview({
   hasAdminPermissions,
   toggleShowFollowers,
   followingChangePending,
+  contactProjectCreatorButtonRef,
 }) {
   const classes = useStyles();
   return (
@@ -226,6 +230,7 @@ function SmallScreenOverview({
               variant="contained"
               color="primary"
               onClick={handleClickContact}
+              ref={contactProjectCreatorButtonRef}
             >
               Contact
             </Button>
@@ -244,6 +249,7 @@ function LargeScreenOverview({
   hasAdminPermissions,
   toggleShowFollowers,
   followingChangePending,
+  contactProjectCreatorButtonRef,
 }) {
   const classes = useStyles();
   return (
@@ -307,6 +313,7 @@ function LargeScreenOverview({
                   color="primary"
                   onClick={handleClickContact}
                   startIcon={<EmailIcon />}
+                  ref={contactProjectCreatorButtonRef}
                 >
                   Contact creator
                 </Button>

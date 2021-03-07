@@ -1,25 +1,22 @@
-import React, { useState } from "react";
-import NextCookies from "next-cookies";
+import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import axios from "axios";
-
+import NextCookies from "next-cookies";
+import React, { useRef, useState } from "react";
+import tokenConfig from "../public/config/tokenConfig";
+import { buildUrlEndingFromFilters } from "../public/lib/filterOperations";
 import {
+  getOrganizationTagsOptions,
+  getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  getProjectTagsOptions,
-  getOrganizationTagsOptions,
   membersWithAdditionalInfo,
 } from "../public/lib/getOptions";
-
-import tokenConfig from "../public/config/tokenConfig";
-
-import WideLayout from "../src/components/layouts/WideLayout";
-import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
-import useScrollTrigger from "@material-ui/core/useScrollTrigger";
-import TopOfPage from "../src/components/hooks/TopOfPage";
-import BrowseContent from "../src/components/browse/BrowseContent";
 import { parseData } from "../public/lib/parsingOperations";
+import BrowseContent from "../src/components/browse/BrowseContent";
+import TopOfPage from "../src/components/hooks/TopOfPage";
 import HubsSubHeader from "../src/components/indexPage/HubsSubHeader";
-import { buildUrlEndingFromFilters } from "../public/lib/filterOperations";
+import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
+import WideLayout from "../src/components/layouts/WideLayout";
 
 export default function Browse({
   projectsObject,
@@ -123,13 +120,14 @@ export default function Browse({
   const handleSetErrorMessage = (newMessage) => {
     setErrorMessage(newMessage);
   };
+  const hubsSubHeaderRef = useRef(null);
   return (
     <>
       <WideLayout
         title="Global Platform for Climate Change Solutions"
         hideHeadline
         showOnScrollUp={showOnScrollUp}
-        subHeader={<HubsSubHeader hubs={hubs} />}
+        subHeader={<HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} />}
       >
         <MainHeadingContainerMobile />
         <BrowseContent
@@ -142,6 +140,7 @@ export default function Browse({
           applySearch={applySearch}
           handleSetErrorMessage={handleSetErrorMessage}
           errorMessage={errorMessage}
+          hubsSubHeaderRef={hubsSubHeaderRef}
         />
       </WideLayout>
     </>
