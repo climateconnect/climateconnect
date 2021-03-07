@@ -1,6 +1,6 @@
 import axios from "axios";
 import Router from "next/router";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { getParams } from "../public/lib/generalOperations";
 import {
@@ -9,6 +9,7 @@ import {
   isLocationValid,
   parseLocation,
 } from "../public/lib/locationOperations";
+import { redirectOnLogin } from "../public/lib/profileOperations";
 import {
   getLastCompletedTutorialStep,
   getLastStepBeforeSkip,
@@ -31,7 +32,7 @@ export default function Signup() {
     newsletter: "",
   });
   const cookies = new Cookies();
-
+  const { user } = useContext(UserContext);
   //Information about the completion state of the tutorial
   const tutorialCookie = cookies.get("finishedTutorialSteps");
   const isClimateActorCookie = cookies.get("tutorialVariables");
@@ -55,6 +56,12 @@ export default function Signup() {
     }, {})
   );
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(function () {
+    if (user) {
+      redirectOnLogin(user, "/");
+    }
+  });
 
   const handleBasicInfoSubmit = (event, values) => {
     event.preventDefault();
