@@ -1,16 +1,23 @@
-import React, { useContext, useRef, useState } from "react";
-import BasicInfo from "../src/components/signup/BasicInfo";
-import AddInfo from "./../src/components/signup/AddInfo";
 import axios from "axios";
 import Router from "next/router";
-import Layout from "../src/components/layouts/layout";
-import UserContext from "../src/components/context/UserContext";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import Cookies from "universal-cookie";
+import { getParams } from "../public/lib/generalOperations";
 import {
-  parseLocation,
-  isLocationValid,
-  indicateWrongLocation,
   getLocationValue,
+  indicateWrongLocation,
+  isLocationValid,
+  parseLocation,
 } from "../public/lib/locationOperations";
+import { redirectOnLogin } from "../public/lib/profileOperations";
+import {
+  getLastCompletedTutorialStep,
+  getLastStepBeforeSkip,
+} from "../public/lib/tutorialOperations";
+import UserContext from "../src/components/context/UserContext";
+import Layout from "../src/components/layouts/layout";
+import BasicInfo from "../src/components/signup/BasicInfo";
+import AddInfo from "./../src/components/signup/AddInfo";
 
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
@@ -24,7 +31,16 @@ export default function Signup() {
     location: {},
     newsletter: "",
   });
-
+  const cookies = new Cookies();
+  const { user } = useContext(UserContext);
+  //Information about the completion state of the tutorial
+  const tutorialCookie = cookies.get("finishedTutorialSteps");
+  const isClimateActorCookie = cookies.get("tutorialVariables");
+  const curTutorialStep = getLastCompletedTutorialStep(tutorialCookie);
+  const lastCompletedTutorialStep =
+    curTutorialStep === -1
+      ? getLastStepBeforeSkip(cookies.get("lastStepBeforeSkipTutorial"))
+      : curTutorialStep;
   const steps = ["basicinfo", "personalinfo"];
   const [curStep, setCurStep] = useState(steps[0]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -40,6 +56,12 @@ export default function Signup() {
     }, {})
   );
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(function () {
+    if (user) {
+      redirectOnLogin(user, "/");
+    }
+  });
 
   const handleBasicInfoSubmit = (event, values) => {
     event.preventDefault();
@@ -57,6 +79,7 @@ export default function Signup() {
 
   const handleAddInfoSubmit = (event, values) => {
     event.preventDefault();
+    const params = getParams(window?.location?.href);
     if (!isLocationValid(values.location)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage);
       return;
@@ -76,6 +99,9 @@ export default function Signup() {
       last_name: values.last_name.trim(),
       location: parseLocation(location),
       send_newsletter: values.sendNewsletter,
+      from_tutorial: params?.from_tutorial === "true",
+      is_activist: isClimateActorCookie?.isActivist,
+      last_completed_tutorial_step: lastCompletedTutorialStep,
     };
     const config = {
       headers: {

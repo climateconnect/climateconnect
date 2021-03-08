@@ -204,6 +204,29 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    from_tutorial = models.BooleanField(
+        help_text="Check whether the user signed up by clicking the \"sign up\" link in the tutorial",
+        verbose_name="Signed up through tutorial?", 
+        null=True, 
+        blank=True, 
+        default=False
+    )
+
+    is_activist = models.CharField(
+        help_text="Options: [\"yes\", \"soon\", \"no\"]. Soon means they said they're interested in becoming active.",
+        verbose_name="Is already active in climate action?", 
+        null=True, 
+        blank=True,
+        max_length=8
+    )
+
+    last_completed_tutorial_step = models.SmallIntegerField(
+        help_text="Last tutorial step the user completed (16=finished)",
+        verbose_name="Last completed tutorial step", 
+        null=True, 
+        blank=True
+    )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "User Profile"

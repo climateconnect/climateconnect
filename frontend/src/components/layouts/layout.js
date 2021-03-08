@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
   alert: {
     width: "100%",
     zIndex: 100,
-    marginTop: theme.spacing(-2)
+    marginTop: theme.spacing(-2),
   },
 }));
 

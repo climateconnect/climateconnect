@@ -1,8 +1,7 @@
-import React from "react";
 import { Button, makeStyles } from "@material-ui/core";
-import TuneIcon from "@material-ui/icons/Tune";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-
+import TuneIcon from "@material-ui/icons/Tune";
+import React from "react";
 import FilterSearchBar from "../filter/FilterSearchBar";
 
 const useStyles = makeStyles((theme) => {
@@ -56,6 +55,7 @@ export default function FilterSection({
   setFiltersExpanded,
   type,
   customSearchBarLabels,
+  filterButtonRef,
 }) {
   const classes = useStyles();
 
@@ -89,6 +89,7 @@ export default function FilterSection({
           startIcon={
             filtersExpanded ? <HighlightOffIcon color="primary" /> : <TuneIcon color="primary" />
           }
+          ref={filterButtonRef}
         >
           Filter
         </Button>

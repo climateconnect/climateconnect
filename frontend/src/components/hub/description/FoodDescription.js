@@ -84,7 +84,10 @@ export default function FoodDescription() {
         </Typography>
         <Typography className={classes.textContent}>
           <div>
-            <img src="/images/foodwaste.jpg" alt="Bar chart shows that foodproduction is responsible for 26% of co2 emissions from which 6% food is never eaten" />
+            <img
+              src="/images/foodwaste.jpg"
+              alt="Bar chart shows that foodproduction is responsible for 26% of co2 emissions from which 6% food is never eaten"
+            />
           </div>
           Around 30% of all food is wasted. This accounts for 6% of total greenhouse gas emissions!
           Other than the enormous and pointless aspect of those emissions, it seems important to
