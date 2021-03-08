@@ -1,18 +1,17 @@
-import React, { useRef, useState } from "react";
-import Router from "next/router";
-import WideLayout from "../src/components/layouts/WideLayout";
-import EditAccountPage from "./../src/components/account/EditAccountPage";
-import { parseProfile } from "./../public/lib/profileOperations";
-import Cookies from "next-cookies";
-import { parseOptions } from "../public/lib/selectOptionsOperations";
-import { getImageUrl } from "../public/lib/imageOperations";
-
-import profile_info_metadata from "./../public/data/profile_info_metadata";
-import LoginNudge from "../src/components/general/LoginNudge";
 import axios from "axios";
+import Cookies from "next-cookies";
+import Router from "next/router";
+import React, { useRef, useState } from "react";
 import tokenConfig from "../public/config/tokenConfig";
+import { blobFromObjectUrl, getImageUrl } from "../public/lib/imageOperations";
+import { indicateWrongLocation, isLocationValid } from "../public/lib/locationOperations";
+import { parseOptions } from "../public/lib/selectOptionsOperations";
+import LoginNudge from "../src/components/general/LoginNudge";
 import PageNotFound from "../src/components/general/PageNotFound";
-import { isLocationValid, indicateWrongLocation } from "../public/lib/locationOperations";
+import WideLayout from "../src/components/layouts/WideLayout";
+import profile_info_metadata from "./../public/data/profile_info_metadata";
+import { parseProfile } from "./../public/lib/profileOperations";
+import EditAccountPage from "./../src/components/account/EditAccountPage";
 
 export default function EditProfilePage({
   skillsOptions,
@@ -45,7 +44,7 @@ export default function EditProfilePage({
   };
   const profile = user ? parseProfile(user, true) : null;
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
-  const saveChanges = (editedAccount) => {
+  const saveChanges = async (editedAccount) => {
     if (
       editedAccount?.info?.location === user?.info?.location &&
       !isLocationValid(editedAccount?.info?.location) &&
@@ -55,12 +54,9 @@ export default function EditProfilePage({
       return;
     }
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
+    const payload = await getProfileWithoutRedundantOptions(user, parsedProfile);
     axios
-      .post(
-        process.env.API_URL + "/api/edit_profile/",
-        getProfileWithoutRedundantOptions(user, parsedProfile),
-        tokenConfig(token)
-      )
+      .post(process.env.API_URL + "/api/edit_profile/", payload, tokenConfig(token))
       .then(function (response) {
         Router.push({
           pathname: "/profiles/" + response.data.url_slug,
@@ -192,11 +188,15 @@ async function getProfileInfoMetadata() {
 
 const parseProfileForRequest = (profile, availabilityOptions, user) => {
   const availability = availabilityOptions.find((o) => o.name == profile.info.availability);
+  const image = profile.image;
+  const thumbnail = profile.thumbnail_image;
+  const background = profile.background_image;
   return {
     first_name: profile.first_name,
     last_name: profile.last_name,
-    image: profile.image,
-    background_image: profile.background_image,
+    image: image,
+    thumbnail_image: thumbnail,
+    background_image: background,
     country: profile.info.country,
     location: profile.info.location,
     biography: profile.info.bio,
@@ -206,14 +206,17 @@ const parseProfileForRequest = (profile, availabilityOptions, user) => {
   };
 };
 
-const getProfileWithoutRedundantOptions = (user, newProfile) => {
+const getProfileWithoutRedundantOptions = async (user, newProfile) => {
   const oldProfile = {
     ...user,
     skills: user.skills.map((s) => s.id),
     image: getImageUrl(user.image),
+    thumbnail_image: getImageUrl(user.thumbnail_image),
     background_image: getImageUrl(user.background_image),
     availability: user.availability && user.availability.id,
   };
+  console.log(oldProfile);
+  console.log(newProfile);
   const finalProfile = {};
   Object.keys(newProfile).map((k) => {
     if (
@@ -226,6 +229,11 @@ const getProfileWithoutRedundantOptions = (user, newProfile) => {
     } else if (oldProfile[k] !== newProfile[k] && !(!oldProfile[k] && !newProfile[k]))
       finalProfile[k] = newProfile[k];
   });
+  if (finalProfile.image) finalProfile.image = await blobFromObjectUrl(finalProfile.image);
+  if (finalProfile.thumbnail_image)
+    finalProfile.thumbnail_image = await blobFromObjectUrl(finalProfile.thumbnail_image);
+  if (finalProfile.background_image)
+    finalProfile.background_image = await blobFromObjectUrl(finalProfile.background_image);
   return finalProfile;
 };
 

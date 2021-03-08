@@ -1,8 +1,8 @@
-import React from "react";
-import OrganizationMetaData from "./OrganizationMetadata";
-import { Typography, Card, CardContent, Link, Avatar } from "@material-ui/core";
+import { Avatar, Card, CardContent, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import OrganizationMetaData from "./OrganizationMetadata";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -51,7 +51,7 @@ export default function OrganizationPreview({ organization, showOrganizationType
         <Avatar
           alt={organization.name}
           size="large"
-          src={getImageUrl(organization.image)}
+          src={getImageUrl(organization.thumbnail_image)}
           className={classes.media}
           component="div"
         />

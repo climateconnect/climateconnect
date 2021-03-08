@@ -1,7 +1,7 @@
-import React from "react";
-import { Typography, IconButton } from "@material-ui/core";
+import { IconButton, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
+import React from "react";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 
 const useStyles = makeStyles((theme) => ({
@@ -47,7 +47,7 @@ function Content({ organization, size, onDelete }) {
   return (
     <span className={classes.wrapper}>
       <img
-        src={getImageUrl(organization.image)}
+        src={getImageUrl(organization.thumbnail_image)}
         className={`${classes.orgImage} ${size === "small" && classes.smallOrgImage}`}
         alt={organization.name + "'s logo"}
       />

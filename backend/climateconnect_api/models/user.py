@@ -48,6 +48,14 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    thumbnail_image = models.ImageField(
+        help_text="The small image that shows on the user preview",
+        verbose_name="Thumbnail Image",
+        upload_to=profile_image_path,
+        null=True,
+        blank=True
+    )
+
     background_image = models.ImageField(
         help_text="Points to user's background image",
         verbose_name="Background Image",
