@@ -4,9 +4,10 @@ import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
 import CloseIcon from "@material-ui/icons/Close";
 import React, { useEffect } from "react";
+import Typist from "react-typist";
 import {
   default as get_steps,
-  default as tutorial_steps,
+  default as tutorial_steps
 } from "../../../public/data/tutorial_steps";
 
 const useStyles = makeStyles((theme) => ({
@@ -287,7 +288,9 @@ const StepText = ({ curStep, tutorialVariables }) => {
 
   return (
     <div className={classes.textBox}>
-      <Typography className={classes.text}>{getTextFromStep()}</Typography>
+      <Typist cursor={{ show: false }} stdTypingDelay={0} avgTypingDelay={20}>
+        <Typography className={classes.text}>{getTextFromStep()}</Typography>
+      </Typist>
     </div>
   );
 };

@@ -5,7 +5,7 @@ import get_steps from "../../../public/data/tutorial_steps";
 import { isOnScreen } from "../../../public/lib/generalOperations";
 import {
   getLastCompletedTutorialStep,
-  getTutorialStepFromCookie,
+  getTutorialStepFromCookie
 } from "../../../public/lib/tutorialOperations";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
@@ -69,7 +69,7 @@ export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggered
   const startingStep = tutorialCookie
     ? getTutorialStepFromCookie(tutorialSteps, tutorialCookie, user)
     : 0;
-  const [step, setStep] = React.useState(startingStep > 0 ? startingStep : 0);
+  const [step, setStep] = React.useState(startingStep);
   const [showTutorial, setShowTutorial] = React.useState(false);
   const [showMinimizedAlert, setShowMinimizedAlert] = React.useState(false);
   const [tutorialVariables, setTutorialVariables] = React.useState(
