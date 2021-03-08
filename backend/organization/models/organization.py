@@ -38,6 +38,14 @@ class Organization(models.Model):
         blank=True
     )
 
+    thumbnail_image = models.ImageField(
+        help_text="Thumbnail image",
+        verbose_name="Thumbnail Image",
+        upload_to=organization_image_path,
+        null=True,
+        blank=True
+    )
+
     background_image = models.ImageField(
         help_text="Points to background image of an organization",
         verbose_name="Background image",

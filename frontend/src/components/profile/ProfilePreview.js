@@ -1,6 +1,6 @@
-import React from "react";
-import { Typography, Link, Avatar, Button, Tooltip } from "@material-ui/core";
+import { Avatar, Button, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles((theme) => {
@@ -66,7 +66,7 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
         <Avatar
           alt={profile.name}
           size="large"
-          src={getImageUrl(profile.image)}
+          src={getImageUrl(profile.thumbnail_image)}
           className={classes.avatar}
         />
         <Typography variant="h6" className={classes.name}>

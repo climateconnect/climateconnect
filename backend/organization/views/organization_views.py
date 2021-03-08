@@ -122,6 +122,8 @@ class CreateOrganizationView(APIView):
 
             if 'image' in request.data:
                 organization.image = get_image_from_data_url(request.data['image'])[0]
+            if 'thumbnail_image' in request.data:
+                organization.thumbnail_image = get_image_from_data_url(request.data['thumbnail_image'])[0]
             if 'background_image' in request.data:
                 organization.background_image = get_image_from_data_url(request.data['background_image'])[0]
 
@@ -210,6 +212,8 @@ class OrganizationAPIView(APIView):
             organization.location = get_location(request.data['location'])
         if 'image' in request.data:
             organization.image = get_image_from_data_url(request.data['image'])[0]
+        if 'thumbnail_image' in request.data:
+            organization.thumbnail_image = get_image_from_data_url(request.data['thumbnail_image'])[0]
         if 'background_image' in request.data:
             organization.background_image = get_image_from_data_url(request.data['background_image'])[0]
         if 'parent_organization' in request.data:

@@ -273,8 +273,13 @@ class EditUserProfile(APIView):
         user_profile.name = user.first_name + ' ' + user.last_name
         user_profile.url_slug = (user.first_name + user.last_name).lower() + str(user.id)
         user.save()
+
         if 'image' in request.data:
             user_profile.image = get_image_from_data_url(request.data['image'])[0]
+
+        if 'thumbnail_image' in request.data:
+            user_profile.thumbnail_image = get_image_from_data_url(request.data['thumbnail_image'])[0]
+
         if 'background_image' in request.data:
             user_profile.background_image = get_image_from_data_url(
                 request.data['background_image'], True, 1280
