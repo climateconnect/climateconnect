@@ -1,6 +1,6 @@
-import React from "react";
-import { makeStyles, Typography, Button } from "@material-ui/core";
+import { Button, makeStyles, Typography } from "@material-ui/core";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import React from "react";
 import FixedPreviewCards from "./FixedPreviewCards";
 
 const useStyles = makeStyles((theme) => ({
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectsSharedBox({ projects, className }) {
+export default function ProjectsSharedBox({ projects, className, isLoading }) {
   const classes = useStyles();
   return (
     <div className={`${className} ${classes.root}`}>
@@ -45,7 +45,7 @@ export default function ProjectsSharedBox({ projects, className }) {
         Find the best climate change solutions from around the world. Get involved, share your own
         solutions or spread effective projects and ideas to your location.
       </Typography>
-      <FixedPreviewCards elements={projects} type="project" />
+      <FixedPreviewCards isLoading={isLoading} elements={projects} type="project" />
       <div className={classes.showProjectsButtonContainer}>
         <Button color="inherit" href="/browse">
           <span className={classes.showProjectsText}>Show all projects</span>

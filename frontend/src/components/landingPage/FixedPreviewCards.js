@@ -1,7 +1,8 @@
-import React from "react";
 import { makeStyles } from "@material-ui/core";
-import ProjectPreview from "../project/ProjectPreview";
+import React from "react";
+import LoadingSpinner from "../general/LoadingSpinner";
 import HubPreview from "../hub/HubPreview";
+import ProjectPreview from "../project/ProjectPreview";
 //This component is to display a fixed amount of projects without  the option to load more
 
 const useStyles = makeStyles((theme) => ({
@@ -54,27 +55,37 @@ const useStyles = makeStyles((theme) => ({
   lastProject: {
     marginRight: 0,
   },
+  loadingSpinner: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1)
+  }
 }));
 
-export default function FixedPreviewCards({ elements, type }) {
+export default function FixedPreviewCards({ elements, type, isLoading }) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
       <div className={classes.container}>
-        {elements.map((e, index) => (
-          <span
-            className={`${classes.project} ${index === 0 && classes.firstProject} ${
-              index === elements.length - 1 && classes.lastProject
-            }`}
-            key={e.url_slug}
-          >
-            {type === "project" ? (
-              <ProjectPreview project={e} />
-            ) : (
-              type === "hub" && <HubPreview hub={e} disableBoxShadow />
-            )}
-          </span>
-        ))}
+        {isLoading ?
+          <LoadingSpinner className={classes.loadingSpinner} />
+        :
+          <>
+            {elements.map((e, index) => (
+              <span
+                className={`${classes.project} ${index === 0 && classes.firstProject} ${
+                  index === elements.length - 1 && classes.lastProject
+                }`}
+                key={e.url_slug}
+              >
+                {type === "project" ? (
+                  <ProjectPreview project={e} />
+                ) : (
+                  type === "hub" && <HubPreview hub={e} disableBoxShadow />
+                )}
+              </span>
+            ))}
+          </>
+        }
       </div>
     </div>
   );
