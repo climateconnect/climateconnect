@@ -5,7 +5,7 @@ import get_steps from "../../../public/data/tutorial_steps";
 import { isOnScreen } from "../../../public/lib/generalOperations";
 import {
   getLastCompletedTutorialStep,
-  getTutorialStepFromCookie
+  getTutorialStepFromCookie,
 } from "../../../public/lib/tutorialOperations";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";

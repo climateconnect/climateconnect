@@ -2,8 +2,7 @@ import Cookies from "universal-cookie";
 
 export function getTutorialStepFromCookie(tutorialSteps, cookieContent, user) {
   if (cookieContent) {
-    if(parseInt(cookieContent) === -1)
-      return -1
+    if (parseInt(cookieContent) === -1) return -1;
     const now = new Date();
     const oneYearFromNow = new Date(now.setFullYear(now.getFullYear() + 1));
     const cookies = new Cookies();

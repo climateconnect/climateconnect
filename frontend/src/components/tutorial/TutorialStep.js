@@ -7,7 +7,7 @@ import React, { useEffect } from "react";
 import Typist from "react-typist";
 import {
   default as get_steps,
-  default as tutorial_steps
+  default as tutorial_steps,
 } from "../../../public/data/tutorial_steps";
 
 const useStyles = makeStyles((theme) => ({
