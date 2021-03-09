@@ -20,6 +20,9 @@ const useStyles = makeStyles((theme) => ({
     background: "#F8F8F8",
     overflowX: "hidden",
   },
+  hideOverFlowY: {
+    overflowY: "hidden",
+  },
   h1ClassName: {
     fontSize: 30,
     fontWeight: "bold",
@@ -114,7 +117,7 @@ export default function Index() {
       largeFooter
       landingPage
     >
-      <div className={classes.root}>
+      <div className={`${classes.root} ${isLoading && classes.hideOverFlowY}`}>
         <LandingTopBox scrollToContent={scrollToContent} />
         <div className={classes.lowerPart}>
           <div id="info" ref={contentRef} className={classes.contentRef} />
