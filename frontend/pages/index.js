@@ -2,7 +2,6 @@ import { Button, makeStyles } from "@material-ui/core";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import tokenConfig from "../public/config/tokenConfig";
-import LoadingSpinner from "../src/components/general/LoadingSpinner";
 import DonationsBanner from "../src/components/landingPage/DonationsBanner";
 import HubsBox from "../src/components/landingPage/HubsBox";
 import JoinCommunityBox from "../src/components/landingPage/JoinCommunityBox";
@@ -125,34 +124,29 @@ export default function Index() {
         <div className={classes.lowerPart}>
           <div id="info" ref={contentRef} className={classes.contentRef} />
           <ExplainerBox h1ClassName={classes.h1ClassName} className={classes.explainerBox} />
-          {isLoading ? (
-            <LoadingSpinner isLoading key="project-previews-spinner" className={classes.loadingSpinner}/>
-          ) : (
-            <>
-              <ProjectsSharedBox
-                projects={elements.projects}
-                className={classes.projectsSharedBox}
-              />
-              <PitchBox h1ClassName={classes.h1ClassName} className={classes.pitchBox} />
-              <div className={classes.signUpButtonContainer}>
-                <Button
-                  href="/signup"
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  className={classes.signUpButton}
-                >
-                  {"Sign up & make a change"}
-                </Button>
-              </div>
-              <HubsBox hubs={elements.hubs} />
-              <JoinCommunityBox h1ClassName={classes.h1ClassName} />
-              <OrganizationsSharedBox organizations={elements.organizations} />
-              <DonationsBanner h1ClassName={classes.h1ClassName} />
-              <OurTeamBox h1ClassName={classes.h1ClassName} />
-              <StartNowBanner h1ClassName={classes.h1ClassName} />
-            </>
-          )}
+          <ProjectsSharedBox
+            projects={elements.projects}
+            className={classes.projectsSharedBox}
+            isLoading={isLoading}
+          />
+          <PitchBox h1ClassName={classes.h1ClassName} className={classes.pitchBox} />
+          <div className={classes.signUpButtonContainer}>
+            <Button
+              href="/signup"
+              variant="contained"
+              color="primary"
+              size="large"
+              className={classes.signUpButton}
+            >
+              {"Sign up & make a change"}
+            </Button>
+          </div>
+          <HubsBox isLoading={isLoading} hubs={elements.hubs} />
+          <JoinCommunityBox h1ClassName={classes.h1ClassName} />
+          <OrganizationsSharedBox isLoading={isLoading} organizations={elements.organizations} />
+          <DonationsBanner h1ClassName={classes.h1ClassName} />
+          <OurTeamBox h1ClassName={classes.h1ClassName} />
+          <StartNowBanner h1ClassName={classes.h1ClassName} />
         </div>
       </div>
     </WideLayout>
