@@ -5,8 +5,8 @@ import AlternatingText from "../general/AlternatingText";
 import LightBigButton from "../staticpages/LightBigButton";
 
 const useStyles = makeStyles((theme) => ({
-  imageContainer: {
-    background: `url('/images/landing_image.jpg')`,
+  imageContainer: (props) => ({
+    background: `url('/images/${props.imageSource}')`,
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
     position: "relative",
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
       backgroundSize: "cover",
       backgroundPosition: "0px 0px",
     },
-  },
+  }),
   img: {
     width: "100%",
     maxWidth: 1500,
@@ -174,13 +174,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LandingTopBox() {
-  const classes = useStyles();
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"))
+  const isVeryLargeScreen = useMediaQuery(theme.breakpoints.up("lg"))
+  const imageSource = isNarrowScreen ? "landing_image_small.jpg" : isVeryLargeScreen? "landing_image_extra_large.jpg" : "landing_image_large.jpg"
+  const classes = useStyles({imageSource: imageSource});
   return (
     <div>
       <div className={classes.imageContainer}>
         <img
-          src="/images/landing_image.jpg"
+          src={`/images/${imageSource}`}
           alt="Photo of earth from space at night with some connecting waypoints"
           className={classes.img}
         />
