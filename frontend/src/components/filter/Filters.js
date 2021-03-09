@@ -244,7 +244,7 @@ export default function Filters({
 
           if (filter.tooltipText) {
             return (
-              <Tooltip arrow title={filter.tooltipText} key={filter.key + "."}>
+              <Tooltip arrow placement="top" title={filter.tooltipText} key={filter.key + "."}>
                 {component}
               </Tooltip>
             );
