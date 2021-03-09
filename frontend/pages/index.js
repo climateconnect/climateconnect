@@ -66,6 +66,9 @@ const useStyles = makeStyles((theme) => ({
   projectsSharedBox: {
     marginTop: theme.spacing(5),
   },
+  loadingSpinner: {
+    marginTop: theme.spacing(2)
+  }
 }));
 
 export default function Index() {
@@ -123,7 +126,7 @@ export default function Index() {
           <div id="info" ref={contentRef} className={classes.contentRef} />
           <ExplainerBox h1ClassName={classes.h1ClassName} className={classes.explainerBox} />
           {isLoading ? (
-            <LoadingSpinner isLoading key="project-previews-spinner" />
+            <LoadingSpinner isLoading key="project-previews-spinner" className={classes.loadingSpinner}/>
           ) : (
             <>
               <ProjectsSharedBox
