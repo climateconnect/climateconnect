@@ -7,7 +7,7 @@ import React, { useEffect } from "react";
 import Typist from "react-typist";
 import {
   default as get_steps,
-  default as tutorial_steps,
+  default as tutorial_steps
 } from "../../../public/data/tutorial_steps";
 
 const useStyles = makeStyles((theme) => ({
@@ -138,7 +138,9 @@ export default function TutorialStep({
     forwardWithValue: forwardWithValue,
     curStepRef: curStepRef,
   };
-  if (curStep.pointsAt) {
+  const rect = curStep?.pointsAt?.current?.getBoundingClientRect()
+  const rectIsHidden = rect && Object.keys(rect).filter(x=>x!==0).length === 0
+  if (curStep.pointsAt && !rectIsHidden) {
     return (
       <Popper
         open
