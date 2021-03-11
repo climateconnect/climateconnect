@@ -1,47 +1,46 @@
-import React, { useState } from "react";
-import noop from "lodash/noop";
 import {
+  Avatar,
+  Badge,
   Box,
-  Container,
   Button,
+  ClickAwayListener,
+  Container,
+  Divider,
   IconButton,
-  SwipeableDrawer,
+  Link,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Badge,
-  Avatar,
-  MenuList,
   MenuItem,
-  Popper,
+  MenuList,
   Paper,
-  ClickAwayListener,
-  Link,
-  Typography,
-  Divider,
+  Popper,
+  SwipeableDrawer,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useContext } from "react";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import GroupWorkIcon from "@material-ui/icons/GroupWork";
+import HomeIcon from "@material-ui/icons/Home";
+import InfoIcon from "@material-ui/icons/Info";
+import MailOutlineIcon from "@material-ui/icons/MailOutline";
+import MenuIcon from "@material-ui/icons/Menu";
+import NotificationsIcon from "@material-ui/icons/Notifications";
+import SettingsIcon from "@material-ui/icons/Settings";
+import noop from "lodash/noop";
+import React, { useContext, useState } from "react";
+import { getImageUrl } from "../../../public/lib/imageOperations";
+import theme from "../../themes/theme";
+import Notification from "../communication/notifications/Notification";
+import NotificationsBox from "../communication/notifications/NotificationsBox";
 import UserContext from "./../context/UserContext";
 
-import MenuIcon from "@material-ui/icons/Menu";
-import InfoIcon from "@material-ui/icons/Info";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import SettingsIcon from "@material-ui/icons/Settings";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import GroupWorkIcon from "@material-ui/icons/GroupWork";
-import { getImageUrl } from "../../../public/lib/imageOperations";
-import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
-import MailOutlineIcon from "@material-ui/icons/MailOutline";
-import NotificationsIcon from "@material-ui/icons/Notifications";
-import NotificationsBox from "../communication/notifications/NotificationsBox";
-import Notification from "../communication/notifications/Notification";
-import HomeIcon from "@material-ui/icons/Home";
-import theme from "../../themes/theme";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -641,61 +640,62 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader }) => {
     setMenuOpen(!menuOpen);
   };
 
-  const handleCloseMenu = () => {
+  const handleCloseMenu = (e) => {
+    console.log(e.target)
     setMenuOpen(false);
   };
 
   return (
-    <Box className={classes.loggedInRoot}>
-      <Button
-        onClick={handleToggleMenu}
-        disableElevation
-        disableRipple
-        disableFocusRipple
-        style={{ backgroundColor: "transparent" }}
-        ref={anchorRef}
-      >
-        <Avatar
-          className={classes.loggedInAvatar}
-          src={getImageUrl(loggedInUser.image)}
-          alt={loggedInUser.name}
-        />
-        <ArrowDropDownIcon />
-      </Button>
-      <Popper
-        open={menuOpen}
-        anchorEl={anchorRef.current}
-        className={`${fixedHeader && classes.loggedInLinksFixedHeader} ${classes.loggedInPopper}`}
-      >
-        <ClickAwayListener onClickAway={handleCloseMenu}>
-          <Paper>
-            <MenuList>
-              {getLoggedInLinks({ loggedInUser })
-                .filter((link) => !link.showOnMobileOnly)
-                .map((link, index) => {
-                  const menuItemProps = {
-                    component: "button",
-                    className: classes.loggedInLink,
-                  };
-                  if (link.isLogoutButton) menuItemProps.onClick = handleLogout;
-                  else menuItemProps.href = link.href;
-                  return (
-                    <MenuItem
-                      key={index}
-                      component="button"
-                      className={classes.loggedInLink}
-                      onClick={link.isLogoutButton && handleLogout}
-                      href={!link.isLogoutButton ? link.href : undefined}
-                    >
-                      {link.text}
-                    </MenuItem>
-                  );
-                })}
-            </MenuList>
-          </Paper>
-        </ClickAwayListener>
-      </Popper>
-    </Box>
+    <ClickAwayListener onClickAway={handleCloseMenu}>
+      <Box className={classes.loggedInRoot}>
+        <Button
+          onClick={handleToggleMenu}
+          disableElevation
+          disableRipple
+          disableFocusRipple
+          style={{ backgroundColor: "transparent" }}
+          ref={anchorRef}
+        >
+          <Avatar
+            className={classes.loggedInAvatar}
+            src={getImageUrl(loggedInUser.image)}
+            alt={loggedInUser.name}
+          />
+          <ArrowDropDownIcon />
+        </Button>
+        <Popper
+          open={menuOpen}
+          anchorEl={anchorRef.current}
+          className={`${fixedHeader && classes.loggedInLinksFixedHeader} ${classes.loggedInPopper}`}
+        >        
+            <Paper>
+              <MenuList>
+                {getLoggedInLinks({ loggedInUser })
+                  .filter((link) => !link.showOnMobileOnly)
+                  .map((link, index) => {
+                    const menuItemProps = {
+                      component: "button",
+                      className: classes.loggedInLink,
+                    };
+                    if (link.isLogoutButton) menuItemProps.onClick = handleLogout;
+                    else menuItemProps.href = link.href;
+                    return (
+                      <MenuItem
+                        key={index}
+                        component="button"
+                        className={classes.loggedInLink}
+                        onClick={link.isLogoutButton && handleLogout}
+                        href={!link.isLogoutButton ? link.href : undefined}
+                      >
+                        {link.text}
+                      </MenuItem>
+                    );
+                  })}
+              </MenuList>
+            </Paper>
+        </Popper>
+      </Box>
+    </ClickAwayListener>
   );
 };
 
