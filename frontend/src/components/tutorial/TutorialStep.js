@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
   text: {
     fontSize: 17.5,
+    position: "absolute"
   },
   buttonsContainer: {
     marginTop: theme.spacing(3),
@@ -98,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: -30,
     marginTop: -25,
   },
-  textPlaceHolder: {
+  textPlaceholder: {
     visibility: "hidden",
   },
 }));
@@ -139,7 +140,7 @@ export default function TutorialStep({
     curStepRef: curStepRef,
   };
   const rect = curStep?.pointsAt?.current?.getBoundingClientRect()
-  const rectIsHidden = rect && Object.keys(rect).filter(x=>x!==0).length === 0
+  const rectIsHidden = rect && rect.height === 0 && rect.width === 0
   if (curStep.pointsAt && !rectIsHidden) {
     return (
       <Popper
@@ -293,6 +294,7 @@ const StepText = ({ curStep, tutorialVariables }) => {
       <Typist cursor={{ show: false }} stdTypingDelay={0} avgTypingDelay={20}>
         <Typography className={classes.text}>{getTextFromStep()}</Typography>
       </Typist>
+      <Typography className={classes.textPlaceholder}>{getTextFromStep()}</Typography>
     </div>
   );
 };
