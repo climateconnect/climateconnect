@@ -79,7 +79,7 @@ class Project(models.Model):
         auto_now=True
     )
 
-    short_description = models.CharField(
+    short_description = models.TextField(
         help_text="Points to short description about the project",
         verbose_name="Short Description",
         null=True,
@@ -87,7 +87,7 @@ class Project(models.Model):
         max_length=240
     )
 
-    description = models.CharField(
+    description = models.TextField(
         help_text="Points to detailed description about the project",
         verbose_name="Description",
         null=True,
