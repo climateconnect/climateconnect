@@ -1,7 +1,7 @@
 import React from "react";
 import Form from "./../general/Form";
-import countries from "./../../../public/data/countries.json";
 import { makeStyles } from "@material-ui/core/styles";
+import { getLocationFields } from "../../../public/lib/locationOperations";
 
 const useStyles = makeStyles(() => {
   return {
@@ -11,7 +11,15 @@ const useStyles = makeStyles(() => {
   };
 });
 
-export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBack }) {
+export default function AddInfo({
+  handleSubmit,
+  errorMessage,
+  values,
+  handleGoBack,
+  locationInputRef,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
+}) {
   const classes = useStyles();
   const fields = [
     {
@@ -28,25 +36,13 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
       key: "last_name",
       value: values["last_name"],
     },
-    {
-      required: true,
-      label: "Country",
-      select: {
-        values: countries.map((country) => {
-          return { key: country, name: country };
-        }),
-        defaultValue: values["country"] ? values["country"] : "",
-        addEmptyValue: true,
-      },
-      key: "country",
-    },
-    {
-      required: true,
-      label: "City/Place",
-      type: "text",
-      key: "city",
-      value: values["city"],
-    },
+    ...getLocationFields({
+      locationInputRef: locationInputRef,
+      locationOptionsOpen: locationOptionsOpen,
+      handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
+      values: values,
+      locationKey: "location",
+    }),
     {
       required: false,
       label: (
@@ -99,6 +95,7 @@ export default function AddInfo({ handleSubmit, errorMessage, values, handleGoBa
         onSubmit={(event, values) => handleSubmit(event, values)}
         errorMessage={errorMessage}
         onGoBack={handleGoBack}
+        fieldClassName={classes.fieldClassName}
       />
     </>
   );

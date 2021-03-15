@@ -1,5 +1,6 @@
-import React from "react";
 import { makeStyles } from "@material-ui/core";
+import React from "react";
+import LoadingSpinner from "../general/LoadingSpinner";
 import OrganizationPreview from "./OrganizationPreview";
 //This component is to display a fixed amount of projects without  the option to load more
 
@@ -42,26 +43,36 @@ const useStyles = makeStyles((theme) => ({
   first: {
     marginLeft: 0,
   },
+  loadingSpinner: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1)
+  }
 }));
 
-export default function OrganizationPreviewsFixed({ organizations, showOrganizationType }) {
+export default function OrganizationPreviewsFixed({ organizations, showOrganizationType, isLoading }) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
       <div className={classes.container}>
-        {organizations.map((organization, index) => {
-          return (
-            <span
-              className={`${classes.organization} ${index === 0 && classes.first}`}
-              key={organization.url_slug}
-            >
-              <OrganizationPreview
-                organization={organization}
-                showOrganizationType={showOrganizationType}
-              />
-            </span>
-          );
-        })}
+      {isLoading ?
+          <LoadingSpinner className={classes.loadingSpinner} />
+        :
+          <>
+            {organizations.map((organization, index) => {
+              return (
+                <span
+                  className={`${classes.organization} ${index === 0 && classes.first}`}
+                  key={organization.url_slug}
+                >
+                  <OrganizationPreview
+                    organization={organization}
+                    showOrganizationType={showOrganizationType}
+                  />
+                </span>
+              );
+            })}
+          </>   
+      }     
       </div>
     </div>
   );

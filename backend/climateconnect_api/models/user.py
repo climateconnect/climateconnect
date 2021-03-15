@@ -2,6 +2,7 @@ from django.db import models
 from climateconnect_api.models.common import (
     Availability, Skill
 )
+from location.models import Location
 
 
 def profile_image_path(instance, filename):
@@ -47,6 +48,14 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    thumbnail_image = models.ImageField(
+        help_text="The small image that shows on the user preview",
+        verbose_name="Thumbnail Image",
+        upload_to=profile_image_path,
+        null=True,
+        blank=True
+    )
+
     background_image = models.ImageField(
         help_text="Points to user's background image",
         verbose_name="Background Image",
@@ -55,6 +64,7 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     country = models.CharField(
         help_text="User's country",
         verbose_name="Country",
@@ -63,6 +73,7 @@ class UserProfile(models.Model):
         null=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     state = models.CharField(
         help_text="User's state",
         verbose_name="State",
@@ -71,10 +82,21 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    # Field not in use. Keeping temporarily for backwards compatibility
     city = models.CharField(
         help_text="User's city",
         verbose_name="City",
         max_length=512,
+        null=True,
+        blank=True
+    )
+
+    location = models.ForeignKey(
+        Location,
+        help_text="Points to the user's location",
+        verbose_name="Location",
+        related_name="user_profile_loc",
+        on_delete=models.SET_NULL,
         null=True,
         blank=True
     )
@@ -187,6 +209,29 @@ class UserProfile(models.Model):
         verbose_name="User's Website",
         max_length=256,
         null=True,
+        blank=True
+    )
+
+    from_tutorial = models.BooleanField(
+        help_text="Check whether the user signed up by clicking the \"sign up\" link in the tutorial",
+        verbose_name="Signed up through tutorial?", 
+        null=True, 
+        blank=True, 
+        default=False
+    )
+
+    is_activist = models.CharField(
+        help_text="Options: [\"yes\", \"soon\", \"no\"]. Soon means they said they're interested in becoming active.",
+        verbose_name="Is already active in climate action?", 
+        null=True, 
+        blank=True,
+        max_length=8
+    )
+
+    last_completed_tutorial_step = models.SmallIntegerField(
+        help_text="Last tutorial step the user completed (16=finished)",
+        verbose_name="Last completed tutorial step", 
+        null=True, 
         blank=True
     )
 

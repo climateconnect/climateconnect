@@ -1,6 +1,5 @@
-import React from "react";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-
+import React from "react";
 import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
@@ -13,6 +12,10 @@ export default function FilterContent({
   possibleFilters,
   filtersExpanded,
   unexpandFilters,
+  locationInputRef,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
+  errorMessage,
 }) {
   const isMediumScreen = useMediaQuery(theme.breakpoints.between("xs", "md"));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
@@ -90,6 +93,10 @@ export default function FilterContent({
             handleUnselectFilter={handleUnselectFilter}
             selectedItems={selectedItems}
             setSelectedItems={setSelectedItems}
+            locationInputRef={locationInputRef}
+            locationOptionsOpen={locationOptionsOpen}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+            errorMessage={errorMessage}
           />
         </>
       ) : isMediumScreen && possibleFilters.length > 3 ? (
@@ -104,6 +111,10 @@ export default function FilterContent({
             handleClickDialogClose={handleClickDialogClose}
             selectedItems={selectedItems}
             setSelectedItems={setSelectedItems}
+            locationInputRef={locationInputRef}
+            locationOptionsOpen={locationOptionsOpen}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+            errorMessage={errorMessage}
           />
           <Filters
             possibleFilters={possibleFiltersSecondHalf}
@@ -117,6 +128,9 @@ export default function FilterContent({
             handleClickDialogClose={handleClickDialogClose}
             selectedItems={selectedItems}
             setSelectedItems={setSelectedItems}
+            locationInputRef={locationInputRef}
+            locationOptionsOpen={locationOptionsOpen}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           />
         </>
       ) : (
@@ -132,6 +146,10 @@ export default function FilterContent({
           justifyContent={type === "projects" ? "space-around" : "flex-start"}
           selectedItems={selectedItems}
           setSelectedItems={setSelectedItems}
+          locationInputRef={locationInputRef}
+          locationOptionsOpen={locationOptionsOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          errorMessage={errorMessage}
         />
       )}
       {

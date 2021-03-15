@@ -13,8 +13,8 @@ import UploadImageDialog from "../dialogs/UploadImageDialog";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
-import SelectField from "../general/SelectField";
-import countries from "./../../../public/data/countries.json";
+import LocationSearchBar from "../search/LocationSearchBar";
+import { parseLocation } from "../../../public/lib/locationOperations";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     fontSize: 40,
   },
-  cityInput: {
+  locationInput: {
     marginBottom: theme.spacing(1),
   },
   overviewHeadline: {
@@ -76,6 +76,10 @@ export default function EditProjectOverview({
   handleSetProject,
   smallScreen,
   tagsOptions,
+  overviewInputsRef,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
+  locationInputRef,
 }) {
   const classes = useStyles();
   const handleChangeProject = (newValue, key) => {
@@ -96,6 +100,10 @@ export default function EditProjectOverview({
           handleChangeProject={handleChangeProject}
           handleChangeImage={handleChangeImage}
           tagsOptions={tagsOptions}
+          overviewInputsRef={overviewInputsRef}
+          locationOptionsOpen={locationOptionsOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          locationInputRef={locationInputRef}
         />
       ) : (
         <LargeScreenOverview
@@ -103,21 +111,40 @@ export default function EditProjectOverview({
           handleChangeProject={handleChangeProject}
           handleChangeImage={handleChangeImage}
           tagsOptions={tagsOptions}
+          overviewInputsRef={overviewInputsRef}
+          locationOptionsOpen={locationOptionsOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          locationInputRef={locationInputRef}
         />
       )}
     </Container>
   );
 }
 
-function SmallScreenOverview({ project, handleChangeProject, handleChangeImage, tagsOptions }) {
+function SmallScreenOverview({
+  project,
+  handleChangeProject,
+  handleChangeImage,
+  tagsOptions,
+  overviewInputsRef,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
+  locationInputRef,
+}) {
   const classes = useStyles();
   return (
     <>
       <InputImage project={project} screenSize="small" handleChangeImage={handleChangeImage} />
-      <div className={classes.blockProjectInfo}>
+      <div className={classes.blockProjectInfo} ref={overviewInputsRef}>
         <InputName project={project} screenSize="small" />
         <InputShortDescription project={project} handleChangeProject={handleChangeProject} />
-        <InputLocation project={project} handleChangeProject={handleChangeProject} />
+        <InputLocation
+          project={project}
+          handleChangeProject={handleChangeProject}
+          locationOptionsOpen={locationOptionsOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          locationInputRef={locationInputRef}
+        />
         <InputWebsite project={project} handleChangeProject={handleChangeProject} />
         <InputTags
           tagsOptions={tagsOptions}
@@ -129,7 +156,16 @@ function SmallScreenOverview({ project, handleChangeProject, handleChangeImage, 
   );
 }
 
-function LargeScreenOverview({ project, handleChangeProject, handleChangeImage, tagsOptions }) {
+function LargeScreenOverview({
+  project,
+  handleChangeProject,
+  handleChangeImage,
+  tagsOptions,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
+  overviewInputsRef,
+  locationInputRef,
+}) {
   const classes = useStyles();
   return (
     <>
@@ -138,9 +174,15 @@ function LargeScreenOverview({ project, handleChangeProject, handleChangeImage, 
         <div className={classes.largeScreenImageContainer}>
           <InputImage project={project} screenSize="large" handleChangeImage={handleChangeImage} />
         </div>
-        <div className={classes.inlineProjectInfo}>
+        <div className={classes.inlineProjectInfo} ref={overviewInputsRef}>
           <InputShortDescription project={project} handleChangeProject={handleChangeProject} />
-          <InputLocation project={project} handleChangeProject={handleChangeProject} />
+          <InputLocation
+            project={project}
+            handleChangeProject={handleChangeProject}
+            locationOptionsOpen={locationOptionsOpen}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+            locationInputRef={locationInputRef}
+          />
           <InputWebsite project={project} handleChangeProject={handleChangeProject} />
           <InputTags
             tagsOptions={tagsOptions}
@@ -176,30 +218,60 @@ const InputShortDescription = ({ project, handleChangeProject }) => {
   );
 };
 
-const InputLocation = ({ project, handleChangeProject }) => {
+const InputLocation = ({
+  project,
+  handleChangeProject,
+  locationOptionsOpen,
+  handleSetLocationOptionsOpen,
+  locationInputRef,
+}) => {
   const classes = useStyles();
+  const handleChangeLocation = (location) => {
+    handleChangeProject(parseLocation(location), "loc");
+  };
+  const handleChangeLegacyLocationElement = (key, value) => {
+    handleChangeProject({ ...project.loc, [key]: value }, "loc");
+  };
+  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
+    return (
+      <>
+        <TextField
+          label="City"
+          variant="outlined"
+          fullWidth
+          className={classes.projectInfoEl}
+          value={project?.loc?.city}
+          type="text"
+          onChange={(event) => handleChangeLegacyLocationElement("city", event.target.value)}
+          required
+        />
+        <TextField
+          label="Country"
+          className={classes.projectInfoEl}
+          variant="outlined"
+          fullWidth
+          value={project?.loc?.country}
+          type="text"
+          onChange={(event) => handleChangeLegacyLocationElement("country", event.target.value)}
+          required
+        />
+      </>
+    );
+  }
   return (
     <div className={classes.projectInfoEl}>
-      <TextField
-        label="City"
-        variant="outlined"
-        fullWidth
-        value={project.city}
-        className={classes.cityInput}
-        type="text"
-        onChange={(event) => handleChangeProject(event.target.value, "city")}
+      <LocationSearchBar
+        label="Location"
         required
-      />
-      <SelectField
-        label="Country"
-        variant="outlined"
-        fullWidth
-        controlled
-        controlledValue={project.country}
-        type="text"
-        onChange={(event) => handleChangeProject(event.target.value, "country")}
-        required
-        options={countries.map((c) => ({ key: c.toLowerCase(), name: c }))}
+        className={classes.locationInput}
+        value={project.loc}
+        onChange={(value) => {
+          handleChangeProject(value, "loc");
+        }}
+        onSelect={handleChangeLocation}
+        open={locationOptionsOpen}
+        handleSetOpen={handleSetLocationOptionsOpen}
+        locationInputRef={locationInputRef}
       />
     </div>
   );

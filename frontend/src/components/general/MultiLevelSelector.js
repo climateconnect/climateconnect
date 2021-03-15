@@ -1,13 +1,21 @@
-import React from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-
-import { List, ListItem, ListItemText, ListItemIcon, Typography, Divider } from "@material-ui/core";
+import {
+  Container,
+  Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import CloseIcon from "@material-ui/icons/Close";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import React from "react";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import FilterSearchBar from "../filter/FilterSearchBar";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -252,24 +260,60 @@ function ListToChooseWrapper({
   expanded,
   onClickSelect,
   selected,
-  className,
   isInPopup,
   isNarrowScreen,
 }) {
   const classes = useStyles();
+
+  // The first section should be the initial tab value
+  const [searchValue, setSearchValue] = React.useState("");
+  const handleSearchBarChange = (event) => setSearchValue(event?.target?.value);
+
+  function filteredLists({ searchValue, itemsToSelectFrom }) {
+    if (searchValue == "" || searchValue == null) {
+      return itemsToSelectFrom;
+    }
+    return (
+      itemsToSelectFrom
+        // remove all inner items that do not match the search query
+        .map((item) => {
+          const itemCopy = Object.assign({}, item);
+          itemCopy.subcategories = item.subcategories.filter((innerItem) => {
+            return innerItem.name.toLowerCase().includes(searchValue.toLowerCase());
+          });
+          return itemCopy;
+        })
+        // remove all items who do not match the search, or have no inner matches
+        .filter((item) => {
+          return (
+            item.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+            item.subcategories.length > 0
+          );
+        })
+    );
+  }
+
   return (
-    <div className={className}>
-      <ListToChooseFrom
-        itemsToSelectFrom={itemsToSelectFrom}
-        onClickExpand={onClickExpand}
-        expanded={expanded}
-        onClickSelect={onClickSelect}
-        selected={selected}
-        className={`${(isNarrowScreen || isInPopup) && classes.narrowScreenListWrapper}`}
-        isInPopup={isInPopup}
-        isNarrowScreen={isNarrowScreen}
-      />
-    </div>
+    <Container>
+      <div className={classes.searchBarContainer}>
+        <FilterSearchBar
+          label="Search for keywords"
+          className={classes.searchBar}
+          onChange={handleSearchBarChange}
+          value={searchValue}
+        />
+        <ListToChooseFrom
+          itemsToSelectFrom={filteredLists({ searchValue, itemsToSelectFrom })}
+          onClickExpand={onClickExpand}
+          expanded={expanded}
+          onClickSelect={onClickSelect}
+          selected={selected}
+          className={`${(isNarrowScreen || isInPopup) && classes.narrowScreenListWrapper}`}
+          isInPopup={isInPopup}
+          isNarrowScreen={isNarrowScreen}
+        />
+      </div>
+    </Container>
   );
 }
 

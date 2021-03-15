@@ -1,5 +1,5 @@
-import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
+import React from "react";
 import FixedPreviewCards from "./FixedPreviewCards";
 
 const useStyles = makeStyles((theme) => ({
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubsBox({ hubs }) {
+export default function HubsBox({ hubs, isLoading }) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -35,7 +35,7 @@ export default function HubsBox({ hubs }) {
         are working on by vising the Hubs. Get a rundown of every main field of action in the fight
         against climate change.
       </Typography>
-      <FixedPreviewCards elements={hubs} type="hub" />
+      <FixedPreviewCards isLoading={isLoading} elements={hubs} type="hub" />
     </div>
   );
 }

@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Container, Tabs, Tab, Divider, useMediaQuery, makeStyles } from "@material-ui/core";
-
-import FilterSection from "../indexPage/FilterSection";
-import FilterContent from "../filter/FilterContent";
-import ProjectPreviews from "../project/ProjectPreviews";
-import ProfilePreviews from "../profile/ProfilePreviews";
-import OrganizationPreviews from "../organization/OrganizationPreviews";
+import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
+import React, { useEffect, useRef, useState } from "react";
 import possibleFilters from "../../../public/data/possibleFilters";
-import NoItemsFound from "./NoItemsFound";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
-import LoadingSpinner from "../general/LoadingSpinner";
+import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import LoadingContext from "../context/LoadingContext";
+import FilterContent from "../filter/FilterContent";
+import LoadingSpinner from "../general/LoadingSpinner";
+import FilterSection from "../indexPage/FilterSection";
+import OrganizationPreviews from "../organization/OrganizationPreviews";
+import ProfilePreviews from "../profile/ProfilePreviews";
+import ProjectPreviews from "../project/ProjectPreviews";
+import Tutorial from "../tutorial/Tutorial";
+import NoItemsFound from "./NoItemsFound";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -39,6 +40,13 @@ export default function BrowseContent({
   applySearch,
   hideMembers,
   customSearchBarLabels,
+  handleSetErrorMessage,
+  errorMessage,
+  hubsSubHeaderRef,
+  hubQuickInfoRef,
+  hubProjectsButtonRef,
+  nextStepTriggeredBy,
+  hubName,
 }) {
   const initialState = {
     items: {
@@ -63,6 +71,12 @@ export default function BrowseContent({
       members: "",
     },
   };
+  //saving these refs for the tutorial
+  const firstProjectCardRef = useRef(null);
+  const filterButtonRef = useRef(null);
+  const organizationsTabRef = useRef(null);
+
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
   const TYPES_BY_TAB_VALUE = hideMembers
     ? ["projects", "organizations"]
@@ -71,6 +85,15 @@ export default function BrowseContent({
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
   const [filtersExpanded, setFiltersExpanded] = useState(false);
   const [state, setState] = useState(initialState);
+  const locationInputRefs = {
+    projects: useRef(null),
+    organizations: useRef(null),
+    members: useRef(null),
+  };
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
+  const handleSetLocationOptionsOpen = (bool) => {
+    setLocationOptionsOpen(bool);
+  };
 
   // We have 2 distinct loading states: filtering, and loading more data. For
   // each state, we want to treat the loading spinner a bit differently, hence
@@ -147,10 +170,16 @@ export default function BrowseContent({
    * state.
    */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
+    if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
+      indicateWrongLocation(locationInputRefs[type], setLocationOptionsOpen, handleSetErrorMessage);
+      return;
+    }
+    handleSetErrorMessage("");
     setIsFiltering(true);
     const res = await applyNewFilters(type, newFilters, closeFilters, state.urlEnding[type]);
-
-    if (res?.closeFilters) setFiltersExpanded(false);
+    if (res?.closeFilters) {
+      setFiltersExpanded(false);
+    }
     if (res?.filteredItemsObject) {
       setState({
         ...state,
@@ -198,6 +227,7 @@ export default function BrowseContent({
           setFiltersExpanded={setFiltersExpanded}
           type={TYPES_BY_TAB_VALUE[tabValue]}
           customSearchBarLabels={customSearchBarLabels}
+          filterButtonRef={filterButtonRef}
         />
         <Tabs
           variant={isNarrowScreen ? "fullWidth" : "standard"}
@@ -207,9 +237,14 @@ export default function BrowseContent({
           textColor="primary"
           centered={true}
         >
-          {TYPES_BY_TAB_VALUE.map((t, index) => (
-            <Tab label={capitalizeFirstLetter(t)} className={classes.tab} key={index} />
-          ))}
+          {TYPES_BY_TAB_VALUE.map((t, index) => {
+            const tabProps = {
+              label: capitalizeFirstLetter(t),
+              className: classes.tab,
+            };
+            if (index === 1) tabProps.ref = organizationsTabRef;
+            return <Tab {...tabProps} key={index} />;
+          })}
         </Tabs>
 
         <Divider className={classes.mainContentDivider} />
@@ -222,8 +257,12 @@ export default function BrowseContent({
                 type={TYPES_BY_TAB_VALUE[0]}
                 applyFilters={handleApplyNewFilters}
                 filtersExpanded={filtersExpanded}
+                errorMessage={errorMessage}
                 unexpandFilters={unexpandFilters}
                 possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[0], filterChoices)}
+                locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[0]]}
+                locationOptionsOpen={locationOptionsOpen}
+                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
               />
             )}
             {/*
@@ -241,6 +280,7 @@ export default function BrowseContent({
                 loadFunc={loadMoreProjects}
                 parentHandlesGridItems
                 projects={state.items.projects}
+                firstProjectCardRef={firstProjectCardRef}
               />
             ) : (
               <NoItemsFound type="projects" />
@@ -252,9 +292,13 @@ export default function BrowseContent({
                 className={classes.tabContent}
                 type={TYPES_BY_TAB_VALUE[1]}
                 applyFilters={handleApplyNewFilters}
+                errorMessage={errorMessage}
                 filtersExpanded={filtersExpanded}
                 unexpandFilters={unexpandFilters}
                 possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[1], filterChoices)}
+                locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[1]]}
+                locationOptionsOpen={locationOptionsOpen}
+                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
               />
             )}
 
@@ -287,8 +331,12 @@ export default function BrowseContent({
                   type={TYPES_BY_TAB_VALUE[2]}
                   applyFilters={handleApplyNewFilters}
                   filtersExpanded={filtersExpanded}
+                  errorMessage={errorMessage}
                   unexpandFilters={unexpandFilters}
                   possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[2], filterChoices)}
+                  locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[2]]}
+                  locationOptionsOpen={locationOptionsOpen}
+                  handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 />
               )}
 
@@ -315,6 +363,19 @@ export default function BrowseContent({
           )}
         </>
       </Container>
+      <Tutorial
+        fixedPosition
+        pointerRefs={{
+          projectCardRef: firstProjectCardRef,
+          filterButtonRef: filterButtonRef,
+          organizationsTabRef: organizationsTabRef,
+          hubsSubHeaderRef: hubsSubHeaderRef,
+          hubQuickInfoRef: hubQuickInfoRef,
+          hubProjectsButtonRef: hubProjectsButtonRef,
+        }}
+        hubName={hubName}
+        nextStepTriggeredBy={nextStepTriggeredBy}
+      />
     </LoadingContext.Provider>
   );
 }

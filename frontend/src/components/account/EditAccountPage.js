@@ -1,31 +1,37 @@
-import React from "react";
 import {
-  Container,
   Avatar,
-  Chip,
   Button,
-  TextField,
-  Typography,
-  Tooltip,
-  IconButton,
-  useMediaQuery,
   Checkbox,
+  Chip,
+  Container,
+  IconButton,
+  TextField,
+  Tooltip,
+  Typography,
+  useMediaQuery,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
-import UploadImageDialog from "./../dialogs/UploadImageDialog";
-import ConfirmDialog from "./../dialogs/ConfirmDialog";
-import SelectField from "./../general/SelectField";
-import SelectDialog from "./../dialogs/SelectDialog";
-import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
-import imageCompression from "browser-image-compression";
-import { getImageDialogHeight } from "../../../public/lib/imageOperations";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import AutoCompleteSearchBar from "../general/AutoCompleteSearchBar";
-import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import Alert from "@material-ui/lab/Alert";
+import React from "react";
+import {
+  getCompressedJPG,
+  getImageDialogHeight,
+  getResizedImage,
+  whitenTransparentPixels,
+} from "../../../public/lib/imageOperations";
+import { parseLocation } from "../../../public/lib/locationOperations";
+import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
+import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
+import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
+import LocationSearchBar from "../search/LocationSearchBar";
+import ConfirmDialog from "./../dialogs/ConfirmDialog";
+import SelectDialog from "./../dialogs/SelectDialog";
+import UploadImageDialog from "./../dialogs/UploadImageDialog";
+import SelectField from "./../general/SelectField";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -217,6 +223,7 @@ export default function EditAccountPage({
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
   //used for previewing images in UploadImageDialog
   const [tempImages, setTempImages] = React.useState({
@@ -239,14 +246,31 @@ export default function EditAccountPage({
 
   const handleBackgroundClose = (image) => {
     setOpen({ ...open, backgroundDialog: false });
-    if (image && image instanceof HTMLCanvasElement)
-      setEditedAccount({ ...editedAccount, background_image: image.toDataURL() });
+    if (image && image instanceof HTMLCanvasElement) {
+      if (image && image instanceof HTMLCanvasElement) {
+        whitenTransparentPixels(image);
+        image.toBlob(async function (blob) {
+          const resizedBlob = URL.createObjectURL(blob);
+          setEditedAccount({ ...editedAccount, background_image: resizedBlob });
+        }, "image/jpeg");
+      }
+    }
   };
 
-  const handleAvatarClose = (image) => {
+  const handleAvatarClose = async (image) => {
     setOpen({ ...open, avatarDialog: false });
     if (image && image instanceof HTMLCanvasElement) {
-      setEditedAccount({ ...editedAccount, image: image.toDataURL() });
+      whitenTransparentPixels(image);
+      image.toBlob(async function (blob) {
+        const resizedBlob = URL.createObjectURL(blob);
+        const thumbnailBlob = await getResizedImage(
+          URL.createObjectURL(blob),
+          120,
+          120,
+          "image/jpeg"
+        );
+        setEditedAccount({ ...editedAccount, image: resizedBlob, thumbnail_image: thumbnailBlob });
+      }, "image/jpeg");
     }
   };
 
@@ -339,12 +363,43 @@ export default function EditAccountPage({
     );
   };
 
-  const displayAccountInfo = (info) =>
-    Object.keys(info).map((key) => {
+  const displayAccountInfo = (info) => {
+    return Object.keys(info).map((key) => {
       const handleChange = (event) => {
         setEditedAccount({
           ...editedAccount,
           info: { ...editedAccount.info, [key]: event.target.value },
+        });
+      };
+
+      const handleChangeLocationString = (newLocationString) => {
+        setEditedAccount({
+          ...editedAccount,
+          info: { ...editedAccount.info, [key]: newLocationString },
+        });
+      };
+
+      //set account.info.location to object when user selects a location
+      const handleChangeLocation = (location) => {
+        setEditedAccount({
+          ...editedAccount,
+          info: {
+            ...editedAccount.info,
+            [key]: parseLocation(location),
+          },
+        });
+      };
+
+      const handleChangeLegacyLocation = (key, event) => {
+        setEditedAccount({
+          ...editedAccount,
+          info: {
+            ...editedAccount.info,
+            location: {
+              ...editedAccount.info.location,
+              [key]: event.target.value,
+            },
+          },
         });
       };
 
@@ -358,9 +413,7 @@ export default function EditAccountPage({
           },
         });
       };
-
       const i = getFullInfoElement(infoMetadata, key, info[key]);
-
       if (i.type === "array") {
         return displayInfoArrayData(key, i);
       } else if (i.type === "select") {
@@ -398,36 +451,70 @@ export default function EditAccountPage({
           return <React.Fragment>{option.name}</React.Fragment>;
         };
         return (
-          <>
-            <div className={classes.infoElement}>
-              {i.value && (
-                <>
-                  <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
-                    Parent organization:
-                  </Typography>
-                  <MiniOrganizationPreview
-                    organization={i.value}
-                    size="small"
-                    className={classes.infoElement}
-                    onDelete={() => handleSetParentOrganization(null)}
-                  />
-                </>
-              )}
-              <AutoCompleteSearchBar
-                label={i.label}
-                className={`${classes.marginTop} ${classes.block}`}
-                baseUrl={process.env.API_URL + i.baseUrl}
-                freeSolo
-                clearOnSelect
-                onSelect={handleSetParentOrganization}
-                renderOption={renderSearchOption}
-                getOptionLabel={(option) => option.name}
-                helperText={i.helperText}
-              />
-            </div>
-          </>
+          <div className={classes.infoElement}>
+            {i.value && (
+              <>
+                <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
+                  Parent organization:
+                </Typography>
+                <MiniOrganizationPreview
+                  organization={i.value}
+                  size="small"
+                  className={classes.infoElement}
+                  onDelete={() => handleSetParentOrganization(null)}
+                />
+              </>
+            )}
+            <AutoCompleteSearchBar
+              label={i.label}
+              className={`${classes.marginTop} ${classes.block}`}
+              baseUrl={process.env.API_URL + i.baseUrl}
+              freeSolo
+              clearOnSelect
+              onSelect={handleSetParentOrganization}
+              renderOption={renderSearchOption}
+              getOptionLabel={(option) => option.name}
+              helperText={i.helperText}
+            />
+          </div>
         );
-      } else if (key != "parent_organization") {
+      } else if (i.type === "location") {
+        //return legacy field options (city, country) instead of the location field when location legacy mode is enabled
+        if (legacyModeEnabled) {
+          return (
+            <>
+              {Object.keys(i.legacy).map((k) => {
+                const field = i.legacy[k];
+                return (
+                  <div key={field.key} className={classes.infoElement}>
+                    <TextField
+                      label={field.name}
+                      variant="outlined"
+                      required
+                      onChange={(event) => handleChangeLegacyLocation(field.key, event)}
+                      value={editedAccount?.info?.location[field.key]}
+                    />
+                  </div>
+                );
+              })}
+            </>
+          );
+        }
+        return (
+          <div className={classes.infoElement} key={i.key}>
+            <LocationSearchBar
+              label={i.name}
+              required
+              value={editedAccount.info.location}
+              onChange={handleChangeLocationString}
+              onSelect={handleChangeLocation}
+              handleSetOpen={i.setLocationOptionsOpen}
+              open={i.locationOptionsOpen}
+              locationInputRef={i.locationInputRef}
+            />
+          </div>
+        );
+      } else if (key != "parent_organization" && i.type === "text") {
         return (
           <div key={key} className={classes.infoElement}>
             <Typography className={classes.subtitle}>
@@ -445,24 +532,20 @@ export default function EditAccountPage({
         );
       }
     });
+  };
 
   const onBackgroundChange = async (backgroundEvent) => {
     const file = backgroundEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
-    const options = {
-      maxSizeMB: 1,
-      maxWidthOrHeight: 1280,
-      useWebWorker: true,
-    };
 
     try {
-      const compressedFile = await imageCompression(file, options);
+      const compressedImage = await getCompressedJPG(file, 1);
 
       setTempImages(() => {
         return {
           ...tempImages,
-          background_image: URL.createObjectURL(compressedFile),
+          background_image: compressedImage,
         };
       });
       handleDialogClickOpen("backgroundDialog");
@@ -475,18 +558,13 @@ export default function EditAccountPage({
     const file = avatarEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
-    const options = {
-      maxSizeMB: 0.5,
-      maxWidthOrHeight: 600,
-      useWebWorker: true,
-    };
 
     try {
-      const compressedFile = await imageCompression(file, options);
+      const compressedImage = await getCompressedJPG(file, 0.5);
       setTempImages(() => {
         return {
           ...tempImages,
-          image: URL.createObjectURL(compressedFile),
+          image: compressedImage,
         };
       });
       handleDialogClickOpen("avatarDialog");
@@ -519,167 +597,176 @@ export default function EditAccountPage({
     console.log(type);
   };
 
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    handleSubmit(editedAccount);
+  };
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
-      {errorMessage && (
-        <Alert severity="error" className={classes.alert}>
-          {errorMessage}
-        </Alert>
-      )}
-      <div
-        className={`${classes.backgroundContainer} ${
-          editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor
-        }`}
-      >
-        <label htmlFor="backgroundPhoto" className={classes.backgroundLabel}>
-          <input
-            type="file"
-            name="backgroundPhoto"
-            id="backgroundPhoto"
-            style={{ display: "none" }}
-            onChange={onBackgroundChange}
-            accept=".png,.jpeg,.jpg"
-            value={selectedFiles.background}
-            onClick={() => handleFileInputClick("background")}
-            onSubmit={() => handleFileSubmit(event, "background")}
-          />
-          {editedAccount.background_image ? (
-            <div className={classes.backgroundPhotoIconContainer}>
-              <AddAPhotoIcon className={`${classes.photoIcon} ${classes.backgroundPhotoIcon}`} />
-            </div>
-          ) : (
-            <div className={classes.avatarButtonContainer}>
-              <Chip color="primary" label="Add background image" icon={<ControlPointIcon />} />
-            </div>
-          )}
-        </label>
-      </div>
-      <Container className={classes.infoContainer}>
-        <Button
-          className={`${classes.saveButton} ${classes.actionButton}`}
-          color="primary"
-          variant="contained"
-          onClick={() => handleSubmit(event, editedAccount)}
+      <form onSubmit={handleFormSubmit}>
+        {errorMessage && (
+          <Alert severity="error" className={classes.alert}>
+            {errorMessage}
+          </Alert>
+        )}
+        <div
+          className={`${classes.backgroundContainer} ${
+            editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor
+          }`}
         >
-          {submitMessage ? submitMessage : "Save"}
-        </Button>
-        <Button
-          className={`${classes.cancelButton} ${classes.actionButton}`}
-          color="secondary"
-          variant="contained"
-          onClick={() => handleDialogClickOpen("confirmExitDialog")}
-        >
-          Cancel
-        </Button>
-        <Container className={classes.avatarWithInfo}>
-          <div className={classes.avatarContainer}>
-            <label htmlFor="avatarPhoto">
-              <input
-                type="file"
-                name="avatarPhoto"
-                id="avatarPhoto"
-                style={{ display: "none" }}
-                onChange={onAvatarChange}
-                accept=".png,.jpeg,.jpg"
-                value={selectedFiles["avatar"]}
-                onClick={() => handleFileInputClick("avatar")}
-                onSubmit={() => handleFileSubmit(event, "avatar")}
-              />
-              <Avatar
-                alt={editedAccount.name}
-                component="div"
-                size="large"
-                src={editedAccount.image}
-                className={classes.avatar}
-              />
-
-              {editedAccount.image ? (
-                <div className={classes.avatarPhotoIconContainer}>
-                  <AddAPhotoIcon className={`${classes.photoIcon} ${classes.avatarPhotoIcon}`} />
-                </div>
-              ) : (
-                <div className={classes.avatarButtonContainer}>
-                  <Chip
-                    label="Add Image"
-                    color="primary"
-                    icon={<ControlPointIcon />}
-                    className={classes.cursorPointer}
-                  />
-                </div>
-              )}
-            </label>
-          </div>
-
-          {splitName ? (
-            <>
-              <TextField
-                className={classes.name}
-                fullWidth
-                value={editedAccount.first_name}
-                onChange={(event) => handleTextFieldChange("first_name", event.target.value)}
-                multiline
-                label={"First name"}
-              />
-              <TextField
-                className={classes.name}
-                fullWidth
-                value={editedAccount.last_name}
-                onChange={(event) => handleTextFieldChange("last_name", event.target.value)}
-                multiline
-                label={"Last name"}
-              />
-            </>
-          ) : (
-            <TextField
-              className={classes.name}
-              fullWidth
-              value={editedAccount.name}
-              onChange={(event) => handleTextFieldChange("name", event.target.value)}
-              multiline
+          <label htmlFor="backgroundPhoto" className={classes.backgroundLabel}>
+            <input
+              type="file"
+              name="backgroundPhoto"
+              id="backgroundPhoto"
+              style={{ display: "none" }}
+              onChange={onBackgroundChange}
+              accept=".png,.jpeg,.jpg"
+              value={selectedFiles.background}
+              onClick={() => handleFileInputClick("background")}
+              onSubmit={() => handleFileSubmit(event, "background")}
             />
-          )}
+            {editedAccount.background_image ? (
+              <div className={classes.backgroundPhotoIconContainer}>
+                <AddAPhotoIcon className={`${classes.photoIcon} ${classes.backgroundPhotoIcon}`} />
+              </div>
+            ) : (
+              <div className={classes.avatarButtonContainer}>
+                <Chip color="primary" label="Add background image" icon={<ControlPointIcon />} />
+              </div>
+            )}
+          </label>
+        </div>
+        <Container className={classes.infoContainer}>
+          <Button
+            className={`${classes.saveButton} ${classes.actionButton}`}
+            color="primary"
+            variant="contained"
+            type="submit"
+          >
+            {submitMessage ? submitMessage : "Save"}
+          </Button>
+          <Button
+            className={`${classes.cancelButton} ${classes.actionButton}`}
+            color="secondary"
+            variant="contained"
+            onClick={() => handleDialogClickOpen("confirmExitDialog")}
+          >
+            Cancel
+          </Button>
+          <Container className={classes.avatarWithInfo}>
+            <div className={classes.avatarContainer}>
+              <label htmlFor="avatarPhoto">
+                <input
+                  type="file"
+                  name="avatarPhoto"
+                  id="avatarPhoto"
+                  style={{ display: "none" }}
+                  onChange={onAvatarChange}
+                  accept=".png,.jpeg,.jpg"
+                  value={selectedFiles["avatar"]}
+                  onClick={() => handleFileInputClick("avatar")}
+                  onSubmit={(event) => handleFileSubmit(event, "avatar")}
+                />
+                <Avatar
+                  alt={editedAccount.name}
+                  component="div"
+                  size="large"
+                  src={editedAccount.image}
+                  className={classes.avatar}
+                />
 
-          {editedAccount.types && (
-            <Container className={classes.noPadding}>
-              {possibleAccountTypes &&
-                getTypesOfAccount(
-                  editedAccount,
-                  possibleAccountTypes,
-                  infoMetadata
-                ).map((typeObject) => (
-                  <Chip
-                    label={typeObject.name}
-                    key={typeObject.key}
-                    className={classes.chip}
-                    onDelete={() => handleTypeDelete(typeObject.key)}
-                  />
-                ))}
-              {possibleAccountTypes &&
-                getTypesOfAccount(editedAccount, possibleAccountTypes, infoMetadata).length <
-                  maxAccountTypes && (
-                  <Chip
-                    label="Add Type"
-                    color={
-                      editedAccount.types && editedAccount.types.length ? "default" : "primary"
-                    }
-                    icon={<ControlPointIcon />}
-                    onClick={() => handleDialogClickOpen("addTypeDialog")}
-                  />
+                {editedAccount.image ? (
+                  <div className={classes.avatarPhotoIconContainer}>
+                    <AddAPhotoIcon className={`${classes.photoIcon} ${classes.avatarPhotoIcon}`} />
+                  </div>
+                ) : (
+                  <div className={classes.avatarButtonContainer}>
+                    <Chip
+                      label="Add Image"
+                      color="primary"
+                      icon={<ControlPointIcon />}
+                      className={classes.cursorPointer}
+                    />
+                  </div>
                 )}
-            </Container>
-          )}
+              </label>
+            </div>
+
+            {splitName ? (
+              <>
+                <TextField
+                  className={classes.name}
+                  fullWidth
+                  value={editedAccount.first_name}
+                  onChange={(event) => handleTextFieldChange("first_name", event.target.value)}
+                  multiline
+                  required
+                  label={"First name"}
+                />
+                <TextField
+                  className={classes.name}
+                  fullWidth
+                  value={editedAccount.last_name}
+                  onChange={(event) => handleTextFieldChange("last_name", event.target.value)}
+                  multiline
+                  required
+                  label={"Last name"}
+                />
+              </>
+            ) : (
+              <TextField
+                className={classes.name}
+                fullWidth
+                value={editedAccount.name}
+                onChange={(event) => handleTextFieldChange("name", event.target.value)}
+                multiline
+                required
+              />
+            )}
+
+            {editedAccount.types && (
+              <Container className={classes.noPadding}>
+                {possibleAccountTypes &&
+                  getTypesOfAccount(
+                    editedAccount,
+                    possibleAccountTypes,
+                    infoMetadata
+                  ).map((typeObject) => (
+                    <Chip
+                      label={typeObject.name}
+                      key={typeObject.key}
+                      className={classes.chip}
+                      onDelete={() => handleTypeDelete(typeObject.key)}
+                    />
+                  ))}
+                {possibleAccountTypes &&
+                  getTypesOfAccount(editedAccount, possibleAccountTypes, infoMetadata).length <
+                    maxAccountTypes && (
+                    <Chip
+                      label="Add Type"
+                      color={
+                        editedAccount.types && editedAccount.types.length ? "default" : "primary"
+                      }
+                      icon={<ControlPointIcon />}
+                      onClick={() => handleDialogClickOpen("addTypeDialog")}
+                    />
+                  )}
+              </Container>
+            )}
+          </Container>
+          <Container className={classes.accountInfo}>
+            {displayAccountInfo(editedAccount.info)}
+          </Container>
         </Container>
-        <Container className={classes.accountInfo}>
-          {displayAccountInfo(editedAccount.info)}
-        </Container>
-      </Container>
-      {children}
-      {deleteEmail && (
-        <Typography variant="subtitle2" className={classes.deleteMessage}>
-          <InfoOutlinedIcon />
-          If you wish to delete this account, send an E-Mail to {deleteEmail}
-        </Typography>
-      )}
+        {children}
+        {deleteEmail && (
+          <Typography variant="subtitle2" className={classes.deleteMessage}>
+            <InfoOutlinedIcon />
+            If you wish to delete this account, send an E-Mail to {deleteEmail}
+          </Typography>
+        )}
+      </form>
       <UploadImageDialog
         onClose={handleBackgroundClose}
         open={open.backgroundDialog}

@@ -1,9 +1,12 @@
 # python standard lib
-import base64, secrets, io
+import base64
+import io
+import secrets
 
+from django.core.files.base import ContentFile
 # django and pillow lib
 from PIL import Image
-from django.core.files.base import ContentFile
+
 
 #source: https://dev.to/ageumatheus/creating-image-from-dataurl-base64-with-pyhton-django-454g
 def get_image_from_data_url( data_url, resize=False, base_width=500 ):
@@ -36,3 +39,18 @@ def get_image_from_data_url( data_url, resize=False, base_width=500 ):
 
     # file and filename
     return file, ( _filename, _extension )
+
+def get_allowed_hosts(ALLOWED_HOSTS_ENV):
+    allowed_hosts = [
+        'localhost',
+        '127.0.0.1',
+        'api.climateconnect.earth',
+        'climateconnect-backend.azurewebsites.net',
+        'climateconnect-frontend.azurewebsites.net',
+        'api.cc-test-domain.com'
+    ]
+    if(ALLOWED_HOSTS_ENV):
+        for host in ALLOWED_HOSTS_ENV.split(","):
+            if not host in allowed_hosts:
+                allowed_hosts.append(host)
+    return allowed_hosts

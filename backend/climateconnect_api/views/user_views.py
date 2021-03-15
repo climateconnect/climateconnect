@@ -1,3 +1,5 @@
+from django.contrib.gis.db.models.functions import Distance
+from location.models import Location
 import uuid
 from django.contrib.auth import (authenticate, login)
 import datetime
@@ -14,6 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.exceptions import NotFound
+from location.utility import get_location, get_location_with_range
 from rest_framework.filters import SearchFilter
 
 from rest_framework.exceptions import ValidationError
@@ -27,7 +30,7 @@ from climateconnect_api.models import UserProfile, Availability, Skill
 
 # Serializer imports
 from climateconnect_api.serializers.user import (
-    UserProfileSerializer, PersonalProfileSerializer, UserProfileStubSerializer, 
+    EditUserProfileSerializer, UserProfileSerializer, PersonalProfileSerializer, UserProfileStubSerializer, 
     UserProfileMinimalSerializer, UserProfileSitemapEntrySerializer
 )
 from organization.serializers.project import ProjectFromProjectMemberSerializer
@@ -77,7 +80,7 @@ class SignUpView(APIView):
     def post(self, request):
         required_params = [
             'email', 'password', 'first_name', 'last_name',
-            'country', 'city', 'send_newsletter'
+            'location', 'send_newsletter', 
         ]
         for param in required_params:
             if param not in request.data:
@@ -85,6 +88,8 @@ class SignUpView(APIView):
 
         if User.objects.filter(username=request.data['email']).exists():
             raise ValidationError("Email already in use.")
+
+        location = get_location(request.data['location'])
 
         user = User.objects.create(
             username=request.data['email'],
@@ -96,22 +101,25 @@ class SignUpView(APIView):
         user.save()
 
         url_slug = (user.first_name + user.last_name).lower() + str(user.id)
-
+        # Get location
         user_profile = UserProfile.objects.create(
-            user=user, country=request.data['country'],
-            city=request.data['city'],
+            user=user, location=location,
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
             verification_key=uuid.uuid4(), send_newsletter=request.data['send_newsletter']
         )
-
+        if "from_tutorial" in request.data:
+            user_profile.from_tutorial = request.data['from_tutorial']
+        if "is_activist" in request.data:
+            user_profile.is_activist = request.data['is_activist']
+        if "last_completed_tutorial_step" in request.data:
+            user_profile.last_completed_tutorial_step = request.data['last_completed_tutorial_step']
         if settings.AUTO_VERIFY == True:
             user_profile.is_profile_verified = True
-            user_profile.save()
             message = "Congratulations! Your account has been created"
         else:
             send_user_verification_email(user, user_profile.verification_key)
             message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(user.email)  # NOQA
-        
+        user_profile.save()
 
         return Response({'success': message}, status=status.HTTP_201_CREATED)
 
@@ -134,21 +142,56 @@ class ListMemberProfilesView(ListAPIView):
     permission_classes = [AllowAny]
     pagination_class = MembersPagination
     filter_backends = [SearchFilter, DjangoFilterBackend]
-    filterset_fields = ['name', 'country', 'city']
+    filterset_fields = ['name']
     search_fields = ['name']
-
-    def get_serializer_class(self):
-        return UserProfileStubSerializer
+    serializer_class = UserProfileStubSerializer
 
     def get_queryset(self):
         user_profiles = UserProfile.objects\
             .filter(is_profile_verified=True)\
             .annotate(is_image_null=Count("image", filter=Q(image="")))\
             .order_by("is_image_null", "-id")
+
         if 'skills' in self.request.query_params:
             skill_names = self.request.query_params.get('skills').split(',')
             skills = Skill.objects.filter(name__in=skill_names)
             user_profiles = user_profiles.filter(skills__in=skills).distinct('id')
+
+        if 'place' in self.request.query_params and 'osm' in self.request.query_params:
+            location_data = get_location_with_range(self.request.query_params)
+            user_profiles = user_profiles.filter(
+                Q(location__country=location_data['country']) 
+                &
+                (
+                    Q(location__multi_polygon__distance_lte=(location_data['location'], location_data['radius']))
+                    |
+                    Q(location__centre_point__distance_lte=(location_data['location'], location_data['radius']))
+                )
+            ).annotate(
+                distance=Distance("location__centre_point", location_data['location'])
+            ).order_by(
+                'distance'
+            )
+        
+        if 'country' and 'city' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                country=self.request.query_params.get('country'),
+                city=self.request.query_params.get('city')
+            )
+            user_profiles = user_profiles.filter(location__in=location_ids)
+
+        if 'city' in self.request.query_params and not 'country' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                city=self.request.query_params.get('city')
+            )
+            user_profiles = user_profiles.filter(location__in=location_ids)
+        
+        if 'country' in self.request.query_params and not 'city' in self.request.query_params:
+            location_ids = Location.objects.filter(
+                country=self.request.query_params.get('country')
+            )
+            user_profiles = user_profiles.filter(location__in=location_ids)
+            
         return user_profiles
 
 
@@ -213,7 +256,7 @@ class EditUserProfile(APIView):
         except UserProfile.DoesNotExist:
             raise NotFound('User not found.')
 
-        serializer = UserProfileSerializer(user_profile)
+        serializer = EditUserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
@@ -230,17 +273,22 @@ class EditUserProfile(APIView):
         user_profile.name = user.first_name + ' ' + user.last_name
         user_profile.url_slug = (user.first_name + user.last_name).lower() + str(user.id)
         user.save()
+
         if 'image' in request.data:
             user_profile.image = get_image_from_data_url(request.data['image'])[0]
-        if 'background_image' in request.data:
-            user_profile.background_image = get_image_from_data_url(request.data['background_image'], True, 1280)[0]
-        if 'country' in request.data:
-            user_profile.country = request.data['country']
 
-        if 'state' in request.data:
-            user_profile.state = request.data['state']
-        if 'city' in request.data:
-            user_profile.city = request.data['city']
+        if 'thumbnail_image' in request.data:
+            user_profile.thumbnail_image = get_image_from_data_url(request.data['thumbnail_image'])[0]
+
+        if 'background_image' in request.data:
+            user_profile.background_image = get_image_from_data_url(
+                request.data['background_image'], True, 1280
+            )[0]
+
+        if 'location' in request.data:
+            geo_location = get_location(request.data['location'])
+            user_profile.location = geo_location
+
         if 'biography' in request.data:
             user_profile.biography = request.data['biography']
         if 'website' in request.data:
@@ -295,6 +343,7 @@ class UserEmailVerificationLinkView(APIView):
         else:
             return Response({'message': 'Permission Denied'}, status=status.HTTP_403_FORBIDDEN)
 
+
 class SendResetPasswordEmail(APIView):
     permission_classes = (AllowAny,)
 
@@ -313,6 +362,7 @@ class SendResetPasswordEmail(APIView):
 
         return Response({"message": "We have sent you an email with your new password. It may take up to 5 minutes to arrive."}, status=status.HTTP_200_OK)
 
+
 class ResendVerificationEmail(APIView):
     permission_classes = (AllowAny,)
 
@@ -325,23 +375,28 @@ class ResendVerificationEmail(APIView):
             return Response({'message': 'There is no profile with this email address. Try entering the correct email address or signing up again.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if user_profile.is_profile_verified:
-            return Response({'message': 'Your profile is already verified. You can not log in with your account.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Your profile is already verified. You now log in with your account.'}, status=status.HTTP_400_BAD_REQUEST)
         
         send_user_verification_email(user_profile.user, user_profile.verification_key)
 
         return Response({"message": "We have send you your verification email again. It may take up to 5 minutes to arrive. Make sure to also check your junk or spam folder."}, status=status.HTTP_200_OK)
+
 
 class SetNewPassword(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
         if 'password_reset_key' not in request.data or 'new_password' not in request.data:
-            return Response({'message': 'Required parameters are missing.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                'message': 'Required parameters are missing.'
+            }, status=status.HTTP_400_BAD_REQUEST)
         password_reset_key = request.data['password_reset_key'].replace('%2D', '-')
         try:
             user_profile = UserProfile.objects.get(password_reset_key=password_reset_key)
         except UserProfile.DoesNotExist:
-            return Response({'message': 'Profile not found.', 'type': 'not_found'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                'message': 'Profile not found.', 'type': 'not_found'
+            }, status=status.HTTP_400_BAD_REQUEST)
         if user_profile.password_reset_timeout > datetime.now(timezone.utc):
             user_profile.user.set_password(request.data['new_password'])
             user_profile.password_reset_timeout = datetime.now(timezone.utc)
@@ -349,9 +404,15 @@ class SetNewPassword(APIView):
             user_profile.save()
             logger.error("reset password for user "+user_profile.url_slug)
         else:
-            return Response({"message": "This link has expired. Please reset your password again.", "type": "link_timed_out"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                "message": "This link has expired. Please reset your password again.", 
+                "type": "link_timed_out"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({"message": "You have successfully set a new password. You may now log in with your new password."}, status=status.HTTP_200_OK)
+        return Response({
+            "message": "You have successfully set a new password. You may now log in with your new password."
+        }, status=status.HTTP_200_OK)
+
 
 class ListMembersForSitemap(ListAPIView):
     permission_classes = [AllowAny]

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+from climateconnect_main.utility.general import get_allowed_hosts
 import os
 from dotenv import find_dotenv, load_dotenv
 from datetime import timedelta
@@ -31,16 +32,15 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 # DEBUG = True
 
-ALLOWED_HOSTS = [
-    'localhost',
+ALLOWED_HOSTS = get_allowed_hosts(env('ALLOWED_HOSTS'))
+
+INTERNAL_IPS = [
+    # ...
     '127.0.0.1',
-    'api.climateconnect.earth',
-    'climateconnect-backend.azurewebsites.net',
-    'climateconnect-frontend.azurewebsites.net',
-    'api.cc-test-domain.com'
+    # ...
 ]
 
-AUTO_VERIFY = env('AUTO_VERIFY')
+AUTO_VERIFY = True if env('AUTO_VERIFY') in ['True', 'true', 'TRUE'] else False
 
 # Application definition
 
@@ -49,6 +49,7 @@ CUSTOM_APPS = [
     'organization', 
     'chat_messages',
     'hubs',
+    'location'
 ]
 
 LIBRARY_APPS = [
@@ -62,13 +63,28 @@ LIBRARY_APPS = [
     'knox',
     'corsheaders',
     'channels',
-    'django_filters'
+    'django_filters',
+    'django.contrib.gis',
 ]
 
-INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
+DEBUG_APPS = [
+    'debug_toolbar',
+]
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+if env('DEBUG') == "True":
+    INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS + DEBUG_APPS
+else:
+    INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
+
+SECURITY_MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',    
+]
+
+DEBUG_MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
+
+NORMAL_MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -77,6 +93,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if env('DEBUG') == "True":
+    MIDDLEWARE = SECURITY_MIDDLEWARE + DEBUG_MIDDLEWARE + NORMAL_MIDDLEWARE
+else:
+    MIDDLEWARE = SECURITY_MIDDLEWARE + NORMAL_MIDDLEWARE
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
@@ -117,7 +138,7 @@ WSGI_APPLICATION = 'climateconnect_main.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': env('DATABASE_NAME'),
         'USER': env('DATABASE_USER'),
         'PASSWORD': env('DATABASE_PASSWORD'),
@@ -196,6 +217,8 @@ PROJECT_COMMENT_TEMPLATE_ID = env('PROJECT_COMMENT_TEMPLATE_ID')
 PROJECT_COMMENT_REPLY_TEMPLATE_ID = env('PROJECT_COMMENT_REPLY_TEMPLATE_ID')
 PROJECT_FOLLOWER_TEMPLATE_ID = env('PROJECT_FOLLOWER_TEMPLATE_ID')
 MAILJET_NEWSLETTER_LIST_ID = env('MAILJET_NEWSLETTER_LIST_ID')
+LOCATION_SERVICE_BASE_URL = env('LOCATION_SERVICE_BASE_URL')
+ENABLE_LEGACY_LOCATION_FORMAT = env('ENABLE_LEGACY_LOCATION_FORMAT')
 
 ASGI_APPLICATION = 'climateconnect_main.routing.application'
 CHANNEL_LAYERS = {

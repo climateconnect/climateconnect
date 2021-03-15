@@ -1,27 +1,26 @@
-import React, { useState, useEffect } from "react";
-
-import WideLayout from "../src/components/layouts/WideLayout";
+import { Button, makeStyles } from "@material-ui/core";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
+import tokenConfig from "../public/config/tokenConfig";
+import DonationsBanner from "../src/components/landingPage/DonationsBanner";
+import HubsBox from "../src/components/landingPage/HubsBox";
+import JoinCommunityBox from "../src/components/landingPage/JoinCommunityBox";
 import LandingTopBox from "../src/components/landingPage/LandingTopBox";
-import ExplainerBox from "../src/components/staticpages/ExplainerBox";
+import OrganizationsSharedBox from "../src/components/landingPage/OrganizationsSharedBox";
+import OurTeamBox from "../src/components/landingPage/OurTeamBox";
 import PitchBox from "../src/components/landingPage/PitchBox";
 import ProjectsSharedBox from "../src/components/landingPage/ProjectsSharedBox";
-
-import { makeStyles, Button } from "@material-ui/core";
-import Cookies from "next-cookies";
-import axios from "axios";
-
-import tokenConfig from "../public/config/tokenConfig";
-import JoinCommunityBox from "../src/components/landingPage/JoinCommunityBox";
-import OrganizationsSharedBox from "../src/components/landingPage/OrganizationsSharedBox";
-import DonationsBanner from "../src/components/landingPage/DonationsBanner";
-import OurTeamBox from "../src/components/landingPage/OurTeamBox";
+import WideLayout from "../src/components/layouts/WideLayout";
+import ExplainerBox from "../src/components/staticpages/ExplainerBox";
 import StartNowBanner from "../src/components/staticpages/StartNowBanner";
-import HubsBox from "../src/components/landingPage/HubsBox";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     background: "#F8F8F8",
     overflowX: "hidden",
+  },
+  hideOverFlowY: {
+    overflowY: "hidden",
   },
   h1ClassName: {
     fontSize: 30,
@@ -66,28 +65,46 @@ const useStyles = makeStyles((theme) => ({
   projectsSharedBox: {
     marginTop: theme.spacing(5),
   },
+  loadingSpinner: {
+    marginTop: theme.spacing(2)
+  }
 }));
 
-export default function Index({ projects, organizations, hubs }) {
+export default function Index() {
   const classes = useStyles();
-  const [initialized, setInitialized] = React.useState(false);
+  const [initialized, setInitialized] = useState(false);
   const [pos, setPos] = useState("top");
+  const [isLoading, setIsLoading] = useState(true);
+  //holds projects, organizations and hubs
+  const [elements, setElements] = useState({});
   useEffect(() => {
-    if (!initialized) {
-      setPos(document.scrollingElement.scrollTop < 50 ? "top" : "moved");
-      setInitialized(true);
-      document.addEventListener("scroll", () => {
-        const scrolled = document.scrollingElement.scrollTop;
-        if (scrolled < 50) {
-          setPos("top");
-        } else {
-          setPos("moved");
-        }
-      });
-    }
-  });
+    const initialize = async () => {
+      if (!initialized && isLoading) {
+        setPos(document.scrollingElement.scrollTop < 50 ? "top" : "moved");
+        document.addEventListener("scroll", () => {
+          const scrolled = document.scrollingElement.scrollTop;
+          if (scrolled < 50) {
+            setPos("top");
+          } else {
+            setPos("moved");
+          }
+        });
+        const projects = await getProjects();
+        const organizations = await getOrganizations();
+        const hubs = await getHubs();
+        setElements({
+          projects: projects,
+          organizations: organizations,
+          hubs: hubs,
+        });
+        setInitialized(true);
+        setIsLoading(false);
+      }
+    };
+    initialize();
+  }, []);
 
-  const contentRef = React.useRef(null);
+  const contentRef = useRef(null);
 
   const scrollToContent = () => contentRef.current.scrollIntoView({ behavior: "smooth" });
 
@@ -102,12 +119,16 @@ export default function Index({ projects, organizations, hubs }) {
       largeFooter
       landingPage
     >
-      <div className={classes.root}>
+      <div className={`${classes.root} ${isLoading && classes.hideOverFlowY}`}>
         <LandingTopBox scrollToContent={scrollToContent} />
         <div className={classes.lowerPart}>
           <div id="info" ref={contentRef} className={classes.contentRef} />
           <ExplainerBox h1ClassName={classes.h1ClassName} className={classes.explainerBox} />
-          <ProjectsSharedBox projects={projects} className={classes.projectsSharedBox} />
+          <ProjectsSharedBox
+            projects={elements.projects}
+            className={classes.projectsSharedBox}
+            isLoading={isLoading}
+          />
           <PitchBox h1ClassName={classes.h1ClassName} className={classes.pitchBox} />
           <div className={classes.signUpButtonContainer}>
             <Button
@@ -120,9 +141,9 @@ export default function Index({ projects, organizations, hubs }) {
               {"Sign up & make a change"}
             </Button>
           </div>
-          <HubsBox hubs={hubs} />
+          <HubsBox isLoading={isLoading} hubs={elements.hubs} />
           <JoinCommunityBox h1ClassName={classes.h1ClassName} />
-          <OrganizationsSharedBox organizations={organizations} />
+          <OrganizationsSharedBox isLoading={isLoading} organizations={elements.organizations} />
           <DonationsBanner h1ClassName={classes.h1ClassName} />
           <OurTeamBox h1ClassName={classes.h1ClassName} />
           <StartNowBanner h1ClassName={classes.h1ClassName} />
@@ -131,19 +152,6 @@ export default function Index({ projects, organizations, hubs }) {
     </WideLayout>
   );
 }
-
-Index.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  if (!token) {
-    console.log(`Error: Token was ${token}...`);
-  }
-
-  return {
-    projects: await getProjects(token),
-    organizations: await getOrganizations(token),
-    hubs: await getHubs(),
-  };
-};
 
 const getProjects = async (token) => {
   try {
@@ -188,7 +196,7 @@ const getOrganizations = async (token) => {
 const parseProjects = (projects) => {
   return projects.map((project) => ({
     ...project,
-    location: project.city + ", " + project.country,
+    location: project.location,
   }));
 };
 
@@ -197,9 +205,7 @@ const parseOrganizations = (organizations) => {
     ...organization,
     types: organization.types.map((type) => type.organization_tag),
     info: {
-      location: organization.city
-        ? organization.city + ", " + organization.country
-        : organization.country,
+      location: organization.location,
     },
   }));
 };

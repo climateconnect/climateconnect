@@ -1,27 +1,28 @@
-import React, { useState, useRef } from "react";
+import { makeStyles, Typography } from "@material-ui/core";
 import axios from "axios";
 import NextCookies from "next-cookies";
-import WideLayout from "../../src/components/layouts/WideLayout";
-import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
-import HubHeaderImage from "../../src/components/hub/HubHeaderImage";
-import HubContent from "../../src/components/hub/HubContent";
+import React, { useRef, useState } from "react";
+import Cookies from "universal-cookie";
 import tokenConfig from "../../public/config/tokenConfig";
-import { parseData } from "../../public/lib/parsingOperations";
+import { buildUrlEndingFromFilters } from "../../public/lib/filterOperations";
 import {
-  getProjectTagsOptions,
   getOrganizationTagsOptions,
+  getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
   membersWithAdditionalInfo,
 } from "../../public/lib/getOptions";
-import BrowseContent from "../../src/components/browse/BrowseContent";
-import Cookies from "universal-cookie";
-import FoodDescription from "../../src/components/hub/description/FoodDescription";
-import BrowseExplainer from "../../src/components/hub/BrowseExplainer";
-import { makeStyles, Typography } from "@material-ui/core";
 import { getImageUrl } from "../../public/lib/imageOperations";
-import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
+import { parseData } from "../../public/lib/parsingOperations";
+import BrowseContent from "../../src/components/browse/BrowseContent";
+import BrowseExplainer from "../../src/components/hub/BrowseExplainer";
 import FashionDescription from "../../src/components/hub/description/FashionDescription";
+import FoodDescription from "../../src/components/hub/description/FoodDescription";
+import HubContent from "../../src/components/hub/HubContent";
+import HubHeaderImage from "../../src/components/hub/HubHeaderImage";
+import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
+import WideLayout from "../../src/components/layouts/WideLayout";
+import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -64,8 +65,21 @@ export default function Hub({
     members: {},
     organizations: {},
   });
+  const [errorMessage, setErrorMessage] = useState("");
+  const handleSetErrorMessage = (newMessage) => {
+    setErrorMessage(newMessage);
+  };
   const contentRef = useRef(null);
-  const scrollToSolutions = () => contentRef.current.scrollIntoView({ behavior: "smooth" });
+
+  //Refs and state for tutorial
+  const hubQuickInfoRef = useRef(null);
+  const hubProjectsButtonRef = useRef(null);
+  const [nextStepTriggeredBy, setNextStepTriggeredBy] = useState(false);
+
+  const scrollToSolutions = () => {
+    setNextStepTriggeredBy("showProjectsButton");
+    contentRef.current.scrollIntoView({ behavior: "smooth" });
+  };
 
   const customSearchBarLabels = {
     projects: "Search for climate solutions in the food sector",
@@ -104,6 +118,7 @@ export default function Hub({
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }
+    handleSetErrorMessage("");
     try {
       const filteredItemsObject = await getDataFromServer({
         type: type,
@@ -160,6 +175,7 @@ export default function Hub({
         {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
         <HubHeaderImage image={getImageUrl(image)} source={image_attribution} />
         <HubContent
+          hubQuickInfoRef={hubQuickInfoRef}
           headline={headline}
           quickInfo={quickInfo}
           statBoxTitle={statBoxTitle}
@@ -167,6 +183,7 @@ export default function Hub({
           scrollToSolutions={scrollToSolutions}
           detailledInfo={<HubDescription hub={hubUrl} />}
           subHeadline={subHeadline}
+          hubProjectsButtonRef={hubProjectsButtonRef}
         />
         <div className={classes.contentRefContainer}>
           <div ref={contentRef} className={classes.contentRef} />
@@ -180,6 +197,12 @@ export default function Hub({
             applySearch={applySearch}
             hideMembers
             customSearchBarLabels={customSearchBarLabels}
+            handleSetErrorMessage={handleSetErrorMessage}
+            errorMessage={errorMessage}
+            hubQuickInfoRef={hubQuickInfoRef}
+            hubProjectsButtonRef={hubProjectsButtonRef}
+            nextStepTriggeredBy={nextStepTriggeredBy}
+            hubName={name}
           />
         </div>
       </div>
@@ -197,18 +220,6 @@ const HubDescription = ({ hub }) => {
       users below!
     </Typography>
   );
-};
-
-const buildUrlEndingFromFilters = (filters) => {
-  let url = "&";
-  Object.keys(filters).map((filterKey) => {
-    if (filters[filterKey] && filters[filterKey].length > 0) {
-      if (Array.isArray(filters[filterKey]))
-        url += encodeURI(filterKey + "=" + filters[filterKey].join()) + "&";
-      else url += encodeURI(filterKey + "=" + filters[filterKey] + "&");
-    }
-  });
-  return url;
 };
 
 Hub.getInitialProps = async (ctx) => {

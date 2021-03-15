@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.conf import settings
 
 from climateconnect_api.models import UserProfile
 from climateconnect_api.serializers.common import (
@@ -11,6 +12,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
     email = serializers.SerializerMethodField()
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
     availability = AvailabilitySerializer()
     skills = SkillSerializer(many=True)
 
@@ -19,7 +21,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'email', 'first_name', 'last_name',
             'url_slug', 'image', 'background_image',
-            'country', 'state', 'city', 'biography', 'is_profile_verified',
+            'location', 'biography', 'is_profile_verified',
             'availability', 'skills', 'has_logged_in', 'website'
         )
 
@@ -35,11 +37,17 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
     def get_last_name(self, obj):
         return obj.user.last_name
 
+    def get_location(self, obj):
+        if obj.location == None:
+            return None
+        return obj.location.name
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
     availability = AvailabilitySerializer()
     skills = SkillSerializer(many=True)
 
@@ -48,8 +56,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'first_name', 'last_name',
             'url_slug', 'image', 'background_image',
-            'country', 'state', 'city', 'biography', 'is_profile_verified',
-            'availability', 'skills', 'website'
+            'biography', 'is_profile_verified',
+            'availability', 'skills', 'website', 'location'
         )
 
     def get_id(self, obj):
@@ -60,19 +68,40 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_last_name(self, obj):
         return obj.user.last_name
+    
+    def get_location(self, obj):
+        if obj.location == None:
+            return None
+        return obj.location.name
+
+class EditUserProfileSerializer(UserProfileSerializer):
+    location = serializers.SerializerMethodField()
+    def get_location(self, obj):
+        if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
+            return {
+                "city": obj.location.city,
+                "country": obj.location.country
+            }
+        else:
+            if obj.location == None:
+                return None
+            return obj.location.name
+    class Meta(UserProfileSerializer.Meta):
+        fields = UserProfileSerializer.Meta.fields + ('location',)
 
 
 class UserProfileMinimalSerializer(serializers.ModelSerializer):
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
     id = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
         fields = (
             'id', 'first_name', 'last_name',
             'url_slug', 'image', 'background_image',
-            'country', 'state', 'city', 'website'
+            'location', 'website'
         )
 
     def get_id(self, obj):
@@ -83,18 +112,24 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
 
     def get_last_name(self, obj):
         return obj.user.last_name
+
+    def get_location(self, obj):
+        if obj.location == None:
+            return None
+        return obj.location.name
 
 
 class UserProfileStubSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
         fields = (
             'id', 'first_name', 'last_name',
-            'url_slug', 'image', 'country', 'city'
+            'url_slug', 'thumbnail_image', 'location'
         )
 
     def get_id(self, obj):
@@ -105,6 +140,11 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
 
     def get_last_name(self, obj):
         return obj.user.last_name
+
+    def get_location(self, obj):
+        if obj.location == None:
+            return None
+        return obj.location.name
 
 class UserAccountSettingsSerializer(serializers.ModelSerializer):
     email = serializers.SerializerMethodField()

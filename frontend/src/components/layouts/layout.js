@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
-import Header from "../general/Header";
-import Footer from "../general/Footer";
 import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import LayoutWrapper from "./LayoutWrapper";
-import theme from "../../themes/theme";
 import Alert from "@material-ui/lab/Alert";
-import LoadingContainer from "../general/LoadingContainer";
-import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
+import React, { useEffect } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
+import theme from "../../themes/theme";
+import Footer from "../general/Footer";
+import Header from "../general/Header";
+import LoadingContainer from "../general/LoadingContainer";
+import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
+import LayoutWrapper from "./LayoutWrapper";
 
 const useStyles = makeStyles((theme) => ({
   mainHeading: {
@@ -18,6 +18,8 @@ const useStyles = makeStyles((theme) => ({
   },
   alert: {
     width: "100%",
+    zIndex: 100,
+    marginTop: theme.spacing(-2),
   },
 }));
 

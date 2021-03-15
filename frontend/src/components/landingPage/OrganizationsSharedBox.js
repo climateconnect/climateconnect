@@ -1,9 +1,9 @@
-import React from "react";
-import { Typography, makeStyles, Button, useMediaQuery } from "@material-ui/core";
+import { Button, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import SmallCloud from "../staticpages/SmallCloud";
-import OrganizationPreviewsFixed from "../organization/OrganizationPreviewsFixed";
+import React from "react";
 import theme from "../../themes/theme";
+import OrganizationPreviewsFixed from "../organization/OrganizationPreviewsFixed";
+import SmallCloud from "../staticpages/SmallCloud";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function OrganizationsSharedBox({ organizations }) {
+export default function OrganizationsSharedBox({ organizations, isLoading }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   return (
@@ -68,7 +68,7 @@ export default function OrganizationsSharedBox({ organizations }) {
           </>
         )}
       </Typography>
-      <OrganizationPreviewsFixed organizations={organizations} showOrganizationType />
+      <OrganizationPreviewsFixed organizations={organizations} showOrganizationType isLoading={isLoading}/>
       <div className={classes.showProjectsButtonContainer}>
         <Button color="inherit" href="/browse#organizations">
           <span className={classes.showProjectsText}>Explore all organizations</span>

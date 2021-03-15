@@ -1,24 +1,22 @@
-import React, { useState } from "react";
-import NextCookies from "next-cookies";
+import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import axios from "axios";
-
+import NextCookies from "next-cookies";
+import React, { useRef, useState } from "react";
+import tokenConfig from "../public/config/tokenConfig";
+import { buildUrlEndingFromFilters } from "../public/lib/filterOperations";
 import {
+  getOrganizationTagsOptions,
+  getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  getProjectTagsOptions,
-  getOrganizationTagsOptions,
   membersWithAdditionalInfo,
 } from "../public/lib/getOptions";
-
-import tokenConfig from "../public/config/tokenConfig";
-
-import WideLayout from "../src/components/layouts/WideLayout";
-import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
-import useScrollTrigger from "@material-ui/core/useScrollTrigger";
-import TopOfPage from "../src/components/hooks/TopOfPage";
-import BrowseContent from "../src/components/browse/BrowseContent";
 import { parseData } from "../public/lib/parsingOperations";
+import BrowseContent from "../src/components/browse/BrowseContent";
+import TopOfPage from "../src/components/hooks/TopOfPage";
 import HubsSubHeader from "../src/components/indexPage/HubsSubHeader";
+import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
+import WideLayout from "../src/components/layouts/WideLayout";
 
 export default function Browse({
   projectsObject,
@@ -33,18 +31,19 @@ export default function Browse({
     members: {},
     organizations: {},
   });
+  const [errorMessage, setErrorMessage] = useState("");
 
   const applyNewFilters = async (type, newFilters, closeFilters, oldUrlEnding) => {
     if (filters === newFilters) {
       return;
     }
-
+    //todo: throw error if user didn't choose a location from the list
     setFilters({ ...filters, [type]: newFilters });
     const newUrlEnding = buildUrlEndingFromFilters(newFilters);
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }
-
+    setErrorMessage(null);
     try {
       const filteredItemsObject = await getDataFromServer({
         type: type,
@@ -118,14 +117,17 @@ export default function Browse({
   });
   const atTopOfPage = TopOfPage({ initTopOfPage: true });
   const showOnScrollUp = isScrollingUp && !atTopOfPage;
-
+  const handleSetErrorMessage = (newMessage) => {
+    setErrorMessage(newMessage);
+  };
+  const hubsSubHeaderRef = useRef(null);
   return (
     <>
       <WideLayout
         title="Global Platform for Climate Change Solutions"
         hideHeadline
         showOnScrollUp={showOnScrollUp}
-        subHeader={<HubsSubHeader hubs={hubs} />}
+        subHeader={<HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} />}
       >
         <MainHeadingContainerMobile />
         <BrowseContent
@@ -136,23 +138,14 @@ export default function Browse({
           filterChoices={filterChoices}
           loadMoreData={loadMoreData}
           applySearch={applySearch}
+          handleSetErrorMessage={handleSetErrorMessage}
+          errorMessage={errorMessage}
+          hubsSubHeaderRef={hubsSubHeaderRef}
         />
       </WideLayout>
     </>
   );
 }
-
-const buildUrlEndingFromFilters = (filters) => {
-  let url = "&";
-  Object.keys(filters).map((filterKey) => {
-    if (filters[filterKey] && filters[filterKey].length > 0) {
-      if (Array.isArray(filters[filterKey]))
-        url += encodeURI(filterKey + "=" + filters[filterKey].join()) + "&";
-      else url += encodeURI(filterKey + "=" + filters[filterKey] + "&");
-    }
-  });
-  return url;
-};
 
 Browse.getInitialProps = async (ctx) => {
   const { token, hideInfo } = NextCookies(ctx);

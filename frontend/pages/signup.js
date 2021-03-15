@@ -1,10 +1,23 @@
-import React, { useContext } from "react";
-import BasicInfo from "../src/components/signup/BasicInfo";
-import AddInfo from "./../src/components/signup/AddInfo";
 import axios from "axios";
 import Router from "next/router";
-import Layout from "../src/components/layouts/layout";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import Cookies from "universal-cookie";
+import { getParams } from "../public/lib/generalOperations";
+import {
+  getLocationValue,
+  indicateWrongLocation,
+  isLocationValid,
+  parseLocation,
+} from "../public/lib/locationOperations";
+import { redirectOnLogin } from "../public/lib/profileOperations";
+import {
+  getLastCompletedTutorialStep,
+  getLastStepBeforeSkip,
+} from "../public/lib/tutorialOperations";
 import UserContext from "../src/components/context/UserContext";
+import Layout from "../src/components/layouts/layout";
+import BasicInfo from "../src/components/signup/BasicInfo";
+import AddInfo from "./../src/components/signup/AddInfo";
 
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
@@ -15,20 +28,40 @@ export default function Signup() {
     repeatpassword: "",
     first_name: "",
     last_name: "",
-    country: "",
-    city: "",
+    location: {},
     newsletter: "",
   });
-
+  const cookies = new Cookies();
+  const { user } = useContext(UserContext);
+  //Information about the completion state of the tutorial
+  const tutorialCookie = cookies.get("finishedTutorialSteps");
+  const isClimateActorCookie = cookies.get("tutorialVariables");
+  const curTutorialStep = getLastCompletedTutorialStep(tutorialCookie);
+  const lastCompletedTutorialStep =
+    curTutorialStep === -1
+      ? getLastStepBeforeSkip(cookies.get("lastStepBeforeSkipTutorial"))
+      : curTutorialStep;
   const steps = ["basicinfo", "personalinfo"];
-  const [curStep, setCurStep] = React.useState(steps[0]);
-  const [errorMessages, setErrorMessages] = React.useState(
+  const [curStep, setCurStep] = useState(steps[0]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const locationInputRef = useRef(null);
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
+  const handleSetLocationOptionsOpen = (bool) => {
+    setLocationOptionsOpen(bool);
+  };
+  const [errorMessages, setErrorMessages] = useState(
     steps.reduce((obj, step) => {
       obj[step] = null;
       return obj;
     }, {})
   );
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(function () {
+    if (user) {
+      redirectOnLogin(user, "/");
+    }
+  });
 
   const handleBasicInfoSubmit = (event, values) => {
     event.preventDefault();
@@ -46,12 +79,17 @@ export default function Signup() {
 
   const handleAddInfoSubmit = (event, values) => {
     event.preventDefault();
+    const params = getParams(window?.location?.href);
+    if (!isLocationValid(values.location)) {
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage);
+      return;
+    }
+    const location = getLocationValue(values, "location");
     setUserInfo({
       ...userInfo,
       first_name: values.first_name,
       last_name: values.last_name,
-      country: values.country,
-      city: values.city,
+      location: location,
       sendNewsletter: values.sendNewsletter,
     });
     const payload = {
@@ -59,9 +97,11 @@ export default function Signup() {
       password: userInfo.password,
       first_name: values.first_name.trim(),
       last_name: values.last_name.trim(),
-      country: values.country.trim(),
-      city: values.city.trim(),
+      location: parseLocation(location),
       send_newsletter: values.sendNewsletter,
+      from_tutorial: params?.from_tutorial === "true",
+      is_activist: isClimateActorCookie?.isActivist,
+      last_completed_tutorial_step: lastCompletedTutorialStep,
     };
     const config = {
       headers: {
@@ -96,14 +136,18 @@ export default function Signup() {
       ...userInfo,
       first_name: values.first_name,
       last_name: values.last_name,
-      country: values.country,
-      city: values.city,
+      location: getLocationValue(values, "location"),
     });
     setCurStep(steps[0]);
   };
 
   return (
-    <Layout title="Sign Up" isLoading={isLoading}>
+    <Layout
+      title="Sign Up"
+      isLoading={isLoading}
+      message={errorMessage}
+      messageType={errorMessage && "error"}
+    >
       {curStep === "basicinfo" ? (
         <BasicInfo
           values={userInfo}
@@ -117,6 +161,9 @@ export default function Signup() {
             handleSubmit={handleAddInfoSubmit}
             errorMessage={errorMessages[steps[1]]}
             handleGoBack={handleGoBackFromAddInfo}
+            locationInputRef={locationInputRef}
+            locationOptionsOpen={locationOptionsOpen}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           />
         )
       )}

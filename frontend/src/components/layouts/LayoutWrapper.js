@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
-import Head from "next/head";
+import { Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
-import Cookies from "universal-cookie";
-import { useMediaQuery, Typography } from "@material-ui/core";
-
-import CookieBanner from "../general/CookieBanner";
+import Head from "next/head";
+import React, { useContext, useEffect } from "react";
+import UserContext from "../context/UserContext";
 import FeedbackButton from "../feedback/FeedbackButton";
+import CookieBanner from "../general/CookieBanner";
 
 const useStyles = makeStyles((theme) => ({
   leaveSpaceForFooter: {
@@ -41,9 +40,8 @@ export default function LayoutWrapper({
   const [initialized, setInitialized] = React.useState(false);
   const isSmallerThanMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const [loading, setLoading] = React.useState(true);
-  const cookies = new Cookies();
   const [bannerOpen, setBannerOpen] = React.useState(true);
-  const acceptedNecessary = cookies.get("acceptedNecessary");
+  const { acceptedNecessary } = useContext(UserContext);
   const closeBanner = () => setBannerOpen(false);
   useEffect(function () {
     if (!initialized) setInitialized(true);

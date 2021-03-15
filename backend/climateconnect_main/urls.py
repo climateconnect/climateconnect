@@ -24,7 +24,9 @@ from knox import views as knox_views
 from django.conf import settings
 from django.conf.urls.static import static
 
-urlpatterns = [
+
+
+urls = [
     path('admin/', admin.site.urls),
     path('ping/', status_views.PingPongView.as_view(), name='ping-pong-api'),
     # User views
@@ -82,8 +84,14 @@ urlpatterns = [
     path('api/donation_goal_progress/', donation_views.GetDonationGoalProgress.as_view(), name='get-donations-this-month'),
     # Organization views
     path('api/', include('organization.urls')),
-    # Common views
+    # chat messages views
     path('api/', include('chat_messages.urls')),
+    #hub views
     path('api/', include('hubs.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+if settings.DEBUG == "True":
+    import debug_toolbar
+    urlpatterns = urls + [path('__debug__/', include(debug_toolbar.urls))]
+else:
+    urlpatterns = urls
