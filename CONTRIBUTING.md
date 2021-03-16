@@ -27,6 +27,12 @@ To report a bug follow these guideline.
 ## Pull Requests
 If you are looking for a place to start contributing to Climate Connect, take a look at the [good first issues](https://github.com/climateconnect/climateconnect/projects/7?card_filter_query=label%3A%22good+first+issue%22) and the [beginner level](https://github.com/climateconnect/climateconnect/issues?q=is%3Aopen+is%3Aissue+label%3A%22beginner+level+issue%22) issues.
 
+When creating a pull request follow these guidelines.
+
+1. Add concise description about pull requests.
+1. Add detailed steps to for testing a feature or bug.
+1. If there is code unrelated to feature or a bug in pull request, please list all changes.
+
 ### Documentation
 Code should be documented where appropriate. The general `python` and `javascript` rules can be followed for formatting.
 
