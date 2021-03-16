@@ -1,6 +1,6 @@
 # Contributing to Climate Connect
 
-Thank you for your interest in contributing to ClimateConnect!
+Thank you for your interest in contributing to Climate Connect!
 
 Table of Contents:
 
@@ -11,21 +11,21 @@ Table of Contents:
 1. [Contact](#contact)
 
 ## Feature Requests
-Feature requests should be reported in the [Climate Connect issue tracker](https://github.com/climateconnect/climateconnect/issues). To reduce the number of duplicates, please make sure to check existing issues.
+Feature requests should be reported in the [Climate Connect issue tracker](https://github.com/climateconnect/climateconnect/issues). To avoid duplicates, please make sure to check existing issues.
 
 ## Bug Reports
-Bug reports should be reported in the [Climate connect issue tracker](https://github.com/climateconnect/climateconnect/issues).
+Bug reports should be reported in the [Climate Connect issue tracker](https://github.com/climateconnect/climateconnect/issues).
 
 To report a bug follow these guideline.
 
 1. Describe the issue: Fill in a concise description of what went wrong
 1. Steps to recreate: List every step you took that led to the unexpected result.
 1. Expected result: Fill in what you would have expected after the last step in "Steps to recreate"
-1. Actual result: Explain what you actually expected to happen.
-1. Link: Please provide a like to this issue.
+1. Actual result: Explain what actually happened
+1. Link: Please provide a link to this issue.
 
 ## Pull Requests
-If you are looking for a place to start contributing to Climate Connect, take a look at the [beginner level](https://github.com/climateconnect/climateconnect/issues?q=is%3Aopen+is%3Aissue+label%3A%22beginner+level+issue%22) issues.
+If you are looking for a place to start contributing to Climate Connect, take a look at the [good first issues](https://github.com/climateconnect/climateconnect/projects/7?card_filter_query=label%3A%22good+first+issue%22) and the [beginner level](https://github.com/climateconnect/climateconnect/issues?q=is%3Aopen+is%3Aissue+label%3A%22beginner+level+issue%22) issues.
 
 ### Documentation
 Code should be documented where appropriate. The general `python` and `javascript` rules can be followed for formatting.
