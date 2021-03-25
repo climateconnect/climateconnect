@@ -1,0 +1,61 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-16 07:24+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: climateconnect_api/views/settings_views.py:81
+#: climateconnect_api/views/user_views.py:326
+msgid "Required parameters are missing."
+msgstr ""
+
+#: climateconnect_api/views/settings_views.py:90
+#: climateconnect_api/views/user_views.py:336
+msgid "User profile not found."
+msgstr "Nutzerprofil nicht gefunden."
+
+#: climateconnect_api/views/settings_views.py:92
+#: climateconnect_api/views/user_views.py:338
+msgid ""
+"Contact contact@climateconnect.earth if you repeatedly experience problems."
+msgstr ""
+"Kontaktiere contact@climateconnect.earth, wenn Du wiederholt Probleme hast."
+
+#: climateconnect_api/views/settings_views.py:101
+msgid "No pending E-Mail change. This link may already have been used."
+msgstr ""
+
+#: climateconnect_api/views/settings_views.py:103
+msgid "Your E-Mail address is now "
+msgstr ""
+
+#: climateconnect_api/views/user_views.py:344
+msgid ""
+"Account already verified. Please contact us if you are having trouble "
+"signing in."
+msgstr ""
+
+#: climateconnect_api/views/user_views.py:349
+msgid "Your profile is successfully verified"
+msgstr ""
+
+#: climateconnect_api/views/user_views.py:351
+msgid "Permission Denied"
+msgstr ""
+
+#~ msgid "Bad request"
+#~ msgstr "Fehlerhafte Anfrage"
