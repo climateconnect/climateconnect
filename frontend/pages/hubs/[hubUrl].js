@@ -1,7 +1,7 @@
 import { makeStyles, Typography } from "@material-ui/core";
 import axios from "axios";
 import NextCookies from "next-cookies";
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import tokenConfig from "../../public/config/tokenConfig";
 import { buildUrlEndingFromFilters } from "../../public/lib/filterOperations";
@@ -14,7 +14,9 @@ import {
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { parseData } from "../../public/lib/parsingOperations";
+import getTexts from "../../public/texts/texts";
 import BrowseContent from "../../src/components/browse/BrowseContent";
+import UserContext from "../../src/components/context/UserContext";
 import BrowseExplainer from "../../src/components/hub/BrowseExplainer";
 import FashionDescription from "../../src/components/hub/description/FashionDescription";
 import FoodDescription from "../../src/components/hub/description/FoodDescription";
@@ -43,6 +45,49 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+export async function getServerSideProps(ctx) {
+  const hubUrl = ctx.query.hubUrl;
+  const { token } = NextCookies(ctx);
+  const [
+    hubData,
+    initialProjects,
+    initialOrganizations,
+    project_categories,
+    organization_types,
+    skills,
+    project_statuses,
+  ] = await Promise.all([
+    getHubData(hubUrl),
+    getProjects({ page: 1, token: token, hubUrl: hubUrl }),
+    getOrganizations({ page: 1, token: token, hubUrl: hubUrl }),
+    getProjectTagsOptions(hubUrl),
+    getOrganizationTagsOptions(),
+    getSkillsOptions(),
+    getStatusOptions(),
+  ]);
+  return {
+    props: {
+      hubUrl: hubUrl,
+      name: hubData.name,
+      headline: hubData.headline,
+      subHeadline: hubData.sub_headline,
+      image: hubData.image,
+      quickInfo: hubData.quick_info,
+      stats: hubData.stats,
+      statBoxTitle: hubData.stat_box_title,
+      image_attribution: hubData.image_attribution,
+      initialProjects: initialProjects,
+      initialOrganizations: initialOrganizations,
+      filterChoices: {
+        project_categories: project_categories,
+        organization_types: organization_types,
+        skills: skills,
+        project_statuses: project_statuses,
+      },
+    },
+  };
+}
+
 export default function Hub({
   hubUrl,
   name,
@@ -57,8 +102,9 @@ export default function Hub({
   subHeadline,
   image_attribution,
 }) {
-  console.log(statBoxTitle);
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "hub", locale: locale });
   const token = new Cookies().get("token");
   const [filters, setFilters] = useState({
     projects: {},
@@ -82,8 +128,8 @@ export default function Hub({
   };
 
   const customSearchBarLabels = {
-    projects: "Search for climate solutions in the food sector",
-    organizations: "Search for climate organizations in the food sector",
+    projects: texts.search_for_solutions_in_sector,
+    organizations: texts.search_for_organizations_in_sector,
   };
 
   const loadMoreData = async (type, page, urlEnding) => {
@@ -181,7 +227,7 @@ export default function Hub({
           statBoxTitle={statBoxTitle}
           stats={stats}
           scrollToSolutions={scrollToSolutions}
-          detailledInfo={<HubDescription hub={hubUrl} />}
+          detailledInfo={<HubDescription hub={hubUrl} texts={texts} />}
           subHeadline={subHeadline}
           hubProjectsButtonRef={hubProjectsButtonRef}
         />
@@ -210,57 +256,15 @@ export default function Hub({
   );
 }
 
-const HubDescription = ({ hub }) => {
+const HubDescription = ({ hub, texts }) => {
   const classes = useStyles();
   if (hub === "food") return <FoodDescription />;
   if (hub === "fashion") return <FashionDescription />;
   return (
     <Typography className={classes.moreInfoSoon}>
-      More Info coming soon! Have a look at the projects and solutions submitted by Climate Connect
-      users below!
+      {texts.more_info_about_hub_coming_soon}
     </Typography>
   );
-};
-
-Hub.getInitialProps = async (ctx) => {
-  const hubUrl = ctx.query.hubUrl;
-  const { token } = NextCookies(ctx);
-  const [
-    hubData,
-    initialProjects,
-    initialOrganizations,
-    project_categories,
-    organization_types,
-    skills,
-    project_statuses,
-  ] = await Promise.all([
-    getHubData(hubUrl),
-    getProjects({ page: 1, token: token, hubUrl: hubUrl }),
-    getOrganizations({ page: 1, token: token, hubUrl: hubUrl }),
-    getProjectTagsOptions(hubUrl),
-    getOrganizationTagsOptions(),
-    getSkillsOptions(),
-    getStatusOptions(),
-  ]);
-  return {
-    hubUrl: hubUrl,
-    name: hubData.name,
-    headline: hubData.headline,
-    subHeadline: hubData.sub_headline,
-    image: hubData.image,
-    quickInfo: hubData.quick_info,
-    stats: hubData.stats,
-    statBoxTitle: hubData.stat_box_title,
-    image_attribution: hubData.image_attribution,
-    initialProjects: initialProjects,
-    initialOrganizations: initialOrganizations,
-    filterChoices: {
-      project_categories: project_categories,
-      organization_types: organization_types,
-      skills: skills,
-      project_statuses: project_statuses,
-    },
-  };
 };
 
 const getHubData = async (url_slug) => {

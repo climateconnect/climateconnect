@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
-import MessageContent from "./../MessageContent";
+import { CircularProgress, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
 import { getDateTime } from "../../../../public/lib/dateOperations";
+import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
-import { Typography, Link, CircularProgress, Tooltip } from "@material-ui/core";
+import MessageContent from "./../MessageContent";
 
 const useStyles = makeStyles((theme) => ({
   time: {
@@ -25,9 +26,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Message({ message, classes, isPrivateChat }) {
   const ownClasses = useStyles();
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "chat", locale: locale });
   const received = message.sender.url_slug !== user.url_slug;
   const sent_date = getDateTime(message.sent_at);
+
   return (
     <div
       className={`${received ? classes.receivedContainer : classes.sentContainer} ${
@@ -50,7 +53,7 @@ export default function Message({ message, classes, isPrivateChat }) {
         <div className={ownClasses.timeContainer}>
           <div className={`${ownClasses.time} ${!received && ownClasses.sentTime}`}>
             {message.unconfirmed && (
-              <Tooltip title="sending message...">
+              <Tooltip title={texts.sending_message + "..."}>
                 <CircularProgress size={10} color="inherit" className={classes.loader} />
               </Tooltip>
             )}

@@ -1,10 +1,12 @@
-import React from "react";
-import { Container, Avatar, Typography, Chip, Button, Link, Tooltip } from "@material-ui/core";
+import { Avatar, Button, Chip, Container, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
-import Linkify from "react-linkify";
-import MessageContent from "../communication/MessageContent";
 import PlaceIcon from "@material-ui/icons/Place";
+import React, { useContext } from "react";
+import Linkify from "react-linkify";
+import getTexts from "../../../public/texts/texts";
+import MessageContent from "../communication/MessageContent";
+import UserContext from "../context/UserContext";
+import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -102,6 +104,8 @@ export default function AccountPage({
   editText,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale });
   const componentDecorator = (href, text, key) => (
     <Link
       color="primary"
@@ -131,7 +135,7 @@ export default function AccountPage({
             if (value.name)
               return (
                 <div key={index} className={classes.subtitle}>
-                  {account.name} is a suborganization of{" "}
+                  {account.name} {texts.is_a_suborganization_of}{" "}
                   <Link color="inherit" href={"/organizations/" + value.url_slug} target="_blank">
                     <MiniOrganizationPreview organization={value} size="small" />
                   </Link>
@@ -210,7 +214,7 @@ export default function AccountPage({
             variant="contained"
             href={editHref}
           >
-            {editText ? editText : "Edit Profile"}
+            {editText ? editText : texts.edit_profile}
           </Button>
         )}
         <Container className={classes.avatarWithInfo}>

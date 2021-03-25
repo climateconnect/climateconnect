@@ -1,20 +1,20 @@
-import React from "react";
-import Link from "next/link";
 import {
-  TextField,
   Button,
-  Container,
-  LinearProgress,
-  Typography,
-  IconButton,
   Checkbox,
+  Container,
+  IconButton,
+  LinearProgress,
   Switch,
+  TextField,
+  Typography,
 } from "@material-ui/core";
-import SelectField from "./SelectField";
 import { makeStyles } from "@material-ui/core/styles";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
+import Link from "next/link";
+import React from "react";
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import LocationSearchBar from "../search/LocationSearchBar";
+import SelectField from "./SelectField";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -161,7 +161,7 @@ export default function Form({
             <IconButton
               size="small"
               className={classes.backButton}
-              onClick={() => onGoBack(event, values)}
+              onClick={(event) => onGoBack(event, values)}
             >
               <KeyboardBackspaceIcon />
             </IconButton>

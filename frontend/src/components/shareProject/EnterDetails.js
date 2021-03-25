@@ -1,16 +1,18 @@
-import React from "react";
-import { Typography, Container, TextField, Tooltip, IconButton } from "@material-ui/core";
-import RadioButtons from "../general/RadioButtons";
+import { Container, IconButton, TextField, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import DatePicker from "../general/DatePicker";
 import Switch from "@material-ui/core/Switch";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
-import CollaborateSection from "./CollaborateSection";
-import AddSummarySection from "./AddSummarySection";
-import AddPhotoSection from "./AddPhotoSection";
+import React, { useContext } from "react";
+import getCollaborationTexts from "../../../public/data/collaborationTexts";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import BottomNavigation from "../general/BottomNavigation";
+import DatePicker from "../general/DatePicker";
+import RadioButtons from "../general/RadioButtons";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
-import collaborationTexts from "../../../public/data/collaborationTexts";
+import AddPhotoSection from "./AddPhotoSection";
+import AddSummarySection from "./AddSummarySection";
+import CollaborateSection from "./CollaborateSection";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -91,6 +93,9 @@ export default function EnterDetails({
     connectionsDialog: false,
   });
   const classes = useStyles(projectData);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: projectData });
+  const collaborationTexts = getCollaborationTexts(texts);
 
   const statusValues = statusOptions.map((s) => {
     return {

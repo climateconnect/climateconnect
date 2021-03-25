@@ -1,22 +1,23 @@
-import React from "react";
 import {
-  makeStyles,
   Avatar,
-  Typography,
-  Link,
-  TableRow,
-  Table,
-  TableCell,
-  Divider,
-  LinearProgress,
   Button,
   Container,
+  Divider,
+  LinearProgress,
+  Link,
+  makeStyles,
+  Table,
   TableBody,
+  TableCell,
+  TableRow,
+  Typography,
 } from "@material-ui/core";
+import React, { useContext } from "react";
 import ReactTimeago from "react-timeago";
-
-import GenericDialog from "./GenericDialog";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import GenericDialog from "./GenericDialog";
 
 const useStyles = makeStyles((theme) => ({
   user: {
@@ -53,17 +54,25 @@ export default function ProjectFollowersDialog({
   url,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
   const handleClose = () => {
     onClose();
   };
   return (
-    <GenericDialog onClose={handleClose} open={open} title={"Followers of " + project.name}>
+    <GenericDialog
+      onClose={handleClose}
+      open={open}
+      title={texts.followers_of + " " + project.name}
+    >
       <div>
         {loading ? (
           <LinearProgress />
         ) : !user ? (
           <>
-            <Typography>{"Please log in to see this project's followers!"}</Typography>
+            <Typography>
+              {texts.please_log_in + " " + texts.to_see_this_projects_followers + "!"}
+            </Typography>
             <Container className={classes.loginButtonContainer}>
               <Button
                 className={classes.loginButton}
@@ -71,21 +80,21 @@ export default function ProjectFollowersDialog({
                 color="primary"
                 href={"/signin?redirect=" + encodeURIComponent(url)}
               >
-                Log in
+                {texts.log_in}
               </Button>
             </Container>
           </>
         ) : followers && followers.length > 0 ? (
-          <ProjectFollowers followers={followers} />
+          <ProjectFollowers followers={followers} texts={texts} />
         ) : (
-          <Typography>This project does not have any followers yet.</Typography>
+          <Typography>{texts.this_project_does_not_have_any_followers_yet}</Typography>
         )}
       </div>
     </GenericDialog>
   );
 }
 
-const ProjectFollowers = ({ followers }) => {
+const ProjectFollowers = ({ followers, texts }) => {
   const classes = useStyles();
   console.log(followers);
   return (
@@ -110,7 +119,7 @@ const ProjectFollowers = ({ followers }) => {
                 </TableCell>
                 <TableCell>
                   <Typography className={classes.followedText}>
-                    Followed <ReactTimeago date={f.created_at} />
+                    {texts.following_since} <ReactTimeago date={f.created_at} />
                   </Typography>
                 </TableCell>
               </TableRow>

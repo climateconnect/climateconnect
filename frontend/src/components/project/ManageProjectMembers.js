@@ -1,8 +1,10 @@
-import React from "react";
-import ManageMembers from "../manageMembers/ManageMembers";
-import { Typography, Button } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import ManageMembers from "../manageMembers/ManageMembers";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -34,6 +36,8 @@ export default function ManageProjectMembers({
   availabilityOptions,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
   const [user_role, setUserRole] = React.useState(members.find((m) => m.id === user.id).role);
   if (!user_role) setUserRole(members.find((m) => m.id === user.id).role);
 
@@ -43,12 +47,14 @@ export default function ManageProjectMembers({
       .then((ret) => {
         if (ret !== false)
           redirect("/projects/" + project.url_slug, {
-            message: "You have successfully updated your team",
+            message: texts.you_have_successfully_updated_your_team,
           });
       })
       .catch((e) => {
         console.log(e);
-        redirect("/projects/" + project.url_slug, { message: "Not all your updates have worked." });
+        redirect("/projects/" + project.url_slug, {
+          message: texts.not_all_your_updates_have_worked,
+        });
       });
   };
 
@@ -103,11 +109,11 @@ export default function ManageProjectMembers({
 
   const verifyInput = () => {
     if (currentMembers.filter((cm) => cm.role.name === "Creator").length !== 1) {
-      alert("There must be exactly one creator of a project.");
+      alert(texts.there_must_be_exactly_one_creator_of_a_project);
       return false;
     }
     if (!members.filter((m) => m.role.name === "Creator").length === 1) {
-      alert("error(There wasn't a creator)");
+      alert(texts.error_no_creator);
       return false;
     }
     return true;
@@ -159,7 +165,7 @@ export default function ManageProjectMembers({
   return (
     <>
       <Typography variant="h4" color="primary" className={classes.headline}>
-        Manage members of {project.name}
+        {texts.manage_members_of_project}
       </Typography>
       <form onSubmit={handleSubmit}>
         <ManageMembers
@@ -181,10 +187,10 @@ export default function ManageProjectMembers({
               variant="contained"
               color="secondary"
             >
-              Cancel
+              {texts.cancel}
             </Button>
             <Button className={classes.button} variant="contained" color="primary" type="submit">
-              Save
+              {texts.save}
             </Button>
           </div>
         </div>

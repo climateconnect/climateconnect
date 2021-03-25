@@ -1,9 +1,11 @@
 import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import possibleFilters from "../../../public/data/possibleFilters";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
+import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
+import UserContext from "../context/UserContext";
 import FilterContent from "../filter/FilterContent";
 import LoadingSpinner from "../general/LoadingSpinner";
 import FilterSection from "../indexPage/FilterSection";
@@ -71,6 +73,7 @@ export default function BrowseContent({
       members: "",
     },
   };
+
   //saving these refs for the tutorial
   const firstProjectCardRef = useRef(null);
   const filterButtonRef = useRef(null);
@@ -81,6 +84,13 @@ export default function BrowseContent({
   const TYPES_BY_TAB_VALUE = hideMembers
     ? ["projects", "organizations"]
     : ["projects", "organizations", "members"];
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
+  const type_names = {
+    projects: texts.projects,
+    organization: texts.organizations,
+    members: texts.members,
+  };
   const [hash, setHash] = useState(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
   const [filtersExpanded, setFiltersExpanded] = useState(false);
@@ -112,10 +122,6 @@ export default function BrowseContent({
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(window.location.hash.replace("#", "")));
     }
   }, []);
-
-  function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
 
   const unexpandFilters = () => {
     setFiltersExpanded(false);
@@ -171,7 +177,12 @@ export default function BrowseContent({
    */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
     if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
-      indicateWrongLocation(locationInputRefs[type], setLocationOptionsOpen, handleSetErrorMessage);
+      indicateWrongLocation(
+        locationInputRefs[type],
+        setLocationOptionsOpen,
+        handleSetErrorMessage,
+        texts
+      );
       return;
     }
     handleSetErrorMessage("");
@@ -239,7 +250,7 @@ export default function BrowseContent({
         >
           {TYPES_BY_TAB_VALUE.map((t, index) => {
             const tabProps = {
-              label: capitalizeFirstLetter(t),
+              label: type_names[t],
               className: classes.tab,
             };
             if (index === 1) tabProps.ref = organizationsTabRef;

@@ -1,14 +1,16 @@
-import React from "react";
-import { Typography, Button, Avatar, Link, Tooltip, CircularProgress } from "@material-ui/core";
+import { Avatar, Button, CircularProgress, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Posts from "./Posts";
-import DateDisplay from "./../general/DateDisplay";
-import { getImageUrl } from "../../../public/lib/imageOperations";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import CommentInput from "./CommentInput";
+import React, { useContext } from "react";
+import { getImageUrl } from "../../../public/lib/imageOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
+import DateDisplay from "./../general/DateDisplay";
+import CommentInput from "./CommentInput";
 import MessageContent from "./MessageContent";
+import Posts from "./Posts";
 
 const useStyles = makeStyles((theme) => ({
   postDate: {
@@ -67,6 +69,8 @@ export default function Post({
   onDeletePost,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "communication", locale: locale });
   const [open, setOpen] = React.useState(false);
   const [displayReplies, setDisplayReplies] = React.useState(false);
   const [replyInterfaceExpanded, setInterfaceExpanded] = React.useState(false);
@@ -108,7 +112,7 @@ export default function Post({
               </Link>
               <Typography variant="body2" className={classes.postDate}>
                 {post.unconfirmed && (
-                  <Tooltip title="sending message...">
+                  <Tooltip title={texts.sending_message + "..."}>
                     <CircularProgress size={10} color="inherit" className={classes.loader} />
                   </Tooltip>
                 )}
@@ -127,7 +131,7 @@ export default function Post({
                   />
                 ) : (
                   <Button onClick={expandReplyInterface} className={classes.replyButton}>
-                    Reply
+                    {texts.reply}
                   </Button>
                 ))}
               {user && user.id === post.author_user.id && (
@@ -140,12 +144,12 @@ export default function Post({
                   {!displayReplies ? (
                     <>
                       <ExpandMoreIcon />
-                      Show replies
+                      {texts.show_replies}
                     </>
                   ) : (
                     <>
                       <ExpandLessIcon />
-                      Hide replies
+                      {texts.hide_replies}
                     </>
                   )}
                 </Link>
@@ -171,10 +175,10 @@ export default function Post({
       <ConfirmDialog
         open={open}
         onClose={onConfirmDialogClose}
-        title="Delete comment"
-        text="Do you really want to delete this comment?"
-        confirmText="Yes"
-        cancelText="No"
+        title={texts.delete_comment}
+        text={texts.do_you_really_want_to_delete_this_comment}
+        confirmText={texts.yes}
+        cancelText={texts.no}
       />
     </div>
   );

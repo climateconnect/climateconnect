@@ -1,10 +1,10 @@
-import React from "react";
-
-import { Box, Tooltip, Typography, Container, Collapse } from "@material-ui/core";
-import PlaceIcon from "@material-ui/icons/Place";
+import { Box, Collapse, Container, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ExploreIcon from "@material-ui/icons/Explore";
-
+import PlaceIcon from "@material-ui/icons/Place";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 
@@ -52,6 +52,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProjectMetaData({ project, hovering, withDescription }) {
   const classes = useStyles({ hovering: hovering });
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const project_parent = project.project_parents[0];
   const main_project_tag = project.tags.map((t) => t.project_tag.name)[0];
   if (withDescription) {
@@ -62,6 +64,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }) 
         project={project}
         hovering={hovering}
         main_project_tag={main_project_tag}
+        texts={texts}
       />
     );
   }
@@ -72,11 +75,19 @@ export default function ProjectMetaData({ project, hovering, withDescription }) 
       project_parent={project_parent}
       project={project}
       main_project_tag={main_project_tag}
+      texts={texts}
     />
   );
 }
 
-const WithDescription = ({ className, project_parent, hovering, project, main_project_tag }) => {
+const WithDescription = ({
+  className,
+  project_parent,
+  hovering,
+  project,
+  main_project_tag,
+  texts,
+}) => {
   const classes = useStyles();
   return (
     <Box className={className}>
@@ -98,7 +109,7 @@ const WithDescription = ({ className, project_parent, hovering, project, main_pr
           />
         )}
         <Box>
-          <Tooltip title="Location">
+          <Tooltip title={texts.location}>
             <PlaceIcon className={classes.cardIcon} />
           </Tooltip>
           <Typography className={classes.metadataText}>{project.location}</Typography>
@@ -108,15 +119,17 @@ const WithDescription = ({ className, project_parent, hovering, project, main_pr
               {project.short_description}
             </Typography>
           </Collapse>
-          {!hovering && <Categories main_project_tag={main_project_tag} />}
+          {!hovering && <Categories main_project_tag={main_project_tag} texts={texts} />}
         </Box>
       </Container>
-      {hovering && <Categories main_project_tag={main_project_tag} hovering={hovering} />}
+      {hovering && (
+        <Categories main_project_tag={main_project_tag} hovering={hovering} texts={texts} />
+      )}
     </Box>
   );
 };
 
-const WithOutDescription = ({ className, project_parent, project, main_project_tag }) => {
+const WithOutDescription = ({ className, project_parent, project, main_project_tag, texts }) => {
   const classes = useStyles();
   return (
     <Box className={className}>
@@ -138,22 +151,22 @@ const WithOutDescription = ({ className, project_parent, project, main_project_t
           />
         )}
         <Box>
-          <Tooltip title="Location">
+          <Tooltip title={texts.location}>
             <PlaceIcon className={classes.cardIcon} />
           </Tooltip>
           <Typography className={classes.metadataText}>{project.location}</Typography>
-          <Categories main_project_tag={main_project_tag} />
+          <Categories main_project_tag={main_project_tag} texts={texts} />
         </Box>
       </Container>
     </Box>
   );
 };
 
-const Categories = ({ main_project_tag, hovering }) => {
+const Categories = ({ main_project_tag, hovering, texts }) => {
   const classes = useStyles({ hovering: hovering });
   return (
     <div className={classes.categories}>
-      <Tooltip title="Categories">
+      <Tooltip title={texts.categories}>
         <ExploreIcon className={classes.cardIcon} />
       </Tooltip>{" "}
       <Typography className={`${classes.categoryText} ${classes.metadataText}`}>

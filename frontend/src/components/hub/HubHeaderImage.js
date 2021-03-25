@@ -1,5 +1,7 @@
-import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -25,12 +27,18 @@ const useStyles = makeStyles((theme) => ({
 
 export default function HubHeaderImage({ image, source, fullWidth }) {
   const classes = useStyles({ image: image, fullWidth: fullWidth });
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "hubs", locale: locale });
   return (
     <>
       <div className={classes.root}>
         <img src={image} className={classes.img} />
       </div>
-      {source && <Typography className={classes.attribution}>Image: {source}</Typography>}
+      {source && (
+        <Typography className={classes.attribution}>
+          {texts.image}: {source}
+        </Typography>
+      )}
     </>
   );
 }

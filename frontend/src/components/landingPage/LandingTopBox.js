@@ -174,10 +174,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LandingTopBox() {
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"))
-  const isVeryLargeScreen = useMediaQuery(theme.breakpoints.up("lg"))
-  const imageSource = isNarrowScreen ? "landing_image_small.jpg" : isVeryLargeScreen? "landing_image_extra_large.jpg" : "landing_image_extra_large.jpg"
-  const classes = useStyles({imageSource: imageSource});
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isVeryLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
+  const imageSource = isNarrowScreen
+    ? "landing_image_small.jpg"
+    : isVeryLargeScreen
+    ? "landing_image_extra_large.jpg"
+    : "landing_image_extra_large.jpg";
+  const classes = useStyles({ imageSource: imageSource });
   return (
     <div>
       <div className={classes.imageContainer}>

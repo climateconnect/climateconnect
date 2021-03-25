@@ -1,15 +1,17 @@
-import React, { useRef } from "react";
-import Form from "../general/Form";
-import { Typography, Link } from "@material-ui/core";
+import { Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import React, { useContext, useRef } from "react";
 import {
-  isLocationValid,
-  parseLocation,
-  indicateWrongLocation,
   getLocationFields,
   getLocationValue,
+  indicateWrongLocation,
+  isLocationValid,
+  parseLocation,
 } from "../../../public/lib/locationOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import Form from "../general/Form";
 
 const useStyles = makeStyles((theme) => ({
   orgBottomLink: {
@@ -52,6 +54,8 @@ export default function Share({
   setMessage,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
 
@@ -122,6 +126,7 @@ export default function Share({
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
       values: project,
       locationKey: "loc",
+      texts: texts,
     }),
   ];
   const messages = {
@@ -143,7 +148,7 @@ export default function Share({
     );
     //Short circuit if the location is not valid and we're not in legacy mode
     if (!legacyModeEnabled && !isLocationValid(values.loc)) {
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage);
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage, texts);
       return;
     }
     const loc_value = getLocationValue(values, "loc");

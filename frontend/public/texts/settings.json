@@ -1,0 +1,166 @@
+{
+  "new_email_verification": {
+    "en": "New Email verification",
+    "de": "Neue E-Mail Adresse verifizieren"
+  },
+  "verifying_new_email": {
+    "en": "Verifying your new E-Mail address...",
+    "de": "Verifiziere neue E-Mail Adresse..."
+  },
+  "enter_your_new_password": {
+    "en": "Enter your new password",
+    "de": ""
+  },
+  "enter_your_new_password_again": {
+    "en": "Enter your new password again",
+    "de": ""
+  },
+  "set_new_password": {
+    "en": "Set new password",
+    "de": ""
+  },
+  "passwords_dont_match": {
+    "en": "Passwords don't match.",
+    "de": ""
+  },
+  "set_a_new_password": {
+    "en": "Set a new password",
+    "de": ""
+  },
+  "click_here_to_get_another_password_reset_email": {
+    "en": "Click here to get another password reset email",
+    "de": ""
+  },
+  "account_verified": {
+    "en": "Account verified",
+    "de": ""
+  },
+  "send_verification_email_again": {
+    "en": "Send verification E-Mail again",
+    "de": ""
+  },
+  "resend_verification_email": {
+    "en": "Resend verification Email",
+    "de": ""
+  },
+  "send_password_reset_email": {
+    "en": "Send password reset email",
+    "de": ""
+  },
+  "enter_your_login_email": {
+    "en": "Enter your login email",
+    "de": ""
+  },
+  "you_didnt_enter_an_email": {
+    "en": "You didn't enter an email.",
+    "de": ""
+  },
+  "reset_password": {
+    "en": "Reset Password",
+    "de": ""
+  },
+  "send_newsletter_text": {
+    "en": "Receive emails about updates, news and interesting projects (~once per month)",
+    "de": ""
+  },
+  "email_on_private_chat_message_text": {
+    "en": "Get notified when somebody sends you a personal chat message",
+    "de": ""
+  },
+  "email_on_group_chat_message_text": {
+    "en": "Get notified when somebody sends you a chat message in a group",
+    "de": ""
+  },
+  "email_on_comment_on_your_project_text": {
+    "en": "Get notified when somebody leaves a comment on a project you're part of",
+    "de": ""
+  },
+  "email_on_reply_to_your_comment_text": {
+    "en": "Get notified when somebody replies to your comment on a project",
+    "de": ""
+  },
+  "email_on_new_project_follower_text": {
+    "en": "Get notified when somebody follows a project you're part of.",
+    "de": ""
+  },
+  "accepted_statistics_text": {
+    "en": "Enable Statistics cookies to help us improve Climate Connect",
+    "de": ""
+  },
+  "to_edit_your_settings": {
+    "en": "to edit your settings.",
+    "de": ""
+  },
+  "your_new_passwords_dont_match": {
+    "en": "Your new passwords don't match",
+    "de": ""
+  },
+  "your_new_email_can_not_be_the_same_as_your_old_email": {
+    "en": "Your new email can not be the same as your old email.",
+    "de": ""
+  },
+  "an_e_mail_to_confirm_this_e_mail_address_change_has_been_sent_to_your_old_e_mail_address": {
+    "en": "An E-Mail to confirm this E-Mail address change has been sent to your old E-Mail address.",
+    "de": ""
+  },
+  "you_havent_made_any_changes": {
+    "en": "You haven't made any changes.",
+    "de": ""
+  },
+  "cookie_settings_successfully_updated": {
+    "en": "Cookie settings successfully updated.",
+    "de": ""
+  },
+  "change_password": {
+    "en": "Change Password",
+    "de": ""
+  },
+  "make_sure_it_is_at_least_8_characters_including_a_number_and_an_uppercase_letter": {
+    "en": "CMake sure it is at least 8 characters including a number and an uppercase letter.",
+    "de": ""
+  },
+  "change_linked_email": {
+    "en": "Change linked email",
+    "de": ""
+  },
+  "your_linked_email_is": {
+    "en": "Your linked email is",
+    "de": ""
+  },
+  "new_email": {
+    "en": "New Email",
+    "de": ""
+  },
+  "change_email": {
+    "en": "Change email",
+    "de": ""
+  },
+  "change_email_text": {
+    "en": "Changing your E-Mail will not change the E-Mail you use for Login. It will just change the E-Mail that your E-Mails are delivered to.",
+    "de": ""
+  },
+  "change_email_preferences": {
+    "en": "Change email preferences",
+    "de": ""
+  },
+  "change_preferences": {
+    "en": "Change preferences",
+    "de": ""
+  },
+  "change_cookie_settings": {
+    "en": "Change cookie settings",
+    "de": ""
+  },
+  "edit_your_profile_page": {
+    "en": "Edit your profile page",
+    "de": ""
+  },
+  "edit_profile_page": {
+    "en": "Edit profile page",
+    "de": ""
+  },
+  "if_you_wish_to_delete_this_account": {
+    "en": "If you wish to delete this account, send an E-Mail to contact@climateconnect.earth",
+    "de": ""
+  }
+}

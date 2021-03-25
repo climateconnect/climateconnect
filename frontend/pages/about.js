@@ -1,24 +1,25 @@
 //global imports
-import React, { useContext } from "react";
-import WideLayout from "../src/components/layouts/WideLayout";
-import { makeStyles } from "@material-ui/core/styles";
-//local components
-import TopSection from "../src/components/staticpages/TopSection";
-import Challenge from "../src/components/staticpages/about/Challenge";
 import { Typography } from "@material-ui/core";
-import Goals from "../src/components/staticpages/about/Goals";
-import Values from "../src/components/staticpages/about/Values";
-import ExplainerBox from "../src/components/staticpages/ExplainerBox";
-import Quote from "../src/components/staticpages/Quote";
-import Born from "../src/components/staticpages/about/Born";
-import Timeline from "../src/components/staticpages/about/Timeline";
-import HowItWorks from "../src/components/staticpages/about/HowItWorks";
-import FaqSection from "../src/components/staticpages/FaqSection";
+import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
-import Team from "../src/components/staticpages/about/Team";
-import StartNowBanner from "../src/components/staticpages/StartNowBanner";
+import React, { useContext } from "react";
+import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import TopOfPage from "../src/components/hooks/TopOfPage";
+import WideLayout from "../src/components/layouts/WideLayout";
+import Born from "../src/components/staticpages/about/Born";
+import Challenge from "../src/components/staticpages/about/Challenge";
+import Goals from "../src/components/staticpages/about/Goals";
+import HowItWorks from "../src/components/staticpages/about/HowItWorks";
+import Team from "../src/components/staticpages/about/Team";
+import Timeline from "../src/components/staticpages/about/Timeline";
+import Values from "../src/components/staticpages/about/Values";
+import ExplainerBox from "../src/components/staticpages/ExplainerBox";
+import FaqSection from "../src/components/staticpages/FaqSection";
+import Quote from "../src/components/staticpages/Quote";
+import StartNowBanner from "../src/components/staticpages/StartNowBanner";
+//local components
+import TopSection from "../src/components/staticpages/TopSection";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -61,26 +62,31 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+export async function getServerSideProps() {
+  const questions = await getQuestionsWithAnswers();
+  return {
+    props: {
+      faqQuestions: questions,
+    },
+  };
+}
+
 export default function About({ faqQuestions }) {
-  console.log(faqQuestions.by_section);
   const classes = useStyles();
   const trigger = !TopOfPage({ initTopOfPage: true });
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "about", locale: locale });
+  console.log(texts);
 
-  const quoteText = `
-    We want to connect everyone that is fighting against climate change from
-    Greta Thunberg and Greenpeace to the local sustainable startup, local
-    and national governments, and your friend who just recently realized that
-    biking to work instead of driving can already make a difference.
-  `;
+  const quoteText = texts.about_quote_text;
 
   return (
     <>
       <WideLayout title="About" isStaticPage noSpaceBottom>
         <div className={classes.root}>
           <TopSection
-            headline="About"
-            subHeader="A new way to fight climate change. Together. Nonprofit. Independent."
+            headline={texts.top_section_headline}
+            subHeader={texts.top_section_subheader}
           />
           <Challenge
             className={classes.challenege}
@@ -94,7 +100,7 @@ export default function About({ faqQuestions }) {
             color="primary"
             className={`${classes.headlineClass} ${classes.solutionHeadline}`}
           >
-            Our Solution
+            {texts.our_solution}
           </Typography>
           <ExplainerBox hideHeadline />
           <Quote className={classes.quote} text={quoteText} />
@@ -112,13 +118,6 @@ export default function About({ faqQuestions }) {
     </>
   );
 }
-
-About.getInitialProps = async () => {
-  const questions = await getQuestionsWithAnswers();
-  return {
-    faqQuestions: questions,
-  };
-};
 
 const getQuestionsWithAnswers = async () => {
   try {

@@ -1,17 +1,19 @@
-import React from "react";
 import {
-  withStyles,
-  MenuItem,
-  ListItemAvatar,
   Avatar,
-  ListItemText,
   Link,
+  ListItemAvatar,
   ListItemIcon,
+  ListItemText,
+  MenuItem,
+  withStyles,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import GroupIcon from "@material-ui/icons/Group";
 import CommentIcon from "@material-ui/icons/Comment";
+import GroupIcon from "@material-ui/icons/Group";
+import React, { useContext } from "react";
 import { getImageUrl } from "../../../../public/lib/imageOperations";
+import getTexts from "../../../../public/texts/texts";
+import UserContext from "../../context/UserContext";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -58,24 +60,26 @@ const NOTIFICATION_TYPES = [
 ];
 
 export default function Notification({ notification, isPlaceholder }) {
-  if (isPlaceholder) return <PlaceholderNotification />;
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale });
+  if (isPlaceholder) return <PlaceholderNotification texts={texts} />;
   else {
     const type = NOTIFICATION_TYPES[notification.notification_type];
     if (type === "private_message")
-      return <PrivateMessageNotification notification={notification} />;
+      return <PrivateMessageNotification notification={notification} texts={texts} />;
     else if (type === "group_message")
-      return <GroupMessageNotification notification={notification} />;
+      return <GroupMessageNotification notification={notification} texts={texts} />;
     else if (type === "project_comment")
-      return <ProjectCommentNotification notification={notification} />;
+      return <ProjectCommentNotification notification={notification} texts={texts} />;
     else if (type === "reply_to_project_comment")
-      return <ProjectCommentReplyNotification notification={notification} />;
+      return <ProjectCommentReplyNotification notification={notification} texts={texts} />;
     else if (type === "project_follower")
-      return <ProjectFollowerNotification notification={notification} />;
+      return <ProjectFollowerNotification notification={notification} texts={texts} />;
     else return <></>;
   }
 }
 
-const PrivateMessageNotification = ({ notification }) => {
+const PrivateMessageNotification = ({ notification, texts }) => {
   const sender = notification.last_message.sender;
   const classes = useStyles();
   //TODO update to chat/<chat_uuid>/
@@ -89,7 +93,7 @@ const PrivateMessageNotification = ({ notification }) => {
           />
         </ListItemAvatar>
         <ListItemText
-          primary={"Message from " + sender.first_name + " " + sender.last_name}
+          primary={texts.message_from + " " + sender.first_name + " " + sender.last_name}
           secondary={notification.last_message.content}
           primaryTypographyProps={{
             className: classes.messageSender,
@@ -103,7 +107,7 @@ const PrivateMessageNotification = ({ notification }) => {
   );
 };
 
-const GroupMessageNotification = ({ notification }) => {
+const GroupMessageNotification = ({ notification, texts }) => {
   const group_title = notification.chat_title;
   const sender = notification.last_message.sender;
   const classes = useStyles();
@@ -116,7 +120,7 @@ const GroupMessageNotification = ({ notification }) => {
           </Avatar>
         </ListItemAvatar>
         <ListItemText
-          primary={"Message in " + group_title}
+          primary={texts.message_in + group_title}
           secondary={
             sender.first_name + " " + sender.last_name + ": " + notification.last_message.content
           }
@@ -132,14 +136,13 @@ const GroupMessageNotification = ({ notification }) => {
   );
 };
 
-const PlaceholderNotification = () => {
+const PlaceholderNotification = ({ texts }) => {
   const classes = useStyles();
   return (
     <Link href="/inbox" underline="none" color="inherit">
       <StyledMenuItem>
         <ListItemText className={classes.listItemText} disableTypography>
-          {`You're all caught up! Here you will be notified on private messages, interactions with
-          your content and updates from projects you follow.`}
+          {texts.placeholderNotification}
           <div>
             <Link className={classes.goToInboxText}>Go to Inbox</Link>
           </div>
@@ -149,7 +152,7 @@ const PlaceholderNotification = () => {
   );
 };
 
-const ProjectCommentNotification = ({ notification }) => {
+const ProjectCommentNotification = ({ notification, texts }) => {
   const classes = useStyles();
   return (
     <Link href={"/projects/" + notification.project.url_slug + "/#comments"} underline="none">
@@ -158,7 +161,7 @@ const ProjectCommentNotification = ({ notification }) => {
           <CommentIcon />
         </ListItemIcon>
         <ListItemText
-          primary={'Comment on "' + notification.project.name + '"'}
+          primary={texts.comment_on + ' "' + notification.project.name + '"'}
           secondary={notification.project_comment.content}
           primaryTypographyProps={{
             className: classes.messageSender,
@@ -172,7 +175,7 @@ const ProjectCommentNotification = ({ notification }) => {
   );
 };
 
-const ProjectCommentReplyNotification = ({ notification }) => {
+const ProjectCommentReplyNotification = ({ notification, texts }) => {
   const classes = useStyles();
   return (
     <Link href={"/projects/" + notification.project.url_slug + "/#comments"} underline="none">
@@ -181,7 +184,7 @@ const ProjectCommentReplyNotification = ({ notification }) => {
           <CommentIcon />
         </ListItemIcon>
         <ListItemText
-          primary={'Reply to your comment on "' + notification.project.name + '"'}
+          primary={texts.reply_to_your_comment_on + ' "' + notification.project.name + '"'}
           secondary={notification.project_comment.content}
           primaryTypographyProps={{
             className: classes.messageSender,
@@ -195,7 +198,7 @@ const ProjectCommentReplyNotification = ({ notification }) => {
   );
 };
 
-const ProjectFollowerNotification = ({ notification }) => {
+const ProjectFollowerNotification = ({ notification, texts }) => {
   const classes = useStyles();
   return (
     <Link
@@ -218,11 +221,13 @@ const ProjectFollowerNotification = ({ notification }) => {
             notification.project_follower.first_name +
             " " +
             notification.project_follower.last_name +
-            ' now follows your project "' +
+            " " +
+            texts.now_follows_your_project +
+            ' "' +
             notification.project.name +
             '"'
           }
-          secondary={"Congratulations!"}
+          secondary={texts.congratulations}
           primaryTypographyProps={{
             className: classes.messageSender,
           }}

@@ -1,9 +1,9 @@
-import React from "react";
-import Router from "next/router";
-import EditAccountPage from "./../account/EditAccountPage";
-import organization_info_metadata from "./../../../public/data/organization_info_metadata.js";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
+import Router from "next/router";
+import React from "react";
+import getOrganizationInfoMetadata from "./../../../public/data/organization_info_metadata.js";
+import EditAccountPage from "./../account/EditAccountPage";
 
 const useStyles = makeStyles(() => {
   return {
@@ -15,7 +15,7 @@ const useStyles = makeStyles(() => {
   };
 });
 
-const parseOrganizationInfo = (info) => {
+const parseOrganizationInfo = (info, organization_info_metadata) => {
   const ret = { info: {} };
   Object.keys(info).map((key) => {
     if (organization_info_metadata[key]) ret.info[key] = info[key];
@@ -33,7 +33,8 @@ export default function EnterDetailledOrganizationInfo({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
 }) {
-  const organization = parseOrganizationInfo(organizationInfo);
+  const organization_info_metadata = getOrganizationInfoMetadata();
+  const organization = parseOrganizationInfo(organizationInfo, organization_info_metadata);
   const infoMetadata = {
     ...organization_info_metadata,
     location: {

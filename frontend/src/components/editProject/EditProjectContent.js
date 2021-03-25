@@ -1,22 +1,24 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import SelectField from "../general/SelectField";
-import DatePicker from "../general/DatePicker";
 import {
-  Switch,
-  Typography,
-  TextField,
-  List,
-  Chip,
   Button,
-  useMediaQuery,
+  Chip,
+  List,
+  Switch,
+  TextField,
+  Typography,
+  useMediaQuery
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
+import getCollaborationTexts from "../../../public/data/collaborationTexts";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import ConfirmDialog from "../dialogs/ConfirmDialog";
+import EnterTextDialog from "../dialogs/EnterTextDialog";
+import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
+import DatePicker from "../general/DatePicker";
+import SelectField from "../general/SelectField";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
-import collaborationTexts from "../../../public/data/collaborationTexts";
-import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
-import EnterTextDialog from "../dialogs/EnterTextDialog";
-import ConfirmDialog from "../dialogs/ConfirmDialog";
 import DeleteProjectButton from "./DeleteProjectButton";
 
 const useStyles = makeStyles((theme) => ({
@@ -70,6 +72,9 @@ export default function EditProjectContent({
   deleteProject,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext)
+  const texts = getTexts({page: "project", locale: locale, project: project})
+  const collaborationTexts = getCollaborationTexts(texts)
   const [selectedItems, setSelectedItems] = React.useState(
     project.skills ? [...project.skills] : []
   );
@@ -112,7 +117,7 @@ export default function EditProjectContent({
 
   const handleConnectionsDialogClose = (connection) => {
     if (project.helpful_connections && project.helpful_connections.includes(connection))
-      alert("You can not add the same connection twice.");
+      alert(texts.you_can_not_add_the_same_connection_twice"You can not add the same connection twice.");
     else {
       if (connection)
         handleSetProject({

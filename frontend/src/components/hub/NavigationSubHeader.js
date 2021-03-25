@@ -1,5 +1,7 @@
-import React from "react";
-import { Container, Link, Typography, makeStyles } from "@material-ui/core";
+import { Container, Link, makeStyles, Typography } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,16 +24,18 @@ const useStyles = makeStyles((theme) => ({
 
 export default function NavigationSubHeader({ hubName }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "navigation", locale: locale });
   return (
     <div className={classes.root}>
       <Container>
         <Typography className={classes.path} component="div">
           <Link className={classes.link} href="/browse">
-            Browse
+            {texts.browse}
           </Link>
           {" / "}
           <Link className={classes.link} href="/hubs">
-            Hubs
+            {texts.hubs}
           </Link>
           {hubName && (
             <>

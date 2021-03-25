@@ -8,9 +8,11 @@ import {
 } from "@material-ui/core";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import React from "react";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import MessageContent from "../communication/MessageContent";
+import UserContext from "../context/UserContext";
 import ElementOnScreen from "../hooks/ElementOnScreen";
 import StatBox from "./StatBox";
 
@@ -94,6 +96,8 @@ export default function HubContent({
   hubProjectsButtonRef,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "hub", locale: locale });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [expanded, setExpanded] = React.useState(false);
   const handleClickExpand = () => {
@@ -137,12 +141,12 @@ export default function HubContent({
               {expanded ? (
                 <>
                   <ExpandLessIcon />
-                  Less Info{" "}
+                  {texts.less_info}{" "}
                 </>
               ) : (
                 <>
                   <ExpandMoreIcon />
-                  More Info
+                  {texts.more_info}
                 </>
               )}
             </Button>
@@ -164,7 +168,7 @@ export default function HubContent({
           onClick={scrollToSolutions}
           ref={hubProjectsButtonRef}
         >
-          <ExpandMoreIcon /> Show Projects
+          <ExpandMoreIcon /> {texts.show_projects}
         </Button>
       </div>
     </Container>

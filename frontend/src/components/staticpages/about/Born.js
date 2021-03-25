@@ -1,5 +1,7 @@
-import React from "react";
-import { makeStyles, Typography, Container } from "@material-ui/core";
+import { Container, makeStyles, Typography } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../../public/texts/texts";
+import UserContext from "../../context/UserContext";
 import HoverImage from "../HoverImage";
 
 const useStyles = makeStyles((theme) => ({
@@ -60,25 +62,23 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Born({ className, headlineClass }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "about", locale: locale });
   return (
     <div className={`${classes.root} ${className}`}>
       <Container className={classes.wrapper}>
         <div className={classes.textWrapper}>
           <Typography component="h1" className={headlineClass}>
-            Climate Connect was born
+            {texts.climate_connect_was_born}
           </Typography>
           <Typography className={classes.textBlock}>
-            The idea of Climate Connect was born after a local networking event in Chris and Tobis
-            home town Erlangen, Germany. After the event it was very obvious that not a lot of
-            people knew each other or worked together before. The idea was born to bring this
-            approach to a global level, and to include as many people as possible to fight climate
-            change together.
+            {texts.climate_connect_was_born_text}
           </Typography>
         </div>
         <div className={classes.imageWrapper}>
           <HoverImage
             src="/images/networking-event.jpg"
-            text="The idea of Climate Connect was born after the success of this event, which resulted in the creation of a Climate action concept for the University in Erlangen"
+            text={texts.climate_connect_was_born_image_text}
             className={classes.hoverImage}
           />
         </div>

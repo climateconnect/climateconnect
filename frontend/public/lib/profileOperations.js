@@ -1,5 +1,6 @@
-import { getImageUrl } from "./imageOperations";
 import Router from "next/router";
+import getTexts from "../texts/texts";
+import { getImageUrl } from "./imageOperations";
 
 export function parseProfile(profile, detailledSkills, keepOldProps) {
   let user = { info: {} };
@@ -28,10 +29,10 @@ export function parseProfile(profile, detailledSkills, keepOldProps) {
   return user;
 }
 
-const SIGN_UP_MESSAGE =
-  "You are now a Climate Connect member. On this page you can customize your profile.";
+export function redirectOnLogin(user, redirectUrl, locale) {
+  const texts = getTexts({ page: "profile", locale: locale });
+  const SIGN_UP_MESSAGE = texts.sign_up_message;
 
-export function redirectOnLogin(user, redirectUrl) {
   if (user.has_logged_in < 2) {
     Router.push({
       pathname: "/editprofile",

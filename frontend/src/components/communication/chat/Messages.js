@@ -1,8 +1,8 @@
-import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
-import Message from "./Message";
+import React from "react";
 import InfiniteScroll from "react-infinite-scroller";
+import Message from "./Message";
 
 const styles = (theme) => {
   return {
@@ -117,16 +117,19 @@ class Messages extends React.Component {
         ) : this.props.isPrivateChat ? (
           <div className={this.props.classes.noHistoryText}>
             <p>
-              This is the very beginning of your conversation with{" "}
+              {this.props.texts.this_is_the_very_beginning_of_your_conversation_with}{" "}
               {this.props.chatting_partner.first_name + " " + this.props.chatting_partner.last_name}
               .
             </p>
-            <p>Write a message to get the conversation started!</p>
+            <p>{this.props.texts.write_a_message_to_get_the_conversation_started}</p>
           </div>
         ) : (
           <div className={this.props.classes.noHistoryText}>
-            <p>This is the very beginning of your conversation in {this.props.title}</p>
-            <p>Write a message to get the conversation started!</p>
+            <p>
+              {this.props.texts.this_is_the_very_beginning_of_your_conversation_in}{" "}
+              {this.props.title}
+            </p>
+            <p>{this.props.texts.write_a_message_to_get_the_conversation_started}</p>
           </div>
         )}
       </InfiniteScroll>

@@ -1,0 +1,30 @@
+{
+  "cookie_banner_headline": {
+    "en": "Cookie information and settings",
+    "de": ""
+  },
+  "cookie_explanation": {
+    "en": "We use cookies in order to offer you an optimal service and to further improve our websites on the basis of statistics.",
+    "de": ""
+  },
+  "for_more_information_check_out_our": {
+    "en": "For more information check out our",
+    "de": ""
+  },
+  "cookies_necessary": {
+    "en": "Necessary",
+    "de": "Essentiell"
+  },
+  "statistics": {
+    "en": "Statistics",
+    "de": ""
+  },
+  "confirm_selection": {
+    "en": "Confirm Selection",
+    "de": ""
+  },
+  "enable_all_cookies": {
+    "en": "Enable all cookies",
+    "de": ""
+  }
+}

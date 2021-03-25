@@ -2,6 +2,7 @@ import { Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import Head from "next/head";
 import React, { useContext, useEffect } from "react";
+import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FeedbackButton from "../feedback/FeedbackButton";
 import CookieBanner from "../general/CookieBanner";
@@ -41,7 +42,8 @@ export default function LayoutWrapper({
   const isSmallerThanMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const [loading, setLoading] = React.useState(true);
   const [bannerOpen, setBannerOpen] = React.useState(true);
-  const { acceptedNecessary } = useContext(UserContext);
+  const { acceptedNecessary, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
   const closeBanner = () => setBannerOpen(false);
   useEffect(function () {
     if (!initialized) setInitialized(true);
@@ -49,8 +51,7 @@ export default function LayoutWrapper({
       setLoading(false);
     }
   });
-  const defaultDescription =
-    "Free and non-profit climate action platform. Share, find and work on impactful, innovative and inspiring solutions to reduce and stop global warming. Join #teamclimate now!";
+  const defaultDescription = texts.defaultDescription;
   return (
     <>
       <Head>
@@ -64,10 +65,7 @@ export default function LayoutWrapper({
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
         />
         <meta property="og:image" content="https://climateconnect.earth/images/landing_image.jpg" />
-        <meta
-          property="og:title"
-          content="Global Platform for Climate Change Solutions | Climate Connect"
-        />
+        <meta property="og:title" content={texts.default_title} />
         <meta property="og:type" content="website" />
 
         <meta name="description" content={description ? description : defaultDescription} />
@@ -79,7 +77,7 @@ export default function LayoutWrapper({
             <div>
               <img className={classes.spinner} src="/images/logo.png" />
             </div>
-            <Typography component="div">Loading...</Typography>
+            <Typography component="div">{texts.loading_and_waiting}</Typography>
           </div>
         ) : (
           <div className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}>

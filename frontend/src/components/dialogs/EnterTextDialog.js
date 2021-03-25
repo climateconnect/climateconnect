@@ -1,7 +1,9 @@
-import React from "react";
-import PropTypes from "prop-types";
 import { TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import PropTypes from "prop-types";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import GenericDialog from "./GenericDialog";
 
 const useStyles = makeStyles({
@@ -21,6 +23,8 @@ export default function EnterTextDialog({
 }) {
   const classes = useStyles();
   const [element, setElement] = React.useState(null);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
 
   const handleClose = () => {
     onClose();
@@ -47,7 +51,7 @@ export default function EnterTextDialog({
       title={title}
       useApplyButton={true}
       onApply={applyElement}
-      applyText={applyText ? applyText : "Apply"}
+      applyText={applyText ? applyText : texts.apply}
     >
       <div className={className}>
         <TextField

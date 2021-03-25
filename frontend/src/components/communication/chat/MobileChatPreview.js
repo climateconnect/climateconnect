@@ -1,8 +1,8 @@
-import React from "react";
-import { ListItem, Avatar, ListItemText, makeStyles, Divider, Badge } from "@material-ui/core";
-import { getImageUrl } from "../../../../public/lib/imageOperations";
+import { Avatar, Badge, Divider, ListItem, ListItemText, makeStyles } from "@material-ui/core";
 import GroupIcon from "@material-ui/icons/Group";
+import React from "react";
 import { getDateTime } from "../../../../public/lib/dateOperations";
+import { getImageUrl } from "../../../../public/lib/imageOperations";
 
 const useStyles = makeStyles((theme) => {
   return {

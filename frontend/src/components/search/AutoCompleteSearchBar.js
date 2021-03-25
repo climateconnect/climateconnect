@@ -1,8 +1,10 @@
-import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import throttle from "lodash/throttle";
 import axios from "axios";
+import throttle from "lodash/throttle";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 export default function AutoCompleteSearchBar({
   label,
@@ -17,6 +19,8 @@ export default function AutoCompleteSearchBar({
   freeSolo,
   onUnselect,
 }) {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "filter_and_search", locale: locale });
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
   const [searchValue, setSearchValue] = React.useState("");
@@ -99,7 +103,7 @@ export default function AutoCompleteSearchBar({
       freeSolo={freeSolo}
       inputValue={inputValue}
       renderOption={renderOption}
-      noOptionsText={!searchValue && !inputValue ? "Start typing" : "No options"}
+      noOptionsText={!searchValue && !inputValue ? texts.start_typing : texts.no_options}
       renderInput={(params) => (
         <TextField
           {...params}

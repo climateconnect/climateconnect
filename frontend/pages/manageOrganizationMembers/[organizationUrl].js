@@ -1,16 +1,16 @@
-import Layout from "../../src/components/layouts/layout";
-import React from "react";
-import tokenConfig from "../../public/config/tokenConfig";
-import axios from "axios";
-import { useContext } from "react";
-import Cookies from "next-cookies";
-import UserContext from "../../src/components/context/UserContext";
-import WideLayout from "../../src/components/layouts/WideLayout";
-import LoginNudge from "../../src/components/general/LoginNudge";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import ManageOrganizationMembers from "../../src/components/organization/ManageOrganizationMembers";
+import axios from "axios";
+import Cookies from "next-cookies";
+import React, { useContext } from "react";
+import tokenConfig from "../../public/config/tokenConfig";
 import { sendToLogin } from "../../public/lib/apiOperations";
+import getTexts from "../../public/texts/texts";
+import UserContext from "../../src/components/context/UserContext";
+import LoginNudge from "../../src/components/general/LoginNudge";
+import Layout from "../../src/components/layouts/layout";
+import WideLayout from "../../src/components/layouts/WideLayout";
+import ManageOrganizationMembers from "../../src/components/organization/ManageOrganizationMembers";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -21,6 +21,31 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+export async function getServerSideProps(ctx) {
+  const { token } = Cookies(ctx);
+  const texts = getTexts({ page: "organization", locale: ctx.locale });
+  if (ctx.req && !token) {
+    const message = texts.you_have_to_log_in_to_manage_organization_members;
+    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
+  }
+  const organizationUrl = encodeURI(ctx.query.organizationUrl);
+  const [organization, members, rolesOptions, availabilityOptions] = await Promise.all([
+    getOrganizationByUrlIfExists(organizationUrl, token),
+    getMembersByOrganization(organizationUrl, token),
+    getRolesOptions(token),
+    getAvailabilityOptions(token),
+  ]);
+  return {
+    props: {
+      organization: organization,
+      members: members,
+      rolesOptions: rolesOptions,
+      availabilityOptions: availabilityOptions,
+      token: token,
+    },
+  };
+}
+
 export default function manageOrganizationMembers({
   organization,
   members,
@@ -28,7 +53,8 @@ export default function manageOrganizationMembers({
   rolesOptions,
   token,
 }) {
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   const classes = useStyles();
   const [currentMembers, setCurrentMembers] = React.useState(
     members ? [...members.sort((a, b) => b.role.role_type - a.role.role_type)] : []
@@ -36,22 +62,21 @@ export default function manageOrganizationMembers({
   if (!user)
     return (
       <WideLayout
-        title="Please Log In to Manage the Members of this Organization"
+        title={texts.please_log_in + " " + texts.to_manage_org_members}
         hideHeadline={true}
       >
-        <LoginNudge fullPage whatToDo="manage the members of this organization" />
+        <LoginNudge fullPage whatToDo={texts.to_manage_org_members} />
       </WideLayout>
     );
   else if (!members.find((m) => m.id === user.id))
     return (
       <WideLayout
-        title="Please Log In to Manage the Members of an Organization"
+        title={texts.please_log_in + " " + texts.to_manage_org_members}
         hideHeadline={true}
       >
         <Typography variant="h4" color="primary" className={classes.headline}>
-          You are not a member of this organization. Go to{" "}
-          <a href={"/organizations/" + organization.url_slug}>the organization page</a> and click
-          join to join it.
+          {texts.you_are_not_a_member_of_this_organization}{" "}
+          {texts.go_to_org_page_and_click_join_to_join_it}
         </Typography>
       </WideLayout>
     );
@@ -60,15 +85,15 @@ export default function manageOrganizationMembers({
     members.find((m) => m.id === user.id).role.name != "Administrator"
   )
     return (
-      <WideLayout title="No Permission to Manage Members of this Organization" hideHeadline={true}>
+      <WideLayout title={texts.no_permission_to_manage_members_of_this_org} hideHeadline={true}>
         <Typography variant="h4" color="primary" className={classes.headline}>
-          You need to be an administrator of the organization to manage organization members.
+          {texts.need_to_be_admin_to_manage_org_members}
         </Typography>
       </WideLayout>
     );
   else {
     return (
-      <Layout title="Manage organization's Members" hideHeadline>
+      <Layout title={texts.manage_organizations_members} hideHeadline>
         <ManageOrganizationMembers
           user={user}
           members={members}
@@ -83,28 +108,6 @@ export default function manageOrganizationMembers({
     );
   }
 }
-
-manageOrganizationMembers.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  if (ctx.req && !token) {
-    const message = "You have to log in to manage an organization's members.";
-    return sendToLogin(ctx, message);
-  }
-  const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, members, rolesOptions, availabilityOptions] = await Promise.all([
-    getOrganizationByUrlIfExists(organizationUrl, token),
-    getMembersByOrganization(organizationUrl, token),
-    getRolesOptions(token),
-    getAvailabilityOptions(token),
-  ]);
-  return {
-    organization: organization,
-    members: members,
-    rolesOptions: rolesOptions,
-    availabilityOptions: availabilityOptions,
-    token: token,
-  };
-};
 
 async function getOrganizationByUrlIfExists(organizationUrl, token) {
   try {

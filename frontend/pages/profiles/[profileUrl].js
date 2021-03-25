@@ -1,24 +1,21 @@
-import React from "react";
-import { Container, Typography, Button } from "@material-ui/core";
+import { Button, Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
-import { useContext } from "react";
 import Cookies from "next-cookies";
-import UserContext from "./../../src/components/context/UserContext";
 import Router from "next/router";
-
-import WideLayout from "../../src/components/layouts/WideLayout";
-import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
-import OrganizationPreviews from "./../../src/components/organization/OrganizationPreviews";
-import AccountPage from "./../../src/components/account/AccountPage";
-
-import TEMP_PROFILE_TYPES from "./../../public/data/profile_types.json";
-import TEMP_INFOMETADATA from "./../../public/data/profile_info_metadata";
+import React, { useContext } from "react";
 import tokenConfig from "../../public/config/tokenConfig";
-import LoginNudge from "../../src/components/general/LoginNudge";
-import { parseProfile } from "./../../public/lib/profileOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
+import getTexts from "../../public/texts/texts";
+import LoginNudge from "../../src/components/general/LoginNudge";
 import PageNotFound from "../../src/components/general/PageNotFound";
+import WideLayout from "../../src/components/layouts/WideLayout";
+import getProfileInfoMetadata from "./../../public/data/profile_info_metadata";
+import { parseProfile } from "./../../public/lib/profileOperations";
+import AccountPage from "./../../src/components/account/AccountPage";
+import UserContext from "./../../src/components/context/UserContext";
+import OrganizationPreviews from "./../../src/components/organization/OrganizationPreviews";
+import ProjectPreviews from "./../../src/components/project/ProjectPreviews";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_user.jpg";
 
@@ -82,18 +79,32 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function ProfilePage({
-  profile,
-  projects,
-  organizations,
-  profileTypes,
-  infoMetadata,
-  token,
-}) {
-  const { user } = useContext(UserContext);
+export async function getServerSideProps(ctx) {
+  const { token } = Cookies(ctx);
+  const profileUrl = encodeURI(ctx.query.profileUrl);
+  const [profile, organizations, projects, infoMetadata] = await Promise.all([
+    getProfileByUrlIfExists(profileUrl, token),
+    getOrganizationsByUser(profileUrl, token),
+    getProjectsByUser(profileUrl, token),
+    getProfileInfoMetadata(ctx.locale),
+  ]);
+  return {
+    props: {
+      profile: profile,
+      organizations: organizations,
+      projects: projects,
+      infoMetadata: infoMetadata,
+      token: token,
+    },
+  };
+}
+
+export default function ProfilePage({ profile, projects, organizations, infoMetadata, token }) {
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale, profile: profile });
   return (
     <WideLayout
-      title={profile ? profile.name + "'s Profile" : "Not Found"}
+      title={profile ? texts.persons_profile : texts.not_found}
       description={
         profile.name +
         " | " +
@@ -106,10 +117,10 @@ export default function ProfilePage({
           profile={profile}
           projects={projects}
           organizations={organizations}
-          profileTypes={profileTypes}
           infoMetadata={infoMetadata}
           user={user}
           token={token}
+          texts={texts}
         />
       ) : (
         <PageNotFound itemName="Profile" />
@@ -118,35 +129,7 @@ export default function ProfilePage({
   );
 }
 
-ProfilePage.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  const profileUrl = encodeURI(ctx.query.profileUrl);
-  const [profile, organizations, projects, profileTypes, infoMetadata] = await Promise.all([
-    getProfileByUrlIfExists(profileUrl, token),
-    getOrganizationsByUser(profileUrl, token),
-    getProjectsByUser(profileUrl, token),
-    getProfileTypes(),
-    getProfileInfoMetadata(),
-  ]);
-  return {
-    profile: profile,
-    organizations: organizations,
-    projects: projects,
-    profileTypes: profileTypes,
-    infoMetadata: infoMetadata,
-    token: token,
-  };
-};
-
-function ProfileLayout({
-  profile,
-  projects,
-  organizations,
-  profileTypes,
-  infoMetadata,
-  user,
-  token,
-}) {
+function ProfileLayout({ profile, projects, organizations, infoMetadata, user, token, texts }) {
   const classes = useStyles();
   const isOwnAccount = user && user.url_slug === profile.url_slug;
   const handleConnectBtn = async (e) => {
@@ -178,55 +161,60 @@ function ProfileLayout({
       editHref={"/editprofile"}
       isOwnAccount={isOwnAccount}
       type="profile"
-      possibleAccountTypes={profileTypes}
       infoMetadata={infoMetadata}
     >
       {!user && (
-        <LoginNudge className={classes.loginNudge} whatToDo="see this user's full information" />
+        <LoginNudge
+          className={classes.loginNudge}
+          whatToDo={texts.to_see_this_users_full_information}
+        />
       )}
       <Container className={classes.container} ref={projectsRef}>
         {user && user.url_slug !== profile.url_slug && (
           <Button variant="contained" color="primary" onClick={handleConnectBtn}>
-            Message
+            {texts.message}
           </Button>
         )}
         <h2>
-          {isOwnAccount ? "Your projects:" : "This user's projects:"}
+          {isOwnAccount ? texts.your_projects + ":" : texts.this_users_projects + ":"}
           <Button
             variant="contained"
             color="primary"
             href="/share"
             className={classes.createButton}
           >
-            Share a project
+            {texts.share_a_project}
           </Button>
         </h2>
         {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
         ) : (
           <Typography>
-            {(isOwnAccount ? "You are" : "This user is") + " not involved in any projects yet!"}
+            {(isOwnAccount ? texts.you_are : texts.this_user_is) +
+              " " +
+              texts.not_involved_in_any_projects_yet}
           </Typography>
         )}
       </Container>
       <Container className={classes.container} ref={organizationsRef}>
         <h2>
-          {isOwnAccount ? "Your organizations" : "This user's organizations:"}
+          {isOwnAccount ? texts.your_organizations : texts.this_users_organizations}
           <Button
             variant="contained"
             color="primary"
             href="/createorganization"
             className={classes.createButton}
           >
-            Create an organization
+            {texts.create_an_organization}
           </Button>
         </h2>
         {organizations && organizations.length > 0 ? (
           <OrganizationPreviews organizations={organizations} showOrganizationType />
         ) : (
           <Typography>
-            {(isOwnAccount ? "You are" : "This user is") +
-              " not involved in any organizations yet!"}
+            {(isOwnAccount ? texts.you_are : texts.this_user_is) +
+              " " +
+              texts.not_involved_in_any_organizations_yet}
           </Typography>
         )}
       </Container>
@@ -282,14 +270,6 @@ async function getOrganizationsByUser(profileUrl, token) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-}
-
-async function getProfileTypes() {
-  return TEMP_PROFILE_TYPES.profile_types;
-}
-
-async function getProfileInfoMetadata() {
-  return TEMP_INFOMETADATA;
 }
 
 function parseProjectStubs(projects) {

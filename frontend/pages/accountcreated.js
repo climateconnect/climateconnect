@@ -1,7 +1,9 @@
-import React from "react";
-import Layout from "../src/components/layouts/layout";
-import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
+import getTexts from "../public/texts/texts";
+import UserContext from "../src/components/context/UserContext";
+import Layout from "../src/components/layouts/layout";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,40 +19,41 @@ const verified = false;
 
 export default function AccountCreated() {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale });
 
   if (verified)
     return (
-      <Layout title="Account created" hideHeadline>
+      <Layout title={texts.account_created} hideHeadline>
         <Paper className={classes.root}>
           <Typography variant="h5" className={classes.headline}>
-            Congratulations, you have created your account!
+            {texts.congratulations_you_have_created_your_account}
           </Typography>
           <Typography variant="h4">
-            <a href="/signin">Click here to log in</a>
+            <a href="/signin">{texts.click_here_to_log_in}</a>
           </Typography>
         </Paper>
       </Layout>
     );
   else
     return (
-      <Layout title="Account created" hideHeadline>
+      <Layout title={texts.account_created} hideHeadline>
         <Paper className={classes.root}>
           <Typography variant="h5" className={classes.headline}>
-            Congratulations! Just one more step to complete your signup!
+            {texts.congratulations_just_one_more_step_to_complete_your_signup}
           </Typography>
           <Typography variant="h4">
-            <div>We have sent you an E-Mail with a link!</div>
-            <div>Please click on the link to activate your account.</div>
+            <div>{texts.we_have_sent_you_an_email_with_a_link}</div>
+            <div>{texts.please_click_on_the_link_to_activate_your_account}</div>
             <br />
             <Typography component="p" variant="h6">
-              Make sure to also check your spam/junk folder incase you cannot find the E-Mail.
+              {texts.make_sure_to_also_check_your_spam}
             </Typography>
             <Typography component="p" variant="h6">
-              If you are experiencing any problems, contact us at support@climateconnect.earth
+              {texts.if_you_are_experiencing_any_problems_contact_us}
             </Typography>
             <Typography component="p" variant="h6">
-              If the E-Mail does not arrive after 5 minutes,{" "}
-              <a href="/resend_verification_email">click here</a> to resend it.
+              {texts.if_the_email_does_not_arrive_after_5_minutes}
             </Typography>
           </Typography>
         </Paper>

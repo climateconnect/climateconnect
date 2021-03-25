@@ -1,14 +1,16 @@
-import React, { useRef } from "react";
-import { useMediaQuery, Container, Divider } from "@material-ui/core";
-import EditProjectOverview from "./EditProjectOverview";
-import EditProjectContent from "./EditProjectContent";
+import { Container, Divider, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import BottomNavigation from "../general/BottomNavigation";
-import Router from "next/router";
 import axios from "axios";
+import Router from "next/router";
+import React, { useContext, useRef } from "react";
 import tokenConfig from "../../../public/config/tokenConfig";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
-import { isLocationValid, indicateWrongLocation } from "../../../public/lib/locationOperations";
+import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import BottomNavigation from "../general/BottomNavigation";
+import EditProjectContent from "./EditProjectContent";
+import EditProjectOverview from "./EditProjectOverview";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -36,6 +38,8 @@ export default function EditProjectRoot({
   handleSetErrorMessage,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
   const draftReqiredProperties = {
@@ -52,7 +56,7 @@ export default function EditProjectRoot({
   const checkIfProjectValid = (isDraft) => {
     if (project?.loc && oldProject?.loc !== project.loc && !isLocationValid(project.loc)) {
       overviewInputsRef.current.scrollIntoView();
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetErrorMessage);
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetErrorMessage, texts);
       return false;
     }
     if (isDraft && Object.keys(draftReqiredProperties).filter((key) => !project[key]).length > 0) {

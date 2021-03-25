@@ -1,10 +1,12 @@
-import React from "react";
-import { makeStyles, Container, Typography, Button, useMediaQuery } from "@material-ui/core";
-import Carousel from "react-multi-carousel";
-import pitch_elements from "../../../../public/data/pitch_elements.json";
+import { Button, Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
+import React, { useContext } from "react";
+import Carousel from "react-multi-carousel";
+import getPitchElements from "../../../../public/data/pitch_elements";
+import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
+import UserContext from "../../context/UserContext";
 import CustomDot from "../../general/CustomDot";
 
 const useStyles = makeStyles((theme) => ({
@@ -93,11 +95,13 @@ const responsive = {
 export default function HowItWorks({ headlineClass }) {
   const classes = useStyles();
   const isSmallerScreen = useMediaQuery(theme.breakpoints.down("md"));
-  console.log(isSmallerScreen);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "about", locale: locale });
+  const pitch_elements = getPitchElements(texts);
   return (
     <Container className={classes.root}>
       <Typography color="primary" className={headlineClass}>
-        How Climate Connect Works
+        {texts.how_climate_connect_works}
       </Typography>
       <Carousel
         responsive={responsive}

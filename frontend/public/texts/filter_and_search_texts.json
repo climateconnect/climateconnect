@@ -1,0 +1,58 @@
+{
+  "point_out_max_selections": {
+    "en": "You can only choose up to",
+    "de": ""
+  },
+  "search_for_keywords": {
+    "en": "Search for keywords",
+    "de": ""
+  },
+  "selected": {
+    "en": "Selected",
+    "de": "Ausgewählte"
+  },
+  "choose_between_on_and": {
+    "en": "Select between 1 and ",
+    "de": "Wähle zwischen 1 und "
+  },
+  "search_projects": {
+    "en": "Search for climate action projects",
+    "de": ""
+  },
+  "search_organizations": {
+    "en": "Search for organizations fighting climate change",
+    "de": ""
+  },
+  "search_active_people": {
+    "en": "Search for people active against climate change",
+    "de": ""
+  },
+  "status_tooltip": {
+    "en": "Only show projects in the selected stage of completion",
+    "de": ""
+  },
+  "organization_type_tooltip": {
+    "en": "Only shows projects created by organizations of the selected type",
+    "de": ""
+  },
+  "categories_tooltip": {
+    "en": "Only shows projects from selected fields",
+    "de": ""
+  },
+  "collaboration_tooltip": {
+    "en": "Filter by whether a project is open to collaborate",
+    "de": ""
+  },
+  "skills_tooltip": {
+    "en": "Filter by the skills a project is looking for",
+    "de": ""
+  },
+  "start_typing": {
+    "en": "Start typing",
+    "de": ""
+  },
+  "no_options": {
+    "en": "No options",
+    "de": ""
+  }
+}

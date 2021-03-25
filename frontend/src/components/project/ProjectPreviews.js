@@ -1,7 +1,9 @@
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import ProjectPreview from "./ProjectPreview";
 
@@ -23,6 +25,8 @@ export default function ProjectPreviews({
   firstProjectCardRef,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const toProjectPreviews = (projects) =>
     projects.map((p) => (
       <GridItem
@@ -73,7 +77,7 @@ export default function ProjectPreviews({
         {parentHandlesGridItems
           ? projects && projects.length > 0
             ? toProjectPreviews(projects)
-            : "No projects found."
+            : texts.no_projects_found
           : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="project-previews-spinner" />}
       </InfiniteScroll>

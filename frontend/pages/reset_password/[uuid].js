@@ -1,48 +1,54 @@
-import React from "react";
-import Layout from "../../src/components/layouts/layout";
-import Form from "../../src/components/general/Form";
 import axios from "axios";
+import React, { useContext } from "react";
 import { redirect } from "../../public/lib/apiOperations";
+import getTexts from "../../public/texts/texts";
+import UserContext from "../../src/components/context/UserContext";
+import Form from "../../src/components/general/Form";
+import Layout from "../../src/components/layouts/layout";
 
-ResetPassword.getInitialProps = async (ctx) => {
+export async function getServerSideProps(ctx) {
   const uuid = encodeURI(ctx.query.uuid);
   return {
-    uuid: uuid,
+    props: {
+      uuid: uuid,
+    },
   };
-};
-
-const fields = [
-  {
-    required: true,
-    label: "Enter your new password",
-    key: "password",
-    type: "password",
-  },
-  {
-    required: true,
-    label: "Enter your new password again",
-    key: "repeatpassword",
-    type: "password",
-  },
-];
-
-const messages = {
-  submitMessage: "Set new password",
-};
+}
 
 export default function ResetPassword({ uuid }) {
   const [errorMessage, setErrorMessage] = React.useState(null);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "settings", locale: locale });
+
+  const fields = [
+    {
+      required: true,
+      label: texts.enter_your_new_password,
+      key: "password",
+      type: "password",
+    },
+    {
+      required: true,
+      label: texts.enter_your_new_password_again,
+      key: "repeatpassword",
+      type: "password",
+    },
+  ];
+
+  const messages = {
+    submitMessage: texts.set_new_password,
+  };
 
   const handleSubmit = async (event, values) => {
     event.preventDefault();
-    if (values.password !== values.repeatpassword) setErrorMessage("Passwords don't match.");
+    if (values.password !== values.repeatpassword) setErrorMessage(texts.passwords_dont_match);
     else {
-      requestSetPassword(uuid, values.password, setErrorMessage);
+      requestSetPassword(uuid, values.password, setErrorMessage, texts);
     }
   };
 
   return (
-    <Layout title="Set a New Password">
+    <Layout title={texts.set_a_new_password}>
       <Form
         fields={fields}
         messages={messages}
@@ -53,7 +59,7 @@ export default function ResetPassword({ uuid }) {
   );
 }
 
-async function requestSetPassword(uuid, new_password, setErrorMessage) {
+async function requestSetPassword(uuid, new_password, setErrorMessage, texts) {
   const payload = {
     password_reset_key: uuid,
     new_password: new_password,
@@ -80,13 +86,13 @@ async function requestSetPassword(uuid, new_password, setErrorMessage) {
           <span>
             {error.response.data.message}{" "}
             <div>
-              <a href="/resetpassword">Click here to get another password reset email</a>
+              <a href="/resetpassword">{texts.click_here_to_get_another_password_reset_email}</a>
             </div>
           </span>
         );
       else setErrorMessage(error.response.data.message);
     } else {
-      setErrorMessage("Something went wrong. Please contact our support team.");
+      setErrorMessage(texts.something_went_wrong);
     }
   }
 }

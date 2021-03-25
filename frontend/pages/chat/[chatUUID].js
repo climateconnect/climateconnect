@@ -1,14 +1,48 @@
-import React, { useEffect, useContext } from "react";
-import FixedHeightLayout from "../../src/components/layouts/FixedHeightLayout";
-import Cookies from "next-cookies";
 import axios from "axios";
+import Cookies from "next-cookies";
+import React, { useContext, useEffect } from "react";
 import tokenConfig from "../../public/config/tokenConfig";
+import { redirect, sendToLogin } from "../../public/lib/apiOperations";
 import { getMessageFromServer } from "../../public/lib/messagingOperations";
-import UserContext from "../../src/components/context/UserContext";
-import PageNotFound from "../../src/components/general/PageNotFound";
-import { sendToLogin, redirect } from "../../public/lib/apiOperations";
+import getTexts from "../../public/texts/texts";
 import MessagingLayout from "../../src/components/communication/chat/MessagingLayout";
+import UserContext from "../../src/components/context/UserContext";
 import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
+import PageNotFound from "../../src/components/general/PageNotFound";
+import FixedHeightLayout from "../../src/components/layouts/FixedHeightLayout";
+
+export async function getServerSideProps(ctx) {
+  const { token } = Cookies(ctx);
+  const texts = getTexts({ page: "chat", locale: ctx.locale });
+  if (ctx.req && !token) {
+    const message = texts.login_required;
+    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
+  }
+  const [chat, messages_object, rolesOptions] = await Promise.all([
+    getChat(ctx.query.chatUUID, token),
+    getChatMessagesByUUID(ctx.query.chatUUID, token, 1),
+    getRolesOptions(),
+  ]);
+  if (!chat) {
+    return {
+      chat_id: null,
+    };
+  }
+  return {
+    props: {
+      token: token,
+      chat_uuid: ctx.query.chatUUID,
+      chatParticipants: parseParticipantsWithRole(chat.participants, rolesOptions),
+      title: chat.title,
+      messages: messages_object.messages,
+      nextLink: messages_object.nextLink,
+      hasMore: messages_object.hasMore,
+      chatUUID: ctx.query["chatUUID"],
+      rolesOptions: rolesOptions,
+      chat_id: chat.id,
+    },
+  };
+}
 
 export default function Chat({
   chatParticipants,
@@ -21,7 +55,7 @@ export default function Chat({
   rolesOptions,
   chat_id,
 }) {
-  const { chatSocket, user, socketConnectionState } = useContext(UserContext);
+  const { chatSocket, user, socketConnectionState, locale } = useContext(UserContext);
   const [participants, setParticipants] = React.useState(chatParticipants);
   const [state, setState] = React.useState({
     nextPage: 2,
@@ -31,10 +65,11 @@ export default function Chat({
   });
   const [errorMessage, setErrorMessage] = React.useState("");
   const [dialogOpen, setDialogOpen] = React.useState(false);
+  const texts = getTexts({ page: "chat", locale: locale });
   const handleChatWindowClose = (e) => {
     if (state.messages.filter((m) => m.unconfirmed).length > 0) {
       e.preventDefault();
-      return (e.returnValue = "Changes you made might not be saved.");
+      return (e.returnValue = texts.changes_might_not_be_saved);
     }
   };
 
@@ -60,7 +95,7 @@ export default function Chat({
     if (!user)
       redirect("/signin", {
         redirect: window.location.pathname + window.location.search,
-        message: "You need to be logged in to see your chats",
+        message: texts.login_required,
       });
   }, [user]);
 
@@ -165,7 +200,7 @@ export default function Chat({
   };
 
   const leaveChat = async () => {
-    if (!title) setErrorMessage("You can only leave group chats");
+    if (!title) setErrorMessage(texts.cannot_leave_private_chats);
     try {
       const res = await axios.post(
         process.env.API_URL + "/api/chat/" + chatUUID + "/leave/",
@@ -174,7 +209,7 @@ export default function Chat({
       );
       console.log(res);
       redirect("/inbox", {
-        message: `You successfully left the group chat ${title}`,
+        message: `${texts.left_group_chat} ${title}`,
       });
     } catch (e) {
       console.log(e.response.data.detail);
@@ -188,7 +223,7 @@ export default function Chat({
       messageType={errorMessage && "error"}
       title={
         isPrivateChat && chatting_partner
-          ? "Message " + chatting_partner.first_name + " " + chatting_partner.last_name
+          ? texts.chat_with + " " + chatting_partner.first_name + " " + chatting_partner.last_name
           : title
       }
     >
@@ -212,49 +247,19 @@ export default function Chat({
           leaveChat={requestLeaveChat}
         />
       ) : (
-        <PageNotFound itemName="Chat" returnText="Return to inbox" returnLink="/inbox" />
+        <PageNotFound itemName="Chat" returnText={texts.return_to_inbox} returnLink="/inbox" />
       )}
       <ConfirmDialog
         open={dialogOpen}
         onClose={onDialogClose}
-        title="Do you really want to leave this group chat?"
-        text="You will not be able to rejoin without being invited"
-        confirmText="Yes"
-        cancelText="No"
+        title={texts.confirm_leave_chat}
+        text={texts.cant_rejoin}
+        confirmText={texts.yes}
+        cancelText={texts.no}
       />
     </FixedHeightLayout>
   );
 }
-
-Chat.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  if (ctx.req && !token) {
-    const message = "You have to log in to see your chats.";
-    return sendToLogin(ctx, message);
-  }
-  const [chat, messages_object, rolesOptions] = await Promise.all([
-    getChat(ctx.query.chatUUID, token),
-    getChatMessagesByUUID(ctx.query.chatUUID, token, 1),
-    getRolesOptions(),
-  ]);
-  if (!chat) {
-    return {
-      chat_id: null,
-    };
-  }
-  return {
-    token: token,
-    chat_uuid: chat.chat_uuid,
-    chatParticipants: parseParticipantsWithRole(chat.participants, rolesOptions),
-    title: chat.title,
-    messages: messages_object.messages,
-    nextLink: messages_object.nextLink,
-    hasMore: messages_object.hasMore,
-    chatUUID: ctx.query.chatUUID,
-    rolesOptions: rolesOptions,
-    chat_id: chat.id,
-  };
-};
 
 const parseParticipantsWithRole = (participants, rolesOptions) => {
   return participants.map((p) => ({

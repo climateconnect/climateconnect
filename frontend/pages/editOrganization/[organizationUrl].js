@@ -1,20 +1,43 @@
 import axios from "axios";
 import Cookies from "next-cookies";
 import Router from "next/router";
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import tokenConfig from "../../public/config/tokenConfig";
-import organization_info_metadata from "../../public/data/organization_info_metadata.js";
+import getOrganizationInfoMetadata from "../../public/data/organization_info_metadata.js";
 import { sendToLogin } from "../../public/lib/apiOperations";
 import { indicateWrongLocation, isLocationValid } from "../../public/lib/locationOperations";
+import getTexts from "../../public/texts/texts";
 import EditAccountPage from "../../src/components/account/EditAccountPage";
+import UserContext from "../../src/components/context/UserContext";
 import PageNotFound from "../../src/components/general/PageNotFound";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
 import { blobFromObjectUrl, getImageUrl } from "./../../public/lib/imageOperations";
 
-//This route should only be accessible to admins of the organization
+export async function getServerSideProps(ctx) {
+  const { token } = Cookies(ctx);
+  if (ctx.req && !token) {
+    const texts = getTexts({ page: "organization", locale: ctx.locale });
+    const message = texts.log_in_to_edit_organization;
+    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
+  }
+  const url = encodeURI(ctx.query.organizationUrl);
+  const [organization, tagOptions] = await Promise.all([
+    getOrganizationByUrlIfExists(url, token),
+    getOrganizationTagsOptions(),
+  ]);
+  return {
+    organization: organization,
+    tagOptions: tagOptions,
+    token: token,
+  };
+}
 
+//This route should only be accessible to admins of the organization
 export default function EditOrganizationPage({ organization, tagOptions, token }) {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "organization", locale: locale });
+  const organization_info_metadata = getOrganizationInfoMetadata(locale);
   const [errorMessage, setErrorMessage] = useState("");
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
@@ -41,14 +64,19 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
 
   const saveChanges = async (editedOrg) => {
-    const error = verifyChanges(editedOrg).error;
+    const error = verifyChanges(editedOrg, texts).error;
     //verify location is valid and notify user if it's not
     if (
       editedOrg?.info?.location !== organization?.info?.location &&
       !isLocationValid(editedOrg?.info?.location) &&
       !legacyModeEnabled
     )
-      indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, handleSetErrorMessage);
+      indicateWrongLocation(
+        locationInputRef,
+        handleSetLocationOptionsOpen,
+        handleSetErrorMessage,
+        texts
+      );
     if (error) {
       handleSetErrorMessage(error);
     } else {
@@ -63,7 +91,7 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
           Router.push({
             pathname: "/organizations/" + organization.url_slug,
             query: {
-              message: "You have successfully edited your organization.",
+              message: texts.successfully_edited_organization,
             },
           });
         })
@@ -104,7 +132,7 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
   }
 
   return (
-    <WideLayout title={organization ? organization.name + "'s Profile" : "Not found"}>
+    <WideLayout title={organization ? organization.name : texts.not_found_error}>
       {organization ? (
         <EditAccountPage
           type="organization"
@@ -118,29 +146,11 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
           errorMessage={errorMessage}
         />
       ) : (
-        <PageNotFound itemName="Organization" />
+        <PageNotFound itemName={texts.organization} />
       )}
     </WideLayout>
   );
 }
-
-EditOrganizationPage.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  if (ctx.req && !token) {
-    const message = "You have to log in to edit an organization.";
-    return sendToLogin(ctx, message);
-  }
-  const url = encodeURI(ctx.query.organizationUrl);
-  const [organization, tagOptions] = await Promise.all([
-    getOrganizationByUrlIfExists(url, token),
-    getOrganizationTagsOptions(),
-  ]);
-  return {
-    organization: organization,
-    tagOptions: tagOptions,
-    token: token,
-  };
-};
 
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getOrganizationByUrlIfExists(organizationUrl, token) {
@@ -204,15 +214,14 @@ const parseForRequest = async (org) => {
   return parsedOrg;
 };
 
-const verifyChanges = (newOrg) => {
+const verifyChanges = (newOrg, texts) => {
   const requiredPropErrors = {
-    image: 'Please add an avatar image by clicking the "Add Image" button.',
-    types:
-      'Please choose at least one organization type by clicking the "Add Type" button under the avatar.',
-    name: "Please type your organization name under the avatar image",
+    image: texts.image_required_error,
+    types: texts.type_required_errror,
+    name: texts.name_required_error,
   };
   const requiredInfoPropErrors = {
-    location: "Please specify your location",
+    location: texts.location_required_error,
   };
   for (const prop of Object.keys(requiredPropErrors)) {
     if (!newOrg[prop] || (Array.isArray(newOrg[prop]) && newOrg[prop].length <= 0)) {

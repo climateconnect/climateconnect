@@ -1,22 +1,22 @@
+import {
+  Button,
+  Collapse,
+  Container,
+  IconButton,
+  Link,
+  makeStyles,
+  Typography,
+  useMediaQuery,
+} from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import { getCookieProps } from "../../../../public/lib/cookieOperations";
-import {
-  makeStyles,
-  Typography,
-  Button,
-  IconButton,
-  Link,
-  Container,
-  Collapse,
-  useMediaQuery,
-} from "@material-ui/core";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import CloseIcon from "@material-ui/icons/Close";
+import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
 import DonationGoal from "./DonationGoal";
-import theme from "../../../themes/theme";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,6 +81,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+//If we want to reuse this, this has to be translated!
 export default function DonationCampaignInformation() {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -130,7 +131,7 @@ export default function DonationCampaignInformation() {
                 </Button>
               )}
               <Typography className={classes.textBlock}>
-                Your donation will help scale up effective climate solutions, support us in growing
+                Your donation will help to scale effective climate solutions, support us in growing
                 a global network of climate actors and allow Climate Connect to stay free and
                 independent. In our December raffle everybody who donates to Climate Connect in the
                 month of December has a chance to win the compensation of their {"year's"}{" "}

@@ -1,0 +1,422 @@
+{
+  "click_here_to_log_in": {
+    "en": "Click here to log in",
+    "de": "Klicke hier um dich einzuloggen"
+  },
+  "yes": {
+    "en": "Yes",
+    "de": ""
+  },
+  "no": {
+    "en": "No",
+    "de": ""
+  },
+  "not_found_error": {
+    "en": "Not found",
+    "de": ""
+  },
+  "error": {
+    "en": "Error",
+    "de": ""
+  },
+  "location": {
+    "en": "Location",
+    "de": ""
+  },
+  "city": {
+    "en": "City",
+    "de": ""
+  },
+  "country": {
+    "en": "Country",
+    "de": ""
+  },
+  "website": {
+    "en": "Website",
+    "de": ""
+  },
+  "description": {
+    "en": "Description",
+    "de": ""
+  },
+  "skills": {
+    "en": "Skills",
+    "de": ""
+  },
+  "project categories": {
+    "en": "Project Categories",
+    "de": ""
+  },
+  "save": {
+    "en": "Save",
+    "de": ""
+  },
+  "add": {
+    "en": "Add",
+    "de": ""
+  },
+  "click_here": {
+    "en": "Click here",
+    "de": "Klicke hier"
+  },
+  "go_to_the": {
+    "en": "Go to the",
+    "de": "Gehe zur"
+  },
+  "go_back": {
+    "en": "Go back",
+    "de": "Zurück"
+  },
+  "default_description": {
+    "en": "Free and non-profit climate action platform. Share, find and work on impactful, innovative and inspiring solutions to reduce and stop global warming. Join #teamclimate now!",
+    "de": ""
+  },
+  "default_title": {
+    "en": "Global Platform for Climate Change Solutions | Climate Connect",
+    "de": ""
+  },
+  "loading_and_waiting": {
+    "en": "Loading...",
+    "de": ""
+  },
+  "privacy_policy": {
+    "en": "Privacy policy",
+    "de": ""
+  },
+  "and": {
+    "en": "and",
+    "de": "und"
+  },
+  "terms_of_use": {
+    "en": "terms of use",
+    "de": "AGBs"
+  },
+  "image": {
+    "en": "Image",
+    "de": ""
+  },
+  "source": {
+    "en": "Source",
+    "de": ""
+  },
+  "sources": {
+    "en": "Sources",
+    "de": ""
+  },
+  "solutions": {
+    "en": "Solutions",
+    "de": ""
+  },
+  "projects": {
+    "en": "Projects",
+    "de": ""
+  },
+  "project": {
+    "en": "Project",
+    "de": ""
+  },
+  "organizations": {
+    "en": "Organizations",
+    "de": ""
+  },
+  "members": {
+    "en": "Members",
+    "de": ""
+  },
+  "please_choose_one_of_the_location_options": {
+    "en": "Please choose one of the location options",
+    "de": ""
+  },
+  "organization_type": {
+    "en": "Organization type",
+    "de": ""
+  },
+  "status": {
+    "en": "Status",
+    "de": ""
+  },
+  "categories": {
+    "en": "Categories",
+    "de": ""
+  },
+  "collaboration": {
+    "en": "Collaboration",
+    "de": ""
+  },
+  "donate": {
+    "en": "Donate",
+    "de": ""
+  },
+  "share": {
+    "en": "Share",
+    "de": ""
+  },
+  "share_a_project": {
+    "en": "Share a project",
+    "de": ""
+  },
+  "inbox": {
+    "en": "Inbox",
+    "de": ""
+  },
+  "log_in": {
+    "en": "Log in",
+    "de": ""
+  },
+  "log_out": {
+    "en": "Log out",
+    "de": ""
+  },
+  "sign_up": {
+    "en": "Sign Up",
+    "de": ""
+  },
+  "sign_up_and_make_a_change": {
+    "en": "Sign up & make a change",
+    "de": ""
+  },
+  "my_profile": {
+    "en": "My Profile",
+    "de": ""
+  },
+  "faq": {
+    "en": "FAQ",
+    "de": ""
+  },
+  "my_projects": {
+    "en": "My Projects",
+    "de": ""
+  },
+  "my_organizations": {
+    "en": "My Organizations",
+    "de": ""
+  },
+  "settings": {
+    "en": "Settings",
+    "de": ""
+  },
+  "profile_image_of": {
+    "en": "Profile image of",
+    "de": ""
+  },
+  "climate_connect_logo": {
+    "en": "Climate Connect logo",
+    "de": ""
+  },
+  "congratulations": {
+    "en": "Congratulations!",
+    "de": ""
+  },
+  "send_message": {
+    "en": "Send Message",
+    "de": ""
+  },
+  "send": {
+    "en": "Send",
+    "de": ""
+  },
+  "availability": {
+    "en": "Availability",
+    "de": ""
+  },
+  "back": {
+    "en": "Back",
+    "de": ""
+  },
+  "next": {
+    "en": "Next",
+    "de": ""
+  },
+  "finish": {
+    "en": "Finish",
+    "de": ""
+  },
+  "finished": {
+    "en": "Finished",
+    "de": ""
+  },
+  "please": {
+    "en": "Please",
+    "de": ""
+  },
+  "please_log_in": {
+    "en": "Please log in",
+    "de": ""
+  },
+  "or": {
+    "en": "or",
+    "de": ""
+  },
+  "cancel": {
+    "en": "Cancel",
+    "de": ""
+  },
+  "cancelled": {
+    "en": "Cancelled",
+    "de": ""
+  },
+  "permissions": {
+    "en": "Permissions",
+    "de": ""
+  },
+  "hours": {
+    "en": "Hours",
+    "de": ""
+  },
+  "remove": {
+    "en": "Remove",
+    "de": ""
+  },
+  "select_more": {
+    "en": "Select more",
+    "de": ""
+  },
+  "error_no_creator": {
+    "en": "Error: There wasn't a creator. Please contact contact@climateconnect.earth to resolve this issue.",
+    "de": ""
+  },
+  "not_all_your_updates_have_worked": {
+    "en": "Not all your updates have worked.",
+    "de": ""
+  },
+  "organization": {
+    "en": "Organization",
+    "de": ""
+  },
+  "page": {
+    "en": "Page",
+    "de": ""
+  },
+  "create_an_organization": {
+    "en": "Create an organization",
+    "de": ""
+  },
+  "you_are": {
+    "en": "You are",
+    "de": ""
+  },
+  "this_user_is": {
+    "en": "This user is",
+    "de": ""
+  },
+  "changes_might_not_be_saved": {
+    "en": "Changes you made might not be saved.",
+    "de": "Möglicherweise werden nicht alle Änderungen gespeichert."
+  },
+  "created": {
+    "en": "Created",
+    "de": ""
+  },
+  "started": {
+    "en": "Started",
+    "de": ""
+  },
+  "show_less": {
+    "en": "Show less",
+    "de": ""
+  },
+  "show_more": {
+    "en": "Show more",
+    "de": ""
+  },
+  "comments": {
+    "en": "Comments",
+    "de": ""
+  },
+  "manage_members": {
+    "en": "Manage members",
+    "de": ""
+  },
+  "something_went_wrong": {
+    "en": "Something went wrong. Please contact our support at contact@climateconnect.earth.",
+    "de": "Etwas ist schiefgelaufen. Bitte wende Dich an contact@climateconnect.earth."
+  },
+  "get_inspired": {
+    "en": "Get inspired",
+    "de": "Lass dich inspirieren"
+  },
+  "january": {
+    "en": "January",
+    "de": "Januar"
+  },
+  "february": {
+    "en": "February",
+    "de": "Februar"
+  },
+  "march": {
+    "en": "March",
+    "de": "März"
+  },
+  "april": {
+    "en": "April",
+    "de": "April"
+  },
+  "may": {
+    "en": "May",
+    "de": "Mai"
+  },
+  "june": {
+    "en": "June",
+    "de": "Juni"
+  },
+  "july": {
+    "en": "July",
+    "de": "Juli"
+  },
+  "august": {
+    "en": "August",
+    "de": "August"
+  },
+  "september": {
+    "en": "September",
+    "de": "September"
+  },
+  "october": {
+    "en": "October",
+    "de": "Oktober"
+  },
+  "november": {
+    "en": "November",
+    "de": "November"
+  },
+  "november_short": {
+    "en": "Nov.",
+    "de": "Nov."
+  },
+  "december": {
+    "en": "December",
+    "de": "Dezember"
+  },
+  "email": {
+    "en": "Email",
+    "de": ""
+  },
+  "password": {
+    "en": "Password",
+    "de": ""
+  },
+  "i_forgot_my_password": {
+    "en": "I forgot my password",
+    "de": ""
+  },
+  "you_are_being_redirected_to_the_climate_connect_youtube_livestream": {
+    "en": "You are being redirected to the Climate Connect YouTube livestream",
+    "de": ""
+  },
+  "you_are_being_redirected_to_the_climate_connect_zoom": {
+    "en": "You are being redirected to the Climate Connect zoom",
+    "de": ""
+  },
+  "no_results": {
+    "en": "No Results",
+    "de": ""
+  },
+  "apply": {
+    "en": "Apply",
+    "de": ""
+  },
+  "upload_an_image": {
+    "en": "Upload an image",
+    "de": ""
+  }
+}

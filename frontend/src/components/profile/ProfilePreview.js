@@ -1,7 +1,9 @@
 import { Avatar, Button, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React from "react";
+import React, { useContext } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -60,6 +62,8 @@ const useStyles = makeStyles((theme) => {
 
 export default function ProfilePreview({ profile, allowMessage, showAdditionalInfo }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale });
   return (
     <div className={classes.avatarWithInfo}>
       <Link href={"/profiles/" + profile.url_slug} className={classes.disableHover}>
@@ -109,7 +113,7 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
             color="primary"
             className={classes.messageButton}
           >
-            Send Message
+            {texts.send_message}
           </Button>
         </div>
       )}

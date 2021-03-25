@@ -1,8 +1,10 @@
-import React from "react";
-import { Typography, makeStyles, useMediaQuery } from "@material-ui/core";
+import { makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import React, { useContext } from "react";
+import getPitchElements from "../../../public/data/pitch_elements.js";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import UserContext from "../context/UserContext";
 import SmallCloud from "../staticpages/SmallCloud";
-import pitch_elements from "../../../public/data/pitch_elements.json";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -149,6 +151,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PitchBox({ h1ClassName, className }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "about", locale: locale });
+  const pitch_elements = getPitchElements(texts);
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <div className={`${classes.root} ${className}`}>

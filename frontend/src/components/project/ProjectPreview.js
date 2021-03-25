@@ -1,8 +1,10 @@
 import { Card, CardContent, CardMedia, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React from "react";
+import React, { useContext } from "react";
 import Truncate from "react-truncate";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import ProjectMetaData from "./ProjectMetaData";
 
 const useStyles = makeStyles((theme) => {
@@ -94,6 +96,8 @@ const useStyles = makeStyles((theme) => {
 
 export default function ProjectPreview({ project, projectRef }) {
   const [hovering, setHovering] = React.useState(false);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles({ hovering: hovering });
   const handleMouseEnter = () => {
     setHovering(true);
@@ -126,7 +130,7 @@ export default function ProjectPreview({ project, projectRef }) {
             <img
               src={getImageUrl(project.image)}
               className={classes.placeholderImg}
-              alt={project.name + "'s project image"}
+              alt={texts.project_image_of_project + " " + project.name}
             />
           )}
         </CardMedia>

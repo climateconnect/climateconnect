@@ -1,10 +1,11 @@
+import { Button, makeStyles, Typography } from "@material-ui/core";
+import AccountBoxIcon from "@material-ui/icons/AccountBox";
+import LocationOnIcon from "@material-ui/icons/LocationOn";
 import React, { useContext } from "react";
-import ProfilePreviews from "./../profile/ProfilePreviews";
-import { Typography, Button, makeStyles } from "@material-ui/core";
+import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
-import AccountBoxIcon from "@material-ui/icons/AccountBox";
+import ProfilePreviews from "./../profile/ProfilePreviews";
 
 const useStyles = makeStyles((theme) => ({
   editButton: {
@@ -49,9 +50,10 @@ function getTeamWithAdditionalInfo(team) {
 }
 
 export default function TeamContent({ project, leaveProject }) {
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles();
-  if (!user) return <LoginNudge whatToDo="see this project's team  members" />;
+  if (!user) return <LoginNudge whatToDo={texts.to_see_this_projects_team_members} />;
   else if (project.team)
     return (
       <>
@@ -66,7 +68,7 @@ export default function TeamContent({ project, leaveProject }) {
                 color="primary"
                 href={"/manageProjectMembers/" + project.url_slug}
               >
-                Manage members
+                {texts.manage_members}
               </Button>
             )}
             <Button
@@ -74,7 +76,7 @@ export default function TeamContent({ project, leaveProject }) {
               variant="contained"
               onClick={leaveProject}
             >
-              Leave project
+              {texts.leave_project}
             </Button>
           </div>
         )}
@@ -85,5 +87,5 @@ export default function TeamContent({ project, leaveProject }) {
         />
       </>
     );
-  else return <Typography>We could not find any members of this project.</Typography>;
+  else return <Typography>{texts.we_could_not_find_any_members_of_this_project}</Typography>;
 }
