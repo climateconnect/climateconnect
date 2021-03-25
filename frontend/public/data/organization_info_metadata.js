@@ -7,7 +7,7 @@ import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import getTexts from "../texts/texts";
 
 export default function getOrganizationInfoMetadata(locale) {
-  const texts = getTexts({page: "organization", locale: locale})
+  const texts = getTexts({ page: "organization", locale: locale });
   return {
     shortdescription: {
       icon: DescriptionIcon,
@@ -77,5 +77,5 @@ export default function getOrganizationInfoMetadata(locale) {
       baseUrl: "/api/organizations/?search=",
       helperText: texts.edit_parent_organization_helper_text,
     },
-  }
+  };
 }
