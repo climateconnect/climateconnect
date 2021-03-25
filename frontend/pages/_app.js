@@ -2,6 +2,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { ThemeProvider } from "@material-ui/core/styles";
 import axios from "axios";
 import NextCookies from "next-cookies";
+import { useRouter } from 'next/router';
 import React, { useEffect } from "react";
 import ReactGA from "react-ga";
 //add global styles
@@ -36,6 +37,8 @@ export default function MyApp({
     setAcceptedStatistics(cookies.get("acceptedStatistics"));
     setAcceptedNecessary(cookies.get("acceptedNecessary"));
   };
+  const router = useRouter()
+  const { locale, locales } = router
   if (
     acceptedStatistics &&
     !gaInitialized &&
@@ -174,6 +177,8 @@ export default function MyApp({
     socketConnectionState: socketConnectionState,
     donationGoal: donationGoal,
     acceptedNecessary: acceptedNecessary,
+    locale: locale,
+    locales: locales,
   };
   return (
     <React.Fragment>

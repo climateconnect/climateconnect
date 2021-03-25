@@ -16,7 +16,10 @@ module.exports = {
     "LETS_ENCRYPT_FILE_CONTENT",
     "ENABLE_LEGACY_LOCATION_FORMAT",
   ]),
-
+  i18n: {
+    locales: ['en', 'de'],
+    defaultLocale: 'en'
+  },
   exportPathMap: async function (defaultPathMap) {
     return defaultPathMap;
   },
