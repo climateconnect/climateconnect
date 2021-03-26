@@ -102,13 +102,9 @@ export default function FilterContent({
   const [currentFilters, setCurrentFilters] = React.useState(reducedPossibleFilters);
   // const [currentFilters, setCurrentFilters] = React.useState(initialFilters);
 
-  // console.warn("hi");
-  // console.log(currentFilters);
-
   const [open, setOpen] = React.useState({});
 
-  // TODO: I believe the selected items is only being
-  // set by the multilevel?
+  // TODO(Piper): I believe the selected items is only being set by the multilevel?
   const [selectedItems, setSelectedItems] = React.useState(
     possibleFilters.reduce((map, obj) => {
       if (obj.type === "openMultiSelectDialogButton") {
@@ -144,7 +140,6 @@ export default function FilterContent({
   const handleValueChange = (key, newValue) => {
     // TODO(piper): we want to update and fetch data on any value change
     const updatedFilters = { ...currentFilters, [key]: newValue };
-    // debugger;
     applyFilters(type, updatedFilters, isSmallScreen);
     setCurrentFilters(updatedFilters);
   };
