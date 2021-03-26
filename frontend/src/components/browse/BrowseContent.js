@@ -179,6 +179,7 @@ export default function BrowseContent({
    */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
     // Save these filters as query params to the URL
+    debugger;
     persistFiltersInURL(newFilters);
 
     if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {

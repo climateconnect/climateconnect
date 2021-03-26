@@ -8,6 +8,7 @@ import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
 import { persistFiltersInURL } from "../../../public/lib/urlOperations";
 import { remove, update, merge } from "lodash";
+import { loadGetInitialProps } from "next/dist/next-server/lib/utils";
 
 export default function FilterContent({
   applyFilters,
@@ -32,12 +33,16 @@ export default function FilterContent({
 
   const router = useRouter();
 
-  // debugger;
-
-  // TODO(piper): we combine the filters together from the
-  // query param and.
-  // Some types are arrays, need to handle appropriately
-
+  /**
+    {
+      "location": "",
+      "status": [],
+      "organization_type": [],
+      "category": "",
+      "collaboration": "",
+      "skills": ""
+    }
+   */
   const reducedPossibleFilters = possibleFilters.reduce((map, obj) => {
     if (obj.type === "multiselect") {
       map[obj.key] = [];
@@ -47,15 +52,44 @@ export default function FilterContent({
     return map;
   }, {});
 
-  // for (key, value in Object.entries(reducedPossibleFilters))
-  //   if (key === )
-  // })
-
   // TODO: order here matters? And need to respect array types.
-  let test = merge({}, reducedPossibleFilters);
-  let test2 = merge(test, router.query);
+  // let test = merge({}, reducedPossibleFilters);
+  // let test2 = merge(test, router.query);
 
-  let initialFilters = test2;
+  // TODO: status needs to be an array at least
+  // on the object shape
+  let initialFilters = {};
+
+  // debugger;
+
+  // Combine the filters together from the query param.
+  // Some types are arrays and expected as such
+  // downstream; need to handle appropriately both on initiailization
+  // and when merging in parameters from query param
+
+  // TODO: this could be implified with the reduce likely
+  Object.entries(router.query).forEach(([key, value]) => {
+    // If there's something set...
+    // Handle specific types
+    if (Array.isArray(reducedPossibleFilters[key])) {
+      reducedPossibleFilters[key].push(value);
+    } else if (typeof reducedPossibleFilters[key] === "string") {
+      // Handle string values too
+      reducedPossibleFilters[key] = value;
+    }
+  });
+
+  /**
+   * TODO: temp
+   *
+   * {location: "", status: Array(1), organization_type: Array(0), category: "Lowering food waste", collaboration: "", …}
+    category: "Lowering food waste"
+    collaboration: ""
+    location: ""
+    organization_type: []
+    skills: ""
+    status: ["In Progress"]
+   */
 
   // initialFilters["status"].push("In test progress");
 
@@ -63,20 +97,23 @@ export default function FilterContent({
   //   ...reducedPossibleFilters,
   // };
 
-  // console.warn("test");
   // console.log(router.query);
 
-  const [currentFilters, setCurrentFilters] = React.useState(initialFilters);
+  const [currentFilters, setCurrentFilters] = React.useState(reducedPossibleFilters);
+  // const [currentFilters, setCurrentFilters] = React.useState(initialFilters);
 
-  console.warn("hi");
-
-  console.log(currentFilters);
+  // console.warn("hi");
+  // console.log(currentFilters);
 
   const [open, setOpen] = React.useState({});
 
+  // TODO: I believe the selected items is only being
+  // set by the multilevel?
   const [selectedItems, setSelectedItems] = React.useState(
     possibleFilters.reduce((map, obj) => {
-      if (obj.type === "openMultiSelectDialogButton") map[obj.key] = [];
+      if (obj.type === "openMultiSelectDialogButton") {
+        map[obj.key] = [];
+      }
       return map;
     }, {})
   );
@@ -95,8 +132,8 @@ export default function FilterContent({
       const updatedFilters = { ...currentFilters, [prop]: results.map((x) => x.name) };
       setCurrentFilters(updatedFilters);
       // console.log(currentFilters);
-      console.warn("here");
-      debugger;
+      console.warn("Handling click dialog close from: ");
+      // debugger;
       console.log(currentFilters);
       applyFilters(type, updatedFilters, isSmallScreen);
     }

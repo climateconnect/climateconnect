@@ -13,8 +13,10 @@ import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import CloseIcon from "@material-ui/icons/Close";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+
 import React from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+
 import FilterSearchBar from "../filter/FilterSearchBar";
 
 const useStyles = makeStyles((theme) => {
@@ -164,13 +166,13 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default function MultiLevelSelector({
-  selected,
-  setSelected,
+  dragAble,
+  isInPopup,
+  itemNamePlural,
   itemsToSelectFrom,
   maxSelections,
-  itemNamePlural,
-  isInPopup,
-  dragAble,
+  selected,
+  setSelected,
 }) {
   const [expanded, setExpanded] = React.useState(null);
 
@@ -187,12 +189,23 @@ export default function MultiLevelSelector({
   };
 
   const onClickSelect = (item) => {
-    if (selected.length >= maxSelections)
+    if (selected.length >= maxSelections) {
       alert("You can only choose up to " + maxSelections + " " + itemNamePlural);
-    else setSelected([...selected, item]);
+    } else {
+      setSelected([...selected, item]);
+    }
   };
 
   const onClickUnselect = (item) => {
+    // TODO(Piper): also have to update persisted URL query param,
+    // and trigger state flow through the whole tree again.
+
+    // When dismissing a selected filter chip, we also want to update the
+    // window state to reflect the currently active filters, and fetch
+    // the updated data from the server
+    // persistFiltersInURL(updatedFilters);
+    // onDismissOfItem(type, updatedFilters, isSmallScreen);
+
     setSelected(
       selected
         .slice(0, selected.indexOf(item))
@@ -208,6 +221,15 @@ export default function MultiLevelSelector({
   };
 
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+
+  // TODO(Piper): force selected items
+  // based on query param --
+  console.log("selected items:");
+  // console.log(itemsToSelectFrom);
+
+  // selected becomes the array of items that
+  // are selected
+  console.log(selected);
 
   return (
     <>
@@ -319,13 +341,13 @@ function ListToChooseWrapper({
 }
 
 function SelectedList({
-  selected,
+  className,
+  dragAble,
   itemNamePlural,
   maxSelections,
-  className,
-  onClickUnselect,
-  dragAble,
   moveItem,
+  onClickUnselect,
+  selected,
 }) {
   const classes = useStyles({});
 
@@ -336,7 +358,11 @@ function SelectedList({
     moveItem(result.source.index, result.destination.index);
   };
 
-  if (dragAble)
+  // console.log("selected list");
+  // console.log(itemNamePlural);
+  // console.log(itemNamePlural);
+
+  if (dragAble) {
     return (
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
@@ -346,7 +372,7 @@ function SelectedList({
               ref={provided.innerRef}
               className={classes.selectedList}
             >
-              {selected.map((item, index) => {
+              {selected?.map((item, index) => {
                 return (
                   <Draggable key={item.id} draggableId={"draggable" + item.id} index={index}>
                     {(provided) => {
@@ -382,34 +408,39 @@ function SelectedList({
         </Droppable>
       </DragDropContext>
     );
-  else
-    return (
-      <div className={className}>
-        <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
-          {selected.length > 0
-            ? "Selected " + itemNamePlural
-            : "Select between 1 and " + maxSelections + " " + itemNamePlural + "!"}
-        </Typography>
-        <List className={classes.selectedList}>
-          {selected.map((item, index) => (
-            <ListItem
-              key={index}
-              button
-              className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
-                classes.selectedItem
-              }`}
-              onClick={() => onClickUnselect(item)}
-              disableRipple
-            >
-              <ListItemText>{item.name}</ListItemText>
-              <ListItemIcon className={classes.selectedItemIcon}>
-                <CloseIcon />
-              </ListItemIcon>
-            </ListItem>
-          ))}
-        </List>
-      </div>
-    );
+  }
+
+  // debugger;
+  return (
+    <div className={className}>
+      <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
+        {selected.length > 0
+          ? "Selected " + itemNamePlural
+          : "Select between 1 and " + maxSelections + " " + itemNamePlural + "!"}
+      </Typography>
+      {/* Shows the list of selected items. For example on /browse when you select "Categories" */}
+      <List className={classes.selectedList}>
+        {selected?.map((item, index) => (
+          // Only show the item if it's valid
+          <ListItem
+            key={index}
+            button
+            className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
+              classes.selectedItem
+            }`}
+            onClick={() => onClickUnselect(item)}
+            disableRipple
+          >
+            {/* <ListItemText>{JSON.stringify(item)}</ListItemText> */}
+            <ListItemText>{item.name}</ListItemText>
+            <ListItemIcon className={classes.selectedItemIcon}>
+              <CloseIcon />
+            </ListItemIcon>
+          </ListItem>
+        ))}
+      </List>
+    </div>
+  );
 }
 
 function ListToChooseFrom({

@@ -45,6 +45,8 @@ export default function FilterOverlay({
         handleClickDialogClose={handleClickDialogClose}
         isInOverlay
         selectedItems={selectedItems}
+        // I believe this is only being used with the
+        // MultiLevelSelectDialog?
         setSelectedItems={setSelectedItems}
         locationInputRef={locationInputRef}
         locationOptionsOpen={locationOptionsOpen}

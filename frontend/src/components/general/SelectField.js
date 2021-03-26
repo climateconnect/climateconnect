@@ -10,24 +10,39 @@ const useStyles = makeStyles({
 });
 
 export default function SelectField({
-  defaultValue,
-  label,
-  options,
-  onChange,
-  required,
   className,
-  InputProps,
-  size,
-  multiple,
-  values,
-  isInOverlay,
-  disabled,
   controlled,
   controlledValue,
+  defaultValue,
+  disabled,
+  InputProps,
+  isInOverlay,
+  label,
+  multiple,
+  onChange,
+  options,
+  required,
+  size,
+  values,
 }) {
   const classes = useStyles();
 
-  if (!defaultValue) defaultValue = "";
+  if (!defaultValue) {
+    defaultValue = "";
+  }
+
+  // TODO(Piper): have to manage controlled value?
+  // console.log("select field: ");
+  // console.log(options);
+  // console.log(defaultValue);
+  // console.log(values);
+
+  // TODO(): transform default values into usable
+  // state here:?
+
+  // If we want to force the checkboxes to be checked
+  // based on a persisted query param URL, then
+  // we update the value and values here...
   const [value, setValue] = React.useState({
     name: defaultValue.name,
     key: defaultValue.key,
@@ -48,29 +63,37 @@ export default function SelectField({
   };
 
   const handleChange = (event) => {
-    if (!multiple) setValue({ name: event.target.value });
-    if (onChange) onChange(event);
+    if (!multiple) {
+      setValue({ name: event.target.value });
+    }
+
+    if (onChange) {
+      onChange(event);
+    }
   };
+
   //TODO: possibly address warnings, that are produced by this component
   return (
     <TextField
-      select
-      required={required}
+      className={className}
+      disabled={disabled}
+      InputProps={InputProps}
       fullWidth
       label={label}
+      onChange={handleChange}
+      required={required}
+      select
+      // Handle values differently depending on if this is being used
+      // within a Multiselect or controlled context
       value={multiple ? values : controlled ? controlledValue.name : value.name}
       variant="outlined"
-      onChange={handleChange}
-      className={className}
       SelectProps={{
         native: !multiple,
         multiple: multiple,
         renderValue: !multiple ? null : () => "Select more",
         MenuProps: MenuProps,
       }}
-      InputProps={InputProps}
       size={size}
-      disabled={disabled}
     >
       {!controlledValue && (!defaultValue || defaultValue === "") && !multiple && (
         <option value="" />
@@ -78,10 +101,12 @@ export default function SelectField({
 
       {options &&
         options.map((value, index) => {
-          if (multiple)
+          if (multiple) {
             return (
               <MenuItem key={index} value={value.name}>
                 <Checkbox
+                  // TODO(Piper): force checkbox selected...
+                  // checked={true}
                   checked={values.indexOf(value.name) > -1}
                   checkedIcon={<CheckBoxIcon className={classes.white} />}
                 />
@@ -91,12 +116,13 @@ export default function SelectField({
                 />
               </MenuItem>
             );
-          else
+          } else {
             return (
               <option value={value.name} key={index} data-key={value.key}>
                 {value.name}
               </option>
             );
+          }
         })}
     </TextField>
   );
