@@ -76,23 +76,23 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default function Filters({
-  possibleFilters,
-  handleApplyFilters,
-  handleValueChange,
-  withApplyButton,
   applyButtonFixedWidth,
   currentFilters,
-  handleClickDialogOpen,
-  open,
+  errorMessage,
+  handleApplyFilters,
   handleClickDialogClose,
+  handleClickDialogOpen,
+  handleSetLocationOptionsOpen,
+  handleValueChange,
   isInOverlay,
   justifyContent,
-  setSelectedItems,
-  selectedItems,
   locationInputRef,
   locationOptionsOpen,
-  handleSetLocationOptionsOpen,
-  errorMessage,
+  open,
+  possibleFilters,
+  selectedItems,
+  setSelectedItems,
+  withApplyButton,
 }) {
   const classes = useStyles({
     justifyContent: justifyContent ? justifyContent : "space-around",
@@ -106,13 +106,13 @@ export default function Filters({
           <Typography color="error">{errorMessage}</Typography>
         </div>
       )}
+
       {/* TODO(piper): add this functionality to all elements where we apply new filters */}
       <div className={`${classes.flexContainer} ${isInOverlay && classes.verticalFlexContainer}`}>
         {possibleFilters.map((filter) => {
           // Get the current values for each potential filter
           // from what could already be previously selected
           const currentFilterValue = currentFilters[filter.key];
-
           if (filter.type === "text") {
             return (
               <TextField
@@ -142,16 +142,6 @@ export default function Filters({
 
           // Select and multiselect
           if (filter.type === "select" || filter.type === "multiselect") {
-            // TODO(Piper): delineate between current filters, and what toi pass
-            // to the copmonents
-
-            // TODO: how do we mark the options as selected from query param
-            // TODO: fix the bug where the checkbox isn't being checked
-            console.log("Current filter value within select or multiselect from: ");
-            console.log(currentFilterValue);
-            // console.log(`${currentFilters}`);
-            // console.log(currentFilters[filter.key]);
-            // debugger;
             return (
               <SelectField
                 options={filter.options}
@@ -159,13 +149,7 @@ export default function Filters({
                   isInOverlay && classes.overlayField
                 }`}
                 multiple={filter.type === "multiselect"}
-                // TODO(Piper): fix this values array
-                // Error: Material-UI: The `value` prop must be an array when using the `Select` component with `multiple`.
-                // Right now... it's currentFilters[filter.key] ==> { } -> "in progress"
-                // Which makes me think that currentFilters is getting updated when it shouldn't be
-                // This is original
                 values={filter.type === "multiselect" && currentFilters[filter.key]}
-                // values={filter.type === "multiselect" && [currentFilterValue]}
                 label={
                   <div className={classes.iconLabel}>
                     <filter.icon fontSize="inherit" />
@@ -183,8 +167,8 @@ export default function Filters({
                 key={filter.key}
                 size="small"
                 isInOverlay={isInOverlay}
-                // defaultValue={currentFilters}
                 // TODO(piper): check on this
+                // defaultValue={currentFilters}
                 defaultValues={currentFilters[filter.key]}
                 onChange={(event) => {
                   handleValueChange(filter.key, event.target.value);
@@ -199,8 +183,6 @@ export default function Filters({
             const curSelectedItems = selectedItems[filter.key];
 
             // TODO(piper): why is filter.key collaboration?
-
-            // useEffect(() => {});
 
             // TODO: fix inifinite loop
             // Insert if not there
@@ -222,13 +204,14 @@ export default function Filters({
                 // TODO: how do we know id, parent_tag, and ???
                 // Do we have to get those from the mutiselect?!
                 const newlySelectedItems = {
-                  id: 2,
+                  // id: 2,
                   name: currentFilterValue, // Lowering food waste
-                  parent_tag: 1,
-                  key: 2,
+                  // parent_tag: 1,
+                  // key: 2,
                 };
 
-                // TODO: make this a set
+                // TODO: fix this logic
+
                 // Get unique list of selected items to pass downwards to MultiLevel
                 const listOfItems = new Set(selectedItems[filter.key].map((item) => item.name));
                 console.log(listOfItems);
@@ -382,20 +365,6 @@ export default function Filters({
             );
           }
         })}
-
-        {/* TODO(piper): remove apply button */}
-        {/* {withApplyButton && (
-          <div className={applyButtonFixedWidth && classes.applyButtonContainer}>
-            <Button
-              color="primary"
-              onClick={handleApplyFilters}
-              variant="contained"
-              className={classes.applyButton}
-            >
-              Apply
-            </Button>
-          </div>
-        )} */}
       </div>
     </>
   );
