@@ -76,7 +76,6 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default function Filters({
-  applyButtonFixedWidth,
   currentFilters,
   errorMessage,
   handleApplyFilters,
@@ -92,7 +91,6 @@ export default function Filters({
   possibleFilters,
   selectedItems,
   setSelectedItems,
-  withApplyButton,
 }) {
   const classes = useStyles({
     justifyContent: justifyContent ? justifyContent : "space-around",
@@ -181,13 +179,6 @@ export default function Filters({
             //  TODO(piper): could potentially
             // pre-select / force selection at this point?
             const curSelectedItems = selectedItems[filter.key];
-
-            // TODO(piper): why is filter.key collaboration?
-
-            // TODO: fix inifinite loop
-            // Insert if not there
-
-            // debugger;
 
             let alreadySelected = false;
             for (const [key, value] of Object.entries(currentFilters)) {

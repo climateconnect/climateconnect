@@ -180,76 +180,72 @@ export default function FilterContent({
       {isSmallScreen ? (
         <>
           <FilterOverlay
-            possibleFilters={possibleFilters}
-            handleApplyFilters={handleApplyFilters}
-            handleValueChange={handleValueChange}
             currentFilters={currentFilters}
-            withApplyButton={true}
-            handleClickDialogOpen={handleClickDialogOpen}
-            open={open}
-            handleClickDialogClose={handleClickDialogClose}
+            errorMessage={errorMessage}
             filtersExpanded={filtersExpanded}
-            unexpandFilters={unexpandFilters}
+            handleApplyFilters={handleApplyFilters}
+            handleClickDialogClose={handleClickDialogClose}
+            handleClickDialogOpen={handleClickDialogOpen}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
             handleUnselectFilter={handleUnselectFilter}
-            selectedItems={selectedItems}
-            setSelectedItems={setSelectedItems}
+            handleValueChange={handleValueChange}
             locationInputRef={locationInputRef}
             locationOptionsOpen={locationOptionsOpen}
-            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-            errorMessage={errorMessage}
+            open={open}
+            possibleFilters={possibleFilters}
+            selectedItems={selectedItems}
+            setSelectedItems={setSelectedItems}
+            unexpandFilters={unexpandFilters}
           />
         </>
       ) : isMediumScreen && possibleFilters.length > 3 ? (
         <>
           <Filters
-            possibleFilters={possibleFiltersFirstHalf}
-            handleApplyFilters={handleApplyFilters}
-            handleValueChange={handleValueChange}
             currentFilters={currentFilters}
-            handleClickDialogOpen={handleClickDialogOpen}
-            open={open}
+            errorMessage={errorMessage}
+            handleApplyFilters={handleApplyFilters}
             handleClickDialogClose={handleClickDialogClose}
-            selectedItems={selectedItems}
-            setSelectedItems={setSelectedItems}
+            handleClickDialogOpen={handleClickDialogOpen}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+            handleValueChange={handleValueChange}
             locationInputRef={locationInputRef}
             locationOptionsOpen={locationOptionsOpen}
-            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-            errorMessage={errorMessage}
+            open={open}
+            possibleFilters={possibleFiltersFirstHalf}
+            selectedItems={selectedItems}
+            setSelectedItems={setSelectedItems}
           />
           <Filters
-            possibleFilters={possibleFiltersSecondHalf}
-            handleApplyFilters={handleApplyFilters}
-            handleValueChange={handleValueChange}
             currentFilters={currentFilters}
-            withApplyButton={true}
-            applyButtonFixedWidth={true}
-            handleClickDialogOpen={handleClickDialogOpen}
-            open={open}
+            handleApplyFilters={handleApplyFilters}
             handleClickDialogClose={handleClickDialogClose}
-            selectedItems={selectedItems}
-            setSelectedItems={setSelectedItems}
+            handleClickDialogOpen={handleClickDialogOpen}
+            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+            handleValueChange={handleValueChange}
             locationInputRef={locationInputRef}
             locationOptionsOpen={locationOptionsOpen}
-            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+            open={open}
+            possibleFilters={possibleFiltersSecondHalf}
+            selectedItems={selectedItems}
+            setSelectedItems={setSelectedItems}
           />
         </>
       ) : (
         <Filters
-          possibleFilters={possibleFilters}
-          handleApplyFilters={handleApplyFilters}
-          handleValueChange={handleValueChange}
           currentFilters={currentFilters}
-          withApplyButton={true}
-          handleClickDialogOpen={handleClickDialogOpen}
-          open={open}
+          errorMessage={errorMessage}
+          handleApplyFilters={handleApplyFilters}
           handleClickDialogClose={handleClickDialogClose}
+          handleClickDialogOpen={handleClickDialogOpen}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          handleValueChange={handleValueChange}
           justifyContent={type === "projects" ? "space-around" : "flex-start"}
-          selectedItems={selectedItems}
-          setSelectedItems={setSelectedItems}
           locationInputRef={locationInputRef}
           locationOptionsOpen={locationOptionsOpen}
-          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          errorMessage={errorMessage}
+          open={open}
+          possibleFilters={possibleFilters}
+          selectedItems={selectedItems}
+          setSelectedItems={setSelectedItems}
         />
       )}
       {
