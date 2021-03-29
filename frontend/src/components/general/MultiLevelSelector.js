@@ -495,11 +495,22 @@ function ListToChooseFrom({
             }
           }
 
+          // We need to keep the key property in tact with the list
+          // item properties. OR we just check to see if the "name"s
+          // match, in which case they should already be selected.
+          const isDisabled =
+            selected.filter((selectedItem) => selectedItem.name === item.name).length === 1;
+
+          // TODO(piper): previouisly -- removing this
+          // const isDisabled =
+          // selected.filter((selectedItem) => selectedItem.key === item.key).length === 1;
+
           return (
             <React.Fragment key={item.key}>
               <ListItem
                 button
-                disabled={selected.filter((s) => s.key === item.key).length === 1}
+                disabled={isDisabled}
+                // disabled={true}
                 classes={{
                   root: `${classes.listItem}
                         ${index == 0 && classes.firstItem}

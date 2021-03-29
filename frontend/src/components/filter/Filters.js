@@ -82,6 +82,8 @@ export default function Filters({
   handleClickDialogClose,
   handleClickDialogOpen,
   handleSetLocationOptionsOpen,
+  handleSelectedListItemToFilters,
+  initialSelectedCategories,
   handleValueChange,
   isInOverlay,
   justifyContent,
@@ -111,6 +113,7 @@ export default function Filters({
           // Get the current values for each potential filter
           // from what could already be previously selected
           const currentFilterValue = currentFilters[filter.key];
+
           if (filter.type === "text") {
             return (
               <TextField
@@ -180,55 +183,62 @@ export default function Filters({
             // pre-select / force selection at this point?
             const curSelectedItems = selectedItems[filter.key];
 
-            let alreadySelected = false;
-            for (const [key, value] of Object.entries(currentFilters)) {
-              if (key === filter.key && currentFilterValue && !alreadySelected) {
-                // category matches query param, then update
-
-                // TODO(Piper): if one of the "currently selected filter values"
-                // matches one of the itemsToChooseFrom in the multiselect range, e.g. the
-                // query param &category="Lowering food waste" -- category matches
-                // "categories"... then we immediately insert that object
-                // into the currently selected items to update the state.
-                // debugger;
-
-                // TODO: how do we know id, parent_tag, and ???
-                // Do we have to get those from the mutiselect?!
-                const newlySelectedItems = {
-                  // id: 2,
-                  name: currentFilterValue, // Lowering food waste
-                  // parent_tag: 1,
-                  // key: 2,
-                };
-
-                // TODO: fix this logic
-
-                // Get unique list of selected items to pass downwards to MultiLevel
-                const listOfItems = new Set(selectedItems[filter.key].map((item) => item.name));
-                console.log(listOfItems);
-
-                if (!listOfItems.has(currentFilterValue)) {
-                  selectedItems[filter.key].push(newlySelectedItems);
-                  // unique
-                  _.uniq(selectedItems[filter.key]);
-                }
-
-                // if (!_.includes(selectedItems[filter.key], newlySelectedItems)) {
-                //   selectedItems[filter.key].push(newlySelectedItems);
-                // }
-
-                // Insert into new items if it's not already there.
-
-                console.log(selectedItems);
-
-                // setSelectedItems({
-                //   ...selectedItems,
-                //   [filter.key]: newlySelectedItems,
-                // });
-
-                alreadySelected = true;
-              }
+            // Only perform one React state change if there's an initial
+            // set of selected categories
+            if (initialSelectedCategories) {
             }
+            console.log(selectedItems);
+            // console.log(initialSelectedCategories);
+
+            // let alreadySelected = false;
+            // for (const [key, value] of Object.entries(currentFilters)) {
+            //   if (key === filter.key && currentFilterValue && !alreadySelected) {
+            //     // category matches query param, then update
+
+            //     // TODO(Piper): if one of the "currently selected filter values"
+            //     // matches one of the itemsToChooseFrom in the multiselect range, e.g. the
+            //     // query param &category="Lowering food waste" -- category matches
+            //     // "categories"... then we immediately insert that object
+            //     // into the currently selected items to update the state.
+            //     // debugger;
+
+            //     // TODO: how do we know id, parent_tag, and ???
+            //     // Do we have to get those from the mutiselect?!
+            //     const newlySelectedItems = {
+            //       // id: 2,
+            //       name: currentFilterValue, // Lowering food waste
+            //       // parent_tag: 1,
+            //       // key: 2,
+            //     };
+
+            //     // TODO: fix this logic
+
+            //     // Get unique list of selected items to pass downwards to MultiLevel
+            //     const listOfItems = new Set(selectedItems[filter.key].map((item) => item.name));
+            //     console.log(listOfItems);
+
+            //     if (!listOfItems.has(currentFilterValue)) {
+            //       selectedItems[filter.key].push(newlySelectedItems);
+            //       // unique
+            //       _.uniq(selectedItems[filter.key]);
+            //     }
+
+            //     // if (!_.includes(selectedItems[filter.key], newlySelectedItems)) {
+            //     //   selectedItems[filter.key].push(newlySelectedItems);
+            //     // }
+
+            //     // Insert into new items if it's not already there.
+
+            //     console.log(selectedItems);
+
+            //     // setSelectedItems({
+            //     //   ...selectedItems,
+            //     //   [filter.key]: newlySelectedItems,
+            //     // });
+
+            //     alreadySelected = true;
+            //   }
+            // }
 
             // http://localhost:3000/browse?&status=In%20Progress&category=Lowering%20food%20waste&
 
@@ -247,34 +257,34 @@ export default function Filters({
              * an array of objects.
              */
             const handleSetSelectedItems = (newSelectedItems) => {
-              debugger;
+              // debugger;
               // console.log("Handling selected items...");
               // console.log(newSelectedItems);
-
-              // TODO: need to persist query param url
 
               // filter.key should be categories?
 
               // TODO(PipeR): need to fix the dismissal of the list item here.
-              for (const [key, value] of Object.entries(currentFilters[filter.key])) {
-                // So if we're in categories
-                if (key === filter.key) {
-                  // upodate with the selected items...?
-                  // TODO(piper) might need to come back to this feature...
-                  // newSelectedItems.forEach(item => {
-                  //   // value being the array of categories?
-                  //   value.forEach(category => {
-                  //     if (item === category) {
-                  //       currentFilters
-                  //     }
-                  //   })
-                  // })
-                }
-              }
+              // for (const [key, value] of Object.entries(currentFilters[filter.key])) {
+              //   // So if we're in categories
+              //   if (key === filter.key) {
+              //     // upodate with the selected items...?
+              //     // TODO(piper) might need to come back to this feature...
+              //     // newSelectedItems.forEach(item => {
+              //     //   // value being the array of categories?
+              //     //   value.forEach(category => {
+              //     //     if (item === category) {
+              //     //       currentFilters
+              //     //     }
+              //     //   })
+              //     // })
+              //   }
+              // }
 
-              // Update the filter array (categoreis)
-
-              handleApplyFilters(filter.key);
+              // TODO(piper); new...
+              // Update the filter array (categoreis) when selected,
+              // to persist the query param in the URL
+              // handleApplyFilters(filter.key);
+              // handleSelectedListItemToFilters(newSelectedItems);
 
               // Value is an array of selected items
               // TODO(piper): an array of strings, or array of arrays for values?

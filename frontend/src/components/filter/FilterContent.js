@@ -1,14 +1,15 @@
 import React, { useCallback } from "react";
 import { useRouter } from "next/router";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { remove, update, merge, initial, uniq } from "lodash";
+import { loadGetInitialProps } from "next/dist/next-server/lib/utils";
 
 import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
+
 import { persistFiltersInURL } from "../../../public/lib/urlOperations";
-import { remove, update, merge } from "lodash";
-import { loadGetInitialProps } from "next/dist/next-server/lib/utils";
 
 export default function FilterContent({
   applyFilters,
@@ -16,6 +17,9 @@ export default function FilterContent({
   errorMessage,
   filtersExpanded,
   handleSetLocationOptionsOpen,
+  // TODO(piper): pass this all the way down...
+  handleSelectedListItemToFilters,
+  initialSelectedCategories,
   locationInputRef,
   locationOptionsOpen,
   possibleFilters,
@@ -43,12 +47,19 @@ export default function FilterContent({
       "skills": ""
     }
    */
+
+  // possibleFilters is an array of objects, which include various properties
+  // like icon, iconName, title, etc. on it. We reduce those to a single object
+  // to determine the initial filters, and selected items...
   const reducedPossibleFilters = possibleFilters.reduce((map, obj) => {
+    // Need to set an empty array for multiselects, otherwise set
+    // this key to a string
     if (obj.type === "multiselect") {
       map[obj.key] = [];
     } else {
       map[obj.key] = "";
     }
+
     return map;
   }, {});
 
@@ -56,11 +67,8 @@ export default function FilterContent({
   // let test = merge({}, reducedPossibleFilters);
   // let test2 = merge(test, router.query);
 
-  // TODO: status needs to be an array at least
-  // on the object shape
+  // TODO: status needs to be an array at least on the object shape
   let initialFilters = {};
-
-  // debugger;
 
   // Combine the filters together from the query param.
   // Some types are arrays and expected as such
@@ -97,20 +105,45 @@ export default function FilterContent({
   //   ...reducedPossibleFilters,
   // };
 
-  // console.log(router.query);
+  const [open, setOpen] = React.useState({});
 
   const [currentFilters, setCurrentFilters] = React.useState(reducedPossibleFilters);
   // const [currentFilters, setCurrentFilters] = React.useState(initialFilters);
 
-  const [open, setOpen] = React.useState({});
-
   // TODO(Piper): I believe the selected items is only being set by the multilevel?
+  // Could merge the initialProjeccategories here and then pass that down as well!
   const [selectedItems, setSelectedItems] = React.useState(
-    possibleFilters.reduce((map, obj) => {
-      if (obj.type === "openMultiSelectDialogButton") {
-        map[obj.key] = [];
+    possibleFilters.reduce((accumulator, currentValue) => {
+      // console.log(currentValue);
+
+      // All we're doing is initializing an empty array here.
+      if (currentValue.type === "openMultiSelectDialogButton") {
+        // debugger;
+
+        // And if we have selected items in the query param, then we populate this...
+        // E.g., if currentFilters["category"] is already set, we also
+        // select this item
+
+        // TODO(piper): test for multiple categories
+        if (currentFilters && currentFilters[currentValue.key]) {
+          if (Array.isArray(currentFilters[currentValue.key])) {
+            accumulator[currentValue.key] = currentFilters[currentValue.key];
+          } else {
+            // Only one item in the array,
+            accumulator[currentValue.key] = [];
+            // Have to transform to a name property, so that the items can render the
+            // name
+            const selectedCategory = {
+              name: currentFilters[currentValue.key],
+            };
+            accumulator[currentValue.key].push(selectedCategory);
+          }
+        } else {
+          accumulator[currentValue.key] = [];
+        }
       }
-      return map;
+
+      return accumulator;
     }, {})
   );
 
@@ -202,6 +235,9 @@ export default function FilterContent({
             handleClickDialogClose={handleClickDialogClose}
             handleClickDialogOpen={handleClickDialogOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+            // TODO: pasing this all the way through...
+            handleSelectedListItemToFilters={handleSelectedListItemToFilters}
+            initialSelectedCategories={initialSelectedCategories}
             handleValueChange={handleValueChange}
             locationInputRef={locationInputRef}
             locationOptionsOpen={locationOptionsOpen}
@@ -216,7 +252,9 @@ export default function FilterContent({
             handleClickDialogClose={handleClickDialogClose}
             handleClickDialogOpen={handleClickDialogOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+            handleSelectedListItemToFilters={handleSelectedListItemToFilters}
             handleValueChange={handleValueChange}
+            initialSelectedCategories={initialSelectedCategories}
             locationInputRef={locationInputRef}
             locationOptionsOpen={locationOptionsOpen}
             open={open}
@@ -243,6 +281,7 @@ export default function FilterContent({
           setSelectedItems={setSelectedItems}
         />
       )}
+      {/* Selected... */}
       {
         <SelectedFilters
           currentFilters={currentFilters}

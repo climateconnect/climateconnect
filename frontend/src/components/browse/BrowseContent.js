@@ -44,6 +44,7 @@ export default function BrowseContent({
   initialMembers,
   initialOrganizations,
   initialProjects,
+  initialSelectedCategories,
   loadMoreData,
 }) {
   const initialState = {
@@ -173,13 +174,25 @@ export default function BrowseContent({
   };
 
   /**
+   * Handler to pass all the way to list items, to
+   * transform a selected / unselected list item and
+   * update the persisted query param.
+   */
+  // TODO(piper): uhhh already persisting on save and dismss?
+  const handleSelectedListItemToFilters = (newSelectedItems) => {
+    console.log("New selected items");
+    console.log(newSelectedItems);
+  };
+
+  /**
    * Sets loading state to true to until the results are
    * returned from applying the new filters. Then updates the
    * state.
    */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
     // Save these filters as query params to the URL
-    debugger;
+    // debugger;
+    // console.log('Handling applying ')
     persistFiltersInURL(newFilters);
 
     if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
@@ -266,6 +279,11 @@ export default function BrowseContent({
                 className={classes.tabContent}
                 errorMessage={errorMessage}
                 filtersExpanded={filtersExpanded}
+                // TODO(Piper): just added
+                handleSelectedListItemToFilters={handleSelectedListItemToFilters}
+                // handleSelectedListItemToFilters={handleSelectedListItemToFilters}
+                initialSelectedCategories={initialSelectedCategories}
+                //
                 handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[0]]}
                 locationOptionsOpen={locationOptionsOpen}
@@ -294,19 +312,20 @@ export default function BrowseContent({
               <NoItemsFound type="projects" />
             )}
           </TabContent>
+          {/*  */}
           <TabContent value={tabValue} index={1} className={classes.tabContent}>
             {filtersExpanded && tabValue === 1 && (
               <FilterContent
-                className={classes.tabContent}
-                type={TYPES_BY_TAB_VALUE[1]}
                 applyFilters={handleApplyNewFilters}
+                className={classes.tabContent}
                 errorMessage={errorMessage}
                 filtersExpanded={filtersExpanded}
-                unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[1], filterChoices)}
+                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[1]]}
                 locationOptionsOpen={locationOptionsOpen}
-                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[1], filterChoices)}
+                type={TYPES_BY_TAB_VALUE[1]}
+                unexpandFilters={unexpandFilters}
               />
             )}
 

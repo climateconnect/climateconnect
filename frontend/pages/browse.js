@@ -143,19 +143,25 @@ export default function Browse({
    * dynamically.
    */
   const router = useRouter();
-  console.warn(router.query);
+  // console.warn(router.query);
 
   // If query params are present, persisted url
   const hasQueryParams = Object.keys(router.query).length !== 0;
-  console.log(hasQueryParams);
+  // console.log(hasQueryParams);
 
+  let initiallySelectedCategories;
   if (router.query) {
     // TODO: ensure this isn't called on every render, maybe useEffect
     // TODO(piper): differentiate between URL window state, and
     // the HTTP request
-    // TODO:
+
     // Update the state of the visual filters, like Select, Dialog, etc
-    // Then actually fetch the data
+    // Then actually fetch the data. We need a way to map what's
+    // in the query param, to what's UI control is present on the screen. For
+    // example, if we have a MultiLevelSelect dialog representing categories
+    // and we have a ?&category=Food waste, then we need to update the
+    // the MultiLevelSelect dialog's selection to that value somehow.
+
     // applyFilters(type, updatedFilters, isSmallScreen);
     // console.log(`Router query: ${JSON.stringify(router.query)}`);
 
@@ -163,8 +169,14 @@ export default function Browse({
     // TODO: add more filter parsing
     let newFilters = { ...filters, ...router.query };
 
-    console.log("New filters:");
-    console.log(newFilters);
+    // console.log("New filters:");
+    // console.log(newFilters);
+
+    // Categories on project pages are multilevel select.
+    if (newFilters.category) {
+      initiallySelectedCategories = newFilters.category;
+      // console.log(newFilters.category);
+    }
 
     // applyNewFilters(undefined, newFilters, null, undefined);
     // setFilters({ ...newFilters });
@@ -191,6 +203,8 @@ export default function Browse({
           initialMembers={membersObject}
           initialOrganizations={organizationsObject}
           initialProjects={projectsObject}
+          // TODO(piper):
+          initialSelectedCategories={initiallySelectedCategories}
           loadMoreData={loadMoreData}
         />
       </WideLayout>
