@@ -1,6 +1,8 @@
 import { Button, Container, Link, makeStyles, useMediaQuery } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,16 +33,18 @@ const useStyles = makeStyles((theme) => ({
 export default function HubsSubHeader({ hubs, subHeaderRef }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "navigation", locale: locale });
   return (
     <div className={classes.root} ref={subHeaderRef}>
       <Container className={classes.container}>
         {isNarrowScreen ? (
           <Button className={classes.viewHubsButton} variant="contained" href={`/hubs/`}>
-            View sector hubs
+            {texts.view_sector_hubs}
           </Button>
         ) : (
           <Link className={classes.link} key={"/hubs"} href={`/hubs/`}>
-            All Hubs
+            {texts.all_hubs}
           </Link>
         )}
         {hubs &&

@@ -1,6 +1,8 @@
-import React from "react";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import LoadingContainer from "../general/LoadingContainer";
 
 const useStyles = makeStyles((theme) => ({
@@ -16,37 +18,34 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProjectSubmittedPage({ user, isDraft, url_slug, hasError }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, user: user, url_slug: url_slug });
   return (
     <div className={classes.root}>
       {hasError ? (
         <Typography variant="h5" color="error" className={classes.headline}>
-          There has been an error when trying to publish your project. Check the console for more
-          information.
+          {texts.there_has_been_an_error_when_trying_to_publish_your_project}
         </Typography>
       ) : !url_slug ? (
         <LoadingContainer headerHeight={233} footerHeight={120} />
       ) : isDraft ? (
         <>
           <Typography variant="h5" className={classes.headline}>
-            Your project has saved as a draft!
+            {texts.your_project_has_saved_as_a_draft}
           </Typography>
           <Typography variant="h5" className={classes.headline}>
-            You can view, edit and publish your project drafts{" "}
-            <a href={"/profiles/" + user.url_slug + "/#projects"}>in the my projects section</a> of
-            your profile
+            {texts.you_can_view_edit_and_publish_your_project_drafts_in_the}
           </Typography>
         </>
       ) : (
         <>
           <Typography variant="h5" className={classes.headline}>
-            Congratulations! Your project has been published!
+            {texts.congratulations_your_project_has_been_published}
           </Typography>
           <Typography variant="h5" className={classes.headline}>
-            We are really happy that you inspire the global climate action community!
+            {texts.we_are_really_happy_that_you_inspire_the_global_climate_action_community}
           </Typography>
-          <Typography variant="h5">
-            You can view your project <a href={"/projects/" + url_slug}>here</a>
-          </Typography>
+          <Typography variant="h5">{texts.you_can_view_your_project_here}</Typography>
         </>
       )}
     </div>

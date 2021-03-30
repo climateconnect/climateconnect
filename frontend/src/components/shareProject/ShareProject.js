@@ -1,4 +1,4 @@
-import { Link, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import React, { useContext, useRef } from "react";
@@ -80,15 +80,15 @@ export default function Share({
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const fields = [
     {
-      falseLabel: "Personal Project",
-      trueLabel: "Organization's project",
+      falseLabel: texts.personal_project,
+      trueLabel: texts.organizations_project,
       key: "is_organization_project",
       type: "switch",
       checked: project.is_organization_project,
     },
     {
       required: true,
-      label: "Organization",
+      label: texts.organization,
       select: {
         values: organizationOptions,
         defaultValue: parent_organization_name,
@@ -96,18 +96,14 @@ export default function Share({
       key: "parent_organization",
       bottomLink: (
         <Typography className={classes.orgBottomLink}>
-          If your organization does not exist yet{" "}
-          <Link href="/createorganization" underline="always">
-            click here
-          </Link>{" "}
-          to create it.
+          {texts.if_your_organization_does_not_exist_yet_click_here}
         </Typography>
       ),
       onlyShowIfChecked: "is_organization_project",
     },
     {
       required: true,
-      label: "Title (Use a short, english title, e.g. 'Generating energy from ocean waves')",
+      label: texts.title_with_explanation_and_example,
       type: "text",
       key: "name",
       value: project.name,
@@ -115,7 +111,7 @@ export default function Share({
         <Typography className={classes.BottomLinkFlex}>
           <InfoOutlinedIcon className={classes.infoIcon} />
           <Typography component="span">
-            Use a title that makes people curious to learn more about your project
+            {texts.use_a_title_that_makes_people_curious_to_learn_more_about_your_project}
           </Typography>
         </Typography>
       ),
@@ -130,7 +126,7 @@ export default function Share({
     }),
   ];
   const messages = {
-    submitMessage: "Next Step",
+    submitMessage: texts.next_step,
   };
 
   const getOrgObject = (org) => {
@@ -171,15 +167,17 @@ export default function Share({
   };
   return (
     <>
-      <div className={classes.appealBox}>
-        <Typography color="secondary" className={classes.appealText}>
-          Please make sure to only use English when sharing a project.
-        </Typography>
-        <Typography color="secondary" className={classes.appealText}>
-          This way most people can benefit from your ideas and experiences to fight climate change
-          together!
-        </Typography>
-      </div>
+      {locale === "en" && (
+        <div className={classes.appealBox}>
+          <Typography color="secondary" className={classes.appealText}>
+            Please make sure to only use English when sharing a project.
+          </Typography>
+          <Typography color="secondary" className={classes.appealText}>
+            This way most people can benefit from your ideas and experiences to fight climate change
+            together!
+          </Typography>
+        </div>
+      )}
       <Form
         className={classes.form}
         fields={fields}

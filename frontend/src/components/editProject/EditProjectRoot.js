@@ -43,8 +43,8 @@ export default function EditProjectRoot({
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
   const draftReqiredProperties = {
-    name: "Project name",
-    loc: "Location",
+    name: texts.project_name,
+    loc: texts.location,
   };
   const overviewInputsRef = useRef(null);
   const locationInputRef = useRef(null);
@@ -63,7 +63,8 @@ export default function EditProjectRoot({
       Object.keys(draftReqiredProperties).map((key) => {
         if (!project[key]) {
           alert(
-            "Your project draft is missing the following reqired property: " +
+            texts.your_project_draft_is_missing_the_following_reqired_property +
+              " " +
               draftReqiredProperties[key]
           );
           return false;
@@ -89,7 +90,7 @@ export default function EditProjectRoot({
         Router.push({
           pathname: "/profiles/" + user.url_slug,
           query: {
-            message: "You have successfully edited your project.",
+            message: texts.you_have_successfully_edited_your_project,
           },
         });
       })
@@ -101,7 +102,7 @@ export default function EditProjectRoot({
 
   const additionalButtons = [
     {
-      text: "Save Changes as draft",
+      text: texts.save_changes_as_draft,
       argument: "save",
       onClick: onSaveDraft,
     },
@@ -136,8 +137,8 @@ export default function EditProjectRoot({
           pathname: "/projects/" + response.data.url_slug,
           query: {
             message: was_draft
-              ? "Your project has been published. Great work!"
-              : "You have successfully edited your project.",
+              ? texts.your_project_has_been_published_great_work
+              : texts.you_have_successfully_edited_your_project,
           },
         });
       })
@@ -155,7 +156,7 @@ export default function EditProjectRoot({
         Router.push({
           pathname: "/profiles/" + user.url_slug,
           query: {
-            message: "You have successfully deleted your project.",
+            message: texts.you_have_successfully_deleted_your_project,
           },
         });
       })

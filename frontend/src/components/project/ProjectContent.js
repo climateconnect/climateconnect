@@ -6,7 +6,7 @@ import humanizeDuration from "humanize-duration";
 import React, { useContext } from "react";
 import TimeAgo from "react-timeago";
 import getTexts from "../../../public/texts/texts";
-import { yearAndDayFormatter } from "../../utils/formatting";
+import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
@@ -138,7 +138,7 @@ export default function ProjectContent({
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
       : null;
-
+  console.log(locale);
   return (
     <div>
       <div className={classes.contentBlock}>
@@ -171,7 +171,11 @@ export default function ProjectContent({
           <div>
             <Typography component="span">
               {texts.started + " "}
-              <TimeAgo date={new Date(project.start_date)} formatter={yearAndDayFormatter} /> by
+              <TimeAgo
+                date={new Date(project.start_date)}
+                formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
+              />{" "}
+              {texts.by}
             </Typography>
             {project.isPersonalProject ? (
               <MiniProfilePreview

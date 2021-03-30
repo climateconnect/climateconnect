@@ -9,7 +9,7 @@ import Form from "./../src/components/general/Form";
 
 export default function Signin() {
   const { user, signIn, API_URL, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "user", locale: locale });
+  const texts = getTexts({ page: "profile", locale: locale });
 
   const fields = [
     {

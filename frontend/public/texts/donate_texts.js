@@ -1,7 +1,7 @@
 import { Link } from "@material-ui/core";
 import React from "react";
 
-export default function getDonateTexts() {
+export default function getDonateTexts({ classes, goal }) {
   return {
     donate_infinitive: {
       en: "Donate",
@@ -184,6 +184,28 @@ export default function getDonateTexts() {
         </>
       ),
       de: <></>,
+    },
+    we_rely_on_your_donation_to_stay_independent: {
+      en: (
+        <>
+          We rely on your donation to <span className={classes?.yellow}>stay independent!</span>
+        </>
+      ),
+      de: "",
+    },
+    we_are_non_profit_and_running_only_on_donations: {
+      en: `We are non-profit and running only on donations. Only with your financial support we can
+      connect climate actors worldwide sustainably in the long run.`,
+      de: ``,
+    },
+    donate_now: {
+      en: "Donate now",
+      de: "",
+    },
+    //example: 50€ raised of of 1000€ goal
+    raised_out_of_goal: {
+      en: `raised out of ${goal}€ goal`,
+      de: `von ${goal}€ Ziel gesammelt`,
     },
   };
 }

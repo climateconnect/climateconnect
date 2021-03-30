@@ -1,7 +1,9 @@
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import Router from "next/router";
-import React from "react";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts.js";
+import UserContext from "../context/UserContext.js";
 import getOrganizationInfoMetadata from "./../../../public/data/organization_info_metadata.js";
 import EditAccountPage from "./../account/EditAccountPage";
 
@@ -33,6 +35,8 @@ export default function EnterDetailledOrganizationInfo({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
 }) {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata();
   const organization = parseOrganizationInfo(organizationInfo, organization_info_metadata);
   const infoMetadata = {
@@ -54,7 +58,7 @@ export default function EnterDetailledOrganizationInfo({
       {!errorMessage && (
         <div>
           <Alert severity="success" className={classes.alert}>
-            Almost done! Here you can customize your organization page and add details
+            {texts.almost_done_here_you_can_customize_your_organization_page_and_add_details}
           </Alert>
         </div>
       )}
@@ -66,7 +70,7 @@ export default function EnterDetailledOrganizationInfo({
         maxAccountTypes={2}
         accountHref={"/organizations/" + organization.url_slug}
         handleSubmit={handleSubmit}
-        submitMessage="Create"
+        submitMessage={texts.create}
         handleCancel={handleCancel}
         errorMessage={errorMessage}
       />

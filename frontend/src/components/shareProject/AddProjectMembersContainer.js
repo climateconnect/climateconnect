@@ -1,7 +1,9 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import MiniProfileInput from "../profile/MiniProfileInput";
 
 const useStyles = makeStyles((theme) => {
@@ -36,6 +38,8 @@ export default function AddProjectMembersContainer({
   handleSetProjectData,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
 
   const handleChangeMember = (m) => {
     handleSetProjectData({
@@ -51,8 +55,8 @@ export default function AddProjectMembersContainer({
   return (
     <div className={blockClassName}>
       <Typography className={classes.info}>
-        <InfoOutlinedIcon className={classes.infoIcon} /> Use the search bar to add members to your
-        project.
+        <InfoOutlinedIcon className={classes.infoIcon} />{" "}
+        {texts.use_the_search_bar_to_add_members_to_your_project}
       </Typography>
       <div className={classes.memberContainer}>
         {projectData.team_members.map((m, index) => {

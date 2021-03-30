@@ -24,18 +24,18 @@ export default function AddInfo({
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "user", locale: locale });
+  const texts = getTexts({ page: "profile", locale: locale });
   const fields = [
     {
       required: true,
-      label: "First Name",
+      label: texts.first_name,
       type: "text",
       key: "first_name",
       value: values["first_name"],
     },
     {
       required: true,
-      label: "Last Name",
+      label: texts.last_name,
       type: "text",
       key: "last_name",
       value: values["last_name"],
@@ -52,7 +52,7 @@ export default function AddInfo({
       required: false,
       label: (
         <span className={classes.checkboxLabels}>
-          I would like to receive emails about updates, news and interesting projects
+          {texts.i_would_like_to_receive_emails_about_updates_news_and_interesting_projects}
         </span>
       ),
       type: "checkbox",
@@ -62,17 +62,7 @@ export default function AddInfo({
     {
       required: true,
       label: (
-        <span className={classes.checkboxLabels}>
-          I agree to the{" "}
-          <a href="terms" target="_blank">
-            Terms of Use
-          </a>{" "}
-          and{" "}
-          <a href="privacy" target="_blank">
-            Privacy policy
-          </a>
-          .
-        </span>
+        <span className={classes.checkboxLabels}>{texts.agree_to_tos_and_privacy_policy}</span>
       ),
       type: "checkbox",
       key: "terms",
@@ -81,8 +71,8 @@ export default function AddInfo({
   ];
 
   const messages = {
-    submitMessage: "Next Step",
-    headerMessage: "Step 2: A little bit about yourself",
+    submitMessage: texts.next_step,
+    headerMessage: texts.signup_step_2_headline,
   };
 
   //dummy route while we don't have backend

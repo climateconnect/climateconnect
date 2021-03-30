@@ -35,13 +35,13 @@ export default function EnterBasicOrganizationInfo({
   const fields = [
     {
       required: true,
-      label: "Organization name",
+      label: texts.organization_name,
       key: "organizationname",
       type: "text",
       value: organizationInfo["name"],
     },
     {
-      label: "We are a sub-organization of a larger organization (e.g. local group)",
+      label: texts.we_are_a_sub_organization_of_a_larger_organization,
       key: "hasparentorganization",
       type: "checkbox",
       checked: false,
@@ -49,16 +49,16 @@ export default function EnterBasicOrganizationInfo({
     },
     {
       required: true,
-      label: "Parent organization name",
+      label: texts.parent_organization_name,
       key: "parentorganizationname",
       type: "autocomplete",
       autoCompleteProps: {
-        label: "Search for your parent organization",
+        label: texts.search_for_your_parent_organization,
         baseUrl: process.env.API_URL + "/api/organizations/?search=",
         onSelect: setParentOrganization,
         renderOption: renderSearchOption,
         getOptionLabel: getOptionLabel,
-        helperText: "Type the name of your parent organization.",
+        helperText: texts.type_the_name_of_your_parent_organization,
         onUnselect: onUnselect,
         filterOut: [],
       },
@@ -75,7 +75,7 @@ export default function EnterBasicOrganizationInfo({
     }),
     {
       required: true,
-      label: `I verify that I am an authorized representative of this organization and have the right to act on its behalf in the creation and management of this page.`,
+      label: texts.i_verify_that_i_am_an_authorized_representative_of_this_organization,
       key: "verified",
       type: "checkbox",
       value: organizationInfo["verified"],
@@ -83,7 +83,7 @@ export default function EnterBasicOrganizationInfo({
   ];
 
   const messages = {
-    submitMessage: "Next step",
+    submitMessage: texts.next_step,
   };
 
   return (

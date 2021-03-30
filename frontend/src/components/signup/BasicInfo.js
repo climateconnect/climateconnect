@@ -1,7 +1,9 @@
-import React from "react";
-import Form from "./../general/Form";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import Form from "./../general/Form";
 
 const useStyles = makeStyles({
   appealText: {
@@ -12,24 +14,26 @@ const useStyles = makeStyles({
 
 export default function BasicInfo({ handleSubmit, errorMessage, values }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale });
   const fields = [
     {
       required: true,
-      label: "Email",
+      label: texts.email,
       type: "email",
       key: "email",
       value: values["email"],
     },
     {
       required: true,
-      label: "Password",
+      label: texts.password,
       type: "password",
       key: "password",
       value: values["password"],
     },
     {
       required: true,
-      label: "Repeat Password",
+      label: texts.repeat_password,
       type: "password",
       key: "repeatpassword",
       value: values["repeatpassword"],
@@ -37,23 +41,23 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
   ];
 
   const messages = {
-    submitMessage: "Next Step",
-    headerMessage: "Step 1: Basic Information",
-    bottomMessage: "Already have an account?",
+    submitMessage: texts.next_step,
+    headerMessage: texts.step_1_basic_information,
+    bottomMessage: texts.already_have_an_account,
   };
 
   const bottomLink = {
-    text: "Log in",
+    text: texts.log_in,
     href: "/signin",
   };
 
   return (
     <>
       <Typography color="secondary" className={classes.appealText}>
-        Here you can create your personal account.
+        {texts.here_you_can_create_your_personal_account}
       </Typography>
       <Typography color="secondary" className={classes.appealText}>
-        You will have an opportunity to create/add an organization once signed up.
+        {texts.you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up}
       </Typography>
       <Form
         fields={fields}

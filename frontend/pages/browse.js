@@ -44,7 +44,7 @@ export async function getServerSideProps(ctx) {
       projectsObject: projectsObject,
       organizationsObject: organizationsObject,
       membersObject: membersObject,
-      token: token,
+      token: token ? token : null,
       filterChoices: {
         project_categories: project_categories,
         organization_types: organization_types,

@@ -1,20 +1,22 @@
-import React from "react";
-import { Container, Typography, TextField, Button, List, Chip } from "@material-ui/core";
+import { Button, Chip, Container, List, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
-import {
-  getImageUrl,
-  getImageDialogHeight,
-  getCompressedJPG,
-  whitenTransparentPixels,
-  getResizedImage,
-} from "../../../public/lib/imageOperations";
-import UploadImageDialog from "../dialogs/UploadImageDialog";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
-const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
-import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
-import LocationSearchBar from "../search/LocationSearchBar";
+import React, { useContext } from "react";
+import {
+  getCompressedJPG,
+  getImageDialogHeight,
+  getImageUrl,
+  getResizedImage,
+  whitenTransparentPixels,
+} from "../../../public/lib/imageOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
+import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
+import UploadImageDialog from "../dialogs/UploadImageDialog";
+import LocationSearchBar from "../search/LocationSearchBar";
+const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -82,6 +84,8 @@ export default function EditProjectOverview({
   locationInputRef,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
   };
@@ -104,6 +108,7 @@ export default function EditProjectOverview({
           locationOptionsOpen={locationOptionsOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           locationInputRef={locationInputRef}
+          texts={texts}
         />
       ) : (
         <LargeScreenOverview
@@ -115,6 +120,7 @@ export default function EditProjectOverview({
           locationOptionsOpen={locationOptionsOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           locationInputRef={locationInputRef}
+          texts={texts}
         />
       )}
     </Container>
@@ -130,26 +136,38 @@ function SmallScreenOverview({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   locationInputRef,
+  texts,
 }) {
   const classes = useStyles();
   return (
     <>
-      <InputImage project={project} screenSize="small" handleChangeImage={handleChangeImage} />
+      <InputImage
+        project={project}
+        screenSize="small"
+        handleChangeImage={handleChangeImage}
+        texts={texts}
+      />
       <div className={classes.blockProjectInfo} ref={overviewInputsRef}>
-        <InputName project={project} screenSize="small" />
-        <InputShortDescription project={project} handleChangeProject={handleChangeProject} />
+        <InputName project={project} screenSize="small" texts={texts} />
+        <InputShortDescription
+          project={project}
+          handleChangeProject={handleChangeProject}
+          texts={texts}
+        />
         <InputLocation
           project={project}
           handleChangeProject={handleChangeProject}
           locationOptionsOpen={locationOptionsOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           locationInputRef={locationInputRef}
+          texts={texts}
         />
-        <InputWebsite project={project} handleChangeProject={handleChangeProject} />
+        <InputWebsite project={project} handleChangeProject={handleChangeProject} texts={texts} />
         <InputTags
           tagsOptions={tagsOptions}
           project={project}
           handleChangeProject={handleChangeProject}
+          texts={texts}
         />
       </div>
     </>
@@ -165,29 +183,41 @@ function LargeScreenOverview({
   handleSetLocationOptionsOpen,
   overviewInputsRef,
   locationInputRef,
+  texts,
 }) {
   const classes = useStyles();
   return (
     <>
-      <InputName project={project} screenSize="large" handleChangeProject={handleChangeProject} />
+      <InputName
+        project={project}
+        screenSize="large"
+        handleChangeProject={handleChangeProject}
+        texts={texts}
+      />
       <div className={classes.flexContainer}>
         <div className={classes.largeScreenImageContainer}>
           <InputImage project={project} screenSize="large" handleChangeImage={handleChangeImage} />
         </div>
         <div className={classes.inlineProjectInfo} ref={overviewInputsRef}>
-          <InputShortDescription project={project} handleChangeProject={handleChangeProject} />
+          <InputShortDescription
+            project={project}
+            handleChangeProject={handleChangeProject}
+            texts={texts}
+          />
           <InputLocation
             project={project}
             handleChangeProject={handleChangeProject}
             locationOptionsOpen={locationOptionsOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
             locationInputRef={locationInputRef}
+            texts={texts}
           />
-          <InputWebsite project={project} handleChangeProject={handleChangeProject} />
+          <InputWebsite project={project} handleChangeProject={handleChangeProject} texts={texts} />
           <InputTags
             tagsOptions={tagsOptions}
             project={project}
             handleChangeProject={handleChangeProject}
+            texts={texts}
           />
         </div>
       </div>
@@ -195,7 +225,7 @@ function LargeScreenOverview({
   );
 }
 
-const InputShortDescription = ({ project, handleChangeProject }) => {
+const InputShortDescription = ({ project, handleChangeProject, texts }) => {
   return (
     <TextField
       label="Summary"
@@ -208,12 +238,8 @@ const InputShortDescription = ({ project, handleChangeProject }) => {
         handleChangeProject(event.target.value.substring(0, 240), "short_description")
       }
       required
-      helperText={
-        "Briefly summarise what you are doing (up to 240 characters)\n\nPlease only use English!"
-      }
-      placeholder={
-        "Briefly summarise what you are doing (up to 240 characters)\n\nPlease only use English!"
-      }
+      helperText={texts.briefly_summarise_what_you_are_doing_up_to_240_characters}
+      placeholder={texts.briefly_summarise_what_you_are_doing_up_to_240_characters}
     />
   );
 };
@@ -224,6 +250,7 @@ const InputLocation = ({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   locationInputRef,
+  texts,
 }) => {
   const classes = useStyles();
   const handleChangeLocation = (location) => {
@@ -236,7 +263,7 @@ const InputLocation = ({
     return (
       <>
         <TextField
-          label="City"
+          label={texts.city}
           variant="outlined"
           fullWidth
           className={classes.projectInfoEl}
@@ -246,7 +273,7 @@ const InputLocation = ({
           required
         />
         <TextField
-          label="Country"
+          label={texts.country}
           className={classes.projectInfoEl}
           variant="outlined"
           fullWidth
@@ -261,7 +288,7 @@ const InputLocation = ({
   return (
     <div className={classes.projectInfoEl}>
       <LocationSearchBar
-        label="Location"
+        label={texts.location}
         required
         className={classes.locationInput}
         value={project.loc}
@@ -277,12 +304,12 @@ const InputLocation = ({
   );
 };
 
-const InputWebsite = ({ project, handleChangeProject }) => {
+const InputWebsite = ({ project, handleChangeProject, texts }) => {
   const classes = useStyles();
   return (
     <div className={classes.projectInfoEl}>
       <TextField
-        label="Website"
+        label={texts.website}
         variant="outlined"
         fullWidth
         value={project.website}
@@ -294,7 +321,7 @@ const InputWebsite = ({ project, handleChangeProject }) => {
   );
 };
 
-const InputTags = ({ project, handleChangeProject, tagsOptions }) => {
+const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [selectedItems, setSelectedItems] = React.useState(project.tags ? [...project.tags] : []);
@@ -316,7 +343,7 @@ const InputTags = ({ project, handleChangeProject, tagsOptions }) => {
   return (
     <div className={classes.projectInfoEl}>
       <Typography variant="body2" className={classes.overviewHeadline}>
-        Project categories
+        {texts.project_categories}
       </Typography>
       {project.tags && (
         <List className={classes.flexContainer}>
@@ -334,7 +361,7 @@ const InputTags = ({ project, handleChangeProject, tagsOptions }) => {
             color="primary"
             onClick={onClickCategoriesDialogOpen}
           >
-            {project.tags && project.tags.length ? "Edit categories" : "Add categories"}
+            {project.tags && project.tags.length ? texts.edit_categories : texts.add_categories}
           </Button>
         </List>
       )}
@@ -353,11 +380,11 @@ const InputTags = ({ project, handleChangeProject, tagsOptions }) => {
   );
 };
 
-const InputName = ({ project, screenSize, handleChangeProject }) => {
+const InputName = ({ project, screenSize, handleChangeProject, texts }) => {
   const classes = useStyles();
   return (
     <TextField
-      label="Project title"
+      label={texts.project_name}
       value={project.name}
       className={classes.projectTitleInput}
       inputProps={screenSize === "large" ? { className: classes.largeProjectTitleInput } : {}}
@@ -368,7 +395,7 @@ const InputName = ({ project, screenSize, handleChangeProject }) => {
   );
 };
 
-const InputImage = ({ project, screenSize, handleChangeImage }) => {
+const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
   const classes = useStyles(project);
 
   const inputFileRef = React.useRef(null);
@@ -380,7 +407,7 @@ const InputImage = ({ project, screenSize, handleChangeImage }) => {
   const onImageChange = async (event) => {
     const file = event.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
-      alert("Please upload either a png or a jpg file.");
+      alert(texts.please_upload_either_a_png_or_a_jpg_file);
     const image = await getCompressedJPG(file, 0.5);
     setTempImage(image);
     setOpen(true);
@@ -425,7 +452,7 @@ const InputImage = ({ project, screenSize, handleChangeImage }) => {
             <div className={classes.addPhotoContainer}>
               <AddAPhotoIcon className={classes.photoIcon} />
               <Button variant="contained" color="primary" onClick={onUploadImageClick}>
-                {!project.image ? "Upload Image" : "Change image"}
+                {!project.image ? texts.upload_image : texts.change_image}
               </Button>
             </div>
           </div>

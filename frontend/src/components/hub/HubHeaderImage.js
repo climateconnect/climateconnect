@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 export default function HubHeaderImage({ image, source, fullWidth }) {
   const classes = useStyles({ image: image, fullWidth: fullWidth });
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "hubs", locale: locale });
+  const texts = getTexts({ page: "hub", locale: locale });
   return (
     <>
       <div className={classes.root}>

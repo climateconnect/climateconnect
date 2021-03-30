@@ -54,5 +54,21 @@
   "no_options": {
     "en": "No options",
     "de": ""
+  },
+  "apply_filters": {
+    "en": "Apply filters",
+    "de": ""
+  },
+  "filters": {
+    "en": "Filters",
+    "de": ""
+  },
+  "radius_km": {
+    "en": "Radius(km)",
+    "de": ""
+  },
+  "selected_filters": {
+    "en": "Selected Filters",
+    "de": ""
   }
 }

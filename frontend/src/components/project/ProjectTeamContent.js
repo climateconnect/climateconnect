@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function getTeamWithAdditionalInfo(team) {
+function getTeamWithAdditionalInfo(team, texts) {
   return team.map((m) => {
     const additionalInfo = [];
     if (m.location)
@@ -30,7 +30,7 @@ function getTeamWithAdditionalInfo(team) {
         importance: "high",
         icon: LocationOnIcon,
         iconName: "LocationOnIcon",
-        toolTipText: "Location",
+        toolTipText: texts.location,
       });
     if (m.role)
       additionalInfo.push({
@@ -38,7 +38,7 @@ function getTeamWithAdditionalInfo(team) {
         importance: "high",
         icon: AccountBoxIcon,
         iconName: "AccountBoxIcon",
-        toolTipText: "Role in project",
+        toolTipText: texts.role_in_project,
       });
     if (m.availability && m.availability !== "not_specified")
       additionalInfo.push({
@@ -81,7 +81,7 @@ export default function TeamContent({ project, leaveProject }) {
           </div>
         )}
         <ProfilePreviews
-          profiles={getTeamWithAdditionalInfo(project.team)}
+          profiles={getTeamWithAdditionalInfo(project.team, texts)}
           allowMessage
           showAdditionalInfo={true}
         />

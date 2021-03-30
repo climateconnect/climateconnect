@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-
-import Header from "../general/Header";
-import Footer from "../general/Footer";
-import theme from "../../themes/theme";
-import LayoutWrapper from "./LayoutWrapper";
-import { getParams } from "../../../public/lib/generalOperations";
 import Alert from "@material-ui/lab/Alert";
+import React, { useEffect, useState } from "react";
+import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
+import theme from "../../themes/theme";
+import Footer from "../footer/Footer";
+import Header from "../header/Header";
+import LayoutWrapper from "./LayoutWrapper";
 
 const useStyles = makeStyles({
   root: {

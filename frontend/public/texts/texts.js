@@ -8,6 +8,7 @@ import getFaqTexts from "./faq_texts";
 import filter_and_search_texts from "./filter_and_search_texts.json";
 import general_texts from "./general_texts.json";
 import getHubTexts from "./getHubTexts";
+import getLandingPageTexts from "./landing_page_texts";
 import navigation_texts from "./navigation_texts.json";
 import notification_texts from "./notification_texts.json";
 import getOrganizationTexts from "./organization_texts";
@@ -24,25 +25,30 @@ export default function getTexts({
   profile,
   project,
   classes,
+  isNarrowScreen,
+  url_slug,
+  user,
+  goal,
 }) {
   const texts = {
     about: getAboutTexts(classes),
-    communication: getCommunicationTexts(),
-    donate: getDonateTexts(),
-    general: general_texts,
     activate_email: activate_email,
-    settings: settings_texts,
     chat: chat_texts,
-    organization: getOrganizationTexts({ organization: organization }),
-    faq: getFaqTexts(),
-    filter_and_search: filter_and_search_texts,
-    project: getProjectTexts({ project: project }),
     cookie: cookie_texts,
+    communication: getCommunicationTexts(),
+    donate: getDonateTexts({ classes: classes, goal: goal }),
+    faq: getFaqTexts({ classes: classes }),
+    filter_and_search: filter_and_search_texts,
+    general: general_texts,
     hub: getHubTexts({ hubName: hubName }),
+    landing_page: getLandingPageTexts({ classes: classes, isNarrowScreen: isNarrowScreen }),
     navigation: navigation_texts,
     notification: notification_texts,
+    organization: getOrganizationTexts({ organization: organization }),
     profile: getProfileTexts({ profile: profile }),
-    tutorial: getTutorialTexts({ hubName: hubName }),
+    project: getProjectTexts({ project: project, user: user, url_slug: url_slug }),
+    settings: settings_texts,
+    tutorial: getTutorialTexts({ hubName: hubName, classes: classes }),
   };
 
   const text = { ...texts[page], ...general_texts };

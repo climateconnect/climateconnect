@@ -1,13 +1,14 @@
-import React from "react";
-import { makeStyles, Typography, Link, Button, Container } from "@material-ui/core";
-import InstagramIcon from "@material-ui/icons/Instagram";
-import GitHubIcon from "@material-ui/icons/GitHub";
-import TwitterIcon from "@material-ui/icons/Twitter";
-import LinkedInIcon from "@material-ui/icons/LinkedIn";
+import { Button, Container, Link, makeStyles, Typography } from "@material-ui/core";
 import FacebookIcon from "@material-ui/icons/Facebook";
-import YouTubeIcon from "@material-ui/icons/YouTube";
 import FavoriteIcon from "@material-ui/icons/Favorite";
-
+import GitHubIcon from "@material-ui/icons/GitHub";
+import InstagramIcon from "@material-ui/icons/Instagram";
+import LinkedInIcon from "@material-ui/icons/LinkedIn";
+import TwitterIcon from "@material-ui/icons/Twitter";
+import YouTubeIcon from "@material-ui/icons/YouTube";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import FeedbackButton from "../feedback/FeedbackButton";
 
 const useStyles = makeStyles((theme) => ({
@@ -144,23 +145,25 @@ const FooterLink = ({ children, href }) => {
 
 export default function LargeFooter({ className }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "navigation", locale: locale });
   return (
     <div className={`${className} ${classes.root}`}>
       <Container maxWidth="lg">
-        <SiteLinks />
+        <SiteLinks texts={texts} />
         <SocialLinks />
-        <MadeWithLoveForEarth />
+        <MadeWithLoveForEarth texts={texts} />
       </Container>
     </div>
   );
 }
 
-const MadeWithLoveForEarth = () => {
+const MadeWithLoveForEarth = (texts) => {
   const classes = useStyles();
   return (
     <div className={classes.madeWith}>
       Made with <FavoriteIcon className={classes.heart} /> for{" "}
-      <img className={classes.earth} src="/images/earth.svg" alt="Picture of our earth" />
+      <img className={classes.earth} src="/images/earth.svg" alt={texts.picture_of_our_earth} />
     </div>
   );
 };
@@ -170,45 +173,45 @@ const SocialLinks = () => {
   return (
     <div className={classes.socialIconsContainer}>
       <Link target="_blank" href="https://www.instagram.com/climate_connect.earth/">
-        <InstagramIcon color="primary" className={classes.socialIcon} />
+        <InstagramIcon color="primary" className={classes.socialIcon} alt="Instagram" />
       </Link>
       <Link target="_blank" href="https://github.com/climateconnect/climateconnect">
-        <GitHubIcon className={classes.socialIcon} />
+        <GitHubIcon className={classes.socialIcon} alt="GitHub" />
       </Link>
       <Link target="_blank" href="https://twitter.com/ConnectClimate">
-        <TwitterIcon color="primary" className={classes.socialIcon} />
+        <TwitterIcon color="primary" className={classes.socialIcon} alt="Twitter" />
       </Link>
       <Link target="_blank" href="https://www.linkedin.com/company/climateconnect">
-        <LinkedInIcon color="primary" className={classes.socialIcon} />
+        <LinkedInIcon color="primary" className={classes.socialIcon} alt="LinkedIn" />
       </Link>
       <Link target="_blank" href="https://www.facebook.com/climateconnect.earth">
-        <FacebookIcon color="primary" className={classes.socialIcon} />
+        <FacebookIcon color="primary" className={classes.socialIcon} alt="Facebook" />
       </Link>
       <Link target="_blank" href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw">
-        <YouTubeIcon color="primary" className={classes.socialIcon} />
+        <YouTubeIcon color="primary" className={classes.socialIcon} alt="YouTube" />
       </Link>
     </div>
   );
 };
 
-const SiteLinks = () => {
+const SiteLinks = (texts) => {
   const classes = useStyles();
   return (
     <div className={classes.siteLinks}>
       <div className={classes.linksSection}>
         <Typography color="primary" component="h3" className={classes.headline}>
-          General
+          {texts.general}
         </Typography>
         <div className={classes.links}>
-          <FooterLink href="/faq">FAQ</FooterLink>
-          <FooterLink href="/donate">Donate</FooterLink>
-          <FooterLink href="/about">About</FooterLink>
+          <FooterLink href="/faq">{texts.faq}</FooterLink>
+          <FooterLink href="/donate">{texts.donate}</FooterLink>
+          <FooterLink href="/about">{texts.about}</FooterLink>
         </div>
       </div>
 
       <div className={classes.linksSection}>
         <Typography color="primary" component="h3" className={classes.headline}>
-          Contact
+          {texts.contact}
         </Typography>
         <div className={classes.links}>
           <FooterLink href="mailto:contact@climateconnect.earth">
@@ -216,41 +219,40 @@ const SiteLinks = () => {
           </FooterLink>
           <FooterLink href="tel:+4915730101056">+4915730101056</FooterLink>
           <FeedbackButton justLink>
-            <Typography className={classes.li}>Leave feedback</Typography>
+            <Typography className={classes.li}>{texts.leave_feedback}</Typography>
           </FeedbackButton>
         </div>
       </div>
 
       <div className={classes.linksSection}>
         <Typography color="primary" component="h3" className={classes.headline}>
-          Browse
+          {texts.browse}
         </Typography>
         <div className={classes.links}>
-          <FooterLink href="/browse">Projects</FooterLink>
-          <FooterLink href="/browse#organizations">Organizations</FooterLink>
-          <FooterLink href="/browse#members">Members</FooterLink>
-          <FooterLink href="/hubs">Hubs</FooterLink>
+          <FooterLink href="/browse">{texts.projects}</FooterLink>
+          <FooterLink href="/browse#organizations">{texts.organizations}</FooterLink>
+          <FooterLink href="/browse#members">{texts.members}</FooterLink>
+          <FooterLink href="/hubs">{texts.hubs}</FooterLink>
         </div>
       </div>
 
       <div className={classes.linksSection}>
         <Typography color="primary" component="h3" className={classes.headline}>
-          Legal
+          {texts.legal}
         </Typography>
         <div className={classes.links}>
-          <FooterLink href="/imprint">Imprint</FooterLink>
-          <FooterLink href="/privacy">Privacy</FooterLink>
-          <FooterLink href="/terms">Terms</FooterLink>
+          <FooterLink href="/imprint">{texts.imprint}</FooterLink>
+          <FooterLink href="/privacy">{texts.privacy}</FooterLink>
+          <FooterLink href="/terms">{texts.terms}</FooterLink>
         </div>
       </div>
 
       <div className={`${classes.newsLetterBox} ${classes.linksSection}`}>
         <Typography color="primary" component="h3" className={classes.headline}>
-          Newsletter
+          {texts.newsletter}
         </Typography>
         <Typography className={`${classes.li} ${classes.newsletterBlurb}`}>
-          Sign up to get updates about Climate Connect and a summary of highlight projects every
-          month!
+          {texts.sign_up_to_get_updates_about_climate_connect}
         </Typography>
         <Button
           className={classes.newsletterSubscribeButton}
@@ -259,7 +261,7 @@ const SiteLinks = () => {
           target="_blank"
           href={process.env.LATEST_NEWSLETTER_LINK}
         >
-          latest newsletter
+          {texts.latest_newsletter}
         </Button>
       </div>
     </div>

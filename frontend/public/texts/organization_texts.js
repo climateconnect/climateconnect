@@ -169,5 +169,34 @@ export default function getOrganizationTexts({ organization }) {
       en: "Create an Organization",
       de: "",
     },
+    organization_name: {
+      en: "Organization name",
+      de: "",
+    },
+    we_are_a_sub_organization_of_a_larger_organization: {
+      en: "We are a sub-organization of a larger organization (e.g. local group)",
+      de: "",
+    },
+    parent_organization_name: {
+      en: "Parent organization name",
+      de: "",
+    },
+    search_for_your_parent_organization: {
+      en: "Search for your parent organization",
+      de: "",
+    },
+    type_the_name_of_your_parent_organization: {
+      en: "Type the name of your parent organization.",
+      de: "",
+    },
+    i_verify_that_i_am_an_authorized_representative_of_this_organization: {
+      en: `I verify that I am an authorized representative of this organization 
+      and have the right to act on its behalf in the creation and management of this page.`,
+      de: ``,
+    },
+    almost_done_here_you_can_customize_your_organization_page_and_add_details: {
+      en: "Almost done! Here you can customize your organization page and add details",
+      de: "",
+    },
   };
 }

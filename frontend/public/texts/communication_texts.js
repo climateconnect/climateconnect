@@ -67,5 +67,26 @@ export default function getCommunicationTexts() {
       en: "Subscribe",
       de: "",
     },
+    feedback: {
+      en: "Feedback",
+      de: "",
+    },
+    your_feedback: {
+      en: "Your Feedback",
+      de: "",
+    },
+    send_feedback: {
+      en: "Send feedback",
+      de: "",
+    },
+    send_us_your_feedback_about_climate_connect: {
+      en:
+        "Send us your feedback about Climate Connect. You can send us ideas, bug reports, criticism or anything else.",
+      de: "",
+    },
+    please_send_me_a_response_to_my_feedback: {
+      en: "Please send me a response to my feedback",
+      de: "",
+    },
   };
 }

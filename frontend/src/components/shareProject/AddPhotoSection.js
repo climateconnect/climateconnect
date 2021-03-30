@@ -1,15 +1,17 @@
-import React from "react";
+import { Button, IconButton, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography, Tooltip, IconButton, Button, useMediaQuery } from "@material-ui/core";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
+import React, { useContext } from "react";
+import { getImageDialogHeight } from "../../../public/lib/imageOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
-const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 import {
+  getCompressedJPG,
   getResizedImage,
   whitenTransparentPixels,
-  getCompressedJPG,
 } from "./../../../public/lib/imageOperations";
-import { getImageDialogHeight } from "../../../public/lib/imageOperations";
+const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -59,6 +61,8 @@ export default function AddPhotoSection({
   handleSetOpen,
 }) {
   const classes = useStyles(projectData);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const [tempImage, setTempImage] = React.useState(projectData.image);
   const inputFileRef = React.useRef(null);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
@@ -70,7 +74,7 @@ export default function AddPhotoSection({
   const onImageChange = async (event) => {
     const file = event.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
-      alert("Please upload either a png or a jpg file.");
+      alert(texts.please_upload_either_a_png_or_a_jpg_file);
     const image = await getCompressedJPG(file, 0.5);
     setTempImage(image);
     handleDialogClickOpen("avatarDialog");
@@ -110,7 +114,7 @@ export default function AddPhotoSection({
           color="primary"
           className={subHeaderClassname}
         >
-          Add photo*
+          {texts.add_photo}*
           <Tooltip title={helpTexts.addPhoto} className={toolTipClassName}>
             <IconButton>
               <ToolTipIcon />
@@ -132,7 +136,7 @@ export default function AddPhotoSection({
               <div className={classes.addPhotoContainer}>
                 <AddAPhotoIcon className={classes.photoIcon} />
                 <Button variant="contained" color="primary" onClick={onUploadImageClick}>
-                  {!projectData.image ? "Upload Image" : "Change image"}
+                  {!projectData.image ? texts.upload_image : texts.change_image}
                 </Button>
               </div>
             </div>

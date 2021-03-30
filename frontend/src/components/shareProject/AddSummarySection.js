@@ -1,6 +1,8 @@
-import React from "react";
+import { IconButton, TextField, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography, Tooltip, IconButton, TextField } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles({
   shortDescriptionWrapper: {
@@ -32,11 +34,13 @@ export default function AddSummarySection({
 }) {
   const classes = useStyles(projectData);
   const shortDescriptionRef = React.useRef(null);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
 
   return (
     <div className={className}>
       <Typography component="h2" variant="subtitle2" color="primary" className={subHeaderClassname}>
-        Summarize your project*
+        {texts.summarize_your_project}*
         <Tooltip title={helpTexts.short_description} className={toolTipClassName}>
           <IconButton>
             <ToolTipIcon />
@@ -49,9 +53,7 @@ export default function AddSummarySection({
           required
           fullWidth
           multiline
-          helperText={
-            "Briefly summarise what you are doing (up to 240 characters)\n\nPlease only use English!"
-          }
+          helperText={texts.briefly_summarise_what_you_are_doing}
           ref={shortDescriptionRef}
           InputLabelProps={{
             shrink: true,
@@ -61,9 +63,7 @@ export default function AddSummarySection({
           InputProps={{
             classes: { root: classes.fullHeight, inputMultiline: classes.fullHeight },
           }}
-          placeholder={
-            "Briefly summarise what you are doing (up to 240 characters)\n\nPlease only use English!"
-          }
+          placeholder={texts.briefly_summarise_what_you_are_doing}
           rows={2}
           value={projectData.short_description}
         />

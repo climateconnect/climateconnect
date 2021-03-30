@@ -14,5 +14,53 @@
   "notifications": {
     "en": "Notifications",
     "de": ""
+  },
+  "picture_of_our_earth": {
+    "en": "Picture of our earth",
+    "de": ""
+  },
+  "general": {
+    "en": "General",
+    "de": ""
+  },
+  "contact": {
+    "en": "Contact",
+    "de": ""
+  },
+  "leave_feedback": {
+    "en": "Leave feedback",
+    "de": ""
+  },
+  "legal": {
+    "en": "Legal",
+    "de": "Rechtliches"
+  },
+  "imprint": {
+    "en": "Imprint",
+    "de": ""
+  },
+  "privacy": {
+    "en": "Privacy",
+    "de": ""
+  },
+  "terms": {
+    "en": "Terms",
+    "de": ""
+  },
+  "newsletter": {
+    "en": "Sign up to get updates about Climate Connect and a summary of highlight projects every month!",
+    "de": ""
+  },
+  "latest_newsletter": {
+    "en": "Latest newsletter",
+    "de": ""
+  },
+  "view_sector_hubs": {
+    "en": "View sector hubs",
+    "de": ""
+  },
+  "all_hubs": {
+    "en": "All Hubs",
+    "de": ""
   }
 }

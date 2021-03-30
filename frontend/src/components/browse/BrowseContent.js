@@ -88,7 +88,7 @@ export default function BrowseContent({
   const texts = getTexts({ page: "general", locale: locale });
   const type_names = {
     projects: texts.projects,
-    organization: texts.organizations,
+    organizations: texts.organizations,
     members: texts.members,
   };
   const [hash, setHash] = useState(null);

@@ -1,5 +1,7 @@
-import React from "react";
-import { Typography, makeStyles } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import FaqQuestionElement from "./FaqQuestionElement";
 
 const useStyles = makeStyles((theme) => {
@@ -17,10 +19,13 @@ const useStyles = makeStyles((theme) => {
 
 export default function FilteredFaqContent({ searchValue, questions }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "faq", locale: locale });
   return (
     <div className={classes.root}>
       <Typography className={classes.header}>
-        Search results for
+        {texts.search_results_for}
+        {texts.search_results_for}
         <Typography className={classes.header} component="span" color="primary">
           {' "' + searchValue + '"'}
         </Typography>

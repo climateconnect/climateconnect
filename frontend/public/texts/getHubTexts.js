@@ -71,6 +71,16 @@ export default function getHubTexts({ hubName }) {
       every tenth of an degree matters.`,
       de: ``,
     },
+    find_climate_projects_in_each_sector_in_our_hubs: {
+      en: "Find climate projects in each sector in our hubs",
+      de: "",
+    },
+    find_climate_projects_in_each_sector_in_our_hubs_text: {
+      en: `Discover facts and concrete climate actions, projects and solutions Climate Connect users
+      are working on by vising the Hubs. Get a rundown of every main field of action in the fight
+      against climate change.`,
+      de: ``,
+    },
   };
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };
   if (hubName === "Food") return { ...generalHubTexts, ...getFoodHubDescription() };

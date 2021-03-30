@@ -206,5 +206,41 @@ export default function getProfileTexts({ profile }) {
       en: "Passwords don't match.",
       de: "",
     },
+    first_name: {
+      en: "First Name",
+      de: "",
+    },
+    last_name: {
+      en: "Last Name",
+      de: "",
+    },
+    i_would_like_to_receive_emails_about_updates_news_and_interesting_projects: {
+      en: "I would like to receive emails about updates, news and interesting projects",
+      de: "",
+    },
+    agree_to_tos_and_privacy_policy: {
+      en: (
+        <>
+          I agree to the{" "}
+          <a href="terms" target="_blank">
+            Terms of Use
+          </a>{" "}
+          and{" "}
+          <a href="privacy" target="_blank">
+            Privacy policy
+          </a>
+          .
+        </>
+      ),
+      de: <></>,
+    },
+    signup_step_2_headline: {
+      en: "Step 2: A little bit about yourself",
+      de: "",
+    },
+    repeat_password: {
+      en: "Repeat Password",
+      de: "",
+    },
   };
 }
