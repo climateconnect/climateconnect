@@ -2,7 +2,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { ThemeProvider } from "@material-ui/core/styles";
 import axios from "axios";
 import NextCookies from "next-cookies";
-import { useRouter } from "next/router";
+import { useRouter } from 'next/router';
 import React, { useEffect } from "react";
 import ReactGA from "react-ga";
 //add global styles
@@ -13,52 +13,6 @@ import { getCookieProps } from "../public/lib/cookieOperations";
 import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
 import theme from "../src/themes/theme";
-
-export async function getServerSideProps(ctx) {
-  const { token, acceptedStatistics } = NextCookies(ctx.ctx);
-
-  if (ctx.router.route === "/" && token) {
-    ctx.ctx.res.writeHead(302, {
-      Location: "/browse",
-      "Content-Type": "text/html; charset=utf-8",
-    });
-    ctx.ctx.res.end();
-    return;
-  }
-  const [user, notifications, donationGoal, pageProps] = await Promise.all([
-    getLoggedInUser(token),
-    getNotifications(token),
-    process.env.DONATION_CAMPAIGN_RUNNING === "true" ? getDonationGoalData() : null,
-    ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps(ctx.ctx) : {},
-  ]);
-  const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
-
-  if (token) {
-    const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
-    if (notificationsToSetRead.length > 0) {
-      const updatedNotifications = await setNotificationsRead(token, notificationsToSetRead);
-      return {
-        props: {
-          pageProps: pageProps,
-          user: user,
-          notifications: updatedNotifications ? updatedNotifications : [],
-          acceptedStatistics: acceptedStatistics,
-          pathName: pathName,
-          donationGoal: donationGoal,
-        },
-      };
-    }
-  }
-  return {
-    props: {
-      pageProps: pageProps,
-      user: user,
-      notifications: notifications ? notifications : [],
-      pathName: pathName,
-      donationGoal: donationGoal,
-    },
-  };
-}
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
@@ -83,8 +37,8 @@ export default function MyApp({
     setAcceptedStatistics(cookies.get("acceptedStatistics"));
     setAcceptedNecessary(cookies.get("acceptedNecessary"));
   };
-  const router = useRouter();
-  const { locale, locales } = router;
+  const router = useRouter()
+  const { locale, locales } = router
   if (
     acceptedStatistics &&
     !gaInitialized &&
@@ -238,6 +192,48 @@ export default function MyApp({
     </React.Fragment>
   );
 }
+
+MyApp.getInitialProps = async (ctx) => {
+  const { token, acceptedStatistics } = NextCookies(ctx.ctx);
+
+  if (ctx.router.route === "/" && token) {
+    ctx.ctx.res.writeHead(302, {
+      Location: "/browse",
+      "Content-Type": "text/html; charset=utf-8",
+    });
+    ctx.ctx.res.end();
+    return;
+  }
+  const [user, notifications, donationGoal, pageProps] = await Promise.all([
+    getLoggedInUser(token),
+    getNotifications(token),
+    process.env.DONATION_CAMPAIGN_RUNNING === "true" ? getDonationGoalData() : null,
+    ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps(ctx.ctx) : {},
+  ]);
+  const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
+
+  if (token) {
+    const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
+    if (notificationsToSetRead.length > 0) {
+      const updatedNotifications = await setNotificationsRead(token, notificationsToSetRead);
+      return {
+        pageProps: pageProps,
+        user: user,
+        notifications: updatedNotifications ? updatedNotifications : [],
+        acceptedStatistics: acceptedStatistics,
+        pathName: pathName,
+        donationGoal: donationGoal,
+      };
+    }
+  }
+  return {
+    pageProps: pageProps,
+    user: user,
+    notifications: notifications ? notifications : [],
+    pathName: pathName,
+    donationGoal: donationGoal,
+  };
+};
 
 const getNotificationsToSetRead = (notifications, pageProps) => {
   let notifications_to_set_unread = [];
