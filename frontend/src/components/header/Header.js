@@ -40,8 +40,8 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import Notification from "../communication/notifications/Notification";
 import NotificationsBox from "../communication/notifications/NotificationsBox";
-import LanguageSelect from "../header/LanguageSelect";
-import UserContext from "./../context/UserContext";
+import UserContext from "../context/UserContext";
+import LanguageSelect from "./LanguageSelect";
 
 const useStyles = makeStyles((theme) => {
   return {
