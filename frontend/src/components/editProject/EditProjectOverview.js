@@ -7,7 +7,7 @@ import {
   getImageDialogHeight,
   getImageUrl,
   getResizedImage,
-  whitenTransparentPixels,
+  whitenTransparentPixels
 } from "../../../public/lib/imageOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
@@ -196,7 +196,12 @@ function LargeScreenOverview({
       />
       <div className={classes.flexContainer}>
         <div className={classes.largeScreenImageContainer}>
-          <InputImage project={project} screenSize="large" handleChangeImage={handleChangeImage} />
+          <InputImage 
+            project={project} 
+            screenSize="large" 
+            handleChangeImage={handleChangeImage}
+            texts={texts} 
+          />
         </div>
         <div className={classes.inlineProjectInfo} ref={overviewInputsRef}>
           <InputShortDescription
