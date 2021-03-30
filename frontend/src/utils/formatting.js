@@ -39,31 +39,31 @@ const yearAndDayFormatter = (
   const units_de = {
     year: {
       singular: "Jahr",
-      plural: "Jahre"
+      plural: "Jahre",
     },
     month: {
       singular: "Monat",
-      plural: "Monate"
+      plural: "Monate",
     },
     week: {
       singular: "Woche",
-      plural: "Wochen"
+      plural: "Wochen",
     },
     day: {
       singular: "Tag",
-      plural: "Tage"
+      plural: "Tage",
     },
     hour: {
       singular: "Stunde",
-      plural: "Stunden"
+      plural: "Stunden",
     },
     minute: {
       singular: "Minute",
-      plural: "Minuten"
+      plural: "Minuten",
     },
     second: {
       singular: "Sekunde",
-      plural: "Sekunden"
+      plural: "Sekunden",
     },
   };
   // Only apply custom logic for the year case
@@ -92,7 +92,8 @@ const yearAndDayFormatter = (
 
     // Case: plural "years" and "days"
     const pluralizeUnit = (value, unit) => {
-      if (locale === "de") return value !== 1 ? `${units_de[unit].plural}` : units_de[unit].singular;
+      if (locale === "de")
+        return value !== 1 ? `${units_de[unit].plural}` : units_de[unit].singular;
       return value !== 1 ? `${unit}s` : unit;
     };
     const pluralizedDays = pluralizeUnit(dayWithinYear, "day");
@@ -106,16 +107,15 @@ const yearAndDayFormatter = (
   // https://github.com/nmn/react-timeago/blob/master/src/defaultFormatter.js
   if (value !== 1) {
     if (locale === "de") unit = units_de[unit].plural;
-    else
-      unit += "s";
+    else unit += "s";
   } else {
-    unit = units_de[unit].singular
+    unit = units_de[unit].singular;
   }
-  if(locale === "de" && suffix === "ago") {
-    return `vor ${value} ${unit}`
+  if (locale === "de" && suffix === "ago") {
+    return `vor ${value} ${unit}`;
   }
-  if(locale === "de" && suffix === "from now") {
-    return `in ${value} ${unit}`
+  if (locale === "de" && suffix === "from now") {
+    return `in ${value} ${unit}`;
   }
   return `${value} ${unit} ${suffix}`;
 };

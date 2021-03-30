@@ -99,7 +99,7 @@ export async function getServerSideProps(ctx) {
 
 export default function ProfilePage({ profile, projects, organizations, token }) {
   const { user, locale } = useContext(UserContext);
-  const infoMetadata = getProfileInfoMetadata(locale)
+  const infoMetadata = getProfileInfoMetadata(locale);
   const texts = getTexts({ page: "profile", locale: locale, profile: profile });
   return (
     <WideLayout

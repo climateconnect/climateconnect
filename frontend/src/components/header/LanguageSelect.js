@@ -41,8 +41,6 @@ export default function LanguageSelect() {
     }
   };
 
-  console.log(locales);
-
   return (
     <>
       <Button onClick={handleClick} color="primary">
