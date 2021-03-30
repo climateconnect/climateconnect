@@ -82,25 +82,24 @@ const useStyles = makeStyles((theme) => {
 export async function getServerSideProps(ctx) {
   const { token } = Cookies(ctx);
   const profileUrl = encodeURI(ctx.query.profileUrl);
-  const [profile, organizations, projects, infoMetadata] = await Promise.all([
+  const [profile, organizations, projects] = await Promise.all([
     getProfileByUrlIfExists(profileUrl, token),
     getOrganizationsByUser(profileUrl, token),
     getProjectsByUser(profileUrl, token),
-    getProfileInfoMetadata(ctx.locale),
   ]);
   return {
     props: {
       profile: profile,
       organizations: organizations,
       projects: projects,
-      infoMetadata: infoMetadata,
       token: token,
     },
   };
 }
 
-export default function ProfilePage({ profile, projects, organizations, infoMetadata, token }) {
+export default function ProfilePage({ profile, projects, organizations, token }) {
   const { user, locale } = useContext(UserContext);
+  const infoMetadata = getProfileInfoMetadata(locale)
   const texts = getTexts({ page: "profile", locale: locale, profile: profile });
   return (
     <WideLayout
