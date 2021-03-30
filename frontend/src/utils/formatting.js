@@ -23,7 +23,6 @@ const germanYearAndDayFormatter = (
   defaultFormatter,
   now
 ) => {
-  console.log("german year and day formatter!")
   return yearAndDayFormatter(value, unit, suffix, elapsedMilliseconds, defaultFormatter, now, "de");
 };
 
@@ -37,8 +36,6 @@ const yearAndDayFormatter = (
   now,
   locale
 ) => {
-  console.log(locale)
-  console.log(locale === "de")
   const units_de = {
     year: {
       singular: "Jahr",
@@ -71,7 +68,6 @@ const yearAndDayFormatter = (
   };
   // Only apply custom logic for the year case
   if (unit === "year") {
-    console.log("unit: year")
     // The days calculation comes directly from react-timeago:
     // https://github.com/nmn/react-timeago/blob/master/src/formatters/buildFormatter.js#L84-L86
 
@@ -106,11 +102,9 @@ const yearAndDayFormatter = (
       return `Vor ${value} ${pluralizedYears} and ${dayWithinYear} ${pluralizedDays}`;
     return `${value} ${pluralizedYears} and ${dayWithinYear} ${pluralizedDays} ago`;
   }
-  console.log("unit: not year")
   // Otherwise, just default. This logic comes from:
   // https://github.com/nmn/react-timeago/blob/master/src/defaultFormatter.js
   if (value !== 1) {
-    console.log(unit)
     if (locale === "de") unit = units_de[unit].plural;
     else
       unit += "s";
@@ -120,7 +114,6 @@ const yearAndDayFormatter = (
   if(locale === "de" && suffix === "ago") {
     return `vor ${value} ${unit}`
   }
-  console.log(suffix)
   if(locale === "de" && suffix === "from now") {
     return `in ${value} ${unit}`
   }
