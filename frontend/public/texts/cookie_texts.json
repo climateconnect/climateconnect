@@ -1,15 +1,15 @@
 {
   "cookie_banner_headline": {
     "en": "Cookie information and settings",
-    "de": ""
+    "de": "Cookie-Informationen und Einstellungen"
   },
   "cookie_explanation": {
     "en": "We use cookies in order to offer you an optimal service and to further improve our websites on the basis of statistics.",
-    "de": ""
+    "de": "Wir verwenden Cookies, um dir einen optimalen Service zu bieten und unsere Webseiten auf Basis von Statistiken weiter zu verbessern."
   },
   "for_more_information_check_out_our": {
     "en": "For more information check out our",
-    "de": ""
+    "de": "Für weitere Informationen besuche unser"
   },
   "cookies_necessary": {
     "en": "Necessary",
@@ -17,14 +17,14 @@
   },
   "statistics": {
     "en": "Statistics",
-    "de": ""
+    "de": "Statistik"
   },
   "confirm_selection": {
     "en": "Confirm Selection",
-    "de": ""
+    "de": "Auswahl bestätigen"
   },
   "enable_all_cookies": {
     "en": "Enable all cookies",
-    "de": ""
+    "de": "Alle Cookies aktivieren"
   }
 }

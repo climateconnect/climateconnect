@@ -1,15 +1,15 @@
 {
   "login_required": {
     "en": "You need to be logged in to see your chats",
-    "de": ""
+    "de": "Du musst eingeloggt sein, um deine Chats sehen zu können"
   },
   "cannot_leave_private_chats": {
     "en": "You can only leave group chats, not private chats",
-    "de": ""
+    "de": "Do kannst nur Gruppenchats verlassen, keine privaten Chats"
   },
   "left_group_chat": {
     "en": "You successfully left the group chat",
-    "de": ""
+    "de": "Du hast den Gruppenchat erfolgreich verlassen"
   },
   "chat_with": {
     "en": "Chat with",
@@ -17,39 +17,39 @@
   },
   "return_to_inbox": {
     "en": "Return to inbox",
-    "de": ""
+    "de": "Zurück zum Posteingang"
   },
   "confirm_leave_chat": {
     "en": "Do you really want to leave this group chat?",
-    "de": ""
+    "de": "Möchtest du diesen Gruppenchat wirklich verlassen?"
   },
   "cant_rejoin": {
     "en": "You will not be able to rejoin without being invited",
-    "de": ""
+    "de": "Du kannst nur wieder beitreten, wenn du eingeladen wirst"
   },
   "you_have_to_log_in_to_see_your_inbox": {
     "en": "You have to log in to see your inbox.",
-    "de": ""
+    "de": "Du musst eingeloggt sein, um deinen Posteingang zu sehen"
   },
   "please_set_a_group_name_if_youre_starting_a_chat_with_more_than_one_member": {
     "en": "Please set a group name if you're starting a chat with more than one member",
-    "de": ""
+    "de": "Bitte lege einen Gruppennamen fest, wenn du einen Chat mit mehr als einem Mitglied startest"
   },
   "please_add_one_or_more_users_to_chat_to_by_searching_them_in_the_search_bar_above": {
     "en": "Please add one or more users to chat to by searching them in the search bar above",
-    "de": ""
+    "de": "Bitte füge einen oder mehrere Benutzer*innen zum Chatten hinzu, indem du sie in der Suchleiste oben suchst"
   },
   "search_user_to_message": {
     "en": "Search user to message",
-    "de": ""
+    "de": "Benutzer zum Kontaktieren suchen"
   },
   "add_more_chat_participants": {
     "en": "Add more chat participants",
-    "de": ""
+    "de": "Weitere Chat-Teilnehmer*innen hinzufügen"
   },
   "type_the_name_of_the_users_you_want_to_message": {
     "en": "Type the name of the user(s) you want to message.",
-    "de": ""
+    "de": "Gib den Namen der Benutzer*innen ein, die du konktaktieren möchtest"
   },
   "group_chat_name": {
     "en": "Group chat name",
@@ -57,19 +57,19 @@
   },
   "start_chat": {
     "en": "Start Chat",
-    "de": ""
+    "de": "Chat starten"
   },
   "new_chat": {
     "en": "New Chat",
-    "de": ""
+    "de": "Neuer Chat"
   },
   "chat_has_been_created": {
     "en": "Chat has been created",
-    "de": ""
+    "de": "Chat wurde erstellt"
   },
   "message": {
     "en": "Message",
-    "de": ""
+    "de": "Nachricht"
   },
   "manage": {
     "en": "Manage",
@@ -77,11 +77,11 @@
   },
   "click_here_to_send_or_press_ctrl_enter": {
     "en": "Click here to send (or press ctrl + Enter)",
-    "de": ""
+    "de": "Klicke hier, um zu senden (oder drücke ctrl + Enter)"
   },
   "back_to_inbox": {
     "en": "Back to inbox",
-    "de": ""
+    "de": "Zurück zum Posteingang"
   },
   "leave_group_chat": {
     "en": "Leave group chat",
@@ -89,54 +89,54 @@
   },
   "manage_chat_members": {
     "en": "Manage chat members",
-    "de": ""
+    "de": "Verwalten von Chat-Mitgliedern"
   },
   "hide_chat_participants": {
     "en": "Hide chat participants",
-    "de": ""
+    "de": "Chat-Teilnehmer*innen ausblenden"
   },
   "show_chat_participants": {
     "en": "Show chat participants",
-    "de": ""
+    "de": "Chat-Teilnehmer*innen anzeigen"
   },
   "you_have_successfully_updated_this_chats_participants": {
     "en": "You have successfully updated this chat's participants!",
-    "de": ""
+    "de": "Du hast die Teilnehmer*innen dieses Chats erfolgreich aktualisiert!"
   },
   "there_must_be_exactly_one_creator_of_an_organization": {
     "en": "There must be exactly one creator of an organization.",
-    "de": ""
+    "de": "Es muss genau einen Ersteller oder eine Erstellerin einer Organisation geben"
   },
   "there_wasnt_a_creator": {
     "en": "There wasn't a creator",
-    "de": ""
+    "de": "Es gab noch keine(n) Ersteller*in"
   },
   "search_for_users_to_add_to_this_group_chat": {
     "en": "Search for users to add to this group chat",
-    "de": ""
+    "de": "Nach Benutzer*innen suchen, die zu diesem Gruppenchat hinzugefügt werden sollen"
   },
   "you_havent_chatted_to_anybody_yet_click_on": {
     "en": "You haven't chatted to anybody yet! Click on the 'New Chat' button to start reaching out to other climate actors!",
-    "de": ""
+    "de": "Du hast noch mit niemandem gechattet! Klicke auf die Schaltfläche 'Neuer Chat', um mit anderen Klimaakteuren in Kontakt zu treten!"
   },
   "sending_message": {
     "en": "sending message",
-    "de": ""
+    "de": "sende Nachricht"
   },
   "this_is_the_very_beginning_of_your_conversation_with": {
     "en": "This is the very beginning of your conversation with",
-    "de": ""
+    "de": "Dies ist der Beginn deines Gesprächs mit"
   },
   "this_is_the_very_beginning_of_your_conversation_in": {
     "en": "This is the very beginning of your conversation in",
-    "de": ""
+    "de": "Dies ist der Beginn deines Gesprächs in"
   },
   "write_a_message_to_get_the_conversation_started": {
     "en": "Write a message to get the conversation started!",
-    "de": ""
+    "de": "Schreib eine Nachricht, um das Gespräch in Gang zu bringen!"
   },
   "you_have_an_unsent_message_are_you_sure_you_want_to_leave": {
-    "en": "You have an unsent message. Are you sure you want to leave?.",
-    "de": ""
+    "en": "You have an unsent message. Are you sure you want to leave?",
+    "de": "Du hast eine nicht gesendete Nachricht. Bist du sicher, dass du gehen willst?"
   }
 }
