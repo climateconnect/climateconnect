@@ -242,13 +242,8 @@ async function getDataFromServer({ type, page, token, urlEnding }) {
 
   // Handle query params as well
   if (urlEnding) {
-    console.log(`Log: ${urlEnding}`);
     // &category=Lowering%20food%20waste&
     url += urlEnding;
-
-    console.log(`Full: ${url}`);
-
-    // Full: http://127.0.0.1:8000/api/projects/?page=1&status=In%20Progress&category=Lowering%20food%20waste&collaboration=no&
   }
 
   try {

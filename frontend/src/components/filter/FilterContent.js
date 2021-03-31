@@ -232,7 +232,7 @@ export default function FilterContent({
           setSelectedItems={setSelectedItems}
         />
       )}
-      {/* Selected... */}
+
       {
         <SelectedFilters
           currentFilters={currentFilters}

@@ -118,7 +118,7 @@ export default function Hub({
         page: 1,
         token: token,
         urlEnding: newUrlEnding,
-        // TODO: I think this is the primary difference between the applyNewFilters logic
+        // TODO: This is the primary difference between the applyNewFilters logic
         // here locally in [hubUrl] and within browse.js -- we should deduplicate
         hubUrl: hubUrl,
       });

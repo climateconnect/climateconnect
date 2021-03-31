@@ -327,7 +327,7 @@ export default function BrowseContent({
               <NoItemsFound type="projects" />
             )}
           </TabContent>
-          {/*  */}
+
           <TabContent value={tabValue} index={1} className={classes.tabContent}>
             {filtersExpanded && tabValue === 1 && (
               <FilterContent
