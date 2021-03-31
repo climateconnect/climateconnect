@@ -29,7 +29,7 @@ django-debug-toolbar==3.2
 django-filter==2.3.0
 django-rest-knox==4.1.0
 django-storages==1.9.1
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 entrypoints==0.3
 factory-boy==2.12.0
 Faker==4.0.2
