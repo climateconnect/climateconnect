@@ -68,8 +68,6 @@ export default function FilterContent({
 
   const [currentFilters, setCurrentFilters] = React.useState(reducedPossibleFilters);
 
-  // TODO(Piper): I believe the selected items is only being set by the multilevel?
-  // Could merge the initialProjeccategories here and then pass that down as well!
   const [selectedItems, setSelectedItems] = React.useState(
     possibleFilters.reduce((accumulator, currentValue) => {
       // All we're doing is initializing an empty array here.
@@ -88,10 +86,8 @@ export default function FilterContent({
             // Ensure we've an array for multiple items
             const splitItems = currentFilters[currentValue.key].split(",");
 
-            // Have to transform to a name property, so that the items can render the name
+            // Have to transform to key on a "name" property, so that ListItem text can render the text correctly
             const selectedCategory = {
-              // Old just a string
-              // name: currentFilters[currentValue.key],
               name: splitItems,
             };
 
@@ -138,7 +134,6 @@ export default function FilterContent({
       [filterKey]: currentFilters[filterKey].filter((f) => f !== filterName),
     };
 
-    // TODO(piper): verify this:
     // When dismissing a selected filter chip, we also want to update the
     // window state to reflect the currently active filters, and fetch
     // the updated data from the server

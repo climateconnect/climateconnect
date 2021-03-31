@@ -371,7 +371,7 @@ function SelectedList({
                           onClick={() => onClickUnselect(item)}
                           disableRipple
                         >
-                          <ListItemText>test {item.name}</ListItemText>
+                          <ListItemText>{item.name}</ListItemText>
                           <ListItemIcon className={classes.selectedItemIcon}>
                             <CloseIcon />
                           </ListItemIcon>
