@@ -12,7 +12,6 @@ export default function MultiLevelSelectDialog({
   itemsToChooseFrom,
   maxSelections,
   onClose,
-  onDismissOfItem,
   open,
   selectedItems,
   setSelectedItems,
@@ -65,7 +64,6 @@ export default function MultiLevelSelectDialog({
         isInPopup
         itemNamePlural={itemNamePlural}
         itemsToSelectFrom={possibleItems}
-        onDismissOfItem={onDismissOfItem}
         maxSelections={maxSelections ? maxSelections : 10}
         selected={selectedItems}
         setSelected={setSelectedItems}

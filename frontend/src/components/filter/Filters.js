@@ -208,7 +208,6 @@ export default function Filters({
                     items={currentFilters[filter.key]}
                     itemsToChooseFrom={filter.itemsToChooseFrom}
                     onClose={(selectedSkills) => handleClickDialogClose(filter.key, selectedSkills)}
-                    onDismissOfItem={handleApplyFilters}
                     open={open[filter.key] ? true : false}
                     selectedItems={curSelectedItems}
                     setSelectedItems={handleSetSelectedItems}
