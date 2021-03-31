@@ -31,15 +31,6 @@ export default function SelectField({
     defaultValue = "";
   }
 
-  // TODO(Piper): have to manage controlled value?
-  // console.log("select field: ");
-  // console.log(options);
-  // console.log(defaultValue);
-  // console.log(values);
-
-  // TODO(): transform default values into usable
-  // state here:?
-
   // If we want to force the checkboxes to be checked
   // based on a persisted query param URL, then
   // we update the value and values here...
@@ -105,8 +96,6 @@ export default function SelectField({
             return (
               <MenuItem key={index} value={value.name}>
                 <Checkbox
-                  // TODO(Piper): force checkbox selected...
-                  // checked={true}
                   checked={values.indexOf(value.name) > -1}
                   checkedIcon={<CheckBoxIcon className={classes.white} />}
                 />

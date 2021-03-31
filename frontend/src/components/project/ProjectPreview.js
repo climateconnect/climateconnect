@@ -11,7 +11,6 @@ const useStyles = makeStyles((theme) => {
     root: {
       "&:hover": {
         cursor: "pointer",
-        // border: `1px solid #FFF`,
         "box-shadow": "2px 2px 1px #EEE",
       },
       "-webkit-user-select": "none",

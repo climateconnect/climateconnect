@@ -51,15 +51,6 @@ export default function Browse({
    * @param {string} oldUrlEnding previous end of URL through the query param
    */
   const applyNewFilters = async (type, newFilters, closeFilters, oldUrlEnding) => {
-    debugger;
-    console.warn("Applying filters: ");
-    console.warn(JSON.stringify(newFilters));
-
-    // Filtered item object might look like this
-    /**
-     * {"location":"","status":["In Progress"],"organization_type":[],"category":"Lowering food waste,Energy","collaboration":"","skills":"Crafts"}
-     */
-
     // Don't fetch data again if the filters are equivalent
     if (filters === newFilters) {
       return;
@@ -86,9 +77,6 @@ export default function Browse({
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
       }
-
-      console.warn("Filtered items object:");
-      console.warn(JSON.stringify(filteredItemsObject));
 
       return {
         closeFilters: closeFilters,
@@ -175,7 +163,6 @@ export default function Browse({
           filterChoices={filterChoices}
           handleSetErrorMessage={handleSetErrorMessage}
           initialFiltersExpanded={true}
-          // initialFiltersExpanded={hasQueryParams}
           initialMembers={membersObject}
           initialOrganizations={organizationsObject}
           initialProjects={projectsObject}

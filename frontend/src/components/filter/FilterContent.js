@@ -17,8 +17,6 @@ export default function FilterContent({
   errorMessage,
   filtersExpanded,
   handleSetLocationOptionsOpen,
-  // TODO(piper): pass this all the way down...
-  handleSelectedListItemToFilters,
   locationInputRef,
   locationOptionsOpen,
   possibleFilters,
@@ -36,17 +34,6 @@ export default function FilterContent({
 
   const router = useRouter();
 
-  /**
-    {
-      "location": "",
-      "status": [],
-      "organization_type": [],
-      "category": "",
-      "collaboration": "",
-      "skills": ""
-    }
-   */
-
   // possibleFilters is an array of objects, which include various properties
   // like icon, iconName, title, etc. on it. We reduce those to a single object
   // to determine the initial filters, and selected items...
@@ -62,29 +49,16 @@ export default function FilterContent({
     return map;
   }, {});
 
-  // TODO: order here matters? And need to respect array types.
-  // let test = merge({}, reducedPossibleFilters);
-  // let test2 = merge(test, router.query);
-
-  // TODO: status needs to be an array at least on the object shape
-  let initialFilters = {};
-
   // Combine the filters together from the query param.
   // Some types are arrays and expected as such
   // downstream; need to handle appropriately both on initiailization
   // and when merging in parameters from query param
-
-  // TODO: this could be implified with the reduce likely
   Object.entries(router.query).forEach(([key, value]) => {
-    // debugger;
-
     // Handle specific types
     if (Array.isArray(reducedPossibleFilters[key])) {
       reducedPossibleFilters[key].push(value);
     } else if (typeof reducedPossibleFilters[key] === "string") {
-      // Handle string values too
-
-      // If there's something set, and it's strings concat'd -
+      // Handle string values too. If there's something set, and it's strings concat'd -
       // we need to make an array out of them
       if (value && value.indexOf(",") > 0) {
         const splitItems = value.split(",");
@@ -95,53 +69,27 @@ export default function FilterContent({
     }
   });
 
-  /**
-   * TODO: temp
-   *
-   * {location: "", status: Array(1), organization_type: Array(0), category: "Lowering food waste", collaboration: "", …}
-    category: "Lowering food waste"
-    collaboration: ""
-    location: ""
-    organization_type: []
-    skills: ""
-    status: ["In Progress"]
-   */
-
-  // initialFilters["status"].push("In test progress");
-
-  //   // ...router.query,
-  //   ...reducedPossibleFilters,
-  // };
-
   const [open, setOpen] = React.useState({});
 
   const [currentFilters, setCurrentFilters] = React.useState(reducedPossibleFilters);
-  // const [currentFilters, setCurrentFilters] = React.useState(initialFilters);
 
   // TODO(Piper): I believe the selected items is only being set by the multilevel?
   // Could merge the initialProjeccategories here and then pass that down as well!
   const [selectedItems, setSelectedItems] = React.useState(
     possibleFilters.reduce((accumulator, currentValue) => {
-      // console.log(currentValue);
-
       // All we're doing is initializing an empty array here.
       if (currentValue.type === "openMultiSelectDialogButton") {
         // And if we have selected items in the query param, then we populate this...
         // E.g., if currentFilters["category"] is already set, we also
         // select this item
-
-        // debugger;
-        // TODO(piper): test for multiple categories
         if (currentFilters && currentFilters[currentValue.key]) {
           if (Array.isArray(currentFilters[currentValue.key])) {
             accumulator[currentValue.key] = currentFilters[currentValue.key];
           } else {
             // Not an array, need to handle differently.
-
             // Only one item in the array,
             accumulator[currentValue.key] = [];
 
-            // TODO
             // Ensure we've an array for multiple items
             const splitItems = currentFilters[currentValue.key].split(",");
 
@@ -163,8 +111,6 @@ export default function FilterContent({
     }, {})
   );
 
-  // debugger;
-
   const handleClickDialogOpen = (prop) => {
     if (!open.prop) {
       setOpen({ ...open, [prop]: true });
@@ -172,16 +118,9 @@ export default function FilterContent({
   };
 
   const handleClickDialogClose = (prop, results) => {
-    // TODO(piper): on "Save" of the dialog, we should
-    // fetch new results, update URL, etc.
-
     if (results) {
       const updatedFilters = { ...currentFilters, [prop]: results.map((x) => x.name) };
       setCurrentFilters(updatedFilters);
-      // console.log(currentFilters);
-      console.warn("Handling click dialog close from: ");
-      // debugger;
-      console.log(currentFilters);
       applyFilters(type, updatedFilters, isSmallScreen);
     }
 
@@ -189,8 +128,6 @@ export default function FilterContent({
   };
 
   const handleValueChange = (key, newValue) => {
-    // TODO(piper): we want to update and fetch data on any value change
-    // debugger;
     const updatedFilters = { ...currentFilters, [key]: newValue };
     applyFilters(type, updatedFilters, isSmallScreen);
     setCurrentFilters(updatedFilters);
@@ -254,8 +191,6 @@ export default function FilterContent({
             handleClickDialogClose={handleClickDialogClose}
             handleClickDialogOpen={handleClickDialogOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-            // TODO: pasing this all the way through...
-            handleSelectedListItemToFilters={handleSelectedListItemToFilters}
             handleValueChange={handleValueChange}
             locationInputRef={locationInputRef}
             locationOptionsOpen={locationOptionsOpen}
@@ -270,7 +205,6 @@ export default function FilterContent({
             handleClickDialogClose={handleClickDialogClose}
             handleClickDialogOpen={handleClickDialogOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-            handleSelectedListItemToFilters={handleSelectedListItemToFilters}
             handleValueChange={handleValueChange}
             locationInputRef={locationInputRef}
             locationOptionsOpen={locationOptionsOpen}

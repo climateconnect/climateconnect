@@ -111,7 +111,6 @@ export default function Filters({
           // Get the current values for each potential filter
           // from what could already be previously selected
           const currentFilterValue = currentFilters[filter.key];
-
           if (filter.type === "text") {
             return (
               <TextField
@@ -166,7 +165,7 @@ export default function Filters({
                 key={filter.key}
                 size="small"
                 isInOverlay={isInOverlay}
-                // TODO(piper): check on this
+                // TODO(piper): verify this is expected -- previously was:
                 // defaultValue={currentFilters}
                 defaultValues={currentFilters[filter.key]}
                 onChange={(event) => {
@@ -177,52 +176,15 @@ export default function Filters({
           }
 
           if (filter.type === "openMultiSelectDialogButton") {
-            //  TODO(piper): could potentially
-            // pre-select / force selection at this point?
-            const curSelectedItems = selectedItems[filter.key];
-
             // Only perform one React state change if there's an initial
             // set of selected categories
-
-            // http://localhost:3000/browse?&status=In%20Progress&category=Lowering%20food%20waste&
+            const curSelectedItems = selectedItems[filter.key];
 
             /**
              * Update the selected items object with new entries. New selected items is
              * an array of objects.
              */
             const handleSetSelectedItems = (newSelectedItems) => {
-              // debugger;
-              // console.log("Handling selected items...");
-              // console.log(newSelectedItems);
-
-              // filter.key should be categories?
-
-              // TODO(PipeR): need to fix the dismissal of the list item here.
-              // for (const [key, value] of Object.entries(currentFilters[filter.key])) {
-              //   // So if we're in categories
-              //   if (key === filter.key) {
-              //     // upodate with the selected items...?
-              //     // TODO(piper) might need to come back to this feature...
-              //     // newSelectedItems.forEach(item => {
-              //     //   // value being the array of categories?
-              //     //   value.forEach(category => {
-              //     //     if (item === category) {
-              //     //       currentFilters
-              //     //     }
-              //     //   })
-              //     // })
-              //   }
-              // }
-
-              // TODO(piper); new...
-              // Update the filter array (categoreis) when selected,
-              // to persist the query param in the URL
-              // handleApplyFilters(filter.key);
-              // handleSelectedListItemToFilters(newSelectedItems);
-
-              // Value is an array of selected items
-              // TODO(piper): an array of strings, or array of arrays for values?
-              // And update the visaul selected items
               setSelectedItems({
                 ...selectedItems,
                 [filter.key]: newSelectedItems,
@@ -243,7 +205,6 @@ export default function Filters({
                     items={currentFilters[filter.key]}
                     itemsToChooseFrom={filter.itemsToChooseFrom}
                     onClose={(selectedSkills) => handleClickDialogClose(filter.key, selectedSkills)}
-                    // TODO(Piper): passing this through the selected item
                     onDismissOfItem={handleApplyFilters}
                     open={open[filter.key] ? true : false}
                     selectedItems={curSelectedItems}

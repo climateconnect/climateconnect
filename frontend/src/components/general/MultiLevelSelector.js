@@ -197,15 +197,9 @@ export default function MultiLevelSelector({
   };
 
   const onClickUnselect = (item) => {
-    // TODO(Piper): also have to update persisted URL query param,
-    // and trigger state flow through the whole tree again.
-
     // When dismissing a selected filter chip, we also want to update the
     // window state to reflect the currently active filters, and fetch
-    // the updated data from the server
-    // persistFiltersInURL(updatedFilters);
-    // onDismissOfItem(type, updatedFilters, isSmallScreen);
-
+    // the updated data from the server.
     setSelected(
       selected
         .slice(0, selected.indexOf(item))
@@ -221,16 +215,6 @@ export default function MultiLevelSelector({
   };
 
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-
-  // TODO(Piper): force selected items
-  // based on query param --
-  console.log("selected items:");
-  // console.log(itemsToSelectFrom);
-
-  // selected becomes the array of items that
-  // are selected
-  console.log(selected);
-
   return (
     <>
       <div className={classes.wrapper}>
@@ -358,12 +342,6 @@ function SelectedList({
     moveItem(result.source.index, result.destination.index);
   };
 
-  // console.log("selected list");
-  // console.log(itemNamePlural);
-  // console.log(itemNamePlural);
-
-  debugger;
-
   if (dragAble) {
     return (
       <DragDropContext onDragEnd={onDragEnd}>
@@ -412,7 +390,6 @@ function SelectedList({
     );
   }
 
-  // debugger;
   return (
     <div className={className}>
       <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
@@ -503,16 +480,11 @@ function ListToChooseFrom({
           const isDisabled =
             selected.filter((selectedItem) => selectedItem.name === item.name).length === 1;
 
-          // TODO(piper): previouisly -- removing this
-          // const isDisabled =
-          // selected.filter((selectedItem) => selectedItem.key === item.key).length === 1;
-
           return (
             <React.Fragment key={item.key}>
               <ListItem
                 button
                 disabled={isDisabled}
-                // disabled={true}
                 classes={{
                   root: `${classes.listItem}
                         ${index == 0 && classes.firstItem}

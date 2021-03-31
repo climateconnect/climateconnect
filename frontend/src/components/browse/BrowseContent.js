@@ -109,7 +109,6 @@ export default function BrowseContent({
   };
 
   useEffect(() => {
-    // TODO(piper): probably here...
     if (window.location.hash) {
       setHash(window.location.hash.replace("#", ""));
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(window.location.hash.replace("#", "")));
@@ -129,9 +128,6 @@ export default function BrowseContent({
   let hasFilteredFromQueryParams = false;
   useEffect(() => {
     if (hasQueryParams && !hasFilteredFromQueryParams) {
-      // TODO(piper): differentiate between URL window state, and
-      // the HTTP request
-
       // Update the state of the visual filters, like Select, Dialog, etc
       // Then actually fetch the data. We need a way to map what's
       // in the query param, to what's UI control is present on the screen. For
@@ -148,28 +144,13 @@ export default function BrowseContent({
         }
       }
 
-      console.warn(queryObject);
-
-      // applyFilters(type, updatedFilters, isSmallScreen);
-
-      // Parse query into correct filters, then
-      // TODO: add more filter parsing
-      // debugger;
-      // let newFilters = { ...filters, ...queryObject };
       let newFilters = { ...queryObject };
 
-      // console.warn(`Router query: ${JSON.stringify(router.query)}`);
-      console.warn(`New filters: ${JSON.stringify(newFilters)}`);
-
-      // TODO: fix hardcoded projects here...
+      // TODO(piper): fix hardcoded projects here...
       // Apply new filters with the query object immediately:
-      // applyNewFilters("projects", newFilters, false, undefined);
       handleApplyNewFilters("projects", newFilters, false, state.urlEnding["projects"]);
-      // pplyNewFilters("projects", newFilters, false, state.urlEnding[type]);
-      // applyNewFilters("projects", newFilters, false, undefined);
 
       // And then update state
-      // setFilters({ ...newFilters });
       hasFilteredFromQueryParams = true;
     }
   }, []);
@@ -226,25 +207,12 @@ export default function BrowseContent({
   };
 
   /**
-   * Handler to pass all the way to list items, to
-   * transform a selected / unselected list item and
-   * update the persisted query param.
-   */
-  // TODO(piper): uhhh already persisting on save and dismss?
-  const handleSelectedListItemToFilters = (newSelectedItems) => {
-    console.log("New selected items");
-    console.log(newSelectedItems);
-  };
-
-  /**
    * Sets loading state to true to until the results are
    * returned from applying the new filters. Then updates the
    * state.
    */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
     // Save these filters as query params to the URL
-    // debugger;
-    // console.log('Handling applying ')
     persistFiltersInURL(newFilters);
 
     if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
@@ -331,9 +299,6 @@ export default function BrowseContent({
                 className={classes.tabContent}
                 errorMessage={errorMessage}
                 filtersExpanded={filtersExpanded}
-                // TODO(Piper): just added
-                handleSelectedListItemToFilters={handleSelectedListItemToFilters}
-                // handleSelectedListItemToFilters={handleSelectedListItemToFilters}
                 handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[0]]}
                 locationOptionsOpen={locationOptionsOpen}

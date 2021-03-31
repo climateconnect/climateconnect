@@ -26,7 +26,6 @@ export default function SelectedFilters({ currentFilters, possibleFilters, handl
   // Only show the "Selected Filters" title if there's at least one filter.
   // TODO: should probably refactor this to use .any
   const hasFilters = Object.keys(currentFilters).reduce((hasFilters, filter) => {
-    // debugger;
     if (currentFilters[filter] && currentFilters[filter].length) {
       hasFilters = true;
     }
@@ -37,10 +36,7 @@ export default function SelectedFilters({ currentFilters, possibleFilters, handl
     <div>
       {hasFilters && <Typography>Selected Filters</Typography>}
 
-      {/* TODO(piper): why isn't there an array here for category */}
       {Object.keys(currentFilters).map((key) => {
-        debugger;
-
         // Only render the chip if the filter is an array
         if (
           currentFilters[key] &&
