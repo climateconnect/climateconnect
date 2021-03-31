@@ -362,6 +362,8 @@ function SelectedList({
   // console.log(itemNamePlural);
   // console.log(itemNamePlural);
 
+  debugger;
+
   if (dragAble) {
     return (
       <DragDropContext onDragEnd={onDragEnd}>
@@ -392,7 +394,7 @@ function SelectedList({
                           onClick={() => onClickUnselect(item)}
                           disableRipple
                         >
-                          <ListItemText>{item.name}</ListItemText>
+                          <ListItemText>test {item.name}</ListItemText>
                           <ListItemIcon className={classes.selectedItemIcon}>
                             <CloseIcon />
                           </ListItemIcon>
@@ -431,8 +433,8 @@ function SelectedList({
             onClick={() => onClickUnselect(item)}
             disableRipple
           >
-            {/* <ListItemText>{JSON.stringify(item)}</ListItemText> */}
-            <ListItemText>{item.name}</ListItemText>
+            {/* If the .name property is undefined, render the item text directly */}
+            <ListItemText>{item.name || item}</ListItemText>
             <ListItemIcon className={classes.selectedItemIcon}>
               <CloseIcon />
             </ListItemIcon>

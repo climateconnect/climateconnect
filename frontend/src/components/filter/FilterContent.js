@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useRouter } from "next/router";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { remove, update, merge, initial, uniq } from "lodash";
+import { remove, update, merge, initial, uniq, indexOf } from "lodash";
 import { loadGetInitialProps } from "next/dist/next-server/lib/utils";
 
 import theme from "../../themes/theme";
@@ -76,13 +76,22 @@ export default function FilterContent({
 
   // TODO: this could be implified with the reduce likely
   Object.entries(router.query).forEach(([key, value]) => {
-    // If there's something set...
+    // debugger;
+
     // Handle specific types
     if (Array.isArray(reducedPossibleFilters[key])) {
       reducedPossibleFilters[key].push(value);
     } else if (typeof reducedPossibleFilters[key] === "string") {
       // Handle string values too
-      reducedPossibleFilters[key] = value;
+
+      // If there's something set, and it's strings concat'd -
+      // we need to make an array out of them
+      if (value && value.indexOf(",") > 0) {
+        const splitItems = value.split(",");
+        reducedPossibleFilters[key] = [...splitItems];
+      } else {
+        reducedPossibleFilters[key] = value;
+      }
     }
   });
 
@@ -117,24 +126,32 @@ export default function FilterContent({
 
       // All we're doing is initializing an empty array here.
       if (currentValue.type === "openMultiSelectDialogButton") {
-        // debugger;
-
         // And if we have selected items in the query param, then we populate this...
         // E.g., if currentFilters["category"] is already set, we also
         // select this item
 
+        // debugger;
         // TODO(piper): test for multiple categories
         if (currentFilters && currentFilters[currentValue.key]) {
           if (Array.isArray(currentFilters[currentValue.key])) {
             accumulator[currentValue.key] = currentFilters[currentValue.key];
           } else {
+            // Not an array, need to handle differently.
+
             // Only one item in the array,
             accumulator[currentValue.key] = [];
-            // Have to transform to a name property, so that the items can render the
-            // name
+
+            // TODO
+            // Ensure we've an array for multiple items
+            const splitItems = currentFilters[currentValue.key].split(",");
+
+            // Have to transform to a name property, so that the items can render the name
             const selectedCategory = {
-              name: currentFilters[currentValue.key],
+              // Old just a string
+              // name: currentFilters[currentValue.key],
+              name: splitItems,
             };
+
             accumulator[currentValue.key].push(selectedCategory);
           }
         } else {
@@ -145,6 +162,8 @@ export default function FilterContent({
       return accumulator;
     }, {})
   );
+
+  // debugger;
 
   const handleClickDialogOpen = (prop) => {
     if (!open.prop) {
@@ -171,6 +190,7 @@ export default function FilterContent({
 
   const handleValueChange = (key, newValue) => {
     // TODO(piper): we want to update and fetch data on any value change
+    // debugger;
     const updatedFilters = { ...currentFilters, [key]: newValue };
     applyFilters(type, updatedFilters, isSmallScreen);
     setCurrentFilters(updatedFilters);
