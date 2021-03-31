@@ -80,7 +80,7 @@ class SignUpView(APIView):
     def post(self, request):
         required_params = [
             'email', 'password', 'first_name', 'last_name',
-            'location', 'send_newsletter'
+            'location', 'send_newsletter', 
         ]
         for param in required_params:
             if param not in request.data:
@@ -107,15 +107,19 @@ class SignUpView(APIView):
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
             verification_key=uuid.uuid4(), send_newsletter=request.data['send_newsletter']
         )
-
+        if "from_tutorial" in request.data:
+            user_profile.from_tutorial = request.data['from_tutorial']
+        if "is_activist" in request.data:
+            user_profile.is_activist = request.data['is_activist']
+        if "last_completed_tutorial_step" in request.data:
+            user_profile.last_completed_tutorial_step = request.data['last_completed_tutorial_step']
         if settings.AUTO_VERIFY == True:
             user_profile.is_profile_verified = True
-            user_profile.save()
             message = "Congratulations! Your account has been created"
         else:
             send_user_verification_email(user, user_profile.verification_key)
             message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(user.email)  # NOQA
-        
+        user_profile.save()
 
         return Response({'success': message}, status=status.HTTP_201_CREATED)
 
@@ -269,8 +273,13 @@ class EditUserProfile(APIView):
         user_profile.name = user.first_name + ' ' + user.last_name
         user_profile.url_slug = (user.first_name + user.last_name).lower() + str(user.id)
         user.save()
+
         if 'image' in request.data:
             user_profile.image = get_image_from_data_url(request.data['image'])[0]
+
+        if 'thumbnail_image' in request.data:
+            user_profile.thumbnail_image = get_image_from_data_url(request.data['thumbnail_image'])[0]
+
         if 'background_image' in request.data:
             user_profile.background_image = get_image_from_data_url(
                 request.data['background_image'], True, 1280
@@ -366,7 +375,7 @@ class ResendVerificationEmail(APIView):
             return Response({'message': 'There is no profile with this email address. Try entering the correct email address or signing up again.'}, status=status.HTTP_400_BAD_REQUEST)
         
         if user_profile.is_profile_verified:
-            return Response({'message': 'Your profile is already verified. You can not log in with your account.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Your profile is already verified. You now log in with your account.'}, status=status.HTTP_400_BAD_REQUEST)
         
         send_user_verification_email(user_profile.user, user_profile.verification_key)
 

@@ -26,7 +26,11 @@ export default function WhoWeAreContent() {
     <div className={classes.teamRoot}>
       <div className={classes.imageContainer}>
         <div className={classes.imageWrapper}>
-          <img src="/images/team.jpg" alt="Climate Connect's core team: A group of 9 people wearing Climate Connect T-Shirts" className={classes.image} />
+          <img
+            src="/images/team.jpg"
+            alt="Climate Connect's core team: A group of 9 people wearing Climate Connect T-Shirts"
+            className={classes.image}
+          />
         </div>
       </div>
     </div>

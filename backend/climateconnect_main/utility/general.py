@@ -1,9 +1,12 @@
 # python standard lib
-import base64, secrets, io
+import base64
+import io
+import secrets
 
+from django.core.files.base import ContentFile
 # django and pillow lib
 from PIL import Image
-from django.core.files.base import ContentFile
+
 
 #source: https://dev.to/ageumatheus/creating-image-from-dataurl-base64-with-pyhton-django-454g
 def get_image_from_data_url( data_url, resize=False, base_width=500 ):

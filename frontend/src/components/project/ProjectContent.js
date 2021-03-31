@@ -1,21 +1,18 @@
-import React, { useContext } from "react";
-import TimeAgo from "react-timeago";
-import humanizeDuration from "humanize-duration";
-import { Typography, Button, Link } from "@material-ui/core";
+import { Button, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-
-import { yearAndDayFormatter } from "../../utils/formatting";
-import DateDisplay from "./../general/DateDisplay";
-import Posts from "./../communication/Posts.js";
-import ProjectStatus from "./ProjectStatus";
-
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-
-import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
-import MiniProfilePreview from "../profile/MiniProfilePreview";
+import humanizeDuration from "humanize-duration";
+import React, { useContext } from "react";
+import TimeAgo from "react-timeago";
+import { yearAndDayFormatter } from "../../utils/formatting";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
+import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
+import MiniProfilePreview from "../profile/MiniProfilePreview";
+import Posts from "./../communication/Posts.js";
+import DateDisplay from "./../general/DateDisplay";
+import ProjectStatus from "./ProjectStatus";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -125,7 +122,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectContent({ project, leaveProject }) {
+export default function ProjectContent({
+  project,
+  leaveProject,
+  projectDescriptionRef,
+  collaborationSectionRef,
+}) {
   const classes = useStyles();
   const { user } = useContext(UserContext);
   const [showFullDescription, setShowFullDescription] = React.useState(false);
@@ -216,7 +218,13 @@ export default function ProjectContent({ project, leaveProject }) {
         </div>
       </div>
       <div className={classes.contentBlock}>
-        <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
+        <Typography
+          component="h2"
+          variant="h6"
+          color="primary"
+          ref={projectDescriptionRef}
+          className={classes.subHeader}
+        >
           Project description
         </Typography>
         <Typography component="div">
@@ -250,7 +258,7 @@ export default function ProjectContent({ project, leaveProject }) {
           </Button>
         )}
       </div>
-      <div className={classes.contentBlock}>
+      <div className={classes.contentBlock} ref={collaborationSectionRef}>
         <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
           Collaboration
         </Typography>

@@ -129,7 +129,7 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = (
             'id', 'first_name', 'last_name',
-            'url_slug', 'image', 'location'
+            'url_slug', 'thumbnail_image', 'location'
         )
 
     def get_id(self, obj):

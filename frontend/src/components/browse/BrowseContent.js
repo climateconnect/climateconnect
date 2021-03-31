@@ -1,19 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
+import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
 import { useRouter } from "next/router";
-import { Container, Tabs, Tab, Divider, useMediaQuery, makeStyles } from "@material-ui/core";
+import React, { useEffect, useRef, useState } from "react";
 
+import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
+import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { persistFiltersInURL } from "../../../public/lib/urlOperations";
-import FilterSection from "../indexPage/FilterSection";
 import FilterContent from "../filter/FilterContent";
-import ProjectPreviews from "../project/ProjectPreviews";
-import ProfilePreviews from "../profile/ProfilePreviews";
+import FilterSection from "../indexPage/FilterSection";
+import LoadingContext from "../context/LoadingContext";
+import LoadingSpinner from "../general/LoadingSpinner";
+import NoItemsFound from "./NoItemsFound";
 import OrganizationPreviews from "../organization/OrganizationPreviews";
 import possibleFilters from "../../../public/data/possibleFilters";
-import NoItemsFound from "./NoItemsFound";
-import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
-import LoadingSpinner from "../general/LoadingSpinner";
-import LoadingContext from "../context/LoadingContext";
-import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
+import ProfilePreviews from "../profile/ProfilePreviews";
+import ProjectPreviews from "../project/ProjectPreviews";
+import Tutorial from "../tutorial/Tutorial";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -45,6 +46,11 @@ export default function BrowseContent({
   initialOrganizations,
   initialProjects,
   loadMoreData,
+  hubsSubHeaderRef,
+  hubQuickInfoRef,
+  hubProjectsButtonRef,
+  nextStepTriggeredBy,
+  hubName,
 }) {
   const initialState = {
     items: {
@@ -69,6 +75,11 @@ export default function BrowseContent({
       members: "",
     },
   };
+
+  //saving these refs for the tutorial
+  const firstProjectCardRef = useRef(null);
+  const filterButtonRef = useRef(null);
+  const organizationsTabRef = useRef(null);
 
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
@@ -275,6 +286,7 @@ export default function BrowseContent({
           setFiltersExpanded={setFiltersExpanded}
           type={TYPES_BY_TAB_VALUE[tabValue]}
           customSearchBarLabels={customSearchBarLabels}
+          filterButtonRef={filterButtonRef}
         />
         <Tabs
           variant={isNarrowScreen ? "fullWidth" : "standard"}
@@ -284,9 +296,14 @@ export default function BrowseContent({
           textColor="primary"
           centered={true}
         >
-          {TYPES_BY_TAB_VALUE.map((t, index) => (
-            <Tab label={capitalizeFirstLetter(t)} className={classes.tab} key={index} />
-          ))}
+          {TYPES_BY_TAB_VALUE.map((t, index) => {
+            const tabProps = {
+              label: capitalizeFirstLetter(t),
+              className: classes.tab,
+            };
+            if (index === 1) tabProps.ref = organizationsTabRef;
+            return <Tab {...tabProps} key={index} />;
+          })}
         </Tabs>
 
         <Divider className={classes.mainContentDivider} />
@@ -322,6 +339,7 @@ export default function BrowseContent({
                 loadFunc={loadMoreProjects}
                 parentHandlesGridItems
                 projects={state.items.projects}
+                firstProjectCardRef={firstProjectCardRef}
               />
             ) : (
               <NoItemsFound type="projects" />
@@ -405,6 +423,19 @@ export default function BrowseContent({
           )}
         </>
       </Container>
+      <Tutorial
+        fixedPosition
+        pointerRefs={{
+          projectCardRef: firstProjectCardRef,
+          filterButtonRef: filterButtonRef,
+          organizationsTabRef: organizationsTabRef,
+          hubsSubHeaderRef: hubsSubHeaderRef,
+          hubQuickInfoRef: hubQuickInfoRef,
+          hubProjectsButtonRef: hubProjectsButtonRef,
+        }}
+        hubName={hubName}
+        nextStepTriggeredBy={nextStepTriggeredBy}
+      />
     </LoadingContext.Provider>
   );
 }

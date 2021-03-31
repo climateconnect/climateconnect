@@ -45,7 +45,11 @@ export default function Hubs({ hubs }) {
   return (
     <WideLayout largeFooter noSpaceBottom title="Climate Solution Hubs">
       <NavigationSubHeader />
-      <HubHeaderImage image="/images/hubs_background.jpg" alt="Beautiful flat landscape with many hot air balloons taking off" fullWidth />
+      <HubHeaderImage
+        image="/images/hubs_background.jpg"
+        alt="Beautiful flat landscape with many hot air balloons taking off"
+        fullWidth
+      />
       <Container>
         <Typography color="primary" component="h1" className={classes.h1}>
           Find climate solutions in each hub

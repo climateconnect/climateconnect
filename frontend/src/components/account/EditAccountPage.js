@@ -1,33 +1,37 @@
-import React from "react";
 import {
-  Container,
   Avatar,
-  Chip,
   Button,
-  TextField,
-  Typography,
-  Tooltip,
-  IconButton,
-  useMediaQuery,
   Checkbox,
+  Chip,
+  Container,
+  IconButton,
+  TextField,
+  Tooltip,
+  Typography,
+  useMediaQuery,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
-import UploadImageDialog from "./../dialogs/UploadImageDialog";
-import ConfirmDialog from "./../dialogs/ConfirmDialog";
-import SelectField from "./../general/SelectField";
-import SelectDialog from "./../dialogs/SelectDialog";
-import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
-import imageCompression from "browser-image-compression";
-import { getImageDialogHeight } from "../../../public/lib/imageOperations";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
-import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import Alert from "@material-ui/lab/Alert";
-import LocationSearchBar from "../search/LocationSearchBar";
+import React from "react";
+import {
+  getCompressedJPG,
+  getImageDialogHeight,
+  getResizedImage,
+  whitenTransparentPixels,
+} from "../../../public/lib/imageOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
+import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
+import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
+import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
+import LocationSearchBar from "../search/LocationSearchBar";
+import ConfirmDialog from "./../dialogs/ConfirmDialog";
+import SelectDialog from "./../dialogs/SelectDialog";
+import UploadImageDialog from "./../dialogs/UploadImageDialog";
+import SelectField from "./../general/SelectField";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -242,14 +246,31 @@ export default function EditAccountPage({
 
   const handleBackgroundClose = (image) => {
     setOpen({ ...open, backgroundDialog: false });
-    if (image && image instanceof HTMLCanvasElement)
-      setEditedAccount({ ...editedAccount, background_image: image.toDataURL() });
+    if (image && image instanceof HTMLCanvasElement) {
+      if (image && image instanceof HTMLCanvasElement) {
+        whitenTransparentPixels(image);
+        image.toBlob(async function (blob) {
+          const resizedBlob = URL.createObjectURL(blob);
+          setEditedAccount({ ...editedAccount, background_image: resizedBlob });
+        }, "image/jpeg");
+      }
+    }
   };
 
-  const handleAvatarClose = (image) => {
+  const handleAvatarClose = async (image) => {
     setOpen({ ...open, avatarDialog: false });
     if (image && image instanceof HTMLCanvasElement) {
-      setEditedAccount({ ...editedAccount, image: image.toDataURL() });
+      whitenTransparentPixels(image);
+      image.toBlob(async function (blob) {
+        const resizedBlob = URL.createObjectURL(blob);
+        const thumbnailBlob = await getResizedImage(
+          URL.createObjectURL(blob),
+          120,
+          120,
+          "image/jpeg"
+        );
+        setEditedAccount({ ...editedAccount, image: resizedBlob, thumbnail_image: thumbnailBlob });
+      }, "image/jpeg");
     }
   };
 
@@ -480,11 +501,10 @@ export default function EditAccountPage({
           );
         }
         return (
-          <div className={classes.infoElement}>
+          <div className={classes.infoElement} key={i.key}>
             <LocationSearchBar
               label={i.name}
               required
-              key={i.key}
               value={editedAccount.info.location}
               onChange={handleChangeLocationString}
               onSelect={handleChangeLocation}
@@ -518,19 +538,14 @@ export default function EditAccountPage({
     const file = backgroundEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
-    const options = {
-      maxSizeMB: 1,
-      maxWidthOrHeight: 1280,
-      useWebWorker: true,
-    };
 
     try {
-      const compressedFile = await imageCompression(file, options);
+      const compressedImage = await getCompressedJPG(file, 1);
 
       setTempImages(() => {
         return {
           ...tempImages,
-          background_image: URL.createObjectURL(compressedFile),
+          background_image: compressedImage,
         };
       });
       handleDialogClickOpen("backgroundDialog");
@@ -543,18 +558,13 @@ export default function EditAccountPage({
     const file = avatarEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
       alert("Please upload either a png or a jpg file.");
-    const options = {
-      maxSizeMB: 0.5,
-      maxWidthOrHeight: 600,
-      useWebWorker: true,
-    };
 
     try {
-      const compressedFile = await imageCompression(file, options);
+      const compressedImage = await getCompressedJPG(file, 0.5);
       setTempImages(() => {
         return {
           ...tempImages,
-          image: URL.createObjectURL(compressedFile),
+          image: compressedImage,
         };
       });
       handleDialogClickOpen("avatarDialog");
@@ -656,7 +666,7 @@ export default function EditAccountPage({
                   accept=".png,.jpeg,.jpg"
                   value={selectedFiles["avatar"]}
                   onClick={() => handleFileInputClick("avatar")}
-                  onSubmit={() => handleFileSubmit(event, "avatar")}
+                  onSubmit={(event) => handleFileSubmit(event, "avatar")}
                 />
                 <Avatar
                   alt={editedAccount.name}

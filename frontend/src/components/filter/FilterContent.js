@@ -1,15 +1,11 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { remove, update, merge, initial, uniq, indexOf } from "lodash";
-import { loadGetInitialProps } from "next/dist/next-server/lib/utils";
 
-import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
-
-import { persistFiltersInURL } from "../../../public/lib/urlOperations";
+import theme from "../../themes/theme";
 
 export default function FilterContent({
   applyFilters,
@@ -32,8 +28,6 @@ export default function FilterContent({
     possibleFilters.length
   );
 
-  const router = useRouter();
-
   // possibleFilters is an array of objects, which include various properties
   // like icon, iconName, title, etc. on it. We reduce those to a single object
   // to determine the initial filters, and selected items...
@@ -53,6 +47,7 @@ export default function FilterContent({
   // Some types are arrays and expected as such
   // downstream; need to handle appropriately both on initiailization
   // and when merging in parameters from query param
+  const router = useRouter();
   Object.entries(router.query).forEach(([key, value]) => {
     // Handle specific types
     if (Array.isArray(reducedPossibleFilters[key])) {
@@ -143,10 +138,10 @@ export default function FilterContent({
       [filterKey]: currentFilters[filterKey].filter((f) => f !== filterName),
     };
 
+    // TODO(piper): verify this:
     // When dismissing a selected filter chip, we also want to update the
     // window state to reflect the currently active filters, and fetch
     // the updated data from the server
-    // persistFiltersInURL(updatedFilters);
     applyFilters(type, updatedFilters, isSmallScreen);
 
     setCurrentFilters(updatedFilters);

@@ -69,7 +69,7 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = (
-            'id', 'name', 'url_slug', 'image', 'location', 'types'
+            'id', 'name', 'url_slug', 'thumbnail_image', 'location', 'types'
         )
     
     def get_location(self, obj):
@@ -87,7 +87,7 @@ class OrganizationStubSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ('id', 'name', 'url_slug', 'image', 'location')
+        fields = ('id', 'name', 'url_slug', 'thumbnail_image', 'location')
 
     def get_location(self, obj):
         if obj.location == None:

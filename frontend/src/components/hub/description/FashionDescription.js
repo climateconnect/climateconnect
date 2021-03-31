@@ -222,7 +222,11 @@ export default function FashionDescription() {
             progress begins with us!
           </Typography>
           <div className={classes.imgWrapper}>
-            <img src="/images/circular_economy.jpg" alt="Shows sustainable lifecycle of fashion in a circular way through: raw materials, design, production, destribution, use, collection and recycling" className={classes.img} />
+            <img
+              src="/images/circular_economy.jpg"
+              alt="Shows sustainable lifecycle of fashion in a circular way through: raw materials, design, production, destribution, use, collection and recycling"
+              className={classes.img}
+            />
           </div>
         </Typography>
       </div>

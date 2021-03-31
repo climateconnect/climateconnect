@@ -1,20 +1,21 @@
-import React, { useContext, useRef } from "react";
-import EnterDetailledOrganizationInfo from "./../src/components/organization/EnterDetailledOrganizationInfo";
-import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
-import Layout from "./../src/components/layouts/layout";
-import WideLayout from "./../src/components/layouts/WideLayout";
 import axios from "axios";
 import Cookies from "next-cookies";
-import tokenConfig from "../public/config/tokenConfig";
-import LoginNudge from "../src/components/general/LoginNudge";
-import UserContext from "../src/components/context/UserContext";
 import Router from "next/router";
+import React, { useContext, useRef } from "react";
+import tokenConfig from "../public/config/tokenConfig";
+import { blobFromObjectUrl } from "../public/lib/imageOperations";
 import {
-  isLocationValid,
-  indicateWrongLocation,
-  parseLocation,
   getLocationValue,
+  indicateWrongLocation,
+  isLocationValid,
+  parseLocation,
 } from "../public/lib/locationOperations";
+import UserContext from "../src/components/context/UserContext";
+import LoginNudge from "../src/components/general/LoginNudge";
+import Layout from "./../src/components/layouts/layout";
+import WideLayout from "./../src/components/layouts/WideLayout";
+import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
+import EnterDetailledOrganizationInfo from "./../src/components/organization/EnterDetailledOrganizationInfo";
 
 export default function CreateOrganization({ tagOptions, token, rolesOptions }) {
   const [errorMessages, setErrorMessages] = React.useState({
@@ -124,8 +125,8 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     location: "Please specify your location",
   };
 
-  const handleDetailledInfoSubmit = (account) => {
-    const organizationToSubmit = parseOrganizationForRequest(account, user, rolesOptions);
+  const handleDetailledInfoSubmit = async (account) => {
+    const organizationToSubmit = await parseOrganizationForRequest(account, user, rolesOptions);
     if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
         locationInputRef,
@@ -163,11 +164,12 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       })
       .catch(function (error) {
         console.log(error);
-        if (error) console.log(error.response.data);
-        handleSetErrorMessages({
-          errorMessages,
-          detailledOrganizationInfo: error?.response?.data,
-        });
+        if (error) console.log(error?.response?.data);
+        if (error?.response?.data?.message)
+          handleSetErrorMessages({
+            errorMessages,
+            detailledOrganizationInfo: error?.response?.data?.message,
+          });
       });
   };
 
@@ -252,7 +254,7 @@ async function getTags(token) {
   }
 }
 
-const parseOrganizationForRequest = (o, user, rolesOptions) => {
+const parseOrganizationForRequest = async (o, user, rolesOptions) => {
   const organization = {
     team_members: [
       { user_id: user.id, permission_type_id: rolesOptions.find((r) => r.name === "Creator").id },
@@ -260,14 +262,17 @@ const parseOrganizationForRequest = (o, user, rolesOptions) => {
     name: o.name,
     background_image: o.background_image,
     image: o.image,
+    thumbnail_image: o.thumbnail_image,
     location: o.info.location,
     website: o.info.website,
     short_description: o.info.shortdescription,
     organization_tags: o.types,
   };
   if (o.parentorganization) organization.parent_organization = o.parentorganization;
-
+  if (o.background_image)
+    organization.background_image = await blobFromObjectUrl(o.background_image);
+  if (o.thumbnail_image) organization.thumbnail_image = await blobFromObjectUrl(o.thumbnail_image);
+  if (o.image) organization.image = await blobFromObjectUrl(o.image);
   if (o.info.school) organization.school = o.info.school;
-
   return organization;
 };

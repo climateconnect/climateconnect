@@ -1,14 +1,14 @@
-import React from "react";
-import { Typography, Button, Avatar, Link, Tooltip, CircularProgress } from "@material-ui/core";
+import { Avatar, Button, CircularProgress, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Posts from "./Posts";
-import DateDisplay from "./../general/DateDisplay";
-import { getImageUrl } from "../../../public/lib/imageOperations";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import CommentInput from "./CommentInput";
+import React from "react";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
+import DateDisplay from "./../general/DateDisplay";
+import CommentInput from "./CommentInput";
 import MessageContent from "./MessageContent";
+import Posts from "./Posts";
 
 const useStyles = makeStyles((theme) => ({
   postDate: {
@@ -97,7 +97,7 @@ export default function Post({
       ) : (
         <div className={classes.commentFlexBox}>
           <Link href={"/profiles/" + post.author_user.url_slug} target="_blank">
-            <Avatar src={getImageUrl(post.author_user.image)} className={classes.avatar} />
+            <Avatar src={getImageUrl(post.author_user.thumbnail_image)} className={classes.avatar} />
           </Link>
           <span className={classes.messageWithMetaData}>
             <div className={classes.metadata}>
