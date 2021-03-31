@@ -141,7 +141,7 @@ export default function BrowseContent({
     if (hasQueryParams && !hasFilteredFromQueryParams) {
       // Update the state of the visual filters, like Select, Dialog, etc
       // Then actually fetch the data. We need a way to map what's
-      // in the query param, to what's UI control is present on the screen. For
+      // in the query param, to what UI element is present on the screen. For
       // example, if we have a MultiLevelSelect dialog representing categories
       // and we have a ?&category=Food waste, then we need to update the
       // the MultiLevelSelect dialog's selection to that value somehow.
@@ -157,7 +157,6 @@ export default function BrowseContent({
 
       let newFilters = { ...queryObject };
 
-      // TODO(piper): fix hardcoded projects here...
       // Apply new filters with the query object immediately:
       handleApplyNewFilters("projects", newFilters, false, state.urlEnding["projects"]);
 
