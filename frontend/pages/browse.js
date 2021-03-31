@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NextCookies from "next-cookies";
 import { useRouter } from "next/router";
 import axios from "axios";
+import useScrollTrigger from "@material-ui/core/useScrollTrigger";
+import _ from "lodash";
 
 import {
   getSkillsOptions,
@@ -16,7 +18,6 @@ import tokenConfig from "../public/config/tokenConfig";
 
 import WideLayout from "../src/components/layouts/WideLayout";
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
-import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import TopOfPage from "../src/components/hooks/TopOfPage";
 import BrowseContent from "../src/components/browse/BrowseContent";
 import { parseData } from "../public/lib/parsingOperations";
@@ -31,6 +32,7 @@ export default function Browse({
   filterChoices,
   hubs,
 }) {
+  // Initialize filters
   const [filters, setFilters] = useState({
     projects: {},
     members: {},
@@ -38,7 +40,27 @@ export default function Browse({
   });
   const [errorMessage, setErrorMessage] = useState("");
 
+  /**
+   * Fetches data from the server based on the newly provided
+   * filters. Returns an object with the new filter data, as well
+   * as other options.
+   *
+   * @param {string} type one of "projects", "members", "organizations"
+   * @param {Object} newFilters something like {"location": "", status: [], etc... }
+   * @param {boolean} closeFilters
+   * @param {string} oldUrlEnding previous end of URL through the query param
+   */
   const applyNewFilters = async (type, newFilters, closeFilters, oldUrlEnding) => {
+    debugger;
+    console.warn("Applying filters: ");
+    console.warn(JSON.stringify(newFilters));
+
+    // Filtered item object might look like this
+    /**
+     * {"location":"","status":["In Progress"],"organization_type":[],"category":"Lowering food waste,Energy","collaboration":"","skills":"Crafts"}
+     */
+
+    // Don't fetch data again if the filters are equivalent
     if (filters === newFilters) {
       return;
     }
@@ -65,6 +87,9 @@ export default function Browse({
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
       }
 
+      console.warn("Filtered items object:");
+      console.warn(JSON.stringify(filteredItemsObject));
+
       return {
         closeFilters: closeFilters,
         filteredItemsObject: filteredItemsObject,
@@ -76,7 +101,6 @@ export default function Browse({
   };
 
   // In browse.js, work on parsing the query param filter and visually updating the filters
-
   const applySearch = async (type, searchValue, oldUrlEnding) => {
     const newSearchQueryParam = `&search=${searchValue}`;
     if (oldUrlEnding === newSearchQueryParam) {
@@ -135,55 +159,6 @@ export default function Browse({
     setErrorMessage(newMessage);
   };
 
-  /**
-   * Support the functionality of a user entering
-   * a provided URL, that already has URL encoded
-   * query params from a filter in it. In this use
-   * case, we should automatically set the filters
-   * dynamically.
-   */
-  const router = useRouter();
-  // console.warn(router.query);
-
-  // If query params are present, persisted url
-  const hasQueryParams = Object.keys(router.query).length !== 0;
-  // console.log(hasQueryParams);
-
-  let initiallySelectedCategories;
-  if (router.query) {
-    // TODO: ensure this isn't called on every render, maybe useEffect
-    // TODO(piper): differentiate between URL window state, and
-    // the HTTP request
-
-    // Update the state of the visual filters, like Select, Dialog, etc
-    // Then actually fetch the data. We need a way to map what's
-    // in the query param, to what's UI control is present on the screen. For
-    // example, if we have a MultiLevelSelect dialog representing categories
-    // and we have a ?&category=Food waste, then we need to update the
-    // the MultiLevelSelect dialog's selection to that value somehow.
-
-    // applyFilters(type, updatedFilters, isSmallScreen);
-    // console.log(`Router query: ${JSON.stringify(router.query)}`);
-
-    // Parse query into correct filters, then
-    // TODO: add more filter parsing
-    let newFilters = { ...filters, ...router.query };
-
-    // console.log("New filters:");
-    // console.log(newFilters);
-
-    // Categories on project pages are multilevel select.
-    if (newFilters.category) {
-      initiallySelectedCategories = newFilters.category;
-      // console.log(newFilters.category);
-    }
-
-    // applyNewFilters(undefined, newFilters, null, undefined);
-    // setFilters({ ...newFilters });
-
-    // Apply new filters with the query object immediately:
-  }
-
   return (
     <>
       <WideLayout
@@ -199,12 +174,11 @@ export default function Browse({
           errorMessage={errorMessage}
           filterChoices={filterChoices}
           handleSetErrorMessage={handleSetErrorMessage}
-          initialFiltersExpanded={hasQueryParams}
+          initialFiltersExpanded={true}
+          // initialFiltersExpanded={hasQueryParams}
           initialMembers={membersObject}
           initialOrganizations={organizationsObject}
           initialProjects={projectsObject}
-          // TODO(piper):
-          initialSelectedCategories={initiallySelectedCategories}
           loadMoreData={loadMoreData}
         />
       </WideLayout>

@@ -44,7 +44,6 @@ export default function BrowseContent({
   initialMembers,
   initialOrganizations,
   initialProjects,
-  initialSelectedCategories,
   loadMoreData,
 }) {
   const initialState = {
@@ -80,11 +79,6 @@ export default function BrowseContent({
   const [hash, setHash] = useState(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
-  const router = useRouter();
-  const hasQueryParams = !!router.query;
-
-  console.warn(hasQueryParams);
-
   // If persisted URL is shared with query param options for filters,
   // then we force the filter to already be expanded.
   const [filtersExpanded, setFiltersExpanded] = useState(initialFiltersExpanded);
@@ -115,10 +109,68 @@ export default function BrowseContent({
   };
 
   useEffect(() => {
-    // TODO: probably here...
+    // TODO(piper): probably here...
     if (window.location.hash) {
       setHash(window.location.hash.replace("#", ""));
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(window.location.hash.replace("#", "")));
+    }
+  }, []);
+
+  const router = useRouter();
+  const hasQueryParams = !!router.query;
+
+  /**
+   * Support the functionality of a user entering
+   * a provided URL, that already has URL encoded
+   * query params from a filter in it. In this use
+   * case, we should automatically set the filters dynamically. Ensure
+   * that this isn't invoked on extraneous renders.
+   */
+  let hasFilteredFromQueryParams = false;
+  useEffect(() => {
+    if (hasQueryParams && !hasFilteredFromQueryParams) {
+      // TODO(piper): differentiate between URL window state, and
+      // the HTTP request
+
+      // Update the state of the visual filters, like Select, Dialog, etc
+      // Then actually fetch the data. We need a way to map what's
+      // in the query param, to what's UI control is present on the screen. For
+      // example, if we have a MultiLevelSelect dialog representing categories
+      // and we have a ?&category=Food waste, then we need to update the
+      // the MultiLevelSelect dialog's selection to that value somehow.
+
+      // For each query param option, ensure that it's
+      // split into array before spreading onto the new filters object
+      const queryObject = _.cloneDeep(router.query);
+      for (const [key, value] of Object.entries(queryObject)) {
+        if (value.indexOf(",") > 0) {
+          queryObject[key] = value.split(",");
+        }
+      }
+
+      console.warn(queryObject);
+
+      // applyFilters(type, updatedFilters, isSmallScreen);
+
+      // Parse query into correct filters, then
+      // TODO: add more filter parsing
+      // debugger;
+      // let newFilters = { ...filters, ...queryObject };
+      let newFilters = { ...queryObject };
+
+      // console.warn(`Router query: ${JSON.stringify(router.query)}`);
+      console.warn(`New filters: ${JSON.stringify(newFilters)}`);
+
+      // TODO: fix hardcoded projects here...
+      // Apply new filters with the query object immediately:
+      // applyNewFilters("projects", newFilters, false, undefined);
+      handleApplyNewFilters("projects", newFilters, false, state.urlEnding["projects"]);
+      // pplyNewFilters("projects", newFilters, false, state.urlEnding[type]);
+      // applyNewFilters("projects", newFilters, false, undefined);
+
+      // And then update state
+      // setFilters({ ...newFilters });
+      hasFilteredFromQueryParams = true;
     }
   }, []);
 
@@ -282,8 +334,6 @@ export default function BrowseContent({
                 // TODO(Piper): just added
                 handleSelectedListItemToFilters={handleSelectedListItemToFilters}
                 // handleSelectedListItemToFilters={handleSelectedListItemToFilters}
-                initialSelectedCategories={initialSelectedCategories}
-                //
                 handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[0]]}
                 locationOptionsOpen={locationOptionsOpen}

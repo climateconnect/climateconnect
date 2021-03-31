@@ -19,7 +19,6 @@ export default function FilterContent({
   handleSetLocationOptionsOpen,
   // TODO(piper): pass this all the way down...
   handleSelectedListItemToFilters,
-  initialSelectedCategories,
   locationInputRef,
   locationOptionsOpen,
   possibleFilters,
@@ -237,7 +236,6 @@ export default function FilterContent({
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
             // TODO: pasing this all the way through...
             handleSelectedListItemToFilters={handleSelectedListItemToFilters}
-            initialSelectedCategories={initialSelectedCategories}
             handleValueChange={handleValueChange}
             locationInputRef={locationInputRef}
             locationOptionsOpen={locationOptionsOpen}
@@ -254,7 +252,6 @@ export default function FilterContent({
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
             handleSelectedListItemToFilters={handleSelectedListItemToFilters}
             handleValueChange={handleValueChange}
-            initialSelectedCategories={initialSelectedCategories}
             locationInputRef={locationInputRef}
             locationOptionsOpen={locationOptionsOpen}
             open={open}
