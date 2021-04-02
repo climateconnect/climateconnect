@@ -175,7 +175,7 @@ function ProjectLayout({
 
   // pagination will only return 10 comments
   const commentsTabLabel = () => {
-    let commentsLabel = "Comments";
+    let commentsLabel = "Discussion";
     if (project && project.comments) {
       if (project.comments.length === 10) {
         commentsLabel += ` (${project.comments.length}+)`;
