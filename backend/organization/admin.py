@@ -5,7 +5,7 @@ from organization.models import (
     Project, ProjectTags, ProjectTagging, Post, Comment,
     PostComment, ProjectComment, ProjectMember, OrganizationMember,
     ProjectParents, ProjectStatus, ProjectCollaborators, ProjectFollower,
-    OrganizationFieldTagging
+    OrganizationFieldTagging, ProjectTranslation, OrganizationTranslation
 )
 
 pass_through_models = (
@@ -55,3 +55,22 @@ class ProjectParentsAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ProjectParents, ProjectParentsAdmin)
+
+
+class ProjectTranslationAdmin(admin.ModelAdmin):
+    search_fields = (
+        'language__id', 'language__name', 'language__language_code',
+        'project__id', 'project__name', 'name_translation'
+    )
+    list_filter = ('language__language_code',)
+
+
+admin.site.register(ProjectTranslation, ProjectTranslationAdmin)
+
+
+class OrganizationTranslationAdmin(admin.ModelAdmin):
+    search_fields = (
+        'language__id', 'language__name', 'language__language_code',
+        'organization__name', 'organization__id', 'name_translation'
+    )
+    list_filter = ('language__language_code',)
