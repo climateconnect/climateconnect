@@ -2,6 +2,7 @@ from django.db import models
 from climateconnect_api.models.common import (
     Availability, Skill
 )
+from climateconnect_api.models.language import Language
 from location.models import Location
 
 
@@ -245,3 +246,45 @@ class UserProfile(models.Model):
         return "%s %s [profile id: %d]" % (
             self.user.first_name, self.user.last_name, self.id
         )
+
+
+class UserProfileTranslation(models.Model):
+    user_profile = models.ForeignKey(
+        UserProfile, related_name="profie_translation",
+        help_text="Points to user profile object", verbose_name="User profile",
+        on_delete=models.CASCADE
+    )
+
+    language = models.ForeignKey(
+        Language, related_name="profile_translatiion_lang",
+        help_text="Points to language object", verbose_name="Language",
+        on_delete=models.CASCADE
+    )
+
+    name_translation = models.CharField(
+        help_text="Translation user's name", verbose_name="Name translation",
+        max_length=256, null=True, blank=True
+    )
+
+    biography_translation = models.TextField(
+        help_text="Translation of user bio", verbose_name="Biography translation",
+        null=True, blank=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True, help_text="Time when translation object was created",
+        verbose_name="Created at"
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True, help_text="Time when translation object was updated",
+        verbose_name="Updated at"
+    )
+
+    class Meta:
+        verbose_name = "User profile translation"
+        verbose_name_plural = "User profile translations"
+        unique_together = [['user_profile', 'language']]
+    
+    def __str__(self):
+        return "{}: {} translation of user {}".format(self.id, self.language.name, self.user_profile.name)
