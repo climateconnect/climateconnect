@@ -18,7 +18,7 @@ class Language(models.Model):
 
     language_code = models.CharField(
         max_length=8,
-        help_text="Short form or Code for each language. e.g.: German/Deutsche has code DE",
+        help_text="Short form or Code for each language. e.g.: German/Deutsch has code de",
         verbose_name='Language Code',
         unique=True
     )
