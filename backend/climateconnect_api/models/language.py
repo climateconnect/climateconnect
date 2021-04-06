@@ -10,7 +10,7 @@ class Language(models.Model):
 
     native_name = models.CharField(
         max_length=512,
-        help_text="Name of language in their native tounge. e.g: German -> Deutsche",
+        help_text="Name of language in their native tounge. e.g: German -> Deutsch",
         verbose_name="Native name",
         null=True,
         blank=True
