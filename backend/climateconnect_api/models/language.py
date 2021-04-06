@@ -33,7 +33,7 @@ class Language(models.Model):
 
     currency = models.CharField(
         max_length=32,
-        help_text="Currancy of each country",
+        help_text="Currency of each country",
         verbose_name="Currency",
         null=True,
         blank=True
