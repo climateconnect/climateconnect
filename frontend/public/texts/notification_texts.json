@@ -5,22 +5,22 @@
   },
   "message_in": {
     "en": "Message in",
-    "de": ""
+    "de": "Nachricht in"
   },
   "placeholder_notification": {
     "en": "You're all caught up! Here you will be notified on private messages, interactions with your content and updates from projects you follow.",
-    "de": ""
+    "de": "Du bist auf dem aktuellsten Stand! Hier wirst du zu privaten Nachrichten, Interaktionen zu deinen Inhalten und Aktualisierungen zu Projekten, denen zu folgst, benachrichtigt."
   },
   "comment_on": {
     "en": "Comment on",
-    "de": ""
+    "de": "Kommentar zu"
   },
   "reply_to_your_comment_on": {
     "en": "Reply to your comment on",
-    "de": ""
+    "de": "Antwort auf deinen Kommentar zu" 
   },
   "now_follows_your_project": {
     "en": "now follows your project",
-    "de": ""
+    "de": "folgt jetzt deinem Projekt"
   }
 }
