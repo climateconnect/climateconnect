@@ -10,7 +10,7 @@ class Language(models.Model):
 
     native_name = models.CharField(
         max_length=512,
-        help_text="Name of language in their native tounge. e.g: German -> Deutsche",
+        help_text="Name of language in their native tounge. e.g: German -> Deutsch",
         verbose_name="Native name",
         null=True,
         blank=True
@@ -18,7 +18,7 @@ class Language(models.Model):
 
     language_code = models.CharField(
         max_length=8,
-        help_text="Short form or Code for each language. e.g.: German/Deutsche has code DE",
+        help_text="Short form or Code for each language. e.g.: German/Deutsch has code de",
         verbose_name='Language Code',
         unique=True
     )
@@ -33,7 +33,7 @@ class Language(models.Model):
 
     currency = models.CharField(
         max_length=32,
-        help_text="Currancy of each country",
+        help_text="Currency of each country",
         verbose_name="Currency",
         null=True,
         blank=True

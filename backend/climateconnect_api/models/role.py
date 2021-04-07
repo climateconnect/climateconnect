@@ -7,11 +7,23 @@ class Role(models.Model):
         verbose_name="Name", max_length=128
     )
 
+    name_de_translation = models.CharField(
+        help_text="Deutsch translation for role name",
+        verbose_name="Name DE translation", max_length=128,
+        null=True, blank=True
+    )
+
     explanation = models.CharField(
         help_text="Explanation of the role's permissions for the user",
         verbose_name="Explanation", max_length=256,
         null=True,
         blank=True
+    )
+
+    explanation_de_translation = models.CharField(
+        help_text="Deutsch translation for explanation",
+        verbose_name="Explanation DE translation",
+        max_length=256, null=True, blank=True
     )
 
     created_at = models.DateTimeField(
