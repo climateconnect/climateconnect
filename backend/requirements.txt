@@ -23,7 +23,7 @@ click-repl==0.1.6
 constantly==15.1.0
 cryptography==3.3.2
 daphne==2.5.0
-Django==2.2.18
+Django==2.2.20
 django-cors-headers==3.2.1
 django-filter==2.3.0
 django-rest-knox==4.1.0
