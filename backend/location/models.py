@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 
+
 # Create your models here.
 class Location(models.Model):
     name = models.CharField(
@@ -8,10 +9,22 @@ class Location(models.Model):
         max_length=4096
     )
 
+    name_de_translation = models.CharField(
+        help_text="Deutsch translation of location name",
+        verbose_name="Name DE translation",
+        max_length=4096, null=True, blank=True
+    )
+
     city = models.CharField(
         help_text="Points to location's city name",
         verbose_name="City",
         max_length=1024
+    )
+
+    city_de_translation = models.CharField(
+        help_text="Deutsch translation for city column",
+        verbose_name="City DE translation",
+        max_length=1024, null=True, blank=True
     )
 
     state = models.CharField(
@@ -22,10 +35,22 @@ class Location(models.Model):
         null=True
     )
 
+    state_de_translation = models.CharField(
+        help_text="Deutsch translation for state column",
+        verbose_name="State DE translation",
+        max_length=1024, null=True, blank=True
+    )
+
     country = models.CharField(
         help_text="Points to location's country name",
         verbose_name="Country",
         max_length=1024
+    )
+
+    country_de_translation = models.CharField(
+        help_text="Deutsch translation for country column",
+        verbose_name="Country DE translation",
+        max_length=1024, null=True, blank=True
     )
 
     multi_polygon = models.MultiPolygonField(

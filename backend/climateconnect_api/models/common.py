@@ -107,6 +107,12 @@ class Skill(models.Model):
         max_length=512
     )
 
+    name_de_translation = models.CharField(
+        help_text="Deutsch translation of name column", 
+        verbose_name="Name DE translation",
+        max_length=512, null=True, blank=True
+    )
+
     # Skill name has spaces and we use skill filters for projects and users.
     # This would help us for filters.
     key = models.CharField(
@@ -142,6 +148,12 @@ class Skill(models.Model):
         max_length=128,
         null=True,
         blank=True
+    )
+
+    details_de_translation = models.CharField(
+        help_text="Deutsch translation for details columns",
+        verbose_name="Details DE translation",
+        max_length=128, null=True, blank=True
     )
 
     class Meta:
