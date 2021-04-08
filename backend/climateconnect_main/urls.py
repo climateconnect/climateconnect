@@ -18,7 +18,8 @@ from django.urls import path, include
 from climateconnect_api.views import (
     status_views, user_views, common_views,
     settings_views, common_views, role_views, 
-    faq_views, notifications_views, donation_views
+    faq_views, notifications_views, donation_views,
+    translation_views
 )
 from knox import views as knox_views
 from django.conf import settings
@@ -27,6 +28,7 @@ from django.conf.urls.static import static
 
 
 urls = [
+    path('test/translate', translation_views.TranslateTextView.as_view(), name='translate-testing-api'),
     path('admin/', admin.site.urls),
     path('ping/', status_views.PingPongView.as_view(), name='ping-pong-api'),
     # User views
