@@ -1,8 +1,8 @@
-import React from "react";
-import { Link, Avatar, Typography, IconButton } from "@material-ui/core";
+import { Avatar, IconButton, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { getImageUrl } from "./../../../public/lib/imageOperations";
 import ClearIcon from "@material-ui/icons/Clear";
+import React from "react";
+import { getImageUrl } from "./../../../public/lib/imageOperations";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -70,11 +70,12 @@ export default function MiniProfilePreview({
 
 function Content({ profile, avatarClassName, size }) {
   const classes = useStyles();
+  console.log(profile)
   return (
     <span className={classes.contentWrapper}>
       <div className={classes.avatarWrapper}>
         <Avatar
-          src={getImageUrl(profile.image)}
+          src={getImageUrl(profile.thumbnail_image)}
           className={`${size === "small" && classes.smallAvatar} ${avatarClassName}`}
         />
       </div>
