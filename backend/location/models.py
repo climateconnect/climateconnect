@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from climateconnect_api.models.language import Language
 
 
 # Create your models here.
@@ -9,22 +10,10 @@ class Location(models.Model):
         max_length=4096
     )
 
-    name_de_translation = models.CharField(
-        help_text="Deutsch translation of location name",
-        verbose_name="Name DE translation",
-        max_length=4096, null=True, blank=True
-    )
-
     city = models.CharField(
         help_text="Points to location's city name",
         verbose_name="City",
         max_length=1024
-    )
-
-    city_de_translation = models.CharField(
-        help_text="Deutsch translation for city column",
-        verbose_name="City DE translation",
-        max_length=1024, null=True, blank=True
     )
 
     state = models.CharField(
@@ -35,22 +24,10 @@ class Location(models.Model):
         null=True
     )
 
-    state_de_translation = models.CharField(
-        help_text="Deutsch translation for state column",
-        verbose_name="State DE translation",
-        max_length=1024, null=True, blank=True
-    )
-
     country = models.CharField(
         help_text="Points to location's country name",
         verbose_name="Country",
         max_length=1024
-    )
-
-    country_de_translation = models.CharField(
-        help_text="Deutsch translation for country column",
-        verbose_name="Country DE translation",
-        max_length=1024, null=True, blank=True
     )
 
     multi_polygon = models.MultiPolygonField(
@@ -99,3 +76,51 @@ class Location(models.Model):
 
     def __str__(self):
         return "%s" % (self.name)
+
+
+class LocationTranslation(models.Model):
+    location = models.ForeignKey(
+        Location, related_name="translate_location",
+        help_text="Points to location table", verbose_name="Location",
+        on_delete=models.CASCADE
+    )
+
+    language = models.ForeignKey(
+        Language, related_name="location_language",
+        help_text="Points to language table", verbose_name="Language",
+        on_delete=models.CASCADE
+    )
+
+    name_translation = models.CharField(
+        help_text="Translation of location name",
+        verbose_name="Name DE translation",
+        max_length=4096, null=True, blank=True
+    )
+
+    city_translation = models.CharField(
+        help_text="Translation for city column",
+        verbose_name="City DE translation",
+        max_length=1024, null=True, blank=True
+    )
+
+    state_translation = models.CharField(
+        help_text="Translation for state column",
+        verbose_name="State DE translation",
+        max_length=1024, null=True, blank=True
+    )
+
+    country_translation = models.CharField(
+        help_text="Translation for country column",
+        verbose_name="Country DE translation",
+        max_length=1024, null=True, blank=True
+    )
+
+    class Meta:
+        verbose_name = "Location translation"
+        verbose_name_plural = "Location translations"
+        unique_together = [['location', 'language']]
+    
+    def __str__(self):
+        return "{}: {} of location {}".format(
+            self.id, self.language.name, self.location.name
+        )

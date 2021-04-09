@@ -16,6 +16,7 @@ def get_locale(language_code):
         raise ValidationError('Unsupported language: ' + language_code)
     return LANGUAGE_CODE_MAP[language_code]
 
+
 def translate(text, target_lang):
     payload = {
         'text': text,
@@ -24,6 +25,7 @@ def translate(text, target_lang):
     url = "https://api.deepl.com/v2/translate?auth_key=" + settings.DEEPL_API_KEY
     translation = requests.post(url, payload)
     return json.loads(translation.text)['translations'][0]
+
 
 def translate_text(text, original_lang, target_lang):
     ALLOWED_LANGUAGE_CODES = ["en", "de"]

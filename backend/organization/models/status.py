@@ -10,6 +10,14 @@ class ProjectStatus(models.Model):
         blank=True
     )
 
+    name_de_translation = models.CharField(
+        help_text="Translation of name column",
+        verbose_name="Name DE translation",
+        max_length=512,
+        null=True,
+        blank=True
+    )
+
     has_end_date = models.BooleanField(
         help_text="Checks whether projects with this status have an end date",
         verbose_name="Has end date"

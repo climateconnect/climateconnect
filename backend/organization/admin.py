@@ -5,14 +5,15 @@ from organization.models import (
     Project, ProjectTags, ProjectTagging, Post, Comment,
     PostComment, ProjectComment, ProjectMember, OrganizationMember,
     ProjectParents, ProjectStatus, ProjectCollaborators, ProjectFollower,
-    OrganizationFieldTagging, ProjectTranslation, OrganizationTranslation
+    OrganizationFieldTagging, ProjectTranslation, OrganizationTranslation,
+    PostTranslation, CommentTranslation
 )
 
 pass_through_models = (
     OrganizationTags, OrganizationTagging, ProjectTags,
     ProjectTagging, Post, Comment, PostComment, ProjectComment, 
     ProjectStatus, ProjectCollaborators, ProjectFollower,
-    OrganizationFieldTagging
+    OrganizationFieldTagging, PostTranslation, CommentTranslation
 )
 
 for model in pass_through_models:
@@ -74,3 +75,6 @@ class OrganizationTranslationAdmin(admin.ModelAdmin):
         'organization__name', 'organization__id', 'name_translation'
     )
     list_filter = ('language__language_code',)
+
+
+admin.site.register(OrganizationTranslation, OrganizationTranslationAdmin)

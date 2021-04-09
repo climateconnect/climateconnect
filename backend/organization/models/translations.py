@@ -1,7 +1,9 @@
 from django.db import models
 
 from climateconnect_api.models.language import Language
-from organization.models import (Project, Organization)
+from organization.models import (
+    Project, Organization, Post, Comment
+)
 
 
 class ProjectTranslation(models.Model):
@@ -111,4 +113,74 @@ class OrganizationTranslation(models.Model):
     def __str__(self):
         return "{}: {} translation for organizaton {}".format(
             self.id, self.language.name, self.organization.name
+        )
+
+
+class PostTranslation(models.Model):
+    post = models.ForeignKey(
+        Post,
+        related_name="translate_post",
+        help_text="Points to post table",
+        verbose_name="Post",
+        on_delete=models.CASCADE
+    )
+
+    language = models.ForeignKey(
+        Language,
+        related_name="post_translation_lang",
+        help_text="Points to language table",
+        verbose_name="Language",
+        on_delete=models.CASCADE
+    )
+
+    content_translation = models.TextField(
+        help_text="Translation of content column",
+        verbose_name="Content translation",
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        verbose_name = "Post translation"
+        verbose_name_plural = "Post translations"
+        unique_together = [['post', 'language']]
+    
+    def __str__(self):
+        return "{} translation for post id {}".format(
+            self.language.name, self.post.id
+        )
+
+
+class CommentTranslation(models.Model):
+    comment = models.ForeignKey(
+        Comment,
+        related_name="translate_comment",
+        help_text="Point to comment table",
+        verbose_name="Comment",
+        on_delete=models.CASCADE
+    )
+
+    language = models.ForeignKey(
+        Language,
+        related_name="comment_translation_lang",
+        help_text="Points to language table",
+        verbose_name="Language",
+        on_delete=models.CASCADE
+    )
+
+    content_translation = models.TextField(
+        help_text="Translation of content column",
+        verbose_name="Content translation",
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        verbose_name = "Comment translation"
+        verbose_name_plural = "Comment translations"
+        unique_together = [['comment', 'language']]
+    
+    def __str__(self):
+        return "{} translation of comment id {}".format(
+            self.language.name, self.comment.id
         )
