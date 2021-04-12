@@ -1,5 +1,6 @@
 import { Link, makeStyles, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
@@ -20,7 +21,7 @@ export default function PageNotFound({ itemName, returnText, returnLink }) {
         {itemName ? `${itemName} ` : texts.page + " "} {texts.not_found_lowercase}
       </Typography>
       <p>
-        <Link href={returnLink ? returnLink : "/browse"}>
+        <Link href={returnLink ? getLocalePrefix(locale) + returnLink : getLocalePrefix(locale) + "/browse"}>
           {returnText ? returnText : texts.return_to_home}
         </Link>
       </p>

@@ -1,6 +1,7 @@
 import { Paper, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import Layout from "../src/components/layouts/layout";
@@ -30,7 +31,7 @@ export default function AccountCreated() {
             {texts.congratulations_you_have_created_your_account}
           </Typography>
           <Typography variant="h4">
-            <a href="/signin">{texts.click_here_to_log_in}</a>
+            <a href={getLocalePrefix(locale) + "/signin"}>{texts.click_here_to_log_in}</a>
           </Typography>
         </Paper>
       </Layout>

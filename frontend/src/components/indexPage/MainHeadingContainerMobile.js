@@ -1,6 +1,7 @@
 import { Button, makeStyles, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import Carousel from "react-multi-carousel";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
@@ -191,8 +192,8 @@ export default function MainHeadingContainerMobile() {
                 ))}
                 {!user && (
                   <div className={classes.signUpButtonBox}>
-                    <Button component="div" href="signup" variant="contained" color="primary">
-                      <a className={classes.shareLink} href="/signup">
+                    <Button component="div" href={getLocalePrefix(locale) + "/signup"} variant="contained" color="primary">
+                      <a className={classes.shareLink} href={getLocalePrefix(locale) + "/signup"}>
                         {texts.join_now}
                       </a>
                     </Button>

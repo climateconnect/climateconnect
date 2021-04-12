@@ -59,3 +59,10 @@ export async function sendToLogin(ctx, message, locale, relativePath) {
   ctx.res.end();
   return;
 }
+
+export function getLocalePrefix(locale) {
+  if(locale === "en")
+    return ""
+  else
+    return `/${locale}`
+}

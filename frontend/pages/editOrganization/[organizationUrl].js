@@ -4,7 +4,7 @@ import Router from "next/router";
 import React, { useContext, useRef, useState } from "react";
 import tokenConfig from "../../public/config/tokenConfig";
 import getOrganizationInfoMetadata from "../../public/data/organization_info_metadata.js";
-import { sendToLogin } from "../../public/lib/apiOperations";
+import { getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
 import { indicateWrongLocation, isLocationValid } from "../../public/lib/locationOperations";
 import getTexts from "../../public/texts/texts";
 import EditAccountPage from "../../src/components/account/EditAccountPage";
@@ -139,7 +139,7 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
           account={organization}
           possibleAccountTypes={tagOptions}
           infoMetadata={infoMetadata}
-          accountHref={"/organizations/" + organization.url_slug}
+          accountHref={getLocalePrefix(locale) + "/organizations/" + organization.url_slug}
           maxAccountTypes={2}
           handleSubmit={saveChanges}
           handleCancel={handleCancel}

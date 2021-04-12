@@ -1,7 +1,8 @@
 import { Link } from "@material-ui/core";
 import React from "react";
+import { getLocalePrefix } from "../lib/apiOperations";
 
-export default function getFaqTexts({ classes }) {
+export default function getFaqTexts({ classes, locale }) {
   return [
     {
       got_a_question: {
@@ -32,7 +33,7 @@ export default function getFaqTexts({ classes }) {
         en: (
           <>
             Find all commonly asked questions and their answers on the{" "}
-            <Link className={classes?.faqLink} href="/faq" target="_blank">
+            <Link className={classes?.faqLink} href={getLocalePrefix(locale) + "/faq"} target="_blank">
               FAQ page
             </Link>
             .
@@ -40,7 +41,7 @@ export default function getFaqTexts({ classes }) {
         ),
         de: <>
           Finde alle regelmäßig gestellten Fragen und ihre Antworten auf der{" "}
-          <Link className={classes?.faqLink} href="/faq" target="_blank">
+          <Link className={classes?.faqLink} href={getLocalePrefix(locale) + "/faq"} target="_blank">
             FAQ Seite
           </Link>
           .

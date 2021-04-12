@@ -7,6 +7,7 @@ import LinkedInIcon from "@material-ui/icons/LinkedIn";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FeedbackButton from "../feedback/FeedbackButton";
@@ -150,7 +151,7 @@ export default function LargeFooter({ className }) {
   return (
     <div className={`${className} ${classes.root}`}>
       <Container maxWidth="lg">
-        <SiteLinks texts={texts} />
+        <SiteLinks texts={texts} locale={locale}/>
         <SocialLinks />
         <MadeWithLoveForEarth texts={texts} />
       </Container>
@@ -194,7 +195,7 @@ const SocialLinks = () => {
   );
 };
 
-const SiteLinks = (texts) => {
+const SiteLinks = (texts, locale) => {
   const classes = useStyles();
   return (
     <div className={classes.siteLinks}>
@@ -203,9 +204,9 @@ const SiteLinks = (texts) => {
           {texts.general}
         </Typography>
         <div className={classes.links}>
-          <FooterLink href="/faq">{texts.faq}</FooterLink>
-          <FooterLink href="/donate">{texts.donate}</FooterLink>
-          <FooterLink href="/about">{texts.about}</FooterLink>
+          <FooterLink href={getLocalePrefix(locale) + "/faq"}>{texts.faq}</FooterLink>
+          <FooterLink href={getLocalePrefix(locale) + "/donate"}>{texts.donate}</FooterLink>
+          <FooterLink href={getLocalePrefix(locale) + "/about"}>{texts.about}</FooterLink>
         </div>
       </div>
 
@@ -229,10 +230,10 @@ const SiteLinks = (texts) => {
           {texts.browse}
         </Typography>
         <div className={classes.links}>
-          <FooterLink href="/browse">{texts.projects}</FooterLink>
-          <FooterLink href="/browse#organizations">{texts.organizations}</FooterLink>
-          <FooterLink href="/browse#members">{texts.members}</FooterLink>
-          <FooterLink href="/hubs">{texts.hubs}</FooterLink>
+          <FooterLink href={getLocalePrefix(locale) + "/browse"}>{texts.projects}</FooterLink>
+          <FooterLink href={getLocalePrefix(locale) + "/browse#organizations"}>{texts.organizations}</FooterLink>
+          <FooterLink href={getLocalePrefix(locale) + "/browse#members"}>{texts.members}</FooterLink>
+          <FooterLink href={getLocalePrefix(locale) + "/hubs"}>{texts.hubs}</FooterLink>
         </div>
       </div>
 
@@ -241,9 +242,9 @@ const SiteLinks = (texts) => {
           {texts.legal}
         </Typography>
         <div className={classes.links}>
-          <FooterLink href="/imprint">{texts.imprint}</FooterLink>
-          <FooterLink href="/privacy">{texts.privacy}</FooterLink>
-          <FooterLink href="/terms">{texts.terms}</FooterLink>
+          <FooterLink href={getLocalePrefix(locale) + "/imprint"}>{texts.imprint}</FooterLink>
+          <FooterLink href={getLocalePrefix(locale) + "/privacy"}>{texts.privacy}</FooterLink>
+          <FooterLink href={getLocalePrefix(locale) + "/terms"}>{texts.terms}</FooterLink>
         </div>
       </div>
 

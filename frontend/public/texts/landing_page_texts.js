@@ -44,7 +44,7 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
         </>
       ),
       de: (<>
-        Komm ins globale Klima-Aktions-Netzwerk, das alle
+        Komm ins globale Klimaschutz-Netzwerk, das alle
         {!isNarrowScreen ? <br /> : " "}
         Klimaschutz-Akteure auf unserem Planeten verbindet
       </>

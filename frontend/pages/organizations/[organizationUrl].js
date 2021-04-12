@@ -8,6 +8,7 @@ import Router from "next/router";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import tokenConfig from "../../public/config/tokenConfig";
+import { getLocalePrefix } from "../../public/lib/apiOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 import { parseOrganization } from "../../public/lib/organizationOperations";
 import getTexts from "../../public/texts/texts";
@@ -86,6 +87,7 @@ export default function OrganizationPage({
           infoMetadata={infoMetadata}
           user={user}
           texts={texts}
+          locale={locale}
         />
       ) : (
         <PageNotFound itemName={texts.organization} />
@@ -94,7 +96,7 @@ export default function OrganizationPage({
   );
 }
 
-function OrganizationLayout({ organization, projects, members, infoMetadata, user, texts }) {
+function OrganizationLayout({ organization, projects, members, infoMetadata, user, texts, locale }) {
   const classes = useStyles();
   const cookies = new Cookies();
   const getMembersWithAdditionalInfo = (members) => {
@@ -140,7 +142,7 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
     <AccountPage
       account={organization}
       default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={"/editOrganization/" + organization.url_slug}
+      editHref={getLocalePrefix(locale) + "/editOrganization/" + organization.url_slug}
       type="organization"
       infoMetadata={infoMetadata}
       isOwnAccount={canEdit}
@@ -160,7 +162,7 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
         )}
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
           {texts.this_organizations_projects}:{" "}
-          <Button variant="contained" color="primary" href="/share">
+          <Button variant="contained" color="primary" href={getLocalePrefix(locale) + "/share"}>
             {texts.share_a_project}
           </Button>
         </div>
@@ -179,7 +181,7 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
                 className={classes.editButton}
                 variant="contained"
                 color="primary"
-                href={"/manageOrganizationMembers/" + organization.url_slug}
+                href={getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug}
               >
                 {texts.manage_members}
               </Button>

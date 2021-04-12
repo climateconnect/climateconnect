@@ -6,13 +6,14 @@ import {
   Link,
   makeStyles,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
+import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getCookieProps } from "../../../../public/lib/cookieOperations";
 import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
@@ -89,7 +90,7 @@ export default function DonationCampaignInformation() {
   const cookieProps = getCookieProps(expiry);
   const [open, setOpen] = React.useState(!cookies.get("hideDonationCampaign"));
   const [expanded, setExpanded] = React.useState(false);
-  const { donationGoal } = useContext(UserContext);
+  const { donationGoal, locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
 
   const handleClose = () => {
@@ -126,7 +127,7 @@ export default function DonationCampaignInformation() {
                 barColor={theme.palette.primary.light}
               />
               {isNarrowScreen && (
-                <Button href="/donate" variant="contained" className={classes.donateButton}>
+                <Button href={getLocalePrefix(locale) + "/donate"} variant="contained" className={classes.donateButton}>
                   Donate now
                 </Button>
               )}
@@ -152,7 +153,7 @@ export default function DonationCampaignInformation() {
                 <Link
                   underline="always"
                   className={classes.link}
-                  href="/raffleterms"
+                  href={getLocalePrefix(locale) + "/raffleterms"}
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -160,7 +161,7 @@ export default function DonationCampaignInformation() {
                 </Link>
               </Typography>
               {!isNarrowScreen && (
-                <Button href="/donate" variant="contained" className={classes.donateButton}>
+                <Button href={getLocalePrefix(locale) + "/donate"} variant="contained" className={classes.donateButton}>
                   Donate now
                 </Button>
               )}

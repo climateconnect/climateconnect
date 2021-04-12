@@ -7,6 +7,7 @@ import InstagramIcon from "@material-ui/icons/Instagram";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LargeFooter from "./LargeFooter";
@@ -113,13 +114,13 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
     >
       <Box className={classes.flexContainer}>
         <Box className={classes.leftBox}>
-          <Link href="/imprint" color="inherit">
+          <Link href={getLocalePrefix(locale) + "/imprint"} color="inherit">
             <span className={`${classes.inheritColor} ${classes.link}`}>{texts.imprint}</span>
           </Link>
-          <Link href="/privacy" color="inherit">
+          <Link href={getLocalePrefix(locale) + "/privacy"} color="inherit">
             <span className={`${classes.inheritColor} ${classes.link}`}>{texts.privacy}</span>
           </Link>
-          <Link href="/terms" color="inherit">
+          <Link href={getLocalePrefix(locale) + "/terms"} color="inherit">
             <span className={classes.inheritColor}>{texts.terms}</span>
           </Link>
         </Box>

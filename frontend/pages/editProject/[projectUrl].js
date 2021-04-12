@@ -4,11 +4,11 @@ import axios from "axios";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
 import tokenConfig from "../../public/config/tokenConfig";
-import { sendToLogin } from "../../public/lib/apiOperations";
+import { getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
 import {
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions,
+  getStatusOptions
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import getTexts from "../../public/texts/texts";
@@ -103,7 +103,7 @@ export default function EditProjectPage({
     return (
       <Layout className={classes.root} title={texts.project_not_found}>
         <Typography className={classes.errorTitle} variant="h3">
-          {texts.project_does_not_exist} <Link href="/share">{texts.click_here}</Link>{" "}
+          {texts.project_does_not_exist} <Link href={getLocalePrefix(locale) + "/share"}>{texts.click_here}</Link>{" "}
           {texts.to_create_a_project}
         </Typography>
       </Layout>
@@ -113,7 +113,7 @@ export default function EditProjectPage({
       <WideLayout title={texts.not_a_member} hideHeadline={true}>
         <Typography variant="h4" color="primary" className={classes.errorTitle}>
           {texts.not_a_member}. {texts.go_to_the}{" "}
-          <a href={"/projects/" + project.url_slug}>{texts.project_page}</a>{" "}
+          <a href={getLocalePrefix(locale) + "/projects/" + project.url_slug}>{texts.project_page}</a>{" "}
           {texts.and_ask_to_be_part_of_the_team}
         </Typography>
       </WideLayout>

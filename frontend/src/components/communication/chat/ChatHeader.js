@@ -3,6 +3,7 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
 import ChatTitle from "../../communication/chat/ChatTitle";
 import UserContext from "../../context/UserContext";
@@ -51,7 +52,7 @@ export default function ChatHeader({
     <div className={`${classes.topBar} ${className}`}>
       {!memberManagementExpanded && (
         <Tooltip title={texts.back_to_inbox}>
-          <IconButton className={classes.backIcon} href="/inbox">
+          <IconButton className={classes.backIcon} href={getLocalePrefix(locale) + "/inbox"}>
             <KeyboardArrowLeftIcon />
           </IconButton>
         </Tooltip>

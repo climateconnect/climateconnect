@@ -1,6 +1,7 @@
 import { makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
@@ -77,7 +78,7 @@ export default function DonationsBanner({ h1ClassName }) {
         </div>
       </div>
       <div className={classes.donateButtonContainer}>
-        <LightBigButton href="/donate" className={classes.donateButton}>
+        <LightBigButton href={getLocalePrefix(locale) + "/donate"} className={classes.donateButton}>
           {texts.donate_now}
         </LightBigButton>
       </div>

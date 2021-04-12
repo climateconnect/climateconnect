@@ -1,6 +1,7 @@
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
@@ -48,7 +49,7 @@ export default function BasicInfo({ handleSubmit, errorMessage, values }) {
 
   const bottomLink = {
     text: texts.log_in,
-    href: "/signin",
+    href: getLocalePrefix(locale) + "/signin",
   };
 
   return (

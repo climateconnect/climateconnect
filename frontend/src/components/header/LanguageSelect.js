@@ -1,36 +1,55 @@
 import { Button, makeStyles, Menu, MenuItem, useMediaQuery, withStyles } from "@material-ui/core";
 import LanguageIcon from "@material-ui/icons/Language";
 import { useRouter } from "next/router";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { getCookieProps } from "../../../public/lib/cookieOperations";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
+  root: props => ({
+    color: props.transparentHeader ? "white" : theme.palette.primary.main,
+    cursor: "pointer"
+  }),
   languageIcon: {
     fontSize: 16,
   },
+  popover: {
+    pointerEvents: "none"
+  },
+  popoverContent: {
+    pointerEvents: "auto"
+  },
+  centerText: {
+    textAlign: "center"
+  }
 }));
 
-export default function LanguageSelect() {
-  const classes = useStyles();
+export default function LanguageSelect({transparentHeader}) {
+  const classes = useStyles({transparentHeader: transparentHeader});
   const { locale, locales } = useContext(UserContext);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const buttonRef = useRef(null)
+  const [anchorEl, setAnchorEl] = useState(buttonRef.current);
+  const [open, setOpen] = useState(false)
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const router = useRouter();
+  const router = useRouter();  
+  useEffect(function(){
+    setAnchorEl(buttonRef.current)
+  }, [])
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleOpen = () => {
+    console.log(anchorEl)
+    setOpen(true)
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setOpen(false)
   };
 
   const handleLanguageClick = (e, newLocale) => {
     e.preventDefault();
-    setAnchorEl(null);
+    setOpen(false);
     if (newLocale !== locale) {
       const now = new Date();
       const cookies = new Cookies();
@@ -43,14 +62,38 @@ export default function LanguageSelect() {
 
   return (
     <>
-      <Button onClick={handleClick} color="primary">
+      <Button 
+        onMouseEnter={handleOpen} 
+        onMouseLeave={handleClose} 
+        className={classes.root} 
+        ref={buttonRef}
+        aria-owns="language-select"
+        aria-haspopup="true"
+      >
         <LanguageIcon className={classes.languageIcon} />
         {locale}
       </Button>
-      <StyledMenu anchorEl={anchorEl} onClose={handleClose} open={Boolean(anchorEl)} keepMounted>
+      <StyledMenu 
+        id="language-select"
+        className={classes.popover}
+        classes={{
+          paper: classes.popoverContent
+        }}
+        anchorEl={anchorEl} 
+        onClose={handleClose} 
+        keepMounted 
+        open={open}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center'
+        }}
+        container={anchorEl?.parentNode}
+        PaperProps={{ onMouseEnter: handleOpen, onMouseLeave: handleClose }}
+      >
         {locales.map((l, index) => (
           <StyledMenuItem
             key={index}
+            className={classes.centerText}
             selected={l === locale}
             dense={!isNarrowScreen}
             onClick={(e) => handleLanguageClick(e, l)}

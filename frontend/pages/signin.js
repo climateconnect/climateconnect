@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useContext, useEffect } from "react";
+import { getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import { redirectOnLogin } from "../public/lib/profileOperations";
 import getTexts from "../public/texts/texts";
@@ -30,14 +31,14 @@ export default function Signin() {
     submitMessage: texts.log_in,
     bottomMessage: (
       <span>
-        {texts.new_to_climate_connect} <a href="/signup">{texts.click_here_to_create_an_account}</a>
+        {texts.new_to_climate_connect} <a href={getLocalePrefix(locale) + "/signup"}>{texts.click_here_to_create_an_account}</a>
       </span>
     ),
   };
 
   const bottomLink = {
     text: texts.forgot_your_password,
-    href: "/resetpassword",
+    href: getLocalePrefix(locale) + "/resetpassword",
   };
 
   const [errorMessage, setErrorMessage] = React.useState(null);
@@ -48,7 +49,7 @@ export default function Signin() {
   useEffect(function () {
     if (!initialized) {
       const params = getParams(window.location.href);
-      if (params.redirect) setRedirectUrl(decodeURIComponent(params.redirect));
+      if (params.redirect) setRedirectUrl(getLocalePrefix(locale) + "/" + decodeURIComponent(params.redirect));
       setInitialized(true);
       //TODO: remove router
     }

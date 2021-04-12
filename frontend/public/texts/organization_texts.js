@@ -1,7 +1,8 @@
 import { Link } from "@material-ui/core";
 import React from "react";
+import { getLocalePrefix } from "../lib/apiOperations";
 
-export default function getOrganizationTexts({ organization }) {
+export default function getOrganizationTexts({ organization, locale }) {
   return {
     log_in_to_edit_organization: {
       en: "You have to log in to edit an organization.",
@@ -65,11 +66,11 @@ export default function getOrganizationTexts({ organization }) {
     go_to_org_page_and_click_join_to_join_it: {
       en: (
         <>
-          Go to the <Link href={"/organizations/" + organization?.url_slug}>organization page</Link>{" "}
+          Go to the <Link href={getLocalePrefix(locale) + "/organizations/" + organization?.url_slug}>organization page</Link>{" "}
           and click join to join it.
         </>
       ),
-      de: <>Gehe auf die <Link href={"/organizations/" + organization?.url_slug}>Organisationsseite</Link>{" "}
+      de: <>Gehe auf die <Link href={getLocalePrefix(locale) + "/organizations/" + organization?.url_slug}>Organisationsseite</Link>{" "}
       und klicke auf {"Join"} um der Organisation beizutreten.</>,
     },
     no_permission_to_manage_members_of_this_org: {

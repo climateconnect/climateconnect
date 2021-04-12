@@ -37,18 +37,18 @@ export default function getTexts({
     cookie: cookie_texts,
     communication: getCommunicationTexts(),
     donate: getDonateTexts({ classes: classes, goal: goal }),
-    faq: getFaqTexts({ classes: classes }),
+    faq: getFaqTexts({ classes: classes, locale: locale }),
     filter_and_search: filter_and_search_texts,
     general: general_texts,
     hub: getHubTexts({ hubName: hubName }),
     landing_page: getLandingPageTexts({ classes: classes, isNarrowScreen: isNarrowScreen }),
     navigation: navigation_texts,
     notification: notification_texts,
-    organization: getOrganizationTexts({ organization: organization }),
-    profile: getProfileTexts({ profile: profile }),
-    project: getProjectTexts({ project: project, user: user, url_slug: url_slug }),
+    organization: getOrganizationTexts({ organization: organization, locale: locale }),
+    profile: getProfileTexts({ profile: profile, locale: locale }),
+    project: getProjectTexts({ project: project, user: user, url_slug: url_slug, locale: locale }),
     settings: settings_texts,
-    tutorial: getTutorialTexts({ hubName: hubName, classes: classes }),
+    tutorial: getTutorialTexts({ hubName: hubName, classes: classes, locale: locale }),
   };
 
   const text = { ...texts[page], ...general_texts };

@@ -1,6 +1,7 @@
 import { Button, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
@@ -79,7 +80,7 @@ export default function OrganizationsSharedBox({ organizations, isLoading }) {
         isLoading={isLoading}
       />
       <div className={classes.showProjectsButtonContainer}>
-        <Button color="inherit" href="/browse#organizations">
+        <Button color="inherit" href={getLocalePrefix(locale) + "/browse#organizations"}>
           <span className={classes.showProjectsText}>{texts.explore_all_organizations}</span>
           <KeyboardArrowRightIcon className={classes.showProjectsArrow} />
         </Button>

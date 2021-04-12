@@ -265,11 +265,11 @@ const getDonations = async () => {
   try {
     const resp = await axios.get(process.env.API_URL + "/api/donation_goal_progress/");
     return {
-      goal_name: resp.data.name,
-      goal_start: resp.data.start_date,
-      goal_end: resp.data.end_date,
-      goal_amount: resp.data.amount,
-      current_amount: resp.data.current_amount,
+      goal_name: resp.data.name ? resp.data.name : null,
+      goal_start: resp.data.start_date ? resp.data.start_date : null,
+      goal_end: resp.data.end_date ? resp.data.end_date : null,
+      goal_amount: resp.data.amount ? resp.data.amount : null,
+      current_amount: resp.data.current_amount ? resp.data.current_amount : null,
     };
   } catch (err) {
     if (err.response && err.response.data) {

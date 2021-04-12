@@ -4,6 +4,7 @@ import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import React, { useContext } from "react";
 import Carousel from "react-multi-carousel";
 import getPitchElements from "../../../../public/data/pitch_elements";
+import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
@@ -118,7 +119,7 @@ export default function HowItWorks({ headlineClass }) {
           <Element
             headline={e.headline}
             text={e.text}
-            link={e.link}
+            link={getLocalePrefix(locale) + e.link}
             img={e.img}
             key={index}
             linkText={e.linkText}

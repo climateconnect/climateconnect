@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useContext } from "react";
-import { redirect } from "../../public/lib/apiOperations";
+import { getLocalePrefix, redirect } from "../../public/lib/apiOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import Form from "../../src/components/general/Form";
@@ -43,7 +43,7 @@ export default function ResetPassword({ uuid }) {
     event.preventDefault();
     if (values.password !== values.repeatpassword) setErrorMessage(texts.passwords_dont_match);
     else {
-      requestSetPassword(uuid, values.password, setErrorMessage, texts);
+      requestSetPassword(uuid, values.password, setErrorMessage, texts, locale);
     }
   };
 
@@ -59,7 +59,7 @@ export default function ResetPassword({ uuid }) {
   );
 }
 
-async function requestSetPassword(uuid, new_password, setErrorMessage, texts) {
+async function requestSetPassword(uuid, new_password, setErrorMessage, texts, locale) {
   const payload = {
     password_reset_key: uuid,
     new_password: new_password,
@@ -86,7 +86,7 @@ async function requestSetPassword(uuid, new_password, setErrorMessage, texts) {
           <span>
             {error.response.data.message}{" "}
             <div>
-              <a href="/resetpassword">{texts.click_here_to_get_another_password_reset_email}</a>
+              <a href={getLocalePrefix(locale) + "/resetpassword"}>{texts.click_here_to_get_another_password_reset_email}</a>
             </div>
           </span>
         );

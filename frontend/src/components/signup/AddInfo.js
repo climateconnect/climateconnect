@@ -1,5 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getLocationFields } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -75,9 +76,8 @@ export default function AddInfo({
     headerMessage: texts.signup_step_2_headline,
   };
 
-  //dummy route while we don't have backend
   const formAction = {
-    href: "/addinfo",
+    href: getLocalePrefix(locale) + "/addinfo",
     method: "GET",
   };
 

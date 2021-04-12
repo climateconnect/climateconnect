@@ -1,7 +1,7 @@
 import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
-import { apiRequest, redirect } from "../../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ManageMembers from "../manageMembers/ManageMembers";
@@ -183,7 +183,7 @@ export default function ManageProjectMembers({
           <div className={classes.buttons}>
             <Button
               className={classes.button}
-              href={"/projects/" + project.url_slug}
+              href={getLocalePrefix(locale) + "/projects/" + project.url_slug}
               variant="contained"
               color="secondary"
             >

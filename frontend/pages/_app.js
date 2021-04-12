@@ -9,6 +9,7 @@ import ReactGA from "react-ga";
 import "react-multi-carousel/lib/styles.css";
 import Cookies from "universal-cookie";
 import tokenConfig from "../public/config/tokenConfig";
+import { getLocalePrefix } from "../public/lib/apiOperations";
 import { getCookieProps } from "../public/lib/cookieOperations";
 import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
@@ -39,6 +40,7 @@ export default function MyApp({
   };
   const router = useRouter();
   const { locale, locales } = router;
+  console.log(locale)
   if (
     acceptedStatistics &&
     !gaInitialized &&
@@ -195,10 +197,9 @@ export default function MyApp({
 
 MyApp.getInitialProps = async (ctx) => {
   const { token, acceptedStatistics } = NextCookies(ctx.ctx);
-
   if (ctx.router.route === "/" && token) {
     ctx.ctx.res.writeHead(302, {
-      Location: "/browse",
+      Location: getLocalePrefix(ctx.router.locale) + "/browse",
       "Content-Type": "text/html; charset=utf-8",
     });
     ctx.ctx.res.end();

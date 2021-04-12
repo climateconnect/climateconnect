@@ -2,6 +2,7 @@ import { Button, makeStyles, Typography } from "@material-ui/core";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
@@ -66,7 +67,7 @@ export default function TeamContent({ project, leaveProject }) {
                 className={classes.editButton}
                 variant="contained"
                 color="primary"
-                href={"/manageProjectMembers/" + project.url_slug}
+                href={getLocalePrefix(locale) + "/manageProjectMembers/" + project.url_slug}
               >
                 {texts.manage_members}
               </Button>

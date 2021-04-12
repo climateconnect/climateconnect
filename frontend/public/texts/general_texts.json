@@ -151,6 +151,10 @@
     "en": "Donate",
     "de": "Spenden"
   },
+  "share_request": {
+    "en": "Share",
+    "de": "Teile"
+  },
   "share": {
     "en": "Share",
     "de": "Teilen"
@@ -173,11 +177,11 @@
   },
   "sign_up": {
     "en": "Sign Up",
-    "de": "Anmelden"
+    "de": "Registrieren"
   },
   "sign_up_and_make_a_change": {
     "en": "Sign up & make a change",
-    "de": "Melde dich an & mach einen Unterschied"
+    "de": "Mach mit"
   },
   "my_profile": {
     "en": "My Profile",
@@ -477,7 +481,7 @@
   },
   "find": {
     "en": "Find",
-    "de": "Finden"
+    "de": "Finde"
   },
   "work_on": {
     "en": "Work on",
@@ -485,7 +489,7 @@
   },
   "get_inspired_by": {
     "en": "Get inspired by",
-    "de": "Lass dich inspirieren von"
+    "de": "Lass dich inspirieren durch"
   },
   "replicate": {
     "en": "Replicate",
@@ -495,9 +499,13 @@
     "en": "Join",
     "de": "Beitreten"
   },
+  "join_now": {
+    "en": "Join now",
+    "de": "Jetzt anmelden"
+  },
   "collaborate_with": {
     "en": "Collaborate with",
-    "de": "Zusammenarbeiten mit"
+    "de": "Kollaboriere mit"
   },
   "the_most_effective_climate_project": {
     "en": "the most effective climate projects",
@@ -513,11 +521,11 @@
   },
   "climate_action_platform": {
     "en": "Climate action platform",
-    "de": "Klima-Aktionsplattform"
+    "de": "Klimaschutzplattform"
   },
   "climate_action_platform_text": {
     "en": "Bringing everyone involved in climate action together.",
-    "de": "Wir bringen alle, die im Klimaschutz involviert sind, zusammen."
+    "de": "Wir bringen alle Klimaschützer zusammen."
   },
   "get_inspired_text": {
     "en": "Find inspiring climate projects to work on. See where you can make the biggest difference.",
@@ -529,7 +537,7 @@
   },
   "share_your_solutions_text_1": {
     "en": "Share your projects & ideas with the climate community!",
-    "de": "Teilen deine Projekte & Ideen mit der Klima-Community!"
+    "de": "Teile deine Projekte & Ideen mit der Klima-Community!"
   },
   "share_your_solutions_text_2": {
     "en": "Find volunteers, partners and customers.",

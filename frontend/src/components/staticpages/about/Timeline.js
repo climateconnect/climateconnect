@@ -118,8 +118,8 @@ export default function Timeline({ headlineClass }) {
 const getTimelineData = (isMediumScreen, texts) => [
   {
     date: texts.july + " 2019",
-    headline: texts.texts.the_idea_is_born,
-    content: texts.texts.the_idea_is_born_text,
+    headline: texts.the_idea_is_born,
+    content: texts.the_idea_is_born_text,
   },
   {
     date: isMediumScreen ? texts.november_short + " 2019" : texts.november + " 2019",

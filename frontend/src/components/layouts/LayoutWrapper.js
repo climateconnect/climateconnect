@@ -1,6 +1,7 @@
-import { Typography, useMediaQuery } from "@material-ui/core";
+import { CircularProgress, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import Head from "next/head";
+import { Router } from "next/router";
 import React, { useContext, useEffect } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -45,12 +46,22 @@ export default function LayoutWrapper({
   const { acceptedNecessary, locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const closeBanner = () => setBannerOpen(false);
+  Router.events.on('routeChangeStart', () => {
+    setLoading(true)
+  }); 
+  Router.events.on('routeChangeComplete', () => {
+    setLoading(false)
+  }); 
+  Router.events.on('routeChangeError', () => {
+    setLoading(false)
+  });
+
   useEffect(function () {
     if (!initialized) setInitialized(true);
     if (loading) {
       setLoading(false);
     }
-  });
+  }, []);
   const defaultDescription = texts.defaultDescription;
   return (
     <>
@@ -77,6 +88,7 @@ export default function LayoutWrapper({
             <div>
               <img className={classes.spinner} src="/images/logo.png" />
             </div>
+            <CircularProgress />
             <Typography component="div">{texts.loading_and_waiting}</Typography>
           </div>
         ) : (

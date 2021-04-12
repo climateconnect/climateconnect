@@ -1,5 +1,6 @@
 import { Container, makeStyles, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LightBigButton from "./LightBigButton";
@@ -42,7 +43,7 @@ export default function StartNowBanner({ h1ClassName, className }) {
           </Typography>
         </div>
         <div className={classes.buttonContainer}>
-          <LightBigButton href="/signup" className={classes.signUpButton}>
+          <LightBigButton href={getLocalePrefix(locale) + "/signup"} className={classes.signUpButton}>
             {texts.sign_up}
           </LightBigButton>
         </div>

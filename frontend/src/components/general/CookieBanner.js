@@ -2,6 +2,7 @@ import { Button, Checkbox, Container, Typography, useMediaQuery } from "@materia
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
@@ -112,11 +113,11 @@ export default function CookieBanner({ closeBanner }) {
         {!isNarrowScreen && <Typography variant="body2">{texts.cookie_explanation}</Typography>}
         <Typography variant="body2">
           {texts.for_more_information_check_out_our}{" "}
-          <a href="privacy" target="_blank">
+          <a href={getLocalePrefix(locale) + "privacy"} target="_blank" rel="noreferrer">
             {texts.privacy_policy}
           </a>{" "}
           {texts.and}{" "}
-          <a href="terms" target="_blank">
+          <a href={getLocalePrefix(locale) + "terms"} target="_blank" rel="noreferrer">
             {texts.terms_of_use}
           </a>
         </Typography>

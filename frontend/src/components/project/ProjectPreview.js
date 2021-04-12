@@ -2,6 +2,7 @@ import { Card, CardContent, CardMedia, Link, Typography } from "@material-ui/cor
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import Truncate from "react-truncate";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -107,7 +108,7 @@ export default function ProjectPreview({ project, projectRef }) {
   };
   return (
     <Link
-      href={project.is_draft ? `/editProject/${project.url_slug}` : `/projects/${project.url_slug}`}
+      href={project.is_draft ? `${getLocalePrefix(locale)}/editProject/${project.url_slug}` : `${getLocalePrefix(locale)}/projects/${project.url_slug}`}
       className={classes.noUnderline}
     >
       <Card

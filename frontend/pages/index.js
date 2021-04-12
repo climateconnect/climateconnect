@@ -2,6 +2,7 @@ import { Button, makeStyles } from "@material-ui/core";
 import axios from "axios";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import tokenConfig from "../public/config/tokenConfig";
+import { getLocalePrefix } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import DonationsBanner from "../src/components/landingPage/DonationsBanner";
@@ -135,7 +136,7 @@ export default function Index() {
           <PitchBox h1ClassName={classes.h1ClassName} className={classes.pitchBox} />
           <div className={classes.signUpButtonContainer}>
             <Button
-              href="/signup"
+              href={getLocalePrefix(locale) + "/signup"}
               variant="contained"
               color="primary"
               size="large"

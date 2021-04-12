@@ -76,7 +76,6 @@ export default function About({ faqQuestions }) {
   const trigger = !TopOfPage({ initTopOfPage: true });
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "about", locale: locale });
-  console.log(texts);
 
   const quoteText = texts.about_quote_text;
 

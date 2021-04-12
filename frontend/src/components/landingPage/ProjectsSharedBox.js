@@ -1,6 +1,7 @@
 import { Button, makeStyles, Typography } from "@material-ui/core";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FixedPreviewCards from "./FixedPreviewCards";
@@ -50,7 +51,7 @@ export default function ProjectsSharedBox({ projects, className, isLoading }) {
       </Typography>
       <FixedPreviewCards isLoading={isLoading} elements={projects} type="project" />
       <div className={classes.showProjectsButtonContainer}>
-        <Button color="inherit" href="/browse">
+        <Button color="inherit" href={getLocalePrefix(locale) + "/browse"}>
           <span className={classes.showProjectsText}>{texts.show_all_projects}</span>
           <KeyboardArrowRightIcon className={classes.showProjectsArrow} />
         </Button>

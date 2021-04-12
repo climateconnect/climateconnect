@@ -1,6 +1,7 @@
 import { Link, Typography } from "@material-ui/core";
 import axios from "axios";
 import React, { useContext, useEffect } from "react";
+import { getLocalePrefix } from "../../public/lib/apiOperations";
 import { redirectOnLogin } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
@@ -69,7 +70,7 @@ export default function ProfileVerified({ successMessage, errorMessage }) {
             {successMessage}
           </Typography>
           <Typography align="center" variant="h5" color="primary" component="h2">
-            <Link href="/signin">{texts.click_here_to_log_in}</Link>
+            <Link href={getLocalePrefix(locale) + "/signin"}>{texts.click_here_to_log_in}</Link>
           </Typography>
         </div>
       ) : null}

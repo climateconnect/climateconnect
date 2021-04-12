@@ -1,7 +1,7 @@
 import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
-import { apiRequest, redirect } from "../../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
 import { getAllChangedMembers } from "../../../public/lib/manageMembers";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -154,7 +154,7 @@ export default function ManageOrganizationMembers({
           <div className={classes.buttons}>
             <Button
               className={classes.button}
-              href={"/organizations/" + organization.url_slug}
+              href={getLocalePrefix(locale) + "/organizations/" + organization.url_slug}
               variant="contained"
               color="secondary"
             >

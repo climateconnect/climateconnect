@@ -1,5 +1,6 @@
 import { Container, Link, makeStyles, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
@@ -30,11 +31,11 @@ export default function NavigationSubHeader({ hubName }) {
     <div className={classes.root}>
       <Container>
         <Typography className={classes.path} component="div">
-          <Link className={classes.link} href="/browse">
+          <Link className={classes.link} href={getLocalePrefix(locale) + "/browse"}>
             {texts.browse}
           </Link>
           {" / "}
-          <Link className={classes.link} href="/hubs">
+          <Link className={classes.link} href={getLocalePrefix(locale) + "/hubs"}>
             {texts.hubs}
           </Link>
           {hubName && (

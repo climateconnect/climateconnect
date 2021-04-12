@@ -1,5 +1,6 @@
 import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
@@ -143,7 +144,7 @@ export default function JoinCommunityBox({ h1ClassName }) {
   return (
     <div className={classes.root}>
       <Container className={classes.content}>
-        {isMediumScreen && <JoinCommunityText h1ClassName={h1ClassName} texts={texts} />}
+        {isMediumScreen && <JoinCommunityText h1ClassName={h1ClassName} texts={texts} locale={locale}/>}
         <div className={classes.cloudContainer}>
           <div className={classes.loginIconContainer} />
         </div>
@@ -153,7 +154,7 @@ export default function JoinCommunityBox({ h1ClassName }) {
   );
 }
 
-const JoinCommunityText = ({ h1ClassName, texts }) => {
+const JoinCommunityText = ({ h1ClassName, texts, locale }) => {
   const classes = useStyles();
   return (
     <div className={classes.textContainer}>
@@ -168,7 +169,7 @@ const JoinCommunityText = ({ h1ClassName, texts }) => {
         {texts.whether_youre_working_on_climate_action_fulltime}
       </Typography>
       <div className={classes.signUpButtonContainer}>
-        <LightBigButton href="/signup">{texts.sign_up}</LightBigButton>
+        <LightBigButton href={getLocalePrefix(locale) + "/signup"}>{texts.sign_up}</LightBigButton>
       </div>
     </div>
   );

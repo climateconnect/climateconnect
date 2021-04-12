@@ -2,6 +2,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
 import Router from "next/router";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations.js";
 import getTexts from "../../../public/texts/texts.js";
 import UserContext from "../context/UserContext.js";
 import getOrganizationInfoMetadata from "./../../../public/data/organization_info_metadata.js";
@@ -68,7 +69,7 @@ export default function EnterDetailledOrganizationInfo({
         possibleAccountTypes={[...tagOptions]}
         infoMetadata={infoMetadata}
         maxAccountTypes={2}
-        accountHref={"/organizations/" + organization.url_slug}
+        accountHref={getLocalePrefix(locale) + "/organizations/" + organization.url_slug}
         handleSubmit={handleSubmit}
         submitMessage={texts.create}
         handleCancel={handleCancel}

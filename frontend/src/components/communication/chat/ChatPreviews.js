@@ -5,13 +5,14 @@ import {
   ListItem,
   ListItemText,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import React, { useContext } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import Truncate from "react-truncate";
+import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getDateTime } from "../../../../public/lib/dateOperations";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
@@ -99,6 +100,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
           isFirstChat={index === 0}
           isNarrowScreen={isNarrowScreen}
           chat={chat}
+          locale={locale}
         />
       ))}
       <LoadingSpinner />
@@ -106,7 +108,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
   );
 }
 
-const ChatPreview = ({ chat, isNarrowScreen, isFirstChat }) => {
+const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
   const lastAction = chat.last_message ? chat.last_message.sent_at : chat.created_at;
   if (!lastAction) console.log(chat);
   const classes = useStyles();
@@ -118,7 +120,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat }) => {
         <ListItem
           button
           component="a"
-          href={"/chat/" + chat.chat_uuid}
+          href={getLocalePrefix(locale) + "/chat/" + chat.chat_uuid}
           alignItems="center"
           className={classes.listItem}
         >

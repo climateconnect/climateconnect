@@ -11,7 +11,7 @@ export default function AlternatingText({ classes, mobile }) {
   return (
     <TextLoop mask={true} interval={4000}>
       <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-        {texts.share}
+        {texts.share_request}
       </Typography>
       <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
         {texts.find}

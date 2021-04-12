@@ -3,6 +3,7 @@ import Router from "next/router";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import UserContext from "../../src/components/context/UserContext";
+import { getLocalePrefix } from "../lib/apiOperations";
 import { startPrivateChat } from "../lib/messagingOperations";
 import getTexts from "../texts/texts";
 
@@ -258,7 +259,7 @@ export default function get_steps({
       },
       button: (
         <div className={classes.buttonContainer}>
-          <Button href="/signup?from_tutorial=true" className={classes.signUpButton} size="large">
+          <Button href={getLocalePrefix(locale) + "/signup?from_tutorial=true"} className={classes.signUpButton} size="large">
             {texts.sign_up}
           </Button>
         </div>

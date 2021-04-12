@@ -5,6 +5,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import humanizeDuration from "humanize-duration";
 import React, { useContext } from "react";
 import TimeAgo from "react-timeago";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
 import MessageContent from "../communication/MessageContent";
@@ -157,7 +158,7 @@ export default function ProjectContent({
                   className={classes.editProjectButton}
                   variant="contained"
                   color="primary"
-                  href={"/editProject/" + project.url_slug}
+                  href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
                 >
                   {project.is_draft ? texts.edit_draft : texts.edit_project}
                 </Button>
@@ -184,7 +185,7 @@ export default function ProjectContent({
                 size="small"
               />
             ) : (
-              <Link href={"/organizations/" + project.creator.url_slug}>
+              <Link href={getLocalePrefix(locale) + "/organizations/" + project.creator.url_slug}>
                 <MiniOrganizationPreview
                   size="small"
                   className={classes.creator}

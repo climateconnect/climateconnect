@@ -5,7 +5,7 @@ import {
   Divider,
   FormControlLabel,
   TextField,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
@@ -14,7 +14,7 @@ import Link from "next/link";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import tokenConfig from "../../../public/config/tokenConfig";
-import { redirect } from "../../../public/lib/apiOperations";
+import { getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations";
@@ -358,7 +358,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           <Button variant="contained" color="primary" type="submit">
             {texts.change_password}
           </Button>
-          <Link href="/resetpassword">
+          <Link href={getLocalePrefix(locale) + "/resetpassword"}>
             <a className={`${classes.forgotPasswordLink} ${classes.primaryColor}`}>
               {texts.i_forgot_my_password}
             </a>
@@ -511,7 +511,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       </Typography>
       <Divider />
       <Button
-        href={"/editprofile"}
+        href={getLocalePrefix(locale) + "/editprofile"}
         className={`${classes.editProfilePageButton}`}
         variant="contained"
         color="primary"

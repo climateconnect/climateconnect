@@ -3,12 +3,13 @@ import Cookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext, useRef } from "react";
 import tokenConfig from "../public/config/tokenConfig";
+import { getLocalePrefix } from "../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../public/lib/imageOperations";
 import {
   getLocationValue,
   indicateWrongLocation,
   isLocationValid,
-  parseLocation,
+  parseLocation
 } from "../public/lib/locationOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -113,7 +114,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
           basicOrganizationInfo: (
             <div>
               {texts.an_organization_with_this_name_already_exists}
-              <a href={"/organizations/" + org.url_slug}>{texts.click_here}</a> {texts.to_see_it}
+              <a href={getLocalePrefix(locale) + "/organizations/" + org.url_slug}>{texts.click_here}</a> {texts.to_see_it}
             </div>
           ),
         });

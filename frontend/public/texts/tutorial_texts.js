@@ -1,7 +1,8 @@
 import { Link } from "@material-ui/core";
 import React from "react";
+import { getLocalePrefix } from "../lib/apiOperations";
 
-export default function getTutorialTexts({ hubName, classes }) {
+export default function getTutorialTexts({ hubName, classes, locale }) {
   return {
     click_here_to_go_back_to_tutorial: {
       en: "Click here to go back to the tutorial",
@@ -73,7 +74,7 @@ export default function getTutorialTexts({ hubName, classes }) {
         <>
           Here you can find climate action projects in the {hubName} field that were created by
           Climate Connect members. You can find an overview of all projects on the{" "}
-          <Link href="/browse" target="_blank" className={classes?.link}>
+          <Link href={getLocalePrefix(locale) + "/browse"} target="_blank" className={classes?.link}>
             browse
           </Link>{" "}
           page.
@@ -82,7 +83,7 @@ export default function getTutorialTexts({ hubName, classes }) {
       de: <>
         Hier kannst du alle Projekte von Climate Connect Nutzern im Bereich {hubName} finden.
         Einen Überblick über alle Projekte erhälst du auf der {" "}
-        <Link href="/browse" target="_blank" className={classes?.link}>
+        <Link href={getLocalePrefix(locale) + "/browse"} target="_blank" className={classes?.link}>
           Browse
         </Link>{" "}
         Seite.
@@ -99,7 +100,7 @@ export default function getTutorialTexts({ hubName, classes }) {
         <>
           Here you can find climate action projects in the {hubName} field that were created by
           Climate Connect members. You can find an overview of all projects on the{" "}
-          <Link href="/browse" target="_blank" className={classes?.link}>
+          <Link href={getLocalePrefix(locale) + "/browse"} target="_blank" className={classes?.link}>
             browse
           </Link>{" "}
           page.
@@ -108,7 +109,7 @@ export default function getTutorialTexts({ hubName, classes }) {
       de: <>
         Hier kannst du alle Projekte von Climate Connect Nutzern im Bereich {hubName} finden. 
         Einen Überblick über alle Projekte erhälst du auf der{" "} 
-        <Link href="/browse" target="_blank" className={classes?.link}>
+        <Link href={getLocalePrefix(locale) + "/browse"} target="_blank" className={classes?.link}>
           Browse
         </Link>{" "}
         Seite.
@@ -123,7 +124,7 @@ export default function getTutorialTexts({ hubName, classes }) {
         <>
           On this page you can find climate action projects in the {hubName} field that were created
           by Climate Connect members. You can find an overview of all projects on the{" "}
-          <Link href="/browse" target="_blank" className={classes?.link}>
+          <Link href={getLocalePrefix(locale) + "/browse"} target="_blank" className={classes?.link}>
             browse
           </Link>{" "}
           page.
@@ -132,7 +133,7 @@ export default function getTutorialTexts({ hubName, classes }) {
       de: <>
         Auf dieser Seite findest du Klimaschutzprojekte im Bereich {hubName}, die von Climate
         Connect Nutzern erstellt wurden. Auf der{" "}
-        <Link href="/browse" target="_blank" className={classes?.link}>
+        <Link href={getLocalePrefix(locale) + "/browse"} target="_blank" className={classes?.link}>
           Browse
         </Link>{" "}
         Seite findest du einen Überblick aller Projekte.

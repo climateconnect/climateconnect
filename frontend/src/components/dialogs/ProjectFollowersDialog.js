@@ -10,10 +10,11 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import React, { useContext } from "react";
 import ReactTimeago from "react-timeago";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -78,14 +79,14 @@ export default function ProjectFollowersDialog({
                 className={classes.loginButton}
                 variant="contained"
                 color="primary"
-                href={"/signin?redirect=" + encodeURIComponent(url)}
+                href={getLocalePrefix(locale) + "/signin?redirect=" + encodeURIComponent(url)}
               >
                 {texts.log_in}
               </Button>
             </Container>
           </>
         ) : followers && followers.length > 0 ? (
-          <ProjectFollowers followers={followers} texts={texts} />
+          <ProjectFollowers followers={followers} texts={texts} locale={locale} />
         ) : (
           <Typography>{texts.this_project_does_not_have_any_followers_yet}</Typography>
         )}
@@ -94,7 +95,7 @@ export default function ProjectFollowersDialog({
   );
 }
 
-const ProjectFollowers = ({ followers, texts }) => {
+const ProjectFollowers = ({ followers, texts, locale }) => {
   const classes = useStyles();
   console.log(followers);
   return (
@@ -106,7 +107,7 @@ const ProjectFollowers = ({ followers, texts }) => {
             return (
               <TableRow key={index} className={classes.follower}>
                 <TableCell>
-                  <Link className={classes.user} href={"/profiles/" + f.user_profile.url_slug}>
+                  <Link className={classes.user} href={getLocalePrefix(locale) + "/profiles/" + f.user_profile.url_slug}>
                     <Avatar
                       className={classes.avatar}
                       src={getImageUrl(f.user_profile.image)}

@@ -5,13 +5,14 @@ import Cookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext } from "react";
 import tokenConfig from "../../public/config/tokenConfig";
+import { getLocalePrefix } from "../../public/lib/apiOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 import getTexts from "../../public/texts/texts";
 import LoginNudge from "../../src/components/general/LoginNudge";
 import PageNotFound from "../../src/components/general/PageNotFound";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import getProfileInfoMetadata from "./../../public/data/profile_info_metadata";
-import { parseProfile } from "./../../public/lib/profileOperations";
+import { nullifyUndefinedValues, parseProfile } from "./../../public/lib/profileOperations";
 import AccountPage from "./../../src/components/account/AccountPage";
 import UserContext from "./../../src/components/context/UserContext";
 import OrganizationPreviews from "./../../src/components/organization/OrganizationPreviews";
@@ -88,12 +89,12 @@ export async function getServerSideProps(ctx) {
     getProjectsByUser(profileUrl, token),
   ]);
   return {
-    props: {
+    props: nullifyUndefinedValues({
       profile: profile,
       organizations: organizations,
       projects: projects,
       token: token,
-    },
+    }),
   };
 }
 
@@ -120,6 +121,7 @@ export default function ProfilePage({ profile, projects, organizations, token })
           user={user}
           token={token}
           texts={texts}
+          locale={locale}
         />
       ) : (
         <PageNotFound itemName="Profile" />
@@ -128,7 +130,7 @@ export default function ProfilePage({ profile, projects, organizations, token })
   );
 }
 
-function ProfileLayout({ profile, projects, organizations, infoMetadata, user, token, texts }) {
+function ProfileLayout({ profile, projects, organizations, infoMetadata, user, token, texts, locale }) {
   const classes = useStyles();
   const isOwnAccount = user && user.url_slug === profile.url_slug;
   const handleConnectBtn = async (e) => {
@@ -157,7 +159,7 @@ function ProfileLayout({ profile, projects, organizations, infoMetadata, user, t
     <AccountPage
       account={profile}
       default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={"/editprofile"}
+      editHref={getLocalePrefix(locale) + "/editprofile"}
       isOwnAccount={isOwnAccount}
       type="profile"
       infoMetadata={infoMetadata}
@@ -179,7 +181,7 @@ function ProfileLayout({ profile, projects, organizations, infoMetadata, user, t
           <Button
             variant="contained"
             color="primary"
-            href="/share"
+            href={getLocalePrefix(locale) + "/share"}
             className={classes.createButton}
           >
             {texts.share_a_project}
@@ -201,7 +203,7 @@ function ProfileLayout({ profile, projects, organizations, infoMetadata, user, t
           <Button
             variant="contained"
             color="primary"
-            href="/createorganization"
+            href={getLocalePrefix(locale) + "/createorganization"}
             className={classes.createButton}
           >
             {texts.create_an_organization}

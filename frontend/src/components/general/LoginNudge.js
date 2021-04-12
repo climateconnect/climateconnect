@@ -1,6 +1,7 @@
 import { Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
@@ -25,11 +26,11 @@ export default function LoginNudge({ whatToDo, fullPage, className }) {
     <div className={`${fullPage && classes.loginNudge} ${className}`}>
       <Typography className={fullPage && classes.loginNudgeText}>
         {texts.please}{" "}
-        <Link underline="always" color="primary" href="/signin">
+        <Link underline="always" color="primary" href={getLocalePrefix(locale) + "/signin"}>
           {texts.log_in}
         </Link>{" "}
         {texts.or}{" "}
-        <Link underline="always" color="primary" href="/signup">
+        <Link underline="always" color="primary" href={getLocalePrefix(locale) + "/signup"}>
           {texts.sign_up}
         </Link>{" "}
         {whatToDo}.
