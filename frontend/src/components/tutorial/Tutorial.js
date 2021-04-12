@@ -7,6 +7,7 @@ import {
   getLastCompletedTutorialStep,
   getTutorialStepFromCookie,
 } from "../../../public/lib/tutorialOperations";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import TutorialStep from "./TutorialStep";
@@ -37,7 +38,8 @@ export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggered
   const classes = useStyles();
   const cookies = new Cookies();
   const tutorialCookie = cookies.get("finishedTutorialSteps");
-  const { acceptedNecessary, user } = useContext(UserContext);
+  const { acceptedNecessary, user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "tutorial", locale: locale });
   const tutorialSteps = get_steps(pointerRefs ? { ...pointerRefs, hubName: hubName } : {});
   const curStepRef = useRef(null);
 
@@ -171,7 +173,7 @@ export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggered
     if (step < 0) {
       return (
         <Tooltip
-          title="Click here to go back to the tutorial"
+          title={texts.click_here_to_go_back_to_tutorial}
           open={showMinimizedAlert}
           placement="left"
           arrow
@@ -185,7 +187,7 @@ export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggered
             }}
             onClick={resetSteps}
           >
-            Tutorial
+            {texts.tutorial}
           </Button>
         </Tooltip>
       );

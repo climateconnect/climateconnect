@@ -1,7 +1,10 @@
 import { Button, makeStyles } from "@material-ui/core";
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import tokenConfig from "../public/config/tokenConfig";
+import { getLocalePrefix } from "../public/lib/apiOperations";
+import getTexts from "../public/texts/texts";
+import UserContext from "../src/components/context/UserContext";
 import DonationsBanner from "../src/components/landingPage/DonationsBanner";
 import HubsBox from "../src/components/landingPage/HubsBox";
 import JoinCommunityBox from "../src/components/landingPage/JoinCommunityBox";
@@ -66,12 +69,14 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(5),
   },
   loadingSpinner: {
-    marginTop: theme.spacing(2)
-  }
+    marginTop: theme.spacing(2),
+  },
 }));
 
 export default function Index() {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
   const [initialized, setInitialized] = useState(false);
   const [pos, setPos] = useState("top");
   const [isLoading, setIsLoading] = useState(true);
@@ -110,7 +115,6 @@ export default function Index() {
 
   return (
     <WideLayout
-      title="Global Platform for Climate Change Solutions"
       hideTitle
       fixedHeader
       transparentHeader={pos === "top"}
@@ -132,13 +136,13 @@ export default function Index() {
           <PitchBox h1ClassName={classes.h1ClassName} className={classes.pitchBox} />
           <div className={classes.signUpButtonContainer}>
             <Button
-              href="/signup"
+              href={getLocalePrefix(locale) + "/signup"}
               variant="contained"
               color="primary"
               size="large"
               className={classes.signUpButton}
             >
-              {"Sign up & make a change"}
+              {texts.sign_up_and_make_a_change}
             </Button>
           </div>
           <HubsBox isLoading={isLoading} hubs={elements.hubs} />

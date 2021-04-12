@@ -57,8 +57,8 @@ const useStyles = makeStyles((theme) => ({
   },
   loadingSpinner: {
     marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1)
-  }
+    marginBottom: theme.spacing(1),
+  },
 }));
 
 export default function FixedPreviewCards({ elements, type, isLoading }) {
@@ -66,9 +66,9 @@ export default function FixedPreviewCards({ elements, type, isLoading }) {
   return (
     <div className={classes.root}>
       <div className={classes.container}>
-        {isLoading ?
+        {isLoading ? (
           <LoadingSpinner className={classes.loadingSpinner} />
-        :
+        ) : (
           <>
             {elements.map((e, index) => (
               <span
@@ -85,7 +85,7 @@ export default function FixedPreviewCards({ elements, type, isLoading }) {
               </span>
             ))}
           </>
-        }
+        )}
       </div>
     </div>
   );

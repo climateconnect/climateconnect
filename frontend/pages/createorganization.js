@@ -3,6 +3,7 @@ import Cookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext, useRef } from "react";
 import tokenConfig from "../public/config/tokenConfig";
+import { getLocalePrefix } from "../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../public/lib/imageOperations";
 import {
   getLocationValue,
@@ -10,12 +11,28 @@ import {
   isLocationValid,
   parseLocation,
 } from "../public/lib/locationOperations";
+import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
 import Layout from "./../src/components/layouts/layout";
 import WideLayout from "./../src/components/layouts/WideLayout";
 import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
 import EnterDetailledOrganizationInfo from "./../src/components/organization/EnterDetailledOrganizationInfo";
+
+export async function getServerSideProps(ctx) {
+  const { token } = Cookies(ctx);
+  const [tagOptions, rolesOptions] = await Promise.all([
+    await getTags(token),
+    await getRolesOptions(token),
+  ]);
+  return {
+    props: {
+      tagOptions: tagOptions,
+      token: token,
+      rolesOptions: rolesOptions,
+    },
+  };
+}
 
 export default function CreateOrganization({ tagOptions, token, rolesOptions }) {
   const [errorMessages, setErrorMessages] = React.useState({
@@ -40,7 +57,8 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     website: "",
     types: [],
   });
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "organization", locale: locale });
   const steps = ["basicorganizationinfo", "detailledorganizationinfo"];
   const [curStep, setCurStep] = React.useState(steps[0]);
   const locationInputRef = useRef(null);
@@ -71,8 +89,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       if (values.hasparentorganization && !values.parentOrganization) {
         handleSetErrorMessages({
           ...errorMessages,
-          basicOrganizationInfo:
-            "You have not selected a parent organization. Either untick the sub-organization field or choose/create your parent organization.",
+          basicOrganizationInfo: texts.you_have_not_selected_a_parent_organization_either_untick,
         });
         return;
       }
@@ -82,7 +99,8 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         indicateWrongLocation(
           locationInputRef,
           setLocationOptionsOpen,
-          handleSetLocationErrorMessage
+          handleSetLocationErrorMessage,
+          texts
         );
         return;
       }
@@ -95,8 +113,11 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
           errorMessages,
           basicOrganizationInfo: (
             <div>
-              An organization with this name already exists. Click{" "}
-              <a href={"/organizations/" + org.url_slug}>here</a> to see it.
+              {texts.an_organization_with_this_name_already_exists}
+              <a href={getLocalePrefix(locale) + "/organizations/" + org.url_slug}>
+                {texts.click_here}
+              </a>{" "}
+              {texts.to_see_it}
             </div>
           ),
         });
@@ -118,11 +139,10 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
   };
 
   const requiredPropErrors = {
-    image: 'Please add an avatar image by clicking the "Add Image" button.',
-    organization_tags:
-      'Please choose at least one organization type by clicking the "Add Type" button under the avatar.',
-    name: "Please type your organization name under the avatar image",
-    location: "Please specify your location",
+    image: texts.image_required_error,
+    organization_tags: texts.type_required_errror,
+    name: texts.name_required_error,
+    location: texts.location_required_error,
   };
 
   const handleDetailledInfoSubmit = async (account) => {
@@ -131,7 +151,8 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       indicateWrongLocation(
         locationInputRef,
         setLocationOptionsOpen,
-        handleSetDetailledErrorMessage
+        handleSetDetailledErrorMessage,
+        texts
       );
       return;
     }
@@ -157,8 +178,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         Router.push({
           pathname: "/organizations/" + response.data.url_slug,
           query: {
-            message:
-              "You have successfully created an organization! You can add members by scrolling down to the members section.",
+            message: texts.you_have_successfully_created_an_organization_you_can_add_members,
           },
         });
       })
@@ -175,13 +195,16 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
 
   if (!user)
     return (
-      <WideLayout title="Please Log In to Create an Organization" hideHeadline={true}>
-        <LoginNudge fullPage whatToDo="create an organization" />
+      <WideLayout
+        title={texts.please_log_in + " " + texts.to_create_an_organization}
+        hideHeadline={true}
+      >
+        <LoginNudge fullPage whatToDo={texts.to_create_an_organization} />
       </WideLayout>
     );
   else if (curStep === "basicorganizationinfo")
     return (
-      <Layout title="Create an Organization">
+      <Layout title={texts.create_an_organization}>
         <EnterBasicOrganizationInfo
           errorMessage={errorMessages.basicOrganizationInfo}
           handleSubmit={handleBasicInfoSubmit}
@@ -194,7 +217,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     );
   else if (curStep === "detailledorganizationinfo")
     return (
-      <WideLayout title="Create an Organization">
+      <WideLayout title={texts.create_an_organization}>
         <EnterDetailledOrganizationInfo
           errorMessage={errorMessages.detailledOrganizationInfo}
           handleSubmit={handleDetailledInfoSubmit}
@@ -207,19 +230,6 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       </WideLayout>
     );
 }
-
-CreateOrganization.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  const [tagOptions, rolesOptions] = await Promise.all([
-    await getTags(token),
-    await getRolesOptions(token),
-  ]);
-  return {
-    tagOptions: tagOptions,
-    token: token,
-    rolesOptions: rolesOptions,
-  };
-};
 
 const getRolesOptions = async (token) => {
   try {

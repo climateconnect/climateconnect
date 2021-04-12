@@ -6,6 +6,7 @@ import Cookies from "next-cookies";
 import React, { useContext, useEffect, useRef } from "react";
 import tokenConfig from "../../public/config/tokenConfig";
 import { redirect } from "../../public/lib/apiOperations";
+import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
 import PageNotFound from "../../src/components/general/PageNotFound";
@@ -60,17 +61,40 @@ const parseComments = (comments) => {
     });
 };
 
+export async function getServerSideProps(ctx) {
+  const { token } = Cookies(ctx);
+  const projectUrl = encodeURI(ctx.query.projectId);
+  const [project, members, posts, comments, following] = await Promise.all([
+    getProjectByIdIfExists(projectUrl, token),
+    token ? getProjectMembersByIdIfExists(projectUrl, token) : [],
+    getPostsByProject(projectUrl, token),
+    getCommentsByProject(projectUrl, token),
+    token ? getIsUserFollowing(projectUrl, token) : false,
+  ]);
+  return {
+    props: {
+      project: project,
+      members: members,
+      posts: posts,
+      comments: comments,
+      token: token,
+      following: following,
+    },
+  };
+}
+
 export default function ProjectPage({ project, members, posts, comments, token, following }) {
   const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
   const [isUserFollowing, setIsUserFollowing] = React.useState(following);
   const [followingChangePending, setFollowingChangePending] = React.useState(false);
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
 
   const handleWindowClose = (e) => {
     if (curComments.filter((c) => c.unconfirmed).length > 0 || followingChangePending) {
       e.preventDefault();
-      return (e.returnValue = "Changes you made might not be saved.");
+      return (e.returnValue = texts.changes_might_not_be_saved);
     }
   };
 
@@ -87,7 +111,7 @@ export default function ProjectPage({ project, members, posts, comments, token, 
       description={project?.shortdescription}
       message={message?.message}
       messageType={message?.messageType}
-      title={project ? project.name : "Solution Not Found"}
+      title={project ? project.name : texts.project + " " + texts.not_found}
     >
       {project ? (
         <ProjectLayout
@@ -100,33 +124,14 @@ export default function ProjectPage({ project, members, posts, comments, token, 
           setCurComments={setCurComments}
           followingChangePending={followingChangePending}
           setFollowingChangePending={setFollowingChangePending}
+          texts={texts}
         />
       ) : (
-        <PageNotFound itemName="Project" />
+        <PageNotFound itemName={texts.project} />
       )}
     </WideLayout>
   );
 }
-
-ProjectPage.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  const projectUrl = encodeURI(ctx.query.projectId);
-  const [project, members, posts, comments, following] = await Promise.all([
-    getProjectByIdIfExists(projectUrl, token),
-    token ? getProjectMembersByIdIfExists(projectUrl, token) : [],
-    getPostsByProject(projectUrl, token),
-    getCommentsByProject(projectUrl, token),
-    token ? getIsUserFollowing(projectUrl, token) : false,
-  ]);
-  return {
-    project: project,
-    members: members,
-    posts: posts,
-    comments: comments,
-    token: token,
-    following: following,
-  };
-};
 
 function ProjectLayout({
   project,
@@ -138,6 +143,7 @@ function ProjectLayout({
   setCurComments,
   followingChangePending,
   setFollowingChangePending,
+  texts,
 }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
@@ -162,7 +168,7 @@ function ProjectLayout({
 
   // pagination will only return 12 members
   const teamTabLabel = () => {
-    let teamLabel = "Team";
+    let teamLabel = texts.team;
     if (project && project.team) {
       if (project.team.length === 12) {
         teamLabel += ` (${project.team.length}+)`;
@@ -175,12 +181,15 @@ function ProjectLayout({
 
   // pagination will only return 10 comments
   const commentsTabLabel = () => {
-    let commentsLabel = "Comments";
+    let commentsLabel = texts.comments;
+    const number_of_parent_comments = project.comments.length;
+    const number_of_replies = project.comments.reduce((total, p) => total + p?.replies?.length, 0);
+    const number_of_coments = number_of_parent_comments + number_of_replies;
     if (project && project.comments) {
       if (project.comments.length === 10) {
-        commentsLabel += ` (${project.comments.length}+)`;
-      } else if (project?.team?.length < 10 && project.comments.length > 0) {
-        commentsLabel += ` (${project.comments.length})`;
+        commentsLabel += ` (${number_of_coments}+)`;
+      } else if (project?.team?.length < 10 && number_of_coments > 0) {
+        commentsLabel += ` (${number_of_coments})`;
       }
     }
     return commentsLabel;
@@ -208,11 +217,11 @@ function ProjectLayout({
       console.log(resp);
       if (resp.status === 200)
         setMessage({
-          message: <span>You have successfully left the project.</span>,
+          message: <span>{texts.you_have_successfully_left_the_project}</span>,
           messageType: "success",
         });
       redirect(`/projects/${project.url_slug}`, {
-        message: "You have successfully left the project.",
+        message: texts.you_have_successfully_left_the_project,
       });
     } catch (e) {
       console.log(e?.response?.data?.message);
@@ -231,11 +240,7 @@ function ProjectLayout({
   const handleToggleFollowProject = () => {
     if (!token)
       setMessage({
-        message: (
-          <span>
-            Please <a href="/signin">log in</a> to follow a project.
-          </span>
-        ),
+        message: <span>{texts.please_log_in_to_follow_a_project}</span>,
         messageType: "error",
       });
     else if (isUserFollowing) setConfirmDialogOpen({ ...confirmDialogOpen, follow: true });
@@ -274,8 +279,7 @@ function ProjectLayout({
     const team_size = project?.team?.length;
     if (user_permission === "Creator" && team_size > 1)
       setMessage({
-        message:
-          'You can\'t leave a project as the creator. Please give the creator role to another team member by clicking "Manage Members" in the team tab',
+        message: `You can't leave a project as the creator. Please give the creator role to another team member by clicking "Manage Members" in the team tab`,
         messageType: "error",
       });
     else setConfirmDialogOpen({ ...confirmDialogOpen, leave: true });
@@ -300,7 +304,7 @@ function ProjectLayout({
             onChange={handleTabChange}
             indicatorColor="primary"
           >
-            <Tab label="Project" className={classes.tab} />
+            <Tab label={texts.project} className={classes.tab} />
             <Tab label={teamTabLabel()} className={classes.tab} />
             <Tab label={commentsTabLabel()} className={classes.tab} />
           </Tabs>
@@ -331,12 +335,10 @@ function ProjectLayout({
       <ConfirmDialog
         open={confirmDialogOpen.follow}
         onClose={onFollowDialogClose}
-        title="Do you really want to unfollow?"
+        title={texts.do_you_really_want_to_unfollow}
         text={
           <span className={classes.dialogText}>
-            Are you sure that you want to unfollow this project?
-            <br />
-            You {"won't"} receive updates about it anymore
+            {texts.are_you_sure_that_you_want_to_unfollow_this_project}
           </span>
         }
         confirmText="Yes"
@@ -345,18 +347,15 @@ function ProjectLayout({
       <ConfirmDialog
         open={confirmDialogOpen.leave}
         onClose={onConfirmDialogClose}
-        title="Do you really want to leave this project?"
+        title={texts.do_you_really_want_to_leave_this_project}
         text={
           <span className={classes.dialogText}>
-            Are you sure that you want to leave this project?
+            {texts.are_you_sure_that_you_want_to_leave_this_project}
             <br />
-            You {"won't"} be part of the team anymore.
+            {texts.you_wont_be_part_of_the_team_anymore}
             {project?.team?.length === 1 && (
               <Typography color="error">
-                <b>
-                  Danger: You are the only member of this project. <br /> If you leave the project
-                  it will be deactivated.
-                </b>
+                <b>{texts.you_are_the_only_member_of_this_project}</b>
               </Typography>
             )}
           </span>

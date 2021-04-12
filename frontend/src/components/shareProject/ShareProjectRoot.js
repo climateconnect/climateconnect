@@ -1,17 +1,19 @@
-import React, { useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
-const DEFAULT_STATUS = 2;
-import ShareProject from "./ShareProject";
-import StepsTracker from "./../general/StepsTracker";
-import SelectCategory from "./SelectCategory";
-import EnterDetails from "./EnterDetails";
-import AddTeam from "./AddTeam";
-import ProjectSubmittedPage from "./ProjectSubmittedPage";
+import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
-import tokenConfig from "../../../public/config/tokenConfig";
 import Router from "next/router";
+import React, { useContext, useEffect } from "react";
+import tokenConfig from "../../../public/config/tokenConfig";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import StepsTracker from "./../general/StepsTracker";
+import AddTeam from "./AddTeam";
+import EnterDetails from "./EnterDetails";
+import ProjectSubmittedPage from "./ProjectSubmittedPage";
+import SelectCategory from "./SelectCategory";
+import ShareProject from "./ShareProject";
+const DEFAULT_STATUS = 2;
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -26,25 +28,25 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const steps = [
+const getSteps = (texts) => [
   {
     key: "share",
     text: "share project",
-    headline: "Share a project",
+    headline: texts.share_a_project,
   },
   {
     key: "selectCategory",
     text: "project category",
-    headline: "Select 1-3 categories that fit your project",
+    headline: texts.select_1_to_3_categories_that_fit_your_project,
   },
   {
     key: "enterDetails",
-    text: "project details",
+    text: texts.project_details,
   },
   {
     key: "addTeam",
     text: "add team",
-    headline: "Add your team",
+    headline: texts.add_your_team,
   },
 ];
 
@@ -60,6 +62,9 @@ export default function ShareProjectRoot({
   setMessage,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
+  const steps = getSteps(texts);
   const [project, setProject] = React.useState(
     getDefaultProjectValues(
       {
@@ -80,7 +85,7 @@ export default function ShareProjectRoot({
       Router.beforePopState(({ as }) => {
         if (location.includes("/share") && as != "/share") {
           const result = window.confirm(
-            "Are you sure you want to leave? You will lose your project."
+            texts.are_you_sure_you_want_to_leave_you_will_lose_your_project
           );
           if (!result) {
             return false;

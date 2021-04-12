@@ -1,7 +1,9 @@
-import React from "react";
-import PropTypes from "prop-types";
 import { Button, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import PropTypes from "prop-types";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import SelectField from "./../general/SelectField";
 import GenericDialog from "./GenericDialog";
 
@@ -39,6 +41,8 @@ export default function SelectDialog({
   const classes = useStyles();
   const [element, setElement] = React.useState(null);
   const [additionalInfo, setAdditionalInfo] = React.useState({});
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
 
   const handleClose = () => {
     onClose();
@@ -97,7 +101,7 @@ export default function SelectDialog({
             </TextField>
           ))}
         <Button variant="contained" color="primary" className={classes.applyButton} type="submit">
-          Add
+          {texts.add}
         </Button>
       </form>
     </GenericDialog>

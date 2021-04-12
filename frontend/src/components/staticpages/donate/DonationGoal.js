@@ -1,5 +1,7 @@
-import React from "react";
-import { makeStyles, LinearProgress, Container, Typography } from "@material-ui/core";
+import { Container, LinearProgress, makeStyles, Typography } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../../public/texts/texts";
+import UserContext from "../../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -51,6 +53,8 @@ const useStyles = makeStyles((theme) => ({
 export default function DonationGoal({ className, current, goal, name, embedded, barColor }) {
   //const atTopOfPage = TopOfPage({ initTopOfPage: true, marginToTrigger: 95 });
   const classes = useStyles({ embedded: embedded, barColor: barColor });
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "donate", locale: locale, classes: classes, goal: goal });
   return (
     <div className={`${className} ${classes.root}`}>
       <Container>
@@ -59,7 +63,7 @@ export default function DonationGoal({ className, current, goal, name, embedded,
           <Typography className={classes.amount} component="span">
             {current}€
           </Typography>{" "}
-          raised out of {goal}€ goal
+          {texts.raised_out_of_goal}
         </Typography>
         <LinearProgress
           variant="determinate"

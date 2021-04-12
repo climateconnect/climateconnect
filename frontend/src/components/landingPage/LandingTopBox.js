@@ -1,6 +1,9 @@
 import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import UserContext from "../context/UserContext";
 import AlternatingText from "../general/AlternatingText";
 import LightBigButton from "../staticpages/LightBigButton";
 
@@ -174,16 +177,27 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LandingTopBox() {
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"))
-  const isVeryLargeScreen = useMediaQuery(theme.breakpoints.up("lg"))
-  const imageSource = isNarrowScreen ? "landing_image_small.jpg" : isVeryLargeScreen? "landing_image_extra_large.jpg" : "landing_image_extra_large.jpg"
-  const classes = useStyles({imageSource: imageSource});
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({
+    page: "landing_page",
+    locale: locale,
+    classes: classes,
+    isNarrowScreen: isNarrowScreen,
+  });
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isVeryLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
+  const imageSource = isNarrowScreen
+    ? "landing_image_small.jpg"
+    : isVeryLargeScreen
+    ? "landing_image_extra_large.jpg"
+    : "landing_image_extra_large.jpg";
+  const classes = useStyles({ imageSource: imageSource });
   return (
     <div>
       <div className={classes.imageContainer}>
         <img
           src={`/images/${imageSource}`}
-          alt="Photo of earth from space at night with some connecting waypoints"
+          alt={texts.landing_page_photo_alt}
           className={classes.img}
         />
       </div>
@@ -191,20 +205,21 @@ export default function LandingTopBox() {
         <div className={classes.textContainer}>
           <Typography className={classes.titleTextContainer} component="h1">
             <div className={classes.titleTextFirstLine}>
-              <AlternatingText classes={classes} mobile={isNarrowScreen} /> climate projects
+              <AlternatingText classes={classes} mobile={isNarrowScreen} /> {texts.climate_projects}
             </div>
-            from around the world
+            {texts.from_around_the_world}
           </Typography>
           {!isNarrowScreen && (
             <Typography component="h2" className={classes.titleTextSubHeader}>
-              Join the global climate action network to connect all
-              {!isNarrowScreen ? <br /> : " "}
-              climate actors on our planet - the only one we have
+              {texts.landing_page_text}
             </Typography>
           )}
           <div className={classes.exploreButtonContainer}>
-            <LightBigButton href="/browse" className={classes.exploreButton}>
-              {isNarrowScreen ? "Explore" : "Explore climate projects"}
+            <LightBigButton
+              href={getLocalePrefix(locale) + "/browse"}
+              className={classes.exploreButton}
+            >
+              {isNarrowScreen ? texts.explore : texts.explore_climate_projects}
             </LightBigButton>
           </div>
         </div>

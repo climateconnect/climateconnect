@@ -1,7 +1,9 @@
-import React from "react";
-import { makeStyles, Container, Typography, Divider, useMediaQuery } from "@material-ui/core";
-import theme from "../../../themes/theme";
+import { Container, Divider, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import React, { useContext } from "react";
 import Carousel from "react-multi-carousel";
+import getTexts from "../../../../public/texts/texts";
+import theme from "../../../themes/theme";
+import UserContext from "../../context/UserContext";
 import CustomDot from "../../general/CustomDot";
 
 const useStyles = makeStyles((theme) => ({
@@ -52,6 +54,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Timeline({ headlineClass }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "about", locale: locale });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const isMediumScreen = useMediaQuery(theme.breakpoints.only("md"));
   const useCarousel = useMediaQuery(theme.breakpoints.down("sm"));
@@ -70,13 +74,12 @@ export default function Timeline({ headlineClass }) {
           component="h1"
           className={`${headlineClass} ${classes.headline}`}
         >
-          After realizing the need for global collaboration, Climate Connect was launched in July
-          2020
+          {texts.after_realizing_the_need_for_global_collaboration}
         </Typography>
       )}
       {!useCarousel ? (
         <div className={classes.timelineElementsWrapper}>
-          {getTimelineData(isMediumScreen).map((d, index) => (
+          {getTimelineData(isMediumScreen, texts).map((d, index) => (
             <TimelineElement
               key={index}
               className={classes.timelineElement}
@@ -97,7 +100,7 @@ export default function Timeline({ headlineClass }) {
           className={classes.carousel}
           customDot={<CustomDot />}
         >
-          {getTimelineData(isMediumScreen).map((d, index) => (
+          {getTimelineData(isMediumScreen, texts).map((d, index) => (
             <TimelineElement
               key={index}
               className={`${classes.timelineElement} ${classes.carouselElement}`}
@@ -112,26 +115,26 @@ export default function Timeline({ headlineClass }) {
   );
 }
 
-const getTimelineData = (isMediumScreen) => [
+const getTimelineData = (isMediumScreen, texts) => [
   {
-    date: "July 2019",
-    headline: "The Idea Is Born",
-    content: `After the networking event, we started working on a way for climate actors to work together to spread good climate solutions worldwide. The idea of Climate Connect was born.`,
+    date: texts.july + " 2019",
+    headline: texts.the_idea_is_born,
+    content: texts.the_idea_is_born_text,
   },
   {
-    date: isMediumScreen ? "Nov. 2019" : "November 2019",
-    headline: "First Prototype",
-    content: `We create our first interactive design prototype and create concepts for how to create collaboration between climate actors. Our team of volunteers starts growing.`,
+    date: isMediumScreen ? texts.november_short + " 2019" : texts.november + " 2019",
+    headline: texts.first_prototype,
+    content: texts.first_prototype_text,
   },
   {
-    date: "July 2020",
-    headline: "Beta launch",
-    content: `We finally launched Climate Connect in Open Beta. New functionality is added every week and we constantly improve the platform based on your feedback.`,
+    date: texts.july + " 2020",
+    headline: texts.beta_launch,
+    content: texts.beta_launch_text,
   },
   {
-    date: "Summer 2021",
-    headline: "Leaving Beta",
-    content: `In the summer of 2021 we expect all core functionality to work smoothly and all pages and content to be polished and user-friendly. Help us get here by sharing your feedback!`,
+    date: texts.summer + " 2021",
+    headline: texts.leaving_beta,
+    content: texts.leaving_beta_text,
   },
 ];
 

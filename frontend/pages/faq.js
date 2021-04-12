@@ -2,8 +2,10 @@ import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import Cookies from "next-cookies";
-import React from "react";
+import React, { useContext } from "react";
 import tokenConfig from "../public/config/tokenConfig";
+import getTexts from "../public/texts/texts";
+import UserContext from "../src/components/context/UserContext";
 import FilteredFaqContent from "../src/components/faq/FilteredFaqContent";
 import UnfilteredFaqContent from "../src/components/faq/UnfilteredFaqContent";
 import FilterSearchBar from "../src/components/filter/FilterSearchBar";
@@ -84,10 +86,23 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+export async function getServerSideProps(ctx) {
+  const { token } = Cookies(ctx);
+  const questions = await getQuestionsWithAnswers(token);
+  return {
+    props: {
+      questionsBySection: questions.by_section,
+      questions: questions.all,
+    },
+  };
+}
+
 export default function Faq({ questionsBySection, questions }) {
   const classes = useStyles();
   // The first section should be the initial tab value
   const [searchValue, setSearchValue] = React.useState("");
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "faq", locale: locale });
 
   const handleSearchBarChange = (event) => {
     setSearchValue(event?.target?.value);
@@ -95,7 +110,7 @@ export default function Faq({ questionsBySection, questions }) {
 
   return (
     <div>
-      <WideLayout title="FAQ" isStaticPage>
+      <WideLayout title={texts.faq} isStaticPage>
         <HeaderImage src={"images/supportusheader.jpg"} className={classes.headerImageContainer}>
           <div className={classes.headerTextContainer}>
             <div className={classes.headerTextInnerContainer}>
@@ -106,10 +121,10 @@ export default function Faq({ questionsBySection, questions }) {
                   variant="h1"
                   className={classes.headerTextBig}
                 >
-                  FAQ
+                  {texts.faq}
                 </Typography>
                 <Typography variant="h1" className={classes.headerTextSmall}>
-                  Find your answers here!
+                  {texts.find_your_answers_here}
                 </Typography>
               </div>
             </div>
@@ -117,11 +132,11 @@ export default function Faq({ questionsBySection, questions }) {
         </HeaderImage>
         <Container>
           <Typography className={classes.topText} component="h1">
-            {"Can't"} find the answer to your question? Contact support@climateconnect.earth.
+            {texts.cant_find_the_answer_to_your_question_contact}
           </Typography>
           <div className={classes.searchBarContainer}>
             <FilterSearchBar
-              label="Search for keywords"
+              label={texts.search_for_keywords}
               className={classes.searchBar}
               onChange={handleSearchBarChange}
               value={searchValue}
@@ -137,15 +152,6 @@ export default function Faq({ questionsBySection, questions }) {
     </div>
   );
 }
-
-Faq.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  const questions = await getQuestionsWithAnswers(token);
-  return {
-    questionsBySection: questions.by_section,
-    questions: questions.all,
-  };
-};
 
 const getQuestionsWithAnswers = async (token) => {
   try {

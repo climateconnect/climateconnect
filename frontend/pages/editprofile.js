@@ -1,17 +1,38 @@
 import axios from "axios";
 import Cookies from "next-cookies";
 import Router from "next/router";
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import tokenConfig from "../public/config/tokenConfig";
 import { blobFromObjectUrl, getImageUrl } from "../public/lib/imageOperations";
 import { indicateWrongLocation, isLocationValid } from "../public/lib/locationOperations";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
+import getTexts from "../public/texts/texts";
+import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
 import PageNotFound from "../src/components/general/PageNotFound";
 import WideLayout from "../src/components/layouts/WideLayout";
-import profile_info_metadata from "./../public/data/profile_info_metadata";
+import getProfileInfoMetadata from "./../public/data/profile_info_metadata";
 import { parseProfile } from "./../public/lib/profileOperations";
 import EditAccountPage from "./../src/components/account/EditAccountPage";
+
+export async function getServerSideProps(ctx) {
+  const { token } = Cookies(ctx);
+  const [skillsOptions, infoMetadata, availabilityOptions, userProfile] = await Promise.all([
+    getSkillsOptions(token),
+    getProfileInfoMetadata(ctx.locale),
+    getAvailabilityOptions(token),
+    getUserProfile(token),
+  ]);
+  return {
+    props: {
+      skillsOptions: skillsOptions,
+      infoMetadata: infoMetadata,
+      availabilityOptions: availabilityOptions,
+      token: token,
+      user: userProfile,
+    },
+  };
+}
 
 export default function EditProfilePage({
   skillsOptions,
@@ -20,6 +41,8 @@ export default function EditProfilePage({
   user,
   token,
 }) {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale });
   const [errorMessage, setErrorMessage] = useState("");
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
@@ -50,7 +73,7 @@ export default function EditProfilePage({
       !isLocationValid(editedAccount?.info?.location) &&
       !legacyModeEnabled
     ) {
-      indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, setErrorMessage);
+      indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, setErrorMessage, texts);
       return;
     }
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
@@ -61,7 +84,7 @@ export default function EditProfilePage({
         Router.push({
           pathname: "/profiles/" + response.data.url_slug,
           query: {
-            message: "You have successfully updated your profile!",
+            message: texts.you_have_successfully_updated_your_profile,
           },
         });
       })
@@ -75,14 +98,17 @@ export default function EditProfilePage({
   };
   if (!profile)
     return (
-      <WideLayout title="Please Log In to Edit your Profile" hideHeadline={true}>
-        <LoginNudge fullPage whatToDo="edit your profile" />
+      <WideLayout
+        title={texts.please_log_in + " " + texts.to_edit_your_profile}
+        hideHeadline={true}
+      >
+        <LoginNudge fullPage whatToDo={texts.to_edit_your_profile} />
       </WideLayout>
     );
   else
     return (
       <WideLayout
-        title={"Edit Profile"}
+        title={texts.edit_profile}
         message={errorMessage}
         messageType={errorMessage && "error"}
       >
@@ -95,28 +121,11 @@ export default function EditProfilePage({
             skillsOptions={skillsOptions}
           />
         ) : (
-          <PageNotFound itemName="Profile" />
+          <PageNotFound itemName={texts.profile} />
         )}
       </WideLayout>
     );
 }
-
-EditProfilePage.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  const [skillsOptions, infoMetadata, availabilityOptions, userProfile] = await Promise.all([
-    getSkillsOptions(token),
-    getProfileInfoMetadata(token),
-    getAvailabilityOptions(token),
-    getUserProfile(token),
-  ]);
-  return {
-    skillsOptions: skillsOptions,
-    infoMetadata: infoMetadata,
-    availabilityOptions: availabilityOptions,
-    token: token,
-    user: userProfile,
-  };
-};
 
 function ProfileLayout({
   profile,
@@ -180,10 +189,6 @@ async function getUserProfile(token) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-}
-
-async function getProfileInfoMetadata() {
-  return profile_info_metadata;
 }
 
 const parseProfileForRequest = (profile, availabilityOptions, user) => {

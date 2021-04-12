@@ -1,11 +1,12 @@
-import React, { useContext } from "react";
-import { makeStyles, Button } from "@material-ui/core";
-import ManageMembers from "../../manageMembers/ManageMembers";
-import UserContext from "../../context/UserContext";
+import { Button, makeStyles } from "@material-ui/core";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import SaveIcon from "@material-ui/icons/Save";
-import { getAllChangedMembers } from "../../../../public/lib/manageMembers";
+import React, { useContext } from "react";
 import { apiRequest } from "../../../../public/lib/apiOperations";
+import { getAllChangedMembers } from "../../../../public/lib/manageMembers";
+import getTexts from "../../../../public/texts/texts";
+import UserContext from "../../context/UserContext";
+import ManageMembers from "../../manageMembers/ManageMembers";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,11 +38,12 @@ export default function ChatMemberManagementOverlay({
   toggleMemberManagementExpanded,
 }) {
   const classes = useStyles();
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "chat", locale: locale });
   const [state, setState] = React.useState({
     curParticipants: participants,
     curUserRole: user_role,
   });
-  const { user } = useContext(UserContext);
   const canEdit = (p) => {
     const participant_role = p.role.name ? p.role : rolesOptions.find((o) => o.name === p.role);
     return p.id === user.id || state.curUserRole.role_type > participant_role.role_type;
@@ -56,16 +58,13 @@ export default function ChatMemberManagementOverlay({
       .then(() => {
         setParticipants(state.curParticipants);
         toggleMemberManagementExpanded(
-          "You have successfully updated this chat's participants!",
+          texts.you_have_successfully_updated_this_chats_participants,
           "success"
         );
       })
       .catch((e) => {
         console.log(e);
-        toggleMemberManagementExpanded(
-          "Something went wrong! Contact contact@climateconnect.earth if this happens repeatedly!",
-          "error"
-        );
+        toggleMemberManagementExpanded(texts.something_went_wrong, "error");
       });
   };
 
@@ -150,11 +149,11 @@ export default function ChatMemberManagementOverlay({
 
   const verifyInput = () => {
     if (state.curParticipants.filter((cm) => cm.role.name === "Creator").length !== 1) {
-      alert("There must be exactly one creator of an organization.");
+      alert(texts.there_must_be_exactly_one_creator_of_an_organization);
       return false;
     }
     if (!participants.filter((m) => m.role.name === "Creator").length === 1) {
-      alert("error(There wasn't a creator)");
+      alert(texts.error + ": " + texts.there_wasnt_a_creator);
       return false;
     }
     return true;
@@ -169,7 +168,7 @@ export default function ChatMemberManagementOverlay({
           startIcon={<ArrowBackIcon />}
           onClick={toggleMemberManagementExpanded}
         >
-          Go back
+          {texts.go_back}
         </Button>
         <Button
           color="primary"
@@ -178,7 +177,7 @@ export default function ChatMemberManagementOverlay({
           className={classes.saveIcon}
           type="submit"
         >
-          Save
+          {texts.save}
         </Button>
       </div>
       <ManageMembers
@@ -191,7 +190,7 @@ export default function ChatMemberManagementOverlay({
         setUserRole={handleSetCurUserRole}
         hideHoursPerWeek
         canEdit={canEdit}
-        label="Search for users to add to this group chat"
+        label={texts.search_for_users_to_add_to_this_group_chat}
         dontPickRole
       />
     </form>

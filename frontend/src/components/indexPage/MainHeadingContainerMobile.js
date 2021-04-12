@@ -1,7 +1,9 @@
+import { Button, makeStyles, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
-import { Typography, makeStyles, Button } from "@material-ui/core";
-import UserContext from "../context/UserContext";
 import Carousel from "react-multi-carousel";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -71,10 +73,10 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const getCarouselContent = () => [
+const getCarouselContent = (texts) => [
   {
-    headline: "Climate action platform",
-    text: ["Bringing everyone involved in climate action together."],
+    headline: texts.climate_action_platform,
+    text: [texts.climate_action_platform_text],
     images: [
       {
         link: "/icons/mainpage-left.svg",
@@ -85,10 +87,8 @@ const getCarouselContent = () => [
     ],
   },
   {
-    headline: "Get inspired",
-    text: [
-      "Find inspiring climate projects to work on. See where you can make the biggest difference.",
-    ],
+    headline: texts.get_inspired,
+    text: [texts.get_inspired_text],
     images: [
       {
         link: "/icons/mainpage-right.svg",
@@ -99,11 +99,8 @@ const getCarouselContent = () => [
     ],
   },
   {
-    headline: "Share your solutions",
-    text: [
-      "Share your projects & ideas with the climate community!",
-      "Find volunteers, partners and customers.",
-    ],
+    headline: texts.share_your_solutions,
+    text: [texts.share_your_solutions_text_1, texts.share_your_solutions_text_2],
     images: [
       {
         link: "/icons/mainpage-creativity.svg",
@@ -114,11 +111,8 @@ const getCarouselContent = () => [
     ],
   },
   {
-    headline: "Spread solutions globally",
-    text: [
-      "Many great local solutions would work in many places!",
-      "Share and find solutions to spread them worldwide.",
-    ],
+    headline: texts.spread_solutions_globally,
+    text: [texts.spread_solutions_globally_text_1, texts.spread_solutions_globally_text_2],
     images: [
       {
         link: "/icons/mainpage-team.svg",
@@ -129,10 +123,8 @@ const getCarouselContent = () => [
     ],
   },
   {
-    headline: "Connect with the right people",
-    text: [
-      "Filter for projects and people based on your skills, needs and interests. Maximize your positive impact on our planet.",
-    ],
+    headline: texts.connect_with_the_right_people,
+    text: [texts.connect_with_the_right_people_text],
     images: [
       {
         link: "/icons/mainpage-resume.svg",
@@ -143,11 +135,8 @@ const getCarouselContent = () => [
     ],
   },
   {
-    headline: "World wide collaboration",
-    text: [
-      "We need to all work together to protect our planet.",
-      "Be part of the global climate community!",
-    ],
+    headline: texts.world_wide_collaboration,
+    text: [texts.world_wide_collaboration_text_1, texts.world_wide_collaboration_text_2],
     images: [
       {
         link: "/icons/mainpage-team.svg",
@@ -168,8 +157,9 @@ const responsive = {
 
 export default function MainHeadingContainerMobile() {
   const classes = useStyles();
-  const { user } = useContext(UserContext);
-  const carouselContent = getCarouselContent();
+  const { locale, user } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
+  const carouselContent = getCarouselContent(texts);
 
   return (
     <div className={classes.outerContainer}>
@@ -202,9 +192,14 @@ export default function MainHeadingContainerMobile() {
                 ))}
                 {!user && (
                   <div className={classes.signUpButtonBox}>
-                    <Button component="div" href="signup" variant="contained" color="primary">
-                      <a className={classes.shareLink} href="/signup">
-                        Join Now
+                    <Button
+                      component="div"
+                      href={getLocalePrefix(locale) + "/signup"}
+                      variant="contained"
+                      color="primary"
+                    >
+                      <a className={classes.shareLink} href={getLocalePrefix(locale) + "/signup"}>
+                        {texts.join_now}
                       </a>
                     </Button>
                   </div>

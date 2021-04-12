@@ -1,6 +1,8 @@
 import { Button, TextField, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React from "react";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import SelectField from "../general/SelectField";
 import LocationSearchBar from "../search/LocationSearchBar";
@@ -92,6 +94,8 @@ export default function Filters({
   handleSetLocationOptionsOpen,
   errorMessage,
 }) {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "filter_and_search", locale: locale });
   const classes = useStyles({
     justifyContent: justifyContent ? justifyContent : "space-around",
     filterElementMargin: justifyContent && justifyContent != "space-around" ? 1 : 0,
@@ -226,7 +230,7 @@ export default function Filters({
                 <TextField
                   key={filter.key}
                   className={classes.radiusField}
-                  label="Radius(km)"
+                  label={texts.radius_km}
                   type={filter.type}
                   value={currentFilters.radius}
                   variant="outlined"
@@ -260,7 +264,7 @@ export default function Filters({
               variant="contained"
               className={classes.applyButton}
             >
-              Apply
+              {texts.apply}
             </Button>
           </div>
         )}

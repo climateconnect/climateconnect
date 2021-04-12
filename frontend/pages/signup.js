@@ -14,6 +14,7 @@ import {
   getLastCompletedTutorialStep,
   getLastStepBeforeSkip,
 } from "../public/lib/tutorialOperations";
+import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import Layout from "../src/components/layouts/layout";
 import BasicInfo from "../src/components/signup/BasicInfo";
@@ -32,7 +33,8 @@ export default function Signup() {
     newsletter: "",
   });
   const cookies = new Cookies();
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale });
   //Information about the completion state of the tutorial
   const tutorialCookie = cookies.get("finishedTutorialSteps");
   const isClimateActorCookie = cookies.get("tutorialVariables");
@@ -59,7 +61,7 @@ export default function Signup() {
 
   useEffect(function () {
     if (user) {
-      redirectOnLogin(user, "/");
+      redirectOnLogin(user, "/", locale);
     }
   });
 
@@ -73,7 +75,7 @@ export default function Signup() {
     });
     //TODO: add check if email is still available
     if (values.password !== values.repeatpassword)
-      setErrorMessages({ ...errorMessages, [steps[0]]: "Passwords don't match." });
+      setErrorMessages({ ...errorMessages, [steps[0]]: texts.passwords_dont_match });
     else setCurStep(steps[1]);
   };
 
@@ -81,7 +83,7 @@ export default function Signup() {
     event.preventDefault();
     const params = getParams(window?.location?.href);
     if (!isLocationValid(values.location)) {
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage);
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage, texts);
       return;
     }
     const location = getLocationValue(values, "location");
@@ -143,7 +145,7 @@ export default function Signup() {
 
   return (
     <Layout
-      title="Sign Up"
+      title={texts.sign_up}
       isLoading={isLoading}
       message={errorMessage}
       messageType={errorMessage && "error"}

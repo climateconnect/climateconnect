@@ -1,7 +1,9 @@
-import React from "react";
-import { TextField, Avatar, Button } from "@material-ui/core";
+import { Avatar, Button, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
 
 const useStyles = makeStyles((theme) => {
@@ -32,6 +34,8 @@ const useStyles = makeStyles((theme) => {
 export default function CommentInput({ user, onSendComment, parent_comment, onCancel }) {
   const classes = useStyles();
   const [curComment, setCurComment] = React.useState("");
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "communication", locale: locale });
   const onCurCommentChange = (e) => setCurComment(e.target.value);
 
   const handleMessageKeydown = (event) => {
@@ -40,7 +44,7 @@ export default function CommentInput({ user, onSendComment, parent_comment, onCa
 
   const handleSendComment = (event) => {
     if (event) event.preventDefault();
-    if (!curComment) alert("Your comment cannot be empty");
+    if (!curComment) alert(texts.your_comment_cannot_be_empty);
     onSendComment(curComment, parent_comment, clearInput);
   };
 
@@ -59,7 +63,7 @@ export default function CommentInput({ user, onSendComment, parent_comment, onCa
               size="small"
               autoFocus
               multiline
-              placeholder="Write a comment..."
+              placeholder={texts.write_a_comment + "..."}
               className={classes.messageInput}
               value={curComment}
               onChange={onCurCommentChange}
@@ -74,16 +78,16 @@ export default function CommentInput({ user, onSendComment, parent_comment, onCa
               className={classes.commentButton}
               onClick={(event) => handleSendComment(event)}
             >
-              Send
+              {texts.send}
             </Button>
             {onCancel && (
               <Button variant="contained" className={classes.cancelButton} onClick={onCancel}>
-                Cancel
+                {texts.cancel}
               </Button>
             )}
           </div>
         </form>
       </div>
     );
-  else return <LoginNudge whatToDo="write a comment" />;
+  else return <LoginNudge whatToDo={texts.to_write_a_comment} />;
 }

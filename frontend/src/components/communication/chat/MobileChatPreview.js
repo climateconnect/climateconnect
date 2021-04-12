@@ -1,8 +1,10 @@
-import React from "react";
-import { ListItem, Avatar, ListItemText, makeStyles, Divider, Badge } from "@material-ui/core";
-import { getImageUrl } from "../../../../public/lib/imageOperations";
+import { Avatar, Badge, Divider, ListItem, ListItemText, makeStyles } from "@material-ui/core";
 import GroupIcon from "@material-ui/icons/Group";
+import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getDateTime } from "../../../../public/lib/dateOperations";
+import { getImageUrl } from "../../../../public/lib/imageOperations";
+import UserContext from "../../context/UserContext";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -34,12 +36,18 @@ const useStyles = makeStyles((theme) => {
 
 export default function MobileChatPreview({ chat, isFirstChat }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
   const isGroupChat = !chat.chatting_partner && !!chat.name;
   const last_activity = chat.last_message ? chat.last_message.sent_at : chat.created_at;
   return (
     <>
       {isFirstChat && <Divider component="li" />}
-      <ListItem button component="a" href={"/chat/" + chat.chat_uuid} alignItems="center">
+      <ListItem
+        button
+        component="a"
+        href={getLocalePrefix(locale) + "/chat/" + chat.chat_uuid}
+        alignItems="center"
+      >
         {isGroupChat ? (
           <Avatar className={classes.mobileAvatar}>
             <GroupIcon />

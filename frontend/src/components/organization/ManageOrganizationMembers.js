@@ -1,9 +1,11 @@
-import React from "react";
-import { Typography, Button } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import ManageMembers from "../manageMembers/ManageMembers";
-import { apiRequest, redirect } from "../../../public/lib/apiOperations";
+import React, { useContext } from "react";
+import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
 import { getAllChangedMembers } from "../../../public/lib/manageMembers";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import ManageMembers from "../manageMembers/ManageMembers";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -35,6 +37,8 @@ export default function ManageOrganizationMembers({
   availabilityOptions,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   const [user_role, setUserRole] = React.useState(members.find((m) => m.id === user.id).role);
   if (!user_role) setUserRole(members.find((m) => m.id === user.id).role);
 
@@ -47,13 +51,13 @@ export default function ManageOrganizationMembers({
     onSubmit()
       .then(() => {
         redirect("/organizations/" + organization.url_slug, {
-          message: "You have successfully updated your organization members",
+          message: texts.successfully_updated_org_members,
         });
       })
       .catch((e) => {
         console.log(e);
         redirect("/organizations/" + organization.url_slug, {
-          errorMessage: "Not all your updates have worked.",
+          errorMessage: texts.not_all_your_updates_have_worked,
         });
       });
   };
@@ -77,11 +81,11 @@ export default function ManageOrganizationMembers({
 
   const verifyInput = () => {
     if (currentMembers.filter((cm) => cm.role.name === "Creator").length !== 1) {
-      alert("There must be exactly one creator of an organization.");
+      alert(texts.there_must_be_exactly_one_creator_of_organization);
       return false;
     }
     if (!members.filter((m) => m.role.name === "Creator").length === 1) {
-      alert("error(There wasn't a creator)");
+      alert(texts.error_no_creator);
       return false;
     }
     return true;
@@ -130,7 +134,7 @@ export default function ManageOrganizationMembers({
   return (
     <>
       <Typography variant="h4" color="primary" className={classes.headline}>
-        Manage members of {organization.name}
+        {texts.manage_members_of_organization_name}
       </Typography>
       <form onSubmit={handleSubmit}>
         <ManageMembers
@@ -150,14 +154,14 @@ export default function ManageOrganizationMembers({
           <div className={classes.buttons}>
             <Button
               className={classes.button}
-              href={"/organizations/" + organization.url_slug}
+              href={getLocalePrefix(locale) + "/organizations/" + organization.url_slug}
               variant="contained"
               color="secondary"
             >
-              Cancel
+              {texts.cancel}
             </Button>
             <Button className={classes.button} variant="contained" color="primary" type="submit">
-              Save
+              {texts.save}
             </Button>
           </div>
         </div>
