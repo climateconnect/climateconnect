@@ -132,6 +132,8 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     status = serializers.CharField(source='status.name', read_only=True)
     image = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
     
     class Meta:
         model = Project
@@ -141,6 +143,13 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             'project_parents', 'tags',
             'is_draft', 'short_description'
         )
+    
+    def get_name(self, obj):
+        print(self.context['request'].LANGUAGE_CODE)
+        return obj.name
+    
+    def get_short_description(self, obj):
+        return obj.short_description
     
     def get_project_parents(self, obj):        
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)

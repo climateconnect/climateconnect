@@ -89,6 +89,7 @@ NORMAL_MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -238,3 +239,7 @@ CHANNEL_LAYERS = {
 # For Celery we use Redis as a broker URL
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
 CELERY_TIMEZONE = "UTC"
+
+LOCALE_PATHS = [
+    BASE_DIR + '/translations',
+]
