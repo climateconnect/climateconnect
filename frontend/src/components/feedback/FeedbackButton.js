@@ -1,11 +1,13 @@
-import React from "react";
 import { Button, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import FeedbackDialog from "./FeedbackDialog";
-import tokenConfig from "../../../public/config/tokenConfig";
-import axios from "axios";
-import Cookies from "universal-cookie";
 import Alert from "@material-ui/lab/Alert";
+import axios from "axios";
+import React, { useContext } from "react";
+import Cookies from "universal-cookie";
+import tokenConfig from "../../../public/config/tokenConfig";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import FeedbackDialog from "./FeedbackDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,6 +39,8 @@ export default function FeedbackButton({ justLink, children }) {
   const [open, setOpen] = React.useState(false);
   const cookies = new Cookies();
   const [message, setMessage] = React.useState("");
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "communication", locale: locale });
 
   const submitFeedback = async (data) => {
     const token = cookies.get("token");
@@ -83,15 +87,15 @@ export default function FeedbackButton({ justLink, children }) {
           }}
           onClick={handleOpenDialog}
         >
-          Feedback
+          {texts.feedback}
         </Button>
       )}
       <FeedbackDialog
         open={open}
         onClose={onFeedbackDialogClose}
-        title="Your Feedback"
-        inputLabel="Your feedback"
-        applyText="Send Feedback"
+        title={texts.your_feedback}
+        inputLabel={texts.your_feedback}
+        applyText={texts.send_feedback}
       />
     </>
   );

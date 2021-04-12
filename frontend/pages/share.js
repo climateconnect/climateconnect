@@ -1,12 +1,43 @@
-import React, { useContext } from "react";
-import WideLayout from "../src/components/layouts/WideLayout";
 import axios from "axios";
-import tokenConfig from "../public/config/tokenConfig";
 import Cookies from "next-cookies";
-import LoginNudge from "../src/components/general/LoginNudge";
-import UserContext from "../src/components/context/UserContext";
-import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
+import React, { useContext } from "react";
+import tokenConfig from "../public/config/tokenConfig";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
+import getTexts from "../public/texts/texts";
+import UserContext from "../src/components/context/UserContext";
+import LoginNudge from "../src/components/general/LoginNudge";
+import WideLayout from "../src/components/layouts/WideLayout";
+import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
+
+export async function getServerSideProps(ctx) {
+  const { token } = Cookies(ctx);
+  const [
+    availabilityOptions,
+    userOrganizations,
+    categoryOptions,
+    skillsOptions,
+    rolesOptions,
+    statusOptions,
+  ] = await Promise.all([
+    getAvailabilityOptions(token),
+    getUserOrganizations(token),
+    getCategoryOptions(token),
+    getSkillsOptions(token),
+    getRolesOptions(token),
+    getStatusOptions(token),
+  ]);
+  return {
+    props: {
+      availabilityOptions: availabilityOptions,
+      userOrganizations: userOrganizations,
+      categoryOptions: categoryOptions,
+      skillsOptions: skillsOptions,
+      rolesOptions: rolesOptions,
+      statusOptions: statusOptions,
+      token: token,
+    },
+  };
+}
 
 export default function Share({
   availabilityOptions,
@@ -17,20 +48,21 @@ export default function Share({
   statusOptions,
   token,
 }) {
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const [errorMessage, setErrorMessage] = React.useState("");
 
   const handleSetErrorMessage = (newMessage) => setErrorMessage(newMessage);
   if (!user)
     return (
-      <WideLayout title="Please Log In to Share your Climate Solution" hideHeadline={true}>
-        <LoginNudge fullPage whatToDo="share a project" />
+      <WideLayout title={texts.please_log_in + " " + texts.to_share_a_project} hideHeadline={true}>
+        <LoginNudge fullPage whatToDo={texts.to_share_a_project} />
       </WideLayout>
     );
   else {
     return (
       <WideLayout
-        title="Share your Climate Solution"
+        title={texts.share_your_climate_solution}
         hideHeadline={true}
         message={errorMessage}
         messageType={errorMessage && "error"}
@@ -50,34 +82,6 @@ export default function Share({
     );
   }
 }
-
-Share.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  const [
-    availabilityOptions,
-    userOrganizations,
-    categoryOptions,
-    skillsOptions,
-    rolesOptions,
-    statusOptions,
-  ] = await Promise.all([
-    getAvailabilityOptions(token),
-    getUserOrganizations(token),
-    getCategoryOptions(token),
-    getSkillsOptions(token),
-    getRolesOptions(token),
-    getStatusOptions(token),
-  ]);
-  return {
-    availabilityOptions: availabilityOptions,
-    userOrganizations: userOrganizations,
-    categoryOptions: categoryOptions,
-    skillsOptions: skillsOptions,
-    rolesOptions: rolesOptions,
-    statusOptions: statusOptions,
-    token: token,
-  };
-};
 
 const getAvailabilityOptions = async (token) => {
   try {

@@ -13,8 +13,10 @@ import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import CloseIcon from "@material-ui/icons/Close";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import React from "react";
+import React, { useContext } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
 
 const useStyles = makeStyles((theme) => {
@@ -173,7 +175,8 @@ export default function MultiLevelSelector({
   dragAble,
 }) {
   const [expanded, setExpanded] = React.useState(null);
-
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "filter_and_search", locale: locale });
   const useStylesProps = {
     marginTop: !isInPopup,
     flexWrapper: !isInPopup,
@@ -188,7 +191,7 @@ export default function MultiLevelSelector({
 
   const onClickSelect = (item) => {
     if (selected.length >= maxSelections)
-      alert("You can only choose up to " + maxSelections + " " + itemNamePlural);
+      alert(texts.point_out_max_selections + " " + maxSelections + " " + itemNamePlural);
     else setSelected([...selected, item]);
   };
 
@@ -224,6 +227,7 @@ export default function MultiLevelSelector({
               }`}
               dragAble={dragAble}
               moveItem={moveItem}
+              texts={texts}
             />
             {selected.length > 0 && <Divider className={classes.divider} />}
           </>
@@ -237,6 +241,7 @@ export default function MultiLevelSelector({
           isNarrowScreen={isNarrowScreen}
           isInPopup={isInPopup}
           className={classes.listWrapper}
+          texts={texts}
         />
         {!(isNarrowScreen || isInPopup) && (
           <SelectedList
@@ -247,6 +252,7 @@ export default function MultiLevelSelector({
             className={classes.selectedWrapper}
             dragAble={dragAble}
             moveItem={moveItem}
+            texts={texts}
           />
         )}
       </div>
@@ -262,6 +268,7 @@ function ListToChooseWrapper({
   selected,
   isInPopup,
   isNarrowScreen,
+  texts,
 }) {
   const classes = useStyles();
 
@@ -297,7 +304,7 @@ function ListToChooseWrapper({
     <Container>
       <div className={classes.searchBarContainer}>
         <FilterSearchBar
-          label="Search for keywords"
+          label={texts.search_for_keywords}
           className={classes.searchBar}
           onChange={handleSearchBarChange}
           value={searchValue}
@@ -325,6 +332,7 @@ function SelectedList({
   onClickUnselect,
   dragAble,
   moveItem,
+  texts,
 }) {
   const classes = useStyles({});
 
@@ -386,8 +394,8 @@ function SelectedList({
       <div className={className}>
         <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
           {selected.length > 0
-            ? "Selected " + itemNamePlural
-            : "Select between 1 and " + maxSelections + " " + itemNamePlural + "!"}
+            ? texts.selected + " " + itemNamePlural
+            : texts.choose_between_on_and + maxSelections + " " + itemNamePlural + "!"}
         </Typography>
         <List className={classes.selectedList}>
           {selected.map((item, index) => (

@@ -13,7 +13,8 @@
  * See more on the formatting options, here:
  * https://github.com/nmn/react-timeago#formatter-optional
  */
-const yearAndDayFormatter = (
+
+const germanYearAndDayFormatter = (
   value,
   unit,
   suffix,
@@ -22,6 +23,49 @@ const yearAndDayFormatter = (
   defaultFormatter,
   now
 ) => {
+  return yearAndDayFormatter(value, unit, suffix, elapsedMilliseconds, defaultFormatter, now, "de");
+};
+
+const yearAndDayFormatter = (
+  value,
+  unit,
+  suffix,
+  elapsedMilliseconds,
+  /* eslint-disable-next-line no-unused-vars */
+  defaultFormatter,
+  now,
+  locale
+) => {
+  const units_de = {
+    year: {
+      singular: "Jahr",
+      plural: "Jahre",
+    },
+    month: {
+      singular: "Monat",
+      plural: "Monate",
+    },
+    week: {
+      singular: "Woche",
+      plural: "Wochen",
+    },
+    day: {
+      singular: "Tag",
+      plural: "Tage",
+    },
+    hour: {
+      singular: "Stunde",
+      plural: "Stunden",
+    },
+    minute: {
+      singular: "Minute",
+      plural: "Minuten",
+    },
+    second: {
+      singular: "Sekunde",
+      plural: "Sekunden",
+    },
+  };
   // Only apply custom logic for the year case
   if (unit === "year") {
     // The days calculation comes directly from react-timeago:
@@ -42,26 +86,38 @@ const yearAndDayFormatter = (
     // days after taking into account the year overflow. We also
     // handle the "0 days ago" case
     if (dayWithinYear === 0) {
+      if (locale === "de") return `vor ${value} ${units_de[unit].singular}`;
       return `${value} ${unit} ago`;
     }
 
     // Case: plural "years" and "days"
     const pluralizeUnit = (value, unit) => {
+      if (locale === "de")
+        return value !== 1 ? `${units_de[unit].plural}` : units_de[unit].singular;
       return value !== 1 ? `${unit}s` : unit;
     };
     const pluralizedDays = pluralizeUnit(dayWithinYear, "day");
     const pluralizedYears = pluralizeUnit(value, "year");
 
+    if (locale === "de")
+      return `Vor ${value} ${pluralizedYears} and ${dayWithinYear} ${pluralizedDays}`;
     return `${value} ${pluralizedYears} and ${dayWithinYear} ${pluralizedDays} ago`;
   }
-
   // Otherwise, just default. This logic comes from:
   // https://github.com/nmn/react-timeago/blob/master/src/defaultFormatter.js
   if (value !== 1) {
-    unit += "s";
+    if (locale === "de") unit = units_de[unit].plural;
+    else unit += "s";
+  } else {
+    unit = units_de[unit].singular;
   }
-
+  if (locale === "de" && suffix === "ago") {
+    return `vor ${value} ${unit}`;
+  }
+  if (locale === "de" && suffix === "from now") {
+    return `in ${value} ${unit}`;
+  }
   return `${value} ${unit} ${suffix}`;
 };
 
-export { yearAndDayFormatter };
+export { yearAndDayFormatter, germanYearAndDayFormatter };

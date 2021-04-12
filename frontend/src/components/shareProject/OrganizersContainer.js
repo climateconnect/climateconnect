@@ -1,10 +1,12 @@
-import React from "react";
-import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
-import { Typography, IconButton } from "@material-ui/core";
+import { IconButton, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
+import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -32,6 +34,8 @@ export default function OrganizersContainer({
   handleRemoveOrganization,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: projectData });
 
   const renderSearchOption = (option) => {
     return (
@@ -53,7 +57,7 @@ export default function OrganizersContainer({
       <div className={blockClassName}>
         <div className={searchBarContainerClassName}>
           <AutoCompleteSearchBar
-            label="Search for collaborating organizations"
+            label={texts.search_for_collaborating_organizations}
             className={`${searchBarClassName} ${blockClassName}`}
             baseUrl={process.env.API_URL + "/api/organizations/?search="}
             clearOnSelect
@@ -62,22 +66,22 @@ export default function OrganizersContainer({
             renderOption={renderSearchOption}
             getOptionLabel={(option) => option.name}
             filterOut={allInvolvedOrgs}
-            helperText="Type the name of the collaborating organization you want to add next."
+            helperText={texts.type_the_name_of_the_collaborating_organization_you_want_to_add_next}
           />
         </div>
         <div className={blockClassName}>
           <Typography className={classes.info}>
-            <InfoOutlinedIcon className={classes.infoIcon} /> Use the search bar to add
-            collaborating organizations.
+            <InfoOutlinedIcon className={classes.infoIcon} />
+            {texts.use_the_search_bar_to_add_collaborating_organizations}
           </Typography>
           {projectData.isPersonalProject ? (
             <Typography component="h2" variant="subtitle2" className={classes.header}>
-              Personal project
+              {texts.personal_project}
             </Typography>
           ) : (
             <>
               <Typography component="h2" variant="subtitle2" className={classes.header}>
-                Responsible Organization
+                {texts.responsible_organization}
               </Typography>
               <MiniOrganizationPreview
                 organization={projectData.parent_organization}
@@ -89,7 +93,7 @@ export default function OrganizersContainer({
         {projectData.collaborating_organizations.length > 0 && (
           <div>
             <Typography component="h2" variant="subtitle2" className={classes.header}>
-              Collaborating Organizations
+              {texts.collaborating_organizations}
             </Typography>
             {projectData.collaborating_organizations.map((o, index) => (
               <MiniOrganizationPreview

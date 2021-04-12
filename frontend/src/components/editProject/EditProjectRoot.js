@@ -1,14 +1,16 @@
-import React, { useRef } from "react";
-import { useMediaQuery, Container, Divider } from "@material-ui/core";
-import EditProjectOverview from "./EditProjectOverview";
-import EditProjectContent from "./EditProjectContent";
+import { Container, Divider, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import BottomNavigation from "../general/BottomNavigation";
-import Router from "next/router";
 import axios from "axios";
+import Router from "next/router";
+import React, { useContext, useRef } from "react";
 import tokenConfig from "../../../public/config/tokenConfig";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
-import { isLocationValid, indicateWrongLocation } from "../../../public/lib/locationOperations";
+import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import BottomNavigation from "../general/BottomNavigation";
+import EditProjectContent from "./EditProjectContent";
+import EditProjectOverview from "./EditProjectOverview";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -36,11 +38,13 @@ export default function EditProjectRoot({
   handleSetErrorMessage,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
   const draftReqiredProperties = {
-    name: "Project name",
-    loc: "Location",
+    name: texts.project_name,
+    loc: texts.location,
   };
   const overviewInputsRef = useRef(null);
   const locationInputRef = useRef(null);
@@ -52,14 +56,15 @@ export default function EditProjectRoot({
   const checkIfProjectValid = (isDraft) => {
     if (project?.loc && oldProject?.loc !== project.loc && !isLocationValid(project.loc)) {
       overviewInputsRef.current.scrollIntoView();
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetErrorMessage);
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetErrorMessage, texts);
       return false;
     }
     if (isDraft && Object.keys(draftReqiredProperties).filter((key) => !project[key]).length > 0) {
       Object.keys(draftReqiredProperties).map((key) => {
         if (!project[key]) {
           alert(
-            "Your project draft is missing the following reqired property: " +
+            texts.your_project_draft_is_missing_the_following_reqired_property +
+              " " +
               draftReqiredProperties[key]
           );
           return false;
@@ -85,7 +90,7 @@ export default function EditProjectRoot({
         Router.push({
           pathname: "/profiles/" + user.url_slug,
           query: {
-            message: "You have successfully edited your project.",
+            message: texts.you_have_successfully_edited_your_project,
           },
         });
       })
@@ -97,7 +102,7 @@ export default function EditProjectRoot({
 
   const additionalButtons = [
     {
-      text: "Save Changes as draft",
+      text: texts.save_changes_as_draft,
       argument: "save",
       onClick: onSaveDraft,
     },
@@ -132,8 +137,8 @@ export default function EditProjectRoot({
           pathname: "/projects/" + response.data.url_slug,
           query: {
             message: was_draft
-              ? "Your project has been published. Great work!"
-              : "You have successfully edited your project.",
+              ? texts.your_project_has_been_published_great_work
+              : texts.you_have_successfully_edited_your_project,
           },
         });
       })
@@ -151,7 +156,7 @@ export default function EditProjectRoot({
         Router.push({
           pathname: "/profiles/" + user.url_slug,
           query: {
-            message: "You have successfully deleted your project.",
+            message: texts.you_have_successfully_deleted_your_project,
           },
         });
       })

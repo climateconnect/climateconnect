@@ -1,7 +1,7 @@
-import { Typography, Container, makeStyles, useMediaQuery } from "@material-ui/core";
+import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import React from "react";
-import IconWrapper from "./IconWrapper";
 import theme from "../../../themes/theme";
+import IconWrapper from "./IconWrapper";
 
 const useStyles = makeStyles(() => ({
   root: {

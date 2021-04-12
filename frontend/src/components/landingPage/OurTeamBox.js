@@ -1,8 +1,10 @@
-import React from "react";
-import { Typography, makeStyles, useMediaQuery, Container } from "@material-ui/core";
+import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
-import SmallCloud from "../staticpages/SmallCloud";
+import UserContext from "../context/UserContext";
 import InfoLinkBox from "../staticpages/InfoLinkBox";
+import SmallCloud from "../staticpages/SmallCloud";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,26 +64,29 @@ const useStyles = makeStyles((theme) => ({
 export default function OurTeamBox({ h1ClassName }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({
+    page: "landing_page",
+    locale: locale,
+    classes: classes,
+    isNarrowScreen: isNarrowScreen,
+  });
   return (
     <Container className={classes.root}>
       <SmallCloud type={2} reverse className={classes.smallCloud2} />
       <Typography color="primary" component="h1" className={h1ClassName}>
-        Our Team
+        {texts.our_team}
       </Typography>
       <div className={classes.content}>
-        <img
-          src="/images/team.jpg"
-          className={classes.teamImage}
-          alt="Climate Connect's core team: A group of 9 people wearing Climate Connect T-Shirts"
-        />
+        <img src="/images/team.jpg" className={classes.teamImage} alt={texts.our_team_image_text} />
         <div className={classes.infoLinkBoxes}>
           <InfoLinkBox
             iconSrc="/icons/group-icon.svg"
-            iconAlt="Icon display 2 people"
-            headline="Who we are"
+            iconAlt={texts.group_icon_alt}
+            headline={texts.who_we_are}
             text={
-              "Find out about our team" + !isNarrowScreen
-                ? " and why we are doing what we are doing"
+              texts.find_out_more_about_our_team + !isNarrowScreen
+                ? " " + texts.and_why_we_are_doing_what_we_are_doing
                 : ""
             }
           >
@@ -89,11 +94,11 @@ export default function OurTeamBox({ h1ClassName }) {
           </InfoLinkBox>
           <InfoLinkBox
             iconSrc="/icons/donate-icon.svg"
-            iconAlt="Open hand offering a seedling with a heart instead of leaves"
-            headline="Our Mission"
+            iconAlt={texts.open_hand_offering_a_seedling_with_a_heart_instead_of_leaves}
+            headline={texts.our_mission}
             text={
-              "Learn about our goals and values" + !isNarrowScreen
-                ? " and what we want to achieve with creating a climate community"
+              texts.learn_about_our_goals_and_values + !isNarrowScreen
+                ? " " + texts.and_what_we_want_to_achieve_with_creating_a_climate_community
                 : ""
             }
           />

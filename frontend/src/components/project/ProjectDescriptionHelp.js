@@ -1,62 +1,65 @@
-import React from "react";
 import { Typography } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 export default function ProjectDescriptionHelp({ status }) {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const bulletPoints = [
     {
-      Idea: "What is the climate impact of the idea?",
-      "In Progress": "What is the climate impact of the project?",
-      Cancelled: "What would the climate impact of the project have been?",
-      "Successfully Finished": "What was/is the climate impact of the project?",
-      Recurring: "What is the climate impact of the project?",
+      Idea: texts.what_is_the_climate_impact_of_the_idea,
+      "In Progress": texts.what_is_the_climate_impact_of_the_idea,
+      Cancelled: texts.what_would_the_climate_impact_of_the_project_have_been,
+      "Successfully Finished": texts.what_was_or_is_the_climate_impact_of_the_project,
+      Recurring: texts.what_is_the_climate_impact_of_the_idea,
     },
     {
-      Idea: "What are you trying to achieve?",
-      "In Progress": "What are you trying to achieve?",
-      Cancelled: "What were you trying to achieve?",
-      "Successfully Finished": "What did you achieve?",
-      Recurring: "What are you achieving?",
+      Idea: texts.what_are_you_trying_to_achieve,
+      "In Progress": texts.what_are_you_trying_to_achieve,
+      Cancelled: texts.what_were_you_trying_to_achieve,
+      "Successfully Finished": texts.what_did_you_achieve,
+      Recurring: texts.what_are_you_achieving,
     },
     {
-      Idea: "How are you going to try to achieve it?",
-      "In Progress": "How are you trying to achieve it?",
-      Cancelled: "How did you try to achieve it?",
-      "Successfully Finished": "How did you make your project a success?",
-      Recurring: "How are you achieving it?",
+      Idea: texts.how_are_you_going_to_try_to_achieve_it,
+      "In Progress": texts.how_are_you_trying_to_achieve_it,
+      Cancelled: texts.how_did_you_try_to_achieve_it,
+      "Successfully Finished": texts.how_did_you_make_your_project_a_success,
+      Recurring: texts.how_are_you_achieving_it,
     },
     {
-      Idea: "What are going to be the biggest challenges?",
-      "In Progress": "What are the biggest challenges?",
-      Cancelled: "What were the biggest challenges?",
-      "Successfully Finished": "What were the biggest challenges?",
-      Recurring: "What are the biggest challenges?",
+      Idea: texts.what_are_going_to_be_the_biggest_challenges,
+      "In Progress": texts.what_are_the_biggest_challenges,
+      Cancelled: texts.what_were_the_biggest_challenges,
+      "Successfully Finished": texts.what_were_the_biggest_challenges,
+      Recurring: texts.what_are_the_biggest_challenges,
     },
     {
-      "In Progress": "What insights have you gained so far?",
-      Cancelled: "What insights did you gain?",
-      "Successfully Finished": "What insights did you gain during the implementation?",
-      Recurring: "What insights have you gained so far?",
+      "In Progress": texts.which_insights_have_you_gained_so_far,
+      Cancelled: texts.which_insights_did_you_gain,
+      "Successfully Finished": texts.which_insights_did_you_gain_during_the_implementation,
+      Recurring: texts.which_insights_have_you_gained_so_far,
     },
     {
-      Idea: "Could this project be replicated?",
-      "In Progress": "Could this project be replicated?",
-      Cancelled: "What would you have needed to make this project a sucess?",
-      "Successfully Finished": "How can this project be replicated by other climate protectors?",
-      Recurring: "Could this project be replicated?",
+      Idea: texts.could_this_project_be_replicated_somewhere_else,
+      "In Progress": texts.could_this_project_be_replicated_somewhere_else,
+      Cancelled: texts.what_would_you_have_needed_to_make_this_project_a_sucess,
+      "Successfully Finished": texts.how_can_this_project_be_replicated_by_other_climate_protectors,
+      Recurring: texts.could_this_project_be_replicated_somewhere_else,
     },
   ];
   return (
     <>
-      <Typography>Please touch on the following points in your project description:</Typography>
+      <Typography>
+        {texts.please_touch_on_the_following_points_in_your_project_description}:
+      </Typography>
       <ul>
         {bulletPoints.map((p, index) => (
           <li key={index}>{p[status.name] ? p[status.name] : p["In Progress"]}</li>
         ))}
       </ul>
-      <Typography>
-        If you want to include a video: the first YouTube link will be converted to an embedded
-        video on your project page.
-      </Typography>
+      <Typography>{texts.if_you_want_to_include_a_video_in_your_project_description}</Typography>
     </>
   );
 }

@@ -18,6 +18,45 @@ import HubsSubHeader from "../src/components/indexPage/HubsSubHeader";
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
 import WideLayout from "../src/components/layouts/WideLayout";
 
+export async function getServerSideProps(ctx) {
+  const { token, hideInfo } = NextCookies(ctx);
+  const [
+    projectsObject,
+    organizationsObject,
+    membersObject,
+    project_categories,
+    organization_types,
+    skills,
+    project_statuses,
+    hubs,
+  ] = await Promise.all([
+    getProjects(1, token),
+    getOrganizations(1, token),
+    getMembers(1, token),
+    getProjectTagsOptions(),
+    getOrganizationTagsOptions(),
+    getSkillsOptions(),
+    getStatusOptions(),
+    getHubs(),
+  ]);
+  return {
+    props: {
+      projectsObject: projectsObject,
+      organizationsObject: organizationsObject,
+      membersObject: membersObject,
+      token: token ? token : null,
+      filterChoices: {
+        project_categories: project_categories,
+        organization_types: organization_types,
+        skills: skills,
+        project_statuses: project_statuses,
+      },
+      hideInfo: hideInfo === "true",
+      hubs: hubs,
+    },
+  };
+}
+
 export default function Browse({
   projectsObject,
   organizationsObject,
@@ -124,7 +163,6 @@ export default function Browse({
   return (
     <>
       <WideLayout
-        title="Global Platform for Climate Change Solutions"
         hideHeadline
         showOnScrollUp={showOnScrollUp}
         subHeader={<HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} />}
@@ -146,43 +184,6 @@ export default function Browse({
     </>
   );
 }
-
-Browse.getInitialProps = async (ctx) => {
-  const { token, hideInfo } = NextCookies(ctx);
-  const [
-    projectsObject,
-    organizationsObject,
-    membersObject,
-    project_categories,
-    organization_types,
-    skills,
-    project_statuses,
-    hubs,
-  ] = await Promise.all([
-    getProjects(1, token),
-    getOrganizations(1, token),
-    getMembers(1, token),
-    getProjectTagsOptions(),
-    getOrganizationTagsOptions(),
-    getSkillsOptions(),
-    getStatusOptions(),
-    getHubs(),
-  ]);
-  return {
-    projectsObject: projectsObject,
-    organizationsObject: organizationsObject,
-    membersObject: membersObject,
-    token: token,
-    filterChoices: {
-      project_categories: project_categories,
-      organization_types: organization_types,
-      skills: skills,
-      project_statuses: project_statuses,
-    },
-    hideInfo: hideInfo === "true",
-    hubs: hubs,
-  };
-};
 
 async function getProjects(page, token, urlEnding) {
   return await getDataFromServer({

@@ -1,8 +1,10 @@
-import React from "react";
+import { Button, Chip, IconButton, List, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import EnterTextDialog from "../dialogs/EnterTextDialog";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
-import { Typography, Tooltip, IconButton, List, Chip, Button } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -40,6 +42,8 @@ export default function CollaborateSection({
   collaborationTexts,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const [selectedItems, setSelectedItems] = React.useState(
     projectData.skills ? [...projectData.skills] : []
   );
@@ -88,7 +92,7 @@ export default function CollaborateSection({
 
   const handleConnectionsDialogClose = (connection) => {
     if (projectData.helpful_connections && projectData.helpful_connections.includes(connection))
-      alert("You can not add the same connection twice.");
+      alert(texts.you_can_not_add_the_same_connection_twice);
     else {
       if (connection)
         handleSetProjectData({
@@ -128,7 +132,7 @@ export default function CollaborateSection({
             </List>
           )}
           <Button variant="contained" color="primary" onClick={onClickSkillsDialogOpen}>
-            {projectData.skills && projectData.skills.length ? "Edit skills" : "Add Skills"}
+            {projectData.skills && projectData.skills.length ? texts.edit_skills : texts.add_skills}
           </Button>
         </div>
       </div>
@@ -159,7 +163,7 @@ export default function CollaborateSection({
           </List>
         )}
         <Button variant="contained" color="primary" onClick={onClickConnectionsDialogOpen}>
-          Add Connections
+          {texts.add_connections}
         </Button>
       </div>
       <MultiLevelSelectDialog
@@ -175,9 +179,9 @@ export default function CollaborateSection({
         open={open.connectionsDialog}
         onClose={handleConnectionsDialogClose}
         maxLength={25}
-        applyText="Add"
-        inputLabel="Connection"
-        title="Add a helpful connection"
+        applyText={texts.add}
+        inputLabel={texts.connection}
+        title={texts.add_a_helpful_connection}
       />
     </>
   );

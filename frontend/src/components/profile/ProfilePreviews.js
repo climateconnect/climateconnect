@@ -1,8 +1,9 @@
-import React from "react";
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
 import InfiniteScroll from "react-infinite-scroller";
-
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import ProfilePreview from "./ProfilePreview";
 
@@ -23,6 +24,8 @@ export default function ProfilePreviews({
   showAdditionalInfo,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale });
   const toProfilePreviews = (profiles) =>
     profiles.map((p) => (
       <GridItem key={p.url_slug} profile={p} showAdditionalInfo={showAdditionalInfo} />
@@ -66,7 +69,7 @@ export default function ProfilePreviews({
         {parentHandlesGridItems
           ? profiles && profiles.length > 0
             ? toProfilePreviews(profiles)
-            : "No members found."
+            : texts.no_members_found
           : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="profile-previews-spinner" />}
       </InfiniteScroll>

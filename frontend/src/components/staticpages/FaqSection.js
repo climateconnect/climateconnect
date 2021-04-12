@@ -1,9 +1,11 @@
-import React from "react";
-import { Container, Typography, makeStyles, Link, Button } from "@material-ui/core";
+import { Button, Container, makeStyles, Typography } from "@material-ui/core";
 import ContactSupportOutlinedIcon from "@material-ui/icons/ContactSupportOutlined";
-import FaqQuestionElement from "../faq/FaqQuestionElement";
-import ExpandMoreOutlinedIcon from "@material-ui/icons/ExpandMoreOutlined";
 import ExpandLessOutlinedIcon from "@material-ui/icons/ExpandLessOutlined";
+import ExpandMoreOutlinedIcon from "@material-ui/icons/ExpandMoreOutlined";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import FaqQuestionElement from "../faq/FaqQuestionElement";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,6 +72,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function FaqSection({ headlineClass, questions }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "faq", locale: locale, classes: classes });
   const [expanded, setExpanded] = React.useState(false);
   const handleToggleShowMore = (e) => {
     e.preventDefault();
@@ -84,14 +88,10 @@ export default function FaqSection({ headlineClass, questions }) {
           </div>
           <div className={classes.explanationText}>
             <Typography component="h3" className={`${headlineClass} ${classes.headline}`}>
-              Got a question?
+              {texts.got_a_question}
             </Typography>
             <Typography className={classes.textBody}>
-              Find all commonly asked questions and their answers on the{" "}
-              <Link className={classes.faqLink} href="/faq" target="_blank">
-                FAQ page
-              </Link>
-              .
+              {texts.find_all_commonly_asked_questions_on_the_faq_page}
             </Typography>
           </div>
         </div>
@@ -112,7 +112,7 @@ export default function FaqSection({ headlineClass, questions }) {
         </div>
         <div className={classes.showMoreButtonContainer}>
           <Button className={classes.showMoreButton} onClick={handleToggleShowMore}>
-            <Typography>{expanded ? "Show Less" : "Show More"}</Typography>
+            <Typography>{expanded ? texts.show_less : texts.show_more}</Typography>
             {expanded ? <ExpandLessOutlinedIcon /> : <ExpandMoreOutlinedIcon />}
           </Button>
         </div>

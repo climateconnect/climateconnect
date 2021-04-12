@@ -1,8 +1,11 @@
-import React from "react";
+import { makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
-import { Typography, makeStyles, useMediaQuery } from "@material-ui/core";
-import LightBigButton from "../staticpages/LightBigButton";
+import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import UserContext from "../context/UserContext";
+import LightBigButton from "../staticpages/LightBigButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,6 +58,8 @@ const useStyles = makeStyles((theme) => ({
 export default function DonationsBanner({ h1ClassName }) {
   const classes = useStyles();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "donate", locale: locale, classes: classes });
   return (
     <div className={classes.root}>
       <div className={classes.content}>
@@ -65,17 +70,16 @@ export default function DonationsBanner({ h1ClassName }) {
         )}
         <div>
           <Typography className={`${classes.headline} ${h1ClassName}`}>
-            We rely on your donation to <span className={classes.yellow}>stay independent!</span>
+            {texts.we_rely_on_your_donation_to_stay_independent}
           </Typography>
           <Typography className={classes.text}>
-            We are non-profit and running only on donations. Only with your financial support we can
-            connect climate actors worldwide sustainably in the long run.
+            {texts.we_are_non_profit_and_running_only_on_donations}
           </Typography>
         </div>
       </div>
       <div className={classes.donateButtonContainer}>
-        <LightBigButton href="/donate" className={classes.donateButton}>
-          Donate now
+        <LightBigButton href={getLocalePrefix(locale) + "/donate"} className={classes.donateButton}>
+          {texts.donate_now}
         </LightBigButton>
       </div>
     </div>

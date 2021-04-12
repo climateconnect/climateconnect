@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
@@ -24,14 +26,16 @@ export default function FilterOverlay({
   const onClose = () => {
     unexpandFilters();
   };
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "filter_and_search", locale: locale });
   return (
     <GenericDialog
       fullScreen
       open={filtersExpanded ? filtersExpanded : false}
       useApplyButton
-      applyText="Apply filters"
+      applyText={texts.apply_filters}
       onClose={onClose}
-      title="Filters"
+      title={texts.filters}
       onApply={handleApplyFilters}
       topBarFixed
     >
