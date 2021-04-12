@@ -11,8 +11,16 @@ from climateconnect_api.serializers.role import RoleSerializer
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.tags import ProjectTaggingSerializer, OrganizationTagging
 
+from organization.utility.project import (
+    get_project_name, get_project_short_description,
+    get_project_description
+)
+
 
 class ProjectSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
     skills = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
@@ -37,6 +45,15 @@ class ProjectSerializer(serializers.ModelSerializer):
             'website', 'number_of_followers'
         )
         read_only_fields = ['url_slug']
+
+    def get_name(self, obj):
+        return get_project_name(obj, self.context['request'].LANGUAGE_CODE)
+    
+    def short_description(self, obj):
+        return get_project_short_description(obj, self.context['request'].LANGUAGE_CODE)
+    
+    def get_description(self, obj):
+        return get_project_description(obj, self.context['request'].LANGUAGE_CODE)
 
     def get_collaborating_organizations(self, obj):
         serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
@@ -67,6 +84,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             return None
         return obj.loc.name
 
+
 class EditProjectSerializer(ProjectSerializer):
     loc = serializers.SerializerMethodField()
     def get_loc(self, obj):
@@ -81,6 +99,7 @@ class EditProjectSerializer(ProjectSerializer):
             return obj.loc.name
     class Meta(ProjectSerializer.Meta):
         fields = ProjectSerializer.Meta.fields + ('loc',)
+
 
 class ProjectParentsSerializer(serializers.ModelSerializer):
     parent_organization = serializers.SerializerMethodField()
@@ -107,6 +126,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
     status = serializers.CharField(source='status.name', read_only=True)
     location = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -116,6 +136,9 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
             'status', 'location', 'project_parents', 'is_draft','website'
         )
     
+    def get_name(self, obj):
+        return get_project_name(obj, self.context['request'].LANGUAGE_CODE)
+
     def get_project_parents(self, obj):
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
         return serializer.data
@@ -145,11 +168,10 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         )
     
     def get_name(self, obj):
-        print(self.context['request'].LANGUAGE_CODE)
-        return obj.name
+        return get_project_name(obj, self.context['request'].LANGUAGE_CODE)
     
     def get_short_description(self, obj):
-        return obj.short_description
+        return get_project_short_description(obj, self.context['request'].LANGUAGE_CODE)
     
     def get_project_parents(self, obj):        
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
