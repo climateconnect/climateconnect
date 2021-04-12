@@ -8,9 +8,10 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
           <span className={classes?.yellow}>Be part</span> of the community
         </>
       ),
-      de: (<>
+      de: (
+        <>
           <span className={classes?.yellow}>Sei Teil</span> der Community
-      </>
+        </>
       ),
     },
     be_part_of_the_community_text: {
@@ -24,7 +25,8 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
     whether_youre_working_on_climate_action_fulltime: {
       en:
         "Whether you're working on climate action fulltime, on a volunteer basis or are just looking for what to do against climate change, we're all part of #teamclimate.",
-      de: "Egal, ob du dich hauptberuflich oder ehrenamtlich für den Klimaschutz engagierst oder einfach nur wissen willst, was Du gegen den Klimawandel tun kannst - wir sind alle Teil von #teamclimate.",
+      de:
+        "Egal, ob du dich hauptberuflich oder ehrenamtlich für den Klimaschutz engagierst oder einfach nur wissen willst, was Du gegen den Klimawandel tun kannst - wir sind alle Teil von #teamclimate.",
     },
     landing_page_photo_alt: {
       en: "Photo of earth from space at night with some connecting waypoints",
@@ -43,12 +45,13 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
           climate actors on our planet - the only one we have
         </>
       ),
-      de: (<>
-        Komm ins globale Klimaschutz-Netzwerk, das alle
-        {!isNarrowScreen ? <br /> : " "}
-        Klimaschutz-Akteure auf unserem Planeten verbindet
-      </>
-    ),
+      de: (
+        <>
+          Komm ins globale Klimaschutz-Netzwerk, das alle
+          {!isNarrowScreen ? <br /> : " "}
+          Klimaschutz-Akteure auf unserem Planeten verbindet
+        </>
+      ),
     },
     explore: {
       en: "Explore",
@@ -113,7 +116,7 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
     man_floating_in_the_air_with_a_lightbulb_a_book_a_pen_a_notebook_a_baloon_and_saturn_floating_around_him: {
       en:
         "Man floating in the air with a lightbulb, a book, a pen, a notebook, a baloon and Saturn floating around him",
-      de: 
+      de:
         "Mann schwebt in der Luft mit einer Glühbirne, einem Buch, einem Stift, einem Notizbuch, einem Ballon und dem Saturn, der um ihn herum schwebt",
     },
     four_people_at_a_table_working_together_and_giving_each_other_a_high_five: {
@@ -129,10 +132,10 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
       ),
       de: (
         <>
-          <span className={classes?.yellow}>Arbeite zusammen</span>, lass dich inspirieren
-          und nehme echten Einfluss <span className={classes?.yellow}>auf den Klimawandel!</span>
+          <span className={classes?.yellow}>Arbeite zusammen</span>, lass dich inspirieren und nehme
+          echten Einfluss <span className={classes?.yellow}>auf den Klimawandel!</span>
         </>
-        ),
+      ),
     },
   };
 }

@@ -31,7 +31,8 @@ export default function Signin() {
     submitMessage: texts.log_in,
     bottomMessage: (
       <span>
-        {texts.new_to_climate_connect} <a href={getLocalePrefix(locale) + "/signup"}>{texts.click_here_to_create_an_account}</a>
+        {texts.new_to_climate_connect}{" "}
+        <a href={getLocalePrefix(locale) + "/signup"}>{texts.click_here_to_create_an_account}</a>
       </span>
     ),
   };
@@ -49,7 +50,8 @@ export default function Signin() {
   useEffect(function () {
     if (!initialized) {
       const params = getParams(window.location.href);
-      if (params.redirect) setRedirectUrl(getLocalePrefix(locale) + "/" + decodeURIComponent(params.redirect));
+      if (params.redirect)
+        setRedirectUrl(getLocalePrefix(locale) + "/" + decodeURIComponent(params.redirect));
       setInitialized(true);
       //TODO: remove router
     }

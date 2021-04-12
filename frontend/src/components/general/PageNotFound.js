@@ -21,7 +21,11 @@ export default function PageNotFound({ itemName, returnText, returnLink }) {
         {itemName ? `${itemName} ` : texts.page + " "} {texts.not_found_lowercase}
       </Typography>
       <p>
-        <Link href={returnLink ? getLocalePrefix(locale) + returnLink : getLocalePrefix(locale) + "/browse"}>
+        <Link
+          href={
+            returnLink ? getLocalePrefix(locale) + returnLink : getLocalePrefix(locale) + "/browse"
+          }
+        >
           {returnText ? returnText : texts.return_to_home}
         </Link>
       </p>

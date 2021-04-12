@@ -10,7 +10,8 @@ export default function getProfileTexts({ profile, locale }) {
     },
     availability_user_profile_missing_message: {
       en: "This user hasn't specified their availibility yet.",
-      de: "Diese(r) Benutzer*in hat noch nicht angegeben, wie viele Stunden pro Woche er/sie erreichbar ist.",
+      de:
+        "Diese(r) Benutzer*in hat noch nicht angegeben, wie viele Stunden pro Woche er/sie erreichbar ist.",
     },
     add_skill: {
       en: "Add skill",
@@ -62,11 +63,13 @@ export default function getProfileTexts({ profile, locale }) {
     },
     pick_how_many_hours_user_contributes_to_org: {
       en: "Pick how many hours per week the user contributes to this organization on average.",
-      de: "Wähle aus, wie viele Stunden pro Woche der/die Benutzer*in im Durchschnitt zu dieser Organisation beiträgt.",
+      de:
+        "Wähle aus, wie viele Stunden pro Woche der/die Benutzer*in im Durchschnitt zu dieser Organisation beiträgt.",
     },
     pick_how_many_hours_user_contributes_to_project: {
       en: "Pick how many hours per week the user contributes to this project on average.",
-      de: "Wähle aus, wie viele Stunden pro Woche der/die Benutzer*in im Durchschnitt zu diesem Projekt beiträgt.",
+      de:
+        "Wähle aus, wie viele Stunden pro Woche der/die Benutzer*in im Durchschnitt zu diesem Projekt beiträgt.",
     },
     do_you_really_want_to_lose_creators_permissions: {
       en: "Do you really want to lose Creator permissions?",
@@ -136,7 +139,8 @@ export default function getProfileTexts({ profile, locale }) {
     },
     sign_up_message: {
       en: "You are now a Climate Connect member. On this page you can customize your profile.",
-      de: "Du bist jetzt ein Climate Connect Mitglied. Auf dieser Seite kannst du dein Profil anpassen.",
+      de:
+        "Du bist jetzt ein Climate Connect Mitglied. Auf dieser Seite kannst du dein Profil anpassen.",
     },
     account_created: {
       en: "Account created",
@@ -164,19 +168,24 @@ export default function getProfileTexts({ profile, locale }) {
     },
     if_you_are_experiencing_any_problems_contact_us: {
       en: "If you are experiencing any problems, contact us at contact@climateconnect.earth",
-      de: "Wenn du Probleme haben solltest, kontaktiere uns einfach unter contact@climateconnect.earth",
+      de:
+        "Wenn du Probleme haben solltest, kontaktiere uns einfach unter contact@climateconnect.earth",
     },
     if_the_email_does_not_arrive_after_5_minutes: {
       en: (
         <>
           If the E-Mail does not arrive after 5 minutes,{" "}
-          <Link href={getLocalePrefix(locale) + "/resend_verification_email"}>click here</Link> to resend it.
+          <Link href={getLocalePrefix(locale) + "/resend_verification_email"}>click here</Link> to
+          resend it.
         </>
       ),
-      de: <>
-        Wenn die E-Mail nach 5 Minuten noch nicht angekommen ist,{" "}
-        <Link href={getLocalePrefix(locale) + "/resend_verification_email"}>klicke hier</Link>, um sie erneut versenden zu lassen.
-      </>,
+      de: (
+        <>
+          Wenn die E-Mail nach 5 Minuten noch nicht angekommen ist,{" "}
+          <Link href={getLocalePrefix(locale) + "/resend_verification_email"}>klicke hier</Link>, um
+          sie erneut versenden zu lassen.
+        </>
+      ),
     },
     you_have_successfully_updated_your_profile: {
       en: "You have successfully updated your profile!",
@@ -204,13 +213,16 @@ export default function getProfileTexts({ profile, locale }) {
           to send the verification link again.
         </>
       ),
-      de: <>
-        Du hast dein Konto noch nicht aktiviert. Klicke auf den Link in der E-Mail, die wir dir geschickt haben, oder{" "}
-        <Link href={getLocalePrefix(locale) + "/resend_verification_email"} target="_blank">
-          klicke hier
-        </Link>{" "}
-        , um edie Bestätigungsemail mit dem Verifizierungslink erneut zu erhalten.
-      </>,
+      de: (
+        <>
+          Du hast dein Konto noch nicht aktiviert. Klicke auf den Link in der E-Mail, die wir dir
+          geschickt haben, oder{" "}
+          <Link href={getLocalePrefix(locale) + "/resend_verification_email"} target="_blank">
+            klicke hier
+          </Link>{" "}
+          , um edie Bestätigungsemail mit dem Verifizierungslink erneut zu erhalten.
+        </>
+      ),
     },
     passwords_dont_match: {
       en: "Passwords don't match.",
@@ -242,21 +254,23 @@ export default function getProfileTexts({ profile, locale }) {
           .
         </>
       ),
-      de: <>
-        Ich erkläre mich mit den{" "}
-        <a href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
-          Nutzungsbedingungen
-        </a>{" "}
-        und den{" "}
-        <a href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
-          Datenschutzbestimmungen
-        </a>
-        einverstanden.
-    </>,
+      de: (
+        <>
+          Ich erkläre mich mit den{" "}
+          <a href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
+            Nutzungsbedingungen
+          </a>{" "}
+          und den{" "}
+          <a href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
+            Datenschutzbestimmungen
+          </a>
+          einverstanden.
+        </>
+      ),
     },
     signup_step_2_headline: {
-      "en": "Step 2: A little bit about yourself",
-      "de": "Schritt 2: Ein paar Infos über dich"
+      en: "Step 2: A little bit about yourself",
+      de: "Schritt 2: Ein paar Infos über dich",
     },
     repeat_password: {
       en: "Repeat Password",

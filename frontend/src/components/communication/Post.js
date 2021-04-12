@@ -101,12 +101,19 @@ export default function Post({
         </Typography>
       ) : (
         <div className={classes.commentFlexBox}>
-          <Link href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug} target="_blank">
+          <Link
+            href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
+            target="_blank"
+          >
             <Avatar src={getImageUrl(post.author_user.image)} className={classes.avatar} />
           </Link>
           <span className={classes.messageWithMetaData}>
             <div className={classes.metadata}>
-              <Link color="inherit" href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug} target="_blank">
+              <Link
+                color="inherit"
+                href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
+                target="_blank"
+              >
                 <Typography variant="body2" className={classes.username}>
                   {post.author_user.first_name + " " + post.author_user.last_name}
                 </Typography>

@@ -40,7 +40,11 @@ export default function HubsSubHeader({ hubs, subHeaderRef }) {
     <div className={classes.root} ref={subHeaderRef}>
       <Container className={classes.container}>
         {isNarrowScreen ? (
-          <Button className={classes.viewHubsButton} variant="contained" href={`${getLocalePrefix(locale)}/hubs/`}>
+          <Button
+            className={classes.viewHubsButton}
+            variant="contained"
+            href={`${getLocalePrefix(locale)}/hubs/`}
+          >
             {texts.view_sector_hubs}
           </Button>
         ) : (
@@ -51,7 +55,11 @@ export default function HubsSubHeader({ hubs, subHeaderRef }) {
         {hubs &&
           !isNarrowScreen &&
           hubs.map((hub) => (
-            <Link className={classes.link} key={hub.url_slug} href={`${getLocalePrefix(locale)}/hubs/${hub.url_slug}`}>
+            <Link
+              className={classes.link}
+              key={hub.url_slug}
+              href={`${getLocalePrefix(locale)}/hubs/${hub.url_slug}`}
+            >
               {hub.name}
             </Link>
           ))}

@@ -43,7 +43,10 @@ export default function StartNowBanner({ h1ClassName, className }) {
           </Typography>
         </div>
         <div className={classes.buttonContainer}>
-          <LightBigButton href={getLocalePrefix(locale) + "/signup"} className={classes.signUpButton}>
+          <LightBigButton
+            href={getLocalePrefix(locale) + "/signup"}
+            className={classes.signUpButton}
+          >
             {texts.sign_up}
           </LightBigButton>
         </div>

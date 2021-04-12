@@ -259,7 +259,11 @@ export default function get_steps({
       },
       button: (
         <div className={classes.buttonContainer}>
-          <Button href={getLocalePrefix(locale) + "/signup?from_tutorial=true"} className={classes.signUpButton} size="large">
+          <Button
+            href={getLocalePrefix(locale) + "/signup?from_tutorial=true"}
+            className={classes.signUpButton}
+            size="large"
+          >
             {texts.sign_up}
           </Button>
         </div>

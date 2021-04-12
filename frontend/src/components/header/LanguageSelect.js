@@ -8,43 +8,43 @@ import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
-  root: props => ({
+  root: (props) => ({
     color: props.transparentHeader ? "white" : theme.palette.primary.main,
-    cursor: "pointer"
+    cursor: "pointer",
   }),
   languageIcon: {
     fontSize: 16,
   },
   popover: {
-    pointerEvents: "none"
+    pointerEvents: "none",
   },
   popoverContent: {
-    pointerEvents: "auto"
+    pointerEvents: "auto",
   },
   centerText: {
-    textAlign: "center"
-  }
+    textAlign: "center",
+  },
 }));
 
-export default function LanguageSelect({transparentHeader}) {
-  const classes = useStyles({transparentHeader: transparentHeader});
+export default function LanguageSelect({ transparentHeader }) {
+  const classes = useStyles({ transparentHeader: transparentHeader });
   const { locale, locales } = useContext(UserContext);
-  const buttonRef = useRef(null)
+  const buttonRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState(buttonRef.current);
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const router = useRouter();  
-  useEffect(function(){
-    setAnchorEl(buttonRef.current)
-  }, [])
+  const router = useRouter();
+  useEffect(function () {
+    setAnchorEl(buttonRef.current);
+  }, []);
 
   const handleOpen = () => {
-    console.log(anchorEl)
-    setOpen(true)
+    console.log(anchorEl);
+    setOpen(true);
   };
 
   const handleClose = () => {
-    setOpen(false)
+    setOpen(false);
   };
 
   const handleLanguageClick = (e, newLocale) => {
@@ -62,10 +62,10 @@ export default function LanguageSelect({transparentHeader}) {
 
   return (
     <>
-      <Button 
-        onMouseEnter={handleOpen} 
-        onMouseLeave={handleClose} 
-        className={classes.root} 
+      <Button
+        onMouseEnter={handleOpen}
+        onMouseLeave={handleClose}
+        className={classes.root}
         ref={buttonRef}
         aria-owns="language-select"
         aria-haspopup="true"
@@ -73,19 +73,19 @@ export default function LanguageSelect({transparentHeader}) {
         <LanguageIcon className={classes.languageIcon} />
         {locale}
       </Button>
-      <StyledMenu 
+      <StyledMenu
         id="language-select"
         className={classes.popover}
         classes={{
-          paper: classes.popoverContent
+          paper: classes.popoverContent,
         }}
-        anchorEl={anchorEl} 
-        onClose={handleClose} 
-        keepMounted 
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        keepMounted
         open={open}
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center'
+          vertical: "bottom",
+          horizontal: "center",
         }}
         container={anchorEl?.parentNode}
         PaperProps={{ onMouseEnter: handleOpen, onMouseLeave: handleClose }}

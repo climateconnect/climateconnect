@@ -108,7 +108,11 @@ export default function ProjectPreview({ project, projectRef }) {
   };
   return (
     <Link
-      href={project.is_draft ? `${getLocalePrefix(locale)}/editProject/${project.url_slug}` : `${getLocalePrefix(locale)}/projects/${project.url_slug}`}
+      href={
+        project.is_draft
+          ? `${getLocalePrefix(locale)}/editProject/${project.url_slug}`
+          : `${getLocalePrefix(locale)}/projects/${project.url_slug}`
+      }
       className={classes.noUnderline}
     >
       <Card

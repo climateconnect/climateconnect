@@ -66,7 +66,8 @@ export default function getDonateTexts({ classes, goal }) {
     your_support_keeps_climate_connect_independent_and_free_for_everyone_text: {
       en:
         "We strongly believe that a platform connecting all climate actors needs to be independent, non-profit and free for everyone. This is only possible with your financial support.",
-      de: "Wir sind der festen Überzeugung, dass Climate Connect unabhängig, gemeinnützig und für jeden kostenlos sein muss. Dies ist nur mit deiner finanziellen Unterstützung möglich.",
+      de:
+        "Wir sind der festen Überzeugung, dass Climate Connect unabhängig, gemeinnützig und für jeden kostenlos sein muss. Dies ist nur mit deiner finanziellen Unterstützung möglich.",
     },
     donate_with_cryptocurrency: {
       en: "Donate with cryptocurrency",
@@ -75,7 +76,8 @@ export default function getDonateTexts({ classes, goal }) {
     donate_with_cryptocurrency_text: {
       en:
         "While we prefer other payment methods, we've also added the option to donate cryptocurrency. When donating with cryptocurrency you will not receive a donation receipt.",
-      de: "Obwohl wir andere Zahlungsmethoden bevorzugen, haben wir auch die Option hinzugefügt, mit Kryptowährung zu spenden. Wenn du mit Kryptowährung spendest, können wir leider keine Spendenbescheinigung ausstellen.",
+      de:
+        "Obwohl wir andere Zahlungsmethoden bevorzugen, haben wir auch die Option hinzugefügt, mit Kryptowährung zu spenden. Wenn du mit Kryptowährung spendest, können wir leider keine Spendenbescheinigung ausstellen.",
     },
     our_bitcoin_address: {
       en: "Our Bitcoin address",
@@ -88,7 +90,8 @@ export default function getDonateTexts({ classes, goal }) {
     what_we_need_to_pay_for_text: {
       en:
         "Next to our volunteers from around the world Climate Connect has 3 full-time employees working hard every day to bring climate actors together to multiply their positive impact on our planet. We can only do this in a sustainable way with your financial support.",
-      de:  "Neben unseren Freiwilligen aus aller Welt hat Climate Connect 3 Vollzeitmitarbeiter, die jeden Tag hart daran arbeiten, Klimaakteure zusammenzubringen, um ihren positiven Einfluss auf unseren Planeten zu vervielfachen. Dies können wir nur mit deiner finanziellen Unterstützung nachhaltig tun.",
+      de:
+        "Neben unseren Freiwilligen aus aller Welt hat Climate Connect 3 Vollzeitmitarbeiter, die jeden Tag hart daran arbeiten, Klimaakteure zusammenzubringen, um ihren positiven Einfluss auf unseren Planeten zu vervielfachen. Dies können wir nur mit deiner finanziellen Unterstützung nachhaltig tun.",
     },
     we_can_only_prevent_a_global_climate_catastrophe_if_everyone: {
       en: `We can only prevent a global climate catastrophe if everyone working 
@@ -116,15 +119,19 @@ export default function getDonateTexts({ classes, goal }) {
           user feedback.
         </>
       ),
-      de: <>
-        Wir befinden uns noch in der Beta-Phase und ein großer Teil unserer Arbeit geht in das Design
-        und die Entwicklung neuer Funktionen (siehe unsere{" "} <a href="https://github.com/climateconnect/climateconnect">Open Source Codebase</a> ). 
-        In den nächsten Monaten werden wir Hubs für jedes wichtige Thema im Bereich des Klimaschutzes 
-        einrichten und die Benutzerfreundlichkeit von Climate Connect erheblich verbessern. Weiterhin werden 
-        wir die Projektseiten noch weiter optimieren, damit wir die Zusammenarbeit und den Wissensaustausch
-        zwischen den Nutzern am effektivsten fördern können. Außerdem verbessern wir ständig bestehende Teile 
-        der Webseiten, basierend auf dem Feedback der Nutzer.
-      </>,
+      de: (
+        <>
+          Wir befinden uns noch in der Beta-Phase und ein großer Teil unserer Arbeit geht in das
+          Design und die Entwicklung neuer Funktionen (siehe unsere{" "}
+          <a href="https://github.com/climateconnect/climateconnect">Open Source Codebase</a> ). In
+          den nächsten Monaten werden wir Hubs für jedes wichtige Thema im Bereich des Klimaschutzes
+          einrichten und die Benutzerfreundlichkeit von Climate Connect erheblich verbessern.
+          Weiterhin werden wir die Projektseiten noch weiter optimieren, damit wir die
+          Zusammenarbeit und den Wissensaustausch zwischen den Nutzern am effektivsten fördern
+          können. Außerdem verbessern wir ständig bestehende Teile der Webseiten, basierend auf dem
+          Feedback der Nutzer.
+        </>
+      ),
     },
     growing_the_community_and_sparking_collaboration: {
       en: "Growing the community and sparking collaboration",
@@ -148,7 +155,8 @@ export default function getDonateTexts({ classes, goal }) {
     },
     ongoing_expenses_text: {
       en: "Our ongoing expenses include server costs, fees for bookkeeping and legal advice.",
-      de: "Unsere laufenden Kosten beinhalten Serverkosten, Gebühren für Buchhaltung und Rechtsberatung.",
+      de:
+        "Unsere laufenden Kosten beinhalten Serverkosten, Gebühren für Buchhaltung und Rechtsberatung.",
     },
     long_term_sustainability: {
       en: "Long term sustainability",
@@ -207,14 +215,16 @@ export default function getDonateTexts({ classes, goal }) {
           . (PDF in german language)
         </>
       ),
-      de: <>
-        Hier fest Du ein Dokument, das einen vereinfachten Zuwendungsnachweis und die 
-        Bestätigung unseres Gemeinnützigkeitsstatus erklärt{" "}
-        <Link target="_blank" href="/documents/nonprofit_status_confirmation.pdf">
-          hier
-        </Link>
-        . (PDF in deutscher Sprache)
-      </>,
+      de: (
+        <>
+          Hier fest Du ein Dokument, das einen vereinfachten Zuwendungsnachweis und die Bestätigung
+          unseres Gemeinnützigkeitsstatus erklärt{" "}
+          <Link target="_blank" href="/documents/nonprofit_status_confirmation.pdf">
+            hier
+          </Link>
+          . (PDF in deutscher Sprache)
+        </>
+      ),
     },
     donation_receipts_text_last_part: {
       en: (
@@ -224,10 +234,13 @@ export default function getDonateTexts({ classes, goal }) {
           documents.
         </>
       ),
-      de: <>
-        Für Spender, die mehr als 300€ pro Jahr spenden, stellen wir eine Spendenbescheinigung aus.{" "}
-        <Link href="mailto:contact@climateconnect.earth">Kontaktiere uns</Link>, wenn du weitere Unterlagen benötigst.
-      </>,
+      de: (
+        <>
+          Für Spender, die mehr als 300€ pro Jahr spenden, stellen wir eine Spendenbescheinigung
+          aus. <Link href="mailto:contact@climateconnect.earth">Kontaktiere uns</Link>, wenn du
+          weitere Unterlagen benötigst.
+        </>
+      ),
     },
     we_rely_on_your_donation_to_stay_independent: {
       en: (
@@ -235,9 +248,10 @@ export default function getDonateTexts({ classes, goal }) {
           We rely on your donation to <span className={classes?.yellow}>stay independent!</span>
         </>
       ),
-      de:  (
+      de: (
         <>
-          Wir sind auf Deine Spende angewiesen, um <span className={classes?.yellow}>unabhängig zu bleiben!</span>
+          Wir sind auf Deine Spende angewiesen, um{" "}
+          <span className={classes?.yellow}>unabhängig zu bleiben!</span>
         </>
       ),
     },

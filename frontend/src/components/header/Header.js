@@ -17,7 +17,7 @@ import {
   Paper,
   Popper,
   SwipeableDrawer,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -315,7 +315,7 @@ export default function Header({
     if (!anchorEl) setAnchorEl(event.currentTarget);
     else setAnchorEl(null);
   };
-  const localePrefix = getLocalePrefix(locale)
+  const localePrefix = getLocalePrefix(locale);
 
   const onNotificationsClose = () => setAnchorEl(null);
 
@@ -372,7 +372,7 @@ function StaticPageLinks() {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
-  const localePrefix = getLocalePrefix(locale)
+  const localePrefix = getLocalePrefix(locale);
   return (
     <div className={classes.staticPageLinksWrapper}>
       <Container className={classes.staticPageLinksContainer}>
@@ -407,7 +407,7 @@ function NormalScreenLinks({
   fixedHeader,
   LINKS,
   texts,
-  localePrefix
+  localePrefix,
 }) {
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -426,7 +426,7 @@ function NormalScreenLinks({
           classes: classes,
           transparentHeader: transparentHeader,
           toggleShowNotifications: toggleShowNotifications,
-          localePrefix: localePrefix
+          localePrefix: localePrefix,
         });
         const Icon = link.icon;
         if (!(isMediumScreen && link.hideOnMediumScreen))
@@ -434,7 +434,7 @@ function NormalScreenLinks({
             <React.Fragment key={index}>
               <span className={classes.menuLink}>
                 {link.type === "languageSelect" ? (
-                  <LanguageSelect transparentHeader={transparentHeader}/>
+                  <LanguageSelect transparentHeader={transparentHeader} />
                 ) : link.onlyShowIconOnNormalScreen ? (
                   <>
                     <IconButton {...buttonProps} className={classes.link}>
@@ -504,7 +504,7 @@ function NarrowScreenLinks({
   fixedHeader,
   LINKS,
   texts,
-  localePrefix
+  localePrefix,
 }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -531,7 +531,7 @@ function NarrowScreenLinks({
             toggleShowNotifications: toggleShowNotifications,
             isNarrowScreen: true,
             linksOutsideDrawer: linksOutsideDrawer,
-            localePrefix: localePrefix
+            localePrefix: localePrefix,
           });
           if (index === linksOutsideDrawer.length - 1) {
             buttonProps.className = classes.marginRight;
@@ -734,7 +734,7 @@ const getLinkButtonProps = ({
   toggleShowNotifications,
   isNarrowScreen,
   linksOutsideDrawer,
-  localePrefix
+  localePrefix,
 }) => {
   const buttonProps = {};
   if (!isNarrowScreen && index !== 0) {

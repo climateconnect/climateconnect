@@ -79,14 +79,22 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     go_to_project_page_and_click_join_to_join: {
       en: (
         <>
-          Go to <Link href={getLocalePrefix(locale) + "/projects/" + project?.url_slug}>the project page</Link> and click join
-          to join it.
+          Go to{" "}
+          <Link href={getLocalePrefix(locale) + "/projects/" + project?.url_slug}>
+            the project page
+          </Link>{" "}
+          and click join to join it.
         </>
       ),
-      de: 
+      de: (
         <>
-          Gehe auf <Link href={getLocalePrefix(locale) + "/projects/" + project?.url_slug}>die Projektseite</Link> und klicke auf {"Mitmachen"}.
-        </>,
+          Gehe auf{" "}
+          <Link href={getLocalePrefix(locale) + "/projects/" + project?.url_slug}>
+            die Projektseite
+          </Link>{" "}
+          und klicke auf {"Mitmachen"}.
+        </>
+      ),
     },
     you_need_to_be_an_administrator_of_the_project_to_manage_project_members: {
       en: "You need to be an administrator of the project to manage project members.",
@@ -106,7 +114,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     },
     there_must_be_exactly_one_creator_of_a_project: {
       en: "There must be exactly one creator of a project.",
-      de: "Für ein Projekt muss es genau eine*n Ersteller*in geben.", 
+      de: "Für ein Projekt muss es genau eine*n Ersteller*in geben.",
     },
     manage_members_of_project: {
       en: `Manage members of ${project?.name}`,
@@ -130,10 +138,12 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
           Please <Link href={getLocalePrefix(locale) + "/signin"}>log in</Link> to follow a project.
         </>
       ),
-      de: 
+      de: (
         <>
-          Bitte <Link href={getLocalePrefix(locale) + "/signin"}>logge dich ein</Link>, um einem Projekt zu folgen.
-        </>,
+          Bitte <Link href={getLocalePrefix(locale) + "/signin"}>logge dich ein</Link>, um einem
+          Projekt zu folgen.
+        </>
+      ),
     },
     you_cant_leave_a_project_as_the_creator: {
       en: `You can't leave a project as the creator. Please give the creator role to another team member by clicking "Manage Members" in the team tab`,
@@ -151,12 +161,13 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
           You {"won't"} receive updates about it anymore
         </>
       ),
-      de: 
+      de: (
         <>
           Bist du sicher, dass du diesem Projekt nicht folgen willst?
           <br />
           Du wirst keine Updates mehr davon erhalten
-        </>,
+        </>
+      ),
     },
     do_you_really_want_to_leave_this_project: {
       en: "Do you really want to leave this project?",
@@ -177,15 +188,17 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
           If you leave the project it will be deactivated.
         </>
       ),
-      de: 
+      de: (
         <>
           Achtung: Du bist das einzige Mitglied in diesem Projekt. <br />
           Wenn du das Projekt verlässt, wird es deaktiviert.
-        </> ,
+        </>
+      ),
     },
     please_create_an_account_or_log_in_to_contact_a_projects_organizer: {
       en: "Please create an account or log in to contact a project's organizer.",
-      de: "Bitte erstelle ein Konto oder melde dich an, um die Verantwortlichen des Projektes zu kontaktieren.",
+      de:
+        "Bitte erstelle ein Konto oder melde dich an, um die Verantwortlichen des Projektes zu kontaktieren.",
     },
     summary: {
       en: "Summary",
@@ -287,7 +300,8 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     },
     would_you_assist_in_the_replication_of_your_project: {
       en: "Would you assist in the replication of your project?",
-      de: "Würdest du dabei unterstützen, wenn jemand dein Projekt auch umsetzen möchte, z.B. an einem anderen Ort?",
+      de:
+        "Würdest du dabei unterstützen, wenn jemand dein Projekt auch umsetzen möchte, z.B. an einem anderen Ort?",
     },
     add_skills_that_would_be_beneficial_for_collaborators_to_have: {
       en: "Add skills that would be beneficial for collaborators to have",
@@ -393,7 +407,8 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     },
     if_you_delete_your_project_it_will_be_lost: {
       en: "If you delete your project, it will be lost. Are you sure that you want to delete it?",
-      de: "Wenn du dein Projekt löscht, geht es verloren. Bist du dir sicher, dass du es löschen möchtest?",
+      de:
+        "Wenn du dein Projekt löscht, geht es verloren. Bist du dir sicher, dass du es löschen möchtest?",
     },
     briefly_summarise_what_you_are_doing_up_to_240_characters: {
       en: "Briefly summarise what you are doing (up to 240 characters)\n\nPlease only use English!",
@@ -476,7 +491,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Show all projects",
       de: "Alle Projekte anzeigen",
     },
-    what_is_the_climate_impact_of_the_idea: { 
+    what_is_the_climate_impact_of_the_idea: {
       en: "What is the climate impact of the idea?",
       de: "Was ist der Klima-Impact deiner Idee?",
     },
@@ -613,32 +628,38 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     add_photo_helptext: {
       en:
         "Upload a photo that represents your project. This way other climate protectors can see at a glance what your project is about. It is recommended to use a non-transparent image in 16:9 format",
-      de: "Lade ein Foto hoch, das dein Projekt repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deinem Projekt geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden",
+      de:
+        "Lade ein Foto hoch, das dein Projekt repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deinem Projekt geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden",
     },
     short_description_helptext: {
       en:
         "Summarize your project in less than 240 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
-      de: "Fasse dein Projekt in weniger als 240 Zeichen zusammen. Andere Klimaschützer*innen sollen verstehen, was dein Projekt erreichen will.",
+      de:
+        "Fasse dein Projekt in weniger als 240 Zeichen zusammen. Andere Klimaschützer*innen sollen verstehen, was dein Projekt erreichen will.",
     },
     description_helptext: {
       en:
         "Describe your project in more detail. What are you exactly doing? What is the climate impact of your project?",
-      de: "Beschreibe dein Projekt genauer. Was machst du genau? Was ist die Klimawirkung deines Projekts?",
+      de:
+        "Beschreibe dein Projekt genauer. Was machst du genau? Was ist die Klimawirkung deines Projekts?",
     },
     collaboration_helptext: {
       en:
         "Select if you are would be open to accept help and work with other climate protectors on your project.",
-      de: "Wähle aus, ob du offen bist, Hilfe anzunehmen und mit anderen Klimaschützer*innen an deinem Projekt zu arbeiten.",
+      de:
+        "Wähle aus, ob du offen bist, Hilfe anzunehmen und mit anderen Klimaschützer*innen an deinem Projekt zu arbeiten.",
     },
     add_skills_helptext: {
       en:
         "If you are looking for someone with specific skills to help you with your project, select these here.",
-      de: "Wenn du jemanden mit bestimmten Fähigkeiten suchst, der*die dich bei deinem Projekt unterstützt, wähle diese hier aus.",
+      de:
+        "Wenn du jemanden mit bestimmten Fähigkeiten suchst, der*die dich bei deinem Projekt unterstützt, wähle diese hier aus.",
     },
     add_connections_helptext: {
       en:
         "Add connections that would be helpful for collaborators to have. Specifically this could be connections to organizations that could help accelerate your project.",
-      de: "Füge Connections hinzu, die für Mitarbeitende hilfreich sein könnten. Konkret könnten dies Connections zu Organisationen sein, die dein Projekt beschleunigen könnten.",
+      de:
+        "Füge Connections hinzu, die für Mitarbeitende hilfreich sein könnten. Konkret könnten dies Connections zu Organisationen sein, die dein Projekt beschleunigen könnten.",
     },
     search_for_collaborating_organizations: {
       en: "Search for collaborating organizations",
@@ -646,7 +667,8 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     },
     type_the_name_of_the_collaborating_organization_you_want_to_add_next: {
       en: "Type the name of the collaborating organization you want to add next.",
-      de: "Gib den Namen der zusammenarbeitenden Organisation ein, die du als nächstes hinzufügen möchtest.",
+      de:
+        "Gib den Namen der zusammenarbeitenden Organisation ein, die du als nächstes hinzufügen möchtest.",
     },
     use_the_search_bar_to_add_collaborating_organizations: {
       en: "Use the search bar to add collaborating organizations.",
@@ -663,7 +685,8 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     there_has_been_an_error_when_trying_to_publish_your_project: {
       en:
         "There has been an error when trying to publish your project. Check the console for more information.",
-      de: "Beim Versuch dein Projekt zu veröffentlichen, ist ein Fehler aufgetreten. Prüfen die console für weitere Informationen.",
+      de:
+        "Beim Versuch dein Projekt zu veröffentlichen, ist ein Fehler aufgetreten. Prüfen die console für weitere Informationen.",
     },
     your_project_has_saved_as_a_draft: {
       en: "Your project has saved as a draft!",
@@ -673,15 +696,21 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: (
         <>
           You can view, edit and publish your project drafts{" "}
-          <a href={getLocalePrefix(locale) + "/profiles/" + user?.url_slug + "/#projects"}>in the my projects section</a> of
-          your profile
+          <a href={getLocalePrefix(locale) + "/profiles/" + user?.url_slug + "/#projects"}>
+            in the my projects section
+          </a>{" "}
+          of your profile
         </>
       ),
-      de: <>
-          Du kannst deine Projektentwürfe {" "}
-          <a href={getLocalePrefix(locale) + "/profiles/" + user?.url_slug + "/#projects"}>im Bereich {"Meine Projekte"}</a> deines
-          Profils ansehen, bearbeiten und veröffentlichen
-      </>,
+      de: (
+        <>
+          Du kannst deine Projektentwürfe{" "}
+          <a href={getLocalePrefix(locale) + "/profiles/" + user?.url_slug + "/#projects"}>
+            im Bereich {"Meine Projekte"}
+          </a>{" "}
+          deines Profils ansehen, bearbeiten und veröffentlichen
+        </>
+      ),
     },
     congratulations_your_project_has_been_published: {
       en: "Congratulations! Your project has been published!",
@@ -694,13 +723,16 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     you_can_view_your_project_here: {
       en: (
         <>
-          You can view your project <a href={getLocalePrefix(locale) + "/projects/" + url_slug}>here</a>
+          You can view your project{" "}
+          <a href={getLocalePrefix(locale) + "/projects/" + url_slug}>here</a>
         </>
       ),
-      de: 
+      de: (
         <>
-          Du kannst dein Projekt <a href={getLocalePrefix(locale) + "/projects/" + url_slug}>hier</a> ansehen
-        </>,
+          Du kannst dein Projekt{" "}
+          <a href={getLocalePrefix(locale) + "/projects/" + url_slug}>hier</a> ansehen
+        </>
+      ),
     },
     please_choose_at_least_one_category: {
       en: "Please choose at least one category!",
@@ -730,14 +762,15 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
           to create it.
         </>
       ),
-      de: 
+      de: (
         <>
           Wenn das Profil deiner Organisation noch nicht existiert,{" "}
           <Link href={getLocalePrefix(locale) + "/createorganization"} underline="immer">
             klicke hier
           </Link>{" "}
           um sie zu erstellen.
-        </>,
+        </>
+      ),
     },
     title_with_explanation_and_example: {
       en: "Title (Use a short, english title, e.g. 'Generating energy from ocean waves')",

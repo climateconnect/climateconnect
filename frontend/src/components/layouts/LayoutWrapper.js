@@ -46,14 +46,14 @@ export default function LayoutWrapper({
   const { acceptedNecessary, locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const closeBanner = () => setBannerOpen(false);
-  Router.events.on('routeChangeStart', () => {
-    setLoading(true)
-  }); 
-  Router.events.on('routeChangeComplete', () => {
-    setLoading(false)
-  }); 
-  Router.events.on('routeChangeError', () => {
-    setLoading(false)
+  Router.events.on("routeChangeStart", () => {
+    setLoading(true);
+  });
+  Router.events.on("routeChangeComplete", () => {
+    setLoading(false);
+  });
+  Router.events.on("routeChangeError", () => {
+    setLoading(false);
   });
 
   useEffect(function () {

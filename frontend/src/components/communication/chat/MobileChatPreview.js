@@ -36,13 +36,18 @@ const useStyles = makeStyles((theme) => {
 
 export default function MobileChatPreview({ chat, isFirstChat }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext)
+  const { locale } = useContext(UserContext);
   const isGroupChat = !chat.chatting_partner && !!chat.name;
   const last_activity = chat.last_message ? chat.last_message.sent_at : chat.created_at;
   return (
     <>
       {isFirstChat && <Divider component="li" />}
-      <ListItem button component="a" href={getLocalePrefix(locale) + "/chat/" + chat.chat_uuid} alignItems="center">
+      <ListItem
+        button
+        component="a"
+        href={getLocalePrefix(locale) + "/chat/" + chat.chat_uuid}
+        alignItems="center"
+      >
         {isGroupChat ? (
           <Avatar className={classes.mobileAvatar}>
             <GroupIcon />

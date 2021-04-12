@@ -144,7 +144,9 @@ export default function JoinCommunityBox({ h1ClassName }) {
   return (
     <div className={classes.root}>
       <Container className={classes.content}>
-        {isMediumScreen && <JoinCommunityText h1ClassName={h1ClassName} texts={texts} locale={locale}/>}
+        {isMediumScreen && (
+          <JoinCommunityText h1ClassName={h1ClassName} texts={texts} locale={locale} />
+        )}
         <div className={classes.cloudContainer}>
           <div className={classes.loginIconContainer} />
         </div>

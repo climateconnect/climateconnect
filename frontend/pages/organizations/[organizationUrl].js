@@ -96,7 +96,15 @@ export default function OrganizationPage({
   );
 }
 
-function OrganizationLayout({ organization, projects, members, infoMetadata, user, texts, locale }) {
+function OrganizationLayout({
+  organization,
+  projects,
+  members,
+  infoMetadata,
+  user,
+  texts,
+  locale,
+}) {
   const classes = useStyles();
   const cookies = new Cookies();
   const getMembersWithAdditionalInfo = (members) => {
@@ -181,7 +189,9 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
                 className={classes.editButton}
                 variant="contained"
                 color="primary"
-                href={getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug}
+                href={
+                  getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
+                }
               >
                 {texts.manage_members}
               </Button>

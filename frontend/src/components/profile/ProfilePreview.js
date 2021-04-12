@@ -67,7 +67,10 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
   const texts = getTexts({ page: "profile", locale: locale });
   return (
     <div className={classes.avatarWithInfo}>
-      <Link href={getLocalePrefix(locale) + "/profiles/" + profile.url_slug} className={classes.disableHover}>
+      <Link
+        href={getLocalePrefix(locale) + "/profiles/" + profile.url_slug}
+        className={classes.disableHover}
+      >
         <Avatar
           alt={profile.name}
           size="large"

@@ -215,7 +215,10 @@ export default function LandingTopBox() {
             </Typography>
           )}
           <div className={classes.exploreButtonContainer}>
-            <LightBigButton href={getLocalePrefix(locale) + "/browse"} className={classes.exploreButton}>
+            <LightBigButton
+              href={getLocalePrefix(locale) + "/browse"}
+              className={classes.exploreButton}
+            >
               {isNarrowScreen ? texts.explore : texts.explore_climate_projects}
             </LightBigButton>
           </div>

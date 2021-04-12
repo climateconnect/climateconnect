@@ -19,7 +19,8 @@ export default function getFaqTexts({ classes, locale }) {
       },
       cant_find_the_answer_to_your_question_contact: {
         en: "Can't find the answer to your question? Contact contact@climateconnect.earth.",
-        de: "Du kannst die Antwort auf deine Frage nicht finden? Schreibe einfach an contact@climateconnect.earth.",
+        de:
+          "Du kannst die Antwort auf deine Frage nicht finden? Schreibe einfach an contact@climateconnect.earth.",
       },
       search_for_keywords: {
         en: "Search for keywords",
@@ -33,19 +34,29 @@ export default function getFaqTexts({ classes, locale }) {
         en: (
           <>
             Find all commonly asked questions and their answers on the{" "}
-            <Link className={classes?.faqLink} href={getLocalePrefix(locale) + "/faq"} target="_blank">
+            <Link
+              className={classes?.faqLink}
+              href={getLocalePrefix(locale) + "/faq"}
+              target="_blank"
+            >
               FAQ page
             </Link>
             .
           </>
         ),
-        de: <>
-          Finde alle regelmäßig gestellten Fragen und ihre Antworten auf der{" "}
-          <Link className={classes?.faqLink} href={getLocalePrefix(locale) + "/faq"} target="_blank">
-            FAQ Seite
-          </Link>
-          .
-        </>,
+        de: (
+          <>
+            Finde alle regelmäßig gestellten Fragen und ihre Antworten auf der{" "}
+            <Link
+              className={classes?.faqLink}
+              href={getLocalePrefix(locale) + "/faq"}
+              target="_blank"
+            >
+              FAQ Seite
+            </Link>
+            .
+          </>
+        ),
       },
     },
   ];

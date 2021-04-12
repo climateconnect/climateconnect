@@ -1,66 +1,66 @@
 {
- "browse": {
-   "en": "Browse",
-   "de": "Browse"
- },
- "hubs": {
-   "en": "Hubs",
-   "de": "Hubs" 
- },
- "about": {
-   "en": "About",
-   "de": "Über uns"
- },
- "notifications": {
-   "en": "Notifications",
-   "de": "Benachrichtigungen"
- },
- "picture_of_our_earth": {
-   "en": "Picture of our earth",
-   "de": "Bild von unserer Erde"
- },
- "general": {
-   "en": "General",
-   "de": "Allgemein"
- },
- "contact": {
-   "en": "Contact",
-   "de": "Kontakt"
- },
- "leave_feedback": {
-   "en": "Leave feedback",
-   "de": "Feedback geben"
- },
- "legal": {
-   "en": "Legal",
-   "de": "Rechtliches"
- },
- "imprint": {
-   "en": "Imprint",
-   "de": "Impressum"
- },
- "privacy": {
-   "en": "Privacy",
-   "de": "Datenschutz"
- },
- "terms": {
-   "en": "Terms",
-   "de": "Nutzungsbedingungen"
- },
- "newsletter": {
-   "en": "Sign up to get updates about Climate Connect and a summary of highlight projects every month!",
-   "de": "Registriere dich, um jeden Monat Neuigkeiten über Climate Connect zu erhalten und zu Projekte informiert zu werden!"
- },
- "latest_newsletter": {
-   "en": "Latest newsletter",
-   "de": "Aktueller Newsletter"
- },
- "view_sector_hubs": {
-   "en": "View sector hubs",
-   "de": "Hubs anzeigen"
- },
- "all_hubs": {
-   "en": "All Hubs",
-   "de": "Alle Hubs"
- }
+  "browse": {
+    "en": "Browse",
+    "de": "Browse"
+  },
+  "hubs": {
+    "en": "Hubs",
+    "de": "Hubs"
+  },
+  "about": {
+    "en": "About",
+    "de": "Über uns"
+  },
+  "notifications": {
+    "en": "Notifications",
+    "de": "Benachrichtigungen"
+  },
+  "picture_of_our_earth": {
+    "en": "Picture of our earth",
+    "de": "Bild von unserer Erde"
+  },
+  "general": {
+    "en": "General",
+    "de": "Allgemein"
+  },
+  "contact": {
+    "en": "Contact",
+    "de": "Kontakt"
+  },
+  "leave_feedback": {
+    "en": "Leave feedback",
+    "de": "Feedback geben"
+  },
+  "legal": {
+    "en": "Legal",
+    "de": "Rechtliches"
+  },
+  "imprint": {
+    "en": "Imprint",
+    "de": "Impressum"
+  },
+  "privacy": {
+    "en": "Privacy",
+    "de": "Datenschutz"
+  },
+  "terms": {
+    "en": "Terms",
+    "de": "Nutzungsbedingungen"
+  },
+  "newsletter": {
+    "en": "Sign up to get updates about Climate Connect and a summary of highlight projects every month!",
+    "de": "Registriere dich, um jeden Monat Neuigkeiten über Climate Connect zu erhalten und zu Projekte informiert zu werden!"
+  },
+  "latest_newsletter": {
+    "en": "Latest newsletter",
+    "de": "Aktueller Newsletter"
+  },
+  "view_sector_hubs": {
+    "en": "View sector hubs",
+    "de": "Hubs anzeigen"
+  },
+  "all_hubs": {
+    "en": "All Hubs",
+    "de": "Alle Hubs"
+  }
 }

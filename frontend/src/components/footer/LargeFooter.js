@@ -151,7 +151,7 @@ export default function LargeFooter({ className }) {
   return (
     <div className={`${className} ${classes.root}`}>
       <Container maxWidth="lg">
-        <SiteLinks texts={texts} locale={locale}/>
+        <SiteLinks texts={texts} locale={locale} />
         <SocialLinks />
         <MadeWithLoveForEarth texts={texts} />
       </Container>
@@ -231,8 +231,12 @@ const SiteLinks = (texts, locale) => {
         </Typography>
         <div className={classes.links}>
           <FooterLink href={getLocalePrefix(locale) + "/browse"}>{texts.projects}</FooterLink>
-          <FooterLink href={getLocalePrefix(locale) + "/browse#organizations"}>{texts.organizations}</FooterLink>
-          <FooterLink href={getLocalePrefix(locale) + "/browse#members"}>{texts.members}</FooterLink>
+          <FooterLink href={getLocalePrefix(locale) + "/browse#organizations"}>
+            {texts.organizations}
+          </FooterLink>
+          <FooterLink href={getLocalePrefix(locale) + "/browse#members"}>
+            {texts.members}
+          </FooterLink>
           <FooterLink href={getLocalePrefix(locale) + "/hubs"}>{texts.hubs}</FooterLink>
         </div>
       </div>

@@ -61,8 +61,6 @@ export async function sendToLogin(ctx, message, locale, relativePath) {
 }
 
 export function getLocalePrefix(locale) {
-  if(locale === "en")
-    return ""
-  else
-    return `/${locale}`
+  if (locale === "en") return "";
+  else return `/${locale}`;
 }

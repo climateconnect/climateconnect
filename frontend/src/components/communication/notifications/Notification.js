@@ -5,7 +5,7 @@ import {
   ListItemIcon,
   ListItemText,
   MenuItem,
-  withStyles
+  withStyles,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CommentIcon from "@material-ui/icons/Comment";
@@ -67,15 +67,27 @@ export default function Notification({ notification, isPlaceholder }) {
   else {
     const type = NOTIFICATION_TYPES[notification.notification_type];
     if (type === "private_message")
-      return <PrivateMessageNotification notification={notification} texts={texts} locale={locale} />;
+      return (
+        <PrivateMessageNotification notification={notification} texts={texts} locale={locale} />
+      );
     else if (type === "group_message")
       return <GroupMessageNotification notification={notification} texts={texts} locale={locale} />;
     else if (type === "project_comment")
-      return <ProjectCommentNotification notification={notification} texts={texts} locale={locale} />;
+      return (
+        <ProjectCommentNotification notification={notification} texts={texts} locale={locale} />
+      );
     else if (type === "reply_to_project_comment")
-      return <ProjectCommentReplyNotification notification={notification} texts={texts} locale={locale} />;
+      return (
+        <ProjectCommentReplyNotification
+          notification={notification}
+          texts={texts}
+          locale={locale}
+        />
+      );
     else if (type === "project_follower")
-      return <ProjectFollowerNotification notification={notification} texts={texts} locale={locale} />;
+      return (
+        <ProjectFollowerNotification notification={notification} texts={texts} locale={locale} />
+      );
     else return <></>;
   }
 }
@@ -156,7 +168,10 @@ const PlaceholderNotification = ({ texts, locale }) => {
 const ProjectCommentNotification = ({ notification, texts, locale }) => {
   const classes = useStyles();
   return (
-    <Link href={getLocalePrefix(locale) + "/projects/" + notification.project.url_slug + "/#comments"} underline="none">
+    <Link
+      href={getLocalePrefix(locale) + "/projects/" + notification.project.url_slug + "/#comments"}
+      underline="none"
+    >
       <StyledMenuItem>
         <ListItemIcon>
           <CommentIcon />
@@ -179,7 +194,10 @@ const ProjectCommentNotification = ({ notification, texts, locale }) => {
 const ProjectCommentReplyNotification = ({ notification, texts, locale }) => {
   const classes = useStyles();
   return (
-    <Link href={getLocalePrefix(locale) + "/projects/" + notification.project.url_slug + "/#comments"} underline="none">
+    <Link
+      href={getLocalePrefix(locale) + "/projects/" + notification.project.url_slug + "/#comments"}
+      underline="none"
+    >
       <StyledMenuItem>
         <ListItemIcon>
           <CommentIcon />
@@ -203,7 +221,12 @@ const ProjectFollowerNotification = ({ notification, texts, locale }) => {
   const classes = useStyles();
   return (
     <Link
-      href={getLocalePrefix(locale) + "/projects/" + notification.project.url_slug + "?show_followers=true"}
+      href={
+        getLocalePrefix(locale) +
+        "/projects/" +
+        notification.project.url_slug +
+        "?show_followers=true"
+      }
       underline="none"
     >
       <StyledMenuItem>

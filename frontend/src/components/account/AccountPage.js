@@ -137,7 +137,11 @@ export default function AccountPage({
               return (
                 <div key={index} className={classes.subtitle}>
                   {account.name} {texts.is_a_suborganization_of}{" "}
-                  <Link color="inherit" href={getLocalePrefix(locale) + "/organizations/" + value.url_slug} target="_blank">
+                  <Link
+                    color="inherit"
+                    href={getLocalePrefix(locale) + "/organizations/" + value.url_slug}
+                    target="_blank"
+                  >
                     <MiniOrganizationPreview organization={value} size="small" />
                   </Link>
                 </div>

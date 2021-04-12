@@ -192,7 +192,12 @@ export default function MainHeadingContainerMobile() {
                 ))}
                 {!user && (
                   <div className={classes.signUpButtonBox}>
-                    <Button component="div" href={getLocalePrefix(locale) + "/signup"} variant="contained" color="primary">
+                    <Button
+                      component="div"
+                      href={getLocalePrefix(locale) + "/signup"}
+                      variant="contained"
+                      color="primary"
+                    >
                       <a className={classes.shareLink} href={getLocalePrefix(locale) + "/signup"}>
                         {texts.join_now}
                       </a>

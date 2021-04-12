@@ -45,7 +45,7 @@ export default function MiniProfilePreview({
   onDelete,
 }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext)
+  const { locale } = useContext(UserContext);
   if (!nolink)
     return (
       <div className={classes.wrapper}>

@@ -10,7 +10,7 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import React, { useContext } from "react";
 import ReactTimeago from "react-timeago";
@@ -107,7 +107,10 @@ const ProjectFollowers = ({ followers, texts, locale }) => {
             return (
               <TableRow key={index} className={classes.follower}>
                 <TableCell>
-                  <Link className={classes.user} href={getLocalePrefix(locale) + "/profiles/" + f.user_profile.url_slug}>
+                  <Link
+                    className={classes.user}
+                    href={getLocalePrefix(locale) + "/profiles/" + f.user_profile.url_slug}
+                  >
                     <Avatar
                       className={classes.avatar}
                       src={getImageUrl(f.user_profile.image)}

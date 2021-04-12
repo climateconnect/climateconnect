@@ -19,7 +19,8 @@ export default function getOrganizationTexts({ organization, locale }) {
     type_required_errror: {
       en:
         'Please choose at least one organization type by clicking the "Add Type" button under the avatar.',
-      de: 'Bitte wähle mindestens einen Organisationstyp aus, indem du auf den Button "Typ hinzufügen" klickst.',
+      de:
+        'Bitte wähle mindestens einen Organisationstyp aus, indem du auf den Button "Typ hinzufügen" klickst.',
     },
     name_required_error: {
       en: "Please type your organization name under the avatar image",
@@ -32,7 +33,8 @@ export default function getOrganizationTexts({ organization, locale }) {
     how_to_describe_organization: {
       en:
         "Describe what your organization is doing, how you work and what impact you have on climate change. Please only use english!",
-      de: "Beschreibe, was deine Organisation macht, wie ihr arbeitet und welchen Einfluss ihr auf den Klimawandeln habt.",
+      de:
+        "Beschreibe, was deine Organisation macht, wie ihr arbeitet und welchen Einfluss ihr auf den Klimawandeln habt.",
     },
     we_are_a_suborganization: {
       en: "We are a sub-organization of a larger organization (e.g. local group)",
@@ -52,7 +54,8 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     no_organization_found: {
       en: "No organizations found. Try changing or removing your filter or search query.",
-      de: "Keine Organisation gefunden. Versuche, den Filter oder deine Suchanfrage zu ändern oder zu entfernen.",
+      de:
+        "Keine Organisation gefunden. Versuche, den Filter oder deine Suchanfrage zu ändern oder zu entfernen.",
     },
     to_manage_org_members: {
       en: "to manage the members of this organization",
@@ -66,12 +69,22 @@ export default function getOrganizationTexts({ organization, locale }) {
     go_to_org_page_and_click_join_to_join_it: {
       en: (
         <>
-          Go to the <Link href={getLocalePrefix(locale) + "/organizations/" + organization?.url_slug}>organization page</Link>{" "}
+          Go to the{" "}
+          <Link href={getLocalePrefix(locale) + "/organizations/" + organization?.url_slug}>
+            organization page
+          </Link>{" "}
           and click join to join it.
         </>
       ),
-      de: <>Gehe auf die <Link href={getLocalePrefix(locale) + "/organizations/" + organization?.url_slug}>Organisationsseite</Link>{" "}
-      und klicke auf {"Join"} um der Organisation beizutreten.</>,
+      de: (
+        <>
+          Gehe auf die{" "}
+          <Link href={getLocalePrefix(locale) + "/organizations/" + organization?.url_slug}>
+            Organisationsseite
+          </Link>{" "}
+          und klicke auf {"Join"} um der Organisation beizutreten.
+        </>
+      ),
     },
     no_permission_to_manage_members_of_this_org: {
       en: "No Permission to Manage Members of this Organization",
@@ -148,7 +161,8 @@ export default function getOrganizationTexts({ organization, locale }) {
     you_have_not_selected_a_parent_organization_either_untick: {
       en:
         "You have not selected a parent organization. Either untick the sub-organization field or choose/create your parent organization.",
-      de: "Du hast keine übergeordnete Organisation ausgewählt. Deaktiviere entweder das Feld für die Sub-Organisation oder erstelle eine dazugehörige übergeordnete Organisation.",
+      de:
+        "Du hast keine übergeordnete Organisation ausgewählt. Deaktiviere entweder das Feld für die Sub-Organisation oder erstelle eine dazugehörige übergeordnete Organisation.",
     },
     an_organization_with_this_name_already_exists: {
       en: "An organization with this name already exists.",
@@ -162,7 +176,8 @@ export default function getOrganizationTexts({ organization, locale }) {
     you_have_successfully_created_an_organization_you_can_add_members: {
       en:
         "You have successfully created an organization! You can add members by scrolling down to the members section.",
-      de: "Du hast erfolgreich eine Organisation erstellt! Du kannst nun Mitglieder hinzufügen, indem du nach unten zum Mitgliederbereich scrollst.",
+      de:
+        "Du hast erfolgreich eine Organisation erstellt! Du kannst nun Mitglieder hinzufügen, indem du nach unten zum Mitgliederbereich scrollst.",
     },
     to_create_an_organization: {
       en: "to create an organization",

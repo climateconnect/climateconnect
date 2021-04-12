@@ -9,7 +9,7 @@ import {
   getLocationValue,
   indicateWrongLocation,
   isLocationValid,
-  parseLocation
+  parseLocation,
 } from "../public/lib/locationOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -114,7 +114,10 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
           basicOrganizationInfo: (
             <div>
               {texts.an_organization_with_this_name_already_exists}
-              <a href={getLocalePrefix(locale) + "/organizations/" + org.url_slug}>{texts.click_here}</a> {texts.to_see_it}
+              <a href={getLocalePrefix(locale) + "/organizations/" + org.url_slug}>
+                {texts.click_here}
+              </a>{" "}
+              {texts.to_see_it}
             </div>
           ),
         });

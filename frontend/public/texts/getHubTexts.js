@@ -14,7 +14,8 @@ export default function getHubTexts({ hubName }) {
     more_info_about_hub_coming_soon: {
       en:
         "More Info coming soon! Have a look at the projects and solutions submitted by Climate Connect users below!",
-      de: "Mehr Infos kommen in Kürze! Schau dir unten die Projekte und Lösungen an, die von Climate Connect Nutzern erstellt wurden!",
+      de:
+        "Mehr Infos kommen in Kürze! Schau dir unten die Projekte und Lösungen an, die von Climate Connect Nutzern erstellt wurden!",
     },
     less_info: {
       en: "Less Info",
@@ -30,7 +31,8 @@ export default function getHubTexts({ hubName }) {
     },
     browse_explainer_text: {
       en: "Find impactful climate change solutions created by Climate Connect users.",
-      de: "Finde wirksame Lösungen für den Klimawandel, die von Climate Connect Nutzern erstellt wurden.",
+      de:
+        "Finde wirksame Lösungen für den Klimawandel, die von Climate Connect Nutzern erstellt wurden.",
     },
     loading_chart: {
       en: "Loading Chart",
@@ -55,7 +57,8 @@ export default function getHubTexts({ hubName }) {
     hubs_overview_mobile_explainer_text: {
       en:
         "Find information and concrete solutions on how to effectively fight climate change in each sector.",
-      de: "Finde Informationen und konkrete Lösungen wie Klimawandel in jedem Sektor effektiv bekämpft werden kann.",
+      de:
+        "Finde Informationen und konkrete Lösungen wie Klimawandel in jedem Sektor effektiv bekämpft werden kann.",
     },
     hubs_overview_largescreen_explainer_text_first_part: {
       en: `On the hub pages you can find information on how to effectively fight climate change in each

@@ -6,7 +6,7 @@ import {
   Link,
   makeStyles,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
@@ -127,7 +127,11 @@ export default function DonationCampaignInformation() {
                 barColor={theme.palette.primary.light}
               />
               {isNarrowScreen && (
-                <Button href={getLocalePrefix(locale) + "/donate"} variant="contained" className={classes.donateButton}>
+                <Button
+                  href={getLocalePrefix(locale) + "/donate"}
+                  variant="contained"
+                  className={classes.donateButton}
+                >
                   Donate now
                 </Button>
               )}
@@ -161,7 +165,11 @@ export default function DonationCampaignInformation() {
                 </Link>
               </Typography>
               {!isNarrowScreen && (
-                <Button href={getLocalePrefix(locale) + "/donate"} variant="contained" className={classes.donateButton}>
+                <Button
+                  href={getLocalePrefix(locale) + "/donate"}
+                  variant="contained"
+                  className={classes.donateButton}
+                >
                   Donate now
                 </Button>
               )}

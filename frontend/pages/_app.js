@@ -40,7 +40,7 @@ export default function MyApp({
   };
   const router = useRouter();
   const { locale, locales } = router;
-  console.log(locale)
+  console.log(locale);
   if (
     acceptedStatistics &&
     !gaInitialized &&

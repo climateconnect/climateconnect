@@ -86,7 +86,9 @@ async function requestSetPassword(uuid, new_password, setErrorMessage, texts, lo
           <span>
             {error.response.data.message}{" "}
             <div>
-              <a href={getLocalePrefix(locale) + "/resetpassword"}>{texts.click_here_to_get_another_password_reset_email}</a>
+              <a href={getLocalePrefix(locale) + "/resetpassword"}>
+                {texts.click_here_to_get_another_password_reset_email}
+              </a>
             </div>
           </span>
         );

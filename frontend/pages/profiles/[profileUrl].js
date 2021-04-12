@@ -130,7 +130,16 @@ export default function ProfilePage({ profile, projects, organizations, token })
   );
 }
 
-function ProfileLayout({ profile, projects, organizations, infoMetadata, user, token, texts, locale }) {
+function ProfileLayout({
+  profile,
+  projects,
+  organizations,
+  infoMetadata,
+  user,
+  token,
+  texts,
+  locale,
+}) {
   const classes = useStyles();
   const isOwnAccount = user && user.url_slug === profile.url_slug;
   const handleConnectBtn = async (e) => {

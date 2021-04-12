@@ -18,7 +18,8 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     },
     tutorial_welcome_to_climate_connect_text_first_part: {
       en: "Climate Connect is a free collaboration platform for people taking climate action.",
-      de: "Climate Connect eine kostenlose Kooperationsplattform für Menschen, die sich für Klimaschutz einsetzen",
+      de:
+        "Climate Connect eine kostenlose Kooperationsplattform für Menschen, die sich für Klimaschutz einsetzen",
     },
     tutorial_welcome_to_climate_connect_text_last_part: {
       en: "Want to discover all the things you can do here?",
@@ -74,20 +75,30 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
         <>
           Here you can find climate action projects in the {hubName} field that were created by
           Climate Connect members. You can find an overview of all projects on the{" "}
-          <Link href={getLocalePrefix(locale) + "/browse"} target="_blank" className={classes?.link}>
+          <Link
+            href={getLocalePrefix(locale) + "/browse"}
+            target="_blank"
+            className={classes?.link}
+          >
             browse
           </Link>{" "}
           page.
         </>
       ),
-      de: <>
-        Hier kannst du alle Projekte von Climate Connect Nutzern im Bereich {hubName} finden.
-        Einen Überblick über alle Projekte erhälst du auf der {" "}
-        <Link href={getLocalePrefix(locale) + "/browse"} target="_blank" className={classes?.link}>
-          Browse
-        </Link>{" "}
-        Seite.
-      </>,
+      de: (
+        <>
+          Hier kannst du alle Projekte von Climate Connect Nutzern im Bereich {hubName} finden.
+          Einen Überblick über alle Projekte erhälst du auf der{" "}
+          <Link
+            href={getLocalePrefix(locale) + "/browse"}
+            target="_blank"
+            className={classes?.link}
+          >
+            Browse
+          </Link>{" "}
+          Seite.
+        </>
+      ),
     },
     welcome_to_the_hub_page_text_for_answer_soon_first_part: {
       en: `That's exciting, you have come to the right place to get started! 🌎 We need smart
@@ -100,20 +111,30 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
         <>
           Here you can find climate action projects in the {hubName} field that were created by
           Climate Connect members. You can find an overview of all projects on the{" "}
-          <Link href={getLocalePrefix(locale) + "/browse"} target="_blank" className={classes?.link}>
+          <Link
+            href={getLocalePrefix(locale) + "/browse"}
+            target="_blank"
+            className={classes?.link}
+          >
             browse
           </Link>{" "}
           page.
         </>
       ),
-      de: <>
-        Hier kannst du alle Projekte von Climate Connect Nutzern im Bereich {hubName} finden. 
-        Einen Überblick über alle Projekte erhälst du auf der{" "} 
-        <Link href={getLocalePrefix(locale) + "/browse"} target="_blank" className={classes?.link}>
-          Browse
-        </Link>{" "}
-        Seite.
-      </>,
+      de: (
+        <>
+          Hier kannst du alle Projekte von Climate Connect Nutzern im Bereich {hubName} finden.
+          Einen Überblick über alle Projekte erhälst du auf der{" "}
+          <Link
+            href={getLocalePrefix(locale) + "/browse"}
+            target="_blank"
+            className={classes?.link}
+          >
+            Browse
+          </Link>{" "}
+          Seite.
+        </>
+      ),
     },
     welcome_to_the_hub_page_text_for_answer_false_first_part: {
       en: "No worries, here is the right place to start off!",
@@ -124,20 +145,30 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
         <>
           On this page you can find climate action projects in the {hubName} field that were created
           by Climate Connect members. You can find an overview of all projects on the{" "}
-          <Link href={getLocalePrefix(locale) + "/browse"} target="_blank" className={classes?.link}>
+          <Link
+            href={getLocalePrefix(locale) + "/browse"}
+            target="_blank"
+            className={classes?.link}
+          >
             browse
           </Link>{" "}
           page.
         </>
       ),
-      de: <>
-        Auf dieser Seite findest du Klimaschutzprojekte im Bereich {hubName}, die von Climate
-        Connect Nutzern erstellt wurden. Auf der{" "}
-        <Link href={getLocalePrefix(locale) + "/browse"} target="_blank" className={classes?.link}>
-          Browse
-        </Link>{" "}
-        Seite findest du einen Überblick aller Projekte.
-      </>,
+      de: (
+        <>
+          Auf dieser Seite findest du Klimaschutzprojekte im Bereich {hubName}, die von Climate
+          Connect Nutzern erstellt wurden. Auf der{" "}
+          <Link
+            href={getLocalePrefix(locale) + "/browse"}
+            target="_blank"
+            className={classes?.link}
+          >
+            Browse
+          </Link>{" "}
+          Seite findest du einen Überblick aller Projekte.
+        </>
+      ),
     },
     the_project_cards: {
       en: "The project cards!",
@@ -208,7 +239,8 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     },
     hubs_tutorial_text: {
       en: `Find plentiful information and effective and interesting projects in a specific field by clicking on one of the links to our hubs.`,
-      de: "Finde eine Fülle von Informationen, sowie effektive und interessante Projekte in einem bestimmten Bereich, indem du auf einen der Links zu unseren Hubs klickst.",
+      de:
+        "Finde eine Fülle von Informationen, sowie effektive und interessante Projekte in einem bestimmten Bereich, indem du auf einen der Links zu unseren Hubs klickst.",
     },
     quick_bits_tutorial_headline: {
       en: "Quick bits",

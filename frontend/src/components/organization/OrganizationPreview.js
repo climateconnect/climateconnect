@@ -47,9 +47,12 @@ const useStyles = makeStyles((theme) => {
 
 export default function OrganizationPreview({ organization, showOrganizationType }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext)
+  const { locale } = useContext(UserContext);
   return (
-    <Link href={getLocalePrefix(locale) + `/organizations/${organization.url_slug}`} className={classes.noUnderline}>
+    <Link
+      href={getLocalePrefix(locale) + `/organizations/${organization.url_slug}`}
+      className={classes.noUnderline}
+    >
       <Card className={classes.root} variant="outlined">
         <Avatar
           alt={organization.name}
