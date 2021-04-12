@@ -6,7 +6,7 @@ export default function Stream() {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   useEffect(() => {
-    window.location = "https://youtu.be/fJEO-WV6w5w";
+    window.location = "https://youtu.be/lUbxcp-OWmo";
   });
   return <div>{texts.you_are_being_redirected_to_the_climate_connect_youtube_livestream}...</div>;
 }

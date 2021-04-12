@@ -4,6 +4,7 @@ from django.db import models
 def hub_image_path(instance, filename):
     return "hubs/{}/{}".format(instance.id, filename)
 
+
 class HubStat(models.Model):
     name = models.CharField(
         help_text="Points to stat name",
@@ -57,6 +58,7 @@ class HubStat(models.Model):
         verbose_name_plural = "HubStats"
     def __str__(self):
         return "%s" % (self.name)    
+
 
 class Hub(models.Model):
     name = models.CharField(

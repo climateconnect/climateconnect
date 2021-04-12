@@ -73,11 +73,12 @@ export default function MiniProfilePreview({
 
 function Content({ profile, avatarClassName, size }) {
   const classes = useStyles();
+  console.log(profile)
   return (
     <span className={classes.contentWrapper}>
       <div className={classes.avatarWrapper}>
         <Avatar
-          src={getImageUrl(profile.image)}
+          src={getImageUrl(profile.thumbnail_image)}
           className={`${size === "small" && classes.smallAvatar} ${avatarClassName}`}
         />
       </div>
