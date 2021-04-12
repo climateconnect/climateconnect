@@ -1,8 +1,10 @@
-import React from "react";
-import { makeStyles, IconButton } from "@material-ui/core";
-import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
+import { IconButton, makeStyles } from "@material-ui/core";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import MiniProfileInput from "../profile/MiniProfileInput";
+import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 
 const useStyles = makeStyles((theme) => ({
   searchBarContainer: {
@@ -48,6 +50,8 @@ export default function ManageMembers({
   dontPickRole,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "organization", locale: locale });
   const renderSearchOption = (option) => {
     return (
       <React.Fragment>
@@ -104,7 +108,7 @@ export default function ManageMembers({
     <div>
       <div className={classes.searchBarContainer}>
         <AutoCompleteSearchBar
-          label={label ? label : "Search for your organization's members"}
+          label={label ? label : texts.search_for_your_organizations_members}
           className={`${classes.searchBar} ${classes.block}`}
           baseUrl={process.env.API_URL + "/api/members/?search="}
           clearOnSelect
@@ -113,7 +117,7 @@ export default function ManageMembers({
           onSelect={handleAddMember}
           renderOption={renderSearchOption}
           getOptionLabel={(option) => option.first_name + " " + option.last_name}
-          helperText="Type the name of the team member you want to add next."
+          helperText={texts.type_name_of_next_team_member}
         />
       </div>
       <div className={classes.memberContainer}>

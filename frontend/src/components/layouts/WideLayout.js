@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
-import Header from "../general/Header";
-import Footer from "../general/Footer";
 import { Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import LayoutWrapper from "./LayoutWrapper";
 import Alert from "@material-ui/lab/Alert";
-import LoadingContainer from "../general/LoadingContainer";
-import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
+import React, { useEffect } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
+import Footer from "../footer/Footer";
+import LoadingContainer from "../general/LoadingContainer";
+import Header from "../header/Header";
 import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
+import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
+import LayoutWrapper from "./LayoutWrapper";
 
 const useStyles = makeStyles((theme) => ({
   main: (props) => ({

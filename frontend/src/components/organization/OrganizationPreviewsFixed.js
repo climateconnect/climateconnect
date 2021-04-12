@@ -45,18 +45,22 @@ const useStyles = makeStyles((theme) => ({
   },
   loadingSpinner: {
     marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1)
-  }
+    marginBottom: theme.spacing(1),
+  },
 }));
 
-export default function OrganizationPreviewsFixed({ organizations, showOrganizationType, isLoading }) {
+export default function OrganizationPreviewsFixed({
+  organizations,
+  showOrganizationType,
+  isLoading,
+}) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
       <div className={classes.container}>
-      {isLoading ?
+        {isLoading ? (
           <LoadingSpinner className={classes.loadingSpinner} />
-        :
+        ) : (
           <>
             {organizations.map((organization, index) => {
               return (
@@ -71,8 +75,8 @@ export default function OrganizationPreviewsFixed({ organizations, showOrganizat
                 </span>
               );
             })}
-          </>   
-      }     
+          </>
+        )}
       </div>
     </div>
   );

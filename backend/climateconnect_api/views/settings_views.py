@@ -14,6 +14,7 @@ from climateconnect_api.utility.email_setup import (
     register_newsletter_contact, 
     unregister_newsletter_contact
 )
+from django.utils.translation import gettext as _
 
 class UserAccountSettingsView(APIView):
     permission_classes = [UserPermission]
@@ -77,21 +78,26 @@ class ChangeEmailView(APIView):
 
     def post(self, request):
         if 'uuid' not in request.data:
-            return Response({'message': 'Required parameters are missing.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': _('Required parameters are missing.')}, status=status.HTTP_400_BAD_REQUEST)
         
         verification_key = request.data['uuid'].replace('%2D', '-')
 
         try:
             user_profile = UserProfile.objects.get(user=request.user, verification_key=verification_key)
         except User.DoesNotExist:
-            return Response({'message': 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                {'message': 
+                    _('User profile not found.')
+                    + " " +
+                    _('Contact contact@climateconnect.earth if you repeatedly experience problems.')
+                }, 
+            status=status.HTTP_400_BAD_REQUEST)
         if user_profile.pending_new_email:
             user_profile.user.email = user_profile.pending_new_email
             user_profile.pending_new_email = None
             user_profile.save()
             user_profile.user.save()
         else:
-            return Response({'message': 'No pending E-Mail change. This link may already have been used.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': _('No pending E-Mail change. This link may already have been used.')}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({"message": "Your E-Mail address is now "+user_profile.user.email}, status=status.HTTP_200_OK)
+        return Response({"message": _("Your E-Mail address is now ")+user_profile.user.email}, status=status.HTTP_200_OK)

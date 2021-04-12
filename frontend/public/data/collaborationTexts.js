@@ -1,26 +1,26 @@
-const collaborationTexts = {
-  allow: {
-    Idea: "Allow collaboration on your project?",
-    "In Progress": "Allow collaboration on your project?",
-    Cancelled: "Encourage collaboration to make your project a success?",
-    "Successfully Finished": "Would you assist in the replication of your project?",
-    Recurring: "Allow collaboration on your project?",
-  },
-  skills: {
-    Idea: "Add skills that would be beneficial for collaborators to have",
-    "In Progress": "Add skills that would be beneficial for collaborators to have",
-    Cancelled: "Add skills that are helpful to make your project a success",
-    "Successfully Finished": "Add skills that are helpful to replicate your project",
-    Recurring: "Add skills that would be beneficial for collaborators to have",
-  },
-  connections: {
-    Idea: "Add connections that would be beneficial for collaborators to have",
-    "In Progress": "Add connections that would be beneficial for collaborators to have",
-    Cancelled: "Add connections that would be beneficial to make your project a success",
-    "Successfully Finished":
-      "Add connection that would be beneficial to have to replicate your project",
-    Recurring: "Add connections that would be beneficial for collaborators to have",
-  },
-};
-
-export default collaborationTexts;
+export default function getCollaborationTexts(texts) {
+  return {
+    allow: {
+      Idea: texts.allow_collaboration_on_your_project,
+      "In Progress": texts.allow_collaboration_on_your_project,
+      Cancelled: texts.encourage_collaboration_to_make_your_project_a_success,
+      "Successfully Finished": texts.would_you_assist_in_the_replication_of_your_project,
+      Recurring: texts.allow_collaboration_on_your_project,
+    },
+    skills: {
+      Idea: texts.add_skills_that_would_be_beneficial_for_collaborators_to_have,
+      "In Progress": texts.add_skills_that_would_be_beneficial_for_collaborators_to_have,
+      Cancelled: texts.add_skills_that_are_helpful_to_make_your_project_a_success,
+      "Successfully Finished": texts.add_skills_that_are_helpful_to_replicate_your_project,
+      Recurring: texts.add_skills_that_would_be_beneficial_for_collaborators_to_have,
+    },
+    connections: {
+      Idea: texts.add_connections_that_would_be_beneficial_for_collaborators_to_have,
+      "In Progress": texts.add_connections_that_would_be_beneficial_for_collaborators_to_have,
+      Cancelled: texts.add_connections_that_would_be_beneficial_to_make_your_project_a_success,
+      "Successfully Finished":
+        texts.add_connection_that_would_be_beneficial_to_have_to_replicate_your_project,
+      Recurring: texts.add_connections_that_would_be_beneficial_for_collaborators_to_have,
+    },
+  };
+}

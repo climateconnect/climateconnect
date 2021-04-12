@@ -1,10 +1,12 @@
-import React from "react";
-import Posts from "./../communication/Posts.js";
-import CommentInput from "../communication/CommentInput.js";
-import { Typography, Divider } from "@material-ui/core";
+import { Divider, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import tokenConfig from "../../../public/config/tokenConfig.js";
 import axios from "axios";
+import React, { useContext } from "react";
+import tokenConfig from "../../../public/config/tokenConfig.js";
+import getTexts from "../../../public/texts/texts.js";
+import CommentInput from "../communication/CommentInput.js";
+import UserContext from "../context/UserContext.js";
+import Posts from "./../communication/Posts.js";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -17,6 +19,8 @@ const useStyles = makeStyles((theme) => {
 
 export default function CommentsContent({ user, project, token, setCurComments }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const comments = project.comments;
   const handleAddComment = (c) => {
     if (c.parent_comment_id) {
@@ -87,7 +91,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
   return (
     <div>
       <CommentInput user={user} onSendComment={onSendComment} />
-      <Typography>{comments.length + " comments"}</Typography>
+      <Typography>{comments.length + " " + texts.comments}</Typography>
       <Divider className={classes.divider} />
       {comments && comments.length > 0 && (
         <Posts

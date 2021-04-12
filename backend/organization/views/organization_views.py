@@ -31,6 +31,7 @@ from organization.pagination import (OrganizationsPagination, ProjectsPagination
 from climateconnect_api.pagination import MembersPagination
 from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.models import Role
+from django.utils.translation import gettext as _
 from django.db.models import Q
 import logging
 logger = logging.getLogger(__name__)
@@ -191,7 +192,7 @@ class OrganizationAPIView(APIView):
         try:
             organization = Organization.objects.get(url_slug=str(url_slug))            
         except Organization.DoesNotExist:
-            return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': _('Organization not found:') + url_slug}, status=status.HTTP_404_NOT_FOUND)
         if('edit_view' in request.query_params):
             serializer = EditOrganizationSerializer(organization, many=False)
         else:
@@ -202,7 +203,7 @@ class OrganizationAPIView(APIView):
         try:
             organization = Organization.objects.get(url_slug=str(url_slug))            
         except Organization.DoesNotExist:
-            return Response({'message': 'Organization not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': _('Organization not found:') + url_slug}, status=status.HTTP_404_NOT_FOUND)
         pass_through_params = ['name', 'short_description', 'school', 'organ', 'website']
         for param in pass_through_params:
             if param in request.data:
@@ -223,7 +224,7 @@ class OrganizationAPIView(APIView):
                 try:
                     parent_organization = Organization.objects.get(id=request.data['parent_organization'])
                 except Organization.DoesNotExist:
-                    return Response({'message': 'Parent org not found for organization {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
+                    return Response({'message': _('Parent organization not found for organization') + url_slug}, status=status.HTTP_404_NOT_FOUND)
                 organization.parent_organization = parent_organization
         old_organization_taggings = OrganizationTagging.objects.filter(organization=organization).values('organization_tag')
         if 'types' in request.data:
@@ -239,11 +240,11 @@ class OrganizationAPIView(APIView):
                             organization_tag=tag, organization=organization
                         )
                     except OrganizationTags.DoesNotExist:
-                        logger.error("Passed org tag id {} does not exists")
+                        logger.error(_("Passed organization tag id does not exists: ") + tag_id)
             
 
         organization.save()
-        return Response({'message': 'Successfully updated organization.'}, status=status.HTTP_200_OK)
+        return Response({'message': _('Successfully updated organization.')}, status=status.HTTP_200_OK)
 
 
 class ListCreateOrganizationMemberView(ListCreateAPIView):

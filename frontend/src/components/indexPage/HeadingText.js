@@ -1,6 +1,8 @@
-import React from "react";
-import { Typography, makeStyles, IconButton } from "@material-ui/core";
+import { IconButton, makeStyles, Typography } from "@material-ui/core";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import AlternatingText from "../general/AlternatingText";
 
 const useStyles = makeStyles((theme) => {
@@ -56,6 +58,8 @@ const useStyles = makeStyles((theme) => {
 
 export default function HeadingText({ mobile, showInfoText, toggleShowInfoText }) {
   const classes = useStyles({ mobile: mobile });
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "navigation", locale: locale });
   return (
     <div
       component="h1"
@@ -74,7 +78,7 @@ export default function HeadingText({ mobile, showInfoText, toggleShowInfoText }
           className={classes.titleTextRight}
           color="secondary"
         >
-          the most effective climate projects
+          {texts.the_most_effective_climate_project}
         </Typography>
       </div>
       {toggleShowInfoText && !showInfoText && (

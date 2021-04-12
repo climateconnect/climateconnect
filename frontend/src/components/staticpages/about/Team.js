@@ -1,6 +1,7 @@
-import { Container, makeStyles, Typography, Link } from "@material-ui/core";
-
-import React from "react";
+import { Container, makeStyles, Typography } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../../public/texts/texts";
+import UserContext from "../../context/UserContext";
 import InfoLinkBox from "../InfoLinkBox";
 
 const useStyles = makeStyles((theme) => ({
@@ -56,38 +57,32 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Team({ headlineClass, className }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "about", locale: locale });
   return (
     <Container className={className}>
       <Typography color="primary" component="h1" className={headlineClass}>
-        Our Team
+        {texts.our_team}
       </Typography>
       <div className={classes.contentWrapper}>
         <div className={classes.imageContainer}>
           <div className={classes.imageWrapper}>
-            <img
-              src="/images/team.jpg"
-              alt="Climate Connect's core team: A group of 9 people wearing Climate Connect T-Shirts"
-              className={classes.image}
-            />
+            <img src="/images/team.jpg" alt={texts.our_team_image_text} className={classes.image} />
           </div>
         </div>
         <div className={classes.textContainer}>
           <Typography color="secondary" className={classes.textBody}>
-            We are an international team of 3 people running Climate Connect full-time and around 15
-            volunteers dedicating their free-time to creating collaboration between climate actors.
+            {texts.our_team_text}
             <br />
             <br />
-            <Link underline="always" href="mailto:contact@climateconnect.earth">
-              Contact us
-            </Link>{" "}
-            if {"you're"} interested in joining the team!
+            {texts.contact_us_if_youre_interested_in_joining_the_team}
           </Typography>
           <InfoLinkBox
             className={classes.infoLinkBox}
             iconSrc="/icons/group-icon.svg"
-            iconAlt="Icon display 2 people"
-            headline="Find Out More"
-            text={"Learn more about our team and why we do what we are doing - coming soon!"}
+            iconAlt={texts.icon_displays_2_people}
+            headline={texts.find_out_more}
+            text={texts.learn_more_about_out_team}
           />
         </div>
       </div>

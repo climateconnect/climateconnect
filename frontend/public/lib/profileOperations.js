@@ -1,5 +1,6 @@
-import { getImageUrl } from "./imageOperations";
 import Router from "next/router";
+import getTexts from "../texts/texts";
+import { getImageUrl } from "./imageOperations";
 
 export function parseProfile(profile, detailledSkills, keepOldProps) {
   let user = { info: {} };
@@ -23,15 +24,26 @@ export function parseProfile(profile, detailledSkills, keepOldProps) {
       website: profile.website,
     },
   };
+  user = convertUndefinedToNull(user);
   if (keepOldProps) delete user.info.location;
   if (detailledSkills) user.info.skills = profile.skills.map((s) => ({ ...s, key: s.id }));
   return user;
 }
 
-const SIGN_UP_MESSAGE =
-  "You are now a Climate Connect member. On this page you can customize your profile.";
+const convertUndefinedToNull = (inputObject) => {
+  const outputObject = { ...inputObject };
+  for (const key of Object.keys(outputObject)) {
+    if (outputObject[key] === undefined) outputObject[key] = null;
+    else if (typeof outputObject[key] === "object" && outputObject[key] !== null)
+      outputObject[key] = convertUndefinedToNull(outputObject[key]);
+  }
+  return outputObject;
+};
 
-export function redirectOnLogin(user, redirectUrl) {
+export function redirectOnLogin(user, redirectUrl, locale) {
+  const texts = getTexts({ page: "profile", locale: locale });
+  const SIGN_UP_MESSAGE = texts.sign_up_message;
+
   if (user.has_logged_in < 2) {
     Router.push({
       pathname: "/editprofile",
@@ -43,4 +55,8 @@ export function redirectOnLogin(user, redirectUrl) {
     if (redirectUrl[0] === "/") redirectUrl = redirectUrl.substring(1, redirectUrl.length);
     window.location.replace(window.location.origin + "/" + redirectUrl);
   } else Router.push("/browse");
+}
+
+export function nullifyUndefinedValues(obj) {
+  return convertUndefinedToNull(obj);
 }

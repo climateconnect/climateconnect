@@ -1,19 +1,32 @@
+import Axios from "axios";
+import Cookies from "next-cookies";
 import React, { useContext } from "react";
-import Layout from "../src/components/layouts/layout";
+import tokenConfig from "../public/config/tokenConfig";
+import getTexts from "../public/texts/texts";
+import SettingsPage from "../src/components/account/SettingsPage";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
-import SettingsPage from "../src/components/account/SettingsPage";
-import Cookies from "next-cookies";
-import Axios from "axios";
-import tokenConfig from "../public/config/tokenConfig";
+import Layout from "../src/components/layouts/layout";
+
+export async function getServerSideProps(ctx) {
+  const { token } = Cookies(ctx);
+  return {
+    props: {
+      settings: await getSettings(token),
+      token: token,
+    },
+  };
+}
 
 export default function Settings({ settings, token }) {
   const { user } = useContext(UserContext);
   const [message, setMessage] = React.useState("");
   const [currentSettings, setCurrentSettings] = React.useState(settings);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "settings", locale: locale });
   if (user)
     return (
-      <Layout title="Settings" message={message} noSpacingBottom>
+      <Layout title={texts.settings} message={message} noSpacingBottom>
         <SettingsPage
           settings={currentSettings}
           setSettings={setCurrentSettings}
@@ -24,19 +37,11 @@ export default function Settings({ settings, token }) {
     );
   else
     return (
-      <Layout title="Please Log In" hideHeadline>
-        <LoginNudge whatToDo="edit your settings." fullPage />
+      <Layout title={texts.please_log_in} hideHeadline>
+        <LoginNudge whatToDo={texts.to_edit_your_settings} fullPage />
       </Layout>
     );
 }
-
-Settings.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  return {
-    settings: await getSettings(token),
-    token: token,
-  };
-};
 
 const getSettings = async (token) => {
   try {

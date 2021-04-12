@@ -1,9 +1,11 @@
 import { TextField } from "@material-ui/core";
-import React from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "axios";
 import { debounce } from "lodash";
+import React, { useContext } from "react";
 import { getNameFromLocation } from "../../../public/lib/locationOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 export default function LocationSearchBar({
   label,
@@ -21,6 +23,8 @@ export default function LocationSearchBar({
   locationInputRef,
   textFieldClassName,
 }) {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "filter_and_search", locale: locale });
   const getValue = (newValue, inputValue) => {
     if (!newValue) {
       return inputValue ? inputValue : "";
@@ -199,7 +203,7 @@ export default function LocationSearchBar({
       filterOptions={handleFilterOptions}
       getOptionDisabled={handleGetOptionDisabled}
       renderOption={renderSearchOption}
-      noOptionsText={!searchValue && !inputValue ? "Start typing..." : "No options"}
+      noOptionsText={!searchValue && !inputValue ? texts.start_typing + "..." : texts.no_options}
       renderInput={(params) => (
         <TextField
           {...params}

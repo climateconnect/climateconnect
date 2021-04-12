@@ -41,6 +41,7 @@ from climateconnect_api.permissions import UserPermission
 from climateconnect_api.utility.email_setup import send_user_verification_email
 from climateconnect_api.utility.email_setup import send_password_link
 from django.conf import settings
+from django.utils.translation import gettext as _
 import logging
 logger = logging.getLogger(__name__)
 
@@ -322,26 +323,32 @@ class UserEmailVerificationLinkView(APIView):
 
     def post(self, request):
         if 'uuid' not in request.data:
-            return Response({'message': 'Required parameters are missing.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': _('Required parameters are missing.')}, status=status.HTTP_400_BAD_REQUEST)
 
         # convert verification string
         print(request.data)
         verification_key = request.data['uuid'].replace('%2D', '-')
         try:
             user_profile = UserProfile.objects.get(verification_key=verification_key)
-        except User.DoesNotExist:
-            return Response({'message': 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
+        except UserProfile.DoesNotExist:
+            return Response(
+                {'message': 
+                    _('User profile not found.')
+                    + " " +
+                    _('Contact contact@climateconnect.earth if you repeatedly experience problems.')
+                }, 
+            status=status.HTTP_400_BAD_REQUEST)
         if user_profile:
             if user_profile.is_profile_verified:
                 return Response({
-                    'message': 'Account already verified. Please contact us if you are having trouble signing in.'
+                    'message': _('Account already verified. Please contact us if you are having trouble signing in.')
                 }, status=status.HTTP_204_NO_CONTENT)
             else:
                 user_profile.is_profile_verified = True
                 user_profile.save()
-                return Response({"message": "Your profile is successfully verified"}, status=status.HTTP_200_OK)
+                return Response({"message": _("Your profile is successfully verified")}, status=status.HTTP_200_OK)
         else:
-            return Response({'message': 'Permission Denied'}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'message': _('Permission Denied')}, status=status.HTTP_403_FORBIDDEN)
 
 
 class SendResetPasswordEmail(APIView):

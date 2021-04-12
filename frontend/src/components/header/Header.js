@@ -17,7 +17,7 @@ import {
   Paper,
   Popper,
   SwipeableDrawer,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -35,12 +35,14 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import SettingsIcon from "@material-ui/icons/Settings";
 import noop from "lodash/noop";
 import React, { useContext, useState } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import Notification from "../communication/notifications/Notification";
 import NotificationsBox from "../communication/notifications/NotificationsBox";
-import UserContext from "./../context/UserContext";
-
+import UserContext from "../context/UserContext";
+import LanguageSelect from "./LanguageSelect";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -172,20 +174,20 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const getLinks = (path_to_redirect) => [
+const getLinks = (path_to_redirect, texts) => [
   {
     href: "/browse",
-    text: "Browse",
+    text: texts.browse,
     iconForDrawer: HomeIcon,
   },
   {
     href: "/about",
-    text: "About",
+    text: texts.about,
     iconForDrawer: InfoIcon,
   },
   {
     href: "/donate",
-    text: "Donate",
+    text: texts.donate,
     iconForDrawer: FavoriteBorderIcon,
     isOutlinedInHeader: true,
     icon: FavoriteBorderIcon,
@@ -193,16 +195,20 @@ const getLinks = (path_to_redirect) => [
   },
   {
     href: "/share",
-    text: "Share a project",
-    mediumScreenText: "Share",
+    text: texts.share_a_project,
+    mediumScreenText: texts.share,
     iconForDrawer: AddCircleIcon,
     isFilledInHeader: true,
     className: "shareProjectButton",
     vanillaIfLoggedOut: true,
   },
   {
+    type: "languageSelect",
+    alwaysDisplayDirectly: true,
+  },
+  {
     type: "notificationsButton",
-    text: "Inbox",
+    text: texts.inbox,
     iconForDrawer: NotificationsIcon,
     hasBadge: true,
     onlyShowIconOnNormalScreen: true,
@@ -214,14 +220,14 @@ const getLinks = (path_to_redirect) => [
   },
   {
     href: "/signin?redirect=" + path_to_redirect,
-    text: "Log in",
+    text: texts.log_in,
     iconForDrawer: AccountCircleIcon,
     isOutlinedInHeader: true,
     onlyShowLoggedOut: true,
   },
   {
     href: "/signup",
-    text: "Sign up",
+    text: texts.sign_up,
     iconForDrawer: AccountCircleIcon,
     isOutlinedInHeader: true,
     onlyShowLoggedOut: true,
@@ -229,58 +235,58 @@ const getLinks = (path_to_redirect) => [
   },
 ];
 
-const STATIC_PAGE_LINKS = [
+const getStaticPageLinks = (texts) => [
   {
     href: "/about",
-    text: "About",
+    text: texts.about,
   },
   {
     href: "/donate",
-    text: "Donate",
+    text: texts.donate,
   },
   {
     href: "/faq",
-    text: "FAQ",
+    text: texts.faq,
   },
 ];
 
-const getLoggedInLinks = ({ loggedInUser }) => {
+const getLoggedInLinks = ({ loggedInUser, texts }) => {
   return [
     {
       href: "/profiles/" + loggedInUser.url_slug,
-      text: "My Profile",
+      text: texts.my_profile,
       iconForDrawer: AccountCircleIcon,
     },
     {
       href: "/inbox",
-      text: "Inbox",
+      text: texts.inbox,
       iconForDrawer: MailOutlineIcon,
     },
     {
       href: "/profiles/" + loggedInUser.url_slug + "/#projects",
-      text: "My Projects",
+      text: texts.my_projects,
       iconForDrawer: GroupWorkIcon,
     },
     {
       href: "/profiles/" + loggedInUser.url_slug + "/#organizations",
-      text: "My Organizations",
+      text: texts.my_organizations,
       iconForDrawer: GroupWorkIcon,
     },
     {
       href: "/settings",
-      text: "Settings",
+      text: texts.settings,
       iconForDrawer: SettingsIcon,
     },
     {
       avatar: true,
       href: "/profiles/" + loggedInUser.url_slug,
       src: loggedInUser.image,
-      alt: loggedInUser.name,
+      alt: texts.profile_image_of + " " + loggedInUser.name,
       showOnMobileOnly: true,
     },
     {
       isLogoutButton: true,
-      text: "Log out",
+      text: texts.log_out,
       iconForDrawer: ExitToAppIcon,
     },
   ];
@@ -300,14 +306,16 @@ export default function Header({
     isStaticPage: isStaticPage,
     background: background,
   });
-  const { user, signOut, notifications, pathName } = useContext(UserContext);
+  const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = React.useState(false);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
-  const LINKS = getLinks(pathName);
+  const LINKS = getLinks(pathName, texts);
   const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
     else setAnchorEl(null);
   };
+  const localePrefix = getLocalePrefix(locale);
 
   const onNotificationsClose = () => setAnchorEl(null);
 
@@ -317,10 +325,10 @@ export default function Header({
       className={`${classes.root} ${className} ${!noSpacingBottom && classes.spacingBottom}`}
     >
       <Container className={classes.container}>
-        <Link href="/">
+        <Link href={localePrefix + "/"}>
           <img
             src={transparentHeader ? "/images/logo_white_beta.svg" : "/images/logo.png"}
-            alt="Climate Connect logo"
+            alt={texts.climate_connect_logo}
             className={classes.logo}
           />
         </Link>
@@ -335,6 +343,8 @@ export default function Header({
             transparentHeader={transparentHeader}
             fixedHeader={fixedHeader}
             LINKS={LINKS}
+            texts={texts}
+            localePrefix={localePrefix}
           />
         ) : (
           <NormalScreenLinks
@@ -347,6 +357,8 @@ export default function Header({
             transparentHeader={transparentHeader}
             fixedHeader={fixedHeader}
             LINKS={LINKS}
+            texts={texts}
+            localePrefix={localePrefix}
           />
         )}
       </Container>
@@ -357,6 +369,10 @@ export default function Header({
 
 function StaticPageLinks() {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "navigation", locale: locale });
+  const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
+  const localePrefix = getLocalePrefix(locale);
   return (
     <div className={classes.staticPageLinksWrapper}>
       <Container className={classes.staticPageLinksContainer}>
@@ -364,7 +380,7 @@ function StaticPageLinks() {
           {STATIC_PAGE_LINKS.map((link, index) => {
             return (
               <Link
-                href={link.href}
+                href={localePrefix + link.href}
                 key={index + "-" + link.text}
                 className={`${classes.staticPageLink} ${
                   window.location.href.includes(link.href) && classes.currentStaticPageLink
@@ -390,6 +406,8 @@ function NormalScreenLinks({
   transparentHeader,
   fixedHeader,
   LINKS,
+  texts,
+  localePrefix,
 }) {
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -401,20 +419,23 @@ function NormalScreenLinks({
           !(!loggedInUser && link.onlyShowLoggedIn) &&
           !link.showOnMobileOnly
       ).map((link, index) => {
-        const buttonProps = getLinkButtonProps(
-          link,
-          index,
-          loggedInUser,
-          classes,
-          transparentHeader,
-          toggleShowNotifications
-        );
+        const buttonProps = getLinkButtonProps({
+          link: link,
+          index: index,
+          loggedInUser: loggedInUser,
+          classes: classes,
+          transparentHeader: transparentHeader,
+          toggleShowNotifications: toggleShowNotifications,
+          localePrefix: localePrefix,
+        });
         const Icon = link.icon;
         if (!(isMediumScreen && link.hideOnMediumScreen))
           return (
             <React.Fragment key={index}>
               <span className={classes.menuLink}>
-                {link.onlyShowIconOnNormalScreen ? (
+                {link.type === "languageSelect" ? (
+                  <LanguageSelect transparentHeader={transparentHeader} />
+                ) : link.onlyShowIconOnNormalScreen ? (
                   <>
                     <IconButton {...buttonProps} className={classes.link}>
                       {link.hasBadge && notifications && notifications.length > 0 ? (
@@ -437,7 +458,7 @@ function NormalScreenLinks({
                           component="h1"
                           variant="h5"
                         >
-                          Notifications
+                          {texts.notifications}
                         </Typography>
                         <Divider />
                         {notifications && notifications.length > 0 ? (
@@ -464,6 +485,8 @@ function NormalScreenLinks({
           loggedInUser={loggedInUser}
           handleLogout={handleLogout}
           fixedHeader={fixedHeader}
+          texts={texts}
+          localePrefix={localePrefix}
         />
       )}
     </Box>
@@ -480,6 +503,8 @@ function NarrowScreenLinks({
   transparentHeader,
   fixedHeader,
   LINKS,
+  texts,
+  localePrefix,
 }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -497,16 +522,17 @@ function NarrowScreenLinks({
       <Box>
         {linksOutsideDrawer.map((link, index) => {
           const Icon = link.iconForDrawer;
-          const buttonProps = getLinkButtonProps(
-            link,
-            index,
-            loggedInUser,
-            classes,
-            transparentHeader,
-            toggleShowNotifications,
-            true,
-            linksOutsideDrawer
-          );
+          const buttonProps = getLinkButtonProps({
+            link: link,
+            index: index,
+            loggedInUser: loggedInUser,
+            classes: classes,
+            transparentHeader: transparentHeader,
+            toggleShowNotifications: toggleShowNotifications,
+            isNarrowScreen: true,
+            linksOutsideDrawer: linksOutsideDrawer,
+            localePrefix: localePrefix,
+          });
           if (index === linksOutsideDrawer.length - 1) {
             buttonProps.className = classes.marginRight;
           }
@@ -535,7 +561,7 @@ function NarrowScreenLinks({
                         component="h1"
                         variant="h5"
                       >
-                        Notifications
+                        {texts.notifications}
                       </Typography>
                       <Divider />
                       {notifications && notifications.length > 0 ? (
@@ -580,7 +606,7 @@ function NarrowScreenLinks({
             ).map((link, index) => {
               const Icon = link.iconForDrawer;
               return (
-                <Link href={link.href} key={index}>
+                <Link href={localePrefix + link.href} key={index}>
                   <ListItem button component="a" onClick={closeDrawer}>
                     <ListItemIcon>
                       <Icon color="primary" />
@@ -591,11 +617,11 @@ function NarrowScreenLinks({
               );
             })}
             {loggedInUser &&
-              getLoggedInLinks({ loggedInUser }).map((link, index) => {
+              getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts }).map((link, index) => {
                 const Icon = link.iconForDrawer;
                 if (link.avatar)
                   return (
-                    <Link href={link.href} key={index}>
+                    <Link href={localePrefix + link.href} key={index}>
                       <Avatar
                         className={classes.loggedInAvatarMobile}
                         src={getImageUrl(loggedInUser.image)}
@@ -614,7 +640,7 @@ function NarrowScreenLinks({
                   );
                 else
                   return (
-                    <Link href={link.href} key={index}>
+                    <Link href={localePrefix + link.href} key={index}>
                       <ListItem button component="a" onClick={closeDrawer}>
                         <ListItemIcon>
                           <Icon color="primary" />
@@ -631,7 +657,7 @@ function NarrowScreenLinks({
   );
 }
 
-const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader }) => {
+const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, localePrefix }) => {
   const classes = useStyles();
   const [menuOpen, setMenuOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -641,7 +667,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader }) => {
   };
 
   const handleCloseMenu = (e) => {
-    console.log(e.target)
+    console.log(e.target);
     setMenuOpen(false);
   };
 
@@ -667,39 +693,39 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader }) => {
           open={menuOpen}
           anchorEl={anchorRef.current}
           className={`${fixedHeader && classes.loggedInLinksFixedHeader} ${classes.loggedInPopper}`}
-        >        
-            <Paper>
-              <MenuList>
-                {getLoggedInLinks({ loggedInUser })
-                  .filter((link) => !link.showOnMobileOnly)
-                  .map((link, index) => {
-                    const menuItemProps = {
-                      component: "button",
-                      className: classes.loggedInLink,
-                    };
-                    if (link.isLogoutButton) menuItemProps.onClick = handleLogout;
-                    else menuItemProps.href = link.href;
-                    return (
-                      <MenuItem
-                        key={index}
-                        component="button"
-                        className={classes.loggedInLink}
-                        onClick={link.isLogoutButton && handleLogout}
-                        href={!link.isLogoutButton ? link.href : undefined}
-                      >
-                        {link.text}
-                      </MenuItem>
-                    );
-                  })}
-              </MenuList>
-            </Paper>
+        >
+          <Paper>
+            <MenuList>
+              {getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts })
+                .filter((link) => !link.showOnMobileOnly)
+                .map((link, index) => {
+                  const menuItemProps = {
+                    component: "button",
+                    className: classes.loggedInLink,
+                  };
+                  if (link.isLogoutButton) menuItemProps.onClick = handleLogout;
+                  else menuItemProps.href = localePrefix + link.href;
+                  return (
+                    <MenuItem
+                      key={index}
+                      component="button"
+                      className={classes.loggedInLink}
+                      onClick={link.isLogoutButton && handleLogout}
+                      href={!link.isLogoutButton ? localePrefix + link.href : undefined}
+                    >
+                      {link.text}
+                    </MenuItem>
+                  );
+                })}
+            </MenuList>
+          </Paper>
         </Popper>
       </Box>
     </ClickAwayListener>
   );
 };
 
-const getLinkButtonProps = (
+const getLinkButtonProps = ({
   link,
   index,
   loggedInUser,
@@ -707,8 +733,9 @@ const getLinkButtonProps = (
   transparentHeader,
   toggleShowNotifications,
   isNarrowScreen,
-  linksOutsideDrawer
-) => {
+  linksOutsideDrawer,
+  localePrefix,
+}) => {
   const buttonProps = {};
   if (!isNarrowScreen && index !== 0) {
     if (link.className) buttonProps.className = classes[link.className];
@@ -728,7 +755,7 @@ const getLinkButtonProps = (
   if (!transparentHeader) buttonProps.color = "primary";
   else if (!contained && link.type !== "notificationsButton") buttonProps.color = "inherit";
   if (link.type === "notificationsButton") buttonProps.onClick = toggleShowNotifications;
-  if (link.href) buttonProps.href = link.href;
+  if (link.href) buttonProps.href = localePrefix + link.href;
   if (isNarrowScreen && index === linksOutsideDrawer.length - 1) {
     buttonProps.className = classes.marginRight;
   }

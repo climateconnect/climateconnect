@@ -1,6 +1,8 @@
-import React from "react";
 import { Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 
 const useStyles = makeStyles((theme) => {
@@ -35,6 +37,8 @@ export default function BottomNavigation({
 }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
 
   const onClickCancelDialogOpen = () => {
     setOpen(true);
@@ -51,7 +55,7 @@ export default function BottomNavigation({
     <div className={`${classes.navigationButtonWrapper} ${className}`}>
       {onClickPreviousStep && (
         <Button variant="contained" className={classes.backButton} onClick={onClickPreviousStep}>
-          Back
+          {texts.back}
         </Button>
       )}
       <div className={classes.nextStepButtonsContainer}>
@@ -62,15 +66,15 @@ export default function BottomNavigation({
               onClick={onClickCancelDialogOpen}
               className={`${classes.backButton} ${classes.draftButton}`}
             >
-              Cancel
+              {texts.cancel}
             </Button>
             <ConfirmDialog
               open={open}
               onClose={handleClickCancel}
-              cancelText="No"
-              confirmText="Yes"
-              text="Do you really want to leave without saving your changes?"
-              title="Leave without saving changes?"
+              cancelText={texts.no}
+              confirmText={texts.yes}
+              text={texts.do_you_really_want_to_leave_without_saving_your_changes}
+              title={texts.leave_without_saving_changes}
             />
           </>
         )}
@@ -91,38 +95,42 @@ export default function BottomNavigation({
             onClick={saveAsDraft}
             className={`${classes.backButton} ${classes.draftButton}`}
           >
-            Save as Draft
+            {texts.save_as_draft}
           </Button>
         )}
-        <NextButtons nextStepButtonType={nextStepButtonType} onClickNextStep={onClickNextStep} />
+        <NextButtons
+          nextStepButtonType={nextStepButtonType}
+          onClickNextStep={onClickNextStep}
+          texts={texts}
+        />
       </div>
     </div>
   );
 }
 
-function NextButtons({ nextStepButtonType, onClickNextStep }) {
+function NextButtons({ nextStepButtonType, onClickNextStep, texts }) {
   if (nextStepButtonType === "submit")
     return (
       <Button variant="contained" color="primary" type="submit">
-        Next Step
+        {texts.next_step}
       </Button>
     );
   else if (nextStepButtonType === "save")
     return (
       <Button variant="contained" color="primary" type="submit">
-        Save Changes
+        {texts.save_changes}
       </Button>
     );
   else if (nextStepButtonType === "publish")
     return (
       <Button variant="contained" color="primary" type="submit">
-        Publish
+        {texts.publish}
       </Button>
     );
   else
     return (
       <Button variant="contained" color="primary" type="submit" onClick={onClickNextStep}>
-        Next Step
+        {texts.next_step}
       </Button>
     );
 }

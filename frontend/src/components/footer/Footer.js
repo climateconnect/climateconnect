@@ -1,15 +1,16 @@
-import React from "react";
-
-import { Box, useMediaQuery, Link } from "@material-ui/core";
+import { Box, Link, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import GitHubIcon from "@material-ui/icons/GitHub";
-import TwitterIcon from "@material-ui/icons/Twitter";
-import InstagramIcon from "@material-ui/icons/Instagram";
 import FacebookIcon from "@material-ui/icons/Facebook";
-import YouTubeIcon from "@material-ui/icons/YouTube";
 import FavoriteIcon from "@material-ui/icons/Favorite";
-
-import LargeFooter from "../footer/LargeFooter";
+import GitHubIcon from "@material-ui/icons/GitHub";
+import InstagramIcon from "@material-ui/icons/Instagram";
+import TwitterIcon from "@material-ui/icons/Twitter";
+import YouTubeIcon from "@material-ui/icons/YouTube";
+import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import LargeFooter from "./LargeFooter";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -100,6 +101,8 @@ export default function Footer({
 const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScrollUp }) => {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "navigation", locale: locale });
 
   return (
     <Box
@@ -111,20 +114,24 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
     >
       <Box className={classes.flexContainer}>
         <Box className={classes.leftBox}>
-          <Link href="/imprint" color="inherit">
-            <span className={`${classes.inheritColor} ${classes.link}`}>Imprint</span>
+          <Link href={getLocalePrefix(locale) + "/imprint"} color="inherit">
+            <span className={`${classes.inheritColor} ${classes.link}`}>{texts.imprint}</span>
           </Link>
-          <Link href="/privacy" color="inherit">
-            <span className={`${classes.inheritColor} ${classes.link}`}>Privacy</span>
+          <Link href={getLocalePrefix(locale) + "/privacy"} color="inherit">
+            <span className={`${classes.inheritColor} ${classes.link}`}>{texts.privacy}</span>
           </Link>
-          <Link href="/terms" color="inherit">
-            <span className={classes.inheritColor}>Terms</span>
+          <Link href={getLocalePrefix(locale) + "/terms"} color="inherit">
+            <span className={classes.inheritColor}>{texts.terms}</span>
           </Link>
         </Box>
         {!isNarrowScreen && (
           <Box component="span" className={classes.centerText}>
             Made with <FavoriteIcon className={classes.heart} /> for{" "}
-            <img className={classes.earth} src="/images/earth.svg" alt="Picture of our earth" />
+            <img
+              className={classes.earth}
+              src="/images/earth.svg"
+              alt={texts.picture_of_our_earth}
+            />
           </Box>
         )}
         <Box component="span" className={classes.rightBox}>
@@ -134,7 +141,7 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
             rel="noopener noreferrer"
             className={classes.inheritColor}
           >
-            <GitHubIcon className={classes.socialMediaLink} />
+            <GitHubIcon className={classes.socialMediaLink} alt="GitHub" />
           </a>
           <a
             href="https://twitter.com/ConnectClimate"
@@ -142,7 +149,7 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
             rel="noopener noreferrer"
             className={classes.inheritColor}
           >
-            <TwitterIcon className={classes.socialMediaLink} />
+            <TwitterIcon className={classes.socialMediaLink} alt="Twitter" />
           </a>
           <a
             href="https://www.instagram.com/climate_connect.earth/"
@@ -150,7 +157,7 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
             rel="noopener noreferrer"
             className={classes.inheritColor}
           >
-            <InstagramIcon className={classes.socialMediaLink} />
+            <InstagramIcon className={classes.socialMediaLink} alt="Instagram" />
           </a>
           <a
             href="https://www.facebook.com/climateconnect.earth/"
@@ -158,7 +165,7 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
             rel="noopener noreferrer"
             className={classes.inheritColor}
           >
-            <FacebookIcon className={classes.socialMediaLink} />
+            <FacebookIcon className={classes.socialMediaLink} alt="Facebook" />
           </a>
           <a
             href="https://www.youtube.com/channel/UC10rPriptUxYilMfvt-8Tkw"
@@ -166,7 +173,7 @@ const SmallFooter = ({ className, noSpacingTop, noAbsolutePosition, showOnScroll
             rel="noopener noreferrer"
             className={classes.inheritColor}
           >
-            <YouTubeIcon className={classes.socialMediaLink} />
+            <YouTubeIcon className={classes.socialMediaLink} alt="YouTube" />
           </a>
         </Box>
       </Box>

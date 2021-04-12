@@ -1,6 +1,9 @@
-import React from "react";
-import { makeStyles, Link, Card, CardMedia, Typography } from "@material-ui/core";
+import { Card, CardMedia, Link, makeStyles, Typography } from "@material-ui/core";
+import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -32,9 +35,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function HubPreview({ hub, disableBoxShadow }) {
   const classes = useStyles({ disableBoxShadow: disableBoxShadow });
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "hub", locale: locale });
 
   return (
-    <Link href={`/hubs/${hub.url_slug}`} className={classes.noUnderline}>
+    <Link href={getLocalePrefix(locale) + `/hubs/${hub.url_slug}`} className={classes.noUnderline}>
       <Card className={classes.root} variant="outlined">
         <CardMedia
           className={classes.media}
@@ -44,7 +49,7 @@ export default function HubPreview({ hub, disableBoxShadow }) {
           <img
             src={getImageUrl(hub.thumbnail_image)}
             className={classes.placeholderImg}
-            alt={hub.name + "'s project image"}
+            alt={texts.image_for + " " + hub.name}
           />
         </CardMedia>
         <div className={classes.cardContentWrapper}>
