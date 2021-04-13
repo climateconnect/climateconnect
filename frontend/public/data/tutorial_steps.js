@@ -233,7 +233,7 @@ export default function get_steps({
       text: (
         <span>
           Click on another tab to see all active organizations or members of Climate Connect. These
-          are the faces behind the projects and the climate actors we strive to we strive to
+          are the faces behind the projects and the climate actors we strive to
           empower.
         </span>
       ),
@@ -365,7 +365,7 @@ export default function get_steps({
           true: (
             <span>
               Sign up to Climate Connect for free to join our international community of people
-              working together to solve the climate crisis. Share you own organization and/or
+              working together to solve the climate crisis. Share your own organization and/or
               projects to get recognition, find new team members and spread your project worldwide.
             </span>
           ),
