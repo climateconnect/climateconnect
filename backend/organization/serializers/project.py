@@ -226,6 +226,7 @@ class ProjectCollaboratorsSerializer(serializers.ModelSerializer):
         serializer = OrganizationStubSerializer(obj.collaborating_organization)
         return serializer.data
 
+
 class ProjectFromProjectParentsSerializer(serializers.ModelSerializer):
     project = serializers.SerializerMethodField()
 
@@ -236,6 +237,7 @@ class ProjectFromProjectParentsSerializer(serializers.ModelSerializer):
     def get_project(self, obj):
         serializer = ProjectStubSerializer(obj.project)
         return serializer.data
+
 
 class ProjectFromProjectMemberSerializer(serializers.ModelSerializer):
     project = serializers.SerializerMethodField()
@@ -248,10 +250,12 @@ class ProjectFromProjectMemberSerializer(serializers.ModelSerializer):
         serializer = ProjectStubSerializer(obj.project)
         return serializer.data
 
+
 class ProjectSitemapEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ('url_slug', 'updated_at')
+
 
 class ProjectFollowerSerializer(serializers.ModelSerializer):
     user_profile = serializers.SerializerMethodField()

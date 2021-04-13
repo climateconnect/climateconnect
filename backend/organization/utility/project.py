@@ -57,7 +57,7 @@ def create_new_project(data: Dict) -> Project:
 
 def get_project_name(project: Project, language_code: str) -> str:
     if language_code != project.language.language_code and \
-        project.translation_project.exists(language__language_code=language_code):
+        project.translation_project.filter(language__language_code=language_code).exists():
         return project.translation_project.get(
             language__language_code=language_code
         ).name_translation
@@ -67,7 +67,7 @@ def get_project_name(project: Project, language_code: str) -> str:
 
 def get_project_short_description(project: Project, language_code: str) -> str:
     if language_code != project.language.language_code and \
-        project.translation_project.exists(language__language_code=language_code):
+        project.translation_project.filter(language__language_code=language_code).exists():
         return project.translation_project.get(
             language__language_code=language_code
         ).short_description_translation
@@ -77,7 +77,7 @@ def get_project_short_description(project: Project, language_code: str) -> str:
 
 def get_project_description(project: Project, language_code: str) -> str:
     if language_code != project.language.language_code and \
-        project.translation_project.exists(language__language_code=language_code):
+        project.translation_project.filter(language__language_code=language_code).exists():
         return project.translation_project.get(
             language__language_code=language_code
         ).description_translation
