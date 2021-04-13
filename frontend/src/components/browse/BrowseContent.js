@@ -41,16 +41,15 @@ export default function BrowseContent({
   filterChoices,
   handleSetErrorMessage,
   hideMembers,
-  initialFiltersExpanded,
+  hubName,
+  hubProjectsButtonRef,
+  hubQuickInfoRef,
+  hubsSubHeaderRef,
   initialMembers,
   initialOrganizations,
   initialProjects,
   loadMoreData,
-  hubsSubHeaderRef,
-  hubQuickInfoRef,
-  hubProjectsButtonRef,
   nextStepTriggeredBy,
-  hubName,
 }) {
   const initialState = {
     items: {
@@ -90,9 +89,8 @@ export default function BrowseContent({
   const [hash, setHash] = useState(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
-  // If persisted URL is shared with query param options for filters,
-  // then we force the filter to already be expanded.
-  const [filtersExpanded, setFiltersExpanded] = useState(initialFiltersExpanded);
+  // Always default to filters being expanded
+  const [filtersExpanded, setFiltersExpanded] = useState(true);
 
   const [state, setState] = useState(initialState);
 

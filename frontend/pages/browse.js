@@ -160,7 +160,6 @@ export default function Browse({
           filterChoices={filterChoices}
           handleSetErrorMessage={handleSetErrorMessage}
           hubsSubHeaderRef={hubsSubHeaderRef}
-          initialFiltersExpanded={true}
           initialMembers={membersObject}
           initialOrganizations={organizationsObject}
           initialProjects={projectsObject}
