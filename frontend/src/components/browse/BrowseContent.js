@@ -155,7 +155,7 @@ export default function BrowseContent({
         }
       }
 
-      let newFilters = { ...queryObject };
+      const newFilters = { ...queryObject };
 
       // Apply new filters with the query object immediately:
       handleApplyNewFilters("projects", newFilters, false, state.urlEnding["projects"]);
