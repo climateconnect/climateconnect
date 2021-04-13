@@ -54,7 +54,6 @@ export default function Browse({
       return;
     }
 
-    //todo: throw error if user didn't choose a location from the list
     setFilters({ ...filters, [type]: newFilters });
 
     const newUrlEnding = encodeQueryParamsFromFilters(newFilters);

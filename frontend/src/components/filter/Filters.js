@@ -105,14 +105,12 @@ export default function Filters({
         </div>
       )}
 
-      {/* TODO(piper): add this functionality to all elements where we apply new filters */}
       <div className={`${classes.flexContainer} ${isInOverlay && classes.verticalFlexContainer}`}>
         {possibleFilters.map((filter) => {
           // Get the current values for each potential filter
           // from what could already be previously selected
           const currentFilterValue = currentFilters[filter.key];
 
-          // TODO(Piper): verify this is working post merge
           let component;
           if (filter.type === "text") {
             component = (
