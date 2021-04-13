@@ -8,7 +8,7 @@
  */
 const persistFiltersInURL = (activeFilters) => {
   const filteredParams = encodeQueryParamsFromFilters(activeFilters);
-  const filteredQueryParams = `?${filteredParams}`;
+  const filteredQueryParams = `?${filteredParams ? filteredParams : ""}`;
 
   // Build a URL with properties. E.g., /browse?...
   const origin = window?.location?.origin;
