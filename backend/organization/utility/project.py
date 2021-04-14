@@ -1,7 +1,7 @@
 from location.utility import get_location
 from typing import Dict
 from organization.models import Project
-from climateconnect_api.models import (Skill,)
+from climateconnect_api.models import (Skill, language,)
 from climateconnect_main.utility.general import get_image_from_data_url
 
 import logging
@@ -53,3 +53,33 @@ def create_new_project(data: Dict) -> Project:
 
     project.save()
     return project
+
+
+def get_project_name(project: Project, language_code: str) -> str:
+    if language_code != project.language.language_code and \
+        project.translation_project.filter(language__language_code=language_code).exists():
+        return project.translation_project.get(
+            language__language_code=language_code
+        ).name_translation
+    
+    return project.name
+
+
+def get_project_short_description(project: Project, language_code: str) -> str:
+    if language_code != project.language.language_code and \
+        project.translation_project.filter(language__language_code=language_code).exists():
+        return project.translation_project.get(
+            language__language_code=language_code
+        ).short_description_translation
+    
+    return project.short_description
+
+
+def get_project_description(project: Project, language_code: str) -> str:
+    if language_code != project.language.language_code and \
+        project.translation_project.filter(language__language_code=language_code).exists():
+        return project.translation_project.get(
+            language__language_code=language_code
+        ).description_translation
+    
+    return project.description

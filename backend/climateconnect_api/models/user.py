@@ -236,6 +236,14 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    language = models.ForeignKey(
+        Language, related_name="profile_language",
+        help_text="Points to user's original language",
+        verbose_name="Language",
+        null=True, blank=True,
+        on_delete=models.SET_NULL
+    )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "User Profile"
