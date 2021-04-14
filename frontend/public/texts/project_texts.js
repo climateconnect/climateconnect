@@ -765,7 +765,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de: (
         <>
           Wenn das Profil deiner Organisation noch nicht existiert,{" "}
-          <Link href={getLocalePrefix(locale) + "/createorganization"} underline="immer">
+          <Link href={getLocalePrefix(locale) + "/createorganization"} underline="always">
             klicke hier
           </Link>{" "}
           um sie zu erstellen.
@@ -783,6 +783,47 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     are_you_sure_you_want_to_leave_you_will_lose_your_project: {
       en: "Are you sure you want to leave? You will lose your project.",
       de: "Bist du sicher, dass du abbrechen willst? Du wirst dein Projekt verlieren.",
+    },
+    add_team: {
+      en: "Add team",
+      de: "Team hinzufügen",
+    },
+    languages: {
+      en: "Languages",
+      de: "Sprachen",
+    },
+    translate: {
+      en: "Translate",
+      de: "Übersetzen",
+    },
+    translate_project_intro: {
+      en: "",
+      de: (
+        <>
+          Da der Klimawandel eine globale Krise ist, ist es uns wichtig, dass alle Projekte auch auf
+          Englisch verfügbar sind.
+          <br />
+          Wenn du auf {"Automatisch Übersetzen"} klickst, kannst du den Text immer noch bearbeiten.
+          Natürlich kannst du auch alles selbst übersetzen. Wenn du auf {"Veröffentlichen"} klickst,
+          werden alle leeren Felder automatisch übersetzt.
+        </>
+      ),
+    },
+    automatically_translate: {
+      en: "Automatically translate",
+      de: "Automatisch Übersetzen",
+    },
+    skip_and_publish: {
+      en: "Publish",
+      de: "Veröffentlichen",
+    },
+    basic_info: {
+      en: "Basic Info",
+      de: "Übersicht",
+    },
+    project_category: {
+      en: "Choose category",
+      de: "Kategorie auswählen",
     },
   };
 }

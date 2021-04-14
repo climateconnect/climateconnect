@@ -37,6 +37,11 @@ class ProjectTranslation(models.Model):
         max_length=4800, null=True, blank=True
     )
 
+    is_manual_translation = models.BooleanField(
+        help_text="Did the user manually translate this or was it automatically translated with DeepL?",
+        verbose_name="Is manual translation?", default=False
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True, help_text="Time when translation object was created",
         verbose_name="Created at", null=True, blank=True
@@ -95,6 +100,11 @@ class OrganizationTranslation(models.Model):
         verbose_name="Organ translation", max_length=512, null=True, blank=True
     )
 
+    is_manual_translation = models.BooleanField(
+        help_text="Did the user manually translate this or was it automatically translated with DeepL?",
+        verbose_name="Is manual translation?", default=False
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True, help_text="Time when translation object was created",
         verbose_name="Created at", null=True, blank=True
@@ -140,6 +150,21 @@ class PostTranslation(models.Model):
         blank=True
     )
 
+    is_manual_translation = models.BooleanField(
+        help_text="Did the user manually translate this or was it automatically translated with DeepL?",
+        verbose_name="Is manual translation?", default=False
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True, help_text="Time when translation object was created",
+        verbose_name="Created at", null=True, blank=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True, help_text="Time when translation object was updated",
+        verbose_name="Updated at", null=True, blank=True
+    )
+
     class Meta:
         verbose_name = "Post translation"
         verbose_name_plural = "Post translations"
@@ -173,6 +198,21 @@ class CommentTranslation(models.Model):
         verbose_name="Content translation",
         null=True,
         blank=True
+    )
+
+    is_manual_translation = models.BooleanField(
+        help_text="Did the user manually translate this or was it automatically translated with DeepL?",
+        verbose_name="Is manual translation?", default=False
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True, help_text="Time when translation object was created",
+        verbose_name="Created at", null=True, blank=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True, help_text="Time when translation object was updated",
+        verbose_name="Updated at", null=True, blank=True
     )
 
     class Meta:

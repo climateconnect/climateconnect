@@ -26,7 +26,7 @@ from organization.serializers.project import (
 from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
 from organization.serializers.tags import (ProjectTagsSerializer)
-from organization.utility.project import create_new_project
+from organization.utility.project import create_new_project, get_project_translations
 from organization.permissions import (ReadSensibleProjectDataPermission, ProjectReadWritePermission, AddProjectMemberPermission, ProjectMemberReadWritePermission, ChangeProjectCreatorPermission)
 from organization.pagination import (
     ProjectsPagination, MembersPagination, ProjectPostPagination, ProjectCommentPagination
@@ -160,7 +160,8 @@ class CreateProjectView(APIView):
         required_params = [
             'name', 'status', 'short_description',
             'collaborators_welcome', 'team_members',
-            'project_tags', 'loc', 'image'
+            'project_tags', 'loc', 'image', 'source_language',
+            'is_manual_translation', 'translations'
         ]
         for param in required_params:
             if param not in request.data:
@@ -173,8 +174,17 @@ class CreateProjectView(APIView):
         except ProjectStatus.DoesNotExist:
             return Response({
                 'message': "Passed status {} does not exist".format(request.data["status"])
-            })
-
+            })  
+        try:
+            translations = get_project_translations(request)
+        except ValueError:
+            return Response({
+                'message': "Please use the same language for all texts."
+            }, status=status.HTTP_400_BAD_REQUEST)  
+        print(translations)
+        return Response({
+            'message': "Seems to have worked!"
+        }, status=status.HTTP_400_BAD_REQUEST) 
         project = create_new_project(request.data)
 
         project_parents = ProjectParents.objects.create(

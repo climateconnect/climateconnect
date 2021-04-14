@@ -2,7 +2,7 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import Router from "next/router";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import tokenConfig from "../../../public/config/tokenConfig";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -13,6 +13,7 @@ import EnterDetails from "./EnterDetails";
 import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import SelectCategory from "./SelectCategory";
 import ShareProject from "./ShareProject";
+import TranslateProject from "./TranslateProject";
 const DEFAULT_STATUS = 2;
 
 const useStyles = makeStyles((theme) => {
@@ -28,27 +29,38 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const getSteps = (texts) => [
-  {
-    key: "share",
-    text: "share project",
-    headline: texts.share_a_project,
-  },
-  {
-    key: "selectCategory",
-    text: "project category",
-    headline: texts.select_1_to_3_categories_that_fit_your_project,
-  },
-  {
-    key: "enterDetails",
-    text: texts.project_details,
-  },
-  {
-    key: "addTeam",
-    text: "add team",
-    headline: texts.add_your_team,
-  },
-];
+const getSteps = (texts, sourceLocale) => {
+  const steps = [
+    {
+      key: "share",
+      text: texts.basic_info,
+      headline: texts.share_a_project,
+    },
+    {
+      key: "selectCategory",
+      text: texts.project_category,
+      headline: texts.select_1_to_3_categories_that_fit_your_project,
+    },
+    {
+      key: "enterDetails",
+      text: texts.project_details,
+    },
+    {
+      key: "addTeam",
+      text: texts.add_team,
+      headline: texts.add_your_team,
+    },    
+  ];
+  if(sourceLocale === "de") {
+    steps.push({
+      key: "translate",
+      text: texts.languages,
+      headline: texts.translate,
+      sourceLocale: ["de"]
+    })
+  }
+  return steps
+}
 
 export default function ShareProjectRoot({
   availabilityOptions,
@@ -62,9 +74,9 @@ export default function ShareProjectRoot({
   setMessage,
 }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext);
+  const { locale, locales } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const steps = getSteps(texts);
+  const steps = getSteps(texts, locale);
   const [project, setProject] = React.useState(
     getDefaultProjectValues(
       {
@@ -75,9 +87,27 @@ export default function ShareProjectRoot({
       statusOptions,
       userOrganizations
     )
-  );
-  const [curStep, setCurStep] = React.useState(steps[0]);
+  );  
+
+  const getStep = (stepNumber) =>  {
+    if(stepNumber >= steps.length)
+      return steps[steps.length - 1]
+    return steps[stepNumber]
+  }
+
+  const [isAutomaticTranslation, setIsAutomaticTranslation] = useState(true);
+  const [sourceLanguage, setSourceLanguage] = useState(locale)
+  const [targetLanguage, setTargetLanguage] = useState(locales.find(l => l !== locale))
+  const [translations, setTranslations] = React.useState({});
+  const [curStep, setCurStep] = React.useState(getStep(4));
   const [finished, setFinished] = React.useState(false);
+
+  const changeTranslationLanguages = ({newLanguagesObject}) => {
+    if(newLanguagesObject.sourceLanguage)
+      setSourceLanguage(newLanguagesObject.sourceLanguage)
+    if(newLanguagesObject.targetLanguage)
+      setTargetLanguage(newLanguagesObject.targetLanguage)
+  }
 
   useEffect(() => {
     if (window) {
@@ -96,15 +126,29 @@ export default function ShareProjectRoot({
     }
   });
 
+  const handleChangeTranslationContent = (locale, newTranslations) => {
+    setTranslations({
+      ...translations,
+      [locale]: {
+        ...translations[locale],
+        ...newTranslations,
+      },
+    });
+  };
+
+  const changeToManualTranslation = () => setIsAutomaticTranslation(false);
+
   const goToNextStep = () => {
-    setCurStep(steps[steps.indexOf(curStep) + 1]);
+    const curStepIndex = steps.indexOf(steps.find((s) => s.key === curStep.key));
+    setCurStep(getStep(curStepIndex + 1));
     setMessage("");
     //scroll to top when navigating to another step
     window.scrollTo(0, 0);
   };
 
   const goToPreviousStep = () => {
-    setCurStep(steps[steps.indexOf(curStep) - 1]);
+    const curStepIndex = steps.indexOf(steps.find((s) => s.key === curStep.key));
+    setCurStep(getStep(curStepIndex - 1));
     setMessage("");
     //scroll to top when navigating to another step
     window.scrollTo(0, 0);
@@ -112,21 +156,23 @@ export default function ShareProjectRoot({
 
   const submitProject = async (event) => {
     event.preventDefault();
+    console.log(await formatProjectForRequest(project, sourceLanguage, translations, isAutomaticTranslation))
     axios
       .post(
         process.env.API_URL + "/api/create_project/",
-        await formatProjectForRequest(project),
+        await formatProjectForRequest(project, sourceLanguage, translations, isAutomaticTranslation),
         tokenConfig(token)
       )
       .then(function (response) {
         setProject({ ...project, url_slug: response.data.url_slug });
+        setFinished(true);
       })
       .catch(function (error) {
         console.log(error);
         setProject({ ...project, error: true });
+        console.log(error)
         if (error) console.log(error.response);
-      });
-    setFinished(true);
+      });    
   };
 
   const saveAsDraft = async (event) => {
@@ -134,7 +180,7 @@ export default function ShareProjectRoot({
     axios
       .post(
         process.env.API_URL + "/api/create_project/",
-        await formatProjectForRequest({ ...project, is_draft: true }),
+        await formatProjectForRequest({ ...project, is_draft: true }, sourceLanguage, translations, isAutomaticTranslation, ),
         tokenConfig(token)
       )
       .then(function (response) {
@@ -196,11 +242,30 @@ export default function ShareProjectRoot({
             <AddTeam
               projectData={project}
               handleSetProjectData={handleSetProject}
+              goToPreviousStep={goToPreviousStep}
+              goToNextStep={goToNextStep}
+              availabilityOptions={availabilityOptions}
+              rolesOptions={rolesOptions}
+              onSubmit={submitProject}
+              saveAsDraft={saveAsDraft}
+              isLastStep={steps[steps.length -1].key === "addTeam"}
+            />
+          )}
+          {curStep.key === "translate" && (
+            <TranslateProject
+              projectData={project}
+              handleSetProjectData={handleSetProject}
+              handleChangeTranslationContent={handleChangeTranslationContent}
               onSubmit={submitProject}
               saveAsDraft={saveAsDraft}
               goToPreviousStep={goToPreviousStep}
               availabilityOptions={availabilityOptions}
               rolesOptions={rolesOptions}
+              changeToManualTranslation={changeToManualTranslation}
+              translations={translations}
+              sourceLanguage={sourceLanguage}
+              targetLanguage={targetLanguage}
+              changeTranslationLanguages={changeTranslationLanguages}
             />
           )}
         </>
@@ -226,17 +291,28 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
     skills: [],
     helpful_connections: [],
     collaborating_organizations: [],
-    loc: {},
+    loc: {
+      osm_id: 1,
+      place_id: 1,
+      country: "test",
+      city: "test"
+    },
     parent_organization: userOrganizations ? userOrganizations[0] : null,
     isPersonalProject: !(userOrganizations && userOrganizations.length > 0),
     is_organization_project: userOrganizations && userOrganizations.length > 0,
     //TODO: Should contain the logged in user as the creator and parent_user by default
     team_members: [{ ...loggedInUser }],
-    website: "",
+    website: "www.test.com",
+    //TODO: remove. This is just for testing
+    short_description: "Bananensaft schmeckt lecker",
+    //leave in as empty string
+    description: "Wir stellen schon seit 2018 Bananensaft her.",
+    name: "tests",
+    project_tags: [{}]
   };
 };
 
-const formatProjectForRequest = async (project) => {
+const formatProjectForRequest = async (project, sourceLanguage, translations, isAutomaticTranslation) => {
   return {
     ...project,
     status: project.status.id,
@@ -248,10 +324,13 @@ const formatProjectForRequest = async (project) => {
       id: m.id,
       role_in_project: m.role_in_project,
     })),
-    project_tags: project.project_tags.map((s) => s.key),
-    parent_organization: project.parent_organization.id,
+    project_tags: project?.project_tags?.map((s) => s.key),
+    parent_organization: project?.parent_organization?.id,
     collaborating_organizations: project.collaborating_organizations.map((o) => o.id),
     image: await blobFromObjectUrl(project.image),
-    thumbnail_image: await blobFromObjectUrl(project.thumbnail_image),
+    thumbnail_image: await blobFromObjectUrl(project.thumbnail_image),    
+    source_language: sourceLanguage,
+    translations: translations ? translations : {},
+    is_manual_translation: !isAutomaticTranslation
   };
 };

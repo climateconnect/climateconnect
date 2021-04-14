@@ -65,3 +65,25 @@ def translate_text(text, original_lang, target_lang):
         'translated_text': translation['text'],
         'translated_lang': target_locale
     }
+
+def get_translations(texts, translations, source_language, is_manual_translation, depth=0):
+    depth = int(depth)
+    # if we started over the a different source language more than one time that means the user used different languages in different texts.
+    if depth > 1:
+        raise ValueError
+    finished_translations = {}
+    if bool(translations):
+        print("we have some translations!")
+        print(translations)
+    else:
+        print("we dont have any translations!")
+        for target_language in settings.LOCALES:
+            if not target_language == source_language:
+                finished_translations[target_language] = {}
+                for key in texts.keys():
+                    translated_text_object = translate_text(source_language, target_language)
+                    # If we got the source language wrong start over with the correct source language
+                    if not translated_text_object.original_lang == source_language:
+                        return get_translations(texts, translations, translated_text_object.original_lang, is_manual_translation, depth + 1)
+                    finished_translations[target_language][key] = translated_text_object['translated_text']
+    return finished_translations

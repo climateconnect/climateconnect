@@ -34,17 +34,24 @@ const useStyles = makeStyles((theme) => {
 export default function AddTeam({
   projectData,
   handleSetProjectData,
-  onSubmit,
-  saveAsDraft,
   goToPreviousStep,
+  goToNextStep,
   availabilityOptions,
   rolesOptions,
+  onSubmit,
+  saveAsDraft,
+  isLastStep
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
+  console.log(isLastStep)
   const onClickPreviousStep = () => {
     goToPreviousStep();
+  };
+
+  const onClickNextStep = () => {
+    goToNextStep();
   };
 
   //Prevent double entries
@@ -103,7 +110,7 @@ export default function AddTeam({
 
   return (
     <Container maxWidth="lg" className={classes.marginTop}>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onClickNextStep}>
         <div className={classes.searchBarContainer}>
           <AutoCompleteSearchBar
             label={texts.search_for_your_team_members}
@@ -134,12 +141,21 @@ export default function AddTeam({
           handleAddOrganization={handleAddOrganization}
           handleRemoveOrganization={handleRemoveOrganization}
         />
-        <BottomNavigation
-          className={classes.block}
-          onClickPreviousStep={onClickPreviousStep}
-          nextStepButtonType="publish"
-          saveAsDraft={saveAsDraft}
-        />
+        {
+          isLastStep ? 
+            <BottomNavigation
+              className={classes.block}
+              onClickPreviousStep={onClickPreviousStep}
+              nextStepButtonType="publish"
+              saveAsDraft={saveAsDraft}
+            />
+          :
+            <BottomNavigation
+              className={classes.block}
+              onClickPreviousStep={onClickPreviousStep}
+              nextStepButtonType="submit"
+            />
+        }
       </form>
     </Container>
   );

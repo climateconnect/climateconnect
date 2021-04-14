@@ -28,7 +28,6 @@ from django.conf.urls.static import static
 
 
 urls = [
-    path('test/translate', translation_views.TranslateTextView.as_view(), name='translate-testing-api'),
     path('admin/', admin.site.urls),
     path('ping/', status_views.PingPongView.as_view(), name='ping-pong-api'),
     # User views
@@ -84,6 +83,8 @@ urls = [
     path('api/sitemap/members/', user_views.ListMembersForSitemap.as_view(), name='list-members-for-sitemap'),
     path('api/set_user_notifications_read/', notifications_views.SetUserNotificationsRead.as_view(), name='set-user-notifications-unread'),
     path('api/donation_goal_progress/', donation_views.GetDonationGoalProgress.as_view(), name='get-donations-this-month'),
+    path('api/translate/', translation_views.TranslateTextView.as_view(), name='translate-testing-api'),
+    path('api/translate_many/', translation_views.TranslateManyTextsView.as_view(), name='translate-testing-api'),
     # Organization views
     path('api/', include('organization.urls')),
     # chat messages views

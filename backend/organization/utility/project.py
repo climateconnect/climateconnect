@@ -1,3 +1,4 @@
+from climateconnect_api.utility.translation import get_translations
 from location.utility import get_location
 from typing import Dict
 from organization.models import Project
@@ -83,3 +84,19 @@ def get_project_description(project: Project, language_code: str) -> str:
         ).description_translation
     
     return project.description
+
+def get_project_translations(request):
+    texts = {
+        'short_description': request.data['short_description']
+    }
+    if 'description' in request.data:
+        texts['description'] = request.data['description']
+    try:
+        return get_translations(
+            texts,
+            request.data['translations'], 
+            request.data['source_language'], 
+            request.data['is_manual_translation']
+        )
+    except ValueError:
+        raise ValueError

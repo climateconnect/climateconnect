@@ -55,7 +55,7 @@ export default function getProfileTexts({ profile, locale }) {
     },
     pick_or_type_users_role: {
       en: "Pick or type user's role",
-      de: "Rolle des/der Benutzer*in auswählen oder eingeben",
+      de: "Rolle beschreiben",
     },
     hours_contributed_per_week: {
       en: "Hour contributed per week",

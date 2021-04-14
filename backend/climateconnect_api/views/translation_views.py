@@ -15,6 +15,21 @@ class TranslateTextView(APIView):
         required_params = ['text', 'target_language']
         for param in required_params:
             if param not in request.data:
-                raise ValidationError('Required parameter mission: ' + param)
+                raise ValidationError('Required parameter missing: ' + param)
         translated_object = translate_text(request.data['text'], get_language(), request.data['target_language'])  
         return Response({'result': translated_object}, status=status.HTTP_200_OK)
+
+class TranslateManyTextsView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        required_params = ['texts', 'target_language']
+        for param in required_params:
+            if param not in request.data:
+                raise ValidationError('Required parameter missing: ' + param)
+
+        translations = {}
+        for key in request.data['texts'].keys():
+            translations[key] = translate_text(request.data['texts'][key], get_language(), request.data['target_language'])
+        
+        return Response({'translations': translations}, status=status.HTTP_200_OK)

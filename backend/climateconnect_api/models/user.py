@@ -279,6 +279,11 @@ class UserProfileTranslation(models.Model):
         null=True, blank=True
     )
 
+    is_manual_translation = models.BooleanField(
+        help_text="Did the user manually translate this or was it automatically translated with DeepL?",
+        verbose_name="Is manual translation?", default=False
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True, help_text="Time when translation object was created",
         verbose_name="Created at"

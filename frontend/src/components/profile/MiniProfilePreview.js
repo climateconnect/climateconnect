@@ -73,7 +73,7 @@ export default function MiniProfilePreview({
 
 function Content({ profile, avatarClassName, size }) {
   const classes = useStyles();
-  console.log(profile)
+  console.log(profile);
   return (
     <span className={classes.contentWrapper}>
       <div className={classes.avatarWrapper}>
