@@ -66,24 +66,36 @@ def translate_text(text, original_lang, target_lang):
         'translated_lang': target_locale
     }
 
-def get_translations(texts, translations, source_language, is_manual_translation, depth=0):
+def get_translations(texts, translations, source_language, depth=0):
     depth = int(depth)
     # if we started over the a different source language more than one time that means the user used different languages in different texts.
     if depth > 1:
         raise ValueError
     finished_translations = {}
-    if bool(translations):
-        print("we have some translations!")
-        print(translations)
-    else:
-        print("we dont have any translations!")
-        for target_language in settings.LOCALES:
-            if not target_language == source_language:
-                finished_translations[target_language] = {}
-                for key in texts.keys():
-                    translated_text_object = translate_text(source_language, target_language)
+    for target_language in settings.LOCALES:
+        if not target_language == source_language:
+            finished_translations[target_language] = {
+                'is_manual_translation': False
+            }
+            print(translations[target_language])
+            for key in texts.keys():
+                # If the user manually translated and the translation isn't an empty string: take the user's translation
+                if (
+                    'is_manual_translation' in translations[target_language] and \
+                        translations[target_language]['is_manual_translation'] and \
+                        key in translations[target_language] and \
+                        len(translations[target_language][key]) > 0
+                ):
+                    finished_translations[target_language][key] = translations[target_language][key]
+                    finished_translations['is_manual_translation']= True
+                # Else use DeepL to translate the text
+                else:
+                    translated_text_object = translate_text(texts[key], source_language, target_language)
                     # If we got the source language wrong start over with the correct source language
-                    if not translated_text_object.original_lang == source_language:
-                        return get_translations(texts, translations, translated_text_object.original_lang, is_manual_translation, depth + 1)
+                    if not translated_text_object['original_lang'] == source_language:
+                        return get_translations(texts, translations, translated_text_object.original_lang, depth + 1)
                     finished_translations[target_language][key] = translated_text_object['translated_text']
-    return finished_translations
+    return {
+        'translations': finished_translations,
+        'source_language': source_language
+    }
