@@ -1,8 +1,11 @@
+# Django imports
 from django.contrib.gis.db.models.functions import Distance
-from location.models import Location
-from location.utility import get_location, get_location_with_range
-from hubs.models.hub import Hub
-from organization.models.tags import ProjectTags
+from django_filters.rest_framework import DjangoFilterBackend
+from django.utils.translation import gettext as _
+from django.db.models import Q
+from django.contrib.auth.models import User
+
+# REST imports
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework.filters import SearchFilter
@@ -11,28 +14,43 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import NotFound
-from django_filters.rest_framework import DjangoFilterBackend
 
-from django.contrib.auth.models import User
+# Backend app imports
+from climateconnect_api.models import Role
+from climateconnect_api.pagination import MembersPagination
+from climateconnect_main.utility.general import get_image_from_data_url
+from climateconnect_api.models import Role, UserProfile
+from climateconnect_api.serializers.user import UserProfileStubSerializer
+from climateconnect_api.utility.translation import get_translations
+from climateconnect_api.models.language import Language
+
 from organization.serializers.organization import (
-    EditOrganizationSerializer, OrganizationSerializer, OrganizationMinimalSerializer, OrganizationMemberSerializer, 
-    UserOrganizationSerializer, OrganizationCardSerializer, OrganizationSitemapEntrySerializer
+    EditOrganizationSerializer, OrganizationSerializer, 
+    OrganizationMinimalSerializer, OrganizationMemberSerializer, 
+    UserOrganizationSerializer, OrganizationCardSerializer, 
+    OrganizationSitemapEntrySerializer
 )
 from organization.serializers.project import (ProjectFromProjectParentsSerializer,)
 from organization.serializers.tags import (OrganizationTagsSerializer)
-from climateconnect_api.serializers.user import UserProfileStubSerializer
-from organization.models import Organization, OrganizationMember, ProjectParents, OrganizationTags, OrganizationTagging
+from organization.models import (
+    Organization, OrganizationMember, 
+    ProjectParents, OrganizationTags, OrganizationTagging
+)
 from organization.permissions import (
     AddOrganizationMemberPermission, ChangeOrganizationCreatorPermission,
-    OrganizationReadWritePermission, OrganizationReadWritePermission, OrganizationMemberReadWritePermission
+    OrganizationReadWritePermission, OrganizationReadWritePermission,
+    OrganizationMemberReadWritePermission
 )
-from climateconnect_api.models import Role, UserProfile
 from organization.pagination import (OrganizationsPagination, ProjectsPagination)
-from climateconnect_api.pagination import MembersPagination
-from climateconnect_main.utility.general import get_image_from_data_url
-from climateconnect_api.models import Role
-from django.utils.translation import gettext as _
-from django.db.models import Q
+from organization.models.tags import ProjectTags
+from organization.models.translations import OrganizationTranslation
+from organization.utility.organization import create_orgnaization_translation
+
+from location.models import Location
+from location.utility import get_location, get_location_with_range
+
+from hubs.models.hub import Hub
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -109,13 +127,29 @@ class CreateOrganizationView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        required_params = ['name', 'team_members', 'location', 'image', 'organization_tags']
+        required_params = [
+            'name', 'team_members', 'location', 'image', 'organization_tags',
+            'is_manual_translation'
+        ]
         for param in required_params:
             if param not in request.data:
                 return Response({
                     'message': 'Required parameter missing: {}'.format(param)
                 }, status=status.HTTP_400_BAD_REQUEST)
+        
+        texts = [request.data['name']]
+        if 'short_description' in request.data:
+            texts.append(request.data['short_description'])
 
+        try:
+            translations = get_translations(
+                texts, request.data['translations'],
+                request.data['source_language']
+            )
+        except ValueError as ve:
+            translations = None
+            logger.error("TranslationFailed: Error translating texts, {}".format(ve))
+        
         organization, created = Organization.objects.get_or_create(name=request.data['name'])
 
         if created:
@@ -147,6 +181,29 @@ class CreateOrganizationView(APIView):
             if 'website' in request.data:
                 organization.website = request.data['website']
             organization.save()
+
+            # Create organization translation
+            if translations and request.data['is_manual_translation']:
+                for language_name in translations:
+                    if language_name != translations['source_language']:
+                        texts = translations[language_name]
+                        language = Language.objects.get(name=language_name)
+                        create_orgnaization_translation(
+                            organization, language, 
+                            texts, request.data['is_manual_translation']
+                        )
+            elif translations and not request.data['is_manual_translation']:
+                # TODO (Dip 15-4-2021): Add celery task here. 
+                # This would change when I add celery in the morning. 
+                for language_name in translations:
+                    if language_name != translations['source_language']:
+                        texts = translations[language_name]
+                        language = Language.objects.get(name=language_name)
+                        create_orgnaization_translation(
+                            organization, language,
+                            texts, request.data['is_manual_translation']
+                        )
+
             roles = Role.objects.all()
             for member in request.data['team_members']:
                 user_role = roles.filter(id=int(member['permission_type_id'])).first()
