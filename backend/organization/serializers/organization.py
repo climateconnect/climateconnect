@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils.translation import get_language
 
 from rest_framework import serializers
 
@@ -26,10 +27,10 @@ class OrganizationSerializer(serializers.ModelSerializer):
         )
 
     def get_name(self, obj):
-        return get_organization_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_name(obj, get_language())
     
     def get_short_description(self, obj):
-        return get_organization_short_description(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_short_description(obj, get_language())
 
     def get_types(self, obj):
         serializer = OrganizationTaggingSerializer(obj.tag_organization, many=True)
@@ -112,7 +113,7 @@ class OrganizationStubSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'url_slug', 'thumbnail_image', 'location')
 
     def get_name(self, obj):
-        return get_organization_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_name(obj, get_language())
 
     def get_location(self, obj):
         if obj.location == None:
