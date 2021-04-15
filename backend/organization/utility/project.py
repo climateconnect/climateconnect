@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def create_new_project(data: Dict) -> Project:
+def create_new_project(data: Dict, source_language: str) -> Project:
     project = Project.objects.create(
         name=data['name'],
         short_description=data['short_description'],
@@ -40,6 +40,7 @@ def create_new_project(data: Dict) -> Project:
         project.is_draft = data['is_draft']
     if 'website' in data:
         project.website = data['website']
+    project.language = source_language
 
     project.url_slug = project.name.replace(" ", "") + str(project.id)
 
@@ -95,8 +96,7 @@ def get_project_translations(request):
         return get_translations(
             texts,
             request.data['translations'], 
-            request.data['source_language'], 
-            request.data['is_manual_translation']
+            request.data['source_language']
         )
     except ValueError:
         raise ValueError

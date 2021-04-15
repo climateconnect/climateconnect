@@ -1,3 +1,4 @@
+from organization.models.translations import ProjectTranslation
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.contrib.gis.db.models.functions import Distance
 from location.utility import get_location, get_location_with_range
@@ -161,7 +162,7 @@ class CreateProjectView(APIView):
             'name', 'status', 'short_description',
             'collaborators_welcome', 'team_members',
             'project_tags', 'loc', 'image', 'source_language',
-            'is_manual_translation', 'translations'
+            'translations'
         ]
         for param in required_params:
             if param not in request.data:
@@ -175,17 +176,30 @@ class CreateProjectView(APIView):
             return Response({
                 'message': "Passed status {} does not exist".format(request.data["status"])
             })  
+
         try:
-            translations = get_project_translations(request)
+            translations = get_project_translations(request)            
         except ValueError:
             return Response({
                 'message': "Please use the same language for all texts."
             }, status=status.HTTP_400_BAD_REQUEST)  
-        print(translations)
-        return Response({
-            'message': "Seems to have worked!"
-        }, status=status.HTTP_400_BAD_REQUEST) 
-        project = create_new_project(request.data)
+
+        project = create_new_project(request.data, translations['source_language'])
+
+        for language in translations:
+            if not language == translations['source_language']:
+                texts = translations[language]
+                translation = ProjectTranslation.objects.create(
+                    project=project, 
+                    language=language,
+                    name_translation=texts['name'], 
+                    short_description_translation=texts['short_description']                
+                )
+                if 'description' in texts:
+                    translation.description_translation = texts['description']
+                if 'helpful_connections' in texts:
+                    translation.helpful_connections_translation = texts['helpful_connections']
+                translation.save()
 
         project_parents = ProjectParents.objects.create(
             project=project, parent_user=request.user
