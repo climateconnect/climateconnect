@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 from climateconnect_api.models.language import Language
 from organization.models import (
@@ -35,6 +36,14 @@ class ProjectTranslation(models.Model):
         help_text="Translation of project's description",
         verbose_name="Description translation",
         max_length=4800, null=True, blank=True
+    )
+
+    helpful_connections_translation = ArrayField(
+        models.CharField(max_length=528, blank=True),
+        help_text="Translation of project's connections",
+        verbose_name="Helpful Connections translation",
+        blank=True, null=True,
+        size=10,
     )
 
     is_manual_translation = models.BooleanField(
