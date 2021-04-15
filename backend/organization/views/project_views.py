@@ -1,3 +1,4 @@
+from climateconnect_api.models.language import Language
 from organization.models.translations import ProjectTranslation
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.contrib.gis.db.models.functions import Distance
@@ -177,29 +178,34 @@ class CreateProjectView(APIView):
                 'message': "Passed status {} does not exist".format(request.data["status"])
             })  
 
+        translations_failed = False
         try:
-            translations = get_project_translations(request)            
+            translations = get_project_translations(request.data)            
         except ValueError:
-            return Response({
-                'message': "Please use the same language for all texts."
-            }, status=status.HTTP_400_BAD_REQUEST)  
+            translations_failed = True
 
-        project = create_new_project(request.data, translations['source_language'])
+        source_language = Language.get(language_code=translations['source_language'])
+        project = create_new_project(request.data, source_language)
 
-        for language in translations:
-            if not language == translations['source_language']:
-                texts = translations[language]
-                translation = ProjectTranslation.objects.create(
-                    project=project, 
-                    language=language,
-                    name_translation=texts['name'], 
-                    short_description_translation=texts['short_description']                
-                )
-                if 'description' in texts:
-                    translation.description_translation = texts['description']
-                if 'helpful_connections' in texts:
-                    translation.helpful_connections_translation = texts['helpful_connections']
-                translation.save()
+        if not translations_failed:
+            for language in translations:
+                if not language == translations['source_language']:
+                    texts = translations[language]
+                    try:
+                        language = Language.get(language_code=language)                    
+                        translation = ProjectTranslation.objects.create(
+                            project=project, 
+                            language=language,
+                            name_translation=texts['name'], 
+                            short_description_translation=texts['short_description']                
+                        )
+                        if 'description' in texts:
+                            translation.description_translation = texts['description']
+                        if 'helpful_connections' in texts:
+                            translation.helpful_connections_translation = texts['helpful_connections']
+                        translation.save()
+                    except Language.DoesNotExist:
+                        print("A language with language_code "+language+" does not exist")
 
         project_parents = ProjectParents.objects.create(
             project=project, parent_user=request.user

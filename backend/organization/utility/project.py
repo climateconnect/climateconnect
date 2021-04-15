@@ -86,17 +86,20 @@ def get_project_description(project: Project, language_code: str) -> str:
     
     return project.description
 
-def get_project_translations(request):
+def get_project_translations(data):
     texts = {
-        'short_description': request.data['short_description']
+        'name': data['name'],
+        'short_description': data['short_description']
     }
-    if 'description' in request.data:
-        texts['description'] = request.data['description']
+    if 'description' in data:
+        texts['description'] = data['description']
+    if 'helpful_connections' in data:
+        texts['helpful_connections'] = data['helpful_connections']
     try:
         return get_translations(
             texts,
-            request.data['translations'], 
-            request.data['source_language']
+            data['translations'], 
+            data['source_language']
         )
     except ValueError:
         raise ValueError
