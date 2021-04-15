@@ -53,7 +53,6 @@ export default function TranslateProject({
   saveAsDraft,
   goToPreviousStep,
   handleChangeTranslationContent,
-  changeToManualTranslation,
   translations,
   targetLanguage
 }) {
@@ -73,8 +72,7 @@ export default function TranslateProject({
   };
 
   const handleTranslationChange = (newValue, projectDataKey) => {
-    handleChangeTranslationContent(targetLanguage, {[projectDataKey]: newValue});
-    changeToManualTranslation();
+    handleChangeTranslationContent(targetLanguage, {[projectDataKey]: newValue}, true);
   };
 
   const automaticallyTranslateProject = async () => {
@@ -132,6 +130,16 @@ export default function TranslateProject({
           </Button>
         </div>
         <div className={classes.translationBlocksHeader}>
+        <TranslationBlock
+            projectData={projectData}
+            headlineTextKey="project_name"
+            projectDataKey="name"
+            rows={1}
+            handleOriginalTextChange={handleOriginalTextChange}
+            handleTranslationChange={handleTranslationChange}
+            translations={translations}
+            targetLanguage={targetLanguage}
+          />
           <TranslationBlock
             projectData={projectData}
             headlineTextKey="summary"
@@ -177,6 +185,9 @@ function TranslationBlock({
 }) {
   const texts = getProjectTexts({});
   const classes = useStyles();
+  console.log(headlineTextKey)
+  console.log(texts[headlineTextKey][targetLanguage])
+  console.log(targetLanguage)
   return (
     <div className={classes.translationBlock}>
       <TranslationBlockElement
@@ -191,7 +202,7 @@ function TranslationBlock({
         headline={texts[headlineTextKey][targetLanguage]}
         rows={rows}
         isTranslation
-        content={translations[targetLanguage][projectDataKey]}
+        content={translations[targetLanguage] && translations[targetLanguage][projectDataKey]}
         handleContentChange={(event) => handleTranslationChange(event.target.value, projectDataKey)}
       />
     </div>
