@@ -95,7 +95,6 @@ export default function ShareProjectRoot({
     return steps[stepNumber]
   }
 
-  const [isAutomaticTranslation, setIsAutomaticTranslation] = useState(true);
   const [sourceLanguage, setSourceLanguage] = useState(locale)
   const [targetLanguage, setTargetLanguage] = useState(locales.find(l => l !== locale))
   const [translations, setTranslations] = React.useState({});
@@ -126,17 +125,16 @@ export default function ShareProjectRoot({
     }
   });
 
-  const handleChangeTranslationContent = (locale, newTranslations) => {
+  const handleChangeTranslationContent = (locale, newTranslations, isManualChange) => {
     setTranslations({
       ...translations,
       [locale]: {
         ...translations[locale],
         ...newTranslations,
+        is_manual_translation: isManualChange ? true : false
       },
     });
   };
-
-  const changeToManualTranslation = () => setIsAutomaticTranslation(false);
 
   const goToNextStep = () => {
     const curStepIndex = steps.indexOf(steps.find((s) => s.key === curStep.key));
@@ -156,11 +154,11 @@ export default function ShareProjectRoot({
 
   const submitProject = async (event) => {
     event.preventDefault();
-    console.log(await formatProjectForRequest(project, sourceLanguage, translations, isAutomaticTranslation))
+    console.log(await formatProjectForRequest(project, sourceLanguage, translations))
     axios
       .post(
         process.env.API_URL + "/api/create_project/",
-        await formatProjectForRequest(project, sourceLanguage, translations, isAutomaticTranslation),
+        await formatProjectForRequest(project, sourceLanguage, translations),
         tokenConfig(token)
       )
       .then(function (response) {
@@ -180,7 +178,7 @@ export default function ShareProjectRoot({
     axios
       .post(
         process.env.API_URL + "/api/create_project/",
-        await formatProjectForRequest({ ...project, is_draft: true }, sourceLanguage, translations, isAutomaticTranslation, ),
+        await formatProjectForRequest({ ...project, is_draft: true }, sourceLanguage, translations),
         tokenConfig(token)
       )
       .then(function (response) {
@@ -261,7 +259,6 @@ export default function ShareProjectRoot({
               goToPreviousStep={goToPreviousStep}
               availabilityOptions={availabilityOptions}
               rolesOptions={rolesOptions}
-              changeToManualTranslation={changeToManualTranslation}
               translations={translations}
               sourceLanguage={sourceLanguage}
               targetLanguage={targetLanguage}
@@ -312,7 +309,7 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
   };
 };
 
-const formatProjectForRequest = async (project, sourceLanguage, translations, isAutomaticTranslation) => {
+const formatProjectForRequest = async (project, sourceLanguage, translations) => {
   return {
     ...project,
     status: project.status.id,
@@ -331,6 +328,5 @@ const formatProjectForRequest = async (project, sourceLanguage, translations, is
     thumbnail_image: await blobFromObjectUrl(project.thumbnail_image),    
     source_language: sourceLanguage,
     translations: translations ? translations : {},
-    is_manual_translation: !isAutomaticTranslation
   };
 };
