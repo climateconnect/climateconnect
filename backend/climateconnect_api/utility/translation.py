@@ -13,7 +13,8 @@ def get_locale(language_code):
         "DE": "de"
     }
     if(language_code not in LANGUAGE_CODE_MAP):
-        raise ValidationError('Unsupported language: ' + language_code)
+       print('Unsupported language: ' + language_code)
+       return "en"
     return LANGUAGE_CODE_MAP[language_code]
 
 
@@ -48,7 +49,8 @@ def translate_text(text, original_lang, target_lang):
     # If the source language is actually the target language (person with german locale wrote english text), 
     # Switch source language and target language (change original lang from german to english and target lang from english to german)
     # Since this means we just translated a text from german to german, we need to call the translate function again and translate to english
-    if get_locale(translation['detected_source_language']) == target_locale:
+    # (We only trust the detected source language if it's more than 150 characters)
+    if len(text) > 150 and get_locale(translation['detected_source_language']) == target_locale:
         target_locale = original_locale
         original_locale = get_locale(translation['detected_source_language'])
         translation = translate(text, target_locale)  
@@ -56,7 +58,8 @@ def translate_text(text, original_lang, target_lang):
     # If the detected source language is complete different from target_lang or original_lan: adapt original lang
     # Example: If person with german locale writes spanish text the text will be translated to english and source language will be spanish
     # (The example assumes that spanish is supported)
-    if not get_locale(translation['detected_source_language']) == original_locale:
+    # (We only trust the detected source language if it's more than 150 characters)
+    if len(text) > 150 and not get_locale(translation['detected_source_language']) == original_locale:
         original_locale = get_locale(translation['detected_source_language'])
 
     return {
@@ -77,7 +80,6 @@ def get_translations(texts, translations, source_language, depth=0):
             finished_translations[target_language] = {
                 'is_manual_translation': False
             }
-            print(translations[target_language])
             for key in texts.keys():
                 # If the user manually translated and the translation isn't an empty string: take the user's translation
                 if (
