@@ -1,6 +1,6 @@
 import { Button, CircularProgress, Container, makeStyles, TextField, Typography } from "@material-ui/core";
-import axios from "axios";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
+import { apiRequest } from "../../../public/lib/apiOperations";
 import getProjectTexts from "../../../public/texts/project_texts";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -61,6 +61,25 @@ export default function TranslateProject({
   const texts = getTexts({ page: "project", locale: locale });
   const [waitingForTranslation, setWaitingForTranslation] = React.useState(false)
 
+  if(translations[targetLanguage])
+    console.log(translations[targetLanguage])
+
+  useEffect(() => {
+    initializeTranslationsObject()
+  }, [])
+
+  const arrayTranslations = ["helpful_connections"]
+
+  const initializeTranslationsObject = () => {
+    if(!translations[targetLanguage]) {
+      const initializedObject = {}
+      for(const key of arrayTranslations) {
+        initializedObject[key] = []
+      }
+      handleChangeTranslationContent(targetLanguage, {...initializedObject}, false)
+    }
+  }
+
   const onClickPreviousStep = () => {
     goToPreviousStep();
   };
@@ -71,28 +90,46 @@ export default function TranslateProject({
     });
   };
 
-  const handleTranslationChange = (newValue, projectDataKey) => {
-    handleChangeTranslationContent(targetLanguage, {[projectDataKey]: newValue}, true);
+  const handleTranslationChange = (newValue, projectDataKey, indexInArray) => {
+    const newTranslationsObject = {
+      [projectDataKey]: newValue
+    }
+    //If it's an array, pass the whole array as the value
+    if(indexInArray || indexInArray === 0){
+      const arrayValue = [...translations[targetLanguage][projectDataKey]]
+      arrayValue[indexInArray] = newValue
+      newTranslationsObject[projectDataKey] = [...arrayValue]
+    }
+    handleChangeTranslationContent(targetLanguage, {...newTranslationsObject}, true);
   };
 
   const automaticallyTranslateProject = async () => {
     setWaitingForTranslation(true)
     try{
-      const response = await axios.post(
-        process.env.API_URL + "/api/translate_many/",
-        {
+      const response = await apiRequest({
+        method: "post",
+        url: "/api/translate_many/",
+        payload: {
           texts: {
+            name: projectData.name,
             short_description: projectData.short_description,
-            description: projectData.description
+            description: projectData.description,
+            helpful_connections: projectData.helpful_connections
           },
           target_language: "en"
-        }
-      )
+        },
+        locale: locale,
+        shouldThrowError: true
+      })
       const translations = response.data.translations
       const translationsObject = Object.keys(translations).reduce(function(obj, key){
-        obj[key] = translations[key]?.translated_text
+        if(Array.isArray(translations[key]))
+          obj[key] = translations[key].map(t => t?.translated_text)
+        else
+          obj[key] = translations[key]?.translated_text
         return obj
       }, {})
+      console.log(translationsObject)
       handleChangeTranslationContent(targetLanguage, translationsObject)
       setWaitingForTranslation(false)
     } catch(e) {
@@ -101,6 +138,8 @@ export default function TranslateProject({
       setWaitingForTranslation(false)
     }  
   };
+
+  console.log(projectData?.helpful_connections?.length > 0)
 
   return (
     <Container className={classes.root}>
@@ -160,6 +199,25 @@ export default function TranslateProject({
             translations={translations}
             targetLanguage={targetLanguage}
           />
+          {
+            projectData?.helpful_connections?.length > 0 &&
+            projectData.helpful_connections.map((connection, index)=> (
+              <TranslationBlock
+              key={index}
+              projectData={projectData}
+              projectDataKey="helpful_connections"
+              headlineTextKey="helpful_connections"
+              rows={1}
+              indexInArray={index}
+              isInArray
+              handleOriginalTextChange={handleOriginalTextChange}
+              handleTranslationChange={handleTranslationChange}
+              translations={translations}
+              targetLanguage={targetLanguage}
+              noHeadline={index>0}
+            />
+            ))            
+          }
         </div>
         <BottomNavigation
           className={classes.block}
@@ -182,40 +240,47 @@ function TranslationBlock({
   handleTranslationChange,
   translations,
   targetLanguage,
+  isInArray,
+  indexInArray,
+  noHeadline
 }) {
   const texts = getProjectTexts({});
   const classes = useStyles();
-  console.log(headlineTextKey)
-  console.log(texts[headlineTextKey][targetLanguage])
-  console.log(targetLanguage)
   return (
     <div className={classes.translationBlock}>
       <TranslationBlockElement
         headline={texts[headlineTextKey][targetLanguage]}
+        noHeadline={noHeadline}
         rows={rows}
-        content={projectData[projectDataKey]}
+        content={isInArray ? projectData[projectDataKey][indexInArray] : projectData[projectDataKey]}
         handleContentChange={(event) =>
           handleOriginalTextChange(event.target.value, projectDataKey)
         }
       />
       <TranslationBlockElement
         headline={texts[headlineTextKey][targetLanguage]}
+        noHeadline={noHeadline}
         rows={rows}
         isTranslation
-        content={translations[targetLanguage] && translations[targetLanguage][projectDataKey]}
-        handleContentChange={(event) => handleTranslationChange(event.target.value, projectDataKey)}
+        content={
+          translations[targetLanguage] && 
+          (isInArray ? translations[targetLanguage][projectDataKey][indexInArray] : translations[targetLanguage][projectDataKey])
+        }
+        handleContentChange={(event) => handleTranslationChange(event.target.value, projectDataKey, indexInArray)}
       />
     </div>
   );
 }
 
-function TranslationBlockElement({ headline, rows, content, handleContentChange }) {
+function TranslationBlockElement({ headline, rows, content, handleContentChange, noHeadline }) {
   const classes = useStyles();
   return (
     <div className={classes.translationBlockElement}>
-      <Typography color="primary" className={classes.sectionHeader}>
-        {headline}
-      </Typography>
+      {!noHeadline &&
+        <Typography color="primary" className={classes.sectionHeader}>
+          {headline}
+        </Typography>
+      }
       <TextField
         rows={rows}
         variant="outlined"
