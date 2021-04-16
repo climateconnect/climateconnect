@@ -27,9 +27,12 @@ class TranslateManyTextsView(APIView):
         for param in required_params:
             if param not in request.data:
                 raise ValidationError('Required parameter missing: ' + param)
-
         translations = {}
         for key in request.data['texts'].keys():
-            translations[key] = translate_text(request.data['texts'][key], get_language(), request.data['target_language'])
-        
+            if type(request.data['texts'][key]) is list:
+                translations[key] = request.data['texts'][key]
+                for i in range(len(request.data['texts'][key])):
+                    translations[key][i] = translate_text(request.data['texts'][key][i], request.LANGUAGE_CODE, request.data['target_language'])
+            else:
+                translations[key] = translate_text(request.data['texts'][key], request.LANGUAGE_CODE, request.data['target_language'])
         return Response({'translations': translations}, status=status.HTTP_200_OK)
