@@ -86,7 +86,7 @@ def get_project_description(project: Project, language_code: str) -> str:
     
     return project.description
 
-def get_project_translations(data):
+def get_project_translations(data:Dict):
     texts = {
         'name': data['name'],
         'short_description': data['short_description']
