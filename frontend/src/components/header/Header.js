@@ -17,7 +17,7 @@ import {
   Paper,
   Popper,
   SwipeableDrawer,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -666,8 +666,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
     setMenuOpen(!menuOpen);
   };
 
-  const handleCloseMenu = (e) => {
-    console.log(e.target);
+  const handleCloseMenu = () => {
     setMenuOpen(false);
   };
 

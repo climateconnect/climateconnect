@@ -397,6 +397,10 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Connection",
       de: "Connection",
     },
+    helpful_connections: {
+      en: "Helpful Connections",
+      de: "Hilfreiche Connections"
+    },
     add_a_helpful_connection: {
       en: "Add a helpful connection",
       de: "Füge eine hilfreiche Connection hinzu",

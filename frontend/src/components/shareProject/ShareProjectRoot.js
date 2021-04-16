@@ -126,14 +126,15 @@ export default function ShareProjectRoot({
   });
 
   const handleChangeTranslationContent = (locale, newTranslations, isManualChange) => {
-    setTranslations({
+    const newTranslationsObject = {
       ...translations,
       [locale]: {
         ...translations[locale],
         ...newTranslations,
         is_manual_translation: isManualChange ? true : false
       },
-    });
+    }
+    setTranslations({...newTranslationsObject});
   };
 
   const goToNextStep = () => {
@@ -286,7 +287,7 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
     collaborators_welcome: true,
     status: statusOptions.find((s) => s.id === DEFAULT_STATUS),
     skills: [],
-    helpful_connections: [],
+    helpful_connections: ["Bananensaftmanufakturen", "Bananenverkäufer*innen"],
     collaborating_organizations: [],
     loc: {
       osm_id: 1,
@@ -305,7 +306,7 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
     //leave in as empty string
     description: "Wir stellen schon seit 2018 Bananensaft her.",
     name: "tests",
-    project_tags: [{}]
+    project_tags: [{}],
   };
 };
 
