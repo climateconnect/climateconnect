@@ -1,15 +1,13 @@
+from climateconnect_api.serializers.role import RoleSerializer
+from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.conf import settings
 from django.utils.translation import get_language
-
 from rest_framework import serializers
 
 from organization.models import Organization, OrganizationMember
-from climateconnect_api.serializers.user import UserProfileStubSerializer
-from climateconnect_api.serializers.role import RoleSerializer
 from organization.serializers.tags import OrganizationTaggingSerializer
 from organization.utility.organization import (
-    get_organization_name, get_organization_short_description
-)
+    get_organization_name, get_organization_short_description)
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -147,7 +145,10 @@ class UserOrganizationSerializer(serializers.ModelSerializer):
         fields = ('organization',)
     
     def get_organization(self, obj):
-        return OrganizationStubSerializer(obj.organization).data
+        return OrganizationStubSerializer(
+            obj.organization, 
+            context={'language_code': self.context['language_code']}
+        ).data
 
 
 class OrganizationsFromProjectMember(serializers.ModelSerializer):
