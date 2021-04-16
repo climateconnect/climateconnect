@@ -73,7 +73,7 @@ class OrganizationMinimalSerializer(serializers.ModelSerializer):
         )
     
     def get_name(self, obj):
-        return get_organization_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_name(obj, get_language())
 
     def get_location(self, obj):
         if obj.location == None:
@@ -92,7 +92,7 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
         )
     
     def get_name(self, obj):
-        return get_organization_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_name(obj, get_language())
 
     def get_location(self, obj):
         if obj.location == None:

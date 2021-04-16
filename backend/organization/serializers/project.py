@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils.translation import get_language
 from location.models import Location
 from location.serializers import LocationStubSerializer
 from rest_framework import serializers
@@ -47,13 +48,13 @@ class ProjectSerializer(serializers.ModelSerializer):
         read_only_fields = ['url_slug']
 
     def get_name(self, obj):
-        return get_project_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_project_name(obj, get_language())
     
     def short_description(self, obj):
-        return get_project_short_description(obj, self.context['request'].LANGUAGE_CODE)
+        return get_project_short_description(obj, get_language())
     
     def get_description(self, obj):
-        return get_project_description(obj, self.context['request'].LANGUAGE_CODE)
+        return get_project_description(obj, get_language())
 
     def get_collaborating_organizations(self, obj):
         serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
@@ -137,7 +138,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
         )
     
     def get_name(self, obj):
-        return get_project_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_project_name(obj, get_language())
 
     def get_project_parents(self, obj):
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
@@ -168,10 +169,10 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         )
     
     def get_name(self, obj):
-        return get_project_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_project_name(obj, get_language())
     
     def get_short_description(self, obj):
-        return get_project_short_description(obj, self.context['request'].LANGUAGE_CODE)
+        return get_project_short_description(obj, get_language())
     
     def get_project_parents(self, obj):        
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
