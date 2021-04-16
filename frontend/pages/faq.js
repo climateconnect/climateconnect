@@ -1,9 +1,8 @@
 import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import axios from "axios";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
-import tokenConfig from "../public/config/tokenConfig";
+import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import FilteredFaqContent from "../src/components/faq/FilteredFaqContent";
@@ -88,7 +87,7 @@ const useStyles = makeStyles((theme) => {
 
 export async function getServerSideProps(ctx) {
   const { token } = Cookies(ctx);
-  const questions = await getQuestionsWithAnswers(token);
+  const questions = await getQuestionsWithAnswers(token, ctx.locale);
   return {
     props: {
       questionsBySection: questions.by_section,
@@ -153,9 +152,14 @@ export default function Faq({ questionsBySection, questions }) {
   );
 }
 
-const getQuestionsWithAnswers = async (token) => {
+const getQuestionsWithAnswers = async (token, ) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/list_faq/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/list_faq/", 
+      token: token,
+      locale: locale
+    });
     if (resp.data.length === 0) return null;
     else {
       return {

@@ -1,6 +1,6 @@
-import React from "react";
 import globby from "globby";
-import axios from "axios";
+import React from "react";
+import { apiRequest } from "../public/lib/apiOperations";
 
 const NOT_LISTED = [
   "/_app",
@@ -108,9 +108,9 @@ const renderEntry = (BASE_URL, url, priority, changefreq, lastmod) => {
 
 export async function getServerSideProps(ctx) {
   const [projectEntries, organizationEntries, memberEntries] = await Promise.all([
-    getEntries("projects"),
-    getEntries("organizations"),
-    getEntries("members"),
+    getEntries("projects", ctx.locale),
+    getEntries("organizations", ctx.locale),
+    getEntries("members", ctx.locale),
   ]);
   const res = ctx.res;
   res.setHeader("Content-Type", "text/xml");
@@ -124,9 +124,13 @@ export async function getServerSideProps(ctx) {
   return { props: {} };
 }
 
-const getEntries = async (entryTypePlural) => {
+const getEntries = async (entryTypePlural, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/sitemap/" + entryTypePlural + "/");
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/sitemap/" + entryTypePlural + "/",
+      locale: locale
+    });
     if (resp.data.length === 0) return null;
     else {
       return parseEntries(entryTypePlural, resp.data.results);

@@ -1,8 +1,8 @@
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import axios from "axios";
 import throttle from "lodash/throttle";
 import React, { useContext } from "react";
+import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
@@ -31,7 +31,11 @@ export default function AutoCompleteSearchBar({
 
     (async () => {
       if (searchValue) {
-        const response = await axios.get(baseUrl + searchValue);
+        const response = await apiRequest({
+          method: "get",
+          url: (baseUrl + searchValue).replace(process.env.API_URL, ""),
+          locale: locale
+        });
         if (active) {
           setOptions(
             response.data.results

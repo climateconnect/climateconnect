@@ -2,12 +2,10 @@ import { Button, Container, IconButton, TextField, Typography } from "@material-
 import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import axios from "axios";
 import Cookies from "next-cookies";
 import Router from "next/router";
 import React from "react";
-import tokenConfig from "../public/config/tokenConfig";
-import { sendToLogin } from "../public/lib/apiOperations";
+import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import ChatPreviews from "../src/components/communication/chat/ChatPreviews";
 import UserContext from "../src/components/context/UserContext";
@@ -74,7 +72,7 @@ export async function getServerSideProps(ctx) {
     const message = texts.you_have_to_log_in_to_see_your_inbox;
     return sendToLogin(ctx, message);
   }
-  const chatData = await getChatsOfLoggedInUser(token);
+  const chatData = await getChatsOfLoggedInUser(token, null, ctx.locale);
   return {
     props: {
       chatData: chatData.chats,
@@ -131,15 +129,18 @@ export default function Inbox({ chatData, token, next }) {
       } else {
         payload.profile_url_slug = newChatMembers[0].url_slug;
       }
-      axios
-        .post(process.env.API_URL + urlPostfix, payload, tokenConfig(token))
-        .then(async function (response) {
-          Router.push("/chat/" + response.data.chat_uuid + "/");
-        })
-        .catch(function (error) {
-          console.log(error.response);
-          // TODO: Show error message that user cant connect
-        });
+      apiRequest({
+        method: "post",
+        url: urlPostfix, 
+        payload: payload, 
+        token: token,
+        locale: locale
+      }).then(async function (response) {
+        Router.push("/chat/" + response.data.chat_uuid + "/");
+      }).catch(function (error) {
+        console.log(error.response);
+        // TODO: Show error message that user cant connect
+      });
     } else
       setErrorMessage(
         texts.please_add_one_or_more_users_to_chat_to_by_searching_them_in_the_search_bar_above
@@ -147,7 +148,7 @@ export default function Inbox({ chatData, token, next }) {
   };
 
   const loadMoreChats = async () => {
-    const newChatData = await getChatsOfLoggedInUser(token, next);
+    const newChatData = await getChatsOfLoggedInUser(token, next, locale);
     const newChats = newChatData.chats;
     setChatsState({
       ...chatsState,
@@ -270,10 +271,15 @@ const parseChats = (chats, user, texts) =>
       }))
     : [];
 
-async function getChatsOfLoggedInUser(token, next) {
+async function getChatsOfLoggedInUser(token, next, locale) {
   try {
-    const url = next ? next : process.env.API_URL + `/api/chats/?page=1`;
-    const resp = await axios.get(url, tokenConfig(token));
+    const url = next ? next : `/api/chats/?page=1`;
+    const resp = await apiRequest({
+      method: "get",
+      url: url, 
+      token: token,
+      locale: locale
+    });
     return {
       chats: parseChatData(resp.data.results),
       next: resp.data.next,

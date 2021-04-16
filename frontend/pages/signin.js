@@ -1,6 +1,5 @@
-import axios from "axios";
 import React, { useContext, useEffect } from "react";
-import { getLocalePrefix } from "../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import { redirectOnLogin } from "../public/lib/profileOperations";
 import getTexts from "../public/texts/texts";
@@ -63,23 +62,27 @@ export default function Signin() {
     //don't redirect to the post url
     event.preventDefault();
     setIsLoading(true);
-    axios
-      .post(API_URL + "/login/", {
+    apiRequest({
+      method: "post",
+      url: "/login/", 
+      payload: {
         username: values.username.toLowerCase(),
         password: values.password,
-      })
-      .then(async function (response) {
-        await signIn(response.data.token, response.data.expiry, redirectUrl);
-      })
-      .catch(function (error) {
-        console.log(error);
-        if (error.response && error.response.data) {
-          if (error.response.data.type === "not_verified")
-            setErrorMessage(<span>{texts.not_verified_error_message}</span>);
-          else setErrorMessage(error.response.data.message);
-          setIsLoading(false);
-        }
-      });
+      },
+      locale: locale
+    })
+    .then(async function (response) {
+      await signIn(response.data.token, response.data.expiry, redirectUrl);
+    })
+    .catch(function (error) {
+      console.log(error);
+      if (error.response && error.response.data) {
+        if (error.response.data.type === "not_verified")
+          setErrorMessage(<span>{texts.not_verified_error_message}</span>);
+        else setErrorMessage(error.response.data.message);
+        setIsLoading(false);
+      }
+    });
   };
 
   return (

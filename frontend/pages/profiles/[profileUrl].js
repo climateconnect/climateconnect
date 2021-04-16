@@ -1,11 +1,9 @@
 import { Button, Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import axios from "axios";
 import Cookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext } from "react";
-import tokenConfig from "../../public/config/tokenConfig";
-import { getLocalePrefix } from "../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 import getTexts from "../../public/texts/texts";
 import LoginNudge from "../../src/components/general/LoginNudge";
@@ -84,9 +82,9 @@ export async function getServerSideProps(ctx) {
   const { token } = Cookies(ctx);
   const profileUrl = encodeURI(ctx.query.profileUrl);
   const [profile, organizations, projects] = await Promise.all([
-    getProfileByUrlIfExists(profileUrl, token),
-    getOrganizationsByUser(profileUrl, token),
-    getProjectsByUser(profileUrl, token),
+    getProfileByUrlIfExists(profileUrl, token, ctx.locale),
+    getOrganizationsByUser(profileUrl, token, ctx.locale),
+    getProjectsByUser(profileUrl, token, ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -144,7 +142,7 @@ function ProfileLayout({
   const isOwnAccount = user && user.url_slug === profile.url_slug;
   const handleConnectBtn = async (e) => {
     e.preventDefault();
-    const chat = await startPrivateChat(profile, token);
+    const chat = await startPrivateChat(profile, token, locale);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
   const projectsRef = React.useRef(null);
@@ -233,12 +231,14 @@ function ProfileLayout({
 }
 
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
-async function getProfileByUrlIfExists(profileUrl, token) {
+async function getProfileByUrlIfExists(profileUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/member/" + profileUrl + "/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/member/" + profileUrl + "/",
+      token: token,
+      locale: locale
+    });
     return parseProfile(resp.data);
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
@@ -248,12 +248,14 @@ async function getProfileByUrlIfExists(profileUrl, token) {
   }
 }
 
-async function getProjectsByUser(profileUrl, token) {
+async function getProjectsByUser(profileUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/member/" + profileUrl + "/projects/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/member/" + profileUrl + "/projects/",
+      token: token,
+      locale: locale
+    });
     if (!resp.data) return null;
     else {
       return parseProjectStubs(resp.data.results);
@@ -265,12 +267,14 @@ async function getProjectsByUser(profileUrl, token) {
   }
 }
 
-async function getOrganizationsByUser(profileUrl, token) {
+async function getOrganizationsByUser(profileUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/member/" + profileUrl + "/organizations/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/member/" + profileUrl + "/organizations/",
+      token: token,
+      locale: locale
+    });
     if (!resp.data) return null;
     else {
       return parseOrganizationStubs(resp.data.results);

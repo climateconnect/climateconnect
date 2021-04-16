@@ -1,7 +1,7 @@
 import { Container, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import axios from "axios";
 import React, { useContext } from "react";
+import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import WideLayout from "../src/components/layouts/WideLayout";
@@ -101,8 +101,8 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export async function getServerSideProps() {
-  const { goal_name, goal_amount, current_amount } = await getDonations();
+export async function getServerSideProps(ctx) {
+  const { goal_name, goal_amount, current_amount } = await getDonations(ctx.locale);
   return {
     props: {
       goal_name: goal_name,
@@ -261,9 +261,13 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
   );
 }
 
-const getDonations = async () => {
+const getDonations = async (locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/donation_goal_progress/");
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/donation_goal_progress/",
+      locale: locale
+    });
     return {
       goal_name: resp.data.name ? resp.data.name : null,
       goal_start: resp.data.start_date ? resp.data.start_date : null,

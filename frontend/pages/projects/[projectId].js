@@ -1,11 +1,10 @@
 import { Container, Tab, Tabs, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import axios from "axios";
 import Cookies from "next-cookies";
 import React, { useContext, useEffect, useRef } from "react";
 import tokenConfig from "../../public/config/tokenConfig";
-import { redirect } from "../../public/lib/apiOperations";
+import { apiRequest, redirect } from "../../public/lib/apiOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
@@ -65,11 +64,11 @@ export async function getServerSideProps(ctx) {
   const { token } = Cookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectId);
   const [project, members, posts, comments, following] = await Promise.all([
-    getProjectByIdIfExists(projectUrl, token),
-    token ? getProjectMembersByIdIfExists(projectUrl, token) : [],
-    getPostsByProject(projectUrl, token),
-    getCommentsByProject(projectUrl, token),
-    token ? getIsUserFollowing(projectUrl, token) : false,
+    getProjectByIdIfExists(projectUrl, token, ctx.locale),
+    token ? getProjectMembersByIdIfExists(projectUrl, token, ctx.locale) : [],
+    getPostsByProject(projectUrl, token, ctx.locale),
+    getCommentsByProject(projectUrl, token, ctx.locale),
+    token ? getIsUserFollowing(projectUrl, token, ctx.locale) : false,
   ]);
   return {
     props: {
@@ -146,6 +145,7 @@ function ProjectLayout({
   texts,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext)
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const [hash, setHash] = React.useState(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({ follow: false, leave: false });
@@ -209,11 +209,13 @@ function ProjectLayout({
   const leaveProject = async () => {
     try {
       console.log(tokenConfig(token));
-      const resp = await axios.post(
-        process.env.API_URL + "/api/projects/" + project.url_slug + "/leave/",
-        {},
-        tokenConfig(token)
-      );
+      const resp = await apiRequest({
+        method: "post",
+        url: "/api/projects/" + project.url_slug + "/leave/",
+        payload: {},
+        token: token,
+        locale: locale
+      });
       console.log(resp);
       if (resp.status === 200)
         setMessage({
@@ -251,24 +253,25 @@ function ProjectLayout({
     const new_value = !isUserFollowing;
     setIsUserFollowing(new_value);
     setFollowingChangePending(true);
-    axios
-      .post(
-        process.env.API_URL + "/api/projects/" + project.url_slug + "/set_follow/",
-        { following: new_value },
-        tokenConfig(token)
-      )
-      .then(function (response) {
-        setIsUserFollowing(response.data.following);
-        setFollowingChangePending(false);
-        setMessage({
-          message: response.data.message,
-          messageType: "success",
-        });
-      })
-      .catch(function (error) {
-        console.log(error);
-        if (error && error.reponse) console.log(error.response);
+    apiRequest({
+      method: "post",
+      url: "/api/projects/" + project.url_slug + "/set_follow/",
+      payload: { following: new_value },
+      token: token,
+      locale: locale
+    })
+    .then(function (response) {
+      setIsUserFollowing(response.data.following);
+      setFollowingChangePending(false);
+      setMessage({
+        message: response.data.message,
+        messageType: "success",
       });
+    })
+    .catch(function (error) {
+      console.log(error);
+      if (error && error.reponse) console.log(error.response);
+    });
   };
 
   const requestLeaveProject = () => {
@@ -380,12 +383,14 @@ function TabContent({ value, index, children }) {
   return <div hidden={value !== index}>{children}</div>;
 }
 
-async function getProjectByIdIfExists(projectUrl, token) {
+async function getProjectByIdIfExists(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/",
+      token: token,
+      locale: locale
+    });
     if (resp.data.length === 0) return null;
     else {
       return parseProject(resp.data);
@@ -396,12 +401,14 @@ async function getProjectByIdIfExists(projectUrl, token) {
   }
 }
 
-async function getIsUserFollowing(projectUrl, token) {
+async function getIsUserFollowing(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/am_i_following/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/am_i_following/",
+      token: token,
+      locale: locale
+    });
     if (resp.data.length === 0) return null;
     else {
       //TODO: get comments and timeline posts and project taggings
@@ -413,12 +420,14 @@ async function getIsUserFollowing(projectUrl, token) {
   }
 }
 
-async function getPostsByProject(projectUrl, token) {
+async function getPostsByProject(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/posts/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/posts/",
+      token: token,
+      locale: locale
+    });
     if (resp.data.length === 0) return null;
     else {
       return resp.data.results;
@@ -429,12 +438,14 @@ async function getPostsByProject(projectUrl, token) {
   }
 }
 
-async function getCommentsByProject(projectUrl, token) {
+async function getCommentsByProject(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/comments/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/comments/",
+      token: token,
+      locale: locale
+    });
     if (resp.data.length === 0) return null;
     else {
       return resp.data.results;
@@ -445,12 +456,14 @@ async function getCommentsByProject(projectUrl, token) {
   }
 }
 
-async function getProjectMembersByIdIfExists(projectUrl, token) {
+async function getProjectMembersByIdIfExists(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/members/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/members/",
+      token: token,
+      locale: locale
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return parseProjectMembers(resp.data.results);

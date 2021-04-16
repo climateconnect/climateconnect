@@ -1,10 +1,8 @@
-import axios from "axios";
 import Cookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext, useRef, useState } from "react";
-import tokenConfig from "../../public/config/tokenConfig";
 import getOrganizationInfoMetadata from "../../public/data/organization_info_metadata.js";
-import { getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
 import { indicateWrongLocation, isLocationValid } from "../../public/lib/locationOperations";
 import getTexts from "../../public/texts/texts";
 import EditAccountPage from "../../src/components/account/EditAccountPage";
@@ -23,8 +21,8 @@ export async function getServerSideProps(ctx) {
   }
   const url = encodeURI(ctx.query.organizationUrl);
   const [organization, tagOptions] = await Promise.all([
-    getOrganizationByUrlIfExists(url, token),
-    getOrganizationTagsOptions(),
+    getOrganizationByUrlIfExists(url, token, ctx.locale),
+    getOrganizationTagsOptions(ctx.locale),
   ]);
   return {
     organization: organization,
@@ -81,24 +79,25 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
       handleSetErrorMessage(error);
     } else {
       const org = await parseForRequest(getChanges(editedOrg, organization));
-      axios
-        .patch(
-          process.env.API_URL + "/api/organizations/" + encodeURI(organization.url_slug) + "/",
-          org,
-          tokenConfig(token)
-        )
-        .then(function () {
-          Router.push({
-            pathname: "/organizations/" + organization.url_slug,
-            query: {
-              message: texts.successfully_edited_organization,
-            },
-          });
-        })
-        .catch(function (error) {
-          console.log(error);
-          if (error) console.log(error.response);
+      apiRequest({
+        method: "patch",
+        url: "/api/organizations/" + encodeURI(organization.url_slug) + "/",
+        payload: org,
+        token: token,
+        locale: locale
+      })
+      .then(function () {
+        Router.push({
+          pathname: "/organizations/" + organization.url_slug,
+          query: {
+            message: texts.successfully_edited_organization,
+          },
         });
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error) console.log(error.response);
+      });
     }
   };
   const handleCancel = () => {
@@ -153,12 +152,14 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
 }
 
 // This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
-async function getOrganizationByUrlIfExists(organizationUrl, token) {
+async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/organizations/" + organizationUrl + "/?edit_view=true",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/?edit_view=true",
+      token: token,
+      locale: locale
+    });
     return parseOrganization(resp.data);
   } catch (err) {
     console.log(err);

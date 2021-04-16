@@ -8,13 +8,15 @@ export async function apiRequest({
   token, 
   payload, 
   shouldThrowError, 
-  locale
+  locale,
+  headers
 }) {
+  console.log("url: "+url)
   const acceptLanguageHeadersByLocale = {
     de: "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
     en: "en-US,en;q=0.9,de-DE;q=0.8,de;q=0.7"
   }
-  const additionalHeaders = {}
+  const additionalHeaders = headers ? headers : {}
   if(locale && acceptLanguageHeadersByLocale[locale]) {
     additionalHeaders["Accept-Language"] = acceptLanguageHeadersByLocale[locale]
   }

@@ -1,9 +1,8 @@
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import axios from "axios";
 import Router from "next/router";
 import React, { useContext, useEffect, useState } from "react";
-import tokenConfig from "../../../public/config/tokenConfig";
+import { apiRequest } from "../../../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -156,40 +155,42 @@ export default function ShareProjectRoot({
   const submitProject = async (event) => {
     event.preventDefault();
     console.log(await formatProjectForRequest(project, sourceLanguage, translations))
-    axios
-      .post(
-        process.env.API_URL + "/api/create_project/",
-        await formatProjectForRequest(project, sourceLanguage, translations),
-        tokenConfig(token)
-      )
-      .then(function (response) {
-        setProject({ ...project, url_slug: response.data.url_slug });
-        setFinished(true);
-      })
-      .catch(function (error) {
-        console.log(error);
-        setProject({ ...project, error: true });
-        console.log(error)
-        if (error) console.log(error.response);
-      });    
+    apiRequest({
+      method: "post",
+      url: "/api/create_project/",
+      payload: await formatProjectForRequest(project, sourceLanguage, translations),
+      token: token,
+      locale: locale
+    })
+    .then(function (response) {
+      setProject({ ...project, url_slug: response.data.url_slug });
+      setFinished(true);
+    })
+    .catch(function (error) {
+      console.log(error);
+      setProject({ ...project, error: true });
+      console.log(error)
+      if (error) console.log(error.response);
+    });    
   };
 
   const saveAsDraft = async (event) => {
     event.preventDefault();
-    axios
-      .post(
-        process.env.API_URL + "/api/create_project/",
-        await formatProjectForRequest({ ...project, is_draft: true }, sourceLanguage, translations),
-        tokenConfig(token)
-      )
-      .then(function (response) {
-        setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
-      })
-      .catch(function (error) {
-        console.log(error);
-        setProject({ ...project, error: true });
-        if (error) console.log(error.response);
-      });
+    apiRequest({
+      method: "post",
+      url: "/api/create_project/",
+      payload: await formatProjectForRequest({ ...project, is_draft: true }, sourceLanguage, translations),
+      token: token,
+      locale: locale
+    })
+    .then(function (response) {
+      setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
+    })
+    .catch(function (error) {
+      console.log(error);
+      setProject({ ...project, error: true });
+      if (error) console.log(error.response);
+    });
     setFinished(true);
   };
 

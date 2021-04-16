@@ -1,7 +1,6 @@
-import Axios from "axios";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
-import tokenConfig from "../public/config/tokenConfig";
+import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import SettingsPage from "../src/components/account/SettingsPage";
 import UserContext from "../src/components/context/UserContext";
@@ -12,7 +11,7 @@ export async function getServerSideProps(ctx) {
   const { token } = Cookies(ctx);
   return {
     props: {
-      settings: await getSettings(token),
+      settings: await getSettings(token, ctx.locale),
       token: token,
     },
   };
@@ -43,12 +42,14 @@ export default function Settings({ settings, token }) {
     );
 }
 
-const getSettings = async (token) => {
+const getSettings = async (token, locale) => {
   try {
-    const resp = await Axios.get(
-      process.env.API_URL + "/api/account_settings/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/account_settings/",
+      token: token,
+      locale: locale
+    });
     return resp.data;
   } catch (err) {
     if (err.response && err.response.data) {

@@ -1,8 +1,7 @@
-import axios from "axios";
 import Cookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext, useRef, useState } from "react";
-import tokenConfig from "../public/config/tokenConfig";
+import { apiRequest } from "../public/lib/apiOperations";
 import { blobFromObjectUrl, getImageUrl } from "../public/lib/imageOperations";
 import { indicateWrongLocation, isLocationValid } from "../public/lib/locationOperations";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
@@ -18,10 +17,10 @@ import EditAccountPage from "./../src/components/account/EditAccountPage";
 export async function getServerSideProps(ctx) {
   const { token } = Cookies(ctx);
   const [skillsOptions, infoMetadata, availabilityOptions, userProfile] = await Promise.all([
-    getSkillsOptions(token),
+    getSkillsOptions(token, ctx.locale),
     getProfileInfoMetadata(ctx.locale),
-    getAvailabilityOptions(token),
-    getUserProfile(token),
+    getAvailabilityOptions(token, ctx.locale),
+    getUserProfile(token, ctx.locale),
   ]);
   return {
     props: {
@@ -78,8 +77,13 @@ export default function EditProfilePage({
     }
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
     const payload = await getProfileWithoutRedundantOptions(user, parsedProfile);
-    axios
-      .post(process.env.API_URL + "/api/edit_profile/", payload, tokenConfig(token))
+    apiRequest({
+      method: "post",
+      url: "/api/edit_profile/", 
+      payload: payload, 
+      token: token,
+      locale: locale
+    })
       .then(function (response) {
         Router.push({
           pathname: "/profiles/" + response.data.url_slug,
@@ -152,9 +156,14 @@ function ProfileLayout({
   );
 }
 
-async function getSkillsOptions(token) {
+async function getSkillsOptions(token, locale) {
   try {
-    const resp = await axios.get(process.env.API_URL + "/skills/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/skills/", 
+      token: token,
+      locale: locale
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return parseOptions(resp.data.results, "parent_skill");
@@ -166,9 +175,14 @@ async function getSkillsOptions(token) {
   }
 }
 
-async function getAvailabilityOptions(token) {
+async function getAvailabilityOptions(token, locale) {
   try {
-    const resp = await axios.get(process.env.API_URL + "/availability/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/availability/", 
+      token: token,
+      locale: locale
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -180,9 +194,14 @@ async function getAvailabilityOptions(token) {
   }
 }
 
-async function getUserProfile(token) {
+async function getUserProfile(token, locale) {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/edit_profile/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/edit_profile/", 
+      token: token,
+      locale: locale
+    });
     return resp.data;
   } catch (err) {
     console.log(err);

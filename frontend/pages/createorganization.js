@@ -1,15 +1,13 @@
-import axios from "axios";
 import Cookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext, useRef } from "react";
-import tokenConfig from "../public/config/tokenConfig";
-import { getLocalePrefix } from "../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../public/lib/imageOperations";
 import {
   getLocationValue,
   indicateWrongLocation,
   isLocationValid,
-  parseLocation,
+  parseLocation
 } from "../public/lib/locationOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -22,8 +20,8 @@ import EnterDetailledOrganizationInfo from "./../src/components/organization/Ent
 export async function getServerSideProps(ctx) {
   const { token } = Cookies(ctx);
   const [tagOptions, rolesOptions] = await Promise.all([
-    await getTags(token),
-    await getRolesOptions(token),
+    await getTags(token, ctx.locale),
+    await getRolesOptions(token, ctx.locale),
   ]);
   return {
     props: {
@@ -104,9 +102,11 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         );
         return;
       }
-      const resp = await axios.get(
-        process.env.API_URL + "/api/organizations/?search=" + values.organizationname
-      );
+      const resp = await apiRequest({
+        method: "get",
+        url: "/api/organizations/?search=" + values.organizationname,
+        locale: locale
+      });
       if (resp.data.results && resp.data.results.find((r) => r.name === values.organizationname)) {
         const org = resp.data.results.find((r) => r.name === values.organizationname);
         handleSetErrorMessages({
@@ -168,29 +168,30 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         return;
       }
     }
-    axios
-      .post(
-        process.env.API_URL + "/api/create_organization/",
-        organizationToSubmit,
-        tokenConfig(token)
-      )
-      .then(function (response) {
-        Router.push({
-          pathname: "/organizations/" + response.data.url_slug,
-          query: {
-            message: texts.you_have_successfully_created_an_organization_you_can_add_members,
-          },
-        });
-      })
-      .catch(function (error) {
-        console.log(error);
-        if (error) console.log(error?.response?.data);
-        if (error?.response?.data?.message)
-          handleSetErrorMessages({
-            errorMessages,
-            detailledOrganizationInfo: error?.response?.data?.message,
-          });
+    apiRequest({
+      method: "post",
+      url: "/api/create_organization/",
+      payload: organizationToSubmit,
+      token: token,
+      locale: locale
+    })
+    .then(function (response) {
+      Router.push({
+        pathname: "/organizations/" + response.data.url_slug,
+        query: {
+          message: texts.you_have_successfully_created_an_organization_you_can_add_members,
+        },
       });
+    })
+    .catch(function (error) {
+      console.log(error);
+      if (error) console.log(error?.response?.data);
+      if (error?.response?.data?.message)
+        handleSetErrorMessages({
+          errorMessages,
+          detailledOrganizationInfo: error?.response?.data?.message,
+        });
+    });
   };
 
   if (!user)
@@ -231,9 +232,14 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     );
 }
 
-const getRolesOptions = async (token) => {
+const getRolesOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/roles/", 
+      token: token, 
+      locale: locale
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -245,12 +251,14 @@ const getRolesOptions = async (token) => {
   }
 };
 
-async function getTags(token) {
+async function getTags(token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/organizationtags/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizationtags/",
+      token: token,
+      locale: locale
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results.map((t) => {

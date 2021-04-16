@@ -1,14 +1,12 @@
 import { Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import axios from "axios";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
-import tokenConfig from "../../public/config/tokenConfig";
-import { getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
 import {
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions,
+  getStatusOptions
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import getTexts from "../../public/texts/texts";
@@ -44,12 +42,12 @@ export async function getServerSideProps(ctx) {
     statusOptions,
     tagsOptions,
   ] = await Promise.all([
-    getProjectByIdIfExists(projectUrl, token),
-    getMembersByProject(projectUrl, token),
-    getSkillsOptions(),
-    getUserOrganizations(token),
-    getStatusOptions(),
-    getProjectTagsOptions(),
+    getProjectByIdIfExists(projectUrl, token, ctx.locale),
+    getMembersByProject(projectUrl, token, ctx.locale),
+    getSkillsOptions(ctx.locale),
+    getUserOrganizations(token, ctx.locale),
+    getStatusOptions(ctx.locale),
+    getProjectTagsOptions(null, ctx.locale),
   ]);
   return {
     props: {
@@ -160,12 +158,14 @@ export default function EditProjectPage({
   }
 }
 
-async function getProjectByIdIfExists(projectUrl, token) {
+async function getProjectByIdIfExists(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/?edit_view=true",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/?edit_view=true",
+      token: token,
+      locale: locale
+    });
     if (resp.data.length === 0) return null;
     else {
       return parseProject(resp.data);
@@ -186,12 +186,14 @@ const parseProject = (project) => ({
   skills: project.skills.map((s) => ({ ...s, key: s.id })),
 });
 
-const getUserOrganizations = async (token) => {
+const getUserOrganizations = async (token, locale) => {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/my_organizations/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/my_organizations/",
+      token: token,
+      locale: locale
+    });
     if (resp.data.length === 0) return null;
     else {
       return resp.data.map((o) => o.organization);
@@ -203,12 +205,14 @@ const getUserOrganizations = async (token) => {
   }
 };
 
-async function getMembersByProject(projectUrl, token) {
+async function getMembersByProject(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/members/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/members/",
+      token: token,
+      locale: locale
+    });
     if (!resp.data) return null;
     else {
       return resp.data.results;

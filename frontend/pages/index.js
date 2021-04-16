@@ -1,8 +1,6 @@
 import { Button, makeStyles } from "@material-ui/core";
-import axios from "axios";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import tokenConfig from "../public/config/tokenConfig";
-import { getLocalePrefix } from "../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import DonationsBanner from "../src/components/landingPage/DonationsBanner";
@@ -94,9 +92,9 @@ export default function Index() {
             setPos("moved");
           }
         });
-        const projects = await getProjects();
-        const organizations = await getOrganizations();
-        const hubs = await getHubs();
+        const projects = await getProjects(locale);
+        const organizations = await getOrganizations(locale);
+        const hubs = await getHubs(locale);
         setElements({
           projects: projects,
           organizations: organizations,
@@ -157,14 +155,15 @@ export default function Index() {
   );
 }
 
-const getProjects = async (token) => {
+const getProjects = async (token, locale) => {
   try {
-    // Read local API URL. This should hit the Django endpoint?
-    // That's the featured projects endpoint?
 
-    const featuredProjectsEndpoint = `${process.env.API_URL}/api/featured_projects/`;
-
-    const resp = await axios.get(featuredProjectsEndpoint, tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/featured_projects/`, 
+      token: token,
+      locale: locale
+    });
 
     if (resp.data.length === 0) {
       return null;
@@ -180,12 +179,13 @@ const getProjects = async (token) => {
   }
 };
 
-const getOrganizations = async (token) => {
+const getOrganizations = async (locale) => {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/featured_organizations/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/featured_organizations/",
+      locale: locale
+    });
     if (resp.data.length === 0) return null;
     else return parseOrganizations(resp.data.results);
   } catch (err) {
@@ -214,9 +214,13 @@ const parseOrganizations = (organizations) => {
   }));
 };
 
-const getHubs = async () => {
+const getHubs = async (locale) => {
   try {
-    const resp = await axios.get(`${process.env.API_URL}/api/hubs/`);
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/`,
+      locale: locale
+    });
     return resp.data.results;
   } catch (err) {
     if (err.response && err.response.data)

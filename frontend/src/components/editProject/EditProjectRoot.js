@@ -1,9 +1,8 @@
 import { Container, Divider, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import axios from "axios";
 import Router from "next/router";
 import React, { useContext, useRef } from "react";
-import tokenConfig from "../../../public/config/tokenConfig";
+import { apiRequest } from "../../../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
@@ -80,24 +79,25 @@ export default function EditProjectRoot({
     if (!valid) {
       return false;
     }
-    axios
-      .patch(
-        process.env.API_URL + "/api/projects/" + project.url_slug + "/",
-        await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
-        tokenConfig(token)
-      )
-      .then(function () {
-        Router.push({
-          pathname: "/profiles/" + user.url_slug,
-          query: {
-            message: texts.you_have_successfully_edited_your_project,
-          },
-        });
-      })
-      .catch(function (error) {
-        console.log(error);
-        if (error) console.log(error.response);
+    apiRequest({
+      method: "patch",
+      url: "/api/projects/" + project.url_slug + "/",
+      payload: await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
+      token: token,
+      locale: locale
+    })
+    .then(function () {
+      Router.push({
+        pathname: "/profiles/" + user.url_slug,
+        query: {
+          message: texts.you_have_successfully_edited_your_project,
+        },
       });
+    })
+    .catch(function (error) {
+      console.log(error);
+      if (error) console.log(error.response);
+    });
   };
 
   const additionalButtons = [
@@ -126,44 +126,48 @@ export default function EditProjectRoot({
       was_draft = true;
     }
 
-    axios
-      .patch(
-        process.env.API_URL + "/api/projects/" + project.url_slug + "/",
-        await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
-        tokenConfig(token)
-      )
-      .then(function (response) {
-        Router.push({
-          pathname: "/projects/" + response.data.url_slug,
-          query: {
-            message: was_draft
-              ? texts.your_project_has_been_published_great_work
-              : texts.you_have_successfully_edited_your_project,
-          },
-        });
-      })
-      .catch(function (error) {
-        console.log(error);
-        if (error) console.log(error.response);
+    apiRequest({
+      method: "patch",
+      url: "/api/projects/" + project.url_slug + "/",
+      payload: await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
+      token: token,
+      locale: locale
+    })
+    .then(function (response) {
+      Router.push({
+        pathname: "/projects/" + response.data.url_slug,
+        query: {
+          message: was_draft
+            ? texts.your_project_has_been_published_great_work
+            : texts.you_have_successfully_edited_your_project,
+        },
       });
+    })
+    .catch(function (error) {
+      console.log(error);
+      if (error) console.log(error.response);
+    });
   };
 
   const deleteProject = () => {
-    axios
-      .delete(process.env.API_URL + "/api/projects/" + project.url_slug + "/", tokenConfig(token))
-      .then(function (response) {
-        console.log(response);
-        Router.push({
-          pathname: "/profiles/" + user.url_slug,
-          query: {
-            message: texts.you_have_successfully_deleted_your_project,
-          },
-        });
-      })
-      .catch(function (error) {
-        console.log(error);
-        if (error) console.log(error.response);
+    apiRequest({
+      method: "delete",
+      url: "/api/projects/" + project.url_slug + "/", 
+      token: token,
+      locale: locale
+    }).then(function (response) {
+      console.log(response);
+      Router.push({
+        pathname: "/profiles/" + user.url_slug,
+        query: {
+          message: texts.you_have_successfully_deleted_your_project,
+        },
       });
+    })
+    .catch(function (error) {
+      console.log(error);
+      if (error) console.log(error.response);
+    });
   };
 
   return (

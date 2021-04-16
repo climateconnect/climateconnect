@@ -1,9 +1,7 @@
 import { Typography } from "@material-ui/core";
-import axios from "axios";
 import cookies from "next-cookies";
 import React, { useContext, useEffect } from "react";
-import tokenConfig from "../../public/config/tokenConfig";
-import { redirect, sendToLogin } from "../../public/lib/apiOperations";
+import { apiRequest, redirect, sendToLogin } from "../../public/lib/apiOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import Layout from "../../src/components/layouts/layout";
@@ -29,11 +27,13 @@ async function newEmailVerification(uuid, token, locale) {
     uuid: uuid,
   };
   try {
-    const response = await axios.post(
-      process.env.API_URL + "/api/verify_new_email/",
-      payload,
-      tokenConfig(token)
-    );
+    const response = await apiRequest({
+      method: "post",
+      url: "/api/verify_new_email/",
+      payload: payload,
+      token: token,
+      locale: locale
+    });
     redirect("/browse", {
       message: response.data.message,
     });

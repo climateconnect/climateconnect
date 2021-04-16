@@ -1,10 +1,9 @@
 import { Button, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
-import axios from "axios";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
-import tokenConfig from "../../../public/config/tokenConfig";
+import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FeedbackDialog from "./FeedbackDialog";
@@ -45,11 +44,13 @@ export default function FeedbackButton({ justLink, children }) {
   const submitFeedback = async (data) => {
     const token = cookies.get("token");
     try {
-      const response = await axios.post(
-        process.env.API_URL + "/api/feedback/",
-        data,
-        tokenConfig(token)
-      );
+      const response = await apiRequest({
+        method: "post",
+        url: "/api/feedback/",
+        payload: data,
+        token: token,
+        locale: locale
+      });
       setMessage(response.data);
     } catch (e) {
       console.log(e);

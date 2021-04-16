@@ -4,13 +4,11 @@ import EmailIcon from "@material-ui/icons/Email";
 import ExploreIcon from "@material-ui/icons/Explore";
 import LanguageIcon from "@material-ui/icons/Language";
 import PlaceIcon from "@material-ui/icons/Place";
-import Axios from "axios";
 import Router from "next/router";
 import React, { useContext, useEffect } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
-import tokenConfig from "../../../public/config/tokenConfig";
-import { redirect } from "../../../public/lib/apiOperations";
+import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
@@ -94,7 +92,7 @@ export default function ProjectOverview({
         errorMessage: texts.please_create_an_account_or_log_in_to_contact_a_projects_organizer,
       });
     }
-    const chat = await startPrivateChat(creator, token);
+    const chat = await startPrivateChat(creator, token, locale);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
   const user_permission =
@@ -110,11 +108,11 @@ export default function ProjectOverview({
   const toggleShowFollowers = async () => {
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
-      const retrievedFollowers = await getFollowers(project, token);
+      const retrievedFollowers = await getFollowers(project, token, locale);
       const notification_to_set_read = notifications.filter(
         (n) => n.notification_type === 4 && n.project.url_slug === project.url_slug
       );
-      await setNotificationsRead(token, notification_to_set_read);
+      await setNotificationsRead(token, notification_to_set_read, locale);
       await refreshNotifications();
       setFollowers(retrievedFollowers);
       setInitiallyCaughtFollowers(true);
@@ -372,12 +370,14 @@ function FollowButton({
   );
 }
 
-const getFollowers = async (project, token) => {
+const getFollowers = async (project, token, locale) => {
   try {
-    const resp = await Axios.get(
-      process.env.API_URL + "/api/projects/" + project.url_slug + "/followers/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + project.url_slug + "/followers/",
+      token: token,
+      locale: locale
+    });
     return resp.data.results;
   } catch (err) {
     console.log(err);

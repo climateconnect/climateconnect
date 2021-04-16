@@ -1,16 +1,15 @@
 import { makeStyles, Typography } from "@material-ui/core";
-import axios from "axios";
 import NextCookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import tokenConfig from "../../public/config/tokenConfig";
+import { apiRequest } from "../../public/lib/apiOperations";
 import { buildUrlEndingFromFilters } from "../../public/lib/filterOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo,
+  membersWithAdditionalInfo
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { parseData } from "../../public/lib/parsingOperations";
@@ -57,13 +56,13 @@ export async function getServerSideProps(ctx) {
     skills,
     project_statuses,
   ] = await Promise.all([
-    getHubData(hubUrl),
-    getProjects({ page: 1, token: token, hubUrl: hubUrl }),
-    getOrganizations({ page: 1, token: token, hubUrl: hubUrl }),
-    getProjectTagsOptions(hubUrl),
-    getOrganizationTagsOptions(),
-    getSkillsOptions(),
-    getStatusOptions(),
+    getHubData(hubUrl, ctx.locale),
+    getProjects({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
+    getOrganizations({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
+    getProjectTagsOptions(hubUrl, ctx.locale),
+    getOrganizationTagsOptions(ctx.locale),
+    getSkillsOptions(ctx.locale),
+    getStatusOptions(ctx.locale),
   ]);
   return {
     props: {
@@ -140,6 +139,7 @@ export default function Hub({
         token: token,
         urlEnding: urlEnding,
         hubUrl: hubUrl,
+        locale: locale
       });
       const newData =
         type === "members" ? membersWithAdditionalInfo(newDataObject.members) : newDataObject[type];
@@ -172,6 +172,7 @@ export default function Hub({
         token: token,
         urlEnding: newUrlEnding,
         hubUrl: hubUrl,
+        locale: locale
       });
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
@@ -201,6 +202,7 @@ export default function Hub({
         token: token,
         urlEnding: newSearchQueryParam,
         hubUrl: hubUrl,
+        locale: locale
       });
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
@@ -267,10 +269,14 @@ const HubDescription = ({ hub, texts }) => {
   );
 };
 
-const getHubData = async (url_slug) => {
+const getHubData = async (url_slug, locale) => {
   console.log("getting data for hub " + url_slug);
   try {
-    const resp = await axios.get(`${process.env.API_URL}/api/hubs/${url_slug}/`);
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/${url_slug}/`,
+      locale: locale
+    });
     return resp.data;
   } catch (err) {
     if (err.response && err.response.data)
@@ -280,34 +286,41 @@ const getHubData = async (url_slug) => {
   }
 };
 
-async function getProjects({ page, token, urlEnding, hubUrl }) {
+async function getProjects({ page, token, urlEnding, hubUrl, locale }) {
   return await getDataFromServer({
     type: "projects",
     page: page,
     token: token,
     urlEnding: urlEnding,
     hubUrl: hubUrl,
+    locale: locale
   });
 }
 
-async function getOrganizations({ page, token, urlEnding, hubUrl }) {
+async function getOrganizations({ page, token, urlEnding, hubUrl, locale }) {
   return await getDataFromServer({
     type: "organizations",
     page: page,
     token: token,
     urlEnding: urlEnding,
     hubUrl: hubUrl,
+    locale: locale
   });
 }
 
-async function getDataFromServer({ type, page, token, urlEnding, hubUrl }) {
-  let url = `${process.env.API_URL}/api/${type}/?page=${page}&hub=${hubUrl}`;
+async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale }) {
+  let url = `/api/${type}/?page=${page}&hub=${hubUrl}`;
   console.log(`getting ${type} data for category ${hubUrl}`);
   if (urlEnding) url += urlEnding;
 
   try {
     console.log(`Getting data for ${type} at ${url}`);
-    const resp = await axios.get(url, tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: url, 
+      token: token,
+      locale: locale
+    });
 
     if (resp.data.length === 0) {
       console.log(`No data of type ${type} found...`);

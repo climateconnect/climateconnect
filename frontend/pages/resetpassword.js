@@ -1,7 +1,5 @@
-import axios from "axios";
 import React, { useContext } from "react";
-import tokenConfig from "../public/config/tokenConfig";
-import { redirect } from "../public/lib/apiOperations";
+import { apiRequest, redirect } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import Form from "../src/components/general/Form";
@@ -29,11 +27,12 @@ export default function ResetPassword() {
     event.preventDefault();
     if (values.email) {
       try {
-        const response = await axios.post(
-          process.env.API_URL + "/api/send_reset_password_email/",
-          { email: values.email },
-          tokenConfig
-        );
+        const response = await apiRequest({
+          method: "post",
+          url: "/api/send_reset_password_email/",
+          payload: { email: values.email },
+          locale: locale
+        });
         redirect("/browse", {
           message: response.data.message,
         });
