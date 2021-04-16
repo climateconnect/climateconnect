@@ -65,6 +65,11 @@ class ListOrganizationsAPIView(ListAPIView):
     def get_serializer_class(self):
         return OrganizationCardSerializer
 
+    def get_serializer_context(self):
+        return {
+            'language_code': self.request.LANGUAGE_CODE
+        }
+
     def get_queryset(self):
         organizations  = Organization.objects.all()
 
@@ -129,7 +134,7 @@ class CreateOrganizationView(APIView):
     def post(self, request):
         required_params = [
             'name', 'team_members', 'location', 'image', 'organization_tags',
-            'is_manual_translation'
+            'translations'
         ]
         for param in required_params:
             if param not in request.data:
@@ -183,26 +188,21 @@ class CreateOrganizationView(APIView):
             organization.save()
 
             # Create organization translation
-            if translations and request.data['is_manual_translation']:
+            if translations:
                 for language_name in translations:
                     if language_name != translations['source_language']:
                         texts = translations[language_name]
                         language = Language.objects.get(name=language_name)
-                        create_orgnaization_translation(
-                            organization, language, 
-                            texts, request.data['is_manual_translation']
-                        )
-            elif translations and not request.data['is_manual_translation']:
-                # TODO (Dip 15-4-2021): Add celery task here. 
-                # This would change when I add celery in the morning. 
-                for language_name in translations:
-                    if language_name != translations['source_language']:
-                        texts = translations[language_name]
-                        language = Language.objects.get(name=language_name)
-                        create_orgnaization_translation(
-                            organization, language,
-                            texts, request.data['is_manual_translation']
-                        )
+                        if language_name['is_manual_translation']:
+                            create_orgnaization_translation(
+                                organization, language,
+                                texts, request.data['is_manual_translation']
+                            )
+                        else:
+                            create_orgnaization_translation(
+                                organization, language,
+                                texts, request.data['is_manual_translation']
+                            )
 
             roles = Role.objects.all()
             for member in request.data['team_members']:
@@ -251,9 +251,14 @@ class OrganizationAPIView(APIView):
         except Organization.DoesNotExist:
             return Response({'message': _('Organization not found:') + url_slug}, status=status.HTTP_404_NOT_FOUND)
         if('edit_view' in request.query_params):
-            serializer = EditOrganizationSerializer(organization, many=False)
+            serializer = EditOrganizationSerializer(
+                organization, many=False, 
+                context={'language_code': request.LANGUAGE_CODE}
+            )
         else:
-            serializer = OrganizationSerializer(organization, many=False)
+            serializer = OrganizationSerializer(
+                organization, many=False, context={'language_code': request.LANGUAGE_CODE}
+            )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, url_slug, format=None):
@@ -423,7 +428,10 @@ class PersonalOrganizationsView(ListAPIView):
         if not UserProfile.objects.filter(user=request.user).exists():
             raise NotFound(detail="Profile not found.", code=status.HTTP_404_NOT_FOUND)
         user_organization_members= OrganizationMember.objects.filter(user=request.user)
-        serializer = UserOrganizationSerializer(user_organization_members, many=True)
+        serializer = UserOrganizationSerializer(
+            user_organization_members, many=True,
+            context={'language_code': request.LANGUAGE_CODE}
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -465,6 +473,11 @@ class ListOrganizationTags(ListAPIView):
 class ListFeaturedOrganizations(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = OrganizationCardSerializer
+
+    def get_serializer_context(self):
+        return {
+            'language_code': self.request.LANGUAGE_CODE
+        }
 
     def get_queryset(self):
         return Organization.objects.filter(rating__lte=99)[0:4]

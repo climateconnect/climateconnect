@@ -26,10 +26,10 @@ class OrganizationSerializer(serializers.ModelSerializer):
         )
 
     def get_name(self, obj):
-        return get_organization_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_name(obj, self.context['language_code'])
     
     def get_short_description(self, obj):
-        return get_organization_short_description(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_short_description(obj, self.context['language_code'])
 
     def get_types(self, obj):
         serializer = OrganizationTaggingSerializer(obj.tag_organization, many=True)
@@ -72,7 +72,7 @@ class OrganizationMinimalSerializer(serializers.ModelSerializer):
         )
     
     def get_name(self, obj):
-        return get_organization_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_name(obj, self.context['language_code'])
 
     def get_location(self, obj):
         if obj.location == None:
@@ -91,7 +91,7 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
         )
     
     def get_name(self, obj):
-        return get_organization_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_name(obj, self.context['language_code'])
 
     def get_location(self, obj):
         if obj.location == None:
@@ -112,7 +112,7 @@ class OrganizationStubSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'url_slug', 'thumbnail_image', 'location')
 
     def get_name(self, obj):
-        return get_organization_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_name(obj, self.context['language_code'])
 
     def get_location(self, obj):
         if obj.location == None:
@@ -146,7 +146,10 @@ class UserOrganizationSerializer(serializers.ModelSerializer):
         fields = ('organization',)
     
     def get_organization(self, obj):
-        return OrganizationStubSerializer(obj.organization).data
+        return OrganizationStubSerializer(
+            obj.organization, 
+            context={'language_code': self.context['language_code']}
+        ).data
 
 
 class OrganizationsFromProjectMember(serializers.ModelSerializer):
