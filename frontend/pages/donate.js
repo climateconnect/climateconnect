@@ -266,7 +266,7 @@ const getDonations = async (locale) => {
     const resp = await apiRequest({
       method: "get",
       url: "/api/donation_goal_progress/",
-      locale: locale
+      locale: locale,
     });
     return {
       goal_name: resp.data.name ? resp.data.name : null,

@@ -48,18 +48,18 @@ const getSteps = (texts, sourceLocale) => {
       key: "addTeam",
       text: texts.add_team,
       headline: texts.add_your_team,
-    },    
+    },
   ];
-  if(sourceLocale === "de") {
+  if (sourceLocale === "de") {
     steps.push({
       key: "translate",
       text: texts.languages,
       headline: texts.translate,
-      sourceLocale: ["de"]
-    })
+      sourceLocale: ["de"],
+    });
   }
-  return steps
-}
+  return steps;
+};
 
 export default function ShareProjectRoot({
   availabilityOptions,
@@ -86,26 +86,23 @@ export default function ShareProjectRoot({
       statusOptions,
       userOrganizations
     )
-  );  
+  );
 
-  const getStep = (stepNumber) =>  {
-    if(stepNumber >= steps.length)
-      return steps[steps.length - 1]
-    return steps[stepNumber]
-  }
+  const getStep = (stepNumber) => {
+    if (stepNumber >= steps.length) return steps[steps.length - 1];
+    return steps[stepNumber];
+  };
 
-  const [sourceLanguage, setSourceLanguage] = useState(locale)
-  const [targetLanguage, setTargetLanguage] = useState(locales.find(l => l !== locale))
+  const [sourceLanguage, setSourceLanguage] = useState(locale);
+  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
   const [translations, setTranslations] = React.useState({});
   const [curStep, setCurStep] = React.useState(getStep(4));
   const [finished, setFinished] = React.useState(false);
 
-  const changeTranslationLanguages = ({newLanguagesObject}) => {
-    if(newLanguagesObject.sourceLanguage)
-      setSourceLanguage(newLanguagesObject.sourceLanguage)
-    if(newLanguagesObject.targetLanguage)
-      setTargetLanguage(newLanguagesObject.targetLanguage)
-  }
+  const changeTranslationLanguages = ({ newLanguagesObject }) => {
+    if (newLanguagesObject.sourceLanguage) setSourceLanguage(newLanguagesObject.sourceLanguage);
+    if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
+  };
 
   useEffect(() => {
     if (window) {
@@ -130,10 +127,10 @@ export default function ShareProjectRoot({
       [locale]: {
         ...translations[locale],
         ...newTranslations,
-        is_manual_translation: isManualChange ? true : false
+        is_manual_translation: isManualChange ? true : false,
       },
-    }
-    setTranslations({...newTranslationsObject});
+    };
+    setTranslations({ ...newTranslationsObject });
   };
 
   const goToNextStep = () => {
@@ -154,24 +151,24 @@ export default function ShareProjectRoot({
 
   const submitProject = async (event) => {
     event.preventDefault();
-    console.log(await formatProjectForRequest(project, sourceLanguage, translations))
+    console.log(await formatProjectForRequest(project, sourceLanguage, translations));
     apiRequest({
       method: "post",
       url: "/api/create_project/",
       payload: await formatProjectForRequest(project, sourceLanguage, translations),
       token: token,
-      locale: locale
+      locale: locale,
     })
-    .then(function (response) {
-      setProject({ ...project, url_slug: response.data.url_slug });
-      setFinished(true);
-    })
-    .catch(function (error) {
-      console.log(error);
-      setProject({ ...project, error: true });
-      console.log(error)
-      if (error) console.log(error.response);
-    });    
+      .then(function (response) {
+        setProject({ ...project, url_slug: response.data.url_slug });
+        setFinished(true);
+      })
+      .catch(function (error) {
+        console.log(error);
+        setProject({ ...project, error: true });
+        console.log(error);
+        if (error) console.log(error.response);
+      });
   };
 
   const saveAsDraft = async (event) => {
@@ -179,18 +176,22 @@ export default function ShareProjectRoot({
     apiRequest({
       method: "post",
       url: "/api/create_project/",
-      payload: await formatProjectForRequest({ ...project, is_draft: true }, sourceLanguage, translations),
+      payload: await formatProjectForRequest(
+        { ...project, is_draft: true },
+        sourceLanguage,
+        translations
+      ),
       token: token,
-      locale: locale
+      locale: locale,
     })
-    .then(function (response) {
-      setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
-    })
-    .catch(function (error) {
-      console.log(error);
-      setProject({ ...project, error: true });
-      if (error) console.log(error.response);
-    });
+      .then(function (response) {
+        setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
+      })
+      .catch(function (error) {
+        console.log(error);
+        setProject({ ...project, error: true });
+        if (error) console.log(error.response);
+      });
     setFinished(true);
   };
 
@@ -248,7 +249,7 @@ export default function ShareProjectRoot({
               rolesOptions={rolesOptions}
               onSubmit={submitProject}
               saveAsDraft={saveAsDraft}
-              isLastStep={steps[steps.length -1].key === "addTeam"}
+              isLastStep={steps[steps.length - 1].key === "addTeam"}
             />
           )}
           {curStep.key === "translate" && (
@@ -294,7 +295,7 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
       osm_id: 1,
       place_id: 1,
       country: "test",
-      city: "test"
+      city: "test",
     },
     parent_organization: userOrganizations ? userOrganizations[0] : null,
     isPersonalProject: !(userOrganizations && userOrganizations.length > 0),
@@ -327,7 +328,7 @@ const formatProjectForRequest = async (project, sourceLanguage, translations) =>
     parent_organization: project?.parent_organization?.id,
     collaborating_organizations: project.collaborating_organizations.map((o) => o.id),
     image: await blobFromObjectUrl(project.image),
-    thumbnail_image: await blobFromObjectUrl(project.thumbnail_image),    
+    thumbnail_image: await blobFromObjectUrl(project.thumbnail_image),
     source_language: sourceLanguage,
     translations: translations ? translations : {},
   };

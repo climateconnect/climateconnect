@@ -168,7 +168,7 @@ export default function Chat({
         url: "/api/chat/" + chat_uuid + "/send_message/",
         payload: { message_content: message },
         token: token,
-        locale: locale
+        locale: locale,
       });
       console.log(resp.data);
       setState({
@@ -209,7 +209,7 @@ export default function Chat({
         url: "/api/chat/" + chatUUID + "/leave/",
         payload: {},
         token: tokenConfig(token),
-        locale: locale
+        locale: locale,
       });
       console.log(res);
       redirect("/inbox", {
@@ -278,7 +278,7 @@ async function getChat(chat_uuid, token, locale) {
       method: "get",
       url: "/api/chat/" + chat_uuid + "/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     return {
       participants: parseParticipants(resp.data.participants, resp.data.user),
@@ -307,9 +307,9 @@ async function getChatMessagesByUUID(chat_uuid, token, page, link, locale) {
       : process.env.API_URL + "/api/messages/?chat_uuid=" + chat_uuid + "&page=" + page;
     const resp = await apiRequest({
       method: "get",
-      url: url.replace(process.env.API_URL, ""), 
+      url: url.replace(process.env.API_URL, ""),
       token: token,
-      locale: locale
+      locale: locale,
     });
     return {
       messages: resp.data.results,
@@ -328,7 +328,7 @@ const getRolesOptions = async (locale) => {
     const resp = await apiRequest({
       method: "get",
       url: "/roles/",
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {

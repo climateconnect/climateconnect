@@ -63,7 +63,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
         url: "/api/projects/" + project.url_slug + "/comment/",
         payload: payload,
         token: token,
-        locale: locale
+        locale: locale,
       });
       handleAddComment(resp.data.comment);
       if (setDisplayReplies) setDisplayReplies(true);
@@ -80,7 +80,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
         method: "delete",
         url: "/api/projects/" + project.url_slug + "/comment/" + post.id + "/",
         token: token,
-        locale: locale
+        locale: locale,
       });
       handleRemoveComment(post);
     } catch (err) {

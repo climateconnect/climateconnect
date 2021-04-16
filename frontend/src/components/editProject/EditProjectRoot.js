@@ -84,20 +84,20 @@ export default function EditProjectRoot({
       url: "/api/projects/" + project.url_slug + "/",
       payload: await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
       token: token,
-      locale: locale
+      locale: locale,
     })
-    .then(function () {
-      Router.push({
-        pathname: "/profiles/" + user.url_slug,
-        query: {
-          message: texts.you_have_successfully_edited_your_project,
-        },
+      .then(function () {
+        Router.push({
+          pathname: "/profiles/" + user.url_slug,
+          query: {
+            message: texts.you_have_successfully_edited_your_project,
+          },
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error) console.log(error.response);
       });
-    })
-    .catch(function (error) {
-      console.log(error);
-      if (error) console.log(error.response);
-    });
   };
 
   const additionalButtons = [
@@ -131,43 +131,44 @@ export default function EditProjectRoot({
       url: "/api/projects/" + project.url_slug + "/",
       payload: await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject)),
       token: token,
-      locale: locale
+      locale: locale,
     })
-    .then(function (response) {
-      Router.push({
-        pathname: "/projects/" + response.data.url_slug,
-        query: {
-          message: was_draft
-            ? texts.your_project_has_been_published_great_work
-            : texts.you_have_successfully_edited_your_project,
-        },
+      .then(function (response) {
+        Router.push({
+          pathname: "/projects/" + response.data.url_slug,
+          query: {
+            message: was_draft
+              ? texts.your_project_has_been_published_great_work
+              : texts.you_have_successfully_edited_your_project,
+          },
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error) console.log(error.response);
       });
-    })
-    .catch(function (error) {
-      console.log(error);
-      if (error) console.log(error.response);
-    });
   };
 
   const deleteProject = () => {
     apiRequest({
       method: "delete",
-      url: "/api/projects/" + project.url_slug + "/", 
+      url: "/api/projects/" + project.url_slug + "/",
       token: token,
-      locale: locale
-    }).then(function (response) {
-      console.log(response);
-      Router.push({
-        pathname: "/profiles/" + user.url_slug,
-        query: {
-          message: texts.you_have_successfully_deleted_your_project,
-        },
-      });
+      locale: locale,
     })
-    .catch(function (error) {
-      console.log(error);
-      if (error) console.log(error.response);
-    });
+      .then(function (response) {
+        console.log(response);
+        Router.push({
+          pathname: "/profiles/" + user.url_slug,
+          query: {
+            message: texts.you_have_successfully_deleted_your_project,
+          },
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error) console.log(error.response);
+      });
   };
 
   return (

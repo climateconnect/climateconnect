@@ -21,17 +21,17 @@ async function profileVerification(uuid, locale) {
   const payload = {
     uuid: uuid,
   };
-  const headers =  {
-    "Accept": "application/json",
+  const headers = {
+    Accept: "application/json",
     "Content-Type": "application/json",
-  }
+  };
   try {
     const response = await apiRequest({
       method: "post",
       url: "/api/verify_profile/",
       payload: payload,
       headers: headers,
-      locale: locale
+      locale: locale,
     });
     return { successMessage: response.data.message, errorMessage: "" };
   } catch (error) {

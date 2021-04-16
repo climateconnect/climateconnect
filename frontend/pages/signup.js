@@ -7,12 +7,12 @@ import {
   getLocationValue,
   indicateWrongLocation,
   isLocationValid,
-  parseLocation
+  parseLocation,
 } from "../public/lib/locationOperations";
 import { redirectOnLogin } from "../public/lib/profileOperations";
 import {
   getLastCompletedTutorialStep,
-  getLastStepBeforeSkip
+  getLastStepBeforeSkip,
 } from "../public/lib/tutorialOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -112,28 +112,28 @@ export default function Signup() {
     setIsLoading(true);
     apiRequest({
       method: "post",
-      url: "/signup/", 
-      payload: payload, 
+      url: "/signup/",
+      payload: payload,
       headers: headers,
-      locale: locale
+      locale: locale,
     })
-    .then(function () {
-      ReactGA.event({
-        category: "User",
-        action: "Created an Account",
+      .then(function () {
+        ReactGA.event({
+          category: "User",
+          action: "Created an Account",
+        });
+        Router.push({
+          pathname: "/accountcreated/",
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+        setIsLoading(false);
+        if (error.response.data.message)
+          setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data.message });
+        else if (error.response.data.length > 0)
+          setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data[0] });
       });
-      Router.push({
-        pathname: "/accountcreated/",
-      });
-    })
-    .catch(function (error) {
-      console.log(error);
-      setIsLoading(false);
-      if (error.response.data.message)
-        setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data.message });
-      else if (error.response.data.length > 0)
-        setErrorMessages({ ...errorMessages, [steps[1]]: error.response.data[0] });
-    });
   };
 
   const handleGoBackFromAddInfo = (event, values) => {

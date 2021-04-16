@@ -84,20 +84,20 @@ export default function EditOrganizationPage({ organization, tagOptions, token }
         url: "/api/organizations/" + encodeURI(organization.url_slug) + "/",
         payload: org,
         token: token,
-        locale: locale
+        locale: locale,
       })
-      .then(function () {
-        Router.push({
-          pathname: "/organizations/" + organization.url_slug,
-          query: {
-            message: texts.successfully_edited_organization,
-          },
+        .then(function () {
+          Router.push({
+            pathname: "/organizations/" + organization.url_slug,
+            query: {
+              message: texts.successfully_edited_organization,
+            },
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+          if (error) console.log(error.response);
         });
-      })
-      .catch(function (error) {
-        console.log(error);
-        if (error) console.log(error.response);
-      });
     }
   };
   const handleCancel = () => {
@@ -158,7 +158,7 @@ async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
       method: "get",
       url: "/api/organizations/" + organizationUrl + "/?edit_view=true",
       token: token,
-      locale: locale
+      locale: locale,
     });
     return parseOrganization(resp.data);
   } catch (err) {

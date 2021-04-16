@@ -113,7 +113,7 @@ async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
       method: "get",
       url: "/api/organizations/" + organizationUrl + "/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     return parseOrganization(resp.data);
   } catch (err) {
@@ -129,7 +129,7 @@ async function getMembersByOrganization(organizationUrl, token, locale) {
       method: "get",
       url: "/api/organizations/" + organizationUrl + "/members/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (!resp.data) return null;
     else {
@@ -182,7 +182,7 @@ const getRolesOptions = async (token, locale) => {
       method: "get",
       url: "/roles/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -201,7 +201,7 @@ const getAvailabilityOptions = async (token, locale) => {
       method: "get",
       url: "/availability/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {

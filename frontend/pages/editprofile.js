@@ -79,10 +79,10 @@ export default function EditProfilePage({
     const payload = await getProfileWithoutRedundantOptions(user, parsedProfile);
     apiRequest({
       method: "post",
-      url: "/api/edit_profile/", 
-      payload: payload, 
+      url: "/api/edit_profile/",
+      payload: payload,
       token: token,
-      locale: locale
+      locale: locale,
     })
       .then(function (response) {
         Router.push({
@@ -160,9 +160,9 @@ async function getSkillsOptions(token, locale) {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/skills/", 
+      url: "/skills/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -179,9 +179,9 @@ async function getAvailabilityOptions(token, locale) {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/availability/", 
+      url: "/availability/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -198,9 +198,9 @@ async function getUserProfile(token, locale) {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/edit_profile/", 
+      url: "/api/edit_profile/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     return resp.data;
   } catch (err) {

@@ -215,7 +215,7 @@ async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
       method: "get",
       url: "/api/organizations/" + organizationUrl + "/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     return parseOrganization(resp.data);
   } catch (err) {
@@ -231,7 +231,7 @@ async function getProjectsByOrganization(organizationUrl, token, locale) {
       method: "get",
       url: "/api/organizations/" + organizationUrl + "/projects/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (!resp.data) return null;
     else {
@@ -250,7 +250,7 @@ async function getMembersByOrganization(organizationUrl, token, locale) {
       method: "get",
       url: "/api/organizations/" + organizationUrl + "/members/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (!resp.data) return null;
     else {

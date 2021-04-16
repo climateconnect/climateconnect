@@ -86,9 +86,9 @@ const getAvailabilityOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/availability/", 
+      url: "/availability/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -105,9 +105,9 @@ const getCategoryOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/projecttags/", 
+      url: "/api/projecttags/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -124,9 +124,9 @@ const getSkillsOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/skills/", 
+      url: "/skills/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -143,9 +143,9 @@ const getRolesOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/roles/", 
+      url: "/roles/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -162,9 +162,9 @@ const getStatusOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/projectstatus/", 
+      url: "/api/projectstatus/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -177,13 +177,13 @@ const getStatusOptions = async (token, locale) => {
   }
 };
 
-const getUserOrganizations = async (token) => {
+const getUserOrganizations = async (token, locale) => {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/my_organizations/", 
+      url: "/api/my_organizations/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.length === 0) return null;
     else {

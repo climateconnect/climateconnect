@@ -9,7 +9,7 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo
+  membersWithAdditionalInfo,
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { parseData } from "../../public/lib/parsingOperations";
@@ -139,7 +139,7 @@ export default function Hub({
         token: token,
         urlEnding: urlEnding,
         hubUrl: hubUrl,
-        locale: locale
+        locale: locale,
       });
       const newData =
         type === "members" ? membersWithAdditionalInfo(newDataObject.members) : newDataObject[type];
@@ -172,7 +172,7 @@ export default function Hub({
         token: token,
         urlEnding: newUrlEnding,
         hubUrl: hubUrl,
-        locale: locale
+        locale: locale,
       });
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
@@ -202,7 +202,7 @@ export default function Hub({
         token: token,
         urlEnding: newSearchQueryParam,
         hubUrl: hubUrl,
-        locale: locale
+        locale: locale,
       });
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
@@ -275,7 +275,7 @@ const getHubData = async (url_slug, locale) => {
     const resp = await apiRequest({
       method: "get",
       url: `/api/hubs/${url_slug}/`,
-      locale: locale
+      locale: locale,
     });
     return resp.data;
   } catch (err) {
@@ -293,7 +293,7 @@ async function getProjects({ page, token, urlEnding, hubUrl, locale }) {
     token: token,
     urlEnding: urlEnding,
     hubUrl: hubUrl,
-    locale: locale
+    locale: locale,
   });
 }
 
@@ -304,7 +304,7 @@ async function getOrganizations({ page, token, urlEnding, hubUrl, locale }) {
     token: token,
     urlEnding: urlEnding,
     hubUrl: hubUrl,
-    locale: locale
+    locale: locale,
   });
 }
 
@@ -317,9 +317,9 @@ async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale 
     console.log(`Getting data for ${type} at ${url}`);
     const resp = await apiRequest({
       method: "get",
-      url: url, 
+      url: url,
       token: token,
-      locale: locale
+      locale: locale,
     });
 
     if (resp.data.length === 0) {

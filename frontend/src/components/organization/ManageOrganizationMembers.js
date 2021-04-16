@@ -97,7 +97,7 @@ export default function ManageOrganizationMembers({
       url: "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
       token: token,
       shouldThrowError: true,
-      locale: locale
+      locale: locale,
     });
   };
 
@@ -108,7 +108,7 @@ export default function ManageOrganizationMembers({
       token: token,
       payload: parseMemberForUpdateRequest(m, organization),
       shouldThrowError: true,
-      locale: locale
+      locale: locale,
     });
   };
 
@@ -119,7 +119,7 @@ export default function ManageOrganizationMembers({
       token: token,
       payload: parseMembersForCreateRequest(organization_members, organization),
       shouldThrowError: true,
-      locale: locale
+      locale: locale,
     });
   };
 
@@ -130,7 +130,7 @@ export default function ManageOrganizationMembers({
       token: token,
       payload: parseMemberForUpdateRequest(new_creator, organization),
       shouldThrowError: true,
-      locale: locale
+      locale: locale,
     });
   };
 

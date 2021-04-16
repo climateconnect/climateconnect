@@ -1,4 +1,11 @@
-import { Button, CircularProgress, Container, makeStyles, TextField, Typography } from "@material-ui/core";
+import {
+  Button,
+  CircularProgress,
+  Container,
+  makeStyles,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getProjectTexts from "../../../public/texts/project_texts";
@@ -39,11 +46,11 @@ const useStyles = makeStyles((theme) => ({
   translateButton: {
     marginRight: theme.spacing(1),
     marginLeft: theme.spacing(1),
-    width: 265
+    width: 265,
   },
   translationLoader: {
     color: "white",
-  }
+  },
 }));
 
 export default function TranslateProject({
@@ -54,31 +61,30 @@ export default function TranslateProject({
   goToPreviousStep,
   handleChangeTranslationContent,
   translations,
-  targetLanguage
+  targetLanguage,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const [waitingForTranslation, setWaitingForTranslation] = React.useState(false)
+  const [waitingForTranslation, setWaitingForTranslation] = React.useState(false);
 
-  if(translations[targetLanguage])
-    console.log(translations[targetLanguage])
+  if (translations[targetLanguage]) console.log(translations[targetLanguage]);
 
   useEffect(() => {
-    initializeTranslationsObject()
-  }, [])
+    initializeTranslationsObject();
+  }, []);
 
-  const arrayTranslations = ["helpful_connections"]
+  const arrayTranslations = ["helpful_connections"];
 
   const initializeTranslationsObject = () => {
-    if(!translations[targetLanguage]) {
-      const initializedObject = {}
-      for(const key of arrayTranslations) {
-        initializedObject[key] = []
+    if (!translations[targetLanguage]) {
+      const initializedObject = {};
+      for (const key of arrayTranslations) {
+        initializedObject[key] = [];
       }
-      handleChangeTranslationContent(targetLanguage, {...initializedObject}, false)
+      handleChangeTranslationContent(targetLanguage, { ...initializedObject }, false);
     }
-  }
+  };
 
   const onClickPreviousStep = () => {
     goToPreviousStep();
@@ -92,20 +98,20 @@ export default function TranslateProject({
 
   const handleTranslationChange = (newValue, projectDataKey, indexInArray) => {
     const newTranslationsObject = {
-      [projectDataKey]: newValue
-    }
+      [projectDataKey]: newValue,
+    };
     //If it's an array, pass the whole array as the value
-    if(indexInArray || indexInArray === 0){
-      const arrayValue = [...translations[targetLanguage][projectDataKey]]
-      arrayValue[indexInArray] = newValue
-      newTranslationsObject[projectDataKey] = [...arrayValue]
+    if (indexInArray || indexInArray === 0) {
+      const arrayValue = [...translations[targetLanguage][projectDataKey]];
+      arrayValue[indexInArray] = newValue;
+      newTranslationsObject[projectDataKey] = [...arrayValue];
     }
-    handleChangeTranslationContent(targetLanguage, {...newTranslationsObject}, true);
+    handleChangeTranslationContent(targetLanguage, { ...newTranslationsObject }, true);
   };
 
   const automaticallyTranslateProject = async () => {
-    setWaitingForTranslation(true)
-    try{
+    setWaitingForTranslation(true);
+    try {
       const response = await apiRequest({
         method: "post",
         url: "/api/translate_many/",
@@ -114,32 +120,31 @@ export default function TranslateProject({
             name: projectData.name,
             short_description: projectData.short_description,
             description: projectData.description,
-            helpful_connections: projectData.helpful_connections
+            helpful_connections: projectData.helpful_connections,
           },
-          target_language: "en"
+          target_language: "en",
         },
         locale: locale,
-        shouldThrowError: true
-      })
-      const translations = response.data.translations
-      const translationsObject = Object.keys(translations).reduce(function(obj, key){
-        if(Array.isArray(translations[key]))
-          obj[key] = translations[key].map(t => t?.translated_text)
-        else
-          obj[key] = translations[key]?.translated_text
-        return obj
-      }, {})
-      console.log(translationsObject)
-      handleChangeTranslationContent(targetLanguage, translationsObject)
-      setWaitingForTranslation(false)
-    } catch(e) {
-      console.log(e)
-      console.log(e?.response?.data)
-      setWaitingForTranslation(false)
-    }  
+        shouldThrowError: true,
+      });
+      const translations = response.data.translations;
+      const translationsObject = Object.keys(translations).reduce(function (obj, key) {
+        if (Array.isArray(translations[key]))
+          obj[key] = translations[key].map((t) => t?.translated_text);
+        else obj[key] = translations[key]?.translated_text;
+        return obj;
+      }, {});
+      console.log(translationsObject);
+      handleChangeTranslationContent(targetLanguage, translationsObject);
+      setWaitingForTranslation(false);
+    } catch (e) {
+      console.log(e);
+      console.log(e?.response?.data);
+      setWaitingForTranslation(false);
+    }
   };
 
-  console.log(projectData?.helpful_connections?.length > 0)
+  console.log(projectData?.helpful_connections?.length > 0);
 
   return (
     <Container className={classes.root}>
@@ -155,21 +160,20 @@ export default function TranslateProject({
             variant="contained"
             color="primary"
             className={classes.translateButton}
-            onClick={automaticallyTranslateProject}            
+            onClick={automaticallyTranslateProject}
           >
-            {
-              waitingForTranslation ?
-                <CircularProgress className={classes.translationLoader} size={23}/>  
-              :
-                texts.automatically_translate
-            }
+            {waitingForTranslation ? (
+              <CircularProgress className={classes.translationLoader} size={23} />
+            ) : (
+              texts.automatically_translate
+            )}
           </Button>
           <Button variant="contained" color="primary" type="submit">
             {texts.skip_and_publish}
           </Button>
         </div>
         <div className={classes.translationBlocksHeader}>
-        <TranslationBlock
+          <TranslationBlock
             projectData={projectData}
             headlineTextKey="project_name"
             projectDataKey="name"
@@ -199,25 +203,23 @@ export default function TranslateProject({
             translations={translations}
             targetLanguage={targetLanguage}
           />
-          {
-            projectData?.helpful_connections?.length > 0 &&
-            projectData.helpful_connections.map((connection, index)=> (
+          {projectData?.helpful_connections?.length > 0 &&
+            projectData.helpful_connections.map((connection, index) => (
               <TranslationBlock
-              key={index}
-              projectData={projectData}
-              projectDataKey="helpful_connections"
-              headlineTextKey="helpful_connections"
-              rows={1}
-              indexInArray={index}
-              isInArray
-              handleOriginalTextChange={handleOriginalTextChange}
-              handleTranslationChange={handleTranslationChange}
-              translations={translations}
-              targetLanguage={targetLanguage}
-              noHeadline={index>0}
-            />
-            ))            
-          }
+                key={index}
+                projectData={projectData}
+                projectDataKey="helpful_connections"
+                headlineTextKey="helpful_connections"
+                rows={1}
+                indexInArray={index}
+                isInArray
+                handleOriginalTextChange={handleOriginalTextChange}
+                handleTranslationChange={handleTranslationChange}
+                translations={translations}
+                targetLanguage={targetLanguage}
+                noHeadline={index > 0}
+              />
+            ))}
         </div>
         <BottomNavigation
           className={classes.block}
@@ -242,7 +244,7 @@ function TranslationBlock({
   targetLanguage,
   isInArray,
   indexInArray,
-  noHeadline
+  noHeadline,
 }) {
   const texts = getProjectTexts({});
   const classes = useStyles();
@@ -252,7 +254,9 @@ function TranslationBlock({
         headline={texts[headlineTextKey][targetLanguage]}
         noHeadline={noHeadline}
         rows={rows}
-        content={isInArray ? projectData[projectDataKey][indexInArray] : projectData[projectDataKey]}
+        content={
+          isInArray ? projectData[projectDataKey][indexInArray] : projectData[projectDataKey]
+        }
         handleContentChange={(event) =>
           handleOriginalTextChange(event.target.value, projectDataKey)
         }
@@ -263,10 +267,14 @@ function TranslationBlock({
         rows={rows}
         isTranslation
         content={
-          translations[targetLanguage] && 
-          (isInArray ? translations[targetLanguage][projectDataKey][indexInArray] : translations[targetLanguage][projectDataKey])
+          translations[targetLanguage] &&
+          (isInArray
+            ? translations[targetLanguage][projectDataKey][indexInArray]
+            : translations[targetLanguage][projectDataKey])
         }
-        handleContentChange={(event) => handleTranslationChange(event.target.value, projectDataKey, indexInArray)}
+        handleContentChange={(event) =>
+          handleTranslationChange(event.target.value, projectDataKey, indexInArray)
+        }
       />
     </div>
   );
@@ -276,11 +284,11 @@ function TranslationBlockElement({ headline, rows, content, handleContentChange,
   const classes = useStyles();
   return (
     <div className={classes.translationBlockElement}>
-      {!noHeadline &&
+      {!noHeadline && (
         <Typography color="primary" className={classes.sectionHeader}>
           {headline}
         </Typography>
-      }
+      )}
       <TextField
         rows={rows}
         variant="outlined"

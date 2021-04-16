@@ -32,7 +32,7 @@ async function newEmailVerification(uuid, token, locale) {
       url: "/api/verify_new_email/",
       payload: payload,
       token: token,
-      locale: locale
+      locale: locale,
     });
     redirect("/browse", {
       message: response.data.message,

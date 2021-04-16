@@ -5,7 +5,7 @@ export async function getMessageFromServer(message_id, token, locale) {
     method: "get",
     url: "/api/message/" + message_id + "/",
     token: token,
-    locale: locale
+    locale: locale,
   });
   return resp.data;
 }
@@ -16,7 +16,7 @@ export async function startPrivateChat(profile, token, locale) {
     url: "/api/start_private_chat/",
     payload: { profile_url_slug: profile.url_slug },
     token: token,
-    locale: locale
+    locale: locale,
   });
   return resp.data;
 }

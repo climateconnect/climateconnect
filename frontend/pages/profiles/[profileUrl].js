@@ -237,7 +237,7 @@ async function getProfileByUrlIfExists(profileUrl, token, locale) {
       method: "get",
       url: "/api/member/" + profileUrl + "/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     return parseProfile(resp.data);
   } catch (err) {
@@ -254,7 +254,7 @@ async function getProjectsByUser(profileUrl, token, locale) {
       method: "get",
       url: "/api/member/" + profileUrl + "/projects/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (!resp.data) return null;
     else {
@@ -273,7 +273,7 @@ async function getOrganizationsByUser(profileUrl, token, locale) {
       method: "get",
       url: "/api/member/" + profileUrl + "/organizations/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (!resp.data) return null;
     else {

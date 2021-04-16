@@ -7,7 +7,7 @@ import {
   getLocationValue,
   indicateWrongLocation,
   isLocationValid,
-  parseLocation
+  parseLocation,
 } from "../public/lib/locationOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -105,7 +105,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       const resp = await apiRequest({
         method: "get",
         url: "/api/organizations/?search=" + values.organizationname,
-        locale: locale
+        locale: locale,
       });
       if (resp.data.results && resp.data.results.find((r) => r.name === values.organizationname)) {
         const org = resp.data.results.find((r) => r.name === values.organizationname);
@@ -173,25 +173,25 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       url: "/api/create_organization/",
       payload: organizationToSubmit,
       token: token,
-      locale: locale
+      locale: locale,
     })
-    .then(function (response) {
-      Router.push({
-        pathname: "/organizations/" + response.data.url_slug,
-        query: {
-          message: texts.you_have_successfully_created_an_organization_you_can_add_members,
-        },
-      });
-    })
-    .catch(function (error) {
-      console.log(error);
-      if (error) console.log(error?.response?.data);
-      if (error?.response?.data?.message)
-        handleSetErrorMessages({
-          errorMessages,
-          detailledOrganizationInfo: error?.response?.data?.message,
+      .then(function (response) {
+        Router.push({
+          pathname: "/organizations/" + response.data.url_slug,
+          query: {
+            message: texts.you_have_successfully_created_an_organization_you_can_add_members,
+          },
         });
-    });
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error) console.log(error?.response?.data);
+        if (error?.response?.data?.message)
+          handleSetErrorMessages({
+            errorMessages,
+            detailledOrganizationInfo: error?.response?.data?.message,
+          });
+      });
   };
 
   if (!user)
@@ -236,9 +236,9 @@ const getRolesOptions = async (token, locale) => {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/roles/", 
-      token: token, 
-      locale: locale
+      url: "/roles/",
+      token: token,
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -257,7 +257,7 @@ async function getTags(token, locale) {
       method: "get",
       url: "/api/organizationtags/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {

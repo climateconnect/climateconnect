@@ -157,12 +157,11 @@ export default function Index() {
 
 const getProjects = async (token, locale) => {
   try {
-
     const resp = await apiRequest({
       method: "get",
-      url: `/api/featured_projects/`, 
+      url: `/api/featured_projects/`,
       token: token,
-      locale: locale
+      locale: locale,
     });
 
     if (resp.data.length === 0) {
@@ -184,7 +183,7 @@ const getOrganizations = async (locale) => {
     const resp = await apiRequest({
       method: "get",
       url: "/api/featured_organizations/",
-      locale: locale
+      locale: locale,
     });
     if (resp.data.length === 0) return null;
     else return parseOrganizations(resp.data.results);
@@ -219,7 +218,7 @@ const getHubs = async (locale) => {
     const resp = await apiRequest({
       method: "get",
       url: `/api/hubs/`,
-      locale: locale
+      locale: locale,
     });
     return resp.data.results;
   } catch (err) {

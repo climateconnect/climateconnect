@@ -376,7 +376,7 @@ const getFollowers = async (project, token, locale) => {
       method: "get",
       url: "/api/projects/" + project.url_slug + "/followers/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     return resp.data.results;
   } catch (err) {

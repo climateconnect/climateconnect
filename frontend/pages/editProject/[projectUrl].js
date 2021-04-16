@@ -6,7 +6,7 @@ import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOp
 import {
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions
+  getStatusOptions,
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import getTexts from "../../public/texts/texts";
@@ -164,7 +164,7 @@ async function getProjectByIdIfExists(projectUrl, token, locale) {
       method: "get",
       url: "/api/projects/" + projectUrl + "/?edit_view=true",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.length === 0) return null;
     else {
@@ -192,7 +192,7 @@ const getUserOrganizations = async (token, locale) => {
       method: "get",
       url: "/api/my_organizations/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.length === 0) return null;
     else {
@@ -211,7 +211,7 @@ async function getMembersByProject(projectUrl, token, locale) {
       method: "get",
       url: "/api/projects/" + projectUrl + "/members/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (!resp.data) return null;
     else {

@@ -8,7 +8,7 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo
+  membersWithAdditionalInfo,
 } from "../public/lib/getOptions";
 import { parseData } from "../public/lib/parsingOperations";
 import BrowseContent from "../src/components/browse/BrowseContent";
@@ -65,7 +65,7 @@ export default function Browse({
   filterChoices,
   hubs,
 }) {
-  const { locale } = useContext(UserContext)
+  const { locale } = useContext(UserContext);
   const [filters, setFilters] = useState({
     projects: {},
     members: {},
@@ -90,7 +90,7 @@ export default function Browse({
         page: 1,
         token: token,
         urlEnding: newUrlEnding,
-        locale: locale
+        locale: locale,
       });
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
@@ -116,7 +116,7 @@ export default function Browse({
         page: 1,
         token: token,
         urlEnding: newSearchQueryParam,
-        locale: locale
+        locale: locale,
       });
 
       if (type === "members") {
@@ -138,7 +138,7 @@ export default function Browse({
         page: page,
         token: token,
         urlEnding: urlEnding,
-        locale: locale
+        locale: locale,
       });
       const newData =
         type === "members" ? membersWithAdditionalInfo(newDataObject.members) : newDataObject[type];
@@ -195,7 +195,7 @@ async function getProjects(page, token, urlEnding, locale) {
     page: page,
     token: token,
     urlEnding: urlEnding,
-    locale: locale
+    locale: locale,
   });
 }
 
@@ -205,7 +205,7 @@ async function getOrganizations(page, token, urlEnding, locale) {
     page: page,
     token: token,
     urlEnding: urlEnding,
-    locale: locale
+    locale: locale,
   });
 }
 
@@ -215,17 +215,17 @@ async function getMembers(page, token, urlEnding, locale) {
     page: page,
     token: token,
     urlEnding: urlEnding,
-    locale: locale
+    locale: locale,
   });
 }
 
-async function getDataFromServer({ type, page, token, urlEnding, locale}) {
+async function getDataFromServer({ type, page, token, urlEnding, locale }) {
   let url = `/api/${type}/?page=${page}`;
   if (urlEnding) url += urlEnding;
 
   try {
     console.log(`Getting data for ${type} at ${url}`);
-    const resp = await apiRequest({method: "get", url: url, token: token, locale: locale});
+    const resp = await apiRequest({ method: "get", url: url, token: token, locale: locale });
     if (resp.data.length === 0) {
       console.log(`No data of type ${type} found...`);
       return null;
@@ -249,7 +249,7 @@ async function getHubs(locale) {
     const resp = await apiRequest({
       method: "get",
       url: `/api/hubs/`,
-      locale: locale
+      locale: locale,
     });
     return resp.data.results;
   } catch (e) {

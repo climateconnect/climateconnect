@@ -76,7 +76,13 @@ export default function MyApp({
     if (!develop) cookieProps.domain = "." + API_HOST;
     try {
       const token = cookies.get("token");
-      await apiRequest({method: "post", url: "/logout/", token:token, payload: {}, locale: locale})
+      await apiRequest({
+        method: "post",
+        url: "/logout/",
+        token: token,
+        payload: {},
+        locale: locale,
+      });
       cookies.remove("token", cookieProps);
       setState({
         ...state,
@@ -214,7 +220,11 @@ MyApp.getInitialProps = async (ctx) => {
   if (token) {
     const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
     if (notificationsToSetRead.length > 0) {
-      const updatedNotifications = await setNotificationsRead(token, notificationsToSetRead, ctx.router.locale);
+      const updatedNotifications = await setNotificationsRead(
+        token,
+        notificationsToSetRead,
+        ctx.router.locale
+      );
       return {
         pageProps: pageProps,
         user: user,
@@ -273,7 +283,7 @@ const setNotificationsRead = async (token, notifications, locale) => {
         url: "/api/set_user_notifications_read/",
         payload: { notifications: notifications.map((n) => n.id) },
         token: token,
-        locale: locale
+        locale: locale,
       });
       return resp.data;
     } catch (e) {
@@ -287,8 +297,8 @@ async function getLoggedInUser(token) {
     try {
       const resp = await apiRequest({
         method: "get",
-        url: "/api/my_profile/", 
-        token: token
+        url: "/api/my_profile/",
+        token: token,
       });
       return resp.data;
     } catch (err) {
@@ -309,8 +319,8 @@ async function getNotifications(token) {
     try {
       const resp = await apiRequest({
         method: "get",
-        url: "/api/notifications/", 
-        token: token       
+        url: "/api/notifications/",
+        token: token,
       });
       return resp.data.results;
     } catch (err) {
@@ -329,7 +339,7 @@ async function getDonationGoalData() {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/donation_goal_progress/"      
+      url: "/api/donation_goal_progress/",
     });
     return {
       goal_name: resp.data.name,

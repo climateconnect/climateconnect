@@ -48,7 +48,7 @@ const getSettings = async (token, locale) => {
       method: "get",
       url: "/api/account_settings/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     return resp.data;
   } catch (err) {

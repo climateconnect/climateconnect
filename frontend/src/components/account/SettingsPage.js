@@ -5,7 +5,7 @@ import {
   Divider,
   FormControlLabel,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
@@ -162,7 +162,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           old_password: passwordInputs.oldpassword,
         },
         token: token,
-        locale: locale
+        locale: locale,
       })
         .then(function (response) {
           setMessage(response.data.message);
@@ -204,7 +204,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         url: "/api/account_settings/",
         payload: { email: newEmail },
         token: token,
-        locale: locale
+        locale: locale,
       })
         .then(function () {
           redirect("/browse", {
@@ -236,7 +236,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         url: "/api/account_settings/",
         payload: emailPreferences,
         token: token,
-        locale: locale
+        locale: locale,
       })
         .then(function (response) {
           setEmailPreferencesLoading(false);

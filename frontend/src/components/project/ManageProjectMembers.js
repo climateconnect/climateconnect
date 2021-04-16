@@ -129,7 +129,7 @@ export default function ManageProjectMembers({
       url: "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
       token: token,
       shouldThrowError: true,
-      locale: locale
+      locale: locale,
     });
   };
 
@@ -140,7 +140,7 @@ export default function ManageProjectMembers({
       token: token,
       payload: parseMemberForUpdateRequest(m, project),
       shouldThrowError: true,
-      locale: locale
+      locale: locale,
     });
   };
 
@@ -151,7 +151,7 @@ export default function ManageProjectMembers({
       token: token,
       payload: parseMembersForCreateRequest(team_members, project),
       shouldThrowError: true,
-      locale: locale
+      locale: locale,
     });
   };
 
@@ -162,7 +162,7 @@ export default function ManageProjectMembers({
       token: token,
       payload: parseMemberForUpdateRequest(new_creator, project),
       shouldThrowError: true,
-      locale: locale
+      locale: locale,
     });
   };
   return (

@@ -31,7 +31,7 @@ export default function ResetPassword() {
           method: "post",
           url: "/api/send_reset_password_email/",
           payload: { email: values.email },
-          locale: locale
+          locale: locale,
         });
         redirect("/browse", {
           message: response.data.message,

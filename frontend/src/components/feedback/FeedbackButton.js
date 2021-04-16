@@ -49,7 +49,7 @@ export default function FeedbackButton({ justLink, children }) {
         url: "/api/feedback/",
         payload: data,
         token: token,
-        locale: locale
+        locale: locale,
       });
       setMessage(response.data);
     } catch (e) {

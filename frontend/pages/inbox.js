@@ -131,16 +131,18 @@ export default function Inbox({ chatData, token, next }) {
       }
       apiRequest({
         method: "post",
-        url: urlPostfix, 
-        payload: payload, 
+        url: urlPostfix,
+        payload: payload,
         token: token,
-        locale: locale
-      }).then(async function (response) {
-        Router.push("/chat/" + response.data.chat_uuid + "/");
-      }).catch(function (error) {
-        console.log(error.response);
-        // TODO: Show error message that user cant connect
-      });
+        locale: locale,
+      })
+        .then(async function (response) {
+          Router.push("/chat/" + response.data.chat_uuid + "/");
+        })
+        .catch(function (error) {
+          console.log(error.response);
+          // TODO: Show error message that user cant connect
+        });
     } else
       setErrorMessage(
         texts.please_add_one_or_more_users_to_chat_to_by_searching_them_in_the_search_bar_above
@@ -276,9 +278,9 @@ async function getChatsOfLoggedInUser(token, next, locale) {
     const url = next ? next : `/api/chats/?page=1`;
     const resp = await apiRequest({
       method: "get",
-      url: url, 
+      url: url,
       token: token,
-      locale: locale
+      locale: locale,
     });
     return {
       chats: parseChatData(resp.data.results),

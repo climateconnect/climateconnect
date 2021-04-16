@@ -129,7 +129,7 @@ const getEntries = async (entryTypePlural, locale) => {
     const resp = await apiRequest({
       method: "get",
       url: "/api/sitemap/" + entryTypePlural + "/",
-      locale: locale
+      locale: locale,
     });
     if (resp.data.length === 0) return null;
     else {

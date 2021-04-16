@@ -145,7 +145,7 @@ function ProjectLayout({
   texts,
 }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext)
+  const { locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const [hash, setHash] = React.useState(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({ follow: false, leave: false });
@@ -214,7 +214,7 @@ function ProjectLayout({
         url: "/api/projects/" + project.url_slug + "/leave/",
         payload: {},
         token: token,
-        locale: locale
+        locale: locale,
       });
       console.log(resp);
       if (resp.status === 200)
@@ -258,20 +258,20 @@ function ProjectLayout({
       url: "/api/projects/" + project.url_slug + "/set_follow/",
       payload: { following: new_value },
       token: token,
-      locale: locale
+      locale: locale,
     })
-    .then(function (response) {
-      setIsUserFollowing(response.data.following);
-      setFollowingChangePending(false);
-      setMessage({
-        message: response.data.message,
-        messageType: "success",
+      .then(function (response) {
+        setIsUserFollowing(response.data.following);
+        setFollowingChangePending(false);
+        setMessage({
+          message: response.data.message,
+          messageType: "success",
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error && error.reponse) console.log(error.response);
       });
-    })
-    .catch(function (error) {
-      console.log(error);
-      if (error && error.reponse) console.log(error.response);
-    });
   };
 
   const requestLeaveProject = () => {
@@ -389,7 +389,7 @@ async function getProjectByIdIfExists(projectUrl, token, locale) {
       method: "get",
       url: "/api/projects/" + projectUrl + "/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.length === 0) return null;
     else {
@@ -407,7 +407,7 @@ async function getIsUserFollowing(projectUrl, token, locale) {
       method: "get",
       url: "/api/projects/" + projectUrl + "/am_i_following/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.length === 0) return null;
     else {
@@ -426,7 +426,7 @@ async function getPostsByProject(projectUrl, token, locale) {
       method: "get",
       url: "/api/projects/" + projectUrl + "/posts/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.length === 0) return null;
     else {
@@ -444,7 +444,7 @@ async function getCommentsByProject(projectUrl, token, locale) {
       method: "get",
       url: "/api/projects/" + projectUrl + "/comments/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.length === 0) return null;
     else {
@@ -462,7 +462,7 @@ async function getProjectMembersByIdIfExists(projectUrl, token, locale) {
       method: "get",
       url: "/api/projects/" + projectUrl + "/members/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {

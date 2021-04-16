@@ -5,7 +5,7 @@ import {
   ListItemIcon,
   ListItemText,
   MenuItem,
-  withStyles
+  withStyles,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CommentIcon from "@material-ui/icons/Comment";

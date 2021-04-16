@@ -40,12 +40,12 @@ export default function AddTeam({
   rolesOptions,
   onSubmit,
   saveAsDraft,
-  isLastStep
+  isLastStep,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  console.log(isLastStep)
+  console.log(isLastStep);
   const onClickPreviousStep = () => {
     goToPreviousStep();
   };
@@ -141,21 +141,20 @@ export default function AddTeam({
           handleAddOrganization={handleAddOrganization}
           handleRemoveOrganization={handleRemoveOrganization}
         />
-        {
-          isLastStep ? 
-            <BottomNavigation
-              className={classes.block}
-              onClickPreviousStep={onClickPreviousStep}
-              nextStepButtonType="publish"
-              saveAsDraft={saveAsDraft}
-            />
-          :
-            <BottomNavigation
-              className={classes.block}
-              onClickPreviousStep={onClickPreviousStep}
-              nextStepButtonType="submit"
-            />
-        }
+        {isLastStep ? (
+          <BottomNavigation
+            className={classes.block}
+            onClickPreviousStep={onClickPreviousStep}
+            nextStepButtonType="publish"
+            saveAsDraft={saveAsDraft}
+          />
+        ) : (
+          <BottomNavigation
+            className={classes.block}
+            onClickPreviousStep={onClickPreviousStep}
+            nextStepButtonType="submit"
+          />
+        )}
       </form>
     </Container>
   );

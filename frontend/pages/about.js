@@ -120,7 +120,7 @@ export default function About({ faqQuestions }) {
 
 const getQuestionsWithAnswers = async () => {
   try {
-    const resp = await apiRequest({method: "get", url: "/api/list_faq/"});
+    const resp = await apiRequest({ method: "get", url: "/api/list_faq/" });
     if (resp.data.length === 0) return null;
     else {
       return {

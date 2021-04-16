@@ -107,7 +107,7 @@ const getHubs = async (locale) => {
     const resp = await apiRequest({
       method: "get",
       url: `/api/hubs/`,
-      locale: locale
+      locale: locale,
     });
     return resp.data.results;
   } catch (err) {

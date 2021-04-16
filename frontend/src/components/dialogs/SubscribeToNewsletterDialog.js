@@ -107,18 +107,18 @@ const subscribeToNewsletter = (emailAddress, locale) => {
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/json",
-  }
+  };
   apiRequest({
     method: "post",
-    url: url, 
-    payload: payload, 
+    url: url,
+    payload: payload,
     headers: headers,
-    locale: locale
+    locale: locale,
   })
-  .then(function (response) {
-    return response;
-  })
-  .catch(function (error) {
-    throw error;
-  });
+    .then(function (response) {
+      return response;
+    })
+    .catch(function (error) {
+      throw error;
+    });
 };

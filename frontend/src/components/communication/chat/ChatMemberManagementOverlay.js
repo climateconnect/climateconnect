@@ -95,7 +95,7 @@ export default function ChatMemberManagementOverlay({
       url: "/api/chat/" + chat_uuid + "/update_member/" + m.participant_id + "/",
       token: token,
       shouldThrowError: true,
-      locale: locale
+      locale: locale,
     });
   };
 
@@ -106,7 +106,7 @@ export default function ChatMemberManagementOverlay({
       token: token,
       payload: parseMemberForUpdateRequest(m),
       shouldThrowError: true,
-      locale: locale
+      locale: locale,
     });
   };
 
@@ -117,18 +117,18 @@ export default function ChatMemberManagementOverlay({
       token: token,
       payload: parseMembersForCreateRequest(chat_participants),
       shouldThrowError: true,
-      locale: locale
+      locale: locale,
     });
   };
 
-  const updateCreator = (new_creator ,locale) => {
+  const updateCreator = (new_creator, locale) => {
     apiRequest({
       method: "post",
       url: "/api/chat/" + chat_uuid + "/change_creator/",
       token: token,
       payload: parseMemberForUpdateRequest(new_creator),
       shouldThrowError: true,
-      locale: locale
+      locale: locale,
     });
   };
 

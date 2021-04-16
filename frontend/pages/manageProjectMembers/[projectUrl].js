@@ -112,7 +112,7 @@ async function getProjectByUrlIfExists(projectUrl, token, locale) {
       method: "get",
       url: "/api/projects/" + projectUrl + "/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     return parseProject(resp.data);
   } catch (err) {
@@ -128,7 +128,7 @@ async function getMembersByProject(projectUrl, token, locale) {
       method: "get",
       url: "/api/projects/" + projectUrl + "/members/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (!resp.data) return null;
     else {
@@ -192,7 +192,7 @@ const getRolesOptions = async (token, locale) => {
       method: "get",
       url: "/roles/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -211,7 +211,7 @@ const getAvailabilityOptions = async (token, locale) => {
       method: "get",
       url: "/availability/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {

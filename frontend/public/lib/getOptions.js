@@ -7,7 +7,7 @@ export async function getSkillsOptions(locale) {
     const resp = await apiRequest({
       method: "get",
       url: "/skills/",
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -28,7 +28,7 @@ export async function getStatusOptions(locale) {
     const resp = await apiRequest({
       method: "get",
       url: "/api/projectstatus/",
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -49,7 +49,7 @@ export async function getProjectTagsOptions(parent_tag_key, locale) {
     const resp = await apiRequest({
       method: "get",
       url: url,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {
@@ -68,7 +68,7 @@ export async function getOrganizationTagsOptions(locale) {
     const resp = await apiRequest({
       method: "get",
       url: "/api/organizationtags/",
-      locale: locale
+      locale: locale,
     });
     if (resp.data.results.length === 0) return null;
     else {

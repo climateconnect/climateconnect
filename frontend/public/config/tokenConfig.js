@@ -11,9 +11,9 @@ export default function tokenConfig(token, additionalHeaders) {
     config.headers["Authorization"] = `Token ${token}`;
   }
 
-  if(additionalHeaders){
-    for(const headerKey of Object.keys(additionalHeaders)){
-      config.headers[headerKey] = additionalHeaders[headerKey]
+  if (additionalHeaders) {
+    for (const headerKey of Object.keys(additionalHeaders)) {
+      config.headers[headerKey] = additionalHeaders[headerKey];
     }
   }
 

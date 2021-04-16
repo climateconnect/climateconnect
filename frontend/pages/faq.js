@@ -152,13 +152,13 @@ export default function Faq({ questionsBySection, questions }) {
   );
 }
 
-const getQuestionsWithAnswers = async (token, ) => {
+const getQuestionsWithAnswers = async (token, locale) => {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/list_faq/", 
+      url: "/api/list_faq/",
       token: token,
-      locale: locale
+      locale: locale,
     });
     if (resp.data.length === 0) return null;
     else {

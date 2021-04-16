@@ -8,7 +8,7 @@ import UserContext from "./../src/components/context/UserContext";
 import Form from "./../src/components/general/Form";
 
 export default function Signin() {
-  const { user, signIn, API_URL, locale } = useContext(UserContext);
+  const { user, signIn, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
 
   const fields = [
@@ -64,25 +64,25 @@ export default function Signin() {
     setIsLoading(true);
     apiRequest({
       method: "post",
-      url: "/login/", 
+      url: "/login/",
       payload: {
         username: values.username.toLowerCase(),
         password: values.password,
       },
-      locale: locale
+      locale: locale,
     })
-    .then(async function (response) {
-      await signIn(response.data.token, response.data.expiry, redirectUrl);
-    })
-    .catch(function (error) {
-      console.log(error);
-      if (error.response && error.response.data) {
-        if (error.response.data.type === "not_verified")
-          setErrorMessage(<span>{texts.not_verified_error_message}</span>);
-        else setErrorMessage(error.response.data.message);
-        setIsLoading(false);
-      }
-    });
+      .then(async function (response) {
+        await signIn(response.data.token, response.data.expiry, redirectUrl);
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error.response && error.response.data) {
+          if (error.response.data.type === "not_verified")
+            setErrorMessage(<span>{texts.not_verified_error_message}</span>);
+          else setErrorMessage(error.response.data.message);
+          setIsLoading(false);
+        }
+      });
   };
 
   return (

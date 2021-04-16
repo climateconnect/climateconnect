@@ -64,16 +64,16 @@ async function requestSetPassword(uuid, new_password, setErrorMessage, texts, lo
     new_password: new_password,
   };
   const headers = {
-    "Accept": "application/json",
+    Accept: "application/json",
     "Content-Type": "application/json",
-  }
+  };
   try {
     const response = await apiRequest({
       method: "post",
       url: "/api/set_new_password/",
       payload: payload,
       headers: headers,
-      locale: locale
+      locale: locale,
     });
     redirect("/browse", {
       message: response.data.message,
