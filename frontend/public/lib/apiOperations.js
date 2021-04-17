@@ -24,15 +24,16 @@ export async function apiRequest({
   if (payload) {
     try {
       const response = await axios[method](process.env.API_URL + url, payload, config);
-      return Promise.resolve(response);
+      return response;
     } catch (error) {
       console.log(error?.response);
-      if (shouldThrowError) throw error;
+      if (shouldThrowError) 
+        throw error;
     }
   } else {
     try {
       const response = axios[method](process.env.API_URL + url, config);
-      return Promise.resolve(response);
+      return response;
     } catch (error) {
       console.log(error?.response);
       if (shouldThrowError) throw error;

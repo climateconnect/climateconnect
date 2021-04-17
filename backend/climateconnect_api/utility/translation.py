@@ -1,7 +1,9 @@
-from django.conf import settings
-import requests
-from rest_framework.exceptions import ValidationError
 import json
+
+import requests
+from django.conf import settings
+from rest_framework.exceptions import ValidationError
+
 
 def get_locale(language_code):
     LANGUAGE_CODE_MAP = {
@@ -44,23 +46,32 @@ def translate_text(text, original_lang, target_lang):
                     target_locale = lc
         else:
             raise ValidationError('target lang and original lang were identical:' + target_lang)
+    if isinstance(text, list):
+        translation_objects = []
+        for element in text:
+            translation_objects.append(translate(element, target_locale))
+        print(translation_objects)
+        translation = {
+            'detected_source_language': original_lang,
+            'text': list(map(lambda translation_element: translation_element['text'], translation_objects))
+        }
+    else:
+        translation = translate(text, target_locale)
+        # If the source language is actually the target language (person with german locale wrote english text), 
+        # Switch source language and target language (change original lang from german to english and target lang from english to german)
+        # Since this means we just translated a text from german to german, we need to call the translate function again and translate to english
+        # (We only trust the detected source language if it's more than 150 characters)
+        if len(text) > 150 and get_locale(translation['detected_source_language']) == target_locale:
+            target_locale = original_locale
+            original_locale = get_locale(translation['detected_source_language'])
+            translation = translate(text, target_locale)  
 
-    translation = translate(text, target_locale)
-    # If the source language is actually the target language (person with german locale wrote english text), 
-    # Switch source language and target language (change original lang from german to english and target lang from english to german)
-    # Since this means we just translated a text from german to german, we need to call the translate function again and translate to english
-    # (We only trust the detected source language if it's more than 150 characters)
-    if len(text) > 150 and get_locale(translation['detected_source_language']) == target_locale:
-        target_locale = original_locale
-        original_locale = get_locale(translation['detected_source_language'])
-        translation = translate(text, target_locale)  
-
-    # If the detected source language is complete different from target_lang or original_lan: adapt original lang
-    # Example: If person with german locale writes spanish text the text will be translated to english and source language will be spanish
-    # (The example assumes that spanish is supported)
-    # (We only trust the detected source language if it's more than 150 characters)
-    if len(text) > 150 and not get_locale(translation['detected_source_language']) == original_locale:
-        original_locale = get_locale(translation['detected_source_language'])
+        # If the detected source language is complete different from target_lang or original_lan: adapt original lang
+        # Example: If person with german locale writes spanish text the text will be translated to english and source language will be spanish
+        # (The example assumes that spanish is supported)
+        # (We only trust the detected source language if it's more than 150 characters)
+        if len(text) > 150 and not get_locale(translation['detected_source_language']) == original_locale:
+            original_locale = get_locale(translation['detected_source_language'])
 
     return {
         'original_text': text,
@@ -95,7 +106,7 @@ def get_translations(texts, translations, source_language, depth=0):
                     translated_text_object = translate_text(texts[key], source_language, target_language)
                     # If we got the source language wrong start over with the correct source language
                     if not translated_text_object['original_lang'] == source_language:
-                        return get_translations(texts, translations, translated_text_object.original_lang, depth + 1)
+                        return get_translations(texts, translations, translated_text_object['original_lang'], depth + 1)
                     finished_translations[target_language][key] = translated_text_object['translated_text']
     return {
         'translations': finished_translations,

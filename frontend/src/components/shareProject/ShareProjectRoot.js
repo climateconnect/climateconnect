@@ -96,7 +96,7 @@ export default function ShareProjectRoot({
   const [sourceLanguage, setSourceLanguage] = useState(locale);
   const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
   const [translations, setTranslations] = React.useState({});
-  const [curStep, setCurStep] = React.useState(getStep(4));
+  const [curStep, setCurStep] = React.useState(getStep(0));
   const [finished, setFinished] = React.useState(false);
 
   const changeTranslationLanguages = ({ newLanguagesObject }) => {
@@ -151,24 +151,25 @@ export default function ShareProjectRoot({
 
   const submitProject = async (event) => {
     event.preventDefault();
-    console.log(await formatProjectForRequest(project, sourceLanguage, translations));
-    apiRequest({
-      method: "post",
-      url: "/api/create_project/",
-      payload: await formatProjectForRequest(project, sourceLanguage, translations),
-      token: token,
-      locale: locale,
-    })
-      .then(function (response) {
-        setProject({ ...project, url_slug: response.data.url_slug });
-        setFinished(true);
+    const payload = await formatProjectForRequest(project, sourceLanguage, translations);
+    
+    try {
+      const resp = await apiRequest({
+        method: "post",
+        url: "/api/create_project/",
+        payload: payload,
+        token: token,
+        locale: locale,
+        shouldThrowError: true
       })
-      .catch(function (error) {
-        console.log(error);
-        setProject({ ...project, error: true });
-        console.log(error);
-        if (error) console.log(error.response);
-      });
+      setProject({ ...project, url_slug: resp.data.url_slug });
+      setFinished(true);
+    } catch(error) {
+      console.log(error);
+      setProject({ ...project, error: true });
+      console.log(error?.response?.data);
+      if (error) console.log(error.response);
+    }
   };
 
   const saveAsDraft = async (event) => {
@@ -289,26 +290,15 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
     collaborators_welcome: true,
     status: statusOptions.find((s) => s.id === DEFAULT_STATUS),
     skills: [],
-    helpful_connections: ["Bananensaftmanufakturen", "Bananenverkäufer*innen"],
+    helpful_connections: [],
     collaborating_organizations: [],
-    loc: {
-      osm_id: 1,
-      place_id: 1,
-      country: "test",
-      city: "test",
-    },
+    loc: {},
     parent_organization: userOrganizations ? userOrganizations[0] : null,
     isPersonalProject: !(userOrganizations && userOrganizations.length > 0),
     is_organization_project: userOrganizations && userOrganizations.length > 0,
     //TODO: Should contain the logged in user as the creator and parent_user by default
     team_members: [{ ...loggedInUser }],
-    website: "www.test.com",
-    //TODO: remove. This is just for testing
-    short_description: "Bananensaft schmeckt lecker",
-    //leave in as empty string
-    description: "Wir stellen schon seit 2018 Bananensaft her.",
-    name: "tests",
-    project_tags: [{}],
+    website: "",
   };
 };
 

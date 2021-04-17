@@ -1,49 +1,61 @@
-from climateconnect_api.models.language import Language
-from organization.models.translations import ProjectTranslation
-from django.contrib.gis.geos.geometry import GEOSGeometry
-from django.contrib.gis.db.models.functions import Distance
-from location.utility import get_location, get_location_with_range
-from location.models import Location
-from hubs.models.hub import Hub
-from dateutil.parser import parse
-from rest_framework.generics import ListAPIView,RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.filters import SearchFilter
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
-
-from django.contrib.auth.models import User
+import logging
 import traceback
 
-from organization.models import (
-    Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging,
-    ProjectStatus, ProjectCollaborators, ProjectFollower, OrganizationTags, OrganizationTagging
-)
-from organization.serializers.project import (
-    EditProjectSerializer, ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer,
- InsertProjectMemberSerializer, ProjectSitemapEntrySerializer, ProjectFollowerSerializer
-)
-from organization.serializers.status import ProjectStatusSerializer
-from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
-from organization.serializers.tags import (ProjectTagsSerializer)
-from organization.utility.project import create_new_project, get_project_translations
-from organization.permissions import (ReadSensibleProjectDataPermission, ProjectReadWritePermission, AddProjectMemberPermission, ProjectMemberReadWritePermission, ChangeProjectCreatorPermission)
-from organization.pagination import (
-    ProjectsPagination, MembersPagination, ProjectPostPagination, ProjectCommentPagination
-)
-from organization.utility.organization import (
-    check_organization,
-)
-from organization.utility.notification import (
-    create_project_comment_reply_notification, create_project_comment_notification, create_project_follower_notification
-)
-from rest_framework.exceptions import ValidationError, NotFound
+from climateconnect_api.models import Availability, Role, Skill, UserProfile
+from climateconnect_api.models.language import Language
 from climateconnect_main.utility.general import get_image_from_data_url
-from climateconnect_api.models import Role, Skill, Availability, UserProfile
+from dateutil.parser import parse
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.db.models import Q
-import logging
+from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
+from hubs.models.hub import Hub
+from location.models import Location
+from location.utility import get_location, get_location_with_range
+from organization.models import (Organization, OrganizationTagging,
+                                 OrganizationTags, Post, Project,
+                                 ProjectCollaborators, ProjectComment,
+                                 ProjectFollower, ProjectMember,
+                                 ProjectParents, ProjectStatus, ProjectTagging,
+                                 ProjectTags)
+from organization.models.translations import ProjectTranslation
+from organization.pagination import (MembersPagination,
+                                     ProjectCommentPagination,
+                                     ProjectPostPagination, ProjectsPagination)
+from organization.permissions import (AddProjectMemberPermission,
+                                      ChangeProjectCreatorPermission,
+                                      ProjectMemberReadWritePermission,
+                                      ProjectReadWritePermission,
+                                      ReadSensibleProjectDataPermission)
+from organization.serializers.content import (PostSerializer,
+                                              ProjectCommentSerializer)
+from organization.serializers.project import (EditProjectSerializer,
+                                              InsertProjectMemberSerializer,
+                                              ProjectFollowerSerializer,
+                                              ProjectMemberSerializer,
+                                              ProjectMinimalSerializer,
+                                              ProjectSerializer,
+                                              ProjectSitemapEntrySerializer,
+                                              ProjectStubSerializer)
+from organization.serializers.status import ProjectStatusSerializer
+from organization.serializers.tags import ProjectTagsSerializer
+from organization.utility.notification import (
+    create_project_comment_notification,
+    create_project_comment_reply_notification,
+    create_project_follower_notification)
+from organization.utility.organization import check_organization
+from organization.utility.project import (create_new_project,
+                                          get_project_translations)
+from rest_framework import status
+from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import (ListAPIView, RetrieveUpdateAPIView,
+                                     RetrieveUpdateDestroyAPIView)
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 logger = logging.getLogger(__name__)
 
 
@@ -158,7 +170,6 @@ class CreateProjectView(APIView):
             organization = check_organization(int(request.data['parent_organization']))
         else:
             organization = None
-
         required_params = [
             'name', 'status', 'short_description',
             'collaborators_welcome', 'team_members',
@@ -177,25 +188,24 @@ class CreateProjectView(APIView):
             return Response({
                 'message': "Passed status {} does not exist".format(request.data["status"])
             })  
-
         translations_failed = False
         try:
-            translations = get_project_translations(request.data)            
+            translations_object = get_project_translations(request.data)     
         except ValueError:
             translations_failed = True
 
-        source_language = Language.get(language_code=translations['source_language'])
+        source_language = Language.objects.get(language_code=translations_object['source_language'])
+        translations = translations_object['translations']
         project = create_new_project(request.data, source_language)
-
         if not translations_failed:
             for language in translations:
-                if not language == translations['source_language']:
+                if not language == source_language.language_code:
                     texts = translations[language]
                     try:
-                        language = Language.get(language_code=language)                    
+                        language_object = Language.objects.get(language_code=language)                    
                         translation = ProjectTranslation.objects.create(
                             project=project, 
-                            language=language,
+                            language=language_object,
                             name_translation=texts['name'], 
                             short_description_translation=texts['short_description']                
                         )
@@ -205,7 +215,7 @@ class CreateProjectView(APIView):
                             translation.helpful_connections_translation = texts['helpful_connections']
                         translation.save()
                     except Language.DoesNotExist:
-                        print("A language with language_code "+language+" does not exist")
+                        print("A language with language_code "+ language +" does not exist")
 
         project_parents = ProjectParents.objects.create(
             project=project, parent_user=request.user
@@ -262,7 +272,7 @@ class CreateProjectView(APIView):
                     availability=user_availability, role_in_project=member['role_in_project']
                 )
                 logger.info("Project member created for user {}".format(user.id))
-
+        
         return Response({
             'message': 'Project {} successfully created'.format(project.name),
             'url_slug': project.url_slug

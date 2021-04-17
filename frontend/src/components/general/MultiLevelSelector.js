@@ -5,7 +5,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -138,30 +138,29 @@ const useStyles = makeStyles((theme) => {
       display: "block",
       margin: "0 auto",
     },
-
     selectedList: {
       maxWidth: 350,
       margin: "0 auto",
     },
-
     divider: {
       backgroundColor: "black",
       marginBottom: theme.spacing(1),
     },
-
     subListLastItem: {
       borderBottom: 0,
     },
-
     // Ensure there's border on the last sublist item,
     // on the last parent list item. See GitHub issue #312
     finalListItem: {
       borderBottom: "1px solid black",
     },
-
     itemUnderExpandedSubList: {
       borderTop: "1px solid black",
     },
+    searchBar: {
+      display: "block",
+      width: "100%"
+    }
   };
 });
 

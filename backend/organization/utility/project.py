@@ -1,11 +1,13 @@
-from climateconnect_api.utility.translation import get_translations
-from location.utility import get_location
-from typing import Dict
-from organization.models import Project
-from climateconnect_api.models import (Skill, language,)
-from climateconnect_main.utility.general import get_image_from_data_url
-
 import logging
+from typing import Dict
+
+from climateconnect_api.models import Skill, language
+from climateconnect_api.utility.translation import get_translations
+from climateconnect_main.utility.general import get_image_from_data_url
+from location.utility import get_location
+
+from organization.models import Project
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,7 +43,6 @@ def create_new_project(data: Dict, source_language: str) -> Project:
     if 'website' in data:
         project.website = data['website']
     project.language = source_language
-
     project.url_slug = project.name.replace(" ", "") + str(project.id)
 
     if 'skills' in data:
@@ -52,7 +53,6 @@ def create_new_project(data: Dict, source_language: str) -> Project:
             except Skill.DoesNotExist:
                 logger.error("Passed skill ID {} does not exists".format(skill_id))
                 continue
-
     project.save()
     return project
 
