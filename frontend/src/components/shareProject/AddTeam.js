@@ -110,7 +110,7 @@ export default function AddTeam({
 
   return (
     <Container maxWidth="lg" className={classes.marginTop}>
-      <form onSubmit={onClickNextStep}>
+      <form onSubmit={isLastStep ? onSubmit : onClickNextStep}>
         <div className={classes.searchBarContainer}>
           <AutoCompleteSearchBar
             label={texts.search_for_your_team_members}
