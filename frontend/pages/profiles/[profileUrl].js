@@ -180,7 +180,7 @@ function ProfileLayout({
       <Container className={classes.container} ref={projectsRef}>
         {user && user.url_slug !== profile.url_slug && (
           <Button variant="contained" color="primary" onClick={handleConnectBtn}>
-            {texts.message}
+            {texts.send_message}
           </Button>
         )}
         <h2>
