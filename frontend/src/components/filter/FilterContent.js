@@ -28,14 +28,9 @@ export default function FilterContent({
     possibleFilters.length
   );
 
-  // possibleFilters is an array of objects, which include various properties
-  // like icon, iconName, title, etc. on it. We reduce those to a single object
-  // to determine the initial filters, and selected items...
-
   // Fields of type "openMultiSelectDialogButton" aren't properly handled here.
   // When loading a filter for categories, opening the category MultiSelectDialog and then closing it again, you'll get an error.
 
-  // TODO(piper): this is it
   // When loading a page with a filtered URL we'll need to retrieve this information from possibleFilters on all fields with the type "openMultiSelectDialogButton"
 
   const reducedPossibleFilters = possibleFilters.reduce((map, obj) => {
@@ -49,8 +44,9 @@ export default function FilterContent({
     return map;
   }, {});
 
-  // Combine the filters together from the query param.
-  // Some types are arrays and expected as such
+  // Combine the filters together from current filters
+  // that are present in the query param in the URL.  Some
+  // types are arrays and expected as such
   // downstream; need to handle appropriately both on initiailization
   // and when merging in parameters from query param
   const router = useRouter();
@@ -81,19 +77,21 @@ export default function FilterContent({
   const [currentFilters, setCurrentFilters] = React.useState(reducedPossibleFilters);
 
   const [selectedItems, setSelectedItems] = React.useState(
-    possibleFilters.reduce((accumulator, currentPossibleFilter) => {
-      // All we're doing is initializing an empty array here.
-      if (currentPossibleFilter.type === "openMultiSelectDialogButton") {
-        // For currently selected items (from the query param), we want
-        // to also propagate the complete filter object through
-        // to the selected items, beyond just the "name" property.
+    // For currently selected items (from the query param), we want
+    // to also propagate the complete filter object through
+    // to the selected items, beyond just the "name" property. The
+    // possibleFilters array includes other properties and
+    // metadata (like icon, iconName, title, etc.) beyond what we persist
+    // in the query params.
 
+    // We reduce those to a single object to determine the initial filters, and selected items.
+    possibleFilters.reduce((accumulator, currentPossibleFilter) => {
+      if (currentPossibleFilter.type === "openMultiSelectDialogButton") {
         if (currentFilters && currentFilters[currentPossibleFilter.key]) {
           if (Array.isArray(currentFilters[currentPossibleFilter.key])) {
             // If we currently have a filter set (e.g. category), then
             // make sure we search through the possible sub items associated
             // with that filter (e.g. itemsToChooseFrom, and subcategories)
-
             let possibleMultiFiltersToPass = [];
             if (currentPossibleFilter.itemsToChooseFrom) {
               const potentialCurrentFilterValues = new Set(
@@ -121,13 +119,8 @@ export default function FilterContent({
             // what appears in the query param
             accumulator[currentPossibleFilter.key] = possibleMultiFiltersToPass;
           } else {
-            // debugger;
-
             // Not an array (e.g. a string like "energy"), need to handle differently.
             accumulator[currentPossibleFilter.key] = [];
-
-            // Ensure we've an array for multiple items
-            const splitItems = currentFilters[currentPossibleFilter.key].split(",");
 
             // For currently selected items (from the query param), we want
             // to also propagate the complete filter object through
@@ -158,14 +151,6 @@ export default function FilterContent({
               });
             }
 
-            // Have to transform to key on a "name" property, so that ListItem text can render the text correctly
-            const selectedCategory = {
-              name: splitItems,
-            };
-
-            // TODO(old)
-            // accumulator[currentPossibleFilter.key].push(selectedCategory);
-            // accumulator[currentPossibleFilter.key].push(currentPossibleFilter);
             accumulator[currentPossibleFilter.key] = possibleFiltersToPass;
           }
         } else {
