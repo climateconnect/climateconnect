@@ -6,6 +6,7 @@ import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
 import theme from "../../themes/theme";
+import { flatten } from "lodash";
 
 export default function FilterContent({
   applyFilters,
@@ -71,83 +72,60 @@ export default function FilterContent({
   const [open, setOpen] = React.useState({});
   const [currentFilters, setCurrentFilters] = React.useState(reducedPossibleFilters);
 
+  /**
+   * Util to return all potential items associated with
+   * a given selected filter. Traverses itemsToChooseFrom, and sub categories
+   * associated with that filter.
+   */
+  const findAllItems = (currentPossibleFilter, filtersToCheck) => {
+    // Immediately just return the initial filter
+    // if we don't need to traverse subcategories or other items to choose from
+    if (!currentPossibleFilter.itemsToChooseFrom) {
+      return currentPossibleFilter;
+    }
+
+    // Ensure we've accurate set membership, and iterate over all items to choose from...
+    let items = [];
+    currentPossibleFilter.itemsToChooseFrom.forEach((item) => {
+      if (filtersToCheck.has(item.name)) {
+        items.push(item);
+      }
+
+      // Check for subcategories as well
+      item?.subcategories.forEach((subcategory) => {
+        if (filtersToCheck.has(subcategory.name)) {
+          items.push(subcategory);
+        }
+      });
+    });
+
+    return items;
+  };
+
   const [selectedItems, setSelectedItems] = React.useState(
-    // For currently selected items (from the query param), we want
+    // For initially selected items (from the query param), we want
     // to also propagate the complete filter object through
     // to the selected items, beyond just the "name" property. The
     // possibleFilters array includes other properties and
     // metadata (like icon, iconName, title, etc.) beyond what we persist
     // in the query params.
-
-    // We reduce those to a single object to determine the initial filters, and selected items.
     possibleFilters.reduce((accumulator, currentPossibleFilter) => {
       if (currentPossibleFilter.type === "openMultiSelectDialogButton") {
         if (currentFilters && currentFilters[currentPossibleFilter.key]) {
+          // Ensure the membership collection is built with an array if it's a single string
+          // like "energy" for "category"
+          let filtersToCheck;
           if (Array.isArray(currentFilters[currentPossibleFilter.key])) {
-            // If we currently have a filter set (e.g. category), then
-            // make sure we search through the possible sub items associated
-            // with that filter (e.g. itemsToChooseFrom, and subcategories)
-            let possibleMultiFiltersToPass = [];
-            if (currentPossibleFilter.itemsToChooseFrom) {
-              const potentialCurrentFilterValues = new Set(
-                currentFilters[currentPossibleFilter.key]
-              );
-
-              currentPossibleFilter.itemsToChooseFrom.forEach((item) => {
-                if (potentialCurrentFilterValues.has(item.name)) {
-                  possibleMultiFiltersToPass.push(item);
-                }
-
-                // Check for subcategories as well
-                if (item.subcategories) {
-                  item.subcategories.forEach((subcategory) => {
-                    if (potentialCurrentFilterValues.has(subcategory.name)) {
-                      possibleMultiFiltersToPass.push(subcategory);
-                    }
-                  });
-                }
-              });
-            }
-
-            // After we've searched through all possible filters,
-            // we ensure the selected items state will have all information based on
-            // what appears in the query param
-            accumulator[currentPossibleFilter.key] = possibleMultiFiltersToPass;
+            filtersToCheck = new Set(currentFilters[currentPossibleFilter.key]);
           } else {
-            // Not an array (e.g. a string like "energy"), need to handle differently.
-            accumulator[currentPossibleFilter.key] = [];
-
-            // For currently selected items (from the query param), we want
-            // to also propagate the complete filter object through
-            // to the selected items, beyond just the "name" property.
-            let possibleFiltersToPass = [];
-
-            // If the filter (e.g. "Category") has items to choose from, then
-            // we have to find those items to pass along to the selectedItems state
-            if (currentPossibleFilter.itemsToChooseFrom) {
-              const potentialCurrentFilterValues = new Set(
-                // Ensure it's an array if it's a single string
-                [currentFilters[currentPossibleFilter.key]]
-              );
-
-              currentPossibleFilter.itemsToChooseFrom.forEach((item) => {
-                if (potentialCurrentFilterValues.has(item.name)) {
-                  possibleFiltersToPass.push(item);
-                }
-
-                // Check for subcategories as well
-                if (item.subcategories) {
-                  item.subcategories.forEach((subcategory) => {
-                    if (potentialCurrentFilterValues.has(subcategory.name)) {
-                      possibleFiltersToPass.push(subcategory);
-                    }
-                  });
-                }
-              });
-            }
-
-            accumulator[currentPossibleFilter.key] = possibleFiltersToPass;
+            filtersToCheck = new Set([currentFilters[currentPossibleFilter.key]]);
           }
+
+          // If we currently have a filter set (e.g. category), then
+          // make sure we search through the possible sub items associated
+          // with that filter (e.g. itemsToChooseFrom, and subcategories)
+          const potentialItems = findAllItems(currentPossibleFilter, filtersToCheck);
+          accumulator[currentPossibleFilter.key] = potentialItems;
         } else {
           accumulator[currentPossibleFilter.key] = [];
         }
