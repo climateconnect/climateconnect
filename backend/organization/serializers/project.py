@@ -13,7 +13,7 @@ from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.tags import ProjectTaggingSerializer, OrganizationTagging
 
 from organization.utility.project import (
-    get_project_name, get_project_short_description,
+    get_project_helpful_connections, get_project_name, get_project_short_description,
     get_project_description
 )
 
@@ -30,6 +30,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     number_of_followers = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     loc = serializers.SerializerMethodField()
+    helpful_connections = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -50,7 +51,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_name(self, obj):
         return get_project_name(obj, get_language())
     
-    def short_description(self, obj):
+    def get_short_description(self, obj):
         return get_project_short_description(obj, get_language())
     
     def get_description(self, obj):
@@ -84,6 +85,9 @@ class ProjectSerializer(serializers.ModelSerializer):
         if obj.loc == None:
             return None
         return obj.loc.name
+
+    def get_helpful_connections(self, obj):
+        return get_project_helpful_connections(obj, get_language())
 
 
 class EditProjectSerializer(ProjectSerializer):
@@ -158,7 +162,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
-    
+    print(get_language())
     class Meta:
         model = Project
         fields = (
