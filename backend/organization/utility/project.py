@@ -1,18 +1,19 @@
 import logging
-from organization.models.tags import ProjectTags
 from typing import Dict
 
-from climateconnect_api.models import Skill, language
+from climateconnect_api.models import Skill
+from climateconnect_api.models.language import Language
 from climateconnect_api.utility.translation import get_translations
 from climateconnect_main.utility.general import get_image_from_data_url
 from location.utility import get_location
 
 from organization.models import Project
+from organization.models.tags import ProjectTags
 
 logger = logging.getLogger(__name__)
 
 
-def create_new_project(data: Dict, source_language: str) -> Project:
+def create_new_project(data: Dict, source_language: Language) -> Project:
     project = Project.objects.create(
         name=data['name'],
         short_description=data['short_description'],

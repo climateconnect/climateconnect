@@ -13,12 +13,14 @@ from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from hubs.models.hub import Hub
 from location.models import Location
 from location.utility import get_location, get_location_with_range
-from organization.models import (Organization, OrganizationTagging,
-                                 OrganizationTags, Post, Project,
-                                 ProjectCollaborators, ProjectComment,
-                                 ProjectFollower, ProjectMember,
-                                 ProjectParents, ProjectStatus, ProjectTagging,
-                                 ProjectTags)
+from organization.models import (
+    Organization, OrganizationTagging,
+    OrganizationTags, Post, Project,
+    ProjectCollaborators, ProjectComment,
+    ProjectFollower, ProjectMember,
+    ProjectParents, ProjectStatus, ProjectTagging,
+    ProjectTags
+)
 from organization.models.translations import ProjectTranslation
 from organization.pagination import (MembersPagination,
                                      ProjectCommentPagination,
@@ -30,14 +32,16 @@ from organization.permissions import (AddProjectMemberPermission,
                                       ReadSensibleProjectDataPermission)
 from organization.serializers.content import (PostSerializer,
                                               ProjectCommentSerializer)
-from organization.serializers.project import (EditProjectSerializer,
-                                              InsertProjectMemberSerializer,
-                                              ProjectFollowerSerializer,
-                                              ProjectMemberSerializer,
-                                              ProjectMinimalSerializer,
-                                              ProjectSerializer,
-                                              ProjectSitemapEntrySerializer,
-                                              ProjectStubSerializer)
+from organization.serializers.project import (
+    EditProjectSerializer,
+    InsertProjectMemberSerializer,
+    ProjectFollowerSerializer,
+    ProjectMemberSerializer,
+    ProjectMinimalSerializer,
+    ProjectSerializer,
+    ProjectSitemapEntrySerializer,
+    ProjectStubSerializer
+)
 from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (

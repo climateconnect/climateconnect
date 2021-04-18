@@ -1,57 +1,51 @@
 # Django imports
-from django.contrib.gis.db.models.functions import Distance
-from django_filters.rest_framework import DjangoFilterBackend
-from django.utils.translation import gettext as _
-from django.db.models import Q
-from django.contrib.auth.models import User
-
-# REST imports
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
-from rest_framework.filters import SearchFilter
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.exceptions import NotFound
+import logging
 
 # Backend app imports
-from climateconnect_api.models import Role
-from climateconnect_api.pagination import MembersPagination
-from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.models import Role, UserProfile
+from climateconnect_api.models.language import Language
+from climateconnect_api.pagination import MembersPagination
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.utility.translation import get_translations
-from climateconnect_api.models.language import Language
-
-from organization.serializers.organization import (
-    EditOrganizationSerializer, OrganizationSerializer, 
-    OrganizationMinimalSerializer, OrganizationMemberSerializer, 
-    UserOrganizationSerializer, OrganizationCardSerializer, 
-    OrganizationSitemapEntrySerializer
-)
-from organization.serializers.project import (ProjectFromProjectParentsSerializer,)
-from organization.serializers.tags import (OrganizationTagsSerializer)
-from organization.models import (
-    Organization, OrganizationMember, 
-    ProjectParents, OrganizationTags, OrganizationTagging
-)
-from organization.permissions import (
-    AddOrganizationMemberPermission, ChangeOrganizationCreatorPermission,
-    OrganizationReadWritePermission, OrganizationReadWritePermission,
-    OrganizationMemberReadWritePermission
-)
-from organization.pagination import (OrganizationsPagination, ProjectsPagination)
-from organization.models.tags import ProjectTags
-from organization.models.translations import OrganizationTranslation
-from organization.utility.organization import create_organization_translation
-
+from climateconnect_main.utility.general import get_image_from_data_url
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models.functions import Distance
+from django.db.models import Q
+from django.utils.translation import gettext as _
+from django_filters.rest_framework import DjangoFilterBackend
+from hubs.models.hub import Hub
 from location.models import Location
 from location.utility import get_location, get_location_with_range
+from organization.models import (Organization, OrganizationMember,
+                                 OrganizationTagging, OrganizationTags,
+                                 ProjectParents)
+from organization.models.tags import ProjectTags
+from organization.models.translations import OrganizationTranslation
+from organization.pagination import OrganizationsPagination, ProjectsPagination
+from organization.permissions import (AddOrganizationMemberPermission,
+                                      ChangeOrganizationCreatorPermission,
+                                      OrganizationMemberReadWritePermission,
+                                      OrganizationReadWritePermission)
+from organization.serializers.organization import (
+    EditOrganizationSerializer, OrganizationCardSerializer,
+    OrganizationMemberSerializer, OrganizationMinimalSerializer,
+    OrganizationSerializer, OrganizationSitemapEntrySerializer,
+    UserOrganizationSerializer)
+from organization.serializers.project import \
+    ProjectFromProjectParentsSerializer
+from organization.serializers.tags import OrganizationTagsSerializer
+from organization.utility.organization import create_organization_translation
+from rest_framework import status
+from rest_framework.exceptions import NotFound
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import (ListAPIView, ListCreateAPIView,
+                                     RetrieveUpdateDestroyAPIView)
+from rest_framework.pagination import PageNumberPagination
+# REST imports
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from hubs.models.hub import Hub
-
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -134,7 +128,7 @@ class CreateOrganizationView(APIView):
     def post(self, request):
         required_params = [
             'name', 'team_members', 'location', 'image', 'organization_tags',
-            'translations'
+            'translations', 'source_language'
         ]
         for param in required_params:
             if param not in request.data:
@@ -142,9 +136,9 @@ class CreateOrganizationView(APIView):
                     'message': 'Required parameter missing: {}'.format(param)
                 }, status=status.HTTP_400_BAD_REQUEST)
         
-        texts = [request.data['name']]
+        texts = {"name": request.data['name']}
         if 'short_description' in request.data:
-            texts.append(request.data['short_description'])
+            texts['short_description'] = request.data['short_description']
 
         try:
             translations = get_translations(
@@ -159,6 +153,10 @@ class CreateOrganizationView(APIView):
 
         if created:
             organization.url_slug = organization.name.replace(" ", "") + str(organization.id)
+
+            # Add primary language to organization table. 
+            source_language = Language.objects.get(language_code=request.data['source_language'])
+            organization.language = source_language
 
             if 'image' in request.data:
                 organization.image = get_image_from_data_url(request.data['image'])[0]
@@ -188,21 +186,15 @@ class CreateOrganizationView(APIView):
             organization.save()
 
             # Create organization translation
+            print(translations)
             if translations:
-                for language_name in translations:
-                    if language_name != translations['source_language']:
-                        texts = translations[language_name]
-                        language = Language.objects.get(name=language_name)
-                        if language_name['is_manual_translation']:
-                            create_organization_translation(
-                                organization, language,
-                                texts, request.data['is_manual_translation']
-                            )
-                        else:
-                            create_organization_translation(
-                                organization, language,
-                                texts, request.data['is_manual_translation']
-                            )
+                for language_code in translations['translations']:
+                    texts = translations['translations'][language_code]
+                    language = Language.objects.get(language_code=language_code)
+                    create_organization_translation(
+                        organization, language,
+                        texts, request.data['translations'][language_code]['is_manual_translation']
+                    )
 
             roles = Role.objects.all()
             for member in request.data['team_members']:
@@ -240,6 +232,7 @@ class CreateOrganizationView(APIView):
             return Response({
                 'message': 'Organization with name {} already exists'.format(request.data['name'])
             }, status=status.HTTP_400_BAD_REQUEST)
+
 
 class OrganizationAPIView(APIView):
     permission_classes = [OrganizationReadWritePermission]
