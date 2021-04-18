@@ -1,4 +1,5 @@
 import logging
+from organization.models.tags import ProjectTags
 from typing import Dict
 
 from climateconnect_api.models import Skill, language
@@ -56,6 +57,14 @@ def create_new_project(data: Dict, source_language: str) -> Project:
     project.save()
     return project
 
+def get_project_helpful_connections(project: Project, language_code: str) -> str:
+    if language_code != project.language.language_code and \
+        project.translation_project.filter(language__language_code=language_code).exists():
+        return project.translation_project.get(
+            language__language_code=language_code
+        ).helpful_connections_translation
+    
+    return project.helpful_connections
 
 def get_project_name(project: Project, language_code: str) -> str:
     if language_code != project.language.language_code and \
@@ -85,6 +94,12 @@ def get_project_description(project: Project, language_code: str) -> str:
         ).description_translation
     
     return project.description
+
+def get_projecttag_name(tag: ProjectTags, language_code: str) -> str:
+    if language_code == "en":
+        return tag.name
+    else:
+        return getattr(tag, "name_{}_translation".format(language_code))
 
 def get_project_translations(data:Dict):
     texts = {
