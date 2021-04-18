@@ -183,29 +183,31 @@ export default function FilterContent({
     applyFilters(type, currentFilters, isSmallScreen);
   };
 
+  /**
+   * Reapplies filters based on two given strings: the
+   * name of the filter (e.g. "Energy") and its
+   * key (e.g. "category").
+   */
   const handleUnselectFilter = (filterName, filterKey) => {
-    debugger;
-
     // Ensure that the filtered value is an array, e.g.
-    // we can't filter on a string like "Energy".
-    // TODO(piper): is this pointing to another bug?
+    // we can't filter on a raw string like "Energy".
     if (!Array.isArray(currentFilters[filterKey])) {
       currentFilters[filterKey] = [currentFilters[filterKey]];
     }
 
+    const prunedFilters = currentFilters[filterKey].filter((f) => f !== filterName);
     const updatedFilters = {
       ...currentFilters,
-      // Purge the selected filter
-      [filterKey]: currentFilters[filterKey].filter((f) => f !== filterName),
+      [filterKey]: prunedFilters,
     };
 
     // When dismissing a selected filter chip, we also want to update the
     // window state to reflect the currently active filters, and fetch
     // the updated data from the server
     applyFilters(type, updatedFilters, isSmallScreen);
-
     setCurrentFilters(updatedFilters);
 
+    // Also re-select items
     if (selectedItems[filterKey]) {
       setSelectedItems({
         ...selectedItems,
