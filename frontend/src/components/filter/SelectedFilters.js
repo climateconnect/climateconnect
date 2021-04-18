@@ -49,7 +49,7 @@ export default function SelectedFilters({ currentFilters, possibleFilters, handl
           currentFilterValues = [currentFilterValues];
         }
 
-        // Get the metadata associated with the filter (e.g. all the "Category") data
+        // Get the metadata associated with the filter (e.g. what type it is, like "Category")
         const filterMetadata = possibleFilters.find((f) => f.key === key);
         return (
           <div key={key} className={classes.selectedBlock}>
