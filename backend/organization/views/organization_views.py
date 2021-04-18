@@ -134,7 +134,7 @@ class CreateOrganizationView(APIView):
     def post(self, request):
         required_params = [
             'name', 'team_members', 'location', 'image', 'organization_tags',
-            'translations'
+            'translations', 'source_language'
         ]
         for param in required_params:
             if param not in request.data:
@@ -142,9 +142,9 @@ class CreateOrganizationView(APIView):
                     'message': 'Required parameter missing: {}'.format(param)
                 }, status=status.HTTP_400_BAD_REQUEST)
         
-        texts = [request.data['name']]
+        texts = {"name": request.data['name']}
         if 'short_description' in request.data:
-            texts.append(request.data['short_description'])
+            texts['short_description'] = request.data['short_description']
 
         try:
             translations = get_translations(
@@ -159,6 +159,10 @@ class CreateOrganizationView(APIView):
 
         if created:
             organization.url_slug = organization.name.replace(" ", "") + str(organization.id)
+
+            # Add primary language to organization table. 
+            source_language = Language.objects.get(language_code=request.data['source_language'])
+            organization.language = source_language
 
             if 'image' in request.data:
                 organization.image = get_image_from_data_url(request.data['image'])[0]
@@ -188,21 +192,15 @@ class CreateOrganizationView(APIView):
             organization.save()
 
             # Create organization translation
+            print(translations)
             if translations:
-                for language_name in translations:
-                    if language_name != translations['source_language']:
-                        texts = translations[language_name]
-                        language = Language.objects.get(name=language_name)
-                        if language_name['is_manual_translation']:
-                            create_orgnaization_translation(
-                                organization, language,
-                                texts, request.data['is_manual_translation']
-                            )
-                        else:
-                            create_orgnaization_translation(
-                                organization, language,
-                                texts, request.data['is_manual_translation']
-                            )
+                for language_code in translations['translations']:
+                    texts = translations['translations'][language_code]
+                    language = Language.objects.get(language_code=language_code)
+                    create_orgnaization_translation(
+                        organization, language,
+                        texts, request.data['translations'][language_code]['is_manual_translation']
+                    )
 
             roles = Role.objects.all()
             for member in request.data['team_members']:
@@ -240,6 +238,7 @@ class CreateOrganizationView(APIView):
             return Response({
                 'message': 'Organization with name {} already exists'.format(request.data['name'])
             }, status=status.HTTP_400_BAD_REQUEST)
+
 
 class OrganizationAPIView(APIView):
     permission_classes = [OrganizationReadWritePermission]
