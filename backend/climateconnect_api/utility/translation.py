@@ -23,11 +23,12 @@ def get_locale(language_code):
 def translate(text, target_lang):
     payload = {
         'text': text,
-        'target_lang': target_lang
+        'target_lang': target_lang,
+        'formality': 'less'
     }
     url = "https://api.deepl.com/v2/translate?auth_key=" + settings.DEEPL_API_KEY
     translation = requests.post(url, payload)
-    return json.loads(translation.text)['translations'][0]
+    return json.loads(translation.content)['translations'][0]
 
 
 def translate_text(text, original_lang, target_lang):
@@ -94,10 +95,11 @@ def get_translations(texts, translations, source_language, depth=0):
             for key in texts.keys():
                 # If the user manually translated and the translation isn't an empty string: take the user's translation
                 if (
+                    'target_language' in translations and \
                     'is_manual_translation' in translations[target_language] and \
-                        translations[target_language]['is_manual_translation'] and \
-                        key in translations[target_language] and \
-                        len(translations[target_language][key]) > 0
+                    translations[target_language]['is_manual_translation'] and \
+                    key in translations[target_language] and \
+                    len(translations[target_language][key]) > 0
                 ):
                     finished_translations[target_language][key] = translations[target_language][key]
                     finished_translations['is_manual_translation']= True
