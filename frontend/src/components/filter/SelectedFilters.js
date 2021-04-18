@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => {
 export default function SelectedFilters({ currentFilters, possibleFilters, handleUnselectFilter }) {
   const classes = useStyles();
 
+  // debugger;
   // Only show the "Selected Filters" title if there's at least one filter.
   // TODO: should probably refactor this to use .any
   const hasFilters = Object.keys(currentFilters).reduce((hasFilters, filter) => {
@@ -36,30 +37,51 @@ export default function SelectedFilters({ currentFilters, possibleFilters, handl
     <div>
       {hasFilters && <Typography>Selected Filters</Typography>}
 
+      {/* Mapping over every filter...  */}
       {Object.keys(currentFilters).map((key) => {
-        // Only render the chip if the filter is an array
-        if (
-          currentFilters[key] &&
-          Array.isArray(currentFilters[key]) &&
-          currentFilters[key].length
-        ) {
-          const filterMetadata = possibleFilters.find((f) => f.key === key);
-          return (
-            <div key={key} className={classes.selectedBlock}>
-              <Tooltip title={filterMetadata.title} className={classes.selectedToolTip}>
-                <filterMetadata.icon />
-              </Tooltip>
-              {currentFilters[key].map((filter) => (
-                <Chip
-                  className={classes.selectedChip}
-                  key={filter}
-                  label={filter}
-                  onDelete={() => handleUnselectFilter(filter, filterMetadata.key)}
-                />
-              ))}
-            </div>
-          );
+        let currentFilterValue = currentFilters[key];
+
+        if (!currentFilterValue || !currentFilterValue.length) {
+          return null;
         }
+
+        // TODO(piper): why does it have to be an array?
+        // Only render the chip if the filter is an array
+        // if (
+        //   // &&
+        //   // Array.isArray(currentFilterValue) &&
+        //   // currentFilterValue.length
+        // ) {
+
+        if (Array.isArray(currentFilterValue)) {
+          //
+        } else {
+          currentFilterValue = [currentFilterValue];
+        }
+
+        // Get the metadata associated with the filter (e.g. all the "Category")
+        // data
+        const filterMetadata = possibleFilters.find((f) => f.key === key);
+
+        return (
+          <div key={key} className={classes.selectedBlock}>
+            {/* Icons */}
+            <Tooltip title={filterMetadata.title} className={classes.selectedToolTip}>
+              <filterMetadata.icon />
+            </Tooltip>
+            {/* Handle strings like "Energy" as being selected too */}
+            {/* TODO: fix this  */}
+            {currentFilterValue.map((filter) => (
+              <Chip
+                className={classes.selectedChip}
+                key={filter}
+                label={filter}
+                onDelete={() => handleUnselectFilter(filter, filterMetadata.key)}
+              />
+            ))}
+          </div>
+        );
+        // }
       })}
     </div>
   );

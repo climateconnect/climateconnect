@@ -31,10 +31,16 @@ export default function FilterContent({
   // possibleFilters is an array of objects, which include various properties
   // like icon, iconName, title, etc. on it. We reduce those to a single object
   // to determine the initial filters, and selected items...
+
+  // Fields of type "openMultiSelectDialogButton" aren't properly handled here.
+  // When loading a filter for categories, opening the category MultiSelectDialog and then closing it again, you'll get an error.
+
+  // TODO(piper): this is it
+  // When loading a page with a filtered URL we'll need to retrieve this information from possibleFilters on all fields with the type "openMultiSelectDialogButton"
+
   const reducedPossibleFilters = possibleFilters.reduce((map, obj) => {
-    // Need to set an empty array for multiselects, otherwise set
-    // this key to a string
-    if (obj.type === "multiselect") {
+    // Handle initializing to an array for multiselects, otherwise an empty string
+    if (obj.type === "multiselect" || obj.type === "openMultiSelectDialogButton") {
       map[obj.key] = [];
     } else {
       map[obj.key] = "";
@@ -51,7 +57,14 @@ export default function FilterContent({
   Object.entries(router.query).forEach(([key, value]) => {
     // Handle specific types
     if (Array.isArray(reducedPossibleFilters[key])) {
-      reducedPossibleFilters[key].push(value);
+      // Handle string values too. If there's something set, and it's strings concat'd -
+      // we need to make an array out of them
+      if (value && value.indexOf(",") > 0) {
+        const splitItems = value.split(",");
+        reducedPossibleFilters[key] = [...splitItems];
+      } else {
+        reducedPossibleFilters[key] = value;
+      }
     } else if (typeof reducedPossibleFilters[key] === "string") {
       // Handle string values too. If there's something set, and it's strings concat'd -
       // we need to make an array out of them
@@ -65,36 +78,98 @@ export default function FilterContent({
   });
 
   const [open, setOpen] = React.useState({});
-
   const [currentFilters, setCurrentFilters] = React.useState(reducedPossibleFilters);
 
   const [selectedItems, setSelectedItems] = React.useState(
-    possibleFilters.reduce((accumulator, currentValue) => {
+    possibleFilters.reduce((accumulator, currentPossibleFilter) => {
       // All we're doing is initializing an empty array here.
-      if (currentValue.type === "openMultiSelectDialogButton") {
-        // And if we have selected items in the query param, then we populate this...
-        // E.g., if currentFilters["category"] is already set, we also
-        // select this item
-        if (currentFilters && currentFilters[currentValue.key]) {
-          if (Array.isArray(currentFilters[currentValue.key])) {
-            accumulator[currentValue.key] = currentFilters[currentValue.key];
+      if (currentPossibleFilter.type === "openMultiSelectDialogButton") {
+        // For currently selected items (from the query param), we want
+        // to also propagate the complete filter object through
+        // to the selected items, beyond just the "name" property.
+
+        if (currentFilters && currentFilters[currentPossibleFilter.key]) {
+          if (Array.isArray(currentFilters[currentPossibleFilter.key])) {
+            // If we currently have a filter set (e.g. category), then
+            // make sure we search through the possible sub items associated
+            // with that filter (e.g. itemsToChooseFrom, and subcategories)
+
+            let possibleMultiFiltersToPass = [];
+            if (currentPossibleFilter.itemsToChooseFrom) {
+              const potentialCurrentFilterValues = new Set(
+                currentFilters[currentPossibleFilter.key]
+              );
+
+              currentPossibleFilter.itemsToChooseFrom.forEach((item) => {
+                if (potentialCurrentFilterValues.has(item.name)) {
+                  possibleMultiFiltersToPass.push(item);
+                }
+
+                // Check for subcategories as well
+                if (item.subcategories) {
+                  item.subcategories.forEach((subcategory) => {
+                    if (potentialCurrentFilterValues.has(subcategory.name)) {
+                      possibleMultiFiltersToPass.push(subcategory);
+                    }
+                  });
+                }
+              });
+            }
+
+            // After we've searched through all possible filters,
+            // we ensure the selected items state will have all information based on
+            // what appears in the query param
+            accumulator[currentPossibleFilter.key] = possibleMultiFiltersToPass;
           } else {
-            // Not an array, need to handle differently.
-            // Only one item in the array,
-            accumulator[currentValue.key] = [];
+            // debugger;
+
+            // Not an array (e.g. a string like "energy"), need to handle differently.
+            accumulator[currentPossibleFilter.key] = [];
 
             // Ensure we've an array for multiple items
-            const splitItems = currentFilters[currentValue.key].split(",");
+            const splitItems = currentFilters[currentPossibleFilter.key].split(",");
+
+            // For currently selected items (from the query param), we want
+            // to also propagate the complete filter object through
+            // to the selected items, beyond just the "name" property.
+            let possibleFiltersToPass = [];
+
+            // If the filter (e.g. "Category") has items to choose from, then
+            // we have to find those items to pass along to the selectedItems state
+            if (currentPossibleFilter.itemsToChooseFrom) {
+              const potentialCurrentFilterValues = new Set(
+                // Ensure it's an array if it's a single string
+                [currentFilters[currentPossibleFilter.key]]
+              );
+
+              currentPossibleFilter.itemsToChooseFrom.forEach((item) => {
+                if (potentialCurrentFilterValues.has(item.name)) {
+                  possibleFiltersToPass.push(item);
+                }
+
+                // Check for subcategories as well
+                if (item.subcategories) {
+                  item.subcategories.forEach((subcategory) => {
+                    if (potentialCurrentFilterValues.has(subcategory.name)) {
+                      possibleFiltersToPass.push(subcategory);
+                    }
+                  });
+                }
+              });
+            }
 
             // Have to transform to key on a "name" property, so that ListItem text can render the text correctly
             const selectedCategory = {
               name: splitItems,
             };
 
-            accumulator[currentValue.key].push(selectedCategory);
+            // TODO(old)
+            // accumulator[currentPossibleFilter.key].push(selectedCategory);
+            // accumulator[currentPossibleFilter.key].push(currentPossibleFilter);
+            accumulator[currentPossibleFilter.key] = possibleFiltersToPass;
           }
         } else {
-          accumulator[currentValue.key] = [];
+          accumulator[currentPossibleFilter.key] = [];
         }
       }
 
@@ -129,8 +204,18 @@ export default function FilterContent({
   };
 
   const handleUnselectFilter = (filterName, filterKey) => {
+    debugger;
+
+    // Ensure that the filtered value is an array, e.g.
+    // we can't filter on a string like "Energy".
+    // TODO(piper): is this pointing to another bug?
+    if (!Array.isArray(currentFilters[filterKey])) {
+      currentFilters[filterKey] = [currentFilters[filterKey]];
+    }
+
     const updatedFilters = {
       ...currentFilters,
+      // Purge the selected filter
       [filterKey]: currentFilters[filterKey].filter((f) => f !== filterName),
     };
 
@@ -226,8 +311,8 @@ export default function FilterContent({
       {
         <SelectedFilters
           currentFilters={currentFilters}
-          possibleFilters={possibleFilters}
           handleUnselectFilter={handleUnselectFilter}
+          possibleFilters={possibleFilters}
         />
       }
     </div>
