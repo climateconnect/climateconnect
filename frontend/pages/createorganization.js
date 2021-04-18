@@ -1,21 +1,30 @@
+import { makeStyles, Typography } from "@material-ui/core";
 import Cookies from "next-cookies";
 import Router from "next/router";
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../public/lib/imageOperations";
 import {
   getLocationValue,
   indicateWrongLocation,
   isLocationValid,
-  parseLocation,
+  parseLocation
 } from "../public/lib/locationOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
+import TranslateTexts from "../src/components/general/TranslateTexts";
 import Layout from "./../src/components/layouts/layout";
 import WideLayout from "./../src/components/layouts/WideLayout";
 import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
 import EnterDetailledOrganizationInfo from "./../src/components/organization/EnterDetailledOrganizationInfo";
+
+const useStyles = makeStyles(theme => ({
+  headline: {
+    textAlign: "center",
+    marginTop: theme.spacing(4),
+  },
+}))
 
 export async function getServerSideProps(ctx) {
   const { token } = Cookies(ctx);
@@ -33,6 +42,7 @@ export async function getServerSideProps(ctx) {
 }
 
 export default function CreateOrganization({ tagOptions, token, rolesOptions }) {
+  const classes = useStyles()
   const [errorMessages, setErrorMessages] = React.useState({
     basicOrganizationInfo: "",
     detailledOrganizationInfo: "",
@@ -55,12 +65,27 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     website: "",
     types: [],
   });
-  const { user, locale } = useContext(UserContext);
+  const { user, locale, locales } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
-  const steps = ["basicorganizationinfo", "detailledorganizationinfo"];
-  const [curStep, setCurStep] = React.useState(steps[0]);
+  const steps = ["basicorganizationinfo", "detailledorganizationinfo", "checktranslations"];
+  const [curStep, setCurStep] = React.useState(steps[2]);
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
+  const [translations, setTranslations] = React.useState({});
+  const [sourceLanguage, setSourceLanguage] = useState(locale);
+  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
+
+  const handleChangeTranslationContent = (locale, newTranslations, isManualChange) => {
+    const newTranslationsObject = {
+      ...translations,
+      [locale]: {
+        ...translations[locale],
+        ...newTranslations,
+        is_manual_translation: isManualChange ? true : false,
+      },
+    };
+    setTranslations({ ...newTranslationsObject });
+  };
 
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
@@ -145,7 +170,16 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     location: texts.location_required_error,
   };
 
+  const handleSetOrganizationInfo = (newOrganizationData) => {
+    setOrganizationInfo({ ...setOrganizationInfo, ...newOrganizationData });
+  }
+
   const handleDetailledInfoSubmit = async (account) => {
+    //If the language is not language, short circuit and allow users to check the english translations for their texts
+    if(locale !== "en"){
+      setCurStep(steps[2])
+      return
+    }
     const organizationToSubmit = await parseOrganizationForRequest(account, user, rolesOptions);
     if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
@@ -194,6 +228,10 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       });
   };
 
+  const handleSubmit = () => {
+    console.log("submitted")
+  }
+
   if (!user)
     return (
       <WideLayout
@@ -230,6 +268,35 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         />
       </WideLayout>
     );
+  else if (curStep === "checktranslations")
+    return (
+      <WideLayout title={texts.languages}>
+        <Typography 
+          color="primary" 
+          className={classes.headline}
+          component="h1"
+          variant="h4"
+        >
+          {texts.translate}
+        </Typography>
+        <TranslateTexts 
+          data={organizationInfo}
+          pageName="organization"
+          handleSetData={handleSetOrganizationInfo}
+          onSubmit={handleSubmit}
+          translations={translations}
+          sourceLanguage={sourceLanguage}
+          targetLanguage={targetLanguage}
+          handleChangeTranslationContent={handleChangeTranslationContent}
+          introTextKey= "translate_organization_intro"
+          textsToTranslate={[{
+            textKey: "shortdescription",
+            rows: 5,
+            headlineTextKey: "short_description"
+          }]}
+        />
+      </WideLayout>
+    )
 }
 
 const getRolesOptions = async (token, locale) => {
