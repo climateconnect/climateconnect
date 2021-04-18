@@ -618,5 +618,9 @@
   "you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up": {
     "en": "You will have an opportunity to create/add an organization once signed up.",
     "de": "Du hast die Möglichkeit, eine Organisation zu erstellen/hinzufügen, sobald du dich angemeldet hast."
+  },
+  "edit_profile": {
+    "en": "Edit Profile",
+    "de": "Profil bearbeiten"
   }
 }

@@ -9,6 +9,7 @@ import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 import { parseOrganization } from "../../public/lib/organizationOperations";
+import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import AccountPage from "../../src/components/account/AccountPage";
 import LoginNudge from "../../src/components/general/LoginNudge";
@@ -44,21 +45,19 @@ const useStyles = makeStyles((theme) => ({
 export async function getServerSideProps(ctx) {
   const { token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, projects, members, organizationTypes, infoMetadata] = await Promise.all([
+  const [organization, projects, members, organizationTypes] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, token, ctx.locale),
     getProjectsByOrganization(organizationUrl, token, ctx.locale),
     getMembersByOrganization(organizationUrl, token, ctx.locale),
     getOrganizationTypes(),
-    getOrganizationInfoMetadata(),
   ]);
   return {
-    props: {
+    props: nullifyUndefinedValues({
       organization: organization,
       projects: projects,
       members: members,
       organizationTypes: organizationTypes,
-      infoMetadata: infoMetadata,
-    },
+    }),
   };
 }
 
@@ -67,9 +66,9 @@ export default function OrganizationPage({
   projects,
   members,
   organizationTypes,
-  infoMetadata,
 }) {
   const { user, locale } = useContext(UserContext);
+  const infoMetadata = getOrganizationInfoMetadata()
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   return (
     <WideLayout
@@ -163,7 +162,7 @@ function OrganizationLayout({
       <Container>
         {user && !canEdit && (
           <Button variant="contained" color="primary" onClick={handleConnectBtn}>
-            {texts.message}
+            {texts.send_message}
           </Button>
         )}
         <div className={`${classes.subtitle} ${classes.cardHeadline}`}>

@@ -98,11 +98,7 @@ export default function getProfileTexts({ profile, locale }) {
     is_a_suborganization_of: {
       en: "is a suborganization of",
       de: "ist eine Unterorganisation von",
-    },
-    edit_profile: {
-      en: "Edit Profile",
-      de: "Profil bearbeiten",
-    },
+    },    
     persons_profile: {
       en: `${profile?.name}'s Profile`,
       de: `${profile?.name}'s Profil`,
