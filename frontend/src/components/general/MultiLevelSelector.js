@@ -326,16 +326,12 @@ function ListToChooseWrapper({
   );
 }
 
-function SelectedList({
-  className,
-  dragAble,
-  itemNamePlural,
-  maxSelections,
-  moveItem,
-  onClickUnselect,
-  selected,
-}) {
+function SelectedList({ className, dragAble, maxSelections, moveItem, onClickUnselect, selected }) {
   const classes = useStyles({});
+
+  // Convert selected to array if it's not already
+  // selected = Array.isArray(selected) ? selected : [selected];
+  debugger;
 
   const onDragEnd = (result) => {
     // dropped outside the list
@@ -393,32 +389,38 @@ function SelectedList({
   }
 
   return (
+    // Convert selected to array if it's not already
+    // selected = Array.isArray(selected) ? selected : [selected];
     <div className={className}>
-      <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
-        {selected.length === 0
-          ? `Select between 1 and ${maxSelections}`
-          : `Selected ${selected.length} of ${maxSelections}`}
-      </Typography>
+      {selected && (
+        <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
+          {selected.length === 0
+            ? `Select between 1 and ${maxSelections}`
+            : `Selected ${selected.length} of ${maxSelections}`}
+        </Typography>
+      )}
       {/* Shows the list of selected items. For example on /browse when you select "Categories" */}
       <List className={classes.selectedList}>
-        {selected?.map((item, index) => (
-          // Only show the item if it's valid
-          <ListItem
-            key={index}
-            button
-            className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
-              classes.selectedItem
-            }`}
-            onClick={() => onClickUnselect(item)}
-            disableRipple
-          >
-            {/* If the .name property is undefined, render the item text directly */}
-            <ListItemText>{item.name || item}</ListItemText>
-            <ListItemIcon className={classes.selectedItemIcon}>
-              <CloseIcon />
-            </ListItemIcon>
-          </ListItem>
-        ))}
+        {selected &&
+          Array.isArray(selected) &&
+          selected?.map((item, index) => (
+            // Only show the item if it's valid
+            <ListItem
+              key={index}
+              button
+              className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
+                classes.selectedItem
+              }`}
+              onClick={() => onClickUnselect(item)}
+              disableRipple
+            >
+              {/* If the .name property is undefined, render the item text directly */}
+              <ListItemText>{item.name || item}</ListItemText>
+              <ListItemIcon className={classes.selectedItemIcon}>
+                <CloseIcon />
+              </ListItemIcon>
+            </ListItem>
+          ))}
       </List>
     </div>
   );
@@ -479,6 +481,10 @@ function ListToChooseFrom({
           // We need to keep the key property in tact with the list
           // item properties. OR we just check to see if the "name"s
           // match, in which case they should already be selected.
+
+          // convert selected to an Array if not
+          selected = Array.isArray(selected) ? selected : [selected];
+
           const isDisabled =
             selected.filter((selectedItem) => selectedItem.name === item.name).length === 1;
 
