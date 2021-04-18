@@ -28,11 +28,6 @@ export default function FilterContent({
     possibleFilters.length
   );
 
-  // Fields of type "openMultiSelectDialogButton" aren't properly handled here.
-  // When loading a filter for categories, opening the category MultiSelectDialog and then closing it again, you'll get an error.
-
-  // When loading a page with a filtered URL we'll need to retrieve this information from possibleFilters on all fields with the type "openMultiSelectDialogButton"
-
   const reducedPossibleFilters = possibleFilters.reduce((map, obj) => {
     // Handle initializing to an array for multiselects, otherwise an empty string
     if (obj.type === "multiselect" || obj.type === "openMultiSelectDialogButton") {
