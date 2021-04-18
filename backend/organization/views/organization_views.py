@@ -44,7 +44,7 @@ from organization.permissions import (
 from organization.pagination import (OrganizationsPagination, ProjectsPagination)
 from organization.models.tags import ProjectTags
 from organization.models.translations import OrganizationTranslation
-from organization.utility.organization import create_orgnaization_translation
+from organization.utility.organization import create_organization_translation
 
 from location.models import Location
 from location.utility import get_location, get_location_with_range
@@ -194,12 +194,12 @@ class CreateOrganizationView(APIView):
                         texts = translations[language_name]
                         language = Language.objects.get(name=language_name)
                         if language_name['is_manual_translation']:
-                            create_orgnaization_translation(
+                            create_organization_translation(
                                 organization, language,
                                 texts, request.data['is_manual_translation']
                             )
                         else:
-                            create_orgnaization_translation(
+                            create_organization_translation(
                                 organization, language,
                                 texts, request.data['is_manual_translation']
                             )

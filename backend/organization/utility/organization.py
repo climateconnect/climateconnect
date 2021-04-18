@@ -1,3 +1,4 @@
+from organization.models.tags import OrganizationTags
 from typing import Dict
 from climateconnect_api.models.language import Language
 
@@ -31,9 +32,13 @@ def get_organization_short_description(organization: Organization, language_code
     
     return organization.short_description
 
+def get_organizationtag_name(tag: OrganizationTags, language_code: str) -> str:
+    if language_code == "en":
+        return tag.name
+    else:
+        return getattr(tag, "name_{}_translation".format(language_code))
 
-
-def create_orgnaization_translation(
+def create_organization_translation(
     organization: Organization, language: Language, texts: Dict,
     is_manual_translation: bool
 ) -> None:

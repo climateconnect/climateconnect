@@ -1,3 +1,4 @@
+from organization.utility.organization import get_organizationtag_name
 from django.utils.translation import get_language
 from organization.utility.project import get_projecttag_name
 from rest_framework import serializers
@@ -37,6 +38,11 @@ class OrganizationTaggingSerializer(serializers.ModelSerializer):
     return serializer.data
 
 class OrganizationTagsSerializer(serializers.ModelSerializer):
+  name = serializers.SerializerMethodField()
+
   class Meta:
     model = OrganizationTags
     fields = ('id', 'name', 'parent_tag', 'additional_info')
+
+  def get_name(self, obj):
+    return get_organizationtag_name(obj, get_language())
