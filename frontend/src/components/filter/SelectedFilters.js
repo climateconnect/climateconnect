@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Chip, Tooltip } from "@material-ui/core";
+import { Chip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => {
@@ -23,8 +23,6 @@ const useStyles = makeStyles((theme) => {
 export default function SelectedFilters({ currentFilters, possibleFilters, handleUnselectFilter }) {
   const classes = useStyles();
 
-  // debugger;
-  // Only show the "Selected Filters" title if there's at least one filter.
   // TODO: should probably refactor this to use .any
   const hasFilters = Object.keys(currentFilters).reduce((hasFilters, filter) => {
     if (currentFilters[filter] && currentFilters[filter].length) {
@@ -33,45 +31,30 @@ export default function SelectedFilters({ currentFilters, possibleFilters, handl
     return hasFilters;
   }, false);
 
+  if (!hasFilters) {
+    return null;
+  }
+
   return (
-    <div>
-      {hasFilters && <Typography>Selected Filters</Typography>}
-
-      {/* Mapping over every filter...  */}
+    <React.Fragment>
+      {/* Now render a selected "Chip" component for every currently selected filter */}
       {Object.keys(currentFilters).map((key) => {
-        let currentFilterValue = currentFilters[key];
+        let currentFilterValues = currentFilters[key];
 
-        if (!currentFilterValue || !currentFilterValue.length) {
+        if (!currentFilterValues || !currentFilterValues.length) {
           return null;
         }
 
-        // TODO(piper): why does it have to be an array?
-        // Only render the chip if the filter is an array
-        // if (
-        //   // &&
-        //   // Array.isArray(currentFilterValue) &&
-        //   // currentFilterValue.length
-        // ) {
-
-        if (Array.isArray(currentFilterValue)) {
-          //
-        } else {
-          currentFilterValue = [currentFilterValue];
+        if (!Array.isArray(currentFilterValues)) {
+          currentFilterValues = [currentFilterValues];
         }
 
-        // Get the metadata associated with the filter (e.g. all the "Category")
-        // data
+        // Get the metadata associated with the filter (e.g. all the "Category") data
         const filterMetadata = possibleFilters.find((f) => f.key === key);
-
         return (
           <div key={key} className={classes.selectedBlock}>
-            {/* Icons */}
-            <Tooltip title={filterMetadata.title} className={classes.selectedToolTip}>
-              <filterMetadata.icon />
-            </Tooltip>
             {/* Handle strings like "Energy" as being selected too */}
-            {/* TODO: fix this  */}
-            {currentFilterValue.map((filter) => (
+            {currentFilterValues.map((filter) => (
               <Chip
                 className={classes.selectedChip}
                 key={filter}
@@ -81,8 +64,7 @@ export default function SelectedFilters({ currentFilters, possibleFilters, handl
             ))}
           </div>
         );
-        // }
       })}
-    </div>
+    </React.Fragment>
   );
 }
