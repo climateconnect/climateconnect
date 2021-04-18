@@ -18,6 +18,7 @@ context and knowledge of various test cases across the team and project contribu
 1. Dismiss a selected filter tag (chip). Ensure
    - URL is updated (query param removed)
    - Selected filter tag (chip) disappears
+   - On refresh, you see selected filter / selected item state updated appropriately
 1. Enter a URL with query params. Open related filter menu (e.g. "Categories" if query param is a
    category). Ensure
    - Items are selected in MutliSelect
