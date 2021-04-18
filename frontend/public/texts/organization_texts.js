@@ -217,5 +217,18 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "Almost done! Here you can customize your organization page and add details",
       de: "Fast geschafft! Hier kannst du deine Organisationsseite anpassen und Details hinzufügen",
     },
+    translate_organization_intro: {
+      en: "",
+      de: (
+        <>
+          Da der Klimawandel eine globale Krise ist, ist es uns wichtig, dass alle Organisationsprofile auch auf
+          Englisch verfügbar sind.
+          <br />
+          Wenn du auf {"Automatisch Übersetzen"} klickst, kannst du den Text immer noch bearbeiten.
+          Natürlich kannst du auch alles selbst übersetzen. Wenn du auf {"Veröffentlichen"} klickst,
+          werden alle leeren Felder automatisch übersetzt.
+        </>
+      ),
+    },    
   };
 }

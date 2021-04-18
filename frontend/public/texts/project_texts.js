@@ -791,15 +791,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     add_team: {
       en: "Add team",
       de: "Team hinzufügen",
-    },
-    languages: {
-      en: "Languages",
-      de: "Sprachen",
-    },
-    translate: {
-      en: "Translate",
-      de: "Übersetzen",
-    },
+    },    
     translate_project_intro: {
       en: "",
       de: (
@@ -812,14 +804,6 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
           werden alle leeren Felder automatisch übersetzt.
         </>
       ),
-    },
-    automatically_translate: {
-      en: "Automatically translate",
-      de: "Automatisch Übersetzen",
-    },
-    skip_and_publish: {
-      en: "Publish",
-      de: "Veröffentlichen",
     },
     basic_info: {
       en: "Basic Info",
