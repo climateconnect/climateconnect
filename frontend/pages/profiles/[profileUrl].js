@@ -230,7 +230,6 @@ function ProfileLayout({
   );
 }
 
-// This will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
 async function getProfileByUrlIfExists(profileUrl, token, locale) {
   try {
     const resp = await apiRequest({

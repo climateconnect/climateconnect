@@ -32,6 +32,7 @@ export default function MyApp({
   const [acceptedNecessary, setAcceptedNecessary] = React.useState(
     cookies.get("acceptedNecessary")
   );
+  const [isLoading, setLoading] = React.useState(false)
   const updateCookies = () => {
     setAcceptedStatistics(cookies.get("acceptedStatistics"));
     setAcceptedNecessary(cookies.get("acceptedNecessary"));
@@ -165,6 +166,14 @@ export default function MyApp({
     }
   };
 
+  const startLoading = () => {
+    setLoading(true)
+  }
+
+  const stopLoading = () => {
+    setLoading(false)
+  }
+
   const contextValues = {
     user: state.user,
     signOut: signOut,
@@ -185,6 +194,9 @@ export default function MyApp({
     acceptedNecessary: acceptedNecessary,
     locale: locale,
     locales: locales,
+    isLoading,
+    startLoading,
+    stopLoading,
   };
   return (
     <React.Fragment>
