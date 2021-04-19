@@ -168,7 +168,7 @@ function parseProject(project) {
     status: project.status,
     location: project.location,
     description: project.description,
-    shortdescription: project.short_description,
+    short_description: project.short_description,
     collaborators_welcome: project.collaborators_welcome,
     start_date: project.start_date,
     end_date: project.end_date,

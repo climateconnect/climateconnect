@@ -9,11 +9,11 @@ import getTexts from "../texts/texts";
 export default function getOrganizationInfoMetadata(locale) {
   const texts = getTexts({ page: "organization", locale: locale });
   return {
-    shortdescription: {
+    short_description: {
       icon: DescriptionIcon,
       iconName: "DescriptionIcon",
       name: texts.description,
-      key: "shortdescription",
+      key: "short_description",
       type: "text",
       weight: 1,
       helptext: texts.how_to_describe_organization,

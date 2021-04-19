@@ -177,7 +177,7 @@ function parseOrganization(organization) {
     types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
     info: {
       location: organization.location,
-      shortdescription: organization.short_description,
+      short_description: organization.short_description,
       website: organization.website,
     },
   };
@@ -205,7 +205,7 @@ const parseForRequest = async (org) => {
   const parsedOrg = {
     ...org,
   };
-  if (org.shortdescription) parsedOrg.short_description = org.shortdescription;
+  if (org.short_description) parsedOrg.short_description = org.short_description;
   if (org.parent_organization)
     parsedOrg.parent_organization = org.parent_organization ? org.parent_organization.id : null;
   if (org.background_image)

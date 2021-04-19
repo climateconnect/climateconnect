@@ -191,7 +191,7 @@ function SmallScreenOverview({
           {project.name}
         </Typography>
 
-        <Typography>{project?.shortdescription}</Typography>
+        <Typography>{project?.short_description}</Typography>
         <div className={classes.projectInfoEl}>
           <Typography>
             <Tooltip title={texts.location}>

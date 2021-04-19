@@ -107,7 +107,7 @@ export default function ProjectPage({ project, members, posts, comments, token, 
 
   return (
     <WideLayout
-      description={project?.shortdescription}
+      description={project?.short_description}
       message={message?.message}
       messageType={message?.messageType}
       title={project ? project.name : texts.project + " " + texts.not_found}
@@ -483,7 +483,7 @@ function parseProject(project) {
     status: project.status,
     location: project.location,
     description: project.description,
-    shortdescription: project.short_description,
+    short_description: project.short_description,
     collaborators_welcome: project.collaborators_welcome,
     start_date: project.start_date,
     end_date: project.end_date,

@@ -5,7 +5,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -159,8 +159,8 @@ const useStyles = makeStyles((theme) => {
     },
     searchBar: {
       display: "block",
-      width: "100%"
-    }
+      width: "100%",
+    },
   };
 });
 

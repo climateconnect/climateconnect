@@ -34,7 +34,11 @@ const convertUndefinedToNull = (inputObject) => {
   const outputObject = { ...inputObject };
   for (const key of Object.keys(outputObject)) {
     if (outputObject[key] === undefined) outputObject[key] = null;
-    else if (typeof outputObject[key] === "object" && !Array.isArray(outputObject[key]) && outputObject[key] !== null)
+    else if (
+      typeof outputObject[key] === "object" &&
+      !Array.isArray(outputObject[key]) &&
+      outputObject[key] !== null
+    )
       outputObject[key] = convertUndefinedToNull(outputObject[key]);
   }
   return outputObject;

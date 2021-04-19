@@ -27,8 +27,7 @@ export async function apiRequest({
       return response;
     } catch (error) {
       console.log(error?.response);
-      if (shouldThrowError) 
-        throw error;
+      if (shouldThrowError) throw error;
     }
   } else {
     try {

@@ -55,11 +55,11 @@ export default function LanguageSelect({ transparentHeader }) {
       const expiry = new Date(now.setFullYear(now.getFullYear() + 1));
       const cookieProps = getCookieProps(expiry);
       cookies.set("NEXT_LOCALE", newLocale, cookieProps);
-      const hasHash = router.asPath.split("#").length > 1
-      if(hasHash){
-        window.location = "/"+newLocale+router.asPath
-        startLoading()
-      }else{
+      const hasHash = router.asPath.split("#").length > 1;
+      if (hasHash) {
+        window.location = "/" + newLocale + router.asPath;
+        startLoading();
+      } else {
         router.push(router.asPath, router.asPath, { locale: newLocale });
       }
     }

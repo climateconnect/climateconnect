@@ -1,17 +1,11 @@
-import {
-  Button,
-  CircularProgress,
-  Container,
-  makeStyles,
-  TextField,
-  Typography,
-} from "@material-ui/core";
+import { Button, Container, makeStyles, TextField, Typography } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getProjectTexts from "../../../public/texts/project_texts";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import BottomNavigation from "../general/BottomNavigation";
+import ButtonLoader from "../general/ButtonLoader";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,9 +41,6 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
     marginLeft: theme.spacing(1),
     width: 265,
-  },
-  translationLoader: {
-    color: "white",
   },
 }));
 
@@ -162,11 +153,7 @@ export default function TranslateProject({
             className={classes.translateButton}
             onClick={automaticallyTranslateProject}
           >
-            {waitingForTranslation ? (
-              <CircularProgress className={classes.translationLoader} size={23} />
-            ) : (
-              texts.automatically_translate
-            )}
+            {waitingForTranslation ? <ButtonLoader /> : texts.automatically_translate}
           </Button>
           <Button variant="contained" color="primary" type="submit">
             {texts.skip_and_publish}

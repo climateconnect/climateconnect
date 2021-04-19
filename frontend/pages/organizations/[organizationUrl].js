@@ -61,19 +61,14 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-export default function OrganizationPage({
-  organization,
-  projects,
-  members,
-  organizationTypes,
-}) {
+export default function OrganizationPage({ organization, projects, members, organizationTypes }) {
   const { user, locale } = useContext(UserContext);
-  const infoMetadata = getOrganizationInfoMetadata()
+  const infoMetadata = getOrganizationInfoMetadata();
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
-      description={organization.name + " | " + organization.info.shortdescription}
+      description={organization.name + " | " + organization.info.short_description}
     >
       {organization ? (
         <OrganizationLayout

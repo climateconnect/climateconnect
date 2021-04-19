@@ -791,7 +791,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     add_team: {
       en: "Add team",
       de: "Team hinzufügen",
-    },    
+    },
     translate_project_intro: {
       en: "",
       de: (

@@ -168,7 +168,7 @@ function parseOrganization(organization) {
     types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
     info: {
       location: organization.location,
-      shortdescription: organization.short_description,
+      short_description: organization.short_description,
       school: organization.school,
       organ: organization.organ,
       parent_organization: organization.parent_organization,

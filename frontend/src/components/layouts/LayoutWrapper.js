@@ -83,7 +83,7 @@ export default function LayoutWrapper({
       </Head>
       {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
       <ThemeProvider theme={theme}>
-        {(loading || isLoading) ? (
+        {loading || isLoading ? (
           <div className={classes.spinnerContainer}>
             <div>
               <img className={classes.spinner} src="/images/logo.png" />

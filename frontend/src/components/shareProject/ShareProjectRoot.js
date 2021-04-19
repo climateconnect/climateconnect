@@ -152,7 +152,7 @@ export default function ShareProjectRoot({
   const submitProject = async (event) => {
     event.preventDefault();
     const payload = await formatProjectForRequest(project, sourceLanguage, translations);
-    
+
     try {
       const resp = await apiRequest({
         method: "post",
@@ -160,11 +160,11 @@ export default function ShareProjectRoot({
         payload: payload,
         token: token,
         locale: locale,
-        shouldThrowError: true
-      })
+        shouldThrowError: true,
+      });
       setProject({ ...project, url_slug: resp.data.url_slug });
       setFinished(true);
-    } catch(error) {
+    } catch (error) {
       console.log(error);
       setProject({ ...project, error: true });
       console.log(error?.response?.data);
