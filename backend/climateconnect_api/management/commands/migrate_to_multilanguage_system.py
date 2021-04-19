@@ -1,3 +1,4 @@
+from organization.models.status import ProjectStatus
 from organization.models.tags import OrganizationTags
 from climateconnect_api.models.common import Skill
 from typing import Any
@@ -1023,6 +1024,29 @@ organizationtags_translation_map = [
     }
 ]
 
+projectstatus_translation_map = [
+    {
+        "name_en": "Idea",
+        "name_de": "Idee"
+    },
+	{
+        "name_en": "In Progress",
+        "name_de": "Im Gange"
+    },
+	{
+        "name_en": "Successfully Finished",
+        "name_de": "Erfolgreich Beendet"
+    },
+	{
+        "name_en": "Cancelled",
+        "name_de": "Abgebrochen"
+    },
+	{
+        "name_en": "Recurring",
+        "name_de": "Wiederholend"
+    }
+]
+
 class Command(BaseCommand):
     help = "Migrate tables to multilanguage system"
 
@@ -1052,4 +1076,13 @@ class Command(BaseCommand):
                 cur_tag = query_result[0]
                 cur_tag.name_de_translation = tag['name_de']
                 cur_tag.save()
-            print("Added translations to "+str(organizationtags_translation_map.index(tag))+" out of "+str(len(skills_translation_map))+" organization tags.")
+            print("Added translations to "+str(organizationtags_translation_map.index(tag))+" out of "+str(len(organizationtags_translation_map))+" organization tags.")
+
+        for status in projectstatus_translation_map:
+            print(status['name_en'])
+            query_result = ProjectStatus.objects.filter(name=status['name_en'])
+            if query_result.exists():
+                cur_status = query_result[0]
+                cur_status.name_de_translation = status['name_de']
+                cur_status.save()
+            print("Added translations to "+str(projectstatus_translation_map.index(status))+" out of "+str(len(projectstatus_translation_map))+" project statuses.")
