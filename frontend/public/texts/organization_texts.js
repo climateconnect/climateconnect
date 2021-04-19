@@ -210,7 +210,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     i_verify_that_i_am_an_authorized_representative_of_this_organization: {
       en: `I verify that I am an authorized representative of this organization 
       and have the right to act on its behalf in the creation and management of this page.`,
-      de: `Ich bestätige, dass ich ein*e autorisierte*r Vertreter*in dieser Organisation 
+      de: `Ich bestätige, dass ich ein(e) autorisierte*r Vertreter*in dieser Organisation 
       bin und das Recht habe, in deren Namen bei der Erstellung und Verwaltung dieser Seite zu handeln.`,
     },
     almost_done_here_you_can_customize_your_organization_page_and_add_details: {
@@ -221,14 +221,14 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "",
       de: (
         <>
-          Da der Klimawandel eine globale Krise ist, ist es uns wichtig, dass alle Organisationsprofile auch auf
-          Englisch verfügbar sind.
+          Da der Klimawandel eine globale Krise ist, ist es uns wichtig, dass alle
+          Organisationsprofile auch auf Englisch verfügbar sind.
           <br />
           Wenn du auf {"Automatisch Übersetzen"} klickst, kannst du den Text immer noch bearbeiten.
           Natürlich kannst du auch alles selbst übersetzen. Wenn du auf {"Veröffentlichen"} klickst,
           werden alle leeren Felder automatisch übersetzt.
         </>
       ),
-    },    
+    },
   };
 }

@@ -1,4 +1,5 @@
 import getAboutTexts from "./about_texts";
+import account_texts from "./account_texts.json";
 import activate_email from "./activate_email.json";
 import chat_texts from "./chat_texts.json";
 import getCommunicationTexts from "./communication_texts";
@@ -32,6 +33,7 @@ export default function getTexts({
 }) {
   const texts = {
     about: getAboutTexts(classes),
+    account: account_texts,
     activate_email: activate_email,
     chat: chat_texts,
     cookie: cookie_texts,

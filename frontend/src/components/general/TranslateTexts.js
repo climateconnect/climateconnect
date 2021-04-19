@@ -6,8 +6,10 @@ import {
   TextField,
   Typography
 } from "@material-ui/core";
+import _ from "lodash";
 import React, { useContext, useEffect } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
+import { getNestedValue } from "../../../public/lib/generalOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import BottomNavigation from "../general/BottomNavigation";
@@ -68,11 +70,10 @@ export default function TranslateTexts({
   arrayTranslationKeys,
   introTextKey,
 }) {
-  console.log(translations)
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: pageName, locale: locale });
-  const targetLanguageTexts = getTexts({ page: pageName, locale: targetLanguage })
+  const targetLanguageTexts = getTexts({ page: pageName, locale: targetLanguage });
   const [waitingForTranslation, setWaitingForTranslation] = React.useState(false);
 
   if (translations[targetLanguage]) console.log(translations[targetLanguage]);
@@ -84,7 +85,7 @@ export default function TranslateTexts({
   const initializeTranslationsObject = () => {
     if (!translations[targetLanguage]) {
       const initializedObject = {};
-      if(arrayTranslationKeys){
+      if (arrayTranslationKeys) {
         for (const key of arrayTranslationKeys) {
           initializedObject[key] = [];
         }
@@ -98,31 +99,45 @@ export default function TranslateTexts({
   };
 
   const handleOriginalTextChange = (newValue, dataKey) => {
-    handleSetData({
-      [dataKey]: newValue,
-    });
+    const obj = {};
+    _.set(obj, dataKey, newValue);
+    handleSetData(obj);
   };
 
   const handleTranslationChange = (newValue, dataKey, indexInArray) => {
+    const flatKey = dataKey.includes(".")
+          ? dataKey.split(".")[dataKey.split(".").length - 1]
+          : dataKey;
     const newTranslationsObject = {
-      [dataKey]: newValue,
+      [flatKey]: newValue,
     };
     //If it's an array, pass the whole array as the value
     if (indexInArray || indexInArray === 0) {
-      const arrayValue = [...translations[targetLanguage][dataKey]];
+      const arrayValue = [...translations[targetLanguage][flatKey]];
       arrayValue[indexInArray] = newValue;
-      newTranslationsObject[dataKey] = [...arrayValue];
+      newTranslationsObject[flatKey] = [...arrayValue];
     }
     handleChangeTranslationContent(targetLanguage, { ...newTranslationsObject }, true);
   };
 
+  const textsToTranslateAreEmpty = () => {
+    const textsWithContent = textsToTranslate.filter((t) => {
+      return getNestedValue(data, t.textKey) && getNestedValue(data, t.textKey).length > 0;
+    });
+    return textsWithContent.length === 0;
+  };
+
   const automaticallyTranslateProject = async () => {
+    if (textsToTranslateAreEmpty()) return;
     setWaitingForTranslation(true);
     try {
       const payloadTexts = textsToTranslate.reduce((obj, textToTranslate) => {
-        obj[textToTranslate.textKey] = data[textToTranslate.textKey]
-        return obj
-      },{})
+        const flatKey = textToTranslate.textKey.includes(".")
+          ? textToTranslate.textKey.split(".")[textToTranslate.textKey.split(".").length - 1]
+          : textToTranslate.textKey;
+        obj[flatKey] = getNestedValue(data, textToTranslate.textKey);
+        return obj;
+      }, {});
       const response = await apiRequest({
         method: "post",
         url: "/api/translate_many/",
@@ -149,10 +164,6 @@ export default function TranslateTexts({
       setWaitingForTranslation(false);
     }
   };
-
-  console.log(introTextKey)
-  console.log(texts[introTextKey])
-  console.log(texts)
 
   return (
     <Container className={classes.root}>
@@ -242,7 +253,7 @@ function TranslationBlock({
   targetLanguageTexts,
 }) {
   const classes = useStyles();
-  console.log(texts[headlineTextKey])
+  const flatDataKey = dataKey.includes(".") ? dataKey.split(".")[dataKey.split(".").length - 1] : dataKey
   return (
     <div className={classes.translationBlock}>
       <TranslationBlockElement
@@ -250,11 +261,11 @@ function TranslationBlock({
         noHeadline={noHeadline}
         rows={rows}
         content={
-          isInArray ? data[dataKey][indexInArray] : data[dataKey]
+          isInArray ? getNestedValue(data, dataKey)[indexInArray] : getNestedValue(data, dataKey)
         }
-        handleContentChange={(event) =>
-          handleOriginalTextChange(event.target.value, dataKey)
-        }
+        handleContentChange={(event) => {
+          handleOriginalTextChange(event.target.value, dataKey);
+        }}
       />
       <TranslationBlockElement
         headline={targetLanguageTexts[headlineTextKey]}
@@ -264,12 +275,12 @@ function TranslationBlock({
         content={
           translations[targetLanguage] &&
           (isInArray
-            ? translations[targetLanguage][dataKey][indexInArray]
-            : translations[targetLanguage][dataKey])
+            ? translations[targetLanguage][flatDataKey][indexInArray]
+            : translations[targetLanguage ][flatDataKey])
         }
-        handleContentChange={(event) =>
-          handleTranslationChange(event.target.value, dataKey, indexInArray)
-        }
+        handleContentChange={(event) => {
+          handleTranslationChange(event.target.value, dataKey, indexInArray);
+        }}
       />
     </div>
   );

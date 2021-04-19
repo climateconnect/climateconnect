@@ -197,8 +197,6 @@ export default function AccountPage({
           }
         }
       });
-  console.log(isOwnAccount)
-  console.log(editText ? editText : texts.edit_profile)
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div

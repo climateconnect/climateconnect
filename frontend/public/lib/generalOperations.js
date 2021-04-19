@@ -23,3 +23,15 @@ export function isOnScreen(el) {
     );
   }
 }
+
+//@propertyName can be of format "info.short_description" which wil then catch obj[info][short_description]
+export function getNestedValue(obj, propertyName) {
+  //short circuit if the property is on the first level
+  if (!propertyName.includes(".")) return obj[propertyName];
+  let propertyToReturn = obj;
+  for (const curLevelProperty of propertyName.split(".")) {
+    if (!propertyToReturn) return null;
+    propertyToReturn = propertyToReturn[curLevelProperty];
+  }
+  return propertyToReturn;
+}

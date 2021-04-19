@@ -21,11 +21,14 @@ def get_locale(language_code):
 
 
 def translate(text, target_lang):
+    if len(text) == 0:
+        return {'text': text}
     payload = {
         'text': text,
-        'target_lang': target_lang,
-        'formality': 'less'
+        'target_lang': target_lang
     }
+    if target_lang == "de":
+        payload['formality'] = 'less'
     url = "https://api.deepl.com/v2/translate?auth_key=" + settings.DEEPL_API_KEY
     translation = requests.post(url, payload)
     return json.loads(translation.content)['translations'][0]
@@ -65,7 +68,7 @@ def translate_text(text, original_lang, target_lang):
         if len(text) > 150 and get_locale(translation['detected_source_language']) == target_locale:
             target_locale = original_locale
             original_locale = get_locale(translation['detected_source_language'])
-            translation = translate(text, target_locale)  
+            translation = translate(text, target_locale)
 
         # If the detected source language is complete different from target_lang or original_lan: adapt original lang
         # Example: If person with german locale writes spanish text the text will be translated to english and source language will be spanish
@@ -73,7 +76,6 @@ def translate_text(text, original_lang, target_lang):
         # (We only trust the detected source language if it's more than 150 characters)
         if len(text) > 150 and not get_locale(translation['detected_source_language']) == original_locale:
             original_locale = get_locale(translation['detected_source_language'])
-
     return {
         'original_text': text,
         'original_lang': original_locale,
@@ -82,7 +84,7 @@ def translate_text(text, original_lang, target_lang):
     }
 
 
-def get_translations(texts, translations, source_language, depth=0):
+def get_translations(texts, translations, source_language, keysToignoreForTranslation, depth=0):
     depth = int(depth)
     # if we started over the a different source language more than one time that means the user used different languages in different texts.
     if depth > 1:
@@ -94,9 +96,10 @@ def get_translations(texts, translations, source_language, depth=0):
                 'is_manual_translation': False
             }
             for key in texts.keys():
+                if key in translations[target_language]:
                 # If the user manually translated and the translation isn't an empty string: take the user's translation
                 if (
-                    'target_language' in translations and \
+                    target_language in translations and \
                     'is_manual_translation' in translations[target_language] and \
                     translations[target_language]['is_manual_translation'] and \
                     key in translations[target_language] and \
@@ -106,10 +109,17 @@ def get_translations(texts, translations, source_language, depth=0):
                     finished_translations['is_manual_translation']= True
                 # Else use DeepL to translate the text
                 else:
-                    translated_text_object = translate_text(texts[key], source_language, target_language)
+                    # If the key should not be translated, just pass the original string (We do this for organization names for example)
+                    if key in keysToignoreForTranslation:
+                        translated_text_object = {
+                            'original_lang': source_language,
+                            'translated_text': texts[key]
+                        }
+                    else:
+                        translated_text_object = translate_text(texts[key], source_language, target_language)
                     # If we got the source language wrong start over with the correct source language
                     if not translated_text_object['original_lang'] == source_language:
-                        return get_translations(texts, translations, translated_text_object['original_lang'], depth + 1)
+                        return get_translations(texts, translations, translated_text_object['original_lang'], keysToignoreForTranslation, depth + 1)
                     finished_translations[target_language][key] = translated_text_object['translated_text']
     return {
         'translations': finished_translations,

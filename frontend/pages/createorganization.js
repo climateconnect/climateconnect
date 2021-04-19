@@ -1,6 +1,5 @@
 import { makeStyles, Typography } from "@material-ui/core";
 import Cookies from "next-cookies";
-import Router from "next/router";
 import React, { useContext, useRef, useState } from "react";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../public/lib/imageOperations";
@@ -19,12 +18,12 @@ import WideLayout from "./../src/components/layouts/WideLayout";
 import EnterBasicOrganizationInfo from "./../src/components/organization/EnterBasicOrganizationInfo";
 import EnterDetailledOrganizationInfo from "./../src/components/organization/EnterDetailledOrganizationInfo";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   headline: {
     textAlign: "center",
     marginTop: theme.spacing(4),
   },
-}))
+}));
 
 export async function getServerSideProps(ctx) {
   const { token } = Cookies(ctx);
@@ -42,7 +41,7 @@ export async function getServerSideProps(ctx) {
 }
 
 export default function CreateOrganization({ tagOptions, token, rolesOptions }) {
-  const classes = useStyles()
+  const classes = useStyles();
   const [errorMessages, setErrorMessages] = React.useState({
     basicOrganizationInfo: "",
     detailledOrganizationInfo: "",
@@ -56,24 +55,34 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
   };
 
   const [organizationInfo, setOrganizationInfo] = React.useState({
-    organizationname: "",
+    name: "",
     hasparentorganization: false,
     parentorganization: "",
-    location: "",
+    image: "",
+    thumbnail_image: "",
     verified: false,
-    shortdescription: "",
-    website: "",
+    info: {
+      location: {},
+      short_description: "",
+      website: "",
+    },
     types: [],
   });
   const { user, locale, locales } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
   const steps = ["basicorganizationinfo", "detailledorganizationinfo", "checktranslations"];
-  const [curStep, setCurStep] = React.useState(steps[2]);
+  const [curStep, setCurStep] = React.useState(steps[0]);
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
   const [translations, setTranslations] = React.useState({});
   const [sourceLanguage, setSourceLanguage] = useState(locale);
   const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+
+  const changeTranslationLanguages = ({ newLanguagesObject }) => {
+    if (newLanguagesObject.sourceLanguage) setSourceLanguage(newLanguagesObject.sourceLanguage);
+    if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
+  };
 
   const handleChangeTranslationContent = (locale, newTranslations, isManualChange) => {
     const newTranslationsObject = {
@@ -172,15 +181,17 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
 
   const handleSetOrganizationInfo = (newOrganizationData) => {
     setOrganizationInfo({ ...setOrganizationInfo, ...newOrganizationData });
-  }
+  };
 
   const handleDetailledInfoSubmit = async (account) => {
     //If the language is not language, short circuit and allow users to check the english translations for their texts
-    if(locale !== "en"){
-      setCurStep(steps[2])
-      return
-    }
-    const organizationToSubmit = await parseOrganizationForRequest(account, user, rolesOptions);
+    const organizationToSubmit = await parseOrganizationForRequest(
+      account,
+      user,
+      rolesOptions,
+      translations,
+      sourceLanguage,
+    );
     if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
         locationInputRef,
@@ -202,6 +213,37 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         return;
       }
     }
+    if (locale !== "en") {
+      console.log(account);
+      setOrganizationInfo({
+        ...account,
+        parentorganization: organizationInfo.parentorganization,
+      });
+      setCurStep(steps[2]);
+      return;
+    }
+    setLoadingSubmit(true);
+    makeCreateOrganizationRequest(organizationToSubmit)
+  };
+
+  const goToPreviousStep = () => {
+    setCurStep(steps[steps.indexOf(curStep) - 1]);
+  };
+
+  const handleSubmit = async(e) => {
+    e.preventDefault()
+    const organizationToSubmit = await parseOrganizationForRequest(
+      organizationInfo,
+      user,
+      rolesOptions,
+      translations,
+      sourceLanguage,
+      targetLanguage
+    );
+    await makeCreateOrganizationRequest(organizationToSubmit)
+  };
+
+  const makeCreateOrganizationRequest = (organizationToSubmit) => {
     apiRequest({
       method: "post",
       url: "/api/create_organization/",
@@ -210,26 +252,20 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       locale: locale,
     })
       .then(function (response) {
-        Router.push({
-          pathname: "/organizations/" + response.data.url_slug,
-          query: {
-            message: texts.you_have_successfully_created_an_organization_you_can_add_members,
-          },
-        });
+        setLoadingSubmit(false);
+        return
       })
       .catch(function (error) {
         console.log(error);
+        setLoadingSubmit(false);
         if (error) console.log(error?.response?.data);
         if (error?.response?.data?.message)
           handleSetErrorMessages({
             errorMessages,
             detailledOrganizationInfo: error?.response?.data?.message,
           });
+        return
       });
-  };
-
-  const handleSubmit = () => {
-    console.log("submitted")
   }
 
   if (!user)
@@ -265,21 +301,17 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
           locationInputRef={locationInputRef}
           locationOptionsOpen={locationOptionsOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          loadingSubmit={loadingSubmit}
         />
       </WideLayout>
     );
   else if (curStep === "checktranslations")
     return (
       <WideLayout title={texts.languages}>
-        <Typography 
-          color="primary" 
-          className={classes.headline}
-          component="h1"
-          variant="h4"
-        >
+        <Typography color="primary" className={classes.headline} component="h1" variant="h4">
           {texts.translate}
         </Typography>
-        <TranslateTexts 
+        <TranslateTexts
           data={organizationInfo}
           pageName="organization"
           handleSetData={handleSetOrganizationInfo}
@@ -288,15 +320,19 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
           sourceLanguage={sourceLanguage}
           targetLanguage={targetLanguage}
           handleChangeTranslationContent={handleChangeTranslationContent}
-          introTextKey= "translate_organization_intro"
-          textsToTranslate={[{
-            textKey: "shortdescription",
-            rows: 5,
-            headlineTextKey: "short_description"
-          }]}
+          goToPreviousStep={goToPreviousStep}
+          introTextKey="translate_organization_intro"
+          textsToTranslate={[
+            {
+              textKey: "info.short_description",
+              rows: 5,
+              headlineTextKey: "short_description",
+            },
+          ]}
+          changeTranslationLanguages={changeTranslationLanguages}
         />
       </WideLayout>
-    )
+    );
 }
 
 const getRolesOptions = async (token, locale) => {
@@ -339,7 +375,13 @@ async function getTags(token, locale) {
   }
 }
 
-const parseOrganizationForRequest = async (o, user, rolesOptions) => {
+const parseOrganizationForRequest = async (
+  o,
+  user,
+  rolesOptions,
+  translations,
+  sourceLanguage,
+) => {
   const organization = {
     team_members: [
       { user_id: user.id, permission_type_id: rolesOptions.find((r) => r.name === "Creator").id },
@@ -350,8 +392,13 @@ const parseOrganizationForRequest = async (o, user, rolesOptions) => {
     thumbnail_image: o.thumbnail_image,
     location: o.info.location,
     website: o.info.website,
-    short_description: o.info.shortdescription,
+    short_description: o.info.short_description,
     organization_tags: o.types,
+    translations: {
+      ...translations,
+      
+    },
+    source_language: sourceLanguage,
   };
   if (o.parentorganization) organization.parent_organization = o.parentorganization;
   if (o.background_image)

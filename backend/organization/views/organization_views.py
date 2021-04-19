@@ -142,8 +142,10 @@ class CreateOrganizationView(APIView):
 
         try:
             translations = get_translations(
-                texts, request.data['translations'],
-                request.data['source_language']
+                texts, 
+                request.data['translations'],
+                request.data['source_language'],
+                ["name"]
             )
         except ValueError as ve:
             translations = None
@@ -186,15 +188,20 @@ class CreateOrganizationView(APIView):
             organization.save()
 
             # Create organization translation
-            print(translations)
             if translations:
-                for language_code in translations['translations']:
-                    texts = translations['translations'][language_code]
-                    language = Language.objects.get(language_code=language_code)
-                    create_organization_translation(
-                        organization, language,
-                        texts, request.data['translations'][language_code]['is_manual_translation']
-                    )
+                for key in translations['translations']:
+                    if not key == "is_manual_translation":
+                        language_code = key
+                        texts = translations['translations'][language_code]
+                        language = Language.objects.get(language_code=language_code)
+                        if language_code in request.data['translations']:
+                            is_manual_translation = request.data['translations'][language_code]['is_manual_translation']
+                        else:
+                            is_manual_translation = False
+                        create_organization_translation(
+                            organization, language,
+                            texts, is_manual_translation
+                        )
 
             roles = Role.objects.all()
             for member in request.data['team_members']:
