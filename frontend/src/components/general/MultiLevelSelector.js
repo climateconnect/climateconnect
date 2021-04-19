@@ -102,6 +102,7 @@ const useStyles = makeStyles((theme) => {
     },
     selectedItemsHeader: {
       fontWeight: "bold",
+      fontSize: "16px",
     },
     selectedItem: {
       background: theme.palette.primary.main,
@@ -234,6 +235,7 @@ export default function MultiLevelSelector({
             {selected.length > 0 && <Divider className={classes.divider} />}
           </>
         )}
+
         <ListToChooseWrapper
           itemsToSelectFrom={itemsToSelectFrom}
           onClickExpand={onClickExpand}
@@ -244,6 +246,7 @@ export default function MultiLevelSelector({
           isInPopup={isInPopup}
           className={classes.listWrapper}
         />
+
         {!(isNarrowScreen || isInPopup) && (
           <SelectedList
             selected={selected}
@@ -392,9 +395,9 @@ function SelectedList({
   return (
     <div className={className}>
       <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
-        {selected.length > 0
-          ? "Selected " + itemNamePlural
-          : "Select between 1 and " + maxSelections + " " + itemNamePlural + "!"}
+        {selected.length === 0
+          ? `Select between 1 and ${maxSelections}`
+          : `Selected ${selected.length} of ${maxSelections}`}
       </Typography>
       {/* Shows the list of selected items. For example on /browse when you select "Categories" */}
       <List className={classes.selectedList}>
