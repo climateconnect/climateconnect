@@ -106,11 +106,12 @@ class SignUpView(APIView):
 
         url_slug = (user.first_name + user.last_name).lower() + str(user.id)
         # Get location
+        source_language = Language.objects.get(language_code=request.data['source_language'])
         user_profile = UserProfile.objects.create(
             user=user, location=location,
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
             verification_key=uuid.uuid4(), send_newsletter=request.data['send_newsletter'],
-            language=request.data['source_language']
+            language=source_language
         )
         if "from_tutorial" in request.data:
             user_profile.from_tutorial = request.data['from_tutorial']
