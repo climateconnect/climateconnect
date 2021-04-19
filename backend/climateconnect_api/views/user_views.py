@@ -84,7 +84,7 @@ class SignUpView(APIView):
     def post(self, request):
         required_params = [
             'email', 'password', 'first_name', 'last_name',
-            'location', 'send_newsletter', 'translations', 'source_language' 
+            'location', 'send_newsletter', 'source_language' 
         ]
         for param in required_params:
             if param not in request.data:
@@ -94,7 +94,6 @@ class SignUpView(APIView):
             raise ValidationError("Email already in use.")
 
         location = get_location(request.data['location'])
-        source_language = Language.objects.get(language_code=request.data['source_language'])
 
         user = User.objects.create(
             username=request.data['email'],
@@ -111,7 +110,7 @@ class SignUpView(APIView):
             user=user, location=location,
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
             verification_key=uuid.uuid4(), send_newsletter=request.data['send_newsletter'],
-            language=source_language
+            language=request.data['source_language']
         )
         if "from_tutorial" in request.data:
             user_profile.from_tutorial = request.data['from_tutorial']
@@ -126,27 +125,6 @@ class SignUpView(APIView):
             send_user_verification_email(user, user_profile.verification_key)
             message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(user.email)  # NOQA
         user_profile.save()
-
-        # Translate user information
-        texts = {'name': user_profile.name}
-        if user_profile.biography:
-            texts['biography'] = user_profile.biography
-        try:
-            translations = get_translations(
-                texts, request.data['translations'],
-                request.data['source_language']
-            )
-        except ValueError as ve:
-            logger.error("TranslationFailed: Error translating texts, {}".format(ve))
-            translations = None
-        
-        if translations:
-            for language_code in translations['translations']:
-                create_user_profile_translation(
-                    translations, user_profile,
-                    request.data['translations'][language_code]['is_manual_translation'],
-                    language_code
-                )
 
         return Response({'success': message}, status=status.HTTP_201_CREATED)
 
