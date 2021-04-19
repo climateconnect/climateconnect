@@ -273,7 +273,7 @@ function LargeScreenOverview({
             {texts.summary}
           </Typography>
           <Typography component="div">
-            <MessageContent content={project?.shortdescription} />
+            <MessageContent content={project?.short_description} />
           </Typography>
           <div className={classes.projectInfoEl}>
             <Typography>

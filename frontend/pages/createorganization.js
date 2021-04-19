@@ -251,7 +251,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       token: token,
       locale: locale,
     })
-      .then(function (response) {
+      .then(function () {
         setLoadingSubmit(false);
         return
       })
