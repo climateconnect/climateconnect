@@ -1,5 +1,10 @@
-# Django imports
 import logging
+# Django imports
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models.functions import Distance
+from django.db.models import Q
+from django.utils.translation import gettext as _
+from django_filters.rest_framework import DjangoFilterBackend
 
 # Backend app imports
 from climateconnect_api.models import Role, UserProfile
@@ -8,11 +13,7 @@ from climateconnect_api.pagination import MembersPagination
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.utility.translation import get_translations
 from climateconnect_main.utility.general import get_image_from_data_url
-from django.contrib.auth.models import User
-from django.contrib.gis.db.models.functions import Distance
-from django.db.models import Q
-from django.utils.translation import gettext as _
-from django_filters.rest_framework import DjangoFilterBackend
+
 from hubs.models.hub import Hub
 from location.models import Location
 from location.utility import get_location, get_location_with_range
@@ -186,7 +187,6 @@ class CreateOrganizationView(APIView):
             organization.save()
 
             # Create organization translation
-            print(translations)
             if translations:
                 for language_code in translations['translations']:
                     texts = translations['translations'][language_code]
