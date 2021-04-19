@@ -129,6 +129,8 @@ class SignUpView(APIView):
 
         # Translate user information
         texts = {'name': user_profile.name}
+        if user_profile.biography:
+            texts['biography'] = user_profile.biography
         try:
             translations = get_translations(
                 texts, request.data['translations'],
