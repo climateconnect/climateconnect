@@ -155,7 +155,8 @@ class ListMemberProfilesView(ListAPIView):
         if 'skills' in self.request.query_params:
             skill_names = self.request.query_params.get('skills').split(',')
             skills = Skill.objects.filter(name__in=skill_names)
-            user_profiles = user_profiles.filter(id__in=user_profiles.filter(skills__in=skills).values('id'))
+            user_profiles = user_profiles.filter(skills__in=skills).distinct()
+            #user_profiles = user_profiles.filter(id__in=user_profiles.filter(skills__in=skills).values('id'))
 
         if 'place' in self.request.query_params and 'osm' in self.request.query_params:
             location_data = get_location_with_range(self.request.query_params)
