@@ -96,7 +96,6 @@ def get_translations(texts, translations, source_language, keysToignoreForTransl
                 'is_manual_translation': False
             }
             for key in texts.keys():
-                if key in translations[target_language]:
                 # If the user manually translated and the translation isn't an empty string: take the user's translation
                 if (
                     target_language in translations and \
