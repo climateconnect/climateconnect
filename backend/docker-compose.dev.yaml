@@ -9,3 +9,13 @@ services:
             - POSTGRES_DB=backend
         ports:
             - "5499:5432"
+
+
+    backenddb_gis:
+        image: mdillon/postgis:9.5-alpine
+        environment:
+            - POSTGRES_USER=backend
+            - POSTGRES_PASSWORD=backend
+            - POSTGRES_DB=backend
+        ports:
+            - "5498:5432"
