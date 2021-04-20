@@ -266,7 +266,9 @@ class OrganizationAPIView(APIView):
         try:
             organization = Organization.objects.get(url_slug=str(url_slug))            
         except Organization.DoesNotExist:
-            return Response({'message': _('Organization not found:') + url_slug}, status=status.HTTP_404_NOT_FOUND)
+            return Response({
+                'message': _('Organization not found:') + url_slug
+            }, status=status.HTTP_404_NOT_FOUND)
         pass_through_params = ['name', 'short_description', 'school', 'organ', 'website']
         for param in pass_through_params:
             if param in request.data:
@@ -281,20 +283,61 @@ class OrganizationAPIView(APIView):
         if 'background_image' in request.data:
             organization.background_image = get_image_from_data_url(request.data['background_image'])[0]
         if 'parent_organization' in request.data:
-            if 'has_parent_organization' in request.data and request.data['has_parent_organization'] == False:
+            if 'has_parent_organization' in request.data \
+                and request.data['has_parent_organization'] == False:
                 organization.parent_organization = None
             else:
                 try:
                     parent_organization = Organization.objects.get(id=request.data['parent_organization'])
                 except Organization.DoesNotExist:
-                    return Response({'message': _('Parent organization not found for organization') + url_slug}, status=status.HTTP_404_NOT_FOUND)
+                    return Response({
+                        'message': _('Parent organization not found for organization') + url_slug
+                    }, status=status.HTTP_404_NOT_FOUND)
                 organization.parent_organization = parent_organization
-        old_organization_taggings = OrganizationTagging.objects.filter(organization=organization).values('organization_tag')
+
+        translations = None
+        if 'translations' in request.data:
+            texts = {}
+            if 'short_description' in request.data:
+                texts['short_description'] = request.data['short_description']
+
+            try:
+                translations = get_translations(
+                        texts,
+                    request.data['translations'],
+                    request.data['source_language'],
+                    ["name"]
+                )
+            except ValueError as ve:
+                translations = None
+                logger.error("TranslationFailed: Error translating texts, {}".format(ve))
+
+        if translations:
+            for key in translations['translations']:
+                if not key == "is_manual_translation":
+                    language_code = key
+                    texts = translations['translations'][language_code]
+                    language = Language.objects.get(language_code=language_code)
+                    if language_code in request.data['translations']:
+                        is_manual_translation = \
+                            request.data['translations'][language_code]['is_manual_translation']
+                    else:
+                        is_manual_translation = False
+                    create_organization_translation(
+                        organization, language,
+                        texts, is_manual_translation
+                    )
+
+        old_organization_taggings = OrganizationTagging.objects.filter(
+            organization=organization
+        ).values('organization_tag')
         if 'types' in request.data:
             for tag in old_organization_taggings:
                 if not tag['organization_tag'] in request.data['types']:
                     tag_to_delete = OrganizationTags.objects.get(id=tag['organization_tag'])
-                    OrganizationTagging.objects.filter(organization=organization, organization_tag=tag_to_delete).delete()
+                    OrganizationTagging.objects.filter(
+                        organization=organization, organization_tag=tag_to_delete
+                    ).delete()
             for tag_id in request.data['types']:
                 if not old_organization_taggings.filter(organization_tag=tag_id).exists():
                     try:
@@ -304,7 +347,6 @@ class OrganizationAPIView(APIView):
                         )
                     except OrganizationTags.DoesNotExist:
                         logger.error(_("Passed organization tag id does not exists: ") + tag_id)
-            
 
         organization.save()
         return Response({'message': _('Successfully updated organization.')}, status=status.HTTP_200_OK)
@@ -345,6 +387,7 @@ class UpdateOrganizationMemberView(RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer):
         serializer.save()
         return serializer.data
+
 
 class AddOrganizationMembersView(APIView):
     permission_classes = [AddOrganizationMemberPermission]

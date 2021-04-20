@@ -219,7 +219,9 @@ class CreateProjectView(APIView):
                             translation.helpful_connections_translation = texts['helpful_connections']
                         translation.save()
                     except Language.DoesNotExist:
-                        print("A language with language_code "+ language +" does not exist")
+                        logger.error(
+                            "A language with language_code {} does not exist".format(language)
+                        )
 
         project_parents = ProjectParents.objects.create(
             project=project, parent_user=request.user
@@ -388,6 +390,38 @@ class ProjectAPIView(APIView):
             project_parents.save()
 
         project.save()
+
+        try:
+            translations_object = get_project_translations(request.data)     
+        except ValueError as ve:
+            logger.error("TranslationFailed: Error translating texts, {}".format(ve))
+            translations_object = None
+
+        if translations_object:
+            source_language = Language.objects.get(
+                language_code=translations_object['source_language']
+            )
+            translations = translations_object['translations']
+            for language in translations_object:
+                if not language == source_language.language_code:
+                    texts = translations[language]
+                    try:
+                        language_object = Language.objects.get(language_code=language)                    
+                        translation = ProjectTranslation.objects.create(
+                            project=project, 
+                            language=language_object,
+                            name_translation=texts['name'], 
+                            short_description_translation=texts['short_description']                
+                        )
+                        if 'description' in texts:
+                            translation.description_translation = texts['description']
+                        if 'helpful_connections' in texts:
+                            translation.helpful_connections_translation = texts['helpful_connections']
+                        translation.save()
+                    except Language.DoesNotExist:
+                        logger.error(
+                            "A language with language_code {} does not exist".format(language)
+                        )
 
         return Response({
             'message': 'Project {} successfully updated'.format(project.name),
