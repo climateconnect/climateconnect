@@ -66,8 +66,8 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(5),
   },
   loadingSpinner: {
-    marginTop: theme.spacing(2)
-  }
+    marginTop: theme.spacing(2),
+  },
 }));
 
 export default function Index() {

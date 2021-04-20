@@ -7,7 +7,7 @@ import React, { useEffect } from "react";
 import Typist from "react-typist";
 import {
   default as get_steps,
-  default as tutorial_steps
+  default as tutorial_steps,
 } from "../../../public/data/tutorial_steps";
 
 const useStyles = makeStyles((theme) => ({
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
   text: {
     fontSize: 17.5,
-    position: "absolute"
+    position: "absolute",
   },
   buttonsContainer: {
     marginTop: theme.spacing(3),
@@ -139,8 +139,8 @@ export default function TutorialStep({
     forwardWithValue: forwardWithValue,
     curStepRef: curStepRef,
   };
-  const rect = curStep?.pointsAt?.current?.getBoundingClientRect()
-  const rectIsHidden = rect && rect.height === 0 && rect.width === 0
+  const rect = curStep?.pointsAt?.current?.getBoundingClientRect();
+  const rectIsHidden = rect && rect.height === 0 && rect.width === 0;
   if (curStep.pointsAt && !rectIsHidden) {
     return (
       <Popper

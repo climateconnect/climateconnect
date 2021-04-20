@@ -233,8 +233,7 @@ export default function get_steps({
       text: (
         <span>
           Click on another tab to see all active organizations or members of Climate Connect. These
-          are the faces behind the projects and the climate actors we strive to
-          empower.
+          are the faces behind the projects and the climate actors we strive to empower.
         </span>
       ),
       placement: "top",

@@ -97,7 +97,10 @@ export default function Post({
       ) : (
         <div className={classes.commentFlexBox}>
           <Link href={"/profiles/" + post.author_user.url_slug} target="_blank">
-            <Avatar src={getImageUrl(post.author_user.thumbnail_image)} className={classes.avatar} />
+            <Avatar
+              src={getImageUrl(post.author_user.thumbnail_image)}
+              className={classes.avatar}
+            />
           </Link>
           <span className={classes.messageWithMetaData}>
             <div className={classes.metadata}>
