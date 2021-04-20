@@ -1,10 +1,11 @@
+from organization.serializers.translation import OrganizationTranslationSerializer
 from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.conf import settings
 from django.utils.translation import get_language
 from rest_framework import serializers
 
-from organization.models import Organization, OrganizationMember
+from organization.models import Organization, OrganizationMember, OrganizationTranslation
 from organization.serializers.tags import OrganizationTaggingSerializer
 from organization.utility.organization import (
     get_organization_name, get_organization_short_description)
@@ -16,12 +17,13 @@ class OrganizationSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
+    language = serializers.SerializerMethodField()
 
     class Meta:
         model = Organization
         fields = ('id', 'types', 'name', 'url_slug', 'image', 
             'background_image', 'parent_organization', 'location',
-            'short_description', 'organ', 'school', 'website'
+            'short_description', 'organ', 'school', 'website', 'language'
         )
 
     def get_name(self, obj):
@@ -43,9 +45,13 @@ class OrganizationSerializer(serializers.ModelSerializer):
             return None
         return obj.location.name
 
+    def get_language(self, obj):
+        return obj.language.language_code
+
 
 class EditOrganizationSerializer(OrganizationSerializer):
     location = serializers.SerializerMethodField()
+    translations = serializers.SerializerMethodField()
     def get_location(self, obj):
         if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
             return {
@@ -56,8 +62,17 @@ class EditOrganizationSerializer(OrganizationSerializer):
             if obj.location == None:
                 return None
             return obj.location.name
+
+    def get_translations(self, obj):
+        translations = OrganizationTranslation.objects.filter(organization=obj)
+        if translations.exists():
+            serializer = OrganizationTranslationSerializer(translations, many=True)
+            print(serializer.data)
+            return serializer.data
+        else:
+            return {}
     class Meta(OrganizationSerializer.Meta):
-        fields = OrganizationSerializer.Meta.fields + ('location',)
+        fields = OrganizationSerializer.Meta.fields + ('location', 'translations')
 
 
 class OrganizationMinimalSerializer(serializers.ModelSerializer):

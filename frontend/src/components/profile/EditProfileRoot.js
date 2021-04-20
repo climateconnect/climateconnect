@@ -89,7 +89,7 @@ export default function EditAccountRoot({
     const payload = await getProfileWithoutRedundantOptions(user, parsedProfile);
     if (isTranslationsStep)
       payload.translations = getTranslationsWithoutRedundantKeys(
-        getTranslationsFromObject(initialTranslations),
+        getTranslationsFromObject(initialTranslations, "user_profile"),
         translations
       );
     apiRequest({

@@ -8,7 +8,7 @@ import {
   TextField,
   Tooltip,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -21,7 +21,7 @@ import {
   getCompressedJPG,
   getImageDialogHeight,
   getResizedImage,
-  whitenTransparentPixels,
+  whitenTransparentPixels
 } from "../../../public/lib/imageOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
@@ -525,7 +525,7 @@ export default function EditAccountPage({
             />
           </div>
         );
-      } else if (key != "parent_organization" && i.type === "text") {
+      } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
         return (
           <div key={key} className={classes.infoElement}>
             <Typography className={classes.subtitle}>

@@ -34,7 +34,7 @@ export default function getOrganizationTexts({ organization, locale }) {
       en:
         "Describe what your organization is doing, how you work and what impact you have on climate change. Please only use english!",
       de:
-        "Beschreibe, was deine Organisation macht, wie ihr arbeitet und welchen Einfluss ihr auf den Klimawandeln habt.",
+        "Beschreibe, was deine Organisation macht, wie ihr arbeitet und welchen Einfluss ihr auf den Klimawandel habt.",
     },
     we_are_a_suborganization: {
       en: "We are a sub-organization of a larger organization (e.g. local group)",
