@@ -17,7 +17,7 @@ import {
   Paper,
   Popper,
   SwipeableDrawer,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -40,7 +40,6 @@ import theme from "../../themes/theme";
 import Notification from "../communication/notifications/Notification";
 import NotificationsBox from "../communication/notifications/NotificationsBox";
 import UserContext from "./../context/UserContext";
-
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -641,7 +640,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader }) => {
   };
 
   const handleCloseMenu = (e) => {
-    console.log(e.target)
+    console.log(e.target);
     setMenuOpen(false);
   };
 
@@ -667,32 +666,32 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader }) => {
           open={menuOpen}
           anchorEl={anchorRef.current}
           className={`${fixedHeader && classes.loggedInLinksFixedHeader} ${classes.loggedInPopper}`}
-        >        
-            <Paper>
-              <MenuList>
-                {getLoggedInLinks({ loggedInUser })
-                  .filter((link) => !link.showOnMobileOnly)
-                  .map((link, index) => {
-                    const menuItemProps = {
-                      component: "button",
-                      className: classes.loggedInLink,
-                    };
-                    if (link.isLogoutButton) menuItemProps.onClick = handleLogout;
-                    else menuItemProps.href = link.href;
-                    return (
-                      <MenuItem
-                        key={index}
-                        component="button"
-                        className={classes.loggedInLink}
-                        onClick={link.isLogoutButton && handleLogout}
-                        href={!link.isLogoutButton ? link.href : undefined}
-                      >
-                        {link.text}
-                      </MenuItem>
-                    );
-                  })}
-              </MenuList>
-            </Paper>
+        >
+          <Paper>
+            <MenuList>
+              {getLoggedInLinks({ loggedInUser })
+                .filter((link) => !link.showOnMobileOnly)
+                .map((link, index) => {
+                  const menuItemProps = {
+                    component: "button",
+                    className: classes.loggedInLink,
+                  };
+                  if (link.isLogoutButton) menuItemProps.onClick = handleLogout;
+                  else menuItemProps.href = link.href;
+                  return (
+                    <MenuItem
+                      key={index}
+                      component="button"
+                      className={classes.loggedInLink}
+                      onClick={link.isLogoutButton && handleLogout}
+                      href={!link.isLogoutButton ? link.href : undefined}
+                    >
+                      {link.text}
+                    </MenuItem>
+                  );
+                })}
+            </MenuList>
+          </Paper>
         </Popper>
       </Box>
     </ClickAwayListener>
