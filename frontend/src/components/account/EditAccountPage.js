@@ -8,7 +8,7 @@ import {
   TextField,
   Tooltip,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -21,7 +21,7 @@ import {
   getCompressedJPG,
   getImageDialogHeight,
   getResizedImage,
-  whitenTransparentPixels
+  whitenTransparentPixels,
 } from "../../../public/lib/imageOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
@@ -207,6 +207,10 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginTop: theme.spacing(10),
   },
+  checkTranslationsButtonContainer: {
+    display: "flex",
+    marginTop: theme.spacing(5),
+  },
 }));
 
 export default function EditAccountPage({
@@ -223,9 +227,10 @@ export default function EditAccountPage({
   splitName,
   deleteEmail,
   loadingSubmit,
+  onClickCheckTranslations,
 }) {
-  const { locale } = useContext(UserContext)
-  const texts = getTexts({page: "account", locale: locale})
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "account", locale: locale });
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
@@ -638,7 +643,11 @@ export default function EditAccountPage({
               </div>
             ) : (
               <div className={classes.avatarButtonContainer}>
-                <Chip color="primary" label={texts.add_background_image} icon={<ControlPointIcon />} />
+                <Chip
+                  color="primary"
+                  label={texts.add_background_image}
+                  icon={<ControlPointIcon />}
+                />
               </div>
             )}
           </label>
@@ -763,6 +772,17 @@ export default function EditAccountPage({
           </Container>
           <Container className={classes.accountInfo}>
             {displayAccountInfo(editedAccount.info)}
+            {onClickCheckTranslations && (
+              <div className={classes.checkTranslationsButtonContainer}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => onClickCheckTranslations(editedAccount)}
+                >
+                  {texts.check_translations}
+                </Button>
+              </div>
+            )}
           </Container>
         </Container>
         {children}

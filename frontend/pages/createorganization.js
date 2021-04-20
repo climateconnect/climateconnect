@@ -7,7 +7,7 @@ import {
   getLocationValue,
   indicateWrongLocation,
   isLocationValid,
-  parseLocation
+  parseLocation,
 } from "../public/lib/locationOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -190,7 +190,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       user,
       rolesOptions,
       translations,
-      sourceLanguage,
+      sourceLanguage
     );
     if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
@@ -223,15 +223,15 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       return;
     }
     setLoadingSubmit(true);
-    makeCreateOrganizationRequest(organizationToSubmit)
+    makeCreateOrganizationRequest(organizationToSubmit);
   };
 
   const goToPreviousStep = () => {
     setCurStep(steps[steps.indexOf(curStep) - 1]);
   };
 
-  const handleSubmit = async(e) => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     const organizationToSubmit = await parseOrganizationForRequest(
       organizationInfo,
       user,
@@ -240,7 +240,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       sourceLanguage,
       targetLanguage
     );
-    await makeCreateOrganizationRequest(organizationToSubmit)
+    await makeCreateOrganizationRequest(organizationToSubmit);
   };
 
   const makeCreateOrganizationRequest = (organizationToSubmit) => {
@@ -253,7 +253,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
     })
       .then(function () {
         setLoadingSubmit(false);
-        return
+        return;
       })
       .catch(function (error) {
         console.log(error);
@@ -264,9 +264,9 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
             errorMessages,
             detailledOrganizationInfo: error?.response?.data?.message,
           });
-        return
+        return;
       });
-  }
+  };
 
   if (!user)
     return (
@@ -375,13 +375,7 @@ async function getTags(token, locale) {
   }
 }
 
-const parseOrganizationForRequest = async (
-  o,
-  user,
-  rolesOptions,
-  translations,
-  sourceLanguage,
-) => {
+const parseOrganizationForRequest = async (o, user, rolesOptions, translations, sourceLanguage) => {
   const organization = {
     team_members: [
       { user_id: user.id, permission_type_id: rolesOptions.find((r) => r.name === "Creator").id },
@@ -396,7 +390,6 @@ const parseOrganizationForRequest = async (
     organization_tags: o.types,
     translations: {
       ...translations,
-      
     },
     source_language: sourceLanguage,
   };

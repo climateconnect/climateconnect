@@ -258,7 +258,7 @@ class UserProfile(models.Model):
 
 class UserProfileTranslation(models.Model):
     user_profile = models.ForeignKey(
-        UserProfile, related_name="profie_translation",
+        UserProfile, related_name="profile_translation",
         help_text="Points to user profile object", verbose_name="User profile",
         on_delete=models.CASCADE
     )
@@ -267,11 +267,6 @@ class UserProfileTranslation(models.Model):
         Language, related_name="profile_translatiion_lang",
         help_text="Points to language object", verbose_name="Language",
         on_delete=models.CASCADE
-    )
-
-    name_translation = models.CharField(
-        help_text="Translation user's name", verbose_name="Name translation",
-        max_length=256, null=True, blank=True
     )
 
     biography_translation = models.TextField(

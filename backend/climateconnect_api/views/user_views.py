@@ -1,51 +1,48 @@
-from django.contrib.gis.db.models.functions import Distance
-from location.models import Location
-import uuid
-from django.contrib.auth import (authenticate, login)
 import datetime
+import logging
+import uuid
+from datetime import datetime, timedelta
 
+from climateconnect_api.models import Availability, Skill, UserProfile
+from climateconnect_api.models.language import Language
+from climateconnect_api.models.user import UserProfileTranslation
+from climateconnect_api.pagination import MembersPagination
+from climateconnect_api.permissions import UserPermission
+from climateconnect_api.serializers.user import (
+    EditUserProfileSerializer, PersonalProfileSerializer,
+    UserProfileMinimalSerializer, UserProfileSerializer,
+    UserProfileSitemapEntrySerializer, UserProfileStubSerializer)
+from climateconnect_api.utility.email_setup import (
+    send_password_link, send_user_verification_email)
+from climateconnect_api.utility.translation import (get_translations,
+                                                    translate_text)
+from climateconnect_api.utility.user import create_user_profile_translation
+from climateconnect_main.utility.general import get_image_from_data_url
+from django.conf import settings
+from django.contrib.auth import authenticate, login
+# Backend imports
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models.functions import Distance
 from django.db.models import Count, Q
 from django.utils import timezone
-from datetime import datetime, timedelta
-from django.conf import settings
 from django.utils.translation import gettext as _
-
 # Rest imports
 from django_filters.rest_framework import DjangoFilterBackend
+from knox.views import LoginView as KnoxLoginView
+from location.models import Location
+from location.utility import get_location, get_location_with_range
+from organization.models.members import OrganizationMember, ProjectMember
+from organization.serializers.organization import \
+    OrganizationsFromProjectMember
+from organization.serializers.project import ProjectFromProjectMemberSerializer
 from rest_framework import status
+from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
-from rest_framework.exceptions import NotFound
-from rest_framework.filters import SearchFilter
 
-from rest_framework.exceptions import ValidationError
-from knox.views import LoginView as KnoxLoginView
-from climateconnect_api.pagination import MembersPagination
-
-# Backend imports
-from django.contrib.auth.models import User
-from organization.models.members import (ProjectMember, OrganizationMember)
-from climateconnect_api.models import UserProfile, Availability, Skill
-
-from climateconnect_api.serializers.user import (
-    EditUserProfileSerializer, UserProfileSerializer, PersonalProfileSerializer, UserProfileStubSerializer, 
-    UserProfileMinimalSerializer, UserProfileSitemapEntrySerializer
-)
-from organization.serializers.project import ProjectFromProjectMemberSerializer
-from organization.serializers.organization import OrganizationsFromProjectMember
-
-from climateconnect_main.utility.general import get_image_from_data_url
-from climateconnect_api.permissions import UserPermission
-from climateconnect_api.utility.email_setup import send_user_verification_email
-from climateconnect_api.utility.email_setup import send_password_link
-from climateconnect_api.utility.translation import get_translations
-from location.utility import get_location, get_location_with_range
-from climateconnect_api.utility.user import create_user_profile_translation
-from climateconnect_api.models.language import Language
-
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -318,7 +315,35 @@ class EditUserProfile(APIView):
                     user_profile.skills.add(skill)
                 except Skill.DoesNotExist:
                     logger.error("Passed skill id {} does not exists")
+        
         user_profile.save()
+
+        if 'translations' in request.data:
+            for language_code in request.data['translations'].keys():
+                language = Language.objects.get(language_code=language_code)
+                passed_lang_translation = request.data['translations'][language_code]
+                db_translations = UserProfileTranslation.objects.filter(user_profile=user_profile, language=language)
+                if db_translations.exists():
+                    db_translation = db_translations[0]
+                    if 'is_manual_translation' in passed_lang_translation:
+                        db_translation.is_manual_translation = passed_lang_translation['is_manual_translation']
+                    if 'bio' in passed_lang_translation:
+                        if len(passed_lang_translation['bio']) == 0:
+                            db_translation.biography_translation = translate_text(
+                                user_profile.biography, 
+                                user_profile.language.language_code, 
+                                language_code
+                            )['text']
+                        else:
+                            db_translation.biography_translation = passed_lang_translation['bio']
+                    db_translation.save()                   
+                else:                    
+                    UserProfileTranslation.objects.create(
+                        is_manual_translation=passed_lang_translation['is_manual_translation'],
+                        language = language,
+                        biography = passed_lang_translation['biography']
+                    )
+                
         serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

@@ -7,12 +7,12 @@ import {
   Typography
 } from "@material-ui/core";
 import _ from "lodash";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { getNestedValue } from "../../../public/lib/generalOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import BottomNavigation from "../general/BottomNavigation";
+import ConfirmDialog from "../dialogs/ConfirmDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,7 +60,6 @@ export default function TranslateTexts({
   data,
   handleSetData,
   onSubmit,
-  saveAsDraft,
   goToPreviousStep,
   handleChangeTranslationContent,
   translations,
@@ -69,14 +68,14 @@ export default function TranslateTexts({
   textsToTranslate,
   arrayTranslationKeys,
   introTextKey,
+  submitButtonText,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: pageName, locale: locale });
   const targetLanguageTexts = getTexts({ page: pageName, locale: targetLanguage });
-  const [waitingForTranslation, setWaitingForTranslation] = React.useState(false);
-
-  if (translations[targetLanguage]) console.log(translations[targetLanguage]);
+  const [waitingForTranslation, setWaitingForTranslation] = useState(false);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   useEffect(() => {
     initializeTranslationsObject();
@@ -94,10 +93,6 @@ export default function TranslateTexts({
     }
   };
 
-  const onClickPreviousStep = () => {
-    goToPreviousStep();
-  };
-
   const handleOriginalTextChange = (newValue, dataKey) => {
     const obj = {};
     _.set(obj, dataKey, newValue);
@@ -106,8 +101,8 @@ export default function TranslateTexts({
 
   const handleTranslationChange = (newValue, dataKey, indexInArray) => {
     const flatKey = dataKey.includes(".")
-          ? dataKey.split(".")[dataKey.split(".").length - 1]
-          : dataKey;
+      ? dataKey.split(".")[dataKey.split(".").length - 1]
+      : dataKey;
     const newTranslationsObject = {
       [flatKey]: newValue,
     };
@@ -120,15 +115,29 @@ export default function TranslateTexts({
     handleChangeTranslationContent(targetLanguage, { ...newTranslationsObject }, true);
   };
 
-  const textsToTranslateAreEmpty = () => {
+  const areTextsToTranslateEmpty = () => {
     const textsWithContent = textsToTranslate.filter((t) => {
       return getNestedValue(data, t.textKey) && getNestedValue(data, t.textKey).length > 0;
     });
-    return textsWithContent.length === 0;
+    if (textsWithContent.length === 0) return "all";
+    if (textsWithContent.length === textsToTranslate.length) {
+      return "none";
+    } else {
+      return "some";
+    }
   };
 
-  const automaticallyTranslateProject = async () => {
-    if (textsToTranslateAreEmpty()) return;
+  const automaticallyTranslateTexts = async (force) => {
+    if (areTextsToTranslateEmpty() === "all") {
+      return;
+    }
+    if (
+      force !== true &&
+      areTextsToTranslateEmpty() !== "all" &&
+      translations[targetLanguage].is_manual_translation
+    ) {
+      setConfirmDialogOpen(true);
+    }
     setWaitingForTranslation(true);
     try {
       const payloadTexts = textsToTranslate.reduce((obj, textToTranslate) => {
@@ -165,6 +174,11 @@ export default function TranslateTexts({
     }
   };
 
+  const onConfirmDialogClose = async (confirmed) => {
+    setConfirmDialogOpen(false);
+    if (confirmed) await automaticallyTranslateTexts(true);
+  };
+
   return (
     <Container className={classes.root}>
       <form onSubmit={onSubmit}>
@@ -179,7 +193,7 @@ export default function TranslateTexts({
             variant="contained"
             color="primary"
             className={classes.translateButton}
-            onClick={automaticallyTranslateProject}
+            onClick={automaticallyTranslateTexts}
           >
             {waitingForTranslation ? (
               <CircularProgress className={classes.translationLoader} size={23} />
@@ -188,7 +202,7 @@ export default function TranslateTexts({
             )}
           </Button>
           <Button variant="contained" color="primary" type="submit">
-            {texts.skip_and_publish}
+            {submitButtonText ? submitButtonText : texts.skip_and_publish}
           </Button>
         </div>
         <div className={classes.translationBlocksHeader}>
@@ -207,31 +221,16 @@ export default function TranslateTexts({
               targetLanguageTexts={targetLanguageTexts}
             />
           ))}
-          {/*data?.helpful_connections?.length > 0 &&
-            data.helpful_connections.map((connection, index) => (
-              <TranslationBlock
-                key={index}
-                data={data}
-                dataKey="helpful_connections"
-                headlineTextKey="helpful_connections"
-                rows={1}
-                indexInArray={index}
-                isInArray
-                handleOriginalTextChange={handleOriginalTextChange}
-                handleTranslationChange={handleTranslationChange}
-                translations={translations}
-                targetLanguage={targetLanguage}
-                noHeadline={index > 0}
-              />
-            ))*/}
         </div>
-        <BottomNavigation
-          className={classes.block}
-          onClickPreviousStep={onClickPreviousStep}
-          nextStepButtonType="publish"
-          saveAsDraft={saveAsDraft}
-        />
       </form>
+      <ConfirmDialog
+        onClose={onConfirmDialogClose}
+        open={confirmDialogOpen}
+        cancelText={texts.no}
+        confirmText={texts.yes}
+        text={texts.confirm_overwrite_all_texts}
+        title={texts.confirm_overwrite_all_texts_headline}
+      />
     </Container>
   );
 }
@@ -253,7 +252,9 @@ function TranslationBlock({
   targetLanguageTexts,
 }) {
   const classes = useStyles();
-  const flatDataKey = dataKey.includes(".") ? dataKey.split(".")[dataKey.split(".").length - 1] : dataKey
+  const flatDataKey = dataKey.includes(".")
+    ? dataKey.split(".")[dataKey.split(".").length - 1]
+    : dataKey;
   return (
     <div className={classes.translationBlock}>
       <TranslationBlockElement
@@ -276,7 +277,7 @@ function TranslationBlock({
           translations[targetLanguage] &&
           (isInArray
             ? translations[targetLanguage][flatDataKey][indexInArray]
-            : translations[targetLanguage ][flatDataKey])
+            : translations[targetLanguage][flatDataKey])
         }
         handleContentChange={(event) => {
           handleTranslationChange(event.target.value, dataKey, indexInArray);
@@ -297,6 +298,7 @@ function TranslationBlockElement({ headline, rows, content, handleContentChange,
       )}
       <TextField
         rows={rows}
+        rowsMax={50}
         variant="outlined"
         fullWidth
         multiline

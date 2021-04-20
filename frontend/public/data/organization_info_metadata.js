@@ -14,7 +14,7 @@ export default function getOrganizationInfoMetadata(locale) {
       iconName: "DescriptionIcon",
       name: texts.description,
       key: "short_description",
-      type: "text",
+      type: "bio",
       weight: 1,
       helptext: texts.how_to_describe_organization,
     },

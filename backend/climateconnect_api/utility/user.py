@@ -10,9 +10,17 @@ def create_user_profile_translation(
     language = Language.objects.get(language_code=language_code)
     user_profile_translation = UserProfileTranslation.objects.create(
         user_profile=user_profile, language=language,
-        name_translation=texts['name'],
         is_manual_translation=is_manual_translation
     )
     if texts['biography']:
         user_profile_translation.biography_translation = texts['biography']
     user_profile_translation.save()
+
+def get_user_profile_biography(user_profile: UserProfile, language_code: str) -> str:
+    if language_code != user_profile.language.language_code and \
+        user_profile.profile_translation.filter(language__language_code=language_code).exists():
+        return user_profile.profile_translation.get(
+            language__language_code=language_code
+        ).biography_translation
+    
+    return user_profile.short_description

@@ -146,14 +146,6 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "None of the members of this organization has signed up yet!",
       de: "Keins der Mitglieder dieser Organisation hat sich bisher registriert!",
     },
-    return_to_home: {
-      en: "Return to home.",
-      de: "Zurück zur Startseite",
-    },
-    not_found_lowercase: {
-      en: "not found.",
-      de: "nicht gefunden.",
-    },
     organizations_logo: {
       en: `${organization?.name}'s logo`,
       de: `${organization?.name}'s Logo`,

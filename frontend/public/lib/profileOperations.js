@@ -15,6 +15,7 @@ export function parseProfile(profile, detailledSkills, keepOldProps) {
     last_name: profile.last_name,
     image: getImageUrl(profile.image),
     background_image: getImageUrl(profile.background_image),
+    language: profile.language,
     info: {
       ...user.info,
       location: profile.location,

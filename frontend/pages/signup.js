@@ -7,12 +7,12 @@ import {
   getLocationValue,
   indicateWrongLocation,
   isLocationValid,
-  parseLocation
+  parseLocation,
 } from "../public/lib/locationOperations";
 import { redirectOnLogin } from "../public/lib/profileOperations";
 import {
   getLastCompletedTutorialStep,
-  getLastStepBeforeSkip
+  getLastStepBeforeSkip,
 } from "../public/lib/tutorialOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -104,7 +104,7 @@ export default function Signup() {
       from_tutorial: params?.from_tutorial === "true",
       is_activist: isClimateActorCookie?.isActivist,
       last_completed_tutorial_step: lastCompletedTutorialStep,
-      source_language: locale
+      source_language: locale,
     };
     const headers = {
       Accept: "application/json",
