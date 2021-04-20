@@ -96,11 +96,13 @@ def get_project_description(project: Project, language_code: str) -> str:
     
     return project.description
 
+
 def get_projecttag_name(tag: ProjectTags, language_code: str) -> str:
     if language_code == "en":
         return tag.name
     else:
         return getattr(tag, "name_{}_translation".format(language_code))
+
 
 def get_project_translations(data:Dict):
     texts = {
