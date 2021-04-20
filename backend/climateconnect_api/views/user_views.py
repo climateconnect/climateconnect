@@ -296,6 +296,10 @@ class EditUserProfile(APIView):
             user_profile.biography = request.data['biography']
         if 'website' in request.data:
             user_profile.website = request.data['website']
+        if 'language' in request.data:
+            language = Language.objects.filter(language_code=request.data['language'])
+            if language.exists():
+                user_profile.language = language[0]
 
         if 'availability' in request.data:
             try:
@@ -328,7 +332,7 @@ class EditUserProfile(APIView):
                     if 'is_manual_translation' in passed_lang_translation:
                         db_translation.is_manual_translation = passed_lang_translation['is_manual_translation']
                     if 'bio' in passed_lang_translation:
-                        if len(passed_lang_translation['bio']) == 0:
+                        if len(passed_lang_translation['bio']) == 0 or db_translation.is_manual_translation == False:
                             db_translation.biography_translation = translate_text(
                                 user_profile.biography, 
                                 user_profile.language.language_code, 
