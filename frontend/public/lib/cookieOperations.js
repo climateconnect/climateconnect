@@ -31,11 +31,11 @@ export function getCookieProps(expiry) {
   console.log(expiry)
   console.log(develop)
   console.log(process.env)
-  console.log(process.env.API_HOST)
+  console.log(process.env.NEXT_PUBLIC_BASE_URL_HOST)
 
   if (!develop) {
     console.log("this is not develop!")
-    cookieProps.domain = "." + process.env.API_HOST;
+    cookieProps.domain = "." + process.env.NEXT_PUBLIC_BASE_URL_HOST;
   }
   console.log(cookieProps)
   return cookieProps;
