@@ -2,25 +2,41 @@ import axios from "axios";
 import Router from "next/router";
 import tokenConfig from "../config/tokenConfig";
 
-export async function apiRequest(method, url, token, payload, throwError) {
+export async function apiRequest({
+  method,
+  url,
+  token,
+  payload,
+  shouldThrowError,
+  locale,
+  headers,
+}) {
+  console.log("url: " + url);
+  const acceptLanguageHeadersByLocale = {
+    de: "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+    en: "en-US,en;q=0.9,de-DE;q=0.8,de;q=0.7",
+  };
+  const additionalHeaders = headers ? headers : {};
+  if (locale && acceptLanguageHeadersByLocale[locale]) {
+    additionalHeaders["Accept-Language"] = acceptLanguageHeadersByLocale[locale];
+  }
+  const config = tokenConfig(token, additionalHeaders);
   if (payload) {
-    axios[method](process.env.API_URL + url, payload, tokenConfig(token))
-      .then(function (response) {
-        return Promise.resolve(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-        if (throwError) throw error;
-      });
+    try {
+      const response = await axios[method](process.env.API_URL + url, payload, config);
+      return response;
+    } catch (error) {
+      console.log(error?.response);
+      if (shouldThrowError) throw error;
+    }
   } else {
-    axios[method](process.env.API_URL + url, tokenConfig(token))
-      .then(function (response) {
-        return Promise.resolve(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-        if (throwError) throw error;
-      });
+    try {
+      const response = axios[method](process.env.API_URL + url, config);
+      return response;
+    } catch (error) {
+      console.log(error?.response);
+      if (shouldThrowError) throw error;
+    }
   }
 }
 

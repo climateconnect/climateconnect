@@ -11,7 +11,7 @@ export function parseOrganization(organization, reduceTypes) {
       : [],
     info: {
       location: organization.location,
-      shortdescription: organization.short_description,
+      short_description: organization.short_description,
       website: organization.website,
     },
   };

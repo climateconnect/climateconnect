@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function LanguageSelect({ transparentHeader }) {
   const classes = useStyles({ transparentHeader: transparentHeader });
-  const { locale, locales } = useContext(UserContext);
+  const { locale, locales, startLoading } = useContext(UserContext);
   const buttonRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState(buttonRef.current);
   const [open, setOpen] = useState(false);
@@ -39,7 +39,6 @@ export default function LanguageSelect({ transparentHeader }) {
   }, []);
 
   const handleOpen = () => {
-    console.log(anchorEl);
     setOpen(true);
   };
 
@@ -56,7 +55,13 @@ export default function LanguageSelect({ transparentHeader }) {
       const expiry = new Date(now.setFullYear(now.getFullYear() + 1));
       const cookieProps = getCookieProps(expiry);
       cookies.set("NEXT_LOCALE", newLocale, cookieProps);
-      router.push(router.asPath, router.asPath, { locale: newLocale });
+      const hasHash = router.asPath.split("#").length > 1;
+      if (hasHash) {
+        window.location = "/" + newLocale + router.asPath;
+        startLoading();
+      } else {
+        router.push(router.asPath, router.asPath, { locale: newLocale });
+      }
     }
   };
 

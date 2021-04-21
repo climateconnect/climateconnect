@@ -1,6 +1,5 @@
-import axios from "axios";
 import React, { useContext, useEffect } from "react";
-import { getLocalePrefix } from "../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import { redirectOnLogin } from "../public/lib/profileOperations";
 import getTexts from "../public/texts/texts";
@@ -9,7 +8,7 @@ import UserContext from "./../src/components/context/UserContext";
 import Form from "./../src/components/general/Form";
 
 export default function Signin() {
-  const { user, signIn, API_URL, locale } = useContext(UserContext);
+  const { user, signIn, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
 
   const fields = [
@@ -63,11 +62,16 @@ export default function Signin() {
     //don't redirect to the post url
     event.preventDefault();
     setIsLoading(true);
-    axios
-      .post(API_URL + "/login/", {
+    apiRequest({
+      method: "post",
+      url: "/login/",
+      payload: {
         username: values.username.toLowerCase(),
         password: values.password,
-      })
+      },
+      locale: locale,
+      shouldThrowError: true
+    })
       .then(async function (response) {
         await signIn(response.data.token, response.data.expiry, redirectUrl);
       })

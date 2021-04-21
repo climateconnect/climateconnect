@@ -397,6 +397,10 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Connection",
       de: "Connection",
     },
+    helpful_connections: {
+      en: "Helpful Connections",
+      de: "Hilfreiche Connections",
+    },
     add_a_helpful_connection: {
       en: "Add a helpful connection",
       de: "Füge eine hilfreiche Connection hinzu",
@@ -765,7 +769,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de: (
         <>
           Wenn das Profil deiner Organisation noch nicht existiert,{" "}
-          <Link href={getLocalePrefix(locale) + "/createorganization"} underline="immer">
+          <Link href={getLocalePrefix(locale) + "/createorganization"} underline="always">
             klicke hier
           </Link>{" "}
           um sie zu erstellen.
@@ -783,6 +787,40 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     are_you_sure_you_want_to_leave_you_will_lose_your_project: {
       en: "Are you sure you want to leave? You will lose your project.",
       de: "Bist du sicher, dass du abbrechen willst? Du wirst dein Projekt verlieren.",
+    },
+    add_team: {
+      en: "Add team",
+      de: "Team hinzufügen",
+    },
+    translate_project_intro: {
+      en: (
+        <>
+          Because climate change is a global crisis it is important to us that projects are
+          available in multiple languages. So far we support german and english.
+          <br />
+          If you click on {"automatically translate"} you can still edit the text afterwards. If you
+          know the language you can of course also translate everything yourself. When you click on
+          publish all empty fields will be translated automatically.
+        </>
+      ),
+      de: (
+        <>
+          Da der Klimawandel eine globale Krise ist, ist es uns wichtig, dass alle Projekte auch auf
+          Englisch verfügbar sind.
+          <br />
+          Wenn du auf {"Automatisch Übersetzen"} klickst, kannst du den Text immer noch bearbeiten.
+          Natürlich kannst du auch alles selbst übersetzen. Wenn du auf {"Veröffentlichen"} klickst,
+          werden alle leeren Felder automatisch übersetzt.
+        </>
+      ),
+    },
+    basic_info: {
+      en: "Basic Info",
+      de: "Übersicht",
+    },
+    project_category: {
+      en: "Choose category",
+      de: "Kategorie auswählen",
     },
   };
 }

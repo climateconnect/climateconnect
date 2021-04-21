@@ -43,7 +43,7 @@ export default function LayoutWrapper({
   const isSmallerThanMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const [loading, setLoading] = React.useState(true);
   const [bannerOpen, setBannerOpen] = React.useState(true);
-  const { acceptedNecessary, locale } = useContext(UserContext);
+  const { acceptedNecessary, locale, isLoading } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const closeBanner = () => setBannerOpen(false);
   Router.events.on("routeChangeStart", () => {
@@ -83,7 +83,7 @@ export default function LayoutWrapper({
       </Head>
       {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
       <ThemeProvider theme={theme}>
-        {loading ? (
+        {loading || isLoading ? (
           <div className={classes.spinnerContainer}>
             <div>
               <img className={classes.spinner} src="/images/logo.png" />

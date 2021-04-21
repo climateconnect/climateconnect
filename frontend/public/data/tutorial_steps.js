@@ -55,7 +55,7 @@ export default function get_steps({
   const handleConnectBtn = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const chat = await startPrivateChat({ url_slug: "thomasbove4" }, token);
+    const chat = await startPrivateChat({ url_slug: "thomasbove4" }, token, locale);
     if (chat && chat.chat_uuid) Router.push("/chat/" + chat.chat_uuid + "/");
     else setLoading(false);
   };

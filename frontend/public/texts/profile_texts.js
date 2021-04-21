@@ -55,7 +55,7 @@ export default function getProfileTexts({ profile, locale }) {
     },
     pick_or_type_users_role: {
       en: "Pick or type user's role",
-      de: "Rolle des/der Benutzer*in auswählen oder eingeben",
+      de: "Rolle beschreiben",
     },
     hours_contributed_per_week: {
       en: "Hour contributed per week",
@@ -98,10 +98,6 @@ export default function getProfileTexts({ profile, locale }) {
     is_a_suborganization_of: {
       en: "is a suborganization of",
       de: "ist eine Unterorganisation von",
-    },
-    edit_profile: {
-      en: "Edit Profile",
-      de: "Profil bearbeiten",
     },
     persons_profile: {
       en: `${profile?.name}'s Profile`,
@@ -264,7 +260,7 @@ export default function getProfileTexts({ profile, locale }) {
           <a href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
             Datenschutzbestimmungen
           </a>
-          einverstanden.
+          {" "}einverstanden.
         </>
       ),
     },
@@ -275,6 +271,23 @@ export default function getProfileTexts({ profile, locale }) {
     repeat_password: {
       en: "Repeat Password",
       de: "Passwort wiederholen",
+    },
+    profile: {
+      en: "Profile",
+      de: "Profil",
+    },
+    translate_profile_intro: {
+      en: "",
+      de: (
+        <>
+          Da der Klimawandel eine globale Krise ist, ist es uns wichtig, dass alle Profile auch auf
+          Englisch verfügbar sind.
+          <br />
+          Wenn du auf {"Automatisch Übersetzen"} klickst, kannst du den Text immer noch bearbeiten.
+          Natürlich kannst du auch alles selbst übersetzen. Wenn du auf {"Veröffentlichen"} klickst,
+          werden alle leeren Felder automatisch übersetzt.
+        </>
+      ),
     },
   };
 }

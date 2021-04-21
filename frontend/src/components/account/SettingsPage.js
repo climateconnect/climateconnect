@@ -9,12 +9,10 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import Axios from "axios";
 import Link from "next/link";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
-import tokenConfig from "../../../public/config/tokenConfig";
-import { getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations";
@@ -155,15 +153,17 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       setPasswordInputs({ ...passwordInputs, newpassword: "", confirmnewpassword: "" });
     } else {
       setErrors({ ...errors, passworderror: "" });
-      Axios.post(
-        process.env.API_URL + "/api/account_settings/",
-        {
+      apiRequest({
+        method: "post",
+        url: "/api/account_settings/",
+        payload: {
           password: passwordInputs.newpassword,
           confirm_password: passwordInputs.confirmnewpassword,
           old_password: passwordInputs.oldpassword,
         },
-        tokenConfig(token)
-      )
+        token: token,
+        locale: locale,
+      })
         .then(function (response) {
           setMessage(response.data.message);
           setErrors({
@@ -199,11 +199,13 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       });
     else {
       setErrors({ ...errors, newemailerror: "" });
-      Axios.post(
-        process.env.API_URL + "/api/account_settings/",
-        { email: newEmail },
-        tokenConfig(token)
-      )
+      apiRequest({
+        method: "post",
+        url: "/api/account_settings/",
+        payload: { email: newEmail },
+        token: token,
+        locale: locale,
+      })
         .then(function () {
           redirect("/browse", {
             message:
@@ -230,11 +232,12 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       )
     ) {
       setEmailPreferencesLoading(true);
-      Axios.post(
-        process.env.API_URL + "/api/account_settings/",
-        emailPreferences,
-        tokenConfig(token)
-      )
+      apiRequest({
+        url: "/api/account_settings/",
+        payload: emailPreferences,
+        token: token,
+        locale: locale,
+      })
         .then(function (response) {
           setEmailPreferencesLoading(false);
           setMessage(response.data.message);

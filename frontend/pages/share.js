@@ -1,7 +1,6 @@
-import axios from "axios";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
-import tokenConfig from "../public/config/tokenConfig";
+import { apiRequest } from "../public/lib/apiOperations";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -19,12 +18,12 @@ export async function getServerSideProps(ctx) {
     rolesOptions,
     statusOptions,
   ] = await Promise.all([
-    getAvailabilityOptions(token),
-    getUserOrganizations(token),
-    getCategoryOptions(token),
-    getSkillsOptions(token),
-    getRolesOptions(token),
-    getStatusOptions(token),
+    getAvailabilityOptions(token, ctx.locale),
+    getUserOrganizations(token, ctx.locale),
+    getCategoryOptions(token, ctx.locale),
+    getSkillsOptions(token, ctx.locale),
+    getRolesOptions(token, ctx.locale),
+    getStatusOptions(token, ctx.locale),
   ]);
   return {
     props: {
@@ -83,9 +82,14 @@ export default function Share({
   }
 }
 
-const getAvailabilityOptions = async (token) => {
+const getAvailabilityOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/availability/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/availability/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -97,9 +101,14 @@ const getAvailabilityOptions = async (token) => {
   }
 };
 
-const getCategoryOptions = async (token) => {
+const getCategoryOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/projecttags/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projecttags/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return parseOptions(resp.data.results, "parent_tag");
@@ -111,9 +120,14 @@ const getCategoryOptions = async (token) => {
   }
 };
 
-const getSkillsOptions = async (token) => {
+const getSkillsOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/skills/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/skills/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return parseOptions(resp.data.results, "parent_skill");
@@ -125,9 +139,14 @@ const getSkillsOptions = async (token) => {
   }
 };
 
-const getRolesOptions = async (token) => {
+const getRolesOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/roles/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -139,9 +158,14 @@ const getRolesOptions = async (token) => {
   }
 };
 
-const getStatusOptions = async (token) => {
+const getStatusOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/projectstatus/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projectstatus/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -153,12 +177,14 @@ const getStatusOptions = async (token) => {
   }
 };
 
-const getUserOrganizations = async (token) => {
+const getUserOrganizations = async (token, locale) => {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/my_organizations/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/my_organizations/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.length === 0) return null;
     else {
       return resp.data.map((o) => o.organization);

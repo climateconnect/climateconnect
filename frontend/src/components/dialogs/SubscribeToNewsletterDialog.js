@@ -1,6 +1,6 @@
 import { Button, makeStyles, TextField, Typography, useMediaQuery } from "@material-ui/core";
-import axios from "axios";
 import React, { useContext } from "react";
+import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
@@ -56,7 +56,7 @@ export default function SubscribeToNewsletterDialog({ onClose, open }) {
     console.log("subscribing!");
     try {
       setLoading(true);
-      const resp = await subscribeToNewsletter(emailAddress);
+      const resp = await subscribeToNewsletter(emailAddress, locale);
       console.log(resp);
       setLoading(false);
     } catch (e) {
@@ -101,17 +101,20 @@ export default function SubscribeToNewsletterDialog({ onClose, open }) {
   );
 }
 
-const subscribeToNewsletter = (emailAddress) => {
+const subscribeToNewsletter = (emailAddress, locale) => {
   const url = process.env.API_URL + "/api/subscribe_to_newsletter/";
   const payload = { email: emailAddress };
-  const config = {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
+  const headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
   };
-  axios
-    .post(url, payload, config)
+  apiRequest({
+    method: "post",
+    url: url,
+    payload: payload,
+    headers: headers,
+    locale: locale,
+  })
     .then(function (response) {
       return response;
     })

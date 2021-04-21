@@ -666,8 +666,7 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
     setMenuOpen(!menuOpen);
   };
 
-  const handleCloseMenu = (e) => {
-    console.log(e.target);
+  const handleCloseMenu = () => {
     setMenuOpen(false);
   };
 

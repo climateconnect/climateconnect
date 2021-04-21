@@ -258,7 +258,7 @@ class UserProfile(models.Model):
 
 class UserProfileTranslation(models.Model):
     user_profile = models.ForeignKey(
-        UserProfile, related_name="profie_translation",
+        UserProfile, related_name="profile_translation",
         help_text="Points to user profile object", verbose_name="User profile",
         on_delete=models.CASCADE
     )
@@ -269,14 +269,14 @@ class UserProfileTranslation(models.Model):
         on_delete=models.CASCADE
     )
 
-    name_translation = models.CharField(
-        help_text="Translation user's name", verbose_name="Name translation",
-        max_length=256, null=True, blank=True
-    )
-
     biography_translation = models.TextField(
         help_text="Translation of user bio", verbose_name="Biography translation",
         null=True, blank=True
+    )
+
+    is_manual_translation = models.BooleanField(
+        help_text="Did the user manually translate this or was it automatically translated with DeepL?",
+        verbose_name="Is manual translation?", default=False
     )
 
     created_at = models.DateTimeField(

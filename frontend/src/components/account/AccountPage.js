@@ -197,7 +197,6 @@ export default function AccountPage({
           }
         }
       });
-
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div

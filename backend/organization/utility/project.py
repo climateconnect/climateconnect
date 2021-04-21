@@ -1,14 +1,19 @@
-from location.utility import get_location
-from typing import Dict
-from organization.models import Project
-from climateconnect_api.models import (Skill, language,)
-from climateconnect_main.utility.general import get_image_from_data_url
-
 import logging
+from typing import Dict
+
+from climateconnect_api.models import Skill
+from climateconnect_api.models.language import Language
+from climateconnect_api.utility.translation import get_translations
+from climateconnect_main.utility.general import get_image_from_data_url
+from location.utility import get_location
+
+from organization.models import Project
+from organization.models.tags import ProjectTags
+
 logger = logging.getLogger(__name__)
 
 
-def create_new_project(data: Dict) -> Project:
+def create_new_project(data: Dict, source_language: Language) -> Project:
     project = Project.objects.create(
         name=data['name'],
         short_description=data['short_description'],
@@ -39,7 +44,7 @@ def create_new_project(data: Dict) -> Project:
         project.is_draft = data['is_draft']
     if 'website' in data:
         project.website = data['website']
-
+    project.language = source_language
     project.url_slug = project.name.replace(" ", "") + str(project.id)
 
     if 'skills' in data:
@@ -50,10 +55,17 @@ def create_new_project(data: Dict) -> Project:
             except Skill.DoesNotExist:
                 logger.error("Passed skill ID {} does not exists".format(skill_id))
                 continue
-
     project.save()
     return project
 
+def get_project_helpful_connections(project: Project, language_code: str) -> str:
+    if language_code != project.language.language_code and \
+        project.translation_project.filter(language__language_code=language_code).exists():
+        return project.translation_project.get(
+            language__language_code=language_code
+        ).helpful_connections_translation
+    
+    return project.helpful_connections
 
 def get_project_name(project: Project, language_code: str) -> str:
     if language_code != project.language.language_code and \
@@ -83,3 +95,29 @@ def get_project_description(project: Project, language_code: str) -> str:
         ).description_translation
     
     return project.description
+
+
+def get_projecttag_name(tag: ProjectTags, language_code: str) -> str:
+    if language_code == "en":
+        return tag.name
+    else:
+        return getattr(tag, "name_{}_translation".format(language_code))
+
+
+def get_project_translations(data:Dict):
+    texts = {
+        'name': data['name'],
+        'short_description': data['short_description']
+    }
+    if 'description' in data:
+        texts['description'] = data['description']
+    if 'helpful_connections' in data:
+        texts['helpful_connections'] = data['helpful_connections']
+    try:
+        return get_translations(
+            texts,
+            data['translations'], 
+            data['source_language']
+        )
+    except ValueError:
+        raise ValueError

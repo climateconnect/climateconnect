@@ -1,14 +1,14 @@
+from organization.serializers.translation import OrganizationTranslationSerializer
+from climateconnect_api.serializers.role import RoleSerializer
+from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.conf import settings
-
+from django.utils.translation import get_language
 from rest_framework import serializers
 
-from organization.models import Organization, OrganizationMember
-from climateconnect_api.serializers.user import UserProfileStubSerializer
-from climateconnect_api.serializers.role import RoleSerializer
+from organization.models import Organization, OrganizationMember, OrganizationTranslation
 from organization.serializers.tags import OrganizationTaggingSerializer
 from organization.utility.organization import (
-    get_organization_name, get_organization_short_description
-)
+    get_organization_name, get_organization_short_description)
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -17,19 +17,20 @@ class OrganizationSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
+    language = serializers.SerializerMethodField()
 
     class Meta:
         model = Organization
         fields = ('id', 'types', 'name', 'url_slug', 'image', 
             'background_image', 'parent_organization', 'location',
-            'short_description', 'organ', 'school', 'website'
+            'short_description', 'organ', 'school', 'website', 'language'
         )
 
     def get_name(self, obj):
-        return get_organization_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_name(obj, get_language())
     
     def get_short_description(self, obj):
-        return get_organization_short_description(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_short_description(obj, get_language())
 
     def get_types(self, obj):
         serializer = OrganizationTaggingSerializer(obj.tag_organization, many=True)
@@ -44,9 +45,13 @@ class OrganizationSerializer(serializers.ModelSerializer):
             return None
         return obj.location.name
 
+    def get_language(self, obj):
+        return obj.language.language_code
+
 
 class EditOrganizationSerializer(OrganizationSerializer):
     location = serializers.SerializerMethodField()
+    translations = serializers.SerializerMethodField()
     def get_location(self, obj):
         if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
             return {
@@ -57,8 +62,16 @@ class EditOrganizationSerializer(OrganizationSerializer):
             if obj.location == None:
                 return None
             return obj.location.name
+
+    def get_translations(self, obj):
+        translations = OrganizationTranslation.objects.filter(organization=obj)
+        if translations.exists():
+            serializer = OrganizationTranslationSerializer(translations, many=True)
+            return serializer.data
+        else:
+            return {}
     class Meta(OrganizationSerializer.Meta):
-        fields = OrganizationSerializer.Meta.fields + ('location',)
+        fields = OrganizationSerializer.Meta.fields + ('location', 'translations')
 
 
 class OrganizationMinimalSerializer(serializers.ModelSerializer):
@@ -72,7 +85,7 @@ class OrganizationMinimalSerializer(serializers.ModelSerializer):
         )
     
     def get_name(self, obj):
-        return get_organization_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_name(obj, get_language())
 
     def get_location(self, obj):
         if obj.location == None:
@@ -91,7 +104,7 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
         )
     
     def get_name(self, obj):
-        return get_organization_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_name(obj, get_language())
 
     def get_location(self, obj):
         if obj.location == None:
@@ -112,7 +125,7 @@ class OrganizationStubSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'url_slug', 'thumbnail_image', 'location')
 
     def get_name(self, obj):
-        return get_organization_name(obj, self.context['request'].LANGUAGE_CODE)
+        return get_organization_name(obj, get_language())
 
     def get_location(self, obj):
         if obj.location == None:
@@ -146,7 +159,10 @@ class UserOrganizationSerializer(serializers.ModelSerializer):
         fields = ('organization',)
     
     def get_organization(self, obj):
-        return OrganizationStubSerializer(obj.organization).data
+        return OrganizationStubSerializer(
+            obj.organization, 
+            context={'language_code': self.context['language_code']}
+        ).data
 
 
 class OrganizationsFromProjectMember(serializers.ModelSerializer):

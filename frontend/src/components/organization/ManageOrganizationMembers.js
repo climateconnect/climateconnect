@@ -67,13 +67,13 @@ export default function ManageOrganizationMembers({
     const allChangedMembers = getAllChangedMembers(members, currentMembers, "organization_members");
     return Promise.all(
       allChangedMembers.map((m) => {
-        if (m.operation === "delete") deleteMember(m);
-        if (m.operation === "update") updateMember(m);
+        if (m.operation === "delete") deleteMember(m, locale);
+        if (m.operation === "update") updateMember(m, locale);
         if (m.operation === "create") {
-          createMembers(m.organization_members);
+          createMembers(m.organization_members, locale);
         }
         if (m.operation === "creator_change") {
-          updateCreator(m.new_creator);
+          updateCreator(m.new_creator, locale);
         }
       })
     );
@@ -91,44 +91,47 @@ export default function ManageOrganizationMembers({
     return true;
   };
 
-  const deleteMember = (m) => {
-    apiRequest(
-      "delete",
-      "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
-      token,
-      null,
-      true
-    );
+  const deleteMember = (m, locale) => {
+    apiRequest({
+      method: "delete",
+      url: "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
+      token: token,
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
   const updateMember = (m) => {
-    apiRequest(
-      "patch",
-      "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
-      token,
-      parseMemberForUpdateRequest(m, organization),
-      true
-    );
+    apiRequest({
+      method: "patch",
+      url: "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
+      token: token,
+      payload: parseMemberForUpdateRequest(m, organization),
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
   const createMembers = (organization_members) => {
-    apiRequest(
-      "post",
-      "/api/organizations/" + organization.url_slug + "/add_members/",
-      token,
-      parseMembersForCreateRequest(organization_members, organization),
-      true
-    );
+    apiRequest({
+      method: "post",
+      url: "/api/organizations/" + organization.url_slug + "/add_members/",
+      token: token,
+      payload: parseMembersForCreateRequest(organization_members, organization),
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
   const updateCreator = (new_creator) => {
-    apiRequest(
-      "post",
-      "/api/organizations/" + organization.url_slug + "/change_creator/",
-      token,
-      parseMemberForUpdateRequest(new_creator, organization),
-      true
-    );
+    apiRequest({
+      method: "post",
+      url: "/api/organizations/" + organization.url_slug + "/change_creator/",
+      token: token,
+      payload: parseMemberForUpdateRequest(new_creator, organization),
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
   return (

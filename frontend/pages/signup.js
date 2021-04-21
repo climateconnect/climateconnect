@@ -1,7 +1,7 @@
-import axios from "axios";
 import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
+import { apiRequest } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import {
   getLocationValue,
@@ -104,16 +104,20 @@ export default function Signup() {
       from_tutorial: params?.from_tutorial === "true",
       is_activist: isClimateActorCookie?.isActivist,
       last_completed_tutorial_step: lastCompletedTutorialStep,
+      source_language: locale,
     };
-    const config = {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
     };
     setIsLoading(true);
-    axios
-      .post(process.env.API_URL + "/signup/", payload, config)
+    apiRequest({
+      method: "post",
+      url: "/signup/",
+      payload: payload,
+      headers: headers,
+      locale: locale,
+    })
       .then(function () {
         ReactGA.event({
           category: "User",

@@ -125,7 +125,7 @@ const GroupMessageNotification = ({ notification, texts, locale }) => {
   const sender = notification.last_message.sender;
   const classes = useStyles();
   return (
-    <Link href={getLocalePrefix(locale) + notification.chat_uuid + "/"} underline="none">
+    <Link href={getLocalePrefix(locale) + "/chat/" + notification.chat_uuid + "/"} underline="none">
       <StyledMenuItem>
         <ListItemAvatar>
           <Avatar alt={group_title}>

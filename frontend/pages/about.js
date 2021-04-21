@@ -1,8 +1,8 @@
 //global imports
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import axios from "axios";
 import React, { useContext } from "react";
+import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import TopOfPage from "../src/components/hooks/TopOfPage";
@@ -120,7 +120,7 @@ export default function About({ faqQuestions }) {
 
 const getQuestionsWithAnswers = async () => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/list_faq/");
+    const resp = await apiRequest({ method: "get", url: "/api/list_faq/" });
     if (resp.data.length === 0) return null;
     else {
       return {

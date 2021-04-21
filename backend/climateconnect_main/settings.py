@@ -239,6 +239,7 @@ CHANNEL_LAYERS = {
 # For Celery we use Redis as a broker URL
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
 CELERY_TIMEZONE = "UTC"
+LOCALES = ['en', 'de']
 
 LOCALE_PATHS = [
     BASE_DIR + '/translations',

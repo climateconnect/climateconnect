@@ -1,10 +1,14 @@
-import axios from "axios";
-import { parseOptions } from "./selectOptionsOperations";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
+import { apiRequest } from "./apiOperations";
+import { parseOptions } from "./selectOptionsOperations";
 
-export async function getSkillsOptions() {
+export async function getSkillsOptions(locale) {
   try {
-    const resp = await axios.get(process.env.API_URL + "/skills/");
+    const resp = await apiRequest({
+      method: "get",
+      url: "/skills/",
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return parseOptions(
@@ -19,9 +23,13 @@ export async function getSkillsOptions() {
   }
 }
 
-export async function getStatusOptions() {
+export async function getStatusOptions(locale) {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/projectstatus/");
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projectstatus/",
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -33,12 +41,16 @@ export async function getStatusOptions() {
   }
 }
 
-export async function getProjectTagsOptions(parent_tag_key) {
+export async function getProjectTagsOptions(parent_tag_key, locale) {
   const url = parent_tag_key
-    ? `${process.env.API_URL}/api/projecttags/?parent_tag_key=${parent_tag_key}`
-    : `${process.env.API_URL}/api/projecttags/`;
+    ? `/api/projecttags/?parent_tag_key=${parent_tag_key}`
+    : `/api/projecttags/`;
   try {
-    const resp = await axios.get(url);
+    const resp = await apiRequest({
+      method: "get",
+      url: url,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       if (parent_tag_key) return resp.data.results;
@@ -51,9 +63,13 @@ export async function getProjectTagsOptions(parent_tag_key) {
   }
 }
 
-export async function getOrganizationTagsOptions() {
+export async function getOrganizationTagsOptions(locale) {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/organizationtags/");
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizationtags/",
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results.map((t) => {

@@ -1,6 +1,6 @@
 import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
-import axios from "axios";
 import React, { useContext } from "react";
+import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import HubHeaderImage from "../src/components/hub/HubHeaderImage";
@@ -40,10 +40,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export async function getServerSideProps() {
+export async function getServerSideProps(ctx) {
   return {
     props: {
-      hubs: await getHubs(),
+      hubs: await getHubs(ctx.locale),
     },
   };
 }
@@ -102,9 +102,13 @@ const LargeScreenExplainerText = ({ texts }) => {
   );
 };
 
-const getHubs = async () => {
+const getHubs = async (locale) => {
   try {
-    const resp = await axios.get(`${process.env.API_URL}/api/hubs/`);
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/`,
+      locale: locale,
+    });
     return resp.data.results;
   } catch (err) {
     if (err.response && err.response.data)

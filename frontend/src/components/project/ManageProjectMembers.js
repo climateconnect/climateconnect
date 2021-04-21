@@ -63,13 +63,13 @@ export default function ManageProjectMembers({
     const allChangedMembers = getAllChangedMembers();
     return Promise.all(
       allChangedMembers.map((m) => {
-        if (m.operation === "delete") deleteMember(m);
-        if (m.operation === "update") updateMember(m);
+        if (m.operation === "delete") deleteMember(m, locale);
+        if (m.operation === "update") updateMember(m, locale);
         if (m.operation === "create") {
-          createMembers(m.team_members);
+          createMembers(m.team_members, locale);
         }
         if (m.operation === "creator_change") {
-          updateCreator(m.new_creator);
+          updateCreator(m.new_creator, locale);
         }
       })
     );
@@ -123,44 +123,47 @@ export default function ManageProjectMembers({
     return member.id === user.id || user_role.role_type > member.role.role_type;
   };
 
-  const deleteMember = (m) => {
-    apiRequest(
-      "delete",
-      "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
-      token,
-      null,
-      true
-    );
+  const deleteMember = (m, locale) => {
+    apiRequest({
+      method: "delete",
+      url: "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
+      token: token,
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
-  const updateMember = (m) => {
-    apiRequest(
-      "patch",
-      "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
-      token,
-      parseMemberForUpdateRequest(m, project),
-      true
-    );
+  const updateMember = (m, locale) => {
+    apiRequest({
+      method: "patch",
+      url: "/api/projects/" + project.url_slug + "/members/" + m.member_id + "/",
+      token: token,
+      payload: parseMemberForUpdateRequest(m, project),
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
-  const createMembers = (team_members) => {
-    apiRequest(
-      "post",
-      "/api/projects/" + project.url_slug + "/add_members/",
-      token,
-      parseMembersForCreateRequest(team_members, project),
-      true
-    );
+  const createMembers = (team_members, locale) => {
+    apiRequest({
+      method: "post",
+      url: "/api/projects/" + project.url_slug + "/add_members/",
+      token: token,
+      payload: parseMembersForCreateRequest(team_members, project),
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
-  const updateCreator = (new_creator) => {
-    apiRequest(
-      "post",
-      "/api/projects/" + project.url_slug + "/change_creator/",
-      token,
-      parseMemberForUpdateRequest(new_creator, project),
-      true
-    );
+  const updateCreator = (new_creator, locale) => {
+    apiRequest({
+      method: "post",
+      url: "/api/projects/" + project.url_slug + "/change_creator/",
+      token: token,
+      payload: parseMemberForUpdateRequest(new_creator, project),
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
   return (
     <>

@@ -1,7 +1,13 @@
-from django.conf import settings
-import requests
-from rest_framework.exceptions import ValidationError
+from climateconnect_api.models.user import UserProfileTranslation
+from django.db.models.query_utils import Q
+from organization.models.translations import OrganizationTranslation, ProjectTranslation
+from climateconnect_api.models.language import Language
 import json
+
+import requests
+from django.conf import settings
+from rest_framework.exceptions import ValidationError
+
 
 def get_locale(language_code):
     LANGUAGE_CODE_MAP = {
@@ -13,18 +19,23 @@ def get_locale(language_code):
         "DE": "de"
     }
     if(language_code not in LANGUAGE_CODE_MAP):
-        raise ValidationError('Unsupported language: ' + language_code)
+       print('Unsupported language: ' + language_code)
+       return "en"
     return LANGUAGE_CODE_MAP[language_code]
 
 
 def translate(text, target_lang):
+    if len(text) == 0:
+        return {'text': text}
     payload = {
         'text': text,
         'target_lang': target_lang
     }
+    if target_lang == "de":
+        payload['formality'] = 'less'
     url = "https://api.deepl.com/v2/translate?auth_key=" + settings.DEEPL_API_KEY
     translation = requests.post(url, payload)
-    return json.loads(translation.text)['translations'][0]
+    return json.loads(translation.content)['translations'][0]
 
 
 def translate_text(text, original_lang, target_lang):
@@ -43,25 +54,171 @@ def translate_text(text, original_lang, target_lang):
                     target_locale = lc
         else:
             raise ValidationError('target lang and original lang were identical:' + target_lang)
+    if isinstance(text, list):
+        translation_objects = []
+        for element in text:
+            translation_objects.append(translate(element, target_locale))
+        print(translation_objects)
+        translation = {
+            'detected_source_language': original_lang,
+            'text': list(map(lambda translation_element: translation_element['text'], translation_objects))
+        }
+    else:
+        translation = translate(text, target_locale)
+        # If the source language is actually the target language (person with german locale wrote english text), 
+        # Switch source language and target language (change original lang from german to english and target lang from english to german)
+        # Since this means we just translated a text from german to german, we need to call the translate function again and translate to english
+        # (We only trust the detected source language if it's more than 150 characters)
+        if len(text) > 150 and get_locale(translation['detected_source_language']) == target_locale:
+            target_locale = original_locale
+            original_locale = get_locale(translation['detected_source_language'])
+            translation = translate(text, target_locale)
 
-    translation = translate(text, target_locale)
-    # If the source language is actually the target language (person with german locale wrote english text), 
-    # Switch source language and target language (change original lang from german to english and target lang from english to german)
-    # Since this means we just translated a text from german to german, we need to call the translate function again and translate to english
-    if get_locale(translation['detected_source_language']) == target_locale:
-        target_locale = original_locale
-        original_locale = get_locale(translation['detected_source_language'])
-        translation = translate(text, target_locale)  
-
-    # If the detected source language is complete different from target_lang or original_lan: adapt original lang
-    # Example: If person with german locale writes spanish text the text will be translated to english and source language will be spanish
-    # (The example assumes that spanish is supported)
-    if not get_locale(translation['detected_source_language']) == original_locale:
-        original_locale = get_locale(translation['detected_source_language'])
-
+        # If the detected source language is complete different from target_lang or original_lan: adapt original lang
+        # Example: If person with german locale writes spanish text the text will be translated to english and source language will be spanish
+        # (The example assumes that spanish is supported)
+        # (We only trust the detected source language if it's more than 150 characters)
+        if len(text) > 150 and not get_locale(translation['detected_source_language']) == original_locale:
+            original_locale = get_locale(translation['detected_source_language'])
     return {
         'original_text': text,
         'original_lang': original_locale,
         'translated_text': translation['text'],
         'translated_lang': target_locale
     }
+
+
+def get_translations(texts, translations, source_language, keys_to_ignore_for_translation=[], depth=0):
+    depth = int(depth)
+    # if we started over the a different source language more than one time that means the user used different languages in different texts.
+    if depth > 1:
+        raise ValueError
+    finished_translations = {}
+    for target_language in settings.LOCALES:
+        if not target_language == source_language:
+            finished_translations[target_language] = {
+                'is_manual_translation': False
+            }
+            for key in texts.keys():
+                # If the user manually translated and the translation isn't an empty string: take the user's translation
+                if (
+                    target_language in translations and \
+                    'is_manual_translation' in translations[target_language] and \
+                    translations[target_language]['is_manual_translation'] and \
+                    key in translations[target_language] and \
+                    len(translations[target_language][key]) > 0
+                ):
+                    finished_translations[target_language][key] = translations[target_language][key]
+                    finished_translations['is_manual_translation']= True
+                # Else use DeepL to translate the text
+                else:
+                    # If the key should not be translated, just pass the original string (We do this for organization names for example)
+                    if key in keys_to_ignore_for_translation:
+                        translated_text_object = {
+                            'original_lang': source_language,
+                            'translated_text': texts[key]
+                        }
+                    else:
+                        translated_text_object = translate_text(texts[key], source_language, target_language)
+                    # If we got the source language wrong start over with the correct source language
+                    if not translated_text_object['original_lang'] == source_language:
+                        return get_translations(texts, translations, translated_text_object['original_lang'], keys_to_ignore_for_translation, depth + 1)
+                    finished_translations[target_language][key] = translated_text_object['translated_text']
+    return {
+        'translations': finished_translations,
+        'source_language': source_language
+    }
+
+def edit_translations(
+    items_to_translate, 
+    data,
+    item,
+    type
+):
+    languages_to_translate_to = Language.objects.filter(~Q(id=item.language.id))
+    for language in languages_to_translate_to:
+        language_code = language.language_code
+        if language_code in data['translations']:
+            passed_lang_translation = data['translations'][language_code]
+        else:
+            passed_lang_translation = {}
+        if type == "project":
+            db_translations = ProjectTranslation.objects.filter(project=item, language=language)
+        if type == "organization":
+            db_translations = OrganizationTranslation.objects.filter(organization=item, language=language)
+        if type == "user_profile":
+            db_translations = UserProfileTranslation.objects.filter(user_profile=item, language=language)
+        # If there already is a translation for this project: edit it
+        if db_translations.exists():
+            edit_translation(
+                db_translations[0], 
+                passed_lang_translation, 
+                items_to_translate,
+                data,
+                item,
+                language_code,
+            )
+        else:
+            if 'is_manual_translation' in passed_lang_translation:
+                is_manual_translation = passed_lang_translation['is_manual_translation']
+            else:
+                is_manual_translation = False
+            if type == "project":
+                db_translation = ProjectTranslation.objects.create(
+                    is_manual_translation=is_manual_translation,
+                    language = language,
+                    project=item
+                )
+            if type == "organization":
+                db_translation = OrganizationTranslation.objects.create(
+                    is_manual_translation=is_manual_translation,
+                    language = language,
+                    organization=item
+                )
+            if type == "user_profile":
+                db_translation = UserProfileTranslation.objects.create(
+                    is_manual_translation=is_manual_translation,
+                    language = language,
+                    user_profile=item
+                )
+            for translation_keys in items_to_translate:
+                if is_manual_translation and translation_keys['key'] in passed_lang_translation and len(passed_lang_translation[translation_keys['key']])>0:
+                    setattr(db_translation, translation_keys['translation_key'], passed_lang_translation[translation_keys['key']])
+                else:
+                    setattr(db_translation, translation_keys['translation_key'], translate_text(
+                        getattr(item, translation_keys['key']), 
+                        item.language.language_code, 
+                        language_code
+                    )['translated_text'])
+
+            db_translation.save()
+
+def edit_translation(
+    db_translation, 
+    passed_translation, 
+    items_to_translate, 
+    changed_properties,
+    item,
+    language_code
+):
+    if 'is_manual_translation' in passed_translation:
+        db_translation.is_manual_translation = passed_translation['is_manual_translation']                
+    for translation_keys in items_to_translate:
+        if translation_keys['key'] in passed_translation:
+            if len(passed_translation[translation_keys['key']]) == 0 or db_translation.is_manual_translation == False:
+                if translation_keys['key'] in changed_properties:
+                    setattr(db_translation, translation_keys['translation_key'], translate_text(
+                        getattr(item, translation_keys['key']), 
+                        item.language.language_code, 
+                        language_code
+                    )['translated_text'])
+            else:
+                setattr(db_translation, translation_keys['translation_key'], passed_translation[translation_keys['key']])
+        elif translation_keys['key'] in changed_properties and db_translation.is_manual_translation == False:
+            setattr(db_translation, translation_keys['translation_key'], translate_text(
+                getattr(item, translation_keys['key']), 
+                item.language.language_code, 
+                language_code
+            )['translated_text'])
+
+    db_translation.save()

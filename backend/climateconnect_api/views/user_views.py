@@ -1,48 +1,46 @@
-from django.contrib.gis.db.models.functions import Distance
-from location.models import Location
-import uuid
-from django.contrib.auth import (authenticate, login)
 import datetime
-
-from django.db.models import Count, Q
-from django.utils import timezone
+import logging
+import uuid
 from datetime import datetime, timedelta
 
+from climateconnect_api.models import Availability, Skill, UserProfile
+from climateconnect_api.models.language import Language
+from climateconnect_api.models.user import UserProfileTranslation
+from climateconnect_api.pagination import MembersPagination
+from climateconnect_api.permissions import UserPermission
+from climateconnect_api.serializers.user import (
+    EditUserProfileSerializer, PersonalProfileSerializer,
+    UserProfileMinimalSerializer, UserProfileSerializer,
+    UserProfileSitemapEntrySerializer, UserProfileStubSerializer)
+from climateconnect_api.utility.email_setup import (
+    send_password_link, send_user_verification_email)
+from climateconnect_api.utility.translation import (edit_translations)
+from climateconnect_main.utility.general import get_image_from_data_url
+from django.conf import settings
+from django.contrib.auth import authenticate, login
+# Backend imports
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models.functions import Distance
+from django.db.models import Count, Q
+from django.utils import timezone
+from django.utils.translation import gettext as _
 # Rest imports
 from django_filters.rest_framework import DjangoFilterBackend
+from knox.views import LoginView as KnoxLoginView
+from location.models import Location
+from location.utility import get_location, get_location_with_range
+from organization.models.members import OrganizationMember, ProjectMember
+from organization.serializers.organization import \
+    OrganizationsFromProjectMember
+from organization.serializers.project import ProjectFromProjectMemberSerializer
 from rest_framework import status
+from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
-from rest_framework.exceptions import NotFound
-from location.utility import get_location, get_location_with_range
-from rest_framework.filters import SearchFilter
 
-from rest_framework.exceptions import ValidationError
-from knox.views import LoginView as KnoxLoginView
-from climateconnect_api.pagination import MembersPagination
-
-# Database imports
-from django.contrib.auth.models import User
-from organization.models.members import (ProjectMember, OrganizationMember)
-from climateconnect_api.models import UserProfile, Availability, Skill
-
-# Serializer imports
-from climateconnect_api.serializers.user import (
-    EditUserProfileSerializer, UserProfileSerializer, PersonalProfileSerializer, UserProfileStubSerializer, 
-    UserProfileMinimalSerializer, UserProfileSitemapEntrySerializer
-)
-from organization.serializers.project import ProjectFromProjectMemberSerializer
-from organization.serializers.organization import OrganizationsFromProjectMember
-
-from climateconnect_main.utility.general import get_image_from_data_url
-from climateconnect_api.permissions import UserPermission
-from climateconnect_api.utility.email_setup import send_user_verification_email
-from climateconnect_api.utility.email_setup import send_password_link
-from django.conf import settings
-from django.utils.translation import gettext as _
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -81,7 +79,7 @@ class SignUpView(APIView):
     def post(self, request):
         required_params = [
             'email', 'password', 'first_name', 'last_name',
-            'location', 'send_newsletter', 
+            'location', 'send_newsletter', 'source_language' 
         ]
         for param in required_params:
             if param not in request.data:
@@ -103,10 +101,12 @@ class SignUpView(APIView):
 
         url_slug = (user.first_name + user.last_name).lower() + str(user.id)
         # Get location
+        source_language = Language.objects.get(language_code=request.data['source_language'])
         user_profile = UserProfile.objects.create(
             user=user, location=location,
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
-            verification_key=uuid.uuid4(), send_newsletter=request.data['send_newsletter']
+            verification_key=uuid.uuid4(), send_newsletter=request.data['send_newsletter'],
+            language=source_language
         )
         if "from_tutorial" in request.data:
             user_profile.from_tutorial = request.data['from_tutorial']
@@ -294,6 +294,10 @@ class EditUserProfile(APIView):
             user_profile.biography = request.data['biography']
         if 'website' in request.data:
             user_profile.website = request.data['website']
+        if 'language' in request.data:
+            language = Language.objects.filter(language_code=request.data['language'])
+            if language.exists():
+                user_profile.language = language[0]
 
         if 'availability' in request.data:
             try:
@@ -313,7 +317,24 @@ class EditUserProfile(APIView):
                     user_profile.skills.add(skill)
                 except Skill.DoesNotExist:
                     logger.error("Passed skill id {} does not exists")
+        
         user_profile.save()
+
+        items_to_translate = [
+            {
+                'key': 'biography',
+                'translation_key': 'biography_translation'
+            },
+        ]
+        if not 'translations' in request.data:
+            request.data['translations'] = {}
+        edit_translations(
+            items_to_translate,
+            request.data,
+            user_profile,
+            "user_profile"
+        )
+                
         serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

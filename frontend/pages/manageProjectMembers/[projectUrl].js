@@ -1,10 +1,8 @@
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import axios from "axios";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
-import tokenConfig from "../../public/config/tokenConfig";
-import { sendToLogin } from "../../public/lib/apiOperations";
+import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import LoginNudge from "../../src/components/general/LoginNudge";
@@ -30,10 +28,10 @@ export async function getServerSideProps(ctx) {
   }
   const projectUrl = encodeURI(ctx.query.projectUrl);
   const [project, members, rolesOptions, availabilityOptions] = await Promise.all([
-    getProjectByUrlIfExists(projectUrl, token),
-    getMembersByProject(projectUrl, token),
-    getRolesOptions(token),
-    getAvailabilityOptions(token),
+    getProjectByUrlIfExists(projectUrl, token, ctx.locale),
+    getMembersByProject(projectUrl, token, ctx.locale),
+    getRolesOptions(token, ctx.locale),
+    getAvailabilityOptions(token, ctx.locale),
   ]);
   return {
     props: {
@@ -108,12 +106,14 @@ export default function manageProjectMembers({
   }
 }
 
-async function getProjectByUrlIfExists(projectUrl, token) {
+async function getProjectByUrlIfExists(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/",
+      token: token,
+      locale: locale,
+    });
     return parseProject(resp.data);
   } catch (err) {
     //console.log(err);
@@ -122,12 +122,14 @@ async function getProjectByUrlIfExists(projectUrl, token) {
   }
 }
 
-async function getMembersByProject(projectUrl, token) {
+async function getMembersByProject(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/members/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/members/",
+      token: token,
+      locale: locale,
+    });
     if (!resp.data) return null;
     else {
       return parseProjectMembers(resp.data.results);
@@ -166,7 +168,7 @@ function parseProject(project) {
     status: project.status,
     location: project.location,
     description: project.description,
-    shortdescription: project.short_description,
+    short_description: project.short_description,
     collaborators_welcome: project.collaborators_welcome,
     start_date: project.start_date,
     end_date: project.end_date,
@@ -184,9 +186,14 @@ function parseProject(project) {
   };
 }
 
-const getRolesOptions = async (token) => {
+const getRolesOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/roles/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -198,9 +205,14 @@ const getRolesOptions = async (token) => {
   }
 };
 
-const getAvailabilityOptions = async (token) => {
+const getAvailabilityOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/availability/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/availability/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;

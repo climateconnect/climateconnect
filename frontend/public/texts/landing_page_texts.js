@@ -132,7 +132,7 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
       ),
       de: (
         <>
-          <span className={classes?.yellow}>Arbeite zusammen</span>, lass dich inspirieren und nehme
+          <span className={classes?.yellow}>Arbeite zusammen</span>, lass dich inspirieren und nimm
           echten Einfluss <span className={classes?.yellow}>auf den Klimawandel!</span>
         </>
       ),

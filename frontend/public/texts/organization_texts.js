@@ -34,7 +34,7 @@ export default function getOrganizationTexts({ organization, locale }) {
       en:
         "Describe what your organization is doing, how you work and what impact you have on climate change. Please only use english!",
       de:
-        "Beschreibe, was deine Organisation macht, wie ihr arbeitet und welchen Einfluss ihr auf den Klimawandeln habt.",
+        "Beschreibe, was deine Organisation macht, wie ihr arbeitet und welchen Einfluss ihr auf den Klimawandel habt.",
     },
     we_are_a_suborganization: {
       en: "We are a sub-organization of a larger organization (e.g. local group)",
@@ -146,14 +146,6 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "None of the members of this organization has signed up yet!",
       de: "Keins der Mitglieder dieser Organisation hat sich bisher registriert!",
     },
-    return_to_home: {
-      en: "Return to home.",
-      de: "Zurück zur Startseite",
-    },
-    not_found_lowercase: {
-      en: "not found.",
-      de: "nicht gefunden.",
-    },
     organizations_logo: {
       en: `${organization?.name}'s logo`,
       de: `${organization?.name}'s Logo`,
@@ -210,12 +202,25 @@ export default function getOrganizationTexts({ organization, locale }) {
     i_verify_that_i_am_an_authorized_representative_of_this_organization: {
       en: `I verify that I am an authorized representative of this organization 
       and have the right to act on its behalf in the creation and management of this page.`,
-      de: `Ich bestätige, dass ich ein*e autorisierte*r Vertreter*in dieser Organisation 
+      de: `Ich bestätige, dass ich ein(e) autorisierte*r Vertreter*in dieser Organisation 
       bin und das Recht habe, in deren Namen bei der Erstellung und Verwaltung dieser Seite zu handeln.`,
     },
     almost_done_here_you_can_customize_your_organization_page_and_add_details: {
       en: "Almost done! Here you can customize your organization page and add details",
       de: "Fast geschafft! Hier kannst du deine Organisationsseite anpassen und Details hinzufügen",
+    },
+    translate_organization_intro: {
+      en: "",
+      de: (
+        <>
+          Da der Klimawandel eine globale Krise ist, ist es uns wichtig, dass alle
+          Organisationsprofile auch auf Englisch verfügbar sind.
+          <br />
+          Wenn du auf {"Automatisch Übersetzen"} klickst, kannst du den Text immer noch bearbeiten.
+          Natürlich kannst du auch alles selbst übersetzen. Wenn du auf {"Veröffentlichen"} klickst,
+          werden alle leeren Felder automatisch übersetzt.
+        </>
+      ),
     },
   };
 }

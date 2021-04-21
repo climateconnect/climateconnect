@@ -618,5 +618,49 @@
   "you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up": {
     "en": "You will have an opportunity to create/add an organization once signed up.",
     "de": "Du hast die Möglichkeit, eine Organisation zu erstellen/hinzufügen, sobald du dich angemeldet hast."
+  },
+  "edit_profile": {
+    "en": "Edit Profile",
+    "de": "Profil bearbeiten"
+  },
+  "languages": {
+    "en": "Languages",
+    "de": "Sprachen"
+  },
+  "translate": {
+    "en": "Translate",
+    "de": "Übersetzen"
+  },
+  "automatically_translate": {
+    "en": "Automatically translate",
+    "de": "Automatisch Übersetzen"
+  },
+  "skip_and_publish": {
+    "en": "Publish",
+    "de": "Veröffentlichen"
+  },
+  "short_description": {
+    "en": "Short description",
+    "de": "Kurzbeschreibung"
+  },
+  "not_found_lowercase": {
+    "en": "not found.",
+    "de": "nicht gefunden."
+  },
+  "return_to_home": {
+    "en": "Return to home.",
+    "de": "Zurück zur Startseite"
+  },
+  "confirm_overwrite_all_texts_headline": {
+    "en": "Do you really want to overwrite your manual translations?",
+    "de": "Willst du wirklich deine manuellen Übersetzungen überschreiben?"
+  },
+  "confirm_overwrite_all_texts": {
+    "en": "Are you sure that you want to replace all the texts you manually translated with an automatic translation?",
+    "de": "Bist du sicher, dass du alle von dir übersetzten Texte durch eine automatische Übersetzung überschreiben möchtest?"
+  },
+  "check_translations": {
+    "en": "Check Translations",
+    "de": "Übersetzungen überprüfen"
   }
 }

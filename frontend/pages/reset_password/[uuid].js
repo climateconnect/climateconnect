@@ -1,6 +1,5 @@
-import axios from "axios";
 import React, { useContext } from "react";
-import { getLocalePrefix, redirect } from "../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix, redirect } from "../../public/lib/apiOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import Form from "../../src/components/general/Form";
@@ -64,18 +63,18 @@ async function requestSetPassword(uuid, new_password, setErrorMessage, texts, lo
     password_reset_key: uuid,
     new_password: new_password,
   };
-  const config = {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
+  const headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
   };
   try {
-    const response = await axios.post(
-      process.env.API_URL + "/api/set_new_password/",
-      payload,
-      config
-    );
+    const response = await apiRequest({
+      method: "post",
+      url: "/api/set_new_password/",
+      payload: payload,
+      headers: headers,
+      locale: locale,
+    });
     redirect("/browse", {
       message: response.data.message,
     });

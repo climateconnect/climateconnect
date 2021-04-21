@@ -1,7 +1,6 @@
 import { Link, Typography } from "@material-ui/core";
-import axios from "axios";
 import React, { useContext, useEffect } from "react";
-import { getLocalePrefix } from "../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
 import { redirectOnLogin } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
@@ -22,19 +21,18 @@ async function profileVerification(uuid, locale) {
   const payload = {
     uuid: uuid,
   };
-  const config = {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      "Accept-Language": locale,
-    },
+  const headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
   };
   try {
-    const response = await axios.post(
-      process.env.API_URL + "/api/verify_profile/",
-      payload,
-      config
-    );
+    const response = await apiRequest({
+      method: "post",
+      url: "/api/verify_profile/",
+      payload: payload,
+      headers: headers,
+      locale: locale,
+    });
     return { successMessage: response.data.message, errorMessage: "" };
   } catch (error) {
     const texts = getTexts({ page: "general", locale: locale });

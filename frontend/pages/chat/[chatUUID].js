@@ -1,8 +1,7 @@
-import axios from "axios";
 import Cookies from "next-cookies";
 import React, { useContext, useEffect } from "react";
 import tokenConfig from "../../public/config/tokenConfig";
-import { redirect, sendToLogin } from "../../public/lib/apiOperations";
+import { apiRequest, redirect, sendToLogin } from "../../public/lib/apiOperations";
 import { getMessageFromServer } from "../../public/lib/messagingOperations";
 import getTexts from "../../public/texts/texts";
 import MessagingLayout from "../../src/components/communication/chat/MessagingLayout";
@@ -19,9 +18,9 @@ export async function getServerSideProps(ctx) {
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
   const [chat, messages_object, rolesOptions] = await Promise.all([
-    getChat(ctx.query.chatUUID, token),
-    getChatMessagesByUUID(ctx.query.chatUUID, token, 1),
-    getRolesOptions(),
+    getChat(ctx.query.chatUUID, token, ctx.locale),
+    getChatMessagesByUUID(ctx.query.chatUUID, token, 1, null, ctx.locale),
+    getRolesOptions(ctx.locale),
   ]);
   if (!chat) {
     return {
@@ -78,7 +77,7 @@ export default function Chat({
       chatSocket.onmessage = async (rawData) => {
         const data = JSON.parse(rawData.data);
         if (data.chat_uuid === chatUUID) {
-          const message = await getMessageFromServer(data.message_id, token);
+          const message = await getMessageFromServer(data.message_id, token, locale);
           setState({
             ...state,
             messages: [
@@ -108,7 +107,8 @@ export default function Chat({
         chatUUID,
         token,
         state.nextPage,
-        state.nextLink
+        state.nextLink,
+        locale
       );
       const newMessages = newMessagesObject.messages;
       const sortedMessages = newMessages.sort((a, b) => a.id - b.id);
@@ -163,11 +163,13 @@ export default function Chat({
 
   const sendChatMessageThroughPostRequest = async (message, chat_uuid, token) => {
     try {
-      const resp = await axios.post(
-        process.env.API_URL + "/api/chat/" + chat_uuid + "/send_message/",
-        { message_content: message },
-        tokenConfig(token)
-      );
+      const resp = await apiRequest({
+        method: "post",
+        url: "/api/chat/" + chat_uuid + "/send_message/",
+        payload: { message_content: message },
+        token: token,
+        locale: locale,
+      });
       console.log(resp.data);
       setState({
         ...state,
@@ -202,11 +204,13 @@ export default function Chat({
   const leaveChat = async () => {
     if (!title) setErrorMessage(texts.cannot_leave_private_chats);
     try {
-      const res = await axios.post(
-        process.env.API_URL + "/api/chat/" + chatUUID + "/leave/",
-        {},
-        tokenConfig(token)
-      );
+      const res = await apiRequest({
+        method: "post",
+        url: "/api/chat/" + chatUUID + "/leave/",
+        payload: {},
+        token: tokenConfig(token),
+        locale: locale,
+      });
       console.log(res);
       redirect("/inbox", {
         message: `${texts.left_group_chat} ${title}`,
@@ -268,12 +272,14 @@ const parseParticipantsWithRole = (participants, rolesOptions) => {
   }));
 };
 
-async function getChat(chat_uuid, token) {
+async function getChat(chat_uuid, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/chat/" + chat_uuid + "/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/chat/" + chat_uuid + "/",
+      token: token,
+      locale: locale,
+    });
     return {
       participants: parseParticipants(resp.data.participants, resp.data.user),
       title: resp.data.name,
@@ -294,12 +300,17 @@ const parseParticipants = (participants, user) => {
   }));
 };
 
-async function getChatMessagesByUUID(chat_uuid, token, page, link) {
+async function getChatMessagesByUUID(chat_uuid, token, page, link, locale) {
   try {
     const url = link
       ? link
       : process.env.API_URL + "/api/messages/?chat_uuid=" + chat_uuid + "&page=" + page;
-    const resp = await axios.get(url, tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: url.replace(process.env.API_URL, ""),
+      token: token,
+      locale: locale,
+    });
     return {
       messages: resp.data.results,
       hasMore: !!resp.data.next && resp.data.next !== link,
@@ -312,9 +323,13 @@ async function getChatMessagesByUUID(chat_uuid, token, page, link) {
   }
 }
 
-const getRolesOptions = async () => {
+const getRolesOptions = async (locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/roles/");
+    const resp = await apiRequest({
+      method: "get",
+      url: "/roles/",
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
