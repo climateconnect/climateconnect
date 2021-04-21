@@ -1,6 +1,8 @@
 import { arraysEqual } from "./generalOperations";
 
 export function getTranslationsFromObject(translationsObject, type) {
+  if(!Array.isArray(translationsObject))
+    return translationsObject
   return translationsObject.reduce(function (obj, translation) {
     if (type === "user_profile") {
       obj[translation.language] = getUserProfileTranslationObject(translation);

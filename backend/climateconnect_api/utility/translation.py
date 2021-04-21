@@ -88,7 +88,7 @@ def translate_text(text, original_lang, target_lang):
     }
 
 
-def get_translations(texts, translations, source_language, keysToignoreForTranslation, depth=0):
+def get_translations(texts, translations, source_language, keys_to_ignore_for_translation=[], depth=0):
     depth = int(depth)
     # if we started over the a different source language more than one time that means the user used different languages in different texts.
     if depth > 1:
@@ -113,7 +113,7 @@ def get_translations(texts, translations, source_language, keysToignoreForTransl
                 # Else use DeepL to translate the text
                 else:
                     # If the key should not be translated, just pass the original string (We do this for organization names for example)
-                    if key in keysToignoreForTranslation:
+                    if key in keys_to_ignore_for_translation:
                         translated_text_object = {
                             'original_lang': source_language,
                             'translated_text': texts[key]
@@ -122,7 +122,7 @@ def get_translations(texts, translations, source_language, keysToignoreForTransl
                         translated_text_object = translate_text(texts[key], source_language, target_language)
                     # If we got the source language wrong start over with the correct source language
                     if not translated_text_object['original_lang'] == source_language:
-                        return get_translations(texts, translations, translated_text_object['original_lang'], keysToignoreForTranslation, depth + 1)
+                        return get_translations(texts, translations, translated_text_object['original_lang'], keys_to_ignore_for_translation, depth + 1)
                     finished_translations[target_language][key] = translated_text_object['translated_text']
     return {
         'translations': finished_translations,
@@ -166,17 +166,20 @@ def edit_translations(
             if type == "project":
                 db_translation = ProjectTranslation.objects.create(
                     is_manual_translation=is_manual_translation,
-                    language = language
+                    language = language,
+                    project=item
                 )
             if type == "organization":
                 db_translation = OrganizationTranslation.objects.create(
                     is_manual_translation=is_manual_translation,
-                    language = language
+                    language = language,
+                    organization=item
                 )
             if type == "user_profile":
                 db_translation = UserProfileTranslation.objects.create(
                     is_manual_translation=is_manual_translation,
-                    language = language
+                    language = language,
+                    user_profile=item
                 )
             for translation_keys in items_to_translate:
                 if is_manual_translation and translation_keys['key'] in passed_lang_translation and len(passed_lang_translation[translation_keys['key']])>0:
@@ -199,12 +202,9 @@ def edit_translation(
     language_code
 ):
     if 'is_manual_translation' in passed_translation:
-        db_translation.is_manual_translation = passed_translation['is_manual_translation']   
-    print("items to translate")
-    print(items_to_translate)                 
+        db_translation.is_manual_translation = passed_translation['is_manual_translation']                
     for translation_keys in items_to_translate:
         if translation_keys['key'] in passed_translation:
-            print("value of "+translation_keys['key']+" changed!")
             if len(passed_translation[translation_keys['key']]) == 0 or db_translation.is_manual_translation == False:
                 if translation_keys['key'] in changed_properties:
                     setattr(db_translation, translation_keys['translation_key'], translate_text(
@@ -214,7 +214,7 @@ def edit_translation(
                     )['translated_text'])
             else:
                 setattr(db_translation, translation_keys['translation_key'], passed_translation[translation_keys['key']])
-        elif translation_keys['key'] in changed_properties and db_translation.is_manual_translation == True:
+        elif translation_keys['key'] in changed_properties and db_translation.is_manual_translation == False:
             setattr(db_translation, translation_keys['translation_key'], translate_text(
                 getattr(item, translation_keys['key']), 
                 item.language.language_code, 

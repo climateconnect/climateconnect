@@ -14,9 +14,7 @@ from climateconnect_api.serializers.user import (
     UserProfileSitemapEntrySerializer, UserProfileStubSerializer)
 from climateconnect_api.utility.email_setup import (
     send_password_link, send_user_verification_email)
-from climateconnect_api.utility.translation import (edit_translations, get_translations,
-                                                    translate_text)
-from climateconnect_api.utility.user import create_user_profile_translation
+from climateconnect_api.utility.translation import (edit_translations)
 from climateconnect_main.utility.general import get_image_from_data_url
 from django.conf import settings
 from django.contrib.auth import authenticate, login
@@ -328,14 +326,14 @@ class EditUserProfile(APIView):
                 'translation_key': 'biography_translation'
             },
         ]
-
-        if 'translations' in request.data:
-            edit_translations(
-                items_to_translate,
-                request.data,
-                user_profile,
-                "user_profile"
-            )
+        if not 'translations' in request.data:
+            request.data['translations'] = {}
+        edit_translations(
+            items_to_translate,
+            request.data,
+            user_profile,
+            "user_profile"
+        )
                 
         serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)

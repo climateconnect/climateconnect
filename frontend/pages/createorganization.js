@@ -1,5 +1,6 @@
 import { makeStyles, Typography } from "@material-ui/core";
 import Cookies from "next-cookies";
+import Router from "next/router";
 import React, { useContext, useRef, useState } from "react";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../public/lib/imageOperations";
@@ -7,7 +8,7 @@ import {
   getLocationValue,
   indicateWrongLocation,
   isLocationValid,
-  parseLocation,
+  parseLocation
 } from "../public/lib/locationOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -223,7 +224,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       return;
     }
     setLoadingSubmit(true);
-    makeCreateOrganizationRequest(organizationToSubmit);
+    await makeCreateOrganizationRequest(organizationToSubmit);
   };
 
   const goToPreviousStep = () => {
@@ -240,7 +241,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       sourceLanguage,
       targetLanguage
     );
-    await makeCreateOrganizationRequest(organizationToSubmit);
+    await makeCreateOrganizationRequest(organizationToSubmit);    
   };
 
   const makeCreateOrganizationRequest = (organizationToSubmit) => {
@@ -251,9 +252,14 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       token: token,
       locale: locale,
     })
-      .then(function () {
+      .then(function (response) {
         setLoadingSubmit(false);
-        return;
+        Router.push({
+          pathname: "/organizations/" + response.data.url_slug,
+          query: {
+            message:texts.you_have_successfully_created_an_organization_you_can_add_members,
+          },
+        });return;
       })
       .catch(function (error) {
         console.log(error);

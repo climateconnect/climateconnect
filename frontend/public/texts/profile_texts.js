@@ -260,7 +260,7 @@ export default function getProfileTexts({ profile, locale }) {
           <a href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
             Datenschutzbestimmungen
           </a>
-          einverstanden.
+          {" "}einverstanden.
         </>
       ),
     },
