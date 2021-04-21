@@ -1,3 +1,7 @@
+from climateconnect_api.models.user import UserProfileTranslation
+from django.db.models.query_utils import Q
+from organization.models.translations import OrganizationTranslation, ProjectTranslation
+from climateconnect_api.models.language import Language
 import json
 
 import requests
@@ -124,3 +128,97 @@ def get_translations(texts, translations, source_language, keysToignoreForTransl
         'translations': finished_translations,
         'source_language': source_language
     }
+
+def edit_translations(
+    items_to_translate, 
+    data,
+    item,
+    type
+):
+    languages_to_translate_to = Language.objects.filter(~Q(id=item.language.id))
+    for language in languages_to_translate_to:
+        language_code = language.language_code
+        if language_code in data['translations']:
+            passed_lang_translation = data['translations'][language_code]
+        else:
+            passed_lang_translation = {}
+        if type == "project":
+            db_translations = ProjectTranslation.objects.filter(project=item, language=language)
+        if type == "organization":
+            db_translations = OrganizationTranslation.objects.filter(organization=item, language=language)
+        if type == "user_profile":
+            db_translations = UserProfileTranslation.objects.filter(user_profile=item, language=language)
+        # If there already is a translation for this project: edit it
+        if db_translations.exists():
+            edit_translation(
+                db_translations[0], 
+                passed_lang_translation, 
+                items_to_translate,
+                data,
+                item,
+                language_code,
+            )
+        else:
+            if 'is_manual_translation' in passed_lang_translation:
+                is_manual_translation = passed_lang_translation['is_manual_translation']
+            else:
+                is_manual_translation = False
+            if type == "project":
+                db_translation = ProjectTranslation.objects.create(
+                    is_manual_translation=is_manual_translation,
+                    language = language
+                )
+            if type == "organization":
+                db_translation = OrganizationTranslation.objects.create(
+                    is_manual_translation=is_manual_translation,
+                    language = language
+                )
+            if type == "user_profile":
+                db_translation = UserProfileTranslation.objects.create(
+                    is_manual_translation=is_manual_translation,
+                    language = language
+                )
+            for translation_keys in items_to_translate:
+                if is_manual_translation and translation_keys['key'] in passed_lang_translation and len(passed_lang_translation[translation_keys['key']])>0:
+                    setattr(db_translation, translation_keys['translation_key'], passed_lang_translation[translation_keys['key']])
+                else:
+                    setattr(db_translation, translation_keys['translation_key'], translate_text(
+                        getattr(item, translation_keys['key']), 
+                        item.language.language_code, 
+                        language_code
+                    )['translated_text'])
+
+            db_translation.save()
+
+def edit_translation(
+    db_translation, 
+    passed_translation, 
+    items_to_translate, 
+    changed_properties,
+    item,
+    language_code
+):
+    if 'is_manual_translation' in passed_translation:
+        db_translation.is_manual_translation = passed_translation['is_manual_translation']   
+    print("items to translate")
+    print(items_to_translate)                 
+    for translation_keys in items_to_translate:
+        if translation_keys['key'] in passed_translation:
+            print("value of "+translation_keys['key']+" changed!")
+            if len(passed_translation[translation_keys['key']]) == 0 or db_translation.is_manual_translation == False:
+                if translation_keys['key'] in changed_properties:
+                    setattr(db_translation, translation_keys['translation_key'], translate_text(
+                        getattr(item, translation_keys['key']), 
+                        item.language.language_code, 
+                        language_code
+                    )['translated_text'])
+            else:
+                setattr(db_translation, translation_keys['translation_key'], passed_translation[translation_keys['key']])
+        elif translation_keys['key'] in changed_properties and db_translation.is_manual_translation == True:
+            setattr(db_translation, translation_keys['translation_key'], translate_text(
+                getattr(item, translation_keys['key']), 
+                item.language.language_code, 
+                language_code
+            )['translated_text'])
+
+    db_translation.save()
