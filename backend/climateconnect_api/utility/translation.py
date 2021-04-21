@@ -84,7 +84,7 @@ def translate_text(text, original_lang, target_lang):
     }
 
 
-def get_translations(texts, translations, source_language, keysToignoreForTranslation, depth=0):
+def get_translations(texts, translations, source_language, keysToignoreForTranslation=[], depth=0):
     depth = int(depth)
     # if we started over the a different source language more than one time that means the user used different languages in different texts.
     if depth > 1:
