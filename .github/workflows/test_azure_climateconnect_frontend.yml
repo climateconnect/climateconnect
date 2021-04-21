@@ -33,6 +33,7 @@ jobs:
         SOCKET_URL: ${{ secrets.TEST_SOCKET_URL }}
         API_HOST: ${{ secrets.TEST_API_HOST }} 
         BASE_URL_HOST: ${{ secrets.TEST_BASE_URL_HOST }}
+        NEXT_PUBLIC_BASE_URL_HOST: ${{ secrets.TEST_BASE_URL_HOST }}
         LATEST_NEWSLETTER_LINK: ${{ secrets.LATEST_NEWSLETTER_LINK }}
         DONATION_CAMPAIGN_RUNNING: ${{ secrets.DONATION_CAMPAIGN_RUNNING }}
 
