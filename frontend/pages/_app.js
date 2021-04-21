@@ -23,6 +23,7 @@ export default function MyApp({
   pathName,
   donationGoal,
 }) {
+  console.log(process.env)
   const [stateInitialized, setStateInitialized] = React.useState(false);
   const [gaInitialized, setGaInitialized] = React.useState(false);
   const cookies = new Cookies();
