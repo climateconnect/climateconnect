@@ -12,7 +12,7 @@ def translate_user_profile(user_profile: UserProfile) -> None:
         texts['biography'] = user_profile.biography
 
     try:
-        translations = get_translations(texts, {}, 'en', [])
+        translations = get_translations(texts, {}, 'en')
     except ValueError as ve:
         print("Error getting translation for user {}".format(
             user_profile.user.first_name

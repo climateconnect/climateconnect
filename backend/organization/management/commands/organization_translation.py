@@ -14,7 +14,7 @@ def translate_organization(organization: Organization) -> None:
         texts['organ'] = organization.organ
     
     try:
-        translations = get_translations(texts, {}, 'en', [])
+        translations = get_translations(texts, {}, 'en')
     except ValueError as ve:
         print("Error getting translation for organization {}".format(organization.name))
         translations = None
