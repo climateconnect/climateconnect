@@ -130,16 +130,16 @@ class EditProjectSerializer(ProjectSerializer):
             return {}
 
     def get_name(self, obj):
-        return get_project_name(obj, obj.language.language_code)
+        return obj.name
     
     def get_short_description(self, obj):
-        return get_project_short_description(obj, obj.language.language_code)
+        return obj.short_description
     
     def get_description(self, obj):
-        return get_project_description(obj, obj.language.language_code)
+        return obj.description
 
     def get_helpful_connections(self, obj):
-        return get_project_helpful_connections(obj, obj.language.language_code)
+        return obj.helpful_connections
 
     class Meta(ProjectSerializer.Meta):
         fields = ProjectSerializer.Meta.fields + ('loc','translations')
