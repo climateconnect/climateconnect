@@ -14,7 +14,7 @@ from climateconnect_api.serializers.user import (
     UserProfileSitemapEntrySerializer, UserProfileStubSerializer)
 from climateconnect_api.utility.email_setup import (
     send_password_link, send_user_verification_email)
-from climateconnect_api.utility.translation import (get_translations,
+from climateconnect_api.utility.translation import (edit_translations, get_translations,
                                                     translate_text)
 from climateconnect_api.utility.user import create_user_profile_translation
 from climateconnect_main.utility.general import get_image_from_data_url
@@ -322,31 +322,20 @@ class EditUserProfile(APIView):
         
         user_profile.save()
 
+        items_to_translate = [
+            {
+                'key': 'biography',
+                'translation_key': 'biography_translation'
+            },
+        ]
+
         if 'translations' in request.data:
-            for language_code in request.data['translations'].keys():
-                language = Language.objects.get(language_code=language_code)
-                passed_lang_translation = request.data['translations'][language_code]
-                db_translations = UserProfileTranslation.objects.filter(user_profile=user_profile, language=language)
-                if db_translations.exists():
-                    db_translation = db_translations[0]
-                    if 'is_manual_translation' in passed_lang_translation:
-                        db_translation.is_manual_translation = passed_lang_translation['is_manual_translation']
-                    if 'bio' in passed_lang_translation:
-                        if len(passed_lang_translation['bio']) == 0 or db_translation.is_manual_translation == False:
-                            db_translation.biography_translation = translate_text(
-                                user_profile.biography, 
-                                user_profile.language.language_code, 
-                                language_code
-                            )['text']
-                        else:
-                            db_translation.biography_translation = passed_lang_translation['bio']
-                    db_translation.save()                   
-                else:                    
-                    UserProfileTranslation.objects.create(
-                        is_manual_translation=passed_lang_translation['is_manual_translation'],
-                        language = language,
-                        biography = passed_lang_translation['biography']
-                    )
+            edit_translations(
+                items_to_translate,
+                request.data,
+                user_profile,
+                "user_profile"
+            )
                 
         serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -11,7 +11,7 @@ from climateconnect_api.models import Role, UserProfile
 from climateconnect_api.models.language import Language
 from climateconnect_api.pagination import MembersPagination
 from climateconnect_api.serializers.user import UserProfileStubSerializer
-from climateconnect_api.utility.translation import get_translations, translate_text
+from climateconnect_api.utility.translation import edit_translations, get_translations, translate_text
 from climateconnect_main.utility.general import get_image_from_data_url
 
 from hubs.models.hub import Hub
@@ -298,53 +298,32 @@ class OrganizationAPIView(APIView):
                     }, status=status.HTTP_404_NOT_FOUND)
                 organization.parent_organization = parent_organization
 
+        items_to_translate = [
+            {
+                'key': 'name',
+                'translation_key': 'name_translation'
+            },
+            {
+                'key': 'short_description',
+                'translation_key': 'short_description_translation'
+            },
+            {
+                'key': 'school',
+                'translation_key': 'school_translation'
+            },
+            {
+                'key': 'organ',
+                'translation_key': 'organ_translation'
+            }
+        ]
+
         if 'translations' in request.data:
-            for language_code in request.data['translations'].keys():
-                language = Language.objects.get(language_code=language_code)
-                passed_lang_translation = request.data['translations'][language_code]
-                db_translations = OrganizationTranslation.objects.filter(organization=organization, language=language)
-                items_to_translate = [
-                    {
-                        'key': 'name',
-                        'translation_key': 'name_translation'
-                    },
-                    {
-                        'key': 'short_description',
-                        'translation_key': 'short_description_translation'
-                    },
-                    {
-                        'key': 'school',
-                        'translation_key': 'school_translation'
-                    },
-                    {
-                        'key': 'organ',
-                        'translation_key': 'organ_translation'
-                    }
-                ]
-                if db_translations.exists():
-                    db_translation = db_translations[0]
-                    if 'is_manual_translation' in passed_lang_translation:
-                        db_translation.is_manual_translation = passed_lang_translation['is_manual_translation']                    
-                    for item in items_to_translate:
-                        if item['key'] in passed_lang_translation:
-                            if len(passed_lang_translation[item['key']]) == 0 or db_translation.is_manual_translation == False:
-                                db_translation[item['translation_key']] = translate_text(
-                                    getattr(organization, item['key']), 
-                                    organization.language.language_code, 
-                                    language_code
-                                )['text']
-                            else:
-                                setattr(db_translation, item['translation_key'], passed_lang_translation[item['key']])
-                    db_translation.save()                   
-                else:                    
-                    db_translation = OrganizationTranslation.objects.create(
-                        is_manual_translation=passed_lang_translation['is_manual_translation'],
-                        language = language
-                    )
-                    for item in items_to_translate:
-                        if item['key'] in passed_lang_translation:
-                            setattr(db_translation, item['translation_key'], passed_lang_translation[item['key']])
-                    db_translation.save()
+            edit_translations(
+                items_to_translate,
+                request.data,
+                organization,
+                "organization"
+            )  
 
         old_organization_taggings = OrganizationTagging.objects.filter(
             organization=organization

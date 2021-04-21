@@ -135,8 +135,6 @@ export default function TranslateProject({
     }
   };
 
-  console.log(projectData?.helpful_connections?.length > 0);
-
   return (
     <Container className={classes.root}>
       <form onSubmit={onSubmit}>

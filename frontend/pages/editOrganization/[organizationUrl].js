@@ -26,14 +26,13 @@ export async function getServerSideProps(ctx) {
     props: nullifyUndefinedValues({
       organization: organization,
       tagOptions: tagOptions,
-    })
+    }),
   };
 }
 
 //This route should only be accessible to admins of the organization
 export default function EditOrganizationPage({ organization, tagOptions }) {
   const { locale } = useContext(UserContext);
-  console.log(organization)
   const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata(locale);
   const [errorMessage, setErrorMessage] = useState("");
@@ -59,10 +58,9 @@ export default function EditOrganizationPage({ organization, tagOptions }) {
     window.scrollTo(0, 0);
   };
 
-
   return (
     <WideLayout title={organization ? organization.name : texts.not_found_error}>
-      <EditOrganizationRoot 
+      <EditOrganizationRoot
         organization={organization}
         tagOptions={tagOptions}
         infoMetadata={infoMetadata}

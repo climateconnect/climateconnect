@@ -1,3 +1,4 @@
+from climateconnect_api.utility.translation import edit_translation, edit_translations, translate_text
 import logging
 import traceback
 
@@ -304,7 +305,6 @@ class ProjectAPIView(APIView):
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
-        
         # Author: Dip
         # Code formatting here. So fields are just pass through so combing them and using setattr method insted.
         pass_through_params = ['collaborators_welcome', 'description', 'helpful_connections','short_description', 'website']
@@ -314,7 +314,6 @@ class ProjectAPIView(APIView):
 
         if 'name' in request.data and request.data['name'] != project.name:
             project.name = request.data['name']
-            project.url_slug = request.data['name'] + str(project.id)
 
         if 'skills' in request.data:
             for skill in project.skills.all():
@@ -387,41 +386,36 @@ class ProjectAPIView(APIView):
                 logger.error("Passed parent organization id {} does not exist")
             
             project_parents.parent_organization = organization
-            project_parents.save()
-
+            project_parents.save()      
+        
         project.save()
 
-        try:
-            translations_object = get_project_translations(request.data)     
-        except ValueError as ve:
-            logger.error("TranslationFailed: Error translating texts, {}".format(ve))
-            translations_object = None
+        items_to_translate = [
+            {
+                'key': 'name',
+                'translation_key': 'name_translation'
+            },
+            {
+                'key': 'short_description',
+                'translation_key': 'short_description_translation'
+            },
+            {
+                'key': 'description',
+                'translation_key': 'description_translation'
+            },
+            {
+                'key': 'helpful_connections',
+                'translation_key': 'helpful_connections_translation'
+            }
+        ]
 
-        if translations_object:
-            source_language = Language.objects.get(
-                language_code=translations_object['source_language']
-            )
-            translations = translations_object['translations']
-            for language in translations_object:
-                if not language == source_language.language_code:
-                    texts = translations[language]
-                    try:
-                        language_object = Language.objects.get(language_code=language)                    
-                        translation = ProjectTranslation.objects.create(
-                            project=project, 
-                            language=language_object,
-                            name_translation=texts['name'], 
-                            short_description_translation=texts['short_description']                
-                        )
-                        if 'description' in texts:
-                            translation.description_translation = texts['description']
-                        if 'helpful_connections' in texts:
-                            translation.helpful_connections_translation = texts['helpful_connections']
-                        translation.save()
-                    except Language.DoesNotExist:
-                        logger.error(
-                            "A language with language_code {} does not exist".format(language)
-                        )
+        if 'translations' in request.data:
+            edit_translations(
+                items_to_translate,
+                request.data,
+                project,
+                "project"
+            )            
 
         return Response({
             'message': 'Project {} successfully updated'.format(project.name),

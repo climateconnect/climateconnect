@@ -6,7 +6,10 @@ import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import { arraysEqual } from "../../../public/lib/generalOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
-import { getTranslationsFromObject } from "../../../public/lib/translationOperations";
+import {
+  getTranslationsFromObject,
+  getTranslationsWithoutRedundantKeys,
+} from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
 import EditAccountPage from "../account/EditAccountPage";
 import UserContext from "../context/UserContext";
@@ -28,17 +31,17 @@ export default function EditOrganizationRoot({
   locationInputRef,
   handleSetLocationOptionsOpen,
   errorMessage,
-  initialTranslations
-}){
-  const classes = useStyles()
-  const cookies = new Cookies()
+  initialTranslations,
+}) {
+  const classes = useStyles();
+  const cookies = new Cookies();
   const token = cookies.get("token");
-  const { locale, locales } = useContext(UserContext)
-  const STEPS = ["edit_organization", "edit_translations"];  
+  const { locale, locales } = useContext(UserContext);
+  const STEPS = ["edit_organization", "edit_translations"];
   const texts = getTexts({ page: "organization", locale: locale });
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
 
-  const [editedOrganization, setEditedOrganization] = useState({ ...organization })
+  const [editedOrganization, setEditedOrganization] = useState({ ...organization });
   const [step, setStep] = useState(STEPS[0]);
   const [translations, setTranslations] = useState(
     initialTranslations ? getTranslationsFromObject(initialTranslations, "organization") : {}
@@ -102,17 +105,17 @@ export default function EditOrganizationRoot({
       editedOrg.language = sourceLanguage;
       const payload = await parseForRequest(getChanges(editedOrg, organization));
       if (isTranslationsStep)
-      payload.translations = getTranslationsWithoutRedundantKeys(
-        getTranslationsFromObject(initialTranslations, "organization"),
-        translations
-      );
+        payload.translations = getTranslationsWithoutRedundantKeys(
+          getTranslationsFromObject(initialTranslations, "organization"),
+          translations
+        );
       apiRequest({
         method: "patch",
         url: "/api/organizations/" + encodeURI(organization.url_slug) + "/",
         payload: payload,
         token: token,
         locale: locale,
-        shouldThrowError: true
+        shouldThrowError: true,
       })
         .then(function () {
           Router.push({
@@ -142,9 +145,9 @@ export default function EditOrganizationRoot({
   };
 
   const handleTranslationsSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
     await saveChanges(editedOrganization, true);
-  }
+  };
 
   return (
     <>
@@ -193,7 +196,7 @@ export default function EditOrganizationRoot({
         <PageNotFound itemName={texts.organization} />
       )}
     </>
-  )
+  );
 }
 
 const parseForRequest = async (org) => {
@@ -234,20 +237,4 @@ const verifyChanges = (newOrg, texts) => {
     }
   }
   return true;
-};
-
-const getTranslationsWithoutRedundantKeys = (oldTranslations, newTranslations) => {
-  const finalTranslationsObject = {};
-  for (const language of Object.keys(newTranslations)) {
-    for (const key of Object.keys(newTranslations[language])) {
-      if (newTranslations[language][key] !== oldTranslations[language][key]) {
-        if (!finalTranslationsObject[language]) {
-          finalTranslationsObject[language] = { [key]: newTranslations[language][key] };
-        } else {
-          finalTranslationsObject[language][key] = newTranslations[language][key];
-        }
-      }
-    }
-  }
-  return finalTranslationsObject;
 };

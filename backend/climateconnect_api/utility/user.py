@@ -23,4 +23,4 @@ def get_user_profile_biography(user_profile: UserProfile, language_code: str) ->
             language__language_code=language_code
         ).biography_translation
     
-    return user_profile.short_description
+    return user_profile.biography

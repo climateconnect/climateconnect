@@ -5,7 +5,10 @@ import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { blobFromObjectUrl, getImageUrl } from "../../../public/lib/imageOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
-import { getTranslationsFromObject } from "../../../public/lib/translationOperations";
+import {
+  getTranslationsFromObject,
+  getTranslationsWithoutRedundantKeys,
+} from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
 import EditAccountPage from "../account/EditAccountPage";
 import UserContext from "../context/UserContext";
@@ -229,22 +232,6 @@ const getProfileWithoutRedundantOptions = async (user, newProfile) => {
   if (finalProfile.background_image)
     finalProfile.background_image = await blobFromObjectUrl(finalProfile.background_image);
   return finalProfile;
-};
-
-const getTranslationsWithoutRedundantKeys = (oldTranslations, newTranslations) => {
-  const finalTranslationsObject = {};
-  for (const language of Object.keys(newTranslations)) {
-    for (const key of Object.keys(newTranslations[language])) {
-      if (newTranslations[language][key] !== oldTranslations[language][key]) {
-        if (!finalTranslationsObject[language]) {
-          finalTranslationsObject[language] = { [key]: newTranslations[language][key] };
-        } else {
-          finalTranslationsObject[language][key] = newTranslations[language][key];
-        }
-      }
-    }
-  }
-  return finalTranslationsObject;
 };
 
 function arraysEqual(_arr1, _arr2) {

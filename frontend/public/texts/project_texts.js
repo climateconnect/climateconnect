@@ -793,7 +793,16 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de: "Team hinzufügen",
     },
     translate_project_intro: {
-      en: "",
+      en: (
+        <>
+          Because climate change is a global crisis it is important to us that projects are
+          available in multiple languages. So far we support german and english.
+          <br />
+          If you click on {"automatically translate"} you can still edit the text afterwards. If you
+          know the language you can of course also translate everything yourself. When you click on
+          publish all empty fields will be translated automatically.
+        </>
+      ),
       de: (
         <>
           Da der Klimawandel eine globale Krise ist, ist es uns wichtig, dass alle Projekte auch auf

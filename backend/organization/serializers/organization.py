@@ -67,7 +67,6 @@ class EditOrganizationSerializer(OrganizationSerializer):
         translations = OrganizationTranslation.objects.filter(organization=obj)
         if translations.exists():
             serializer = OrganizationTranslationSerializer(translations, many=True)
-            print(serializer.data)
             return serializer.data
         else:
             return {}
