@@ -225,7 +225,7 @@ export default function TranslateTexts({
         <div className={classes.translationBlocksHeader}>
           {textsToTranslate.map((textObj, index) => {
             if (textObj.isArray){
-              return translations[targetLanguage][textObj.textKey].map((entry, index) => (
+              return data[textObj.textKey].map((entry, index) => (
                 <TranslationBlock
                   key={index}
                   data={data}
