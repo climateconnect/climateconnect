@@ -8,7 +8,7 @@ import {
   TextField,
   Tooltip,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -21,7 +21,7 @@ import {
   getCompressedJPG,
   getImageDialogHeight,
   getResizedImage,
-  whitenTransparentPixels,
+  whitenTransparentPixels
 } from "../../../public/lib/imageOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
