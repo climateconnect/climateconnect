@@ -9,6 +9,7 @@ import {
   getStatusOptions,
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
+import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import EditProjectRoot from "../../src/components/editProject/EditProjectRoot";
@@ -50,7 +51,7 @@ export async function getServerSideProps(ctx) {
     getProjectTagsOptions(null, ctx.locale),
   ]);
   return {
-    props: {
+    props: nullifyUndefinedValues({
       project: project,
       members: members,
       skillsOptions: skillsOptions,
@@ -58,7 +59,7 @@ export async function getServerSideProps(ctx) {
       statusOptions: statusOptions,
       tagsOptions: tagsOptions,
       token: token,
-    },
+    }),
   };
 }
 
@@ -152,6 +153,7 @@ export default function EditProjectPage({
           user={user}
           user_role={user_role}
           handleSetErrorMessage={handleSetErrorMessage}
+          initialTranslations={project.translations}
         />
       </WideLayout>
     );

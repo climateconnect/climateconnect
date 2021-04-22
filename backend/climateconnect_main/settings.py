@@ -105,11 +105,12 @@ CORS_ORIGIN_WHITELIST = [
     "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
     "https://alpha.climateconnect.earth",
     "https://climateconnect.earth",
+    "https://test3425.climateconnect.earth",
     "https://www.climateconnect.earth",
     "https://www.cc-test-domain.com",
     "https://cc-test-domain.com",
     "http://cc-test-domain.com",
-    "https://climateconnect-frontend.azurewebsites.net"
+    "https://test-climateconnect-frontend.azurewebsites.net"
 ]
 APPEND_SLASH = False
 

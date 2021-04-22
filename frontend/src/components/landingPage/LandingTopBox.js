@@ -205,7 +205,7 @@ export default function LandingTopBox() {
         <div className={classes.textContainer}>
           <Typography className={classes.titleTextContainer} component="h1">
             <div className={classes.titleTextFirstLine}>
-              <AlternatingText classes={classes} mobile={isNarrowScreen} /> {texts.climate_projects}
+              <AlternatingText classes={classes} mobile={isNarrowScreen} />
             </div>
             {texts.from_around_the_world}
           </Typography>

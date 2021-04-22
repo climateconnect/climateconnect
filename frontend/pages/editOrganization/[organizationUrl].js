@@ -26,7 +26,7 @@ export async function getServerSideProps(ctx) {
     props: nullifyUndefinedValues({
       organization: organization,
       tagOptions: tagOptions,
-    })
+    }),
   };
 }
 
@@ -59,10 +59,9 @@ export default function EditOrganizationPage({ organization, tagOptions }) {
     window.scrollTo(0, 0);
   };
 
-
   return (
     <WideLayout title={organization ? organization.name : texts.not_found_error}>
-      <EditOrganizationRoot 
+      <EditOrganizationRoot
         organization={organization}
         tagOptions={tagOptions}
         infoMetadata={infoMetadata}

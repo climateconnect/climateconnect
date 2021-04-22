@@ -52,6 +52,10 @@ class OrganizationSerializer(serializers.ModelSerializer):
 class EditOrganizationSerializer(OrganizationSerializer):
     location = serializers.SerializerMethodField()
     translations = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
+    organ = serializers.SerializerMethodField()
+    school = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
     def get_location(self, obj):
         if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
             return {
@@ -67,10 +71,17 @@ class EditOrganizationSerializer(OrganizationSerializer):
         translations = OrganizationTranslation.objects.filter(organization=obj)
         if translations.exists():
             serializer = OrganizationTranslationSerializer(translations, many=True)
-            print(serializer.data)
             return serializer.data
         else:
             return {}
+    def get_short_description(self, obj):
+        return obj.short_description
+    def get_organ(self, obj):
+        return obj.organ
+    def get_school(self, obj):
+        return obj.school
+    def get_name(self, obj):
+        return obj.name
     class Meta(OrganizationSerializer.Meta):
         fields = OrganizationSerializer.Meta.fields + ('location', 'translations')
 

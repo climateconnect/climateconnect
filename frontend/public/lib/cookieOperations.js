@@ -27,6 +27,16 @@ export function getCookieProps(expiry) {
     expires: new Date(expiry),
     secure: !develop,
   };
-  if (!develop) cookieProps.domain = "." + process.env.API_HOST;
+  console.log("getting cookie props")
+  console.log(expiry)
+  console.log(develop)
+  console.log(process.env.BASE_URL_HOST)
+  console.log(process.env.NEXT_PUBLIC_BASE_URL_HOST)
+
+  if (!develop) {
+    console.log("this is not develop!")
+    cookieProps.domain = "." + process.env.BASE_URL_HOST;
+  }
+  console.log(cookieProps)
   return cookieProps;
 }

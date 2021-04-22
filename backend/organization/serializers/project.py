@@ -1,3 +1,5 @@
+from organization.serializers.translation import ProjectTranslationSerializer
+from organization.models.translations import ProjectTranslation
 from rest_framework.fields import SerializerMethodField
 from organization.serializers.status import ProjectStatusSerializer
 from organization.utility.status import get_project_status
@@ -34,6 +36,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
     loc = serializers.SerializerMethodField()
     helpful_connections = serializers.SerializerMethodField()
+    language = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -47,7 +50,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             'skills', 'helpful_connections',
             'project_parents', 'tags', 
             'created_at', 'collaborating_organizations', 'is_draft',
-            'website', 'number_of_followers'
+            'website', 'number_of_followers', 'language'
         )
         read_only_fields = ['url_slug']
 
@@ -96,9 +99,17 @@ class ProjectSerializer(serializers.ModelSerializer):
         serializer = ProjectStatusSerializer(obj.status, many=False)
         return serializer.data['name']
 
+    def get_language(self, obj):
+        return obj.language.language_code
+
 
 class EditProjectSerializer(ProjectSerializer):
     loc = serializers.SerializerMethodField()
+    translations = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
+    helpful_connections = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
     def get_loc(self, obj):
         if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
             return {
@@ -109,8 +120,29 @@ class EditProjectSerializer(ProjectSerializer):
             if obj.loc == None:
                 return None
             return obj.loc.name
+
+    def get_translations(self, obj):
+        translations = ProjectTranslation.objects.filter(project=obj)
+        if translations.exists():
+            serializer = ProjectTranslationSerializer(translations, many=True)
+            return serializer.data
+        else:
+            return {}
+
+    def get_name(self, obj):
+        return obj.name
+    
+    def get_short_description(self, obj):
+        return obj.short_description
+    
+    def get_description(self, obj):
+        return obj.description
+
+    def get_helpful_connections(self, obj):
+        return obj.helpful_connections
+
     class Meta(ProjectSerializer.Meta):
-        fields = ProjectSerializer.Meta.fields + ('loc',)
+        fields = ProjectSerializer.Meta.fields + ('loc','translations')
 
 
 class ProjectParentsSerializer(serializers.ModelSerializer):

@@ -1,6 +1,7 @@
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
-import { apiRequest } from "../public/lib/apiOperations";
+import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
+import { nullifyUndefinedValues } from "../public/lib/profileOperations";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -10,6 +11,11 @@ import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
 
 export async function getServerSideProps(ctx) {
   const { token } = Cookies(ctx);
+  if (ctx.req && !token) {
+    const texts = getTexts({ page: "project", locale: ctx.locale });
+    const message = texts.please_log_in_or_sign_up_to_share_a_project;
+    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
+  }
   const [
     availabilityOptions,
     userOrganizations,
@@ -26,7 +32,7 @@ export async function getServerSideProps(ctx) {
     getStatusOptions(token, ctx.locale),
   ]);
   return {
-    props: {
+    props: nullifyUndefinedValues({
       availabilityOptions: availabilityOptions,
       userOrganizations: userOrganizations,
       categoryOptions: categoryOptions,
@@ -34,7 +40,7 @@ export async function getServerSideProps(ctx) {
       rolesOptions: rolesOptions,
       statusOptions: statusOptions,
       token: token,
-    },
+    }),
   };
 }
 

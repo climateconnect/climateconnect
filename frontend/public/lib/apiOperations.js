@@ -7,7 +7,7 @@ export async function apiRequest({
   url,
   token,
   payload,
-  shouldThrowError,
+  shouldThrowError=true,
   locale,
   headers,
 }) {
@@ -26,6 +26,7 @@ export async function apiRequest({
       const response = await axios[method](process.env.API_URL + url, payload, config);
       return response;
     } catch (error) {
+      console.log(error)
       console.log(error?.response);
       if (shouldThrowError) throw error;
     }

@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
   topButtonRow: {
     display: "inline-flex",
+    alignItems: "flex-start",
     width: "100%",
     justifyContent: "center",
     marginTop: theme.spacing(2),
@@ -52,6 +53,13 @@ const useStyles = makeStyles((theme) => ({
   translationLoader: {
     color: "white",
   },
+  submitOptions: {
+    display: "flex",
+    flexDirection: "column"
+  },
+  saveAsDraftButton: {
+    marginTop: theme.spacing(1)
+  }
 }));
 
 // @textsToTranslate: Metadata object showing which keys of the data object are translateable.
@@ -69,6 +77,9 @@ export default function TranslateTexts({
   arrayTranslationKeys,
   introTextKey,
   submitButtonText,
+  saveAsDraft,
+  loadingSubmit,
+  loadingSubmitDraft
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -137,6 +148,7 @@ export default function TranslateTexts({
       translations[targetLanguage].is_manual_translation
     ) {
       setConfirmDialogOpen(true);
+      return
     }
     setWaitingForTranslation(true);
     try {
@@ -176,9 +188,9 @@ export default function TranslateTexts({
 
   const onConfirmDialogClose = async (confirmed) => {
     setConfirmDialogOpen(false);
-    if (confirmed) await automaticallyTranslateTexts(true);
+    if (confirmed) 
+      await automaticallyTranslateTexts(true);
   };
-
   return (
     <Container className={classes.root}>
       <form onSubmit={onSubmit}>
@@ -193,7 +205,8 @@ export default function TranslateTexts({
             variant="contained"
             color="primary"
             className={classes.translateButton}
-            onClick={automaticallyTranslateTexts}
+            onClick={() => automaticallyTranslateTexts()}
+            disabled={waitingForTranslation}
           >
             {waitingForTranslation ? (
               <CircularProgress className={classes.translationLoader} size={23} />
@@ -201,26 +214,62 @@ export default function TranslateTexts({
               texts.automatically_translate
             )}
           </Button>
-          <Button variant="contained" color="primary" type="submit">
-            {submitButtonText ? submitButtonText : texts.skip_and_publish}
-          </Button>
+          <div className={classes.submitOptions}>
+            <Button variant="contained" color="primary" type="submit" disabled={loadingSubmit || loadingSubmitDraft}>
+              {
+                loadingSubmit ? (
+                  <CircularProgress className={classes.translationLoader} size={23} />
+                ) : (submitButtonText ? submitButtonText : texts.skip_and_publish)
+              }
+            </Button>
+            {saveAsDraft &&(
+              <Button variant="contained" disabled={loadingSubmit || loadingSubmitDraft} onClick={saveAsDraft} className={classes.saveAsDraftButton}>
+                {
+                  loadingSubmitDraft ? (
+                    <CircularProgress className={classes.translationLoader} size={23} />
+                  ) : texts.save_as_draft                  
+                }
+              </Button>  
+            )} 
+          </div>
         </div>
         <div className={classes.translationBlocksHeader}>
-          {textsToTranslate.map((textObj, index) => (
-            <TranslationBlock
-              key={index}
-              data={data}
-              headlineTextKey={textObj.headlineTextKey}
-              dataKey={textObj.textKey}
-              rows={textObj.rows}
-              handleOriginalTextChange={handleOriginalTextChange}
-              handleTranslationChange={handleTranslationChange}
-              translations={translations}
-              targetLanguage={targetLanguage}
-              texts={texts}
-              targetLanguageTexts={targetLanguageTexts}
-            />
-          ))}
+          {textsToTranslate.map((textObj, index) => {
+            if (textObj.isArray){
+              return data[textObj.textKey].map((entry, index) => (
+                <TranslationBlock
+                  key={index}
+                  data={data}
+                  headlineTextKey={textObj.headlineTextKey}
+                  dataKey={textObj.textKey}
+                  indexInArray={index}
+                  isInArray
+                  rows={textObj.rows}
+                  handleOriginalTextChange={handleOriginalTextChange}
+                  handleTranslationChange={handleTranslationChange}
+                  translations={translations}
+                  targetLanguage={targetLanguage}
+                  texts={texts}
+                  targetLanguageTexts={targetLanguageTexts}
+                />
+              ));
+            }else
+              return (
+                <TranslationBlock
+                  key={index}
+                  data={data}
+                  headlineTextKey={textObj.headlineTextKey}
+                  dataKey={textObj.textKey}
+                  rows={textObj.rows}
+                  handleOriginalTextChange={handleOriginalTextChange}
+                  handleTranslationChange={handleTranslationChange}
+                  translations={translations}
+                  targetLanguage={targetLanguage}
+                  texts={texts}
+                  targetLanguageTexts={targetLanguageTexts}
+                />
+              );
+          })}
         </div>
       </form>
       <ConfirmDialog
@@ -255,6 +304,16 @@ function TranslationBlock({
   const flatDataKey = dataKey.includes(".")
     ? dataKey.split(".")[dataKey.split(".").length - 1]
     : dataKey;
+
+  const changeOriginalText = (newValue, dataKey) => {
+    if(!isInArray){
+      handleOriginalTextChange(newValue, dataKey)
+    } else{
+      const newArrayValue = data[dataKey]
+      newArrayValue[indexInArray] = newValue
+      handleOriginalTextChange(newArrayValue, dataKey)
+    }
+  }
   return (
     <div className={classes.translationBlock}>
       <TranslationBlockElement
@@ -265,7 +324,7 @@ function TranslationBlock({
           isInArray ? getNestedValue(data, dataKey)[indexInArray] : getNestedValue(data, dataKey)
         }
         handleContentChange={(event) => {
-          handleOriginalTextChange(event.target.value, dataKey);
+          changeOriginalText(event.target.value, dataKey);
         }}
       />
       <TranslationBlockElement

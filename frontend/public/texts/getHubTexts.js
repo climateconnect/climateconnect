@@ -7,9 +7,21 @@ export default function getHubTexts({ hubName }) {
       en: "Search for climate solutions in the " + hubName + " sector",
       de: "Durchsuche Klimaschutzprojekte im Bereich " + hubName,
     },
+    search_projects_in_location: {
+      en: "Search climate projects in " + hubName,
+      de: "Suche Klimaprojekte in " + hubName,
+    },
     search_for_organizations_in_sector: {
       en: "Search for climate organizations in the " + hubName + " sector",
       de: "Durchsuche Klimaschutzorganisationen im Bereich " + hubName,
+    },
+    search_organization_in_location: {
+      en: "Search organizations in " + hubName,
+      de: "Suche Organisationen in " + hubName,
+    },
+    search_profiles_in_location: {
+      en: "Search climate protectors in " + hubName,
+      de: "Suche Klimaschützer in " + hubName,
     },
     more_info_about_hub_coming_soon: {
       en:
@@ -92,6 +104,10 @@ export default function getHubTexts({ hubName }) {
       arbeiten, indem du die Hubs besuchst. Verschaffe dir damit einen Überblick über alle wichtigen 
       Handlungsfelder im Kampf gegen den Klimawandel.`,
     },
+    click_here_to_minimize_info: {
+      en: "Click here to minimize the info about the hub",
+      de: "Klicke hier, um den Info-Bereich der Hub auszublenden"
+    }
   };
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };
   if (hubName === "Food") return { ...generalHubTexts, ...getFoodHubDescription() };

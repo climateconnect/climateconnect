@@ -1,3 +1,4 @@
+from rest_framework.fields import SerializerMethodField
 from climateconnect_api.utility.user import get_user_profile_biography
 from django.utils.translation import get_language
 from climateconnect_api.serializers.translation import UserProfileTranslationSerializer
@@ -90,6 +91,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class EditUserProfileSerializer(UserProfileSerializer):
     location = serializers.SerializerMethodField()
     translations = serializers.SerializerMethodField()
+    biography = serializers.SerializerMethodField()
     def get_location(self, obj):
         if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
             return {
@@ -108,6 +110,9 @@ class EditUserProfileSerializer(UserProfileSerializer):
             return serializer.data
         else:
             return {}
+
+    def get_biography(self, obj):
+        return obj.biography
     class Meta(UserProfileSerializer.Meta):
         fields = UserProfileSerializer.Meta.fields + ('location', 'translations')
 

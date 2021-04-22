@@ -1,6 +1,6 @@
 import { makeStyles, Typography } from "@material-ui/core";
 import NextCookies from "next-cookies";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../public/lib/apiOperations";
 import { buildUrlEndingFromFilters } from "../../public/lib/filterOperations";
@@ -9,7 +9,7 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo,
+  membersWithAdditionalInfo
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { parseData } from "../../public/lib/parsingOperations";
@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+//potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hubUrl;
   const { token } = NextCookies(ctx);
@@ -67,6 +68,7 @@ export async function getServerSideProps(ctx) {
   return {
     props: {
       hubUrl: hubUrl,
+      isLocationHub: hubData.hub_type === "location hub",
       name: hubData.name,
       headline: hubData.headline,
       subHeadline: hubData.sub_headline,
@@ -83,8 +85,8 @@ export async function getServerSideProps(ctx) {
         skills: skills,
         project_statuses: project_statuses,
       },
-    },
-  };
+    }
+  }
 }
 
 export default function Hub({
@@ -100,10 +102,11 @@ export default function Hub({
   filterChoices,
   subHeadline,
   image_attribution,
+  isLocationHub,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "hub", locale: locale });
+  const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("token");
   const [filters, setFilters] = useState({
     projects: {},
@@ -116,6 +119,13 @@ export default function Hub({
   };
   const contentRef = useRef(null);
 
+  const [initialMembers, setInitialMembers] = useState(null)
+  useEffect(async function(){
+    if(isLocationHub){
+      setInitialMembers(await getMembers({page: 1, token: token, hubUrl: hubUrl, locale: locale}))
+    }
+  }, [])
+
   //Refs and state for tutorial
   const hubQuickInfoRef = useRef(null);
   const hubProjectsButtonRef = useRef(null);
@@ -127,8 +137,9 @@ export default function Hub({
   };
 
   const customSearchBarLabels = {
-    projects: texts.search_for_solutions_in_sector,
-    organizations: texts.search_for_organizations_in_sector,
+    projects: isLocationHub ? texts.search_projects_in_location : texts.search_for_solutions_in_sector,
+    organizations: isLocationHub ? texts.search_organization_in_location : texts.search_for_organizations_in_sector,
+    profiles: texts.search_profiles_in_location
   };
 
   const loadMoreData = async (type, page, urlEnding) => {
@@ -216,12 +227,17 @@ export default function Hub({
     }
   };
 
+  const closeHubHeaderImage = (e) => {
+    e.preventDefault()
+    console.log("closing hub header image")
+  }
+
   return (
     <WideLayout title={headline} fixedHeader headerBackground="#FFF">
       <div className={classes.contentUnderHeader}>
         <NavigationSubHeader hubName={name} />
         {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
-        <HubHeaderImage image={getImageUrl(image)} source={image_attribution} />
+        <HubHeaderImage image={getImageUrl(image)} source={image_attribution} onClose={closeHubHeaderImage}/>
         <HubContent
           hubQuickInfoRef={hubQuickInfoRef}
           headline={headline}
@@ -232,18 +248,20 @@ export default function Hub({
           detailledInfo={<HubDescription hub={hubUrl} texts={texts} />}
           subHeadline={subHeadline}
           hubProjectsButtonRef={hubProjectsButtonRef}
+          isLocationHub={isLocationHub}
         />
         <div className={classes.contentRefContainer}>
           <div ref={contentRef} className={classes.contentRef} />
-          <BrowseExplainer />
+          {!isLocationHub && <BrowseExplainer />}
           <BrowseContent
             initialProjects={initialProjects}
             initialOrganizations={initialOrganizations}
+            initialMembers={initialMembers}
             filterChoices={filterChoices}
             loadMoreData={loadMoreData}
             applyNewFilters={applyNewFilters}
             applySearch={applySearch}
-            hideMembers
+            hideMembers={!isLocationHub}
             customSearchBarLabels={customSearchBarLabels}
             handleSetErrorMessage={handleSetErrorMessage}
             errorMessage={errorMessage}
@@ -276,6 +294,7 @@ const getHubData = async (url_slug, locale) => {
       method: "get",
       url: `/api/hubs/${url_slug}/`,
       locale: locale,
+      shouldThrowError: true
     });
     return resp.data;
   } catch (err) {
@@ -300,6 +319,17 @@ async function getProjects({ page, token, urlEnding, hubUrl, locale }) {
 async function getOrganizations({ page, token, urlEnding, hubUrl, locale }) {
   return await getDataFromServer({
     type: "organizations",
+    page: page,
+    token: token,
+    urlEnding: urlEnding,
+    hubUrl: hubUrl,
+    locale: locale,
+  });
+}
+
+async function getMembers({ page, token, urlEnding, hubUrl, locale }) {
+  return await getDataFromServer({
+    type: "members",
     page: page,
     token: token,
     urlEnding: urlEnding,

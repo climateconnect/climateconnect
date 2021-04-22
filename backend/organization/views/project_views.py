@@ -1,3 +1,4 @@
+from climateconnect_api.utility.translation import edit_translation, edit_translations, translate_text
 import logging
 import traceback
 
@@ -85,13 +86,31 @@ class ListProjectsView(ListAPIView):
     def get_queryset(self):
         projects = Project.objects.filter(is_draft=False,is_active=True)
         if 'hub' in self.request.query_params:
-            project_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
-            project_category_ids = list(map(lambda c: c.id, project_category))
-            project_tags = ProjectTags.objects.filter(id__in=project_category_ids)
-            project_tags_with_children = ProjectTags.objects.filter(Q(parent_tag__in=project_tags) | Q(id__in=project_tags))
-            projects = projects.filter(
-                tag_project__project_tag__in=project_tags_with_children
-            ).distinct()
+            hub = Hub.objects.filter(url_slug=self.request.query_params['hub'])
+            if hub.exists():
+                if hub[0].hub_type == Hub.SECTOR_HUB_TYPE:
+                    project_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
+                    project_category_ids = list(map(lambda c: c.id, project_category))
+                    project_tags = ProjectTags.objects.filter(id__in=project_category_ids)
+                    project_tags_with_children = ProjectTags.objects.filter(Q(parent_tag__in=project_tags) | Q(id__in=project_tags))
+                    projects = projects.filter(
+                        tag_project__project_tag__in=project_tags_with_children
+                    ).distinct()
+                elif hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = hub[0].location.all()[0]
+                    projects = projects.filter(
+                        Q(loc__country=location.country) 
+                        &
+                        (
+                            Q(loc__multi_polygon__coveredby=(location.multi_polygon))
+                            |
+                            Q(loc__centre_point__coveredby=(location.multi_polygon))
+                        )
+                    ).annotate(
+                        distance=Distance("loc__centre_point", location.multi_polygon)
+                    ).order_by(
+                        'distance'
+                    )
 
         if 'collaboration' in self.request.query_params:
             collaborators_welcome = self.request.query_params.get('collaboration')
@@ -304,7 +323,6 @@ class ProjectAPIView(APIView):
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
-        
         # Author: Dip
         # Code formatting here. So fields are just pass through so combing them and using setattr method insted.
         pass_through_params = ['collaborators_welcome', 'description', 'helpful_connections','short_description', 'website']
@@ -314,7 +332,6 @@ class ProjectAPIView(APIView):
 
         if 'name' in request.data and request.data['name'] != project.name:
             project.name = request.data['name']
-            project.url_slug = request.data['name'] + str(project.id)
 
         if 'skills' in request.data:
             for skill in project.skills.all():
@@ -387,41 +404,36 @@ class ProjectAPIView(APIView):
                 logger.error("Passed parent organization id {} does not exist")
             
             project_parents.parent_organization = organization
-            project_parents.save()
-
+            project_parents.save()      
+        
         project.save()
 
-        try:
-            translations_object = get_project_translations(request.data)     
-        except ValueError as ve:
-            logger.error("TranslationFailed: Error translating texts, {}".format(ve))
-            translations_object = None
+        items_to_translate = [
+            {
+                'key': 'name',
+                'translation_key': 'name_translation'
+            },
+            {
+                'key': 'short_description',
+                'translation_key': 'short_description_translation'
+            },
+            {
+                'key': 'description',
+                'translation_key': 'description_translation'
+            },
+            {
+                'key': 'helpful_connections',
+                'translation_key': 'helpful_connections_translation'
+            }
+        ]
 
-        if translations_object:
-            source_language = Language.objects.get(
-                language_code=translations_object['source_language']
-            )
-            translations = translations_object['translations']
-            for language in translations_object:
-                if not language == source_language.language_code:
-                    texts = translations[language]
-                    try:
-                        language_object = Language.objects.get(language_code=language)                    
-                        translation = ProjectTranslation.objects.create(
-                            project=project, 
-                            language=language_object,
-                            name_translation=texts['name'], 
-                            short_description_translation=texts['short_description']                
-                        )
-                        if 'description' in texts:
-                            translation.description_translation = texts['description']
-                        if 'helpful_connections' in texts:
-                            translation.helpful_connections_translation = texts['helpful_connections']
-                        translation.save()
-                    except Language.DoesNotExist:
-                        logger.error(
-                            "A language with language_code {} does not exist".format(language)
-                        )
+        if 'translations' in request.data:
+            edit_translations(
+                items_to_translate,
+                request.data,
+                project,
+                "project"
+            )            
 
         return Response({
             'message': 'Project {} successfully updated'.format(project.name),
@@ -595,9 +607,16 @@ class ListProjectTags(ListAPIView):
     serializer_class = ProjectTagsSerializer
 
     def get_queryset(self):
-        if("parent_tag_key" in self.request.query_params):
-            parent_tag = ProjectTags.objects.get(key=self.request.query_params['parent_tag_key'])
-            return ProjectTags.objects.filter(parent_tag=parent_tag)
+        if("hub" in self.request.query_params):
+            try:
+                hub = Hub.objects.get(url_slug=self.request.query_params['hub'])
+                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
+                    parent_tag = hub.filter_parent_tags.all()[0]
+                    return ProjectTags.objects.filter(parent_tag=parent_tag)
+                if hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    return ProjectTags.objects.all()                    
+            except Hub.DoesNotExist:
+                return ProjectTags.objects.all()
         else:
             return ProjectTags.objects.all()
 

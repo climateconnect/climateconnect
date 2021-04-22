@@ -58,7 +58,7 @@ projecttags_translation_map = [
     },
     {
         "name_en": "Fighting ocean acidification",
-        "name_de": "Bekämpfung von Ozeanübersäurung"
+        "name_de": "Bekämpfung von Ozeanübersäuerung"
     },
     {
         "name_en": "Fighting overfishing",

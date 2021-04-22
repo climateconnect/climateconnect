@@ -101,7 +101,6 @@ export default function CollaborateSection({
       handleSetOpen({ connectionsDialog: false });
     }
   };
-
   return (
     <>
       <div className={blockClassName}>
@@ -111,7 +110,7 @@ export default function CollaborateSection({
           color="primary"
           className={subHeaderClassName}
         >
-          {collaborationTexts.skills[projectData.status.name]}
+          {collaborationTexts.skills[projectData.status.status_type]}
           <Tooltip title={helpTexts.addSkills} className={toolTipClassName}>
             <IconButton>
               <ToolTipIcon />
@@ -143,7 +142,7 @@ export default function CollaborateSection({
           color="primary"
           className={subHeaderClassName}
         >
-          {collaborationTexts.connections[projectData.status.name]}
+          {collaborationTexts.connections[projectData.status.status_type]}
           <Tooltip title={helpTexts.addConnections} className={toolTipClassName}>
             <IconButton>
               <ToolTipIcon />

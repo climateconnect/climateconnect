@@ -287,7 +287,7 @@ export default function EnterDetails({
               color="primary"
               className={classes.subHeader}
             >
-              {collaborationTexts.allow[projectData.status.name]}
+              {collaborationTexts.allow[projectData.status.status_type]}
               <Tooltip title={helpTexts.collaboration} className={classes.tooltip}>
                 <IconButton>
                   <HelpOutlineIcon />

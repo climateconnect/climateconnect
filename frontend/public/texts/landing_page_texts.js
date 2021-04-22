@@ -137,5 +137,13 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
         </>
       ),
     },
+    climate_projects_with: {
+      en: "climate projects",
+      de: "Klimaprojekten"
+    },
+    learn_from: {
+      en: "Learn from",
+      de: "Lerne von"
+    }
   };
 }

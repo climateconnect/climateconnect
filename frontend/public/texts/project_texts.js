@@ -667,7 +667,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     },
     search_for_collaborating_organizations: {
       en: "Search for collaborating organizations",
-      de: "Suche nach Organisationen, mit denen du/ihr das Projekt in Zusammenarbeit umsetzt",
+      de: "Suche nach Organisationen, mit denen du/ihr zusammenarbeitet",
     },
     type_the_name_of_the_collaborating_organization_you_want_to_add_next: {
       en: "Type the name of the collaborating organization you want to add next.",
@@ -793,7 +793,16 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de: "Team hinzufügen",
     },
     translate_project_intro: {
-      en: "",
+      en: (
+        <>
+          Because climate change is a global crisis it is important to us that projects are
+          available in multiple languages. So far we support german and english.
+          <br />
+          If you click on {"automatically translate"} you can still edit the text afterwards. If you
+          know the language you can of course also translate everything yourself. When you click on
+          publish all empty fields will be translated automatically.
+        </>
+      ),
       de: (
         <>
           Da der Klimawandel eine globale Krise ist, ist es uns wichtig, dass alle Projekte auch auf
@@ -813,5 +822,17 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Choose category",
       de: "Kategorie auswählen",
     },
+    allow_collaboration: {
+      en: "Allow collaboration",
+      de: "Zusammenarbeit zulassen"
+    },
+    dont_allow_collaboration: {
+      en: "Don't allow collaboration",
+      de: "Keine Zusammenarbeit gewünscht"
+    },
+    please_log_in_or_sign_up_to_share_a_project: {
+      en: "Please log in or sign up to share a project",
+      de: "Bitte logge dich ein oder registriere dich, um ein Projekt zu teilen"
+    }
   };
 }
