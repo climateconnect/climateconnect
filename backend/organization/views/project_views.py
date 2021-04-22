@@ -86,13 +86,31 @@ class ListProjectsView(ListAPIView):
     def get_queryset(self):
         projects = Project.objects.filter(is_draft=False,is_active=True)
         if 'hub' in self.request.query_params:
-            project_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
-            project_category_ids = list(map(lambda c: c.id, project_category))
-            project_tags = ProjectTags.objects.filter(id__in=project_category_ids)
-            project_tags_with_children = ProjectTags.objects.filter(Q(parent_tag__in=project_tags) | Q(id__in=project_tags))
-            projects = projects.filter(
-                tag_project__project_tag__in=project_tags_with_children
-            ).distinct()
+            hub = Hub.objects.filter(url_slug=self.request.query_params['hub'])
+            if hub.exists():
+                if hub[0].hub_type == Hub.SECTOR_HUB_TYPE:
+                    project_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
+                    project_category_ids = list(map(lambda c: c.id, project_category))
+                    project_tags = ProjectTags.objects.filter(id__in=project_category_ids)
+                    project_tags_with_children = ProjectTags.objects.filter(Q(parent_tag__in=project_tags) | Q(id__in=project_tags))
+                    projects = projects.filter(
+                        tag_project__project_tag__in=project_tags_with_children
+                    ).distinct()
+                elif hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = hub[0].location.all()[0]
+                    projects = projects.filter(
+                        Q(loc__country=location.country) 
+                        &
+                        (
+                            Q(loc__multi_polygon__coveredby=(location.multi_polygon))
+                            |
+                            Q(loc__centre_point__coveredby=(location.multi_polygon))
+                        )
+                    ).annotate(
+                        distance=Distance("loc__centre_point", location.multi_polygon)
+                    ).order_by(
+                        'distance'
+                    )
 
         if 'collaboration' in self.request.query_params:
             collaborators_welcome = self.request.query_params.get('collaboration')
@@ -589,9 +607,16 @@ class ListProjectTags(ListAPIView):
     serializer_class = ProjectTagsSerializer
 
     def get_queryset(self):
-        if("parent_tag_key" in self.request.query_params):
-            parent_tag = ProjectTags.objects.get(key=self.request.query_params['parent_tag_key'])
-            return ProjectTags.objects.filter(parent_tag=parent_tag)
+        if("hub" in self.request.query_params):
+            try:
+                hub = Hub.objects.get(url_slug=self.request.query_params['hub'])
+                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
+                    parent_tag = hub.filter_parent_tags.all()[0]
+                    return ProjectTags.objects.filter(parent_tag=parent_tag)
+                if hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    return ProjectTags.objects.all()                    
+            except Hub.DoesNotExist:
+                return ProjectTags.objects.all()
         else:
             return ProjectTags.objects.all()
 

@@ -69,15 +69,34 @@ class ListOrganizationsAPIView(ListAPIView):
         organizations  = Organization.objects.all()
 
         if 'hub' in self.request.query_params:
-            project_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
-            project_category_ids = list(map(lambda c: c.id, project_category))
-            project_tags = ProjectTags.objects.filter(id__in=project_category_ids)
-            project_tags_with_children = ProjectTags.objects.filter(Q(parent_tag__in=project_tags) | Q(id__in=project_tags))
-            organizations = organizations.filter(
-                Q(project_parent_org__project__tag_project__project_tag__in=project_tags_with_children) 
-                | 
-                Q(field_tag_organization__field_tag__in=project_tags_with_children)
-            ).distinct()
+            hub = Hub.objects.filter(url_slug=self.request.query_params['hub'])
+            if hub.exists():
+                if hub[0].hub_type == Hub.SECTOR_HUB_TYPE:
+                    project_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
+                    project_category_ids = list(map(lambda c: c.id, project_category))
+                    project_tags = ProjectTags.objects.filter(id__in=project_category_ids)
+                    project_tags_with_children = ProjectTags.objects.filter(Q(parent_tag__in=project_tags) | Q(id__in=project_tags))
+                    organizations = organizations.filter(
+                        Q(project_parent_org__project__tag_project__project_tag__in=project_tags_with_children) 
+                        | 
+                        Q(field_tag_organization__field_tag__in=project_tags_with_children)
+                    ).distinct()
+                elif hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = hub[0].location.all()[0]
+                    organizations = organizations.filter(
+                        Q(location__country=location.country) 
+                        &
+                        (
+                            Q(location__multi_polygon__coveredby=(location.multi_polygon))
+                            |
+                            Q(location__centre_point__coveredby=(location.multi_polygon))
+                        )
+                    ).annotate(
+                        distance=Distance("location__centre_point", location.multi_polygon)
+                    ).order_by(
+                        'distance'
+                    )
+                
 
         if 'organization_type' in self.request.query_params:
             organization_type_names = self.request.query_params.get('organization_type').split(',')

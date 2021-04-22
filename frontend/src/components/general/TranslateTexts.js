@@ -77,7 +77,9 @@ export default function TranslateTexts({
   arrayTranslationKeys,
   introTextKey,
   submitButtonText,
-  saveAsDraft
+  saveAsDraft,
+  loadingSubmit,
+  loadingSubmitDraft
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -204,6 +206,7 @@ export default function TranslateTexts({
             color="primary"
             className={classes.translateButton}
             onClick={() => automaticallyTranslateTexts()}
+            disabled={waitingForTranslation}
           >
             {waitingForTranslation ? (
               <CircularProgress className={classes.translationLoader} size={23} />
@@ -212,12 +215,20 @@ export default function TranslateTexts({
             )}
           </Button>
           <div className={classes.submitOptions}>
-            <Button variant="contained" color="primary" type="submit">
-              {submitButtonText ? submitButtonText : texts.skip_and_publish}
+            <Button variant="contained" color="primary" type="submit" disabled={loadingSubmit || loadingSubmitDraft}>
+              {
+                loadingSubmit ? (
+                  <CircularProgress className={classes.translationLoader} size={23} />
+                ) : (submitButtonText ? submitButtonText : texts.skip_and_publish)
+              }
             </Button>
             {saveAsDraft &&(
-              <Button variant="contained" onClick={saveAsDraft} className={classes.saveAsDraftButton}>
-                {texts.save_as_draft}
+              <Button variant="contained" disabled={loadingSubmit || loadingSubmitDraft} onClick={saveAsDraft} className={classes.saveAsDraftButton}>
+                {
+                  loadingSubmitDraft ? (
+                    <CircularProgress className={classes.translationLoader} size={23} />
+                  ) : texts.save_as_draft                  
+                }
               </Button>  
             )} 
           </div>

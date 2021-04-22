@@ -198,7 +198,7 @@ function ProfileLayout({
           <ProjectPreviews projects={projects} />
         ) : (
           <Typography>
-            {(isOwnAccount ? texts.you_are : texts.this_user_is) +
+            {(isOwnAccount ? texts.you_are : texts.user_name_is) +
               " " +
               texts.not_involved_in_any_projects_yet}
           </Typography>
@@ -206,7 +206,7 @@ function ProfileLayout({
       </Container>
       <Container className={classes.container} ref={organizationsRef}>
         <h2>
-          {isOwnAccount ? texts.your_organizations : texts.this_users_organizations}
+          {isOwnAccount ? texts.your_organizations + ":" : texts.this_users_organizations + ":"}
           <Button
             variant="contained"
             color="primary"
@@ -220,7 +220,7 @@ function ProfileLayout({
           <OrganizationPreviews organizations={organizations} showOrganizationType />
         ) : (
           <Typography>
-            {(isOwnAccount ? texts.you_are : texts.this_user_is) +
+            {(isOwnAccount ? texts.you_are : texts.user_name_is) +
               " " +
               texts.not_involved_in_any_organizations_yet}
           </Typography>

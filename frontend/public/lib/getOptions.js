@@ -41,9 +41,9 @@ export async function getStatusOptions(locale) {
   }
 }
 
-export async function getProjectTagsOptions(parent_tag_key, locale) {
-  const url = parent_tag_key
-    ? `/api/projecttags/?parent_tag_key=${parent_tag_key}`
+export async function getProjectTagsOptions(hub, locale) {
+  const url = hub
+    ? `/api/projecttags/?hub=${hub}`
     : `/api/projecttags/`;
   try {
     const resp = await apiRequest({
@@ -53,7 +53,7 @@ export async function getProjectTagsOptions(parent_tag_key, locale) {
     });
     if (resp.data.results.length === 0) return null;
     else {
-      if (parent_tag_key) return resp.data.results;
+      if (hub) return resp.data.results;
       else return parseOptions(resp.data.results, "parent_tag");
     }
   } catch (err) {

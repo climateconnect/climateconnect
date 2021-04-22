@@ -8,9 +8,10 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo,
+  membersWithAdditionalInfo
 } from "../public/lib/getOptions";
 import { parseData } from "../public/lib/parsingOperations";
+import { nullifyUndefinedValues } from "../public/lib/profileOperations";
 import BrowseContent from "../src/components/browse/BrowseContent";
 import UserContext from "../src/components/context/UserContext";
 import TopOfPage from "../src/components/hooks/TopOfPage";
@@ -40,7 +41,7 @@ export async function getServerSideProps(ctx) {
     getHubs(ctx.locale),
   ]);
   return {
-    props: {
+    props: nullifyUndefinedValues({
       projectsObject: projectsObject,
       organizationsObject: organizationsObject,
       membersObject: membersObject,
@@ -53,7 +54,7 @@ export async function getServerSideProps(ctx) {
       },
       hideInfo: hideInfo === "true",
       hubs: hubs,
-    },
+    })
   };
 }
 
