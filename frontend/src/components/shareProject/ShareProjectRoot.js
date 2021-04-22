@@ -6,13 +6,13 @@ import { apiRequest } from "../../../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import TranslateTexts from "../general/TranslateTexts";
 import StepsTracker from "./../general/StepsTracker";
 import AddTeam from "./AddTeam";
 import EnterDetails from "./EnterDetails";
 import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import SelectCategory from "./SelectCategory";
 import ShareProject from "./ShareProject";
-import TranslateProject from "./TranslateProject";
 const DEFAULT_STATUS = 2;
 
 const useStyles = makeStyles((theme) => {
@@ -84,9 +84,12 @@ export default function ShareProjectRoot({
         role_in_project: "",
       },
       statusOptions,
-      userOrganizations
+      userOrganizations,
+      locale
     )
   );
+  const [loadingSubmit, setLoadingSubmit] = useState(false)
+  const [loadingSubmitDraft, setLoadingSubmitDraft] = useState(false)
 
   const getStep = (stepNumber) => {
     if (stepNumber >= steps.length) return steps[steps.length - 1];
@@ -100,7 +103,7 @@ export default function ShareProjectRoot({
   const [finished, setFinished] = React.useState(false);
 
   const changeTranslationLanguages = ({ newLanguagesObject }) => {
-    if (newLanguagesObject.sourceLanguage) setSourceLanguage(newLanguagesObject.sourceLanguage);
+    if (newLanguagesObject.sourceLanguage) setProject({...project, language: newLanguagesObject.sourceLanguage});
     if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
   };
 
@@ -151,7 +154,8 @@ export default function ShareProjectRoot({
 
   const submitProject = async (event) => {
     event.preventDefault();
-    const payload = await formatProjectForRequest(project, sourceLanguage, translations);
+    setLoadingSubmit(true)
+    const payload = await formatProjectForRequest(project, translations);
 
     try {
       const resp = await apiRequest({
@@ -163,10 +167,12 @@ export default function ShareProjectRoot({
         shouldThrowError: true,
       });
       setProject({ ...project, url_slug: resp.data.url_slug });
+      setLoadingSubmit(false)
       setFinished(true);
     } catch (error) {
       console.log(error);
       setProject({ ...project, error: true });
+      setLoadingSubmit(false)
       console.log(error?.response?.data);
       if (error) console.log(error.response);
     }
@@ -174,12 +180,12 @@ export default function ShareProjectRoot({
 
   const saveAsDraft = async (event) => {
     event.preventDefault();
+    setLoadingSubmitDraft(true)
     apiRequest({
       method: "post",
       url: "/api/create_project/",
       payload: await formatProjectForRequest(
         { ...project, is_draft: true },
-        sourceLanguage,
         translations
       ),
       token: token,
@@ -187,10 +193,12 @@ export default function ShareProjectRoot({
     })
       .then(function (response) {
         setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
+        setLoadingSubmitDraft(false)
       })
       .catch(function (error) {
         console.log(error);
         setProject({ ...project, error: true });
+        setLoadingSubmit(false)
         if (error) console.log(error.response);
       });
     setFinished(true);
@@ -199,6 +207,31 @@ export default function ShareProjectRoot({
   const handleSetProject = (newProjectData) => {
     setProject({ ...project, ...newProjectData });
   };
+
+  const textsToTranslate = [
+    {
+      textKey: "name",
+      rows: 1,
+      headlineTextKey: "project_name"
+    },
+    {
+      textKey: "short_description",
+      rows: 5,
+      headlineTextKey: "short_description"
+    },
+    {
+      textKey: "description",
+      rows: 15,
+      headlineTextKey: "description"
+    },
+    {
+      textKey: "helpful_connections",
+      rows: 1,
+      headlineTextKey: "helpful_connections",
+      isArray: true,
+    },
+  ]
+
   return (
     <>
       {!finished ? (
@@ -254,19 +287,22 @@ export default function ShareProjectRoot({
             />
           )}
           {curStep.key === "translate" && (
-            <TranslateProject
-              projectData={project}
-              handleSetProjectData={handleSetProject}
-              handleChangeTranslationContent={handleChangeTranslationContent}
+            <TranslateTexts
+              data={project}
+              handleSetData={handleSetProject}
               onSubmit={submitProject}
-              saveAsDraft={saveAsDraft}
               goToPreviousStep={goToPreviousStep}
-              availabilityOptions={availabilityOptions}
-              rolesOptions={rolesOptions}
+              handleChangeTranslationContent={handleChangeTranslationContent}
               translations={translations}
-              sourceLanguage={sourceLanguage}
               targetLanguage={targetLanguage}
-              changeTranslationLanguages={changeTranslationLanguages}
+              pageName="project"
+              textsToTranslate={textsToTranslate}
+              arrayTranslationKeys={["helpful_connections"]}
+              introTextKey="translate_project_intro"
+              submitButtonText={texts.submit}
+              saveAsDraft={saveAsDraft}
+              loadingSubmit={loadingSubmit}
+              loadingSubmitDraft={loadingSubmitDraft}            
             />
           )}
         </>
@@ -285,7 +321,7 @@ export default function ShareProjectRoot({
 }
 
 //TODO: remove some of these default values as they are just for testing
-const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations) => {
+const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations, locale) => {
   return {
     collaborators_welcome: true,
     status: statusOptions.find((s) => s.id === DEFAULT_STATUS),
@@ -299,10 +335,11 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
     //TODO: Should contain the logged in user as the creator and parent_user by default
     team_members: [{ ...loggedInUser }],
     website: "",
+    language: locale
   };
 };
 
-const formatProjectForRequest = async (project, sourceLanguage, translations) => {
+const formatProjectForRequest = async (project, translations) => {
   return {
     ...project,
     status: project.status.id,
@@ -319,7 +356,7 @@ const formatProjectForRequest = async (project, sourceLanguage, translations) =>
     collaborating_organizations: project.collaborating_organizations.map((o) => o.id),
     image: await blobFromObjectUrl(project.image),
     thumbnail_image: await blobFromObjectUrl(project.thumbnail_image),
-    source_language: sourceLanguage,
+    source_language: project.language,
     translations: translations ? translations : {},
   };
 };
