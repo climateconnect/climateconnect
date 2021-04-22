@@ -667,7 +667,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     },
     search_for_collaborating_organizations: {
       en: "Search for collaborating organizations",
-      de: "Suche nach Organisationen, mit denen du/ihr das Projekt in Zusammenarbeit umsetzt",
+      de: "Suche nach Organisationen, mit denen du/ihr zusammenarbeitet",
     },
     type_the_name_of_the_collaborating_organization_you_want_to_add_next: {
       en: "Type the name of the collaborating organization you want to add next.",
@@ -822,5 +822,13 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Choose category",
       de: "Kategorie auswählen",
     },
+    allow_collaboration: {
+      en: "Allow collaboration",
+      de: "Zusammenarbeit zulassen"
+    },
+    dont_allow_collaboration: {
+      en: "Don't allow collaboration",
+      de: "Keine Zusammenarbeit gewünscht"
+    }
   };
 }

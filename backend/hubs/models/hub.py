@@ -1,3 +1,4 @@
+from location.models import Location
 from organization.models.tags import ProjectTags
 from django.db import models
 
@@ -34,7 +35,7 @@ class HubStat(models.Model):
         max_length=1024,
         null=True,
         blank=True
-    )
+    )    
 
     source_link = models.CharField(
         help_text="Link to the source of the stat",
@@ -90,6 +91,17 @@ class Hub(models.Model):
         max_length=1024,
         null=True,
         blank=True
+    )
+
+    SECTOR_HUB_TYPE = 0
+    LOCATION_HUB_TYPE = 1  # User can read and write to project or organization.
+    HUB_TYPES = (
+        (SECTOR_HUB_TYPE, 'sector hub'), (LOCATION_HUB_TYPE, 'location hub')
+    )
+
+    hub_type = models.IntegerField(
+        help_text="Type of hub", verbose_name="Hub Type",
+        choices=HUB_TYPES, default=SECTOR_HUB_TYPE
     )
 
     segway_text = models.TextField(
@@ -153,6 +165,14 @@ class Hub(models.Model):
         verbose_name="Stat box title",
         max_length=1024,
         null=True,
+        blank=True
+    )
+
+    location = models.ManyToManyField(
+        Location,
+        related_name="hub_location",
+        help_text="For city hubs: for which locations is the CityHub",
+        verbose_name="Location",
         blank=True
     )
 

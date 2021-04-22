@@ -112,26 +112,26 @@ export default function getProfileTexts({ profile, locale }) {
       de: "Deine Projekte",
     },
     this_users_projects: {
-      en: "This user's projects",
-      de: "Die Projekte dieses Mitglieds",
+      en: `${profile?.first_name}'s projects`,
+      de: `Projekte von ${profile?.first_name}`,
     },
     /*context: You are...*/
     not_involved_in_any_projects_yet: {
       en: "not involved in any projects yet!",
-      de: "Noch nicht in Projekte involviert!",
+      de: "noch nicht in Projekten involviert!",
     },
     your_organizations: {
       en: "Your organizations",
       de: "Deine Organisationen",
     },
     this_users_organizations: {
-      en: "This user's organizations",
-      de: "Die Organisationen dieses Benutzers",
+      en: `${profile?.first_name}'s organizations`,
+      de: `Organisationen von ${profile?.first_name}`,
     },
     /*context: You are...*/
     not_involved_in_any_organizations_yet: {
       en: "not involved in any organizations yet!",
-      de: "Noch in keiner Organisation engagiert!",
+      de: "noch in keiner Organisation engagiert!",
     },
     sign_up_message: {
       en: "You are now a Climate Connect member. On this page you can customize your profile.",
@@ -289,5 +289,9 @@ export default function getProfileTexts({ profile, locale }) {
         </>
       ),
     },
+    user_name_is: {
+      en: `${profile?.first_name} is`,
+      de: `${profile?.first_name} ist`
+    }
   };
 }

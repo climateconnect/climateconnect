@@ -225,7 +225,8 @@ MyApp.getInitialProps = async (ctx) => {
     getLoggedInUser(token),
     getNotifications(token),
     process.env.DONATION_CAMPAIGN_RUNNING === "true" ? getDonationGoalData() : null,
-    ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps(ctx.ctx) : {},
+    //Call getInitialProps of children
+    ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps({...ctx.ctx, locale: ctx.router.locale}) : {},
   ]);
   const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
 

@@ -223,6 +223,21 @@ export default function BrowseContent({
     }
   };
 
+  /*This is specifically for location hubs: 
+    Sector hubs don't show members
+    We only know whether a hub is a location hub after loading initial props
+    Therefore we only catch members on location hubs after they are initialized.
+  */
+  useEffect(function(){
+    if(initialMembers) {
+      setState({
+        ...state,
+        items: { ...state.items, members:membersWithAdditionalInfo(initialMembers.members) },
+        hasMore: { ...state.hasMore, members: initialMembers.hasMore}
+      })
+    }
+  }, [initialMembers])
+
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   return (

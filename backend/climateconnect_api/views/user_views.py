@@ -1,4 +1,5 @@
 import datetime
+from hubs.models.hub import Hub
 import logging
 import uuid
 from datetime import datetime, timedelta
@@ -152,6 +153,25 @@ class ListMemberProfilesView(ListAPIView):
             .filter(is_profile_verified=True)\
             .annotate(is_image_null=Count("image", filter=Q(image="")))\
             .order_by("is_image_null", "-id")
+
+        if 'hub' in self.request.query_params:
+            hub = Hub.objects.filter(url_slug=self.request.query_params['hub'])
+            if hub.exists():
+                if hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = hub[0].location.all()[0]
+                    user_profiles = user_profiles.filter(
+                        Q(location__country=location.country) 
+                        &
+                        (
+                            Q(location__multi_polygon__coveredby=(location.multi_polygon))
+                            |
+                            Q(location__centre_point__coveredby=(location.multi_polygon))
+                        )
+                    ).annotate(
+                        distance=Distance("location__centre_point", location.multi_polygon)
+                    ).order_by(
+                        'distance'
+                    )
 
         if 'skills' in self.request.query_params:
             skill_names = self.request.query_params.get('skills').split(',')
