@@ -62,8 +62,10 @@ export default function CommentsContent({ user, project, token, setCurComments }
       const resp = await apiRequest({
         url: "/api/projects/" + project.url_slug + "/comment/",
         payload: payload,
+        method: "post",
         token: token,
         locale: locale,
+        shouldThrowError: true
       });
       handleAddComment(resp.data.comment);
       if (setDisplayReplies) setDisplayReplies(true);
