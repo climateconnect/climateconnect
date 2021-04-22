@@ -33,13 +33,14 @@ const useStyles = makeStyles((theme) => ({
       width: "auto",
     },
   },
-  accountInfo: {
+  accountInfo: props => ({
     padding: 0,
     marginTop: theme.spacing(1),
     [theme.breakpoints.up("sm")]: {
       paddingRight: theme.spacing(15),
     },
-  },
+    marginRight: props.isOwnAccount ? theme.spacing(10) : 0
+  }),
   name: {
     fontWeight: "bold",
     padding: theme.spacing(1),
@@ -104,7 +105,7 @@ export default function AccountPage({
   isOwnAccount,
   editText,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({isOwnAccount: isOwnAccount})
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
   const componentDecorator = (href, text, key) => (
