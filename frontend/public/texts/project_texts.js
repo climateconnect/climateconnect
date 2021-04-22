@@ -829,6 +829,10 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     dont_allow_collaboration: {
       en: "Don't allow collaboration",
       de: "Keine Zusammenarbeit gewünscht"
+    },
+    please_log_in_or_sign_up_to_share_a_project: {
+      en: "Please log in or sign up to share a project",
+      de: "Bitte logge dich ein oder registriere dich, um ein Projekt zu teilen"
     }
   };
 }
