@@ -7,7 +7,7 @@ export async function apiRequest({
   url,
   token,
   payload,
-  shouldThrowError,
+  shouldThrowError=true,
   locale,
   headers,
 }) {
