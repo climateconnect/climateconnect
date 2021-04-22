@@ -17,7 +17,7 @@ def translate_project(project: Project) -> None:
     if project.description:
         data['description'] = project.description
     if project.helpful_connections:
-        data['helpful_connection']
+        data['helpful_connections'] = project.helpful_connections
     try:
         translations = get_project_translations(data)
     except ValueError:
@@ -36,8 +36,8 @@ def translate_project(project: Project) -> None:
 
             if 'description' in texts:
                 translation.description_translation = texts['description']
-            if 'helpful_connection' in texts:
-                translation.helpful_connection_translation = texts['helpful_connection']
+            if 'helpful_connections' in texts:
+                translation.helpful_connections_translation = texts['helpful_connections']
                 
             translation.save()
             print("Translation in {} done for project {}".format(language.name, project.name))
@@ -45,6 +45,11 @@ def translate_project(project: Project) -> None:
 
 class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:
-        for project in Project.objects.all():
-            print("Starting translation for project {}".format(project.name))
+        projects_to_translate = Project.objects.filter(translation_project=None)
+        number_of_projects = projects_to_translate.count()
+        print("Translating {} projects".format(number_of_projects))
+        for idx, project in enumerate(projects_to_translate):
+            print("Starting project translation for {} ({}/{})".format(
+                project.name, idx + 1, number_of_projects
+            ))
             translate_project(project)

@@ -26,16 +26,16 @@ class ProjectTranslation(models.Model):
         max_length=1024, null=True, blank=True
     )
 
-    short_description_translation = models.CharField(
+    short_description_translation = models.TextField(
         help_text="Translation of project's short description",
         verbose_name="Short description translation",
-        max_length=240, null=True, blank=True
+        max_length=480, null=True, blank=True
     )
 
     description_translation = models.TextField(
         help_text="Translation of project's description",
         verbose_name="Description translation",
-        max_length=4800, null=True, blank=True
+        max_length=9000, null=True, blank=True
     )
 
     helpful_connections_translation = ArrayField(
