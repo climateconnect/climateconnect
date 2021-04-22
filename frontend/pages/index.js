@@ -160,10 +160,9 @@ const getProjects = async (token, locale) => {
     const resp = await apiRequest({
       method: "get",
       url: `/api/featured_projects/`,
-      token: token,
       locale: locale,
+      shouldThrowError: true
     });
-
     if (resp.data.length === 0) {
       return null;
     }
