@@ -16,9 +16,11 @@ def check_organization(organization_id: str) -> Organization:
 def get_organization_name(organization: Organization, language_code: str) -> str:
     if language_code != organization.language.language_code and \
         organization.translation_org.filter(language__language_code=language_code).exists():
-        return organization.translation_org.get(
+        name_translation = organization.translation_org.get(
             language__language_code=language_code
         ).name_translation
+        if name_translation and len(name_translation) > 0:
+            return name_translation
     
     return organization.name
 
