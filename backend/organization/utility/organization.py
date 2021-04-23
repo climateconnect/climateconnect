@@ -19,6 +19,7 @@ def get_organization_name(organization: Organization, language_code: str) -> str
         name_translation = organization.translation_org.get(
             language__language_code=language_code
         ).name_translation
+        
         if name_translation and len(name_translation) > 0:
             return name_translation
     
