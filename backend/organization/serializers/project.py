@@ -1,4 +1,10 @@
+from organization.serializers.translation import ProjectTranslationSerializer
+from organization.models.translations import ProjectTranslation
+from rest_framework.fields import SerializerMethodField
+from organization.serializers.status import ProjectStatusSerializer
+from organization.utility.status import get_project_status
 from django.conf import settings
+from django.utils.translation import get_language
 from location.models import Location
 from location.serializers import LocationStubSerializer
 from rest_framework import serializers
@@ -11,15 +17,26 @@ from climateconnect_api.serializers.role import RoleSerializer
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.tags import ProjectTaggingSerializer, OrganizationTagging
 
+from organization.utility.project import (
+    get_project_helpful_connections, get_project_name, get_project_short_description,
+    get_project_description
+)
+
+
 class ProjectSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
     skills = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
-    status = serializers.CharField(source='status.name', read_only=True)
+    status = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     loc = serializers.SerializerMethodField()
+    helpful_connections = serializers.SerializerMethodField()
+    language = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -33,9 +50,18 @@ class ProjectSerializer(serializers.ModelSerializer):
             'skills', 'helpful_connections',
             'project_parents', 'tags', 
             'created_at', 'collaborating_organizations', 'is_draft',
-            'website', 'number_of_followers'
+            'website', 'number_of_followers', 'language'
         )
         read_only_fields = ['url_slug']
+
+    def get_name(self, obj):
+        return get_project_name(obj, get_language())
+    
+    def get_short_description(self, obj):
+        return get_project_short_description(obj, get_language())
+    
+    def get_description(self, obj):
+        return get_project_description(obj, get_language())
 
     def get_collaborating_organizations(self, obj):
         serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
@@ -66,8 +92,24 @@ class ProjectSerializer(serializers.ModelSerializer):
             return None
         return obj.loc.name
 
+    def get_helpful_connections(self, obj):
+        return get_project_helpful_connections(obj, get_language())
+
+    def get_status(self, obj):
+        serializer = ProjectStatusSerializer(obj.status, many=False)
+        return serializer.data['name']
+
+    def get_language(self, obj):
+        return obj.language.language_code
+
+
 class EditProjectSerializer(ProjectSerializer):
     loc = serializers.SerializerMethodField()
+    translations = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
+    helpful_connections = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
     def get_loc(self, obj):
         if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
             return {
@@ -78,8 +120,30 @@ class EditProjectSerializer(ProjectSerializer):
             if obj.loc == None:
                 return None
             return obj.loc.name
+
+    def get_translations(self, obj):
+        translations = ProjectTranslation.objects.filter(project=obj)
+        if translations.exists():
+            serializer = ProjectTranslationSerializer(translations, many=True)
+            return serializer.data
+        else:
+            return {}
+
+    def get_name(self, obj):
+        return obj.name
+    
+    def get_short_description(self, obj):
+        return obj.short_description
+    
+    def get_description(self, obj):
+        return obj.description
+
+    def get_helpful_connections(self, obj):
+        return obj.helpful_connections
+
     class Meta(ProjectSerializer.Meta):
-        fields = ProjectSerializer.Meta.fields + ('loc',)
+        fields = ProjectSerializer.Meta.fields + ('loc','translations')
+
 
 class ProjectParentsSerializer(serializers.ModelSerializer):
     parent_organization = serializers.SerializerMethodField()
@@ -104,8 +168,9 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
 class ProjectMinimalSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True)
     project_parents = serializers.SerializerMethodField()
-    status = serializers.CharField(source='status.name', read_only=True)
+    status = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -115,6 +180,9 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
             'status', 'location', 'project_parents', 'is_draft','website'
         )
     
+    def get_name(self, obj):
+        return get_project_name(obj, get_language())
+
     def get_project_parents(self, obj):
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
         return serializer.data
@@ -124,14 +192,20 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
             return None
         return obj.loc.name
 
+    def get_status(self, obj):
+        serializer = ProjectStatusSerializer(obj.status, many=False)
+        return serializer.data['name']
+
 
 class ProjectStubSerializer(serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
-    status = serializers.CharField(source='status.name', read_only=True)
+    status = SerializerMethodField()
     image = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
-    
+    name = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
+    print(get_language())
     class Meta:
         model = Project
         fields = (
@@ -140,6 +214,12 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             'project_parents', 'tags',
             'is_draft', 'short_description'
         )
+    
+    def get_name(self, obj):
+        return get_project_name(obj, get_language())
+    
+    def get_short_description(self, obj):
+        return get_project_short_description(obj, get_language())
     
     def get_project_parents(self, obj):        
         serializer = ProjectParentsSerializer(obj.project_parent, many=True)
@@ -161,6 +241,10 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         if obj.loc == None:
             return None
         return obj.loc.name
+
+    def get_status(self, obj):
+        serializer = ProjectStatusSerializer(obj.status, many=False)
+        return serializer.data['name']
 
 
 class ProjectMemberSerializer(serializers.ModelSerializer):
@@ -194,6 +278,7 @@ class ProjectCollaboratorsSerializer(serializers.ModelSerializer):
         serializer = OrganizationStubSerializer(obj.collaborating_organization)
         return serializer.data
 
+
 class ProjectFromProjectParentsSerializer(serializers.ModelSerializer):
     project = serializers.SerializerMethodField()
 
@@ -204,6 +289,7 @@ class ProjectFromProjectParentsSerializer(serializers.ModelSerializer):
     def get_project(self, obj):
         serializer = ProjectStubSerializer(obj.project)
         return serializer.data
+
 
 class ProjectFromProjectMemberSerializer(serializers.ModelSerializer):
     project = serializers.SerializerMethodField()
@@ -216,10 +302,12 @@ class ProjectFromProjectMemberSerializer(serializers.ModelSerializer):
         serializer = ProjectStubSerializer(obj.project)
         return serializer.data
 
+
 class ProjectSitemapEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ('url_slug', 'updated_at')
+
 
 class ProjectFollowerSerializer(serializers.ModelSerializer):
     user_profile = serializers.SerializerMethodField()

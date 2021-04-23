@@ -1,19 +1,18 @@
-import React from "react";
-import WideLayout from "../src/components/layouts/WideLayout";
-import { Container, Typography, Button, IconButton, TextField } from "@material-ui/core";
-import ChatPreviews from "../src/components/communication/chat/ChatPreviews";
+import { Button, Container, IconButton, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Cookies from "next-cookies";
-import axios from "axios";
 import AddIcon from "@material-ui/icons/Add";
-import tokenConfig from "../public/config/tokenConfig";
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import Cookies from "next-cookies";
+import Router from "next/router";
+import React from "react";
+import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
+import getTexts from "../public/texts/texts";
+import ChatPreviews from "../src/components/communication/chat/ChatPreviews";
 import UserContext from "../src/components/context/UserContext";
 import LoadingContainer from "../src/components/general/LoadingContainer";
-import AutoCompleteSearchBar from "../src/components/search/AutoCompleteSearchBar";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import WideLayout from "../src/components/layouts/WideLayout";
 import MiniProfilePreview from "../src/components/profile/MiniProfilePreview";
-import Router from "next/router";
-import { sendToLogin } from "../public/lib/apiOperations";
+import AutoCompleteSearchBar from "../src/components/search/AutoCompleteSearchBar";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -66,15 +65,33 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+export async function getServerSideProps(ctx) {
+  const { token } = Cookies(ctx);
+  if (ctx.req && !token) {
+    const texts = getTexts({ page: "chat", locale: ctx.locale });
+    const message = texts.you_have_to_log_in_to_see_your_inbox;
+    return sendToLogin(ctx, message);
+  }
+  const chatData = await getChatsOfLoggedInUser(token, null, ctx.locale);
+  return {
+    props: {
+      chatData: chatData.chats,
+      next: chatData.next,
+      token: token,
+    },
+  };
+}
+
 export default function Inbox({ chatData, token, next }) {
   const classes = useStyles();
-  const { user } = React.useContext(UserContext);
+  const { user, locale } = React.useContext(UserContext);
+  const texts = getTexts({ page: "chat", locale: locale });
   const [userSearchEnabled, setUserSearchEnabled] = React.useState(false);
   const [newChatMembers, setNewChatMembers] = React.useState([]);
   const [errorMessage, setErrorMessage] = React.useState("");
   const [groupName, setGroupName] = React.useState("");
   const [chatsState, setChatsState] = React.useState({
-    chats: parseChats(chatData, user),
+    chats: parseChats(chatData, user, texts),
     next: next,
   });
 
@@ -103,7 +120,7 @@ export default function Inbox({ chatData, token, next }) {
       if (isGroupchat) {
         if (!groupName) {
           setErrorMessage(
-            "Please set a group name if you're starting a chat with more than one member"
+            texts.please_set_a_group_name_if_youre_starting_a_chat_with_more_than_one_member
           );
           return;
         }
@@ -112,8 +129,13 @@ export default function Inbox({ chatData, token, next }) {
       } else {
         payload.profile_url_slug = newChatMembers[0].url_slug;
       }
-      axios
-        .post(process.env.API_URL + urlPostfix, payload, tokenConfig(token))
+      apiRequest({
+        method: "post",
+        url: urlPostfix,
+        payload: payload,
+        token: token,
+        locale: locale,
+      })
         .then(async function (response) {
           Router.push("/chat/" + response.data.chat_uuid + "/");
         })
@@ -123,17 +145,17 @@ export default function Inbox({ chatData, token, next }) {
         });
     } else
       setErrorMessage(
-        "Please add one or more users to chat to by searching them in the search bar above"
+        texts.please_add_one_or_more_users_to_chat_to_by_searching_them_in_the_search_bar_above
       );
   };
 
   const loadMoreChats = async () => {
-    const newChatData = await getChatsOfLoggedInUser(token, next);
+    const newChatData = await getChatsOfLoggedInUser(token, next, locale);
     const newChats = newChatData.chats;
     setChatsState({
       ...chatsState,
       next: newChatData.next,
-      chats: [...chatsState.chats, ...parseChats(newChats, user)],
+      chats: [...chatsState.chats, ...parseChats(newChats, user, texts)],
     });
   };
 
@@ -156,18 +178,18 @@ export default function Inbox({ chatData, token, next }) {
 
   return (
     <div>
-      <WideLayout title="Inbox" messageType="error" message={errorMessage}>
+      <WideLayout title={texts.inbox} messageType="error" message={errorMessage}>
         <Container maxWidth="md" className={classes.root}>
           <Typography component="h1" variant="h4" className={classes.headline}>
-            Inbox
+            {texts.inbox}
           </Typography>
           {userSearchEnabled ? (
             <div className={classes.searchSectionContainer}>
               <AutoCompleteSearchBar
                 label={
                   newChatMembers.length < 1
-                    ? "Search user to message..."
-                    : "Add more chat participants..."
+                    ? texts.search_user_to_message + "..."
+                    : texts.add_more_chat_participants + "..."
                 }
                 baseUrl={process.env.API_URL + "/api/members/?search="}
                 clearOnSelect
@@ -176,12 +198,12 @@ export default function Inbox({ chatData, token, next }) {
                 onSelect={handleAddNewChatMember}
                 renderOption={renderSearchOption}
                 getOptionLabel={(option) => option.first_name + " " + option.last_name}
-                helperText="Type the name of the user(s) you want to message."
+                helperText={texts.type_the_name_of_the_users_you_want_to_message}
               />
               <form onSubmit={handleStartChat}>
                 {newChatMembers.length > 1 && (
                   <TextField
-                    label="Group chat name"
+                    label={texts.group_chat_name}
                     size="small"
                     className={classes.groupChatName}
                     required
@@ -201,14 +223,14 @@ export default function Inbox({ chatData, token, next }) {
                 </div>
                 <div className={classes.buttonBar}>
                   <Button variant="contained" color="primary" type="submit">
-                    Start Chat
+                    {texts.start_chat}Start Chat
                   </Button>
                   <Button
                     variant="contained"
                     className={classes.cancelButton}
                     onClick={disableUserSearch}
                   >
-                    Cancel
+                    {texts.cancel}
                   </Button>
                 </div>
               </form>
@@ -221,7 +243,7 @@ export default function Inbox({ chatData, token, next }) {
               color="primary"
               onClick={enableUserSearch}
             >
-              New Chat
+              {texts.new_chat}
             </Button>
           )}
           {user ? (
@@ -240,35 +262,26 @@ export default function Inbox({ chatData, token, next }) {
   );
 }
 
-const parseChats = (chats, user) =>
+const parseChats = (chats, user, texts) =>
   chats
     ? chats.map((chat) => ({
         ...chat,
         chatting_partner:
           chat.participants.length === 2 && chat.participants.filter((p) => p.id != user.id)[0],
         unread_count: chat.unread_count,
-        content: chat.last_message ? chat.last_message.content : "Chat has been created",
+        content: chat.last_message ? chat.last_message.content : texts.chat_has_been_created,
       }))
     : [];
 
-Inbox.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  if (ctx.req && !token) {
-    const message = "You have to log in to see your inbox.";
-    return sendToLogin(ctx, message);
-  }
-  const chatData = await getChatsOfLoggedInUser(token);
-  return {
-    chatData: chatData.chats,
-    next: chatData.next,
-    token: token,
-  };
-};
-
-async function getChatsOfLoggedInUser(token, next) {
+async function getChatsOfLoggedInUser(token, next, locale) {
   try {
-    const url = next ? next : process.env.API_URL + `/api/chats/?page=1`;
-    const resp = await axios.get(url, tokenConfig(token));
+    const url = next ? next : `/api/chats/?page=1`;
+    const resp = await apiRequest({
+      method: "get",
+      url: url,
+      token: token,
+      locale: locale,
+    });
     return {
       chats: parseChatData(resp.data.results),
       next: resp.data.next,

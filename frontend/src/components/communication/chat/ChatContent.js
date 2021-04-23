@@ -1,8 +1,9 @@
-import React from "react";
-import { Button, IconButton, TextField, makeStyles, Tooltip } from "@material-ui/core";
+import { Button, IconButton, makeStyles, TextField, Tooltip } from "@material-ui/core";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import SendIcon from "@material-ui/icons/Send";
-
+import React, { useContext } from "react";
+import getTexts from "../../../../public/texts/texts";
+import UserContext from "../../context/UserContext";
 import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import Messages from "./Messages";
 
@@ -72,6 +73,8 @@ export default function ChatContent({
   setShowSendHelper,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "chat", locale: locale });
 
   const handleOpen = () => {
     setShowSendHelper(true);
@@ -99,13 +102,13 @@ export default function ChatContent({
               startIcon={<GroupAddIcon />}
               onClick={handleToggleMemberManagementExpanded}
             >
-              Manage
+              {texts.manage}
             </Button>
           )}
         </div>
       )}
       {loading ? (
-        <div>Loading</div>
+        <div>{texts.loading_and_waiting}</div>
       ) : (
         <Messages
           messages={messages}
@@ -115,6 +118,7 @@ export default function ChatContent({
           loadFunc={loadMoreMessages}
           isPrivateChat={isPrivateChat}
           title={title}
+          texts={texts}
         />
       )}
       <div className={`${classes.bottomBar} ${classes.maxWidth}`}>
@@ -124,7 +128,7 @@ export default function ChatContent({
             size="small"
             autoFocus
             multiline
-            placeholder="Message"
+            placeholder={texts.message}
             className={classes.messageInput}
             value={curMessage}
             onChange={onCurMessageChange}
@@ -135,7 +139,7 @@ export default function ChatContent({
             onClose={handleClose}
             onOpen={handleOpen}
             arrow
-            title="Click here to send (or press ctrl + Enter)"
+            title={texts.click_here_to_send_or_press_ctrl_enter}
             placement="top"
           >
             <IconButton

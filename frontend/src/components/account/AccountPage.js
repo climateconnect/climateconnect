@@ -1,10 +1,13 @@
-import React from "react";
-import { Container, Avatar, Typography, Chip, Button, Link, Tooltip } from "@material-ui/core";
+import { Avatar, Button, Chip, Container, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
-import Linkify from "react-linkify";
-import MessageContent from "../communication/MessageContent";
 import PlaceIcon from "@material-ui/icons/Place";
+import React, { useContext } from "react";
+import Linkify from "react-linkify";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
+import MessageContent from "../communication/MessageContent";
+import UserContext from "../context/UserContext";
+import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -30,13 +33,14 @@ const useStyles = makeStyles((theme) => ({
       width: "auto",
     },
   },
-  accountInfo: {
+  accountInfo: props => ({
     padding: 0,
     marginTop: theme.spacing(1),
     [theme.breakpoints.up("sm")]: {
       paddingRight: theme.spacing(15),
     },
-  },
+    marginRight: props.isOwnAccount ? theme.spacing(10) : 0
+  }),
   name: {
     fontWeight: "bold",
     padding: theme.spacing(1),
@@ -101,7 +105,9 @@ export default function AccountPage({
   isOwnAccount,
   editText,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({isOwnAccount: isOwnAccount})
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale });
   const componentDecorator = (href, text, key) => (
     <Link
       color="primary"
@@ -131,8 +137,12 @@ export default function AccountPage({
             if (value.name)
               return (
                 <div key={index} className={classes.subtitle}>
-                  {account.name} is a suborganization of{" "}
-                  <Link color="inherit" href={"/organizations/" + value.url_slug} target="_blank">
+                  {account.name} {texts.is_a_suborganization_of}{" "}
+                  <Link
+                    color="inherit"
+                    href={getLocalePrefix(locale) + "/organizations/" + value.url_slug}
+                    target="_blank"
+                  >
                     <MiniOrganizationPreview organization={value} size="small" />
                   </Link>
                 </div>
@@ -188,7 +198,6 @@ export default function AccountPage({
           }
         }
       });
-
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div
@@ -210,7 +219,7 @@ export default function AccountPage({
             variant="contained"
             href={editHref}
           >
-            {editText ? editText : "Edit Profile"}
+            {editText ? editText : texts.edit_profile}
           </Button>
         )}
         <Container className={classes.avatarWithInfo}>

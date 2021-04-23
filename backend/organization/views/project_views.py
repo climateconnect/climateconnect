@@ -1,47 +1,66 @@
-from django.contrib.gis.geos.geometry import GEOSGeometry
-from django.contrib.gis.db.models.functions import Distance
-from location.utility import get_location, get_location_with_range
-from location.models import Location
-from hubs.models.hub import Hub
-from dateutil.parser import parse
-from rest_framework.generics import ListAPIView,RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.filters import SearchFilter
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
-
-from django.contrib.auth.models import User
+from climateconnect_api.utility.translation import edit_translation, edit_translations, translate_text
+import logging
 import traceback
 
+from climateconnect_api.models import Availability, Role, Skill, UserProfile
+from climateconnect_api.models.language import Language
+from climateconnect_main.utility.general import get_image_from_data_url
+from dateutil.parser import parse
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos.geometry import GEOSGeometry
+from django.db.models import Q
+from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
+from hubs.models.hub import Hub
+from location.models import Location
+from location.utility import get_location, get_location_with_range
 from organization.models import (
-    Project, Organization, ProjectParents, ProjectMember, Post, ProjectComment, ProjectTags, ProjectTagging,
-    ProjectStatus, ProjectCollaborators, ProjectFollower, OrganizationTags, OrganizationTagging
+    Organization, OrganizationTagging,
+    OrganizationTags, Post, Project,
+    ProjectCollaborators, ProjectComment,
+    ProjectFollower, ProjectMember,
+    ProjectParents, ProjectStatus, ProjectTagging,
+    ProjectTags
 )
+from organization.models.translations import ProjectTranslation
+from organization.pagination import (MembersPagination,
+                                     ProjectCommentPagination,
+                                     ProjectPostPagination, ProjectsPagination)
+from organization.permissions import (AddProjectMemberPermission,
+                                      ChangeProjectCreatorPermission,
+                                      ProjectMemberReadWritePermission,
+                                      ProjectReadWritePermission,
+                                      ReadSensibleProjectDataPermission)
+from organization.serializers.content import (PostSerializer,
+                                              ProjectCommentSerializer)
 from organization.serializers.project import (
-    EditProjectSerializer, ProjectSerializer, ProjectMinimalSerializer, ProjectStubSerializer, ProjectMemberSerializer,
- InsertProjectMemberSerializer, ProjectSitemapEntrySerializer, ProjectFollowerSerializer
+    EditProjectSerializer,
+    InsertProjectMemberSerializer,
+    ProjectFollowerSerializer,
+    ProjectMemberSerializer,
+    ProjectMinimalSerializer,
+    ProjectSerializer,
+    ProjectSitemapEntrySerializer,
+    ProjectStubSerializer
 )
 from organization.serializers.status import ProjectStatusSerializer
-from organization.serializers.content import (PostSerializer, ProjectCommentSerializer)
-from organization.serializers.tags import (ProjectTagsSerializer)
-from organization.utility.project import create_new_project
-from organization.permissions import (ReadSensibleProjectDataPermission, ProjectReadWritePermission, AddProjectMemberPermission, ProjectMemberReadWritePermission, ChangeProjectCreatorPermission)
-from organization.pagination import (
-    ProjectsPagination, MembersPagination, ProjectPostPagination, ProjectCommentPagination
-)
-from organization.utility.organization import (
-    check_organization,
-)
+from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
-    create_project_comment_reply_notification, create_project_comment_notification, create_project_follower_notification
-)
-from rest_framework.exceptions import ValidationError, NotFound
-from climateconnect_main.utility.general import get_image_from_data_url
-from climateconnect_api.models import Role, Skill, Availability, UserProfile
-from django.db.models import Q
-import logging
+    create_project_comment_notification,
+    create_project_comment_reply_notification,
+    create_project_follower_notification)
+from organization.utility.organization import check_organization
+from organization.utility.project import (create_new_project,
+                                          get_project_translations)
+from rest_framework import status
+from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import (ListAPIView, RetrieveUpdateAPIView,
+                                     RetrieveUpdateDestroyAPIView)
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 logger = logging.getLogger(__name__)
 
 
@@ -67,13 +86,31 @@ class ListProjectsView(ListAPIView):
     def get_queryset(self):
         projects = Project.objects.filter(is_draft=False,is_active=True)
         if 'hub' in self.request.query_params:
-            project_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
-            project_category_ids = list(map(lambda c: c.id, project_category))
-            project_tags = ProjectTags.objects.filter(id__in=project_category_ids)
-            project_tags_with_children = ProjectTags.objects.filter(Q(parent_tag__in=project_tags) | Q(id__in=project_tags))
-            projects = projects.filter(
-                tag_project__project_tag__in=project_tags_with_children
-            ).distinct()
+            hub = Hub.objects.filter(url_slug=self.request.query_params['hub'])
+            if hub.exists():
+                if hub[0].hub_type == Hub.SECTOR_HUB_TYPE:
+                    project_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
+                    project_category_ids = list(map(lambda c: c.id, project_category))
+                    project_tags = ProjectTags.objects.filter(id__in=project_category_ids)
+                    project_tags_with_children = ProjectTags.objects.filter(Q(parent_tag__in=project_tags) | Q(id__in=project_tags))
+                    projects = projects.filter(
+                        tag_project__project_tag__in=project_tags_with_children
+                    ).distinct()
+                elif hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = hub[0].location.all()[0]
+                    projects = projects.filter(
+                        Q(loc__country=location.country) 
+                        &
+                        (
+                            Q(loc__multi_polygon__coveredby=(location.multi_polygon))
+                            |
+                            Q(loc__centre_point__coveredby=(location.multi_polygon))
+                        )
+                    ).annotate(
+                        distance=Distance("loc__centre_point", location.multi_polygon)
+                    ).order_by(
+                        'distance'
+                    )
 
         if 'collaboration' in self.request.query_params:
             collaborators_welcome = self.request.query_params.get('collaboration')
@@ -156,11 +193,11 @@ class CreateProjectView(APIView):
             organization = check_organization(int(request.data['parent_organization']))
         else:
             organization = None
-
         required_params = [
             'name', 'status', 'short_description',
             'collaborators_welcome', 'team_members',
-            'project_tags', 'loc', 'image'
+            'project_tags', 'loc', 'image', 'source_language',
+            'translations'
         ]
         for param in required_params:
             if param not in request.data:
@@ -173,9 +210,37 @@ class CreateProjectView(APIView):
         except ProjectStatus.DoesNotExist:
             return Response({
                 'message': "Passed status {} does not exist".format(request.data["status"])
-            })
+            })  
+        translations_failed = False
+        try:
+            translations_object = get_project_translations(request.data)     
+        except ValueError:
+            translations_failed = True
 
-        project = create_new_project(request.data)
+        source_language = Language.objects.get(language_code=translations_object['source_language'])
+        translations = translations_object['translations']
+        project = create_new_project(request.data, source_language)
+        if not translations_failed:
+            for language in translations:
+                if not language == source_language.language_code:
+                    texts = translations[language]
+                    try:
+                        language_object = Language.objects.get(language_code=language)                    
+                        translation = ProjectTranslation.objects.create(
+                            project=project, 
+                            language=language_object,
+                            name_translation=texts['name'], 
+                            short_description_translation=texts['short_description']                
+                        )
+                        if 'description' in texts:
+                            translation.description_translation = texts['description']
+                        if 'helpful_connections' in texts:
+                            translation.helpful_connections_translation = texts['helpful_connections']
+                        translation.save()
+                    except Language.DoesNotExist:
+                        logger.error(
+                            "A language with language_code {} does not exist".format(language)
+                        )
 
         project_parents = ProjectParents.objects.create(
             project=project, parent_user=request.user
@@ -232,7 +297,7 @@ class CreateProjectView(APIView):
                     availability=user_availability, role_in_project=member['role_in_project']
                 )
                 logger.info("Project member created for user {}".format(user.id))
-
+        
         return Response({
             'message': 'Project {} successfully created'.format(project.name),
             'url_slug': project.url_slug
@@ -258,7 +323,6 @@ class ProjectAPIView(APIView):
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
             return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
-        
         # Author: Dip
         # Code formatting here. So fields are just pass through so combing them and using setattr method insted.
         pass_through_params = ['collaborators_welcome', 'description', 'helpful_connections','short_description', 'website']
@@ -268,7 +332,6 @@ class ProjectAPIView(APIView):
 
         if 'name' in request.data and request.data['name'] != project.name:
             project.name = request.data['name']
-            project.url_slug = request.data['name'] + str(project.id)
 
         if 'skills' in request.data:
             for skill in project.skills.all():
@@ -341,9 +404,36 @@ class ProjectAPIView(APIView):
                 logger.error("Passed parent organization id {} does not exist")
             
             project_parents.parent_organization = organization
-            project_parents.save()
-
+            project_parents.save()      
+        
         project.save()
+
+        items_to_translate = [
+            {
+                'key': 'name',
+                'translation_key': 'name_translation'
+            },
+            {
+                'key': 'short_description',
+                'translation_key': 'short_description_translation'
+            },
+            {
+                'key': 'description',
+                'translation_key': 'description_translation'
+            },
+            {
+                'key': 'helpful_connections',
+                'translation_key': 'helpful_connections_translation'
+            }
+        ]
+
+        if 'translations' in request.data:
+            edit_translations(
+                items_to_translate,
+                request.data,
+                project,
+                "project"
+            )            
 
         return Response({
             'message': 'Project {} successfully updated'.format(project.name),
@@ -517,9 +607,16 @@ class ListProjectTags(ListAPIView):
     serializer_class = ProjectTagsSerializer
 
     def get_queryset(self):
-        if("parent_tag_key" in self.request.query_params):
-            parent_tag = ProjectTags.objects.get(key=self.request.query_params['parent_tag_key'])
-            return ProjectTags.objects.filter(parent_tag=parent_tag)
+        if("hub" in self.request.query_params):
+            try:
+                hub = Hub.objects.get(url_slug=self.request.query_params['hub'])
+                if hub.hub_type == Hub.SECTOR_HUB_TYPE:
+                    parent_tag = hub.filter_parent_tags.all()[0]
+                    return ProjectTags.objects.filter(parent_tag=parent_tag)
+                if hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    return ProjectTags.objects.all()                    
+            except Hub.DoesNotExist:
+                return ProjectTags.objects.all()
         else:
             return ProjectTags.objects.all()
 

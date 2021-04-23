@@ -1,7 +1,10 @@
 import { Button, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import React from "react";
+import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import UserContext from "../context/UserContext";
 import OrganizationPreviewsFixed from "../organization/OrganizationPreviewsFixed";
 import SmallCloud from "../staticpages/SmallCloud";
 
@@ -51,21 +54,24 @@ const useStyles = makeStyles((theme) => ({
 export default function OrganizationsSharedBox({ organizations, isLoading }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({
+    page: "landing_page",
+    locale: locale,
+    classes: classes,
+    isNarrowScreen: isNarrowScreen,
+  });
   return (
     <div className={classes.root}>
       <SmallCloud type={2} className={classes.smallCloud1} />
       <SmallCloud type={1} className={classes.smallCloud2} reverse />
       <Typography className={classes.headline} component="h1" color="primary">
-        Find a climate action organization and get involved
+        {texts.find_a_climate_action_organization_and_get_involved}
       </Typography>
       <Typography className={classes.explainerText}>
-        Find nonprofits, associations, companies, institutes, NGOs, local governments and other
-        types of organizations taking climate action!{" "}
+        {texts.find_a_climate_action_organization_and_get_involved_text}{" "}
         {!isNarrowScreen && (
-          <>
-            You can directly contact the {"organization's"} representative to exchange knowledge,
-            find volunteering opportunities or job opportunites.
-          </>
+          <>{texts.find_a_climate_action_organization_and_get_involved_additional_text}</>
         )}
       </Typography>
       <OrganizationPreviewsFixed
@@ -74,8 +80,8 @@ export default function OrganizationsSharedBox({ organizations, isLoading }) {
         isLoading={isLoading}
       />
       <div className={classes.showProjectsButtonContainer}>
-        <Button color="inherit" href="/browse#organizations">
-          <span className={classes.showProjectsText}>Explore all organizations</span>
+        <Button color="inherit" href={getLocalePrefix(locale) + "/browse#organizations"}>
+          <span className={classes.showProjectsText}>{texts.explore_all_organizations}</span>
           <KeyboardArrowRightIcon className={classes.showProjectsArrow} />
         </Button>
       </div>

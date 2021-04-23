@@ -1,5 +1,8 @@
-import React from "react";
-import { makeStyles, Typography, Container } from "@material-ui/core";
+import { Container, makeStyles, Typography } from "@material-ui/core";
+import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import LightBigButton from "./LightBigButton";
 
 const useStyles = makeStyles((theme) => ({
@@ -29,18 +32,22 @@ const useStyles = makeStyles((theme) => ({
 
 export default function StartNowBanner({ h1ClassName, className }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "landing_page", locale: locale, classes: classes });
   return (
     <div className={`${classes.root} ${className}`}>
       <Container>
         <div>
           <Typography className={`${classes.headline} ${h1ClassName}`} component="h1">
-            <span className={classes.yellow}>Work together</span>, feel inspired and make a real
-            impact <span className={classes.yellow}>on climate change!</span>
+            {texts.start_now_banner_text}
           </Typography>
         </div>
         <div className={classes.buttonContainer}>
-          <LightBigButton href="/signup" className={classes.signUpButton}>
-            Sign up
+          <LightBigButton
+            href={getLocalePrefix(locale) + "/signup"}
+            className={classes.signUpButton}
+          >
+            {texts.sign_up}
           </LightBigButton>
         </div>
       </Container>

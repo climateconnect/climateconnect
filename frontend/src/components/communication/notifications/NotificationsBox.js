@@ -1,5 +1,5 @@
+import { Menu, withStyles } from "@material-ui/core";
 import React from "react";
-import { withStyles, Menu } from "@material-ui/core";
 
 const NotificationsBox = withStyles({
   paper: {

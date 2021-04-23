@@ -1,23 +1,25 @@
-import React from "react";
-import PropTypes from "prop-types";
 import {
+  Badge,
+  Divider,
   List,
   ListItem,
   ListItemText,
-  Divider,
-  Badge,
   Typography,
   useMediaQuery,
 } from "@material-ui/core";
-import Truncate from "react-truncate";
 import { makeStyles } from "@material-ui/core/styles";
+import PropTypes from "prop-types";
+import React, { useContext } from "react";
 import InfiniteScroll from "react-infinite-scroller";
-
-import MiniProfilePreview from "../../profile/MiniProfilePreview";
+import Truncate from "react-truncate";
+import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getDateTime } from "../../../../public/lib/dateOperations";
+import getTexts from "../../../../public/texts/texts";
+import UserContext from "../../context/UserContext";
+import LoadingSpinner from "../../general/LoadingSpinner";
+import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import ChatTitle from "./ChatTitle";
 import MobileChatPreview from "./MobileChatPreview";
-import LoadingSpinner from "../../general/LoadingSpinner";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -63,6 +65,8 @@ const useStyles = makeStyles((theme) => {
 
 export default function ChatPreviews({ chats, loadFunc, hasMore }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "chat", locale: locale });
   const [isLoading, setIsLoading] = React.useState(false);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
   const loadMore = async () => {
@@ -78,9 +82,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
       <>
         <Divider />
         <Typography variant="h6" className={classes.NoChatsMessage}>
-          {
-            'You haven\'t chatted to anybody yet! Click on the "New Chat" button to start reaching out to other climate actors!'
-          }
+          {texts.you_havent_chatted_to_anybody_yet_click_on}
         </Typography>
       </>
     );
@@ -98,6 +100,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
           isFirstChat={index === 0}
           isNarrowScreen={isNarrowScreen}
           chat={chat}
+          locale={locale}
         />
       ))}
       <LoadingSpinner />
@@ -105,7 +108,7 @@ export default function ChatPreviews({ chats, loadFunc, hasMore }) {
   );
 }
 
-const ChatPreview = ({ chat, isNarrowScreen, isFirstChat }) => {
+const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale }) => {
   const lastAction = chat.last_message ? chat.last_message.sent_at : chat.created_at;
   if (!lastAction) console.log(chat);
   const classes = useStyles();
@@ -117,7 +120,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat }) => {
         <ListItem
           button
           component="a"
-          href={"/chat/" + chat.chat_uuid}
+          href={getLocalePrefix(locale) + "/chat/" + chat.chat_uuid}
           alignItems="center"
           className={classes.listItem}
         >

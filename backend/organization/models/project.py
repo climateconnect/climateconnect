@@ -4,6 +4,7 @@ from django.contrib.postgres.fields import ArrayField
 
 from organization.models import (Organization,)
 from climateconnect_api.models import (Skill,)
+from climateconnect_api.models.language import Language
 
 
 def project_image_path(instance, filename):
@@ -169,6 +170,14 @@ class Project(models.Model):
         verbose_name="Is an Active Project",
         default=True,
         null=False
+    )
+
+    language = models.ForeignKey(
+        Language, related_name="project_language",
+        help_text="Original project language",
+        verbose_name="Language",
+        null=True, blank=True,
+        on_delete=models.SET_NULL
     )
 
     class Meta:

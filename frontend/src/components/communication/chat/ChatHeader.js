@@ -1,10 +1,13 @@
-import React from "react";
-import { IconButton, makeStyles, Link, Tooltip } from "@material-ui/core";
-import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
-import ChatTitle from "../../communication/chat/ChatTitle";
-import MiniProfilePreview from "../../profile/MiniProfilePreview";
-import GroupAddIcon from "@material-ui/icons/GroupAdd";
+import { IconButton, Link, makeStyles, Tooltip } from "@material-ui/core";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import GroupAddIcon from "@material-ui/icons/GroupAdd";
+import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
+import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../../public/lib/apiOperations";
+import getTexts from "../../../../public/texts/texts";
+import ChatTitle from "../../communication/chat/ChatTitle";
+import UserContext from "../../context/UserContext";
+import MiniProfilePreview from "../../profile/MiniProfilePreview";
 
 const useStyles = makeStyles((theme) => ({
   topBar: {
@@ -43,24 +46,26 @@ export default function ChatHeader({
   leaveChat,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "chat", locale: locale });
   return (
     <div className={`${classes.topBar} ${className}`}>
       {!memberManagementExpanded && (
-        <Tooltip title="Back to inbox">
-          <IconButton className={classes.backIcon} href="/inbox">
+        <Tooltip title={texts.back_to_inbox}>
+          <IconButton className={classes.backIcon} href={getLocalePrefix(locale) + "/inbox"}>
             <KeyboardArrowLeftIcon />
           </IconButton>
         </Tooltip>
       )}
       {!isPrivateChat && (
-        <Tooltip title="Leave group chat">
+        <Tooltip title={texts.leave_group_chat}>
           <IconButton className={classes.manageMembersButton} onClick={leaveChat}>
             <ExitToAppIcon />
           </IconButton>
         </Tooltip>
       )}
       {!isPrivateChat && !showChatParticipants && canEditMembers && !memberManagementExpanded && (
-        <Tooltip title="Manage chat members">
+        <Tooltip title={texts.manage_chat_members}>
           <IconButton
             className={classes.manageMembersButton}
             onClick={handleToggleMemberManagementExpanded}
@@ -80,7 +85,7 @@ export default function ChatHeader({
               onClick={toggleShowChatParticipants}
               className={classes.showParticipantsButton}
             >
-              {showChatParticipants ? "Hide chat participants" : "Show chat participants"}
+              {showChatParticipants ? texts.hide_chat_participants : texts.show_chat_participants}
             </Link>
           </div>
         </div>

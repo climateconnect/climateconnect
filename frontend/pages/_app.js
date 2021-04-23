@@ -1,13 +1,13 @@
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { ThemeProvider } from "@material-ui/core/styles";
-import axios from "axios";
 import NextCookies from "next-cookies";
+import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import ReactGA from "react-ga";
 //add global styles
 import "react-multi-carousel/lib/styles.css";
 import Cookies from "universal-cookie";
-import tokenConfig from "../public/config/tokenConfig";
+import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getCookieProps } from "../public/lib/cookieOperations";
 import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
@@ -32,10 +32,13 @@ export default function MyApp({
   const [acceptedNecessary, setAcceptedNecessary] = React.useState(
     cookies.get("acceptedNecessary")
   );
+  const [isLoading, setLoading] = React.useState(false);
   const updateCookies = () => {
     setAcceptedStatistics(cookies.get("acceptedStatistics"));
     setAcceptedNecessary(cookies.get("acceptedNecessary"));
   };
+  const router = useRouter();
+  const { locale, locales } = router;
   if (
     acceptedStatistics &&
     !gaInitialized &&
@@ -73,7 +76,13 @@ export default function MyApp({
     if (!develop) cookieProps.domain = "." + API_HOST;
     try {
       const token = cookies.get("token");
-      await axios.post(process.env.API_URL + "/logout/", null, tokenConfig(token));
+      await apiRequest({
+        method: "post",
+        url: "/logout/",
+        token: token,
+        payload: {},
+        locale: locale,
+      });
       cookies.remove("token", cookieProps);
       setState({
         ...state,
@@ -99,6 +108,10 @@ export default function MyApp({
   };
 
   const signIn = async (token, expiry) => {
+    console.log(process.env)
+    console.log(process.env.API_HOST)
+    console.log(process.env.BASE_URL_HOST)
+    console.log(process.env.NEXT_PUBLIC_BASE_URL_HOST)
     const cookieProps = getCookieProps(expiry);
 
     cookies.set("token", token, cookieProps);
@@ -156,6 +169,14 @@ export default function MyApp({
     }
   };
 
+  const startLoading = () => {
+    setLoading(true);
+  };
+
+  const stopLoading = () => {
+    setLoading(false);
+  };
+
   const contextValues = {
     user: state.user,
     signOut: signOut,
@@ -174,6 +195,11 @@ export default function MyApp({
     socketConnectionState: socketConnectionState,
     donationGoal: donationGoal,
     acceptedNecessary: acceptedNecessary,
+    locale: locale,
+    locales: locales,
+    isLoading,
+    startLoading,
+    stopLoading,
   };
   return (
     <React.Fragment>
@@ -190,10 +216,9 @@ export default function MyApp({
 
 MyApp.getInitialProps = async (ctx) => {
   const { token, acceptedStatistics } = NextCookies(ctx.ctx);
-
   if (ctx.router.route === "/" && token) {
     ctx.ctx.res.writeHead(302, {
-      Location: "/browse",
+      Location: getLocalePrefix(ctx.router.locale) + "/browse",
       "Content-Type": "text/html; charset=utf-8",
     });
     ctx.ctx.res.end();
@@ -203,14 +228,19 @@ MyApp.getInitialProps = async (ctx) => {
     getLoggedInUser(token),
     getNotifications(token),
     process.env.DONATION_CAMPAIGN_RUNNING === "true" ? getDonationGoalData() : null,
-    ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps(ctx.ctx) : {},
+    //Call getInitialProps of children
+    ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps({...ctx.ctx, locale: ctx.router.locale}) : {},
   ]);
   const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
 
   if (token) {
     const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
     if (notificationsToSetRead.length > 0) {
-      const updatedNotifications = await setNotificationsRead(token, notificationsToSetRead);
+      const updatedNotifications = await setNotificationsRead(
+        token,
+        notificationsToSetRead,
+        ctx.router.locale
+      );
       return {
         pageProps: pageProps,
         user: user,
@@ -261,14 +291,16 @@ const getNotificationsToSetRead = (notifications, pageProps) => {
   return notifications_to_set_unread;
 };
 
-const setNotificationsRead = async (token, notifications) => {
+const setNotificationsRead = async (token, notifications, locale) => {
   if (token) {
     try {
-      const resp = await axios.post(
-        process.env.API_URL + "/api/set_user_notifications_read/",
-        { notifications: notifications.map((n) => n.id) },
-        tokenConfig(token)
-      );
+      const resp = await apiRequest({
+        method: "post",
+        url: "/api/set_user_notifications_read/",
+        payload: { notifications: notifications.map((n) => n.id) },
+        token: token,
+        locale: locale,
+      });
       return resp.data;
     } catch (e) {
       console.log(e);
@@ -279,7 +311,11 @@ const setNotificationsRead = async (token, notifications) => {
 async function getLoggedInUser(token) {
   if (token) {
     try {
-      const resp = await axios.get(process.env.API_URL + "/api/my_profile/", tokenConfig(token));
+      const resp = await apiRequest({
+        method: "get",
+        url: "/api/my_profile/",
+        token: token,
+      });
       return resp.data;
     } catch (err) {
       console.log(err);
@@ -297,7 +333,11 @@ async function getLoggedInUser(token) {
 async function getNotifications(token) {
   if (token) {
     try {
-      const resp = await axios.get(process.env.API_URL + "/api/notifications/", tokenConfig(token));
+      const resp = await apiRequest({
+        method: "get",
+        url: "/api/notifications/",
+        token: token,
+      });
       return resp.data.results;
     } catch (err) {
       if (err.response && err.response.data)
@@ -313,7 +353,10 @@ async function getNotifications(token) {
 
 async function getDonationGoalData() {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/donation_goal_progress/");
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/donation_goal_progress/",
+    });
     return {
       goal_name: resp.data.name,
       goal_start: resp.data.start_date,

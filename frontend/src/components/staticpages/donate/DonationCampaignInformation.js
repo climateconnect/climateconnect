@@ -1,22 +1,23 @@
-import React, { useContext } from "react";
-import Cookies from "universal-cookie";
-import { getCookieProps } from "../../../../public/lib/cookieOperations";
 import {
-  makeStyles,
-  Typography,
   Button,
+  Collapse,
+  Container,
   IconButton,
   Link,
-  Container,
-  Collapse,
+  makeStyles,
+  Typography,
   useMediaQuery,
 } from "@material-ui/core";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import CloseIcon from "@material-ui/icons/Close";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import React, { useContext } from "react";
+import Cookies from "universal-cookie";
+import { getLocalePrefix } from "../../../../public/lib/apiOperations";
+import { getCookieProps } from "../../../../public/lib/cookieOperations";
+import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
 import DonationGoal from "./DonationGoal";
-import theme from "../../../themes/theme";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,6 +82,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+//If we want to reuse this, this has to be translated!
 export default function DonationCampaignInformation() {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -88,7 +90,7 @@ export default function DonationCampaignInformation() {
   const cookieProps = getCookieProps(expiry);
   const [open, setOpen] = React.useState(!cookies.get("hideDonationCampaign"));
   const [expanded, setExpanded] = React.useState(false);
-  const { donationGoal } = useContext(UserContext);
+  const { donationGoal, locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
 
   const handleClose = () => {
@@ -125,12 +127,16 @@ export default function DonationCampaignInformation() {
                 barColor={theme.palette.primary.light}
               />
               {isNarrowScreen && (
-                <Button href="/donate" variant="contained" className={classes.donateButton}>
+                <Button
+                  href={getLocalePrefix(locale) + "/donate"}
+                  variant="contained"
+                  className={classes.donateButton}
+                >
                   Donate now
                 </Button>
               )}
               <Typography className={classes.textBlock}>
-                Your donation will help scale up effective climate solutions, support us in growing
+                Your donation will help to scale effective climate solutions, support us in growing
                 a global network of climate actors and allow Climate Connect to stay free and
                 independent. In our December raffle everybody who donates to Climate Connect in the
                 month of December has a chance to win the compensation of their {"year's"}{" "}
@@ -151,7 +157,7 @@ export default function DonationCampaignInformation() {
                 <Link
                   underline="always"
                   className={classes.link}
-                  href="/raffleterms"
+                  href={getLocalePrefix(locale) + "/raffleterms"}
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -159,7 +165,11 @@ export default function DonationCampaignInformation() {
                 </Link>
               </Typography>
               {!isNarrowScreen && (
-                <Button href="/donate" variant="contained" className={classes.donateButton}>
+                <Button
+                  href={getLocalePrefix(locale) + "/donate"}
+                  variant="contained"
+                  className={classes.donateButton}
+                >
                   Donate now
                 </Button>
               )}

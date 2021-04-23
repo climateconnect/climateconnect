@@ -1,6 +1,8 @@
 from location.models import Location
 from django.db import models
 
+from climateconnect_api.models.language import Language
+
 
 def organization_image_path(instance, filename):
     return "organization_images/{}/profile/{}".format(
@@ -148,6 +150,14 @@ class Organization(models.Model):
         help_text="organizations with a rating of 99 are being shown as featured. Could later be used to sort organizations.",
         verbose_name="Rating (1-100)",
         default=100
+    )
+
+    language = models.ForeignKey(
+        Language, related_name="orgnaization_language",
+        help_text="Points to original language organization was created on",
+        verbose_name="Language",
+        null=True, blank=True,
+        on_delete=models.SET_NULL
     )
 
     class Meta:

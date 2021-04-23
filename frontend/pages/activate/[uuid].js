@@ -1,61 +1,74 @@
-import React from "react";
-import { Typography, Link } from "@material-ui/core";
+import { Link, Typography } from "@material-ui/core";
+import React, { useContext, useEffect } from "react";
+import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
+import { redirectOnLogin } from "../../public/lib/profileOperations";
+import getTexts from "../../public/texts/texts";
+import UserContext from "../../src/components/context/UserContext";
 import Layout from "../../src/components/layouts/layout";
-import axios from "axios";
 
-ProfileVerified.getInitialProps = async (ctx) => {
-  const uuid = encodeURI(ctx.query.uuid);
-  const messages = await profileVerification(uuid);
+export async function getServerSideProps({ query, locale }) {
+  const uuid = encodeURI(query.uuid);
+  const messages = await profileVerification(uuid, locale);
   return {
-    successMessage: messages["successMessage"],
-    errorMessage: messages["errorMessage"],
+    props: {
+      successMessage: messages["successMessage"] ? messages["successMessage"] : null,
+      errorMessage: messages["errorMessage"] ? messages["errorMessage"] : null,
+    },
   };
-};
+}
 
-async function profileVerification(uuid) {
+async function profileVerification(uuid, locale) {
   const payload = {
     uuid: uuid,
   };
-  const config = {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
+  const headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
   };
   try {
-    const response = await axios.post(
-      process.env.API_URL + "/api/verify_profile/",
-      payload,
-      config
-    );
+    const response = await apiRequest({
+      method: "post",
+      url: "/api/verify_profile/",
+      payload: payload,
+      headers: headers,
+      locale: locale,
+    });
     return { successMessage: response.data.message, errorMessage: "" };
   } catch (error) {
+    const texts = getTexts({ page: "general", locale: locale });
     if (error.response && error.response.data) {
       return { successMessage: "", errorMessage: error.response.data.message };
     } else if (error.request) {
       return {
         successMessage: "",
-        errorMessage: "Something went wrong. Please contact our support team.",
+        errorMessage: texts.something_went_wrong,
       };
     } else {
       return {
         successMessage: "",
-        errorMessage: "Something went wrong. Please contact our support team.",
+        errorMessage: texts.something_went_wrong,
       };
     }
   }
 }
 
 export default function ProfileVerified({ successMessage, errorMessage }) {
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "settings", locale: locale });
+  useEffect(function () {
+    if (user) {
+      redirectOnLogin(user, "/", locale);
+    }
+  });
   return (
-    <Layout title="Account Verified">
-      {successMessage != "" ? (
+    <Layout title={texts.accont_verified} hideHeadline={errorMessage}>
+      {successMessage !== "" && successMessage !== null ? (
         <div>
           <Typography align="center" variant="h5" component="h2">
             {successMessage}
           </Typography>
           <Typography align="center" variant="h5" color="primary" component="h2">
-            <Link href="/signin">Click here to log in</Link>
+            <Link href={getLocalePrefix(locale) + "/signin"}>{texts.click_here_to_log_in}</Link>
           </Typography>
         </div>
       ) : null}

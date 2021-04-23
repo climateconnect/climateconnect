@@ -1,10 +1,11 @@
-import React from "react";
-import OrganizationPreview from "./OrganizationPreview";
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
 import InfiniteScroll from "react-infinite-scroller";
-
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
+import OrganizationPreview from "./OrganizationPreview";
 
 const useStyles = makeStyles({
   reset: {
@@ -23,7 +24,8 @@ export default function OrganizationPreviews({
   showOrganizationType,
 }) {
   const classes = useStyles();
-
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "organization", locale: locale });
   const toOrganizationPreviews = (organizations) =>
     organizations.map((o) => (
       <GridItem key={o.url_slug} organization={o} showOrganizationType={showOrganizationType} />
@@ -67,7 +69,7 @@ export default function OrganizationPreviews({
         {parentHandlesGridItems
           ? organizations && organizations.length > 0
             ? toOrganizationPreviews(organizations)
-            : "No organizations found. Try changing or removing your filter or search query."
+            : texts.no_organization_found
           : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="organization-previews-spinner" />}
       </InfiniteScroll>

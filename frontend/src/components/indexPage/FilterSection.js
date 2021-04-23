@@ -1,7 +1,9 @@
 import { Button, makeStyles } from "@material-ui/core";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import TuneIcon from "@material-ui/icons/Tune";
-import React from "react";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
 
 const useStyles = makeStyles((theme) => {
@@ -43,12 +45,6 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const searchBarLabels = {
-  projects: "Search for climate action projects",
-  organizations: "Search for organizations fighting climate change",
-  members: "Search for people active against climate change",
-};
-
 export default function FilterSection({
   filtersExpanded,
   onSubmit,
@@ -58,6 +54,13 @@ export default function FilterSection({
   filterButtonRef,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "filter_and_search", locale: locale });
+  const searchBarLabels = {
+    projects: texts.search_projects,
+    organizations: texts.search_organizations,
+    members: texts.search_active_people,
+  };
 
   const InputLabelClasses = {
     root: classes.inputLabel,

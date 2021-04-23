@@ -1,6 +1,8 @@
-import React from "react";
-import { Typography, Chip, Tooltip } from "@material-ui/core";
+import { Chip, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -22,13 +24,15 @@ const useStyles = makeStyles((theme) => {
 
 export default function SelectedFilters({ currentFilters, possibleFilters, handleUnselectFilter }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "filter_and_search", locale: locale });
   const hasFilters = Object.keys(currentFilters).reduce((hasFilters, filter) => {
     if (currentFilters[filter] && currentFilters[filter].length) hasFilters = true;
     return hasFilters;
   }, false);
   return (
     <div>
-      {hasFilters && <Typography>Selected Filters</Typography>}
+      {hasFilters && <Typography>{texts.selected_filters}</Typography>}
       {Object.keys(currentFilters).map((key) => {
         if (
           currentFilters[key] &&

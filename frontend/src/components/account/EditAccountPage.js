@@ -8,7 +8,7 @@ import {
   TextField,
   Tooltip,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -16,15 +16,18 @@ import ControlPointIcon from "@material-ui/icons/ControlPoint";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import Alert from "@material-ui/lab/Alert";
-import React from "react";
+import React, { useContext } from "react";
 import {
   getCompressedJPG,
   getImageDialogHeight,
   getResizedImage,
-  whitenTransparentPixels,
+  whitenTransparentPixels
 } from "../../../public/lib/imageOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
+import ButtonLoader from "../general/ButtonLoader";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import LocationSearchBar from "../search/LocationSearchBar";
@@ -204,6 +207,10 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginTop: theme.spacing(10),
   },
+  checkTranslationsButtonContainer: {
+    display: "flex",
+    marginTop: theme.spacing(5),
+  },
 }));
 
 export default function EditAccountPage({
@@ -219,7 +226,11 @@ export default function EditAccountPage({
   skillsOptions,
   splitName,
   deleteEmail,
+  loadingSubmit,
+  onClickCheckTranslations,
 }) {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "account", locale: locale });
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
@@ -455,7 +466,7 @@ export default function EditAccountPage({
             {i.value && (
               <>
                 <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
-                  Parent organization:
+                  {texts.parent_organization}:
                 </Typography>
                 <MiniOrganizationPreview
                   organization={i.value}
@@ -514,7 +525,7 @@ export default function EditAccountPage({
             />
           </div>
         );
-      } else if (key != "parent_organization" && i.type === "text") {
+      } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
         return (
           <div key={key} className={classes.infoElement}>
             <Typography className={classes.subtitle}>
@@ -537,7 +548,7 @@ export default function EditAccountPage({
   const onBackgroundChange = async (backgroundEvent) => {
     const file = backgroundEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
-      alert("Please upload either a png or a jpg file.");
+      alert(texts.please_upload_either_a_png_or_a_jpg_file);
 
     try {
       const compressedImage = await getCompressedJPG(file, 1);
@@ -557,7 +568,7 @@ export default function EditAccountPage({
   const onAvatarChange = async (avatarEvent) => {
     const file = avatarEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
-      alert("Please upload either a png or a jpg file.");
+      alert(texts.please_upload_either_a_png_or_a_jpg_file);
 
     try {
       const compressedImage = await getCompressedJPG(file, 0.5);
@@ -632,7 +643,11 @@ export default function EditAccountPage({
               </div>
             ) : (
               <div className={classes.avatarButtonContainer}>
-                <Chip color="primary" label="Add background image" icon={<ControlPointIcon />} />
+                <Chip
+                  color="primary"
+                  label={texts.add_background_image}
+                  icon={<ControlPointIcon />}
+                />
               </div>
             )}
           </label>
@@ -644,7 +659,7 @@ export default function EditAccountPage({
             variant="contained"
             type="submit"
           >
-            {submitMessage ? submitMessage : "Save"}
+            {loadingSubmit ? <ButtonLoader /> : submitMessage ? submitMessage : "Save"}
           </Button>
           <Button
             className={`${classes.cancelButton} ${classes.actionButton}`}
@@ -683,7 +698,7 @@ export default function EditAccountPage({
                 ) : (
                   <div className={classes.avatarButtonContainer}>
                     <Chip
-                      label="Add Image"
+                      label={texts.add_image}
                       color="primary"
                       icon={<ControlPointIcon />}
                       className={classes.cursorPointer}
@@ -702,7 +717,7 @@ export default function EditAccountPage({
                   onChange={(event) => handleTextFieldChange("first_name", event.target.value)}
                   multiline
                   required
-                  label={"First name"}
+                  label={texts.first_name}
                 />
                 <TextField
                   className={classes.name}
@@ -711,7 +726,7 @@ export default function EditAccountPage({
                   onChange={(event) => handleTextFieldChange("last_name", event.target.value)}
                   multiline
                   required
-                  label={"Last name"}
+                  label={texts.last_name}
                 />
               </>
             ) : (
@@ -744,7 +759,7 @@ export default function EditAccountPage({
                   getTypesOfAccount(editedAccount, possibleAccountTypes, infoMetadata).length <
                     maxAccountTypes && (
                     <Chip
-                      label="Add Type"
+                      label={texts.add_type}
                       color={
                         editedAccount.types && editedAccount.types.length ? "default" : "primary"
                       }
@@ -757,13 +772,24 @@ export default function EditAccountPage({
           </Container>
           <Container className={classes.accountInfo}>
             {displayAccountInfo(editedAccount.info)}
+            {onClickCheckTranslations && (
+              <div className={classes.checkTranslationsButtonContainer}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => onClickCheckTranslations(editedAccount)}
+                >
+                  {texts.check_translations}
+                </Button>
+              </div>
+            )}
           </Container>
         </Container>
         {children}
         {deleteEmail && (
           <Typography variant="subtitle2" className={classes.deleteMessage}>
             <InfoOutlinedIcon />
-            If you wish to delete this account, send an E-Mail to {deleteEmail}
+            {texts.if_you_wish_to_delete} {deleteEmail}
           </Typography>
         )}
       </form>
@@ -788,11 +814,11 @@ export default function EditAccountPage({
         <SelectDialog
           onClose={handleAddTypeClose}
           open={open.addTypeDialog}
-          title="Add Type"
+          title={texts.add_type}
           values={getTypes(possibleAccountTypes, infoMetadata).filter(
             (type) => editedAccount.types && !editedAccount.types.includes(type.key)
           )}
-          label={"Choose type"}
+          label={texts.choose_type}
           supportAdditionalInfo={true}
           className={classes.dialogWidth}
         />
@@ -800,10 +826,10 @@ export default function EditAccountPage({
       <ConfirmDialog
         open={open.confirmExitDialog}
         onClose={handleConfirmExitClose}
-        title="Exit"
-        text="Do you really want to exit without saving?"
-        cancelText="No"
-        confirmText="Yes"
+        title={texts.exit}
+        text={texts.do_you_really_want_to_exit_without_saving}
+        cancelText={texts.no}
+        confirmText={texts.yes}
       />
     </Container>
   );

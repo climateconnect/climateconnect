@@ -1,20 +1,21 @@
 import { makeStyles, Typography } from "@material-ui/core";
-import axios from "axios";
 import NextCookies from "next-cookies";
-import React, { useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import tokenConfig from "../../public/config/tokenConfig";
+import { apiRequest } from "../../public/lib/apiOperations";
 import { buildUrlEndingFromFilters } from "../../public/lib/filterOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo,
+  membersWithAdditionalInfo
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { parseData } from "../../public/lib/parsingOperations";
+import getTexts from "../../public/texts/texts";
 import BrowseContent from "../../src/components/browse/BrowseContent";
+import UserContext from "../../src/components/context/UserContext";
 import BrowseExplainer from "../../src/components/hub/BrowseExplainer";
 import FashionDescription from "../../src/components/hub/description/FashionDescription";
 import FoodDescription from "../../src/components/hub/description/FoodDescription";
@@ -43,6 +44,51 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+//potentially switch back to getinitialprops here?!
+export async function getServerSideProps(ctx) {
+  const hubUrl = ctx.query.hubUrl;
+  const { token } = NextCookies(ctx);
+  const [
+    hubData,
+    initialProjects,
+    initialOrganizations,
+    project_categories,
+    organization_types,
+    skills,
+    project_statuses,
+  ] = await Promise.all([
+    getHubData(hubUrl, ctx.locale),
+    getProjects({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
+    getOrganizations({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
+    getProjectTagsOptions(hubUrl, ctx.locale),
+    getOrganizationTagsOptions(ctx.locale),
+    getSkillsOptions(ctx.locale),
+    getStatusOptions(ctx.locale),
+  ]);
+  return {
+    props: {
+      hubUrl: hubUrl,
+      isLocationHub: hubData.hub_type === "location hub",
+      name: hubData.name,
+      headline: hubData.headline,
+      subHeadline: hubData.sub_headline,
+      image: hubData.image,
+      quickInfo: hubData.quick_info,
+      stats: hubData.stats,
+      statBoxTitle: hubData.stat_box_title,
+      image_attribution: hubData.image_attribution,
+      initialProjects: initialProjects,
+      initialOrganizations: initialOrganizations,
+      filterChoices: {
+        project_categories: project_categories,
+        organization_types: organization_types,
+        skills: skills,
+        project_statuses: project_statuses,
+      },
+    }
+  }
+}
+
 export default function Hub({
   hubUrl,
   name,
@@ -56,9 +102,11 @@ export default function Hub({
   filterChoices,
   subHeadline,
   image_attribution,
+  isLocationHub,
 }) {
-  console.log(statBoxTitle);
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("token");
   const [filters, setFilters] = useState({
     projects: {},
@@ -71,6 +119,13 @@ export default function Hub({
   };
   const contentRef = useRef(null);
 
+  const [initialMembers, setInitialMembers] = useState(null)
+  useEffect(async function(){
+    if(isLocationHub){
+      setInitialMembers(await getMembers({page: 1, token: token, hubUrl: hubUrl, locale: locale}))
+    }
+  }, [])
+
   //Refs and state for tutorial
   const hubQuickInfoRef = useRef(null);
   const hubProjectsButtonRef = useRef(null);
@@ -82,8 +137,9 @@ export default function Hub({
   };
 
   const customSearchBarLabels = {
-    projects: "Search for climate solutions in the food sector",
-    organizations: "Search for climate organizations in the food sector",
+    projects: isLocationHub ? texts.search_projects_in_location : texts.search_for_solutions_in_sector,
+    organizations: isLocationHub ? texts.search_organization_in_location : texts.search_for_organizations_in_sector,
+    profiles: texts.search_profiles_in_location
   };
 
   const loadMoreData = async (type, page, urlEnding) => {
@@ -94,6 +150,7 @@ export default function Hub({
         token: token,
         urlEnding: urlEnding,
         hubUrl: hubUrl,
+        locale: locale,
       });
       const newData =
         type === "members" ? membersWithAdditionalInfo(newDataObject.members) : newDataObject[type];
@@ -126,6 +183,7 @@ export default function Hub({
         token: token,
         urlEnding: newUrlEnding,
         hubUrl: hubUrl,
+        locale: locale,
       });
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
@@ -155,6 +213,7 @@ export default function Hub({
         token: token,
         urlEnding: newSearchQueryParam,
         hubUrl: hubUrl,
+        locale: locale,
       });
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
@@ -168,12 +227,17 @@ export default function Hub({
     }
   };
 
+  const closeHubHeaderImage = (e) => {
+    e.preventDefault()
+    console.log("closing hub header image")
+  }
+
   return (
     <WideLayout title={headline} fixedHeader headerBackground="#FFF">
       <div className={classes.contentUnderHeader}>
         <NavigationSubHeader hubName={name} />
         {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
-        <HubHeaderImage image={getImageUrl(image)} source={image_attribution} />
+        <HubHeaderImage image={getImageUrl(image)} source={image_attribution} onClose={closeHubHeaderImage}/>
         <HubContent
           hubQuickInfoRef={hubQuickInfoRef}
           headline={headline}
@@ -181,21 +245,23 @@ export default function Hub({
           statBoxTitle={statBoxTitle}
           stats={stats}
           scrollToSolutions={scrollToSolutions}
-          detailledInfo={<HubDescription hub={hubUrl} />}
+          detailledInfo={<HubDescription hub={hubUrl} texts={texts} />}
           subHeadline={subHeadline}
           hubProjectsButtonRef={hubProjectsButtonRef}
+          isLocationHub={isLocationHub}
         />
         <div className={classes.contentRefContainer}>
           <div ref={contentRef} className={classes.contentRef} />
-          <BrowseExplainer />
+          {!isLocationHub && <BrowseExplainer />}
           <BrowseContent
             initialProjects={initialProjects}
             initialOrganizations={initialOrganizations}
+            initialMembers={initialMembers}
             filterChoices={filterChoices}
             loadMoreData={loadMoreData}
             applyNewFilters={applyNewFilters}
             applySearch={applySearch}
-            hideMembers
+            hideMembers={!isLocationHub}
             customSearchBarLabels={customSearchBarLabels}
             handleSetErrorMessage={handleSetErrorMessage}
             errorMessage={errorMessage}
@@ -210,63 +276,26 @@ export default function Hub({
   );
 }
 
-const HubDescription = ({ hub }) => {
+const HubDescription = ({ hub, texts }) => {
   const classes = useStyles();
   if (hub === "food") return <FoodDescription />;
   if (hub === "fashion") return <FashionDescription />;
   return (
     <Typography className={classes.moreInfoSoon}>
-      More Info coming soon! Have a look at the projects and solutions submitted by Climate Connect
-      users below!
+      {texts.more_info_about_hub_coming_soon}
     </Typography>
   );
 };
 
-Hub.getInitialProps = async (ctx) => {
-  const hubUrl = ctx.query.hubUrl;
-  const { token } = NextCookies(ctx);
-  const [
-    hubData,
-    initialProjects,
-    initialOrganizations,
-    project_categories,
-    organization_types,
-    skills,
-    project_statuses,
-  ] = await Promise.all([
-    getHubData(hubUrl),
-    getProjects({ page: 1, token: token, hubUrl: hubUrl }),
-    getOrganizations({ page: 1, token: token, hubUrl: hubUrl }),
-    getProjectTagsOptions(hubUrl),
-    getOrganizationTagsOptions(),
-    getSkillsOptions(),
-    getStatusOptions(),
-  ]);
-  return {
-    hubUrl: hubUrl,
-    name: hubData.name,
-    headline: hubData.headline,
-    subHeadline: hubData.sub_headline,
-    image: hubData.image,
-    quickInfo: hubData.quick_info,
-    stats: hubData.stats,
-    statBoxTitle: hubData.stat_box_title,
-    image_attribution: hubData.image_attribution,
-    initialProjects: initialProjects,
-    initialOrganizations: initialOrganizations,
-    filterChoices: {
-      project_categories: project_categories,
-      organization_types: organization_types,
-      skills: skills,
-      project_statuses: project_statuses,
-    },
-  };
-};
-
-const getHubData = async (url_slug) => {
+const getHubData = async (url_slug, locale) => {
   console.log("getting data for hub " + url_slug);
   try {
-    const resp = await axios.get(`${process.env.API_URL}/api/hubs/${url_slug}/`);
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/hubs/${url_slug}/`,
+      locale: locale,
+      shouldThrowError: true
+    });
     return resp.data;
   } catch (err) {
     if (err.response && err.response.data)
@@ -276,34 +305,52 @@ const getHubData = async (url_slug) => {
   }
 };
 
-async function getProjects({ page, token, urlEnding, hubUrl }) {
+async function getProjects({ page, token, urlEnding, hubUrl, locale }) {
   return await getDataFromServer({
     type: "projects",
     page: page,
     token: token,
     urlEnding: urlEnding,
     hubUrl: hubUrl,
+    locale: locale,
   });
 }
 
-async function getOrganizations({ page, token, urlEnding, hubUrl }) {
+async function getOrganizations({ page, token, urlEnding, hubUrl, locale }) {
   return await getDataFromServer({
     type: "organizations",
     page: page,
     token: token,
     urlEnding: urlEnding,
     hubUrl: hubUrl,
+    locale: locale,
   });
 }
 
-async function getDataFromServer({ type, page, token, urlEnding, hubUrl }) {
-  let url = `${process.env.API_URL}/api/${type}/?page=${page}&hub=${hubUrl}`;
+async function getMembers({ page, token, urlEnding, hubUrl, locale }) {
+  return await getDataFromServer({
+    type: "members",
+    page: page,
+    token: token,
+    urlEnding: urlEnding,
+    hubUrl: hubUrl,
+    locale: locale,
+  });
+}
+
+async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale }) {
+  let url = `/api/${type}/?page=${page}&hub=${hubUrl}`;
   console.log(`getting ${type} data for category ${hubUrl}`);
   if (urlEnding) url += urlEnding;
 
   try {
     console.log(`Getting data for ${type} at ${url}`);
-    const resp = await axios.get(url, tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: url,
+      token: token,
+      locale: locale,
+    });
 
     if (resp.data.length === 0) {
       console.log(`No data of type ${type} found...`);
