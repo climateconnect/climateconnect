@@ -108,10 +108,10 @@ export default function MyApp({
   };
 
   const signIn = async (token, expiry) => {
-    console.log(process.env)
-    console.log(process.env.API_HOST)
-    console.log(process.env.BASE_URL_HOST)
-    console.log(process.env.NEXT_PUBLIC_BASE_URL_HOST)
+    console.log(process.env);
+    console.log(process.env.API_HOST);
+    console.log(process.env.BASE_URL_HOST);
+    console.log(process.env.NEXT_PUBLIC_BASE_URL_HOST);
     const cookieProps = getCookieProps(expiry);
 
     cookies.set("token", token, cookieProps);
@@ -229,7 +229,9 @@ MyApp.getInitialProps = async (ctx) => {
     getNotifications(token),
     process.env.DONATION_CAMPAIGN_RUNNING === "true" ? getDonationGoalData() : null,
     //Call getInitialProps of children
-    ctx.Component && ctx.Component.getInitialProps ? ctx.Component.getInitialProps({...ctx.ctx, locale: ctx.router.locale}) : {},
+    ctx.Component && ctx.Component.getInitialProps
+      ? ctx.Component.getInitialProps({ ...ctx.ctx, locale: ctx.router.locale })
+      : {},
   ]);
   const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
 

@@ -22,5 +22,9 @@
   "now_follows_your_project": {
     "en": "now follows your project",
     "de": "folgt jetzt deinem Projekt"
+  },
+  "go_to_inbox": {
+    "en": "Go to Inbox",
+    "de": "Zum Posteingang"
   }
 }

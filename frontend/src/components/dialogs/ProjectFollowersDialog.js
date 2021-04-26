@@ -56,7 +56,7 @@ export default function ProjectFollowersDialog({
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "general", locale: locale });
+  const texts = getTexts({ page: "project", locale: locale });
   const handleClose = () => {
     onClose();
   };

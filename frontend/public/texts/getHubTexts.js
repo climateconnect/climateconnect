@@ -106,8 +106,8 @@ export default function getHubTexts({ hubName }) {
     },
     click_here_to_minimize_info: {
       en: "Click here to minimize the info about the hub",
-      de: "Klicke hier, um den Info-Bereich der Hub auszublenden"
-    }
+      de: "Klicke hier, um den Info-Bereich der Hub auszublenden",
+    },
   };
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };
   if (hubName === "Food") return { ...generalHubTexts, ...getFoodHubDescription() };

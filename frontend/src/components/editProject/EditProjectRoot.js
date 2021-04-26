@@ -7,7 +7,7 @@ import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import {
   getTranslationsFromObject,
-  getTranslationsWithoutRedundantKeys
+  getTranslationsWithoutRedundantKeys,
 } from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -106,7 +106,10 @@ export default function EditProjectRoot({
     apiRequest({
       method: "patch",
       url: "/api/projects/" + project.url_slug + "/",
-      payload: await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject), translationChanges),
+      payload: await parseProjectForRequest(
+        getProjectWithoutRedundancies(project, oldProject),
+        translationChanges
+      ),
       token: token,
       locale: locale,
     })
@@ -126,7 +129,7 @@ export default function EditProjectRoot({
 
   const onCheckTranslations = (e) => {
     e.preventDefault();
-    setStep(STEPS[1])
+    setStep(STEPS[1]);
   };
 
   const additionalButtons = [
@@ -169,7 +172,10 @@ export default function EditProjectRoot({
     apiRequest({
       method: "patch",
       url: "/api/projects/" + project.url_slug + "/",
-      payload: await parseProjectForRequest(getProjectWithoutRedundancies(project, oldProject), translationChanges),
+      payload: await parseProjectForRequest(
+        getProjectWithoutRedundancies(project, oldProject),
+        translationChanges
+      ),
       token: token,
       locale: locale,
     })
@@ -214,8 +220,8 @@ export default function EditProjectRoot({
     await handleSubmit(e);
   };
 
-  const handleTranslationsDraftSubmit = async() => {
-    await onSaveDraft()
+  const handleTranslationsDraftSubmit = async () => {
+    await onSaveDraft();
   };
 
   const goToPreviousStep = () => {
@@ -236,7 +242,7 @@ export default function EditProjectRoot({
 
   const handleSetProjectData = (newProjectData) => {
     handleSetProject({ ...project, ...newProjectData });
-  }
+  };
 
   const textsToTranslate = [
     {
@@ -329,7 +335,7 @@ const getProjectWithoutRedundancies = (newProject, oldProject) => {
 const parseProjectForRequest = async (project, translationChanges) => {
   const ret = {
     ...project,
-    translations: translationChanges
+    translations: translationChanges,
   };
   if (project.image) ret.image = await blobFromObjectUrl(project.image);
   if (project.thumbnail_image)

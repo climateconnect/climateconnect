@@ -42,9 +42,7 @@ export async function getStatusOptions(locale) {
 }
 
 export async function getProjectTagsOptions(hub, locale) {
-  const url = hub
-    ? `/api/projecttags/?hub=${hub}`
-    : `/api/projecttags/`;
+  const url = hub ? `/api/projecttags/?hub=${hub}` : `/api/projecttags/`;
   try {
     const resp = await apiRequest({
       method: "get",

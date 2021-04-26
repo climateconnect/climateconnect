@@ -8,7 +8,7 @@ import {
   getLocationValue,
   indicateWrongLocation,
   isLocationValid,
-  parseLocation
+  parseLocation,
 } from "../public/lib/locationOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -241,7 +241,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       sourceLanguage,
       targetLanguage
     );
-    await makeCreateOrganizationRequest(organizationToSubmit);    
+    await makeCreateOrganizationRequest(organizationToSubmit);
   };
 
   const makeCreateOrganizationRequest = (organizationToSubmit) => {
@@ -257,9 +257,10 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
         Router.push({
           pathname: "/organizations/" + response.data.url_slug,
           query: {
-            message:texts.you_have_successfully_created_an_organization_you_can_add_members,
+            message: texts.you_have_successfully_created_an_organization_you_can_add_members,
           },
-        });return;
+        });
+        return;
       })
       .catch(function (error) {
         console.log(error);

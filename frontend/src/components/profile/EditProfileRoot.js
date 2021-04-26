@@ -7,7 +7,7 @@ import { blobFromObjectUrl, getImageUrl } from "../../../public/lib/imageOperati
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import {
   getTranslationsFromObject,
-  getTranslationsWithoutRedundantKeys
+  getTranslationsWithoutRedundantKeys,
 } from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
 import EditAccountPage from "../account/EditAccountPage";
@@ -90,10 +90,12 @@ export default function EditAccountRoot({
     editedAccount.language = sourceLanguage;
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
     const payload = await getProfileWithoutRedundantOptions(user, parsedProfile);
-    payload.translations = parseTranslationsForRequest(getTranslationsWithoutRedundantKeys(
-      getTranslationsFromObject(initialTranslations, "user_profile"),
-      translations
-    ))
+    payload.translations = parseTranslationsForRequest(
+      getTranslationsWithoutRedundantKeys(
+        getTranslationsFromObject(initialTranslations, "user_profile"),
+        translations
+      )
+    );
     apiRequest({
       method: "post",
       url: "/api/edit_profile/",
@@ -233,17 +235,16 @@ const getProfileWithoutRedundantOptions = async (user, newProfile) => {
   return finalProfile;
 };
 
-const parseTranslationsForRequest = translations => {
-  const finalTranslations = {...translations}
-  for(const key of Object.keys(translations)){
+const parseTranslationsForRequest = (translations) => {
+  const finalTranslations = { ...translations };
+  for (const key of Object.keys(translations)) {
     finalTranslations[key] = {
       ...translations[key],
-    }
-    if(translations[key].bio)
-      finalTranslations[key].biography = translations[key].bio
+    };
+    if (translations[key].bio) finalTranslations[key].biography = translations[key].bio;
   }
-  return finalTranslations
-}
+  return finalTranslations;
+};
 
 function arraysEqual(_arr1, _arr2) {
   if (!Array.isArray(_arr1) || !Array.isArray(_arr2) || _arr1.length !== _arr2.length) return false;

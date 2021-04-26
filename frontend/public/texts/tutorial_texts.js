@@ -32,7 +32,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     tutorial_lets_start_with_a_question_text: {
       en: `Are you already involved in climate action, for example as a volunteer or in your
       professional life?`,
-      de: `Engagierst du dich bereits als Ehrenamtlicher oder im Berufsleben für den Klimaschutz?`,
+      de: `Engagierst du dich bereits ehrenamtlich oder beruflich für den Klimaschutz?`,
     },
     no_but_i_would_like_to: {
       en: "No, but I'd like to",

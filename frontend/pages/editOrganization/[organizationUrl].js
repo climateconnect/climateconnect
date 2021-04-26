@@ -33,7 +33,7 @@ export async function getServerSideProps(ctx) {
 //This route should only be accessible to admins of the organization
 export default function EditOrganizationPage({ organization, tagOptions }) {
   const { locale } = useContext(UserContext);
-  console.log(organization)
+  console.log(organization);
   const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata(locale);
   const [errorMessage, setErrorMessage] = useState("");

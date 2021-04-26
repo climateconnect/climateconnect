@@ -259,8 +259,8 @@ export default function getProfileTexts({ profile, locale }) {
           und den{" "}
           <a href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
             Datenschutzbestimmungen
-          </a>
-          {" "}einverstanden.
+          </a>{" "}
+          einverstanden.
         </>
       ),
     },
@@ -291,7 +291,7 @@ export default function getProfileTexts({ profile, locale }) {
     },
     user_name_is: {
       en: `${profile?.first_name} is`,
-      de: `${profile?.first_name} ist`
-    }
+      de: `${profile?.first_name} ist`,
+    },
   };
 }

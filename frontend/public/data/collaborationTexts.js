@@ -18,9 +18,8 @@ export default function getCollaborationTexts(texts) {
       idea: texts.add_connections_that_would_be_beneficial_for_collaborators_to_have,
       inprogress: texts.add_connections_that_would_be_beneficial_for_collaborators_to_have,
       cancelled: texts.add_connections_that_would_be_beneficial_to_make_your_project_a_success,
-      finished:
-        texts.add_connection_that_would_be_beneficial_to_have_to_replicate_your_project,
-        recurring: texts.add_connections_that_would_be_beneficial_for_collaborators_to_have,
+      finished: texts.add_connection_that_would_be_beneficial_to_have_to_replicate_your_project,
+      recurring: texts.add_connections_that_would_be_beneficial_for_collaborators_to_have,
     },
   };
 }
