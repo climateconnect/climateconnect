@@ -88,8 +88,8 @@ export default function ShareProjectRoot({
       locale
     )
   );
-  const [loadingSubmit, setLoadingSubmit] = useState(false)
-  const [loadingSubmitDraft, setLoadingSubmitDraft] = useState(false)
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [loadingSubmitDraft, setLoadingSubmitDraft] = useState(false);
 
   const getStep = (stepNumber) => {
     if (stepNumber >= steps.length) return steps[steps.length - 1];
@@ -103,7 +103,8 @@ export default function ShareProjectRoot({
   const [finished, setFinished] = React.useState(false);
 
   const changeTranslationLanguages = ({ newLanguagesObject }) => {
-    if (newLanguagesObject.sourceLanguage) setProject({...project, language: newLanguagesObject.sourceLanguage});
+    if (newLanguagesObject.sourceLanguage)
+      setProject({ ...project, language: newLanguagesObject.sourceLanguage });
     if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
   };
 
@@ -154,7 +155,7 @@ export default function ShareProjectRoot({
 
   const submitProject = async (event) => {
     event.preventDefault();
-    setLoadingSubmit(true)
+    setLoadingSubmit(true);
     const payload = await formatProjectForRequest(project, translations);
 
     try {
@@ -167,12 +168,12 @@ export default function ShareProjectRoot({
         shouldThrowError: true,
       });
       setProject({ ...project, url_slug: resp.data.url_slug });
-      setLoadingSubmit(false)
+      setLoadingSubmit(false);
       setFinished(true);
     } catch (error) {
       console.log(error);
       setProject({ ...project, error: true });
-      setLoadingSubmit(false)
+      setLoadingSubmit(false);
       console.log(error?.response?.data);
       if (error) console.log(error.response);
     }
@@ -180,25 +181,22 @@ export default function ShareProjectRoot({
 
   const saveAsDraft = async (event) => {
     event.preventDefault();
-    setLoadingSubmitDraft(true)
+    setLoadingSubmitDraft(true);
     apiRequest({
       method: "post",
       url: "/api/create_project/",
-      payload: await formatProjectForRequest(
-        { ...project, is_draft: true },
-        translations
-      ),
+      payload: await formatProjectForRequest({ ...project, is_draft: true }, translations),
       token: token,
       locale: locale,
     })
       .then(function (response) {
         setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
-        setLoadingSubmitDraft(false)
+        setLoadingSubmitDraft(false);
       })
       .catch(function (error) {
         console.log(error);
         setProject({ ...project, error: true });
-        setLoadingSubmit(false)
+        setLoadingSubmit(false);
         if (error) console.log(error.response);
       });
     setFinished(true);
@@ -212,17 +210,17 @@ export default function ShareProjectRoot({
     {
       textKey: "name",
       rows: 1,
-      headlineTextKey: "project_name"
+      headlineTextKey: "project_name",
     },
     {
       textKey: "short_description",
       rows: 5,
-      headlineTextKey: "short_description"
+      headlineTextKey: "short_description",
     },
     {
       textKey: "description",
       rows: 15,
-      headlineTextKey: "description"
+      headlineTextKey: "description",
     },
     {
       textKey: "helpful_connections",
@@ -230,7 +228,7 @@ export default function ShareProjectRoot({
       headlineTextKey: "helpful_connections",
       isArray: true,
     },
-  ]
+  ];
 
   return (
     <>
@@ -302,7 +300,7 @@ export default function ShareProjectRoot({
               submitButtonText={texts.submit}
               saveAsDraft={saveAsDraft}
               loadingSubmit={loadingSubmit}
-              loadingSubmitDraft={loadingSubmitDraft}            
+              loadingSubmitDraft={loadingSubmitDraft}
             />
           )}
         </>
@@ -335,7 +333,7 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations,
     //TODO: Should contain the logged in user as the creator and parent_user by default
     team_members: [{ ...loggedInUser }],
     website: "",
-    language: locale
+    language: locale,
   };
 };
 

@@ -70,7 +70,7 @@ export default function Signin() {
         password: values.password,
       },
       locale: locale,
-      shouldThrowError: true
+      shouldThrowError: true,
     })
       .then(async function (response) {
         await signIn(response.data.token, response.data.expiry, redirectUrl);

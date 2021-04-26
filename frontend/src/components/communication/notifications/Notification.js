@@ -63,7 +63,7 @@ const NOTIFICATION_TYPES = [
 export default function Notification({ notification, isPlaceholder }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale });
-  if (isPlaceholder) return <PlaceholderNotification texts={texts} />;
+  if (isPlaceholder) return <PlaceholderNotification texts={texts} locale={locale} />;
   else {
     const type = NOTIFICATION_TYPES[notification.notification_type];
     if (type === "private_message")
@@ -157,7 +157,7 @@ const PlaceholderNotification = ({ texts, locale }) => {
         <ListItemText className={classes.listItemText} disableTypography>
           {texts.placeholderNotification}
           <div>
-            <Link className={classes.goToInboxText}>Go to Inbox</Link>
+            <Link className={classes.goToInboxText}>{texts.go_to_inbox}</Link>
           </div>
         </ListItemText>
       </StyledMenuItem>

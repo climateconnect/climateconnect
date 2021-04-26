@@ -161,7 +161,7 @@ const getProjects = async (token, locale) => {
       method: "get",
       url: `/api/featured_projects/`,
       locale: locale,
-      shouldThrowError: true
+      shouldThrowError: true,
     });
     if (resp.data.length === 0) {
       return null;
