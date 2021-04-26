@@ -79,13 +79,13 @@ def create_project_status_test_data():
     # Creating 2 project status
     print("Creating project status...")
     if not ProjectStatus.objects.filter(name='In Progress').exists():
-        ProjectStatus.objects.create(name='In Progress', has_end_date=True, has_start_date=True)
+        ProjectStatus.objects.create(name='In Progress', status_type=1, has_end_date=True, has_start_date=True)
         print("In Progress status created.")
     else:
         print("In Progress project status already exists.")
 
     if not ProjectStatus.objects.filter(name='Recurring').exists():
-        ProjectStatus.objects.create(name='Recurring', has_end_date=False, has_start_date=True)
+        ProjectStatus.objects.create(name='Recurring', status_type=4, has_end_date=False, has_start_date=True)
         print("Recurring project status created.")
     else:
         print("Recurring project status already exists.")
