@@ -223,7 +223,7 @@ export default function Inbox({ chatData, token, next }) {
                 </div>
                 <div className={classes.buttonBar}>
                   <Button variant="contained" color="primary" type="submit">
-                    {texts.start_chat}Start Chat
+                    {texts.start_chat}
                   </Button>
                   <Button
                     variant="contained"
