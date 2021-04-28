@@ -17,11 +17,11 @@ context and knowledge of various test cases across the team and project contribu
 1. Enter a URL with query params. Ensure
    - Correct selected filter tags
    - Correct selected resources (projects)
+1. Enter a URL with query params. Open related filter menu (e.g. "Categories" if query param is a
+   category). Ensure
+   - Items are selected in MutliSelect
 1. Dismiss a selected filter tag (chip). Ensure
    - URL is updated (query param removed) correctly
    - Selected filter tag (chip) disappears
    - Resources (projects) are re-fetched and updated in the UI correctly
    - On refresh, you see selected filter / selected item state updated appropriately
-1. Enter a URL with query params. Open related filter menu (e.g. "Categories" if query param is a
-   category). Ensure
-   - Items are selected in MutliSelect
