@@ -300,10 +300,14 @@ const StepText = ({ curStep, tutorialVariables }) => {
 
   return (
     <div className={classes.textBox}>
-      <Typist cursor={{ show: false }} stdTypingDelay={0} avgTypingDelay={20}>
-        <Typography className={classes.text}>{getTextFromStep()}</Typography>
-      </Typist>
-      <Typography className={classes.textPlaceholder}>{getTextFromStep()}</Typography>
+      {!curStep.preventUsingTypist && (
+        <Typist cursor={{ show: false }} stdTypingDelay={0} avgTypingDelay={20}>
+          <Typography className={classes.text}>{getTextFromStep()}</Typography>
+        </Typist>
+      )}
+      <Typography className={!curStep.preventUsingTypist && classes.textPlaceholder}>
+        {getTextFromStep()}
+      </Typography>
     </div>
   );
 };
