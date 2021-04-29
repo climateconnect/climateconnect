@@ -8,7 +8,6 @@ import skillsToChooseFrom from "../../../public/data/skills.json";
 
 export default function MultiLevelSelectDialog({
   dragAble,
-  items,
   itemsToChooseFrom,
   maxSelections,
   onClose,
@@ -17,14 +16,12 @@ export default function MultiLevelSelectDialog({
   setSelectedItems,
   type,
 }) {
-  const handleClose = () => {
-    setSelectedItems(items ? items : []);
-    onClose();
-  };
-
-  // When clicking "Save" to close the
-  // dialog, we want to apply the filters,
-  // update the persisted URL, and refectch the data
+  /**
+   * When clicking "Save" to close the
+   * dialog, we want to apply the filters,
+   * update the persisted URL, refetch the data,
+   * and close the dialog.
+   */
   const applySkills = () => {
     onClose(selectedItems);
   };
@@ -53,7 +50,7 @@ export default function MultiLevelSelectDialog({
     <GenericDialog
       applyText={"Save"}
       onApply={applySkills}
-      onClose={handleClose}
+      onClose={onClose}
       open={open}
       title={"Add " + itemNamePlural}
       topBarFixed
