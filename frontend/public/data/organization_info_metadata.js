@@ -89,35 +89,35 @@ export default function getOrganizationInfoMetadata(locale, organization) {
       type: "select",
       options: [
         {
-          key: "1-10",
+          key: 0,
           name: "1-10"
         },
         {
-          key: "11-50",
+          key: 1,
           name: "11-50"
         },
         {
-          key: "51-100",
+          key: 2,
           name: "51-100"
         },
         {
-          key: "251-500",
+          key: 3,
           name: "251-500"
         },
         {
-          key: "501-1000",
+          key: 4,
           name: texts.large_medium_organization_size
         },
         {
-          key: "1001-5000",
+          key: 5,
           name: texts.large_organization_size
         },
         {
-          key: "5001-50000",
+          key: 6,
           name: texts.very_large_organization_size
         },
         {
-          key: "50000+",
+          key: 7,
           name: texts.huge_organization_size
         },
       ]

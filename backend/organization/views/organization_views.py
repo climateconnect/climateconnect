@@ -209,6 +209,8 @@ class CreateOrganizationView(APIView):
                 organization.about = request.data['about']
             if 'website' in request.data:
                 organization.website = request.data['website']
+            if 'organization_size' in request.data:
+                organization.organization_size = request.data['organization_size']
             organization.save()
 
             # Create organization translation
@@ -292,7 +294,7 @@ class OrganizationAPIView(APIView):
             return Response({
                 'message': _('Organization not found:') + url_slug
             }, status=status.HTTP_404_NOT_FOUND)
-        pass_through_params = ['name', 'short_description', 'about', 'school', 'organ', 'website']
+        pass_through_params = ['name', 'short_description', 'about', 'school', 'organ', 'website', 'organization_size']
         for param in pass_through_params:
             if param in request.data:
                 setattr(organization, param, request.data[param])

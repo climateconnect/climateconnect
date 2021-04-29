@@ -100,7 +100,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     manage_organizations_members: {
       en: "Manage organization's Members",
-      de: "Verwalte Mitglieder dieser Organisation",
+      de: "Verwalte die Mitglieder dieser Organisation",
     },
     you_have_to_log_in_to_manage_organization_members: {
       en: "You have to log in to manage an organization's members.",
@@ -116,7 +116,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     manage_members_of_organization_name: {
       en: `Manage members of ${organization?.name}`,
-      de: `Verwalte Mitglieder von ${organization?.name}`,
+      de: `Verwalte die Mitglieder von ${organization?.name}`,
     },
     search_for_your_organizations_members: {
       en: "Search for your organization's members",
@@ -249,6 +249,14 @@ export default function getOrganizationTexts({ organization, locale }) {
     huge_organization_size: {
       en: "Over 50,000",
       de: "Über 50.000"
+    },
+    organization_size: {
+      en: "Organization size",
+      de: "Größe der Organisation"
+    },
+    people: {
+      en: "people",
+      de: "Menschen"
     }
   };
 }

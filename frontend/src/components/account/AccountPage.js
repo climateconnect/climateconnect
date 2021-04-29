@@ -191,6 +191,16 @@ export default function AccountPage({
                 </div>
               </div>
             );
+          } else if (i.type === "select" && value) {
+            const textValue = i.options ? i.options.find(o => o?.key===value).name : value
+            return (
+              <div key={index}>
+                <div className={classes.subtitle}>{i.name}:</div>
+                <div className={classes.content}>
+                  {textValue ? textValue + additionalText : i.missingMessage}
+                </div>
+              </div>
+            )
           } else if (value && i.type !== "detailled_description") {
             return (
               <div key={index}>
@@ -273,8 +283,6 @@ export default function AccountPage({
     </Container>
   );
 }
-
-//below functions will be replaced with db call later --> potentially retrieve these props directly on the page instead of on the component
 
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };

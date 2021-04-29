@@ -25,7 +25,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
         fields = ('id', 'types', 'name', 'url_slug', 'image', 
             'background_image', 'parent_organization', 'location',
             'short_description', 'organ', 'school', 'website', 
-            'language', 'about'
+            'language', 'about', 'organization_size'
         )
 
     def get_name(self, obj):

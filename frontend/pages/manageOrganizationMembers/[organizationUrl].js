@@ -3,6 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
 import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
+import { parseOrganization } from "../../public/lib/organizationOperations";
+import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import LoginNudge from "../../src/components/general/LoginNudge";
@@ -34,13 +36,13 @@ export async function getServerSideProps(ctx) {
     getAvailabilityOptions(token, ctx.locale),
   ]);
   return {
-    props: {
+    props: nullifyUndefinedValues({
       organization: organization,
       members: members,
       rolesOptions: rolesOptions,
       availabilityOptions: availabilityOptions,
       token: token,
-    },
+    })
   };
 }
 
@@ -157,24 +159,6 @@ function parseOrganizationMembers(members) {
       isCreator: m.permission.role_type === 2,
     };
   });
-}
-
-function parseOrganization(organization) {
-  return {
-    url_slug: organization.url_slug,
-    background_image: organization.background_image,
-    name: organization.name,
-    image: organization.image,
-    types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
-    info: {
-      location: organization.location,
-      short_description: organization.short_description,
-      school: organization.school,
-      organ: organization.organ,
-      parent_organization: organization.parent_organization,
-      about: organization.about,
-    },
-  };
 }
 
 const getRolesOptions = async (token, locale) => {

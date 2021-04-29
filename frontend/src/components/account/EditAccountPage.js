@@ -377,13 +377,20 @@ export default function EditAccountPage({
       </div>
     );
   };
-
+  
   const displayAccountInfo = (info) => {
     return Object.keys(info).map((key) => {
+      const i = getFullInfoElement(infoMetadata, key, info[key]);
+
       const handleChange = (event) => {
+        let newValue = event.target.value
+        if(i.type === "select"){
+          //On select fields, use the key as the new value since the text can have multiple languages
+          newValue = i.options.find(o=>o.name === event.target.value).key
+        }
         setEditedAccount({
           ...editedAccount,
-          info: { ...editedAccount.info, [key]: event.target.value },
+          info: { ...editedAccount.info, [key]: newValue },
         });
       };
 
@@ -428,7 +435,6 @@ export default function EditAccountPage({
           },
         });
       };
-      const i = getFullInfoElement(infoMetadata, key, info[key]);
       if (i.type === "array") {
         return displayInfoArrayData(key, i);
       } else if (i.type === "select") {
@@ -529,8 +535,6 @@ export default function EditAccountPage({
             />
           </div>
         );
-      } else if (i.type === "select") {
-        console.log(i)
       } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
         return (
           <div key={key} className={classes.infoElement}>
