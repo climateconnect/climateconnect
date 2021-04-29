@@ -39,7 +39,7 @@ export default function EnterDetailledOrganizationInfo({
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
-  const organization_info_metadata = getOrganizationInfoMetadata(locale, organization);
+  const organization_info_metadata = getOrganizationInfoMetadata(locale, organizationInfo);
   const organization = parseOrganizationInfo(organizationInfo, organization_info_metadata);
   const infoMetadata = {
     ...organization_info_metadata,
