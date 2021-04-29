@@ -274,9 +274,9 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
       de: "Willkommen auf der Projektseite!",
     },
     welcome_to_the_project_page_text: {
-      en: `In the top section you can find a short summary (<240 characters) and the most important information about the project. 
+      en: `In the top section you can find a short summary (<280 characters) and the most important information about the project. 
       If the first impression is interesting, you can dive deeper.`,
-      de: `Im oberen Bereich findest du eine kurze Zusammenfassung (<240 Zeichen) und die wichtigsten Informationen zum Projekt. 
+      de: `Im oberen Bereich findest du eine kurze Zusammenfassung (<280 Zeichen) und die wichtigsten Informationen zum Projekt. 
       Wenn es dich interessiert, kannst du mehr darüber erfahren.`,
     },
     detailled_info_about_project_headline: {

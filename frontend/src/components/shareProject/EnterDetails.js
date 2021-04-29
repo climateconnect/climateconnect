@@ -122,7 +122,7 @@ export default function EnterDetails({
   const validation = {
     short_description: {
       name: texts.short_summary,
-      maxLength: 240,
+      maxLength: 280,
     },
     description: {
       name: texts.description,

@@ -411,8 +411,8 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
         "Wenn du dein Projekt löscht, geht es verloren. Bist du dir sicher, dass du es löschen möchtest?",
     },
     briefly_summarise_what_you_are_doing_up_to_240_characters: {
-      en: "Briefly summarise what you are doing (up to 240 characters)\n\nPlease only use English!",
-      de: "Fass kurz zusammen, was ihr tun (bis zu 240 Zeichen)",
+      en: "Briefly summarise what you are doing (up to 280 characters)\n\nPlease only use English!",
+      de: "Fass kurz zusammen, was ihr tun (bis zu 280 Zeichen)",
     },
     project_categories: {
       en: "Project categories",
@@ -598,8 +598,8 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de: "Fasse dein Projekt zusammen",
     },
     briefly_summarise_what_you_are_doing: {
-      en: "Briefly summarise what you are doing (up to 240 characters)",
-      de: "Fasse kurz zusammen, was du tust (bis zu 240 Zeichen)",
+      en: "Briefly summarise what you are doing (up to 280 characters)",
+      de: "Fasse kurz zusammen, was du tust (bis zu 280 Zeichen)",
     },
     search_for_your_team_members: {
       en: "Search for your team members",
@@ -633,9 +633,9 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     },
     short_description_helptext: {
       en:
-        "Summarize your project in less than 240 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
+        "Summarize your project in less than 280 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
       de:
-        "Fasse dein Projekt in weniger als 240 Zeichen zusammen. Andere Klimaschützer*innen sollen verstehen, was dein Projekt erreichen will.",
+        "Fasse dein Projekt in weniger als 280 Zeichen zusammen. Andere Klimaschützer*innen sollen verstehen, was dein Projekt erreichen will.",
     },
     description_helptext: {
       en:
