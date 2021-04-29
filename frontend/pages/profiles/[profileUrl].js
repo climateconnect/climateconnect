@@ -301,6 +301,7 @@ function parseOrganizationStubs(organizations) {
     types: o.organization.types.map((type) => type.organization_tag),
     info: {
       location: o.organization.location,
+      short_description: o.organization?.short_description
     },
   }));
 }

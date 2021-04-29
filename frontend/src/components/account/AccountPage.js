@@ -8,6 +8,7 @@ import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
+import DetailledDescription from "./DetailledDescription";
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -94,6 +95,10 @@ const useStyles = makeStyles((theme) => ({
   infoIcon: {
     marginBottom: -4,
   },
+  detailledDescription: {
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3)
+  }
 }));
 
 export default function AccountPage({
@@ -186,7 +191,7 @@ export default function AccountPage({
                 </div>
               </div>
             );
-          } else if (value) {
+          } else if (value && i.type !== "detailled_description") {
             return (
               <div key={index}>
                 <div className={classes.subtitle}>{i.name}:</div>
@@ -198,6 +203,18 @@ export default function AccountPage({
           }
         }
       });
+  const getDetailledDescription = () => {
+    const detailled_description_obj =  Object.keys(account.info).filter(i=>{
+      const el = getFullInfoElement(infoMetadata, i, account.info[i])
+      return el.type === "detailled_description"
+    })
+    if(detailled_description_obj.length > 0){
+      const key = detailled_description_obj[0]
+      return getFullInfoElement(infoMetadata, key, account.info[key])
+    }else
+      return null
+  }
+  const detailledDescription = getDetailledDescription()
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div
@@ -243,6 +260,15 @@ export default function AccountPage({
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
       </Container>
+      {detailledDescription && (
+        <Container>        
+          <DetailledDescription 
+            title={detailledDescription.name}
+            value={detailledDescription.value}
+            className={classes.detailledDescription}
+          />
+        </Container>
+      )}      
       {children}
     </Container>
   );

@@ -6,17 +6,17 @@ import SchoolIcon from "@material-ui/icons/School";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import getTexts from "../texts/texts";
 
-export default function getOrganizationInfoMetadata(locale) {
-  const texts = getTexts({ page: "organization", locale: locale });
+export default function getOrganizationInfoMetadata(locale, organization) {
+  const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   return {
     short_description: {
       icon: DescriptionIcon,
       iconName: "DescriptionIcon",
-      name: texts.description,
+      name: `${texts.summary} (${texts.twohundred_eighty_chars_max})`,
       key: "short_description",
       type: "bio",
       weight: 1,
-      helptext: texts.how_to_describe_organization,
+      helptext: texts.how_to_summarize_organization,
     },
     location: {
       icon: PlaceIcon,
@@ -77,5 +77,50 @@ export default function getOrganizationInfoMetadata(locale) {
       baseUrl: "/api/organizations/?search=",
       helperText: texts.edit_parent_organization_helper_text,
     },
+    about: {
+      name: `${texts.about}`,
+      key: "about",
+      type: "detailled_description",
+      helptext: texts.how_to_describe_organization,
+    },
+    organization_size: {
+      name: `${texts.organization_size}`,
+      key: "organization_size",
+      type: "select",
+      options: [
+        {
+          key: "1-10",
+          name: "1-10"
+        },
+        {
+          key: "11-50",
+          name: "11-50"
+        },
+        {
+          key: "51-100",
+          name: "51-100"
+        },
+        {
+          key: "251-500",
+          name: "251-500"
+        },
+        {
+          key: "501-1000",
+          name: texts.large_medium_organization_size
+        },
+        {
+          key: "1001-5000",
+          name: texts.large_organization_size
+        },
+        {
+          key: "5001-50000",
+          name: texts.very_large_organization_size
+        },
+        {
+          key: "50000+",
+          name: texts.huge_organization_size
+        },
+      ]
+    }
   };
 }

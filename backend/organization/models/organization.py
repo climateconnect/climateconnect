@@ -115,11 +115,19 @@ class Organization(models.Model):
         blank=True
     )
 
-    short_description = models.TextField(
-        help_text="Short description about an organization",
-        verbose_name="Short Description",
+    about = models.TextField(
+        help_text="About section of the organization page",
+        verbose_name="About",
         null=True,
         blank=True
+    )
+
+    short_description = models.TextField(
+        help_text="Short description of the org: 240 characters max!",
+        verbose_name="Short description",
+        null=True,
+        blank=True,
+        max_length=280
     )
 
     school = models.CharField(
@@ -158,6 +166,30 @@ class Organization(models.Model):
         verbose_name="Language",
         null=True, blank=True,
         on_delete=models.SET_NULL
+    )
+
+    VERY_SMALL_ORGANIZATION_SIZE = 0
+    SMALL_ORGANIZATION_SIZE = 1
+    SMALL_MEDIUM_ORGANIZATION_SIZE= 2
+    MEDIUM_ORGANIZATION_SIZE = 3
+    LARGE_MEDIUM_ORGANIZATION_SIZE = 4
+    LARGE_ORGANIZATION_SIZE = 5
+    VERY_LARGE_ORGANIZATION_SIZE= 6
+    HUGE_ORGANIZATION_SIZE = 7
+
+
+    # These options are also hardcoded in the frontend because I figured this will hardly ever change and isn't worth it to get from the server. 
+    # Changes here will need to also be made in the frontend
+    ORGANIZATION_SIZE_OPTIONS = (
+        (VERY_SMALL_ORGANIZATION_SIZE, "1-10"), (SMALL_ORGANIZATION_SIZE, "11-50"),
+        (SMALL_MEDIUM_ORGANIZATION_SIZE, "51-250"), (MEDIUM_ORGANIZATION_SIZE, "251-500"), 
+        (LARGE_MEDIUM_ORGANIZATION_SIZE, "501-1000"), (LARGE_ORGANIZATION_SIZE, "1001-5000"), 
+        (VERY_LARGE_ORGANIZATION_SIZE, "5001-50000"), (HUGE_ORGANIZATION_SIZE, "50000+")
+    )
+
+    organization_size = models.IntegerField(
+        help_text="The number of people working in this organization",
+        verbose_name="Organization size", choices=ORGANIZATION_SIZE_OPTIONS, null=True, blank=True
     )
 
     class Meta:

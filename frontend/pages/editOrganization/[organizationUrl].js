@@ -33,9 +33,8 @@ export async function getServerSideProps(ctx) {
 //This route should only be accessible to admins of the organization
 export default function EditOrganizationPage({ organization, tagOptions }) {
   const { locale } = useContext(UserContext);
-  console.log(organization);
   const texts = getTexts({ page: "organization", locale: locale });
-  const organization_info_metadata = getOrganizationInfoMetadata(locale);
+  const organization_info_metadata = getOrganizationInfoMetadata(locale, organization);
   const [errorMessage, setErrorMessage] = useState("");
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
@@ -105,6 +104,7 @@ function parseOrganization(organization) {
       location: organization.location,
       short_description: organization.short_description,
       website: organization.website,
+      about: organization.about
     },
   };
   org.types = org.types.map((t) => t.key);

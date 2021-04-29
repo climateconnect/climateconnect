@@ -29,7 +29,7 @@ from organization.permissions import (AddOrganizationMemberPermission,
                                       OrganizationReadWritePermission)
 from organization.serializers.organization import (
     EditOrganizationSerializer, OrganizationCardSerializer,
-    OrganizationMemberSerializer, OrganizationMinimalSerializer,
+    OrganizationMemberSerializer,
     OrganizationSerializer, OrganizationSitemapEntrySerializer,
     UserOrganizationSerializer)
 from organization.serializers.project import \
@@ -148,7 +148,7 @@ class CreateOrganizationView(APIView):
     def post(self, request):
         required_params = [
             'name', 'team_members', 'location', 'image', 'organization_tags',
-            'translations', 'source_language'
+            'translations', 'source_language', 'short_description'
         ]
         for param in required_params:
             if param not in request.data:
@@ -159,6 +159,8 @@ class CreateOrganizationView(APIView):
         texts = {"name": request.data['name']}
         if 'short_description' in request.data:
             texts['short_description'] = request.data['short_description']
+        if 'about' in request.data:
+            texts['about'] = request.data['about']
 
         try:
             translations = get_translations(
@@ -203,6 +205,8 @@ class CreateOrganizationView(APIView):
                 organization.location = get_location(request.data['location'])
             if 'short_description' in request.data:
                 organization.short_description = request.data['short_description']
+            if 'about' in request.data:
+                organization.about = request.data['about']
             if 'website' in request.data:
                 organization.website = request.data['website']
             organization.save()
@@ -288,7 +292,7 @@ class OrganizationAPIView(APIView):
             return Response({
                 'message': _('Organization not found:') + url_slug
             }, status=status.HTTP_404_NOT_FOUND)
-        pass_through_params = ['name', 'short_description', 'school', 'organ', 'website']
+        pass_through_params = ['name', 'short_description', 'about', 'school', 'organ', 'website']
         for param in pass_through_params:
             if param in request.data:
                 setattr(organization, param, request.data[param])
@@ -327,6 +331,10 @@ class OrganizationAPIView(APIView):
                 'translation_key': 'short_description_translation'
             },
             {
+                'key': 'about',
+                'translation_key': 'about_translation'
+            },
+            {
                 'key': 'school',
                 'translation_key': 'school_translation'
             },
@@ -336,13 +344,12 @@ class OrganizationAPIView(APIView):
             }
         ]
 
-        if 'translations' in request.data:
-            edit_translations(
-                items_to_translate,
-                request.data,
-                organization,
-                "organization"
-            )  
+        edit_translations(
+            items_to_translate,
+            request.data,
+            organization,
+            "organization"
+        )  
 
         old_organization_taggings = OrganizationTagging.objects.filter(
             organization=organization

@@ -13,6 +13,9 @@ export function parseOrganization(organization, reduceTypes) {
       location: organization.location,
       short_description: organization.short_description,
       website: organization.website,
+      about: organization.about,
+      school: organization.school,
+      organ: organization.organ
     },
   };
   if (reduceTypes) org.types = organization.types ? org.types.map((t) => t.key) : [];

@@ -8,7 +8,7 @@ import {
   TextField,
   Tooltip,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -21,7 +21,7 @@ import {
   getCompressedJPG,
   getImageDialogHeight,
   getResizedImage,
-  whitenTransparentPixels,
+  whitenTransparentPixels
 } from "../../../public/lib/imageOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
@@ -35,6 +35,7 @@ import ConfirmDialog from "./../dialogs/ConfirmDialog";
 import SelectDialog from "./../dialogs/SelectDialog";
 import UploadImageDialog from "./../dialogs/UploadImageDialog";
 import SelectField from "./../general/SelectField";
+import DetailledDescriptionInput from "./DetailledDescriptionInput";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -211,6 +212,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     marginTop: theme.spacing(5),
   },
+  detailledDescriptionContainer: {
+    marginTop: theme.spacing(5)
+  }
 }));
 
 export default function EditAccountPage({
@@ -525,6 +529,8 @@ export default function EditAccountPage({
             />
           </div>
         );
+      } else if (i.type === "select") {
+        console.log(i)
       } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
         return (
           <div key={key} className={classes.infoElement}>
@@ -612,6 +618,27 @@ export default function EditAccountPage({
     event.preventDefault();
     handleSubmit(editedAccount);
   };
+
+  const getDetailledDescription = () => {
+    const detailled_description_obj =  Object.keys(editedAccount.info).filter(i=>{
+      const el = getFullInfoElement(infoMetadata, i, editedAccount.info[i])
+      return el.type === "detailled_description"
+    })
+    if(detailled_description_obj.length > 0){
+      const key = detailled_description_obj[0]
+      return getFullInfoElement(infoMetadata, key, editedAccount.info[key])
+    }else
+      return null
+  }
+  const detailledDescription = getDetailledDescription()
+
+  const handleValueChange = (event, key) => {
+    setEditedAccount({
+      ...editedAccount,
+      info: { ...editedAccount.info, [key]: event.target.value },
+    });
+  };
+
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <form onSubmit={handleFormSubmit}>
@@ -771,7 +798,7 @@ export default function EditAccountPage({
             )}
           </Container>
           <Container className={classes.accountInfo}>
-            {displayAccountInfo(editedAccount.info)}
+            {displayAccountInfo(editedAccount.info)}            
             {onClickCheckTranslations && (
               <div className={classes.checkTranslationsButtonContainer}>
                 <Button
@@ -783,7 +810,18 @@ export default function EditAccountPage({
                 </Button>
               </div>
             )}
-          </Container>
+          </Container>          
+        </Container>
+        <Container className={classes.detailledDescriptionContainer}>
+          {detailledDescription && (
+            <DetailledDescriptionInput 
+              title={detailledDescription.name}
+              helpText={detailledDescription.helptext}
+              value={detailledDescription.value}
+              onChange={handleValueChange}
+              infoKey={detailledDescription.key}
+            />
+          )}
         </Container>
         {children}
         {deleteEmail && (
@@ -835,9 +873,6 @@ export default function EditAccountPage({
   );
 }
 
-const getFullInfoElement = (infoMetadata, key, value) => {
-  return { ...infoMetadata[key], value: value };
-};
 
 const getTypes = (possibleAccountTypes, infoMetadata) => {
   return possibleAccountTypes.map((type) => {
@@ -854,4 +889,8 @@ const getTypesOfAccount = (account, possibleAccountTypes, infoMetadata) => {
   return getTypes(possibleAccountTypes, infoMetadata).filter((type) =>
     account.types.includes(type.key)
   );
+};
+
+const getFullInfoElement = (infoMetadata, key, value) => {
+  return { ...infoMetadata[key], value: value };
 };

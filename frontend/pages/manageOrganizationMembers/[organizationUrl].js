@@ -172,6 +172,7 @@ function parseOrganization(organization) {
       school: organization.school,
       organ: organization.organ,
       parent_organization: organization.parent_organization,
+      about: organization.about,
     },
   };
 }

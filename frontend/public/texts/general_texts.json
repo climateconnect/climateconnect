@@ -301,7 +301,7 @@
   },
   "create_an_organization": {
     "en": "Create an organization",
-    "de": "Erstelle eine Organisation"
+    "de": "Organisation erstellen"
   },
   "you_are": {
     "en": "You are",
@@ -662,5 +662,13 @@
   "check_translations": {
     "en": "Check Translations",
     "de": "Übersetzungen überprüfen"
+  },
+  "summary": {
+    "en": "Summary",
+    "de": "Zusammenfassung"
+  },
+  "twohundred_eighty_chars_max": {
+    "en": "280 characters max",
+    "de": "Maximal 280 Zeichen"
   }
 }

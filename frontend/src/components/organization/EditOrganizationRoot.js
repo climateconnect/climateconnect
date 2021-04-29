@@ -8,7 +8,7 @@ import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import {
   getTranslationsFromObject,
-  getTranslationsWithoutRedundantKeys,
+  getTranslationsWithoutRedundantKeys
 } from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
 import EditAccountPage from "../account/EditAccountPage";
@@ -37,11 +37,11 @@ export default function EditOrganizationRoot({
   const cookies = new Cookies();
   const token = cookies.get("token");
   const { locale, locales } = useContext(UserContext);
-  const STEPS = ["edit_organization", "edit_translations"];
-  const texts = getTexts({ page: "organization", locale: locale });
+  const STEPS = ["edit_organization", "edit_translations"];  
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
 
   const [editedOrganization, setEditedOrganization] = useState({ ...organization });
+  const texts = getTexts({ page: "organization", locale: locale, organization: editedOrganization });
   const [step, setStep] = useState(STEPS[0]);
   const [translations, setTranslations] = useState(
     initialTranslations ? getTranslationsFromObject(initialTranslations, "organization") : {}
@@ -178,6 +178,7 @@ export default function EditOrganizationRoot({
               handleChangeTranslationContent={handleChangeTranslations}
               translations={translations}
               targetLanguage={targetLanguage}
+              organization={organization}
               pageName="organization"
               introTextKey="translate_organization_intro"
               submitButtonText={texts.save}
@@ -186,6 +187,11 @@ export default function EditOrganizationRoot({
                   textKey: "info.short_description",
                   rows: 5,
                   headlineTextKey: "short_description",
+                },
+                {
+                  textKey: "info.about",
+                  rows: 9,
+                  headlineTextKey: "about",
                 },
               ]}
               changeTranslationLanguages={changeTranslationLanguages}
