@@ -73,7 +73,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     here_you_can_find_projects_in_hub: {
       en: (
         <>
-          Here you can find climate action projects in the {hubName} field that were created by
+          Here you can find climate action projects in the {hubName} hub that were created by
           Climate Connect members. You can find an overview of all projects on the{" "}
           <Link
             href={getLocalePrefix(locale) + "/browse"}
@@ -87,7 +87,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
       ),
       de: (
         <>
-          Hier kannst du alle Projekte von Climate Connect Nutzern im Bereich {hubName} finden.
+          Hier kannst du alle Projekte von Climate Connect Nutzern im {hubName} Hub finden.
           Einen Überblick über alle Projekte erhälst du auf der{" "}
           <Link
             href={getLocalePrefix(locale) + "/browse"}
