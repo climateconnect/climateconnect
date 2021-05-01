@@ -1,47 +1,47 @@
-from django.contrib.gis.db.models.functions import Distance
-from location.models import Location
-import uuid
-from django.contrib.auth import (authenticate, login)
 import datetime
-
-from django.db.models import Count, Q
-from django.utils import timezone
+from hubs.models.hub import Hub
+import logging
+import uuid
 from datetime import datetime, timedelta
 
+from climateconnect_api.models import Availability, Skill, UserProfile
+from climateconnect_api.models.language import Language
+from climateconnect_api.models.user import UserProfileTranslation
+from climateconnect_api.pagination import MembersPagination
+from climateconnect_api.permissions import UserPermission
+from climateconnect_api.serializers.user import (
+    EditUserProfileSerializer, PersonalProfileSerializer,
+    UserProfileMinimalSerializer, UserProfileSerializer,
+    UserProfileSitemapEntrySerializer, UserProfileStubSerializer)
+from climateconnect_api.utility.email_setup import (
+    send_password_link, send_user_verification_email)
+from climateconnect_api.utility.translation import (edit_translations)
+from climateconnect_main.utility.general import get_image_from_data_url
+from django.conf import settings
+from django.contrib.auth import authenticate, login
+# Backend imports
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models.functions import Distance
+from django.db.models import Count, Q
+from django.utils import timezone
+from django.utils.translation import gettext as _
 # Rest imports
 from django_filters.rest_framework import DjangoFilterBackend
+from knox.views import LoginView as KnoxLoginView
+from location.models import Location
+from location.utility import get_location, get_location_with_range
+from organization.models.members import OrganizationMember, ProjectMember
+from organization.serializers.organization import \
+    OrganizationsFromProjectMember
+from organization.serializers.project import ProjectFromProjectMemberSerializer
 from rest_framework import status
+from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
-from rest_framework.exceptions import NotFound
-from location.utility import get_location, get_location_with_range
-from rest_framework.filters import SearchFilter
 
-from rest_framework.exceptions import ValidationError
-from knox.views import LoginView as KnoxLoginView
-from climateconnect_api.pagination import MembersPagination
-
-# Database imports
-from django.contrib.auth.models import User
-from organization.models.members import (ProjectMember, OrganizationMember)
-from climateconnect_api.models import UserProfile, Availability, Skill
-
-# Serializer imports
-from climateconnect_api.serializers.user import (
-    EditUserProfileSerializer, UserProfileSerializer, PersonalProfileSerializer, UserProfileStubSerializer, 
-    UserProfileMinimalSerializer, UserProfileSitemapEntrySerializer
-)
-from organization.serializers.project import ProjectFromProjectMemberSerializer
-from organization.serializers.organization import OrganizationsFromProjectMember
-
-from climateconnect_main.utility.general import get_image_from_data_url
-from climateconnect_api.permissions import UserPermission
-from climateconnect_api.utility.email_setup import send_user_verification_email
-from climateconnect_api.utility.email_setup import send_password_link
-from django.conf import settings
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -80,7 +80,7 @@ class SignUpView(APIView):
     def post(self, request):
         required_params = [
             'email', 'password', 'first_name', 'last_name',
-            'location', 'send_newsletter', 
+            'location', 'send_newsletter', 'source_language' 
         ]
         for param in required_params:
             if param not in request.data:
@@ -102,10 +102,12 @@ class SignUpView(APIView):
 
         url_slug = (user.first_name + user.last_name).lower() + str(user.id)
         # Get location
+        source_language = Language.objects.get(language_code=request.data['source_language'])
         user_profile = UserProfile.objects.create(
             user=user, location=location,
             url_slug=url_slug, name=request.data['first_name']+" "+request.data['last_name'],
-            verification_key=uuid.uuid4(), send_newsletter=request.data['send_newsletter']
+            verification_key=uuid.uuid4(), send_newsletter=request.data['send_newsletter'],
+            language=source_language
         )
         if "from_tutorial" in request.data:
             user_profile.from_tutorial = request.data['from_tutorial']
@@ -152,10 +154,30 @@ class ListMemberProfilesView(ListAPIView):
             .annotate(is_image_null=Count("image", filter=Q(image="")))\
             .order_by("is_image_null", "-id")
 
+        if 'hub' in self.request.query_params:
+            hub = Hub.objects.filter(url_slug=self.request.query_params['hub'])
+            if hub.exists():
+                if hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = hub[0].location.all()[0]
+                    user_profiles = user_profiles.filter(
+                        Q(location__country=location.country) 
+                        &
+                        (
+                            Q(location__multi_polygon__coveredby=(location.multi_polygon))
+                            |
+                            Q(location__centre_point__coveredby=(location.multi_polygon))
+                        )
+                    ).annotate(
+                        distance=Distance("location__centre_point", location.multi_polygon)
+                    ).order_by(
+                        'distance'
+                    )
+
         if 'skills' in self.request.query_params:
             skill_names = self.request.query_params.get('skills').split(',')
             skills = Skill.objects.filter(name__in=skill_names)
-            user_profiles = user_profiles.filter(skills__in=skills).distinct('id')
+            user_profiles = user_profiles.filter(skills__in=skills).distinct()
+            #user_profiles = user_profiles.filter(id__in=user_profiles.filter(skills__in=skills).values('id'))
 
         if 'place' in self.request.query_params and 'osm' in self.request.query_params:
             location_data = get_location_with_range(self.request.query_params)
@@ -293,6 +315,10 @@ class EditUserProfile(APIView):
             user_profile.biography = request.data['biography']
         if 'website' in request.data:
             user_profile.website = request.data['website']
+        if 'language' in request.data:
+            language = Language.objects.filter(language_code=request.data['language'])
+            if language.exists():
+                user_profile.language = language[0]
 
         if 'availability' in request.data:
             try:
@@ -312,7 +338,24 @@ class EditUserProfile(APIView):
                     user_profile.skills.add(skill)
                 except Skill.DoesNotExist:
                     logger.error("Passed skill id {} does not exists")
+        
         user_profile.save()
+
+        items_to_translate = [
+            {
+                'key': 'biography',
+                'translation_key': 'biography_translation'
+            },
+        ]
+        if not 'translations' in request.data:
+            request.data['translations'] = {}
+        edit_translations(
+            items_to_translate,
+            request.data,
+            user_profile,
+            "user_profile"
+        )
+                
         serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -322,26 +365,32 @@ class UserEmailVerificationLinkView(APIView):
 
     def post(self, request):
         if 'uuid' not in request.data:
-            return Response({'message': 'Required parameters are missing.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': _('Required parameters are missing.')}, status=status.HTTP_400_BAD_REQUEST)
 
         # convert verification string
         print(request.data)
         verification_key = request.data['uuid'].replace('%2D', '-')
         try:
             user_profile = UserProfile.objects.get(verification_key=verification_key)
-        except User.DoesNotExist:
-            return Response({'message': 'Bad request'}, status=status.HTTP_400_BAD_REQUEST)
+        except UserProfile.DoesNotExist:
+            return Response(
+                {'message': 
+                    _('User profile not found.')
+                    + " " +
+                    _('Contact contact@climateconnect.earth if you repeatedly experience problems.')
+                }, 
+            status=status.HTTP_400_BAD_REQUEST)
         if user_profile:
             if user_profile.is_profile_verified:
                 return Response({
-                    'message': 'Account already verified. Please contact us if you are having trouble signing in.'
+                    'message': _('Account already verified. Please contact us if you are having trouble signing in.')
                 }, status=status.HTTP_204_NO_CONTENT)
             else:
                 user_profile.is_profile_verified = True
                 user_profile.save()
-                return Response({"message": "Your profile is successfully verified"}, status=status.HTTP_200_OK)
+                return Response({"message": _("Your profile is successfully verified")}, status=status.HTTP_200_OK)
         else:
-            return Response({'message': 'Permission Denied'}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'message': _('Permission Denied')}, status=status.HTTP_403_FORBIDDEN)
 
 
 class SendResetPasswordEmail(APIView):

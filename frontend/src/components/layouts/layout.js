@@ -5,9 +5,9 @@ import React, { useEffect } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
 import theme from "../../themes/theme";
-import Footer from "../general/Footer";
-import Header from "../general/Header";
+import Footer from "../footer/Footer";
 import LoadingContainer from "../general/LoadingContainer";
+import Header from "../header/Header";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import LayoutWrapper from "./LayoutWrapper";
 

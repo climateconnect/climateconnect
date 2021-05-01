@@ -1,8 +1,10 @@
-import React from "react";
-import { makeStyles, TextField, Button, Typography, useMediaQuery } from "@material-ui/core";
-import GenericDialog from "./GenericDialog";
+import { Button, makeStyles, TextField, Typography, useMediaQuery } from "@material-ui/core";
+import React, { useContext } from "react";
+import { apiRequest } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
-import axios from "axios";
+import UserContext from "../context/UserContext";
+import GenericDialog from "./GenericDialog";
 
 const useStyles = makeStyles((theme) => ({
   callToAction: {
@@ -43,6 +45,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SubscribeToNewsletterDialog({ onClose, open }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "communication", locale: locale });
   const [emailAddress, setEmailAddress] = React.useState("");
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -52,7 +56,7 @@ export default function SubscribeToNewsletterDialog({ onClose, open }) {
     console.log("subscribing!");
     try {
       setLoading(true);
-      const resp = await subscribeToNewsletter(emailAddress);
+      const resp = await subscribeToNewsletter(emailAddress, locale);
       console.log(resp);
       setLoading(false);
     } catch (e) {
@@ -67,18 +71,15 @@ export default function SubscribeToNewsletterDialog({ onClose, open }) {
       maxWidth="sm"
       onClose={onClose}
       open={open}
-      title={isMediumScreen ? "Climate News" : "Receive Climate news every month!"}
+      title={isMediumScreen ? texts.climate_news : texts.receive_climate_news_every_month}
     >
-      <Typography className={classes.textBlock}>
-        Get the most <b>interesting climate solutions</b> and <b>updates</b> about the Climate
-        Connect platform {"&"} community delivered right to your inbox <b>every month</b>!
-      </Typography>
+      <Typography className={classes.textBlock}>{texts.newsletter_banner_text}</Typography>
       <form className={classes.callToAction} onSubmit={handleSubscribe}>
         <TextField
           value={emailAddress}
           variant="outlined"
           size={isMediumScreen ? "small" : "large"}
-          label="Your email address"
+          label={texts.your_email_address}
           className={classes.emailTextField}
           onChange={handleEmailTextChange}
           type="email"
@@ -93,24 +94,27 @@ export default function SubscribeToNewsletterDialog({ onClose, open }) {
           className={classes.subscribeButton}
           disabled={loading}
         >
-          Subscribe
+          {texts.subscribe}
         </Button>
       </form>
     </GenericDialog>
   );
 }
 
-const subscribeToNewsletter = (emailAddress) => {
+const subscribeToNewsletter = (emailAddress, locale) => {
   const url = process.env.API_URL + "/api/subscribe_to_newsletter/";
   const payload = { email: emailAddress };
-  const config = {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
+  const headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
   };
-  axios
-    .post(url, payload, config)
+  apiRequest({
+    method: "post",
+    url: url,
+    payload: payload,
+    headers: headers,
+    locale: locale,
+  })
     .then(function (response) {
       return response;
     })

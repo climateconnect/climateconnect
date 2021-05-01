@@ -1,8 +1,10 @@
-import React from "react";
-import { Typography, makeStyles, useMediaQuery } from "@material-ui/core";
+import { makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import React, { useContext } from "react";
+import getPitchElements from "../../../public/data/pitch_elements.js";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import UserContext from "../context/UserContext";
 import SmallCloud from "../staticpages/SmallCloud";
-import pitch_elements from "../../../public/data/pitch_elements.json";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -149,6 +151,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PitchBox({ h1ClassName, className }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "about", locale: locale });
+  const pitch_elements = getPitchElements(texts);
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <div className={`${classes.root} ${className}`}>
@@ -159,7 +164,7 @@ export default function PitchBox({ h1ClassName, className }) {
         </>
       )}
       <Typography color="primary" component="h1" className={h1ClassName}>
-        {'"Effective climate action only works with global collaboration"'}
+        {'"' + texts.effective_climate_action_only_works_with_global_collaboration + '"'}
       </Typography>
       <div className={classes.pitchElementsWrapper}>
         <PitchElement
@@ -216,6 +221,8 @@ export default function PitchBox({ h1ClassName, className }) {
 
 const PitchElement = ({ image, headline, text, alternate, children }) => {
   const classes = useStyles({ alternate: alternate });
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "landing_page", locale: locale });
   return (
     <div className={classes.pitchElementRoot}>
       {children}
@@ -224,7 +231,7 @@ const PitchElement = ({ image, headline, text, alternate, children }) => {
           <img
             src={image}
             className={classes.pitchElementImage}
-            alt="5 people positioned around a globe connected through lines"
+            alt={texts.five_people_positioned_around_a_globe_connected_through_lines}
           />
         </div>
       )}
@@ -233,14 +240,16 @@ const PitchElement = ({ image, headline, text, alternate, children }) => {
           component="h1"
           className={classes.pitchElementHeadline}
           color="primary"
-          alt="Man floating in the air with a lightbulb, a book, a pen, a notebook, a baloon and Saturn floating around him"
+          alt={
+            texts.man_floating_in_the_air_with_a_lightbulb_a_book_a_pen_a_notebook_a_baloon_and_saturn_floating_around_him
+          }
         >
           {headline}
         </Typography>
         <Typography
           color="secondary"
           className={classes.pitchElementText}
-          alt="4 people at a table working together and giving each other a high 5"
+          alt={texts.four_people_at_a_table_working_together_and_giving_each_other_a_high_five}
         >
           {text}
         </Typography>

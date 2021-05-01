@@ -1,21 +1,22 @@
 import _ from "lodash";
 import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { persistFiltersInURL } from "../../../public/lib/urlOperations";
 import FilterContent from "../filter/FilterContent";
 import FilterSection from "../indexPage/FilterSection";
+import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import NoItemsFound from "./NoItemsFound";
 import OrganizationPreviews from "../organization/OrganizationPreviews";
 import possibleFilters from "../../../public/data/possibleFilters";
-import ProfilePreviews from "../profile/ProfilePreviews";
 import ProjectPreviews from "../project/ProjectPreviews";
 import Tutorial from "../tutorial/Tutorial";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -87,6 +88,13 @@ export default function BrowseContent({
     ? ["projects", "organizations"]
     : ["projects", "organizations", "members"];
 
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
+  const type_names = {
+    projects: texts.projects,
+    organizations: texts.organizations,
+    members: texts.members,
+  };
   const [hash, setHash] = useState(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
@@ -257,7 +265,12 @@ export default function BrowseContent({
     persistFiltersInURL(newFilters);
 
     if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
-      indicateWrongLocation(locationInputRefs[type], setLocationOptionsOpen, handleSetErrorMessage);
+      indicateWrongLocation(
+        locationInputRefs[type],
+        setLocationOptionsOpen,
+        handleSetErrorMessage,
+        texts
+      );
       return;
     }
 
@@ -301,6 +314,24 @@ export default function BrowseContent({
     }
   };
 
+  /*This is specifically for location hubs:
+    Sector hubs don't show members
+    We only know whether a hub is a location hub after loading initial props
+    Therefore we only catch members on location hubs after they are initialized.
+  */
+  useEffect(
+    function () {
+      if (initialMembers) {
+        setState({
+          ...state,
+          items: { ...state.items, members: membersWithAdditionalInfo(initialMembers.members) },
+          hasMore: { ...state.hasMore, members: initialMembers.hasMore },
+        });
+      }
+    },
+    [initialMembers]
+  );
+
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   return (
@@ -328,7 +359,7 @@ export default function BrowseContent({
         >
           {TYPES_BY_TAB_VALUE.map((t, index) => {
             const tabProps = {
-              label: capitalizeFirstLetter(t),
+              label: type_names[t],
               className: classes.tab,
             };
             if (index === 1) tabProps.ref = organizationsTabRef;

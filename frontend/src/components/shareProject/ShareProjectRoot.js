@@ -1,17 +1,19 @@
-import React, { useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
-const DEFAULT_STATUS = 2;
-import ShareProject from "./ShareProject";
-import StepsTracker from "./../general/StepsTracker";
-import SelectCategory from "./SelectCategory";
-import EnterDetails from "./EnterDetails";
-import AddTeam from "./AddTeam";
-import ProjectSubmittedPage from "./ProjectSubmittedPage";
-import axios from "axios";
-import tokenConfig from "../../../public/config/tokenConfig";
+import { makeStyles } from "@material-ui/core/styles";
 import Router from "next/router";
+import React, { useContext, useEffect, useState } from "react";
+import { apiRequest } from "../../../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import TranslateTexts from "../general/TranslateTexts";
+import StepsTracker from "./../general/StepsTracker";
+import AddTeam from "./AddTeam";
+import EnterDetails from "./EnterDetails";
+import ProjectSubmittedPage from "./ProjectSubmittedPage";
+import SelectCategory from "./SelectCategory";
+import ShareProject from "./ShareProject";
+const DEFAULT_STATUS = 2;
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -26,27 +28,38 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const steps = [
-  {
-    key: "share",
-    text: "share project",
-    headline: "Share a project",
-  },
-  {
-    key: "selectCategory",
-    text: "project category",
-    headline: "Select 1-3 categories that fit your project",
-  },
-  {
-    key: "enterDetails",
-    text: "project details",
-  },
-  {
-    key: "addTeam",
-    text: "add team",
-    headline: "Add your team",
-  },
-];
+const getSteps = (texts, sourceLocale) => {
+  const steps = [
+    {
+      key: "share",
+      text: texts.basic_info,
+      headline: texts.share_a_project,
+    },
+    {
+      key: "selectCategory",
+      text: texts.project_category,
+      headline: texts.select_1_to_3_categories_that_fit_your_project,
+    },
+    {
+      key: "enterDetails",
+      text: texts.project_details,
+    },
+    {
+      key: "addTeam",
+      text: texts.add_team,
+      headline: texts.add_your_team,
+    },
+  ];
+  if (sourceLocale === "de") {
+    steps.push({
+      key: "translate",
+      text: texts.languages,
+      headline: texts.translate,
+      sourceLocale: ["de"],
+    });
+  }
+  return steps;
+};
 
 export default function ShareProjectRoot({
   availabilityOptions,
@@ -60,6 +73,9 @@ export default function ShareProjectRoot({
   setMessage,
 }) {
   const classes = useStyles();
+  const { locale, locales } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
+  const steps = getSteps(texts, locale);
   const [project, setProject] = React.useState(
     getDefaultProjectValues(
       {
@@ -68,11 +84,29 @@ export default function ShareProjectRoot({
         role_in_project: "",
       },
       statusOptions,
-      userOrganizations
+      userOrganizations,
+      locale
     )
   );
-  const [curStep, setCurStep] = React.useState(steps[0]);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [loadingSubmitDraft, setLoadingSubmitDraft] = useState(false);
+
+  const getStep = (stepNumber) => {
+    if (stepNumber >= steps.length) return steps[steps.length - 1];
+    return steps[stepNumber];
+  };
+
+  const [sourceLanguage, setSourceLanguage] = useState(locale);
+  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
+  const [translations, setTranslations] = React.useState({});
+  const [curStep, setCurStep] = React.useState(getStep(0));
   const [finished, setFinished] = React.useState(false);
+
+  const changeTranslationLanguages = ({ newLanguagesObject }) => {
+    if (newLanguagesObject.sourceLanguage)
+      setProject({ ...project, language: newLanguagesObject.sourceLanguage });
+    if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
+  };
 
   useEffect(() => {
     if (window) {
@@ -80,7 +114,7 @@ export default function ShareProjectRoot({
       Router.beforePopState(({ as }) => {
         if (location.includes("/share") && as != "/share") {
           const result = window.confirm(
-            "Are you sure you want to leave? You will lose your project."
+            texts.are_you_sure_you_want_to_leave_you_will_lose_your_project
           );
           if (!result) {
             return false;
@@ -91,15 +125,29 @@ export default function ShareProjectRoot({
     }
   });
 
+  const handleChangeTranslationContent = (locale, newTranslations, isManualChange) => {
+    const newTranslationsObject = {
+      ...translations,
+      [locale]: {
+        ...translations[locale],
+        ...newTranslations,
+        is_manual_translation: isManualChange ? true : false,
+      },
+    };
+    setTranslations({ ...newTranslationsObject });
+  };
+
   const goToNextStep = () => {
-    setCurStep(steps[steps.indexOf(curStep) + 1]);
+    const curStepIndex = steps.indexOf(steps.find((s) => s.key === curStep.key));
+    setCurStep(getStep(curStepIndex + 1));
     setMessage("");
     //scroll to top when navigating to another step
     window.scrollTo(0, 0);
   };
 
   const goToPreviousStep = () => {
-    setCurStep(steps[steps.indexOf(curStep) - 1]);
+    const curStepIndex = steps.indexOf(steps.find((s) => s.key === curStep.key));
+    setCurStep(getStep(curStepIndex - 1));
     setMessage("");
     //scroll to top when navigating to another step
     window.scrollTo(0, 0);
@@ -107,37 +155,48 @@ export default function ShareProjectRoot({
 
   const submitProject = async (event) => {
     event.preventDefault();
-    axios
-      .post(
-        process.env.API_URL + "/api/create_project/",
-        await formatProjectForRequest(project),
-        tokenConfig(token)
-      )
-      .then(function (response) {
-        setProject({ ...project, url_slug: response.data.url_slug });
-      })
-      .catch(function (error) {
-        console.log(error);
-        setProject({ ...project, error: true });
-        if (error) console.log(error.response);
+    setLoadingSubmit(true);
+    const payload = await formatProjectForRequest(project, translations);
+
+    try {
+      const resp = await apiRequest({
+        method: "post",
+        url: "/api/create_project/",
+        payload: payload,
+        token: token,
+        locale: locale,
+        shouldThrowError: true,
       });
-    setFinished(true);
+      setProject({ ...project, url_slug: resp.data.url_slug });
+      setLoadingSubmit(false);
+      setFinished(true);
+    } catch (error) {
+      console.log(error);
+      setProject({ ...project, error: true });
+      setLoadingSubmit(false);
+      console.log(error?.response?.data);
+      if (error) console.log(error.response);
+    }
   };
 
   const saveAsDraft = async (event) => {
     event.preventDefault();
-    axios
-      .post(
-        process.env.API_URL + "/api/create_project/",
-        await formatProjectForRequest({ ...project, is_draft: true }),
-        tokenConfig(token)
-      )
+    setLoadingSubmitDraft(true);
+    apiRequest({
+      method: "post",
+      url: "/api/create_project/",
+      payload: await formatProjectForRequest({ ...project, is_draft: true }, translations),
+      token: token,
+      locale: locale,
+    })
       .then(function (response) {
         setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
+        setLoadingSubmitDraft(false);
       })
       .catch(function (error) {
         console.log(error);
         setProject({ ...project, error: true });
+        setLoadingSubmit(false);
         if (error) console.log(error.response);
       });
     setFinished(true);
@@ -146,6 +205,31 @@ export default function ShareProjectRoot({
   const handleSetProject = (newProjectData) => {
     setProject({ ...project, ...newProjectData });
   };
+
+  const textsToTranslate = [
+    {
+      textKey: "name",
+      rows: 1,
+      headlineTextKey: "project_name",
+    },
+    {
+      textKey: "short_description",
+      rows: 5,
+      headlineTextKey: "short_description",
+    },
+    {
+      textKey: "description",
+      rows: 15,
+      headlineTextKey: "description",
+    },
+    {
+      textKey: "helpful_connections",
+      rows: 1,
+      headlineTextKey: "helpful_connections",
+      isArray: true,
+    },
+  ];
+
   return (
     <>
       {!finished ? (
@@ -191,11 +275,32 @@ export default function ShareProjectRoot({
             <AddTeam
               projectData={project}
               handleSetProjectData={handleSetProject}
-              onSubmit={submitProject}
-              saveAsDraft={saveAsDraft}
               goToPreviousStep={goToPreviousStep}
+              goToNextStep={goToNextStep}
               availabilityOptions={availabilityOptions}
               rolesOptions={rolesOptions}
+              onSubmit={submitProject}
+              saveAsDraft={saveAsDraft}
+              isLastStep={steps[steps.length - 1].key === "addTeam"}
+            />
+          )}
+          {curStep.key === "translate" && (
+            <TranslateTexts
+              data={project}
+              handleSetData={handleSetProject}
+              onSubmit={submitProject}
+              goToPreviousStep={goToPreviousStep}
+              handleChangeTranslationContent={handleChangeTranslationContent}
+              translations={translations}
+              targetLanguage={targetLanguage}
+              pageName="project"
+              textsToTranslate={textsToTranslate}
+              arrayTranslationKeys={["helpful_connections"]}
+              introTextKey="translate_project_intro"
+              submitButtonText={texts.submit}
+              saveAsDraft={saveAsDraft}
+              loadingSubmit={loadingSubmit}
+              loadingSubmitDraft={loadingSubmitDraft}
             />
           )}
         </>
@@ -214,7 +319,7 @@ export default function ShareProjectRoot({
 }
 
 //TODO: remove some of these default values as they are just for testing
-const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations) => {
+const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations, locale) => {
   return {
     collaborators_welcome: true,
     status: statusOptions.find((s) => s.id === DEFAULT_STATUS),
@@ -228,10 +333,11 @@ const getDefaultProjectValues = (loggedInUser, statusOptions, userOrganizations)
     //TODO: Should contain the logged in user as the creator and parent_user by default
     team_members: [{ ...loggedInUser }],
     website: "",
+    language: locale,
   };
 };
 
-const formatProjectForRequest = async (project) => {
+const formatProjectForRequest = async (project, translations) => {
   return {
     ...project,
     status: project.status.id,
@@ -243,10 +349,12 @@ const formatProjectForRequest = async (project) => {
       id: m.id,
       role_in_project: m.role_in_project,
     })),
-    project_tags: project.project_tags.map((s) => s.key),
-    parent_organization: project.parent_organization.id,
+    project_tags: project?.project_tags?.map((s) => s.key),
+    parent_organization: project?.parent_organization?.id,
     collaborating_organizations: project.collaborating_organizations.map((o) => o.id),
     image: await blobFromObjectUrl(project.image),
     thumbnail_image: await blobFromObjectUrl(project.thumbnail_image),
+    source_language: project.language,
+    translations: translations ? translations : {},
   };
 };

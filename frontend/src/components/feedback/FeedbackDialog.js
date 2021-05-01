@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
-import PropTypes from "prop-types";
-import { TextField, Typography, Button, Checkbox } from "@material-ui/core";
+import { Button, Checkbox, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import GenericDialog from "./../dialogs/GenericDialog";
+import PropTypes from "prop-types";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import GenericDialog from "./../dialogs/GenericDialog";
 
 const useStyles = makeStyles((theme) => ({
   textField: {
@@ -26,7 +27,8 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
   const [element, setElement] = React.useState(null);
   const [checked, setChecked] = React.useState(false);
   const [email, setEmail] = React.useState("");
-  const { user } = useContext(UserContext);
+  const { locale, user } = useContext(UserContext);
+  const texts = getTexts({ page: "communication", locale: locale });
   const handleClose = () => {
     onClose();
     setElement(null);
@@ -55,8 +57,7 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
       <div className={className}>
         <form onSubmit={onSend}>
           <Typography className={classes.feedback}>
-            Send us your feedback about Climate Connect. You can send us ideas, bug reports,
-            criticism or anything else.
+            {texts.send_us_your_feedback_about_climate_connect}
           </Typography>
           <TextField
             multiline
@@ -79,7 +80,9 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
             size="small"
             onChange={(e) => setChecked(e.target.checked)}
           />
-          <label htmlFor={"feedbackcheckbox"}>Please send me a response to my feedback</label>
+          <label htmlFor={"feedbackcheckbox"}>
+            {texts.please_send_me_a_response_to_my_feedback}
+          </label>
           {checked && !user && (
             <>
               <br />
@@ -88,14 +91,14 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
                 onChange={handleEmailChange}
                 className={classes.emailTextField}
                 value={email}
-                placeholder="Email Address"
+                placeholder={texts.email_address}
                 type="email"
                 required
               />
             </>
           )}
           <Button variant="contained" color="primary" type="submit" className={classes.sendButton}>
-            Send
+            {texts.send}
           </Button>
         </form>
       </div>

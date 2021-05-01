@@ -1,8 +1,11 @@
-import React from "react";
-import { makeStyles, Typography, Container, useMediaQuery } from "@material-ui/core";
+import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
+import theme from "../../themes/theme";
+import UserContext from "../context/UserContext";
 import LightBigButton from "../staticpages/LightBigButton";
 import SmallCloud from "../staticpages/SmallCloud";
-import theme from "../../themes/theme";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -136,39 +139,39 @@ const useStyles = makeStyles((theme) => ({
 export default function JoinCommunityBox({ h1ClassName }) {
   const classes = useStyles();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "landing_page", locale: locale, classes: classes });
   return (
     <div className={classes.root}>
       <Container className={classes.content}>
-        {isMediumScreen && <JoinCommunityText h1ClassName={h1ClassName} />}
+        {isMediumScreen && (
+          <JoinCommunityText h1ClassName={h1ClassName} texts={texts} locale={locale} />
+        )}
         <div className={classes.cloudContainer}>
           <div className={classes.loginIconContainer} />
         </div>
-        {!isMediumScreen && <JoinCommunityText h1ClassName={h1ClassName} />}
+        {!isMediumScreen && <JoinCommunityText h1ClassName={h1ClassName} texts={texts} />}
       </Container>
     </div>
   );
 }
 
-const JoinCommunityText = ({ h1ClassName }) => {
+const JoinCommunityText = ({ h1ClassName, texts, locale }) => {
   const classes = useStyles();
   return (
     <div className={classes.textContainer}>
       <Typography component="h1" className={`${h1ClassName} ${classes.headline}`}>
         <SmallCloud type={1} className={classes.smallCloud1} light />
         <SmallCloud type={2} className={classes.smallCloud2} light />
-        <span className={classes.yellow}>Be part</span> of the community
+        {texts.be_part_of_the_community}
       </Typography>
       <Typography className={classes.bePartOfCommunityText}>
-        Sign up to Climate Connect - {"it's"} for free! By signing up you can work together and
-        share knowledge and experiences with people taking climate action globally and in your home
-        town.
+        {texts.be_part_of_the_community_text}
         <br /> <br />
-        {
-          "Whether you're working on climate action fulltime, on a volunteer basis or are just looking for what to do against climate change, we're all part of #teamclimate."
-        }
+        {texts.whether_youre_working_on_climate_action_fulltime}
       </Typography>
       <div className={classes.signUpButtonContainer}>
-        <LightBigButton href="/signup">Sign up</LightBigButton>
+        <LightBigButton href={getLocalePrefix(locale) + "/signup"}>{texts.sign_up}</LightBigButton>
       </div>
     </div>
   );

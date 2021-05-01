@@ -3,12 +3,14 @@ import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
 import CloseIcon from "@material-ui/icons/Close";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import Typist from "react-typist";
 import {
   default as get_steps,
-  default as tutorial_steps
+  default as tutorial_steps,
 } from "../../../public/data/tutorial_steps";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
   text: {
     fontSize: 17.5,
-    position: "absolute"
+    position: "absolute",
   },
   buttonsContainer: {
     marginTop: theme.spacing(3),
@@ -117,6 +119,9 @@ export default function TutorialStep({
   hubName,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "tutorial", locale: locale });
+  console.log(texts);
   const curStep = get_steps(
     pointerRefs ? { ...pointerRefs, hubName: hubName, onClickForward: onClickForward } : {}
   )[step];
@@ -138,9 +143,10 @@ export default function TutorialStep({
     isFinalStep: isFinalStep,
     forwardWithValue: forwardWithValue,
     curStepRef: curStepRef,
+    texts: texts,
   };
-  const rect = curStep?.pointsAt?.current?.getBoundingClientRect()
-  const rectIsHidden = rect && rect.height === 0 && rect.width === 0
+  const rect = curStep?.pointsAt?.current?.getBoundingClientRect();
+  const rectIsHidden = rect && rect.height === 0 && rect.width === 0;
   if (curStep.pointsAt && !rectIsHidden) {
     return (
       <Popper
@@ -189,6 +195,7 @@ const Step = ({
   isFinalStep,
   forwardWithValue,
   curStepRef,
+  texts,
 }) => {
   const classes = useStyles();
   return (
@@ -203,13 +210,13 @@ const Step = ({
       {step === 0 ? (
         <div className={classes.buttonsContainer}>
           <Button className={classes.backwardButton} onClick={onClickSkip}>
-            No
+            {texts.no}
           </Button>
           <Button
             className={classes.forwardButton}
             onClick={() => onClickForward({ isStartingStep: true })}
           >
-            Yes!
+            {texts.yes}!
           </Button>
         </div>
       ) : curStep.button ? (
@@ -222,6 +229,7 @@ const Step = ({
           possibleAnswers={curStep.possibleAnswers}
           variableToSet={curStep.setsValue}
           forwardWithValue={forwardWithValue}
+          texts={texts}
         />
       )}
     </div>
@@ -234,6 +242,7 @@ const ButtonBar = ({
   onClickBackward,
   possibleAnswers,
   forwardWithValue,
+  texts,
 }) => {
   const classes = useStyles();
   return (
@@ -262,10 +271,10 @@ const ButtonBar = ({
       ) : (
         <div>
           <Button className={classes.backwardButton} onClick={onClickBackward}>
-            Back
+            {texts.back}
           </Button>
           <Button className={classes.forwardButton} onClick={onClickForward}>
-            Next
+            {texts.next}
           </Button>
         </div>
       )}
@@ -291,10 +300,14 @@ const StepText = ({ curStep, tutorialVariables }) => {
 
   return (
     <div className={classes.textBox}>
-      <Typist cursor={{ show: false }} stdTypingDelay={0} avgTypingDelay={20}>
-        <Typography className={classes.text}>{getTextFromStep()}</Typography>
-      </Typist>
-      <Typography className={classes.textPlaceholder}>{getTextFromStep()}</Typography>
+      {!curStep.preventUsingTypist && (
+        <Typist cursor={{ show: false }} stdTypingDelay={0} avgTypingDelay={20}>
+          <Typography className={classes.text}>{getTextFromStep()}</Typography>
+        </Typist>
+      )}
+      <Typography className={!curStep.preventUsingTypist && classes.textPlaceholder}>
+        {getTextFromStep()}
+      </Typography>
     </div>
   );
 };

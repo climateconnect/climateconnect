@@ -152,10 +152,15 @@ const alreadyParsed = (location) => {
   return true;
 };
 
-export function indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage) {
+export function indicateWrongLocation(
+  locationInputRef,
+  setLocationOptionsOpen,
+  setErrorMessage,
+  texts
+) {
   locationInputRef.current.focus();
   setLocationOptionsOpen(true);
-  setErrorMessage("Please choose one of the location options");
+  setErrorMessage(texts.please_choose_one_of_the_location_options);
 }
 
 export function getLocationFields({
@@ -164,20 +169,21 @@ export function getLocationFields({
   handleSetLocationOptionsOpen,
   values,
   locationKey,
+  texts,
 }) {
   //in legacy mode, return a city and a country field
   if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
     return [
       {
         required: true,
-        label: "City",
+        label: texts.city,
         type: "text",
         key: "city",
         value: values[locationKey].city,
       },
       {
         required: true,
-        label: "Country",
+        label: texts.country,
         type: "text",
         key: "country",
         value: values[locationKey].country,
@@ -188,7 +194,7 @@ export function getLocationFields({
   return [
     {
       required: true,
-      label: "Location",
+      label: texts.location,
       type: "location",
       key: locationKey ? locationKey : "location",
       value: values[locationKey],

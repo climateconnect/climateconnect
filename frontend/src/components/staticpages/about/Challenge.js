@@ -1,8 +1,10 @@
-import React from "react";
-import { Typography, Container, makeStyles, Collapse, useMediaQuery } from "@material-ui/core";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { Collapse, Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import React, { useContext } from "react";
+import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
+import UserContext from "../../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -108,16 +110,18 @@ const useStyles = makeStyles((theme) => ({
 export default function Challenge({ headlineClass, showContent, className }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "about", locale: locale, classes: classes });
   return (
     <Container className={`${classes.root} ${className}`}>
       <Typography color="primary" component="h1" className={headlineClass}>
-        The Challenge
+        {texts.the_challenge}
       </Typography>
       <div>
         <div className={classes.imageContainer}>
           <img
             src="/images/wildfire.jpg"
-            alt="One firefighter fights against bog fire in the twilight"
+            alt={texts.the_challenge_image_text}
             className={classes.img}
           />
         </div>
@@ -126,7 +130,7 @@ export default function Challenge({ headlineClass, showContent, className }) {
             <div className={classes.subHeaderWrapper}>
               {!isNarrowScreen && (
                 <Typography component="h1" className={classes.subHeader}>
-                  We can only solve the climate crisis through worldwide collaboration
+                  {texts.we_can_only_solve_the_climate_crisis_through_worldwide_collaboration}
                 </Typography>
               )}
               {!showContent && <ExpandMoreIcon className={classes.expandMoreIcon} />}
@@ -134,17 +138,15 @@ export default function Challenge({ headlineClass, showContent, className }) {
             <Collapse in={showContent} timeout={1000}>
               <div className={classes.challengesWrapper}>
                 <Typography className={classes.challenge}>
-                  The climate crisis is{" "}
-                  <span className={classes.marked}>the biggest challenge</span> humanity has ever
-                  faced - and we can only solve it together.
+                  {texts.the_climate_crisis_is_the_biggest_challenge_text}
                 </Typography>
                 <Typography className={classes.challenge}>
-                  Many people are working on very effective climate solutions. We need to{" "}
-                  <span className={classes.marked}>spread effective solutions</span> globally.
+                  {texts.spread_effective_solutions_globally_text}
                 </Typography>
                 <Typography className={classes.challenge}>
-                  NGOs, companies, governments, public institutions and citizens need to{" "}
-                  <span className={classes.marked}>work together</span> to solve this crisis.
+                  {
+                    texts.ngos_companies_governments_institutions_citizens_need_to_work_together_text
+                  }
                 </Typography>
               </div>
               {showContent && (
@@ -157,7 +159,7 @@ export default function Challenge({ headlineClass, showContent, className }) {
         </div>
         <Container>
           <Typography color="primary" className={classes.thisisWhy}>
-            This is why we created Climate Connect
+            {texts.this_is_why_we_created_climate_connect}
           </Typography>
         </Container>
       </div>

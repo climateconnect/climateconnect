@@ -1,8 +1,10 @@
-import React from "react";
-import { Typography, makeStyles, Container, useMediaQuery } from "@material-ui/core";
-import SmallCloud from "./SmallCloud";
+import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import UserContext from "../context/UserContext";
 import ExplainerElement from "./ExplainerElement";
+import SmallCloud from "./SmallCloud";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -87,6 +89,8 @@ const useStyles = makeStyles((theme) => ({
 export default function ExplainerBox({ h1ClassName, className, hideHeadline }) {
   const classes = useStyles();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "about", locale: locale });
 
   return (
     <Container className={`${classes.root} ${className}`}>
@@ -100,52 +104,36 @@ export default function ExplainerBox({ h1ClassName, className, hideHeadline }) {
       )}
       {!hideHeadline && (
         <Typography color="primary" component="h1" className={h1ClassName}>
-          This is Climate Connect
+          {texts.this_is_climate_connect}
         </Typography>
       )}
       <div className={classes.explainerWrapper}>
         <ExplainerElement
           text={
             <>
-              A <b>free, non-profit</b> climate action network.
+              {texts.a_free_nonprofit_climate_action_network}
               <br />
-              100% Independent.
+              {texts.hundred_percent_independent}.
             </>
           }
           icon="/icons/floating_sign_heart.svg"
-          alt="Heart Icon"
+          alt={texts.heart_icon}
         >
           {isMediumScreen && <SmallCloud type={1} className={classes.mobileCloud1} />}
         </ExplainerElement>
         <ExplainerElement
-          text={
-            <>
-              For <b>everyone</b> who contributes or
-              <br />
-              wants to contribute to solving the
-              <br />
-              climate crisis.
-            </>
-          }
+          text={<>{texts.for_everyone_who_contributes_or_wants_to_contribute}</>}
           icon="/icons/floating_sign_group.svg"
-          alt="Group of People icon"
+          alt={texts.group_of_people_icon}
         >
           {isMediumScreen && <SmallCloud type={2} className={classes.mobileCloud2} />}
           {isMediumScreen && <SmallCloud type={2} className={classes.mobileCloud3} reverse />}
           {isMediumScreen && <SmallCloud type={2} className={classes.mobileCloud4} reverse />}
         </ExplainerElement>
         <ExplainerElement
-          text={
-            <>
-              Enabling global and local
-              <br />
-              <b>{"collaboration and knowledge sharing"}</b>
-              <br />
-              in climate action.
-            </>
-          }
+          text={<>{texts.enabling_global_and_locale_collaboration_and_knowledge_sharing}</>}
           icon="/icons/floating_sign_lightbulb.svg"
-          alt="Idea lightbulb"
+          alt={texts.idea_lightbulb_icon}
         >
           {isMediumScreen && <SmallCloud type={2} className={classes.mobileCloud5} />}
         </ExplainerElement>

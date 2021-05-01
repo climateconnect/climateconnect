@@ -1,20 +1,20 @@
-import React from "react";
-import Link from "next/link";
 import {
-  Typography,
-  Divider,
   Button,
-  TextField,
-  FormControlLabel,
   Checkbox,
   CircularProgress,
+  Divider,
+  FormControlLabel,
+  TextField,
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import tokenConfig from "../../../public/config/tokenConfig";
-import Axios from "axios";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import { redirect } from "../../../public/lib/apiOperations";
+import Link from "next/link";
+import React, { useContext } from "react";
 import Cookies from "universal-cookie";
+import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations";
 
 const useStyles = makeStyles((theme) => ({
@@ -51,42 +51,44 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const possibleEmailPreferences = [
-  {
-    key: "send_newsletter",
-    text: "Receive emails about updates, news and interesting projects (~once per month)",
-  },
-  {
-    key: "email_on_private_chat_message",
-    text: "Get notified when somebody sends you a personal chat message",
-  },
-  {
-    key: "email_on_group_chat_message",
-    text: "Get notified when somebody sends you a chat message in a group",
-  },
-  {
-    key: "email_on_comment_on_your_project",
-    text: "Get notified when somebody leaves a comment on a project you're part of",
-  },
-  {
-    key: "email_on_reply_to_your_comment",
-    text: "Get notified when somebody replies to your comment on a project",
-  },
-  {
-    key: "email_on_new_project_follower",
-    text: "Get notified when somebody follows a project you're part of",
-  },
-];
-
-const possibleCookiePreferences = [
-  {
-    key: "acceptedStatistics",
-    text: "Enable Statistics cookies to help us improve Climate Connect",
-  },
-];
-
 export default function SettingsPage({ settings, setSettings, token, setMessage }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "settings", locale: locale });
+
+  const possibleEmailPreferences = [
+    {
+      key: "send_newsletter",
+      text: texts.send_newsletter_text,
+    },
+    {
+      key: "email_on_private_chat_message",
+      text: texts.email_on_private_chat_message_text,
+    },
+    {
+      key: "email_on_group_chat_message",
+      text: texts.email_on_group_chat_message_text,
+    },
+    {
+      key: "email_on_comment_on_your_project",
+      text: texts.email_on_comment_on_your_project_text,
+    },
+    {
+      key: "email_on_reply_to_your_comment",
+      text: texts.email_on_reply_to_your_comment_text,
+    },
+    {
+      key: "email_on_new_project_follower",
+      text: texts.email_on_new_project_follower_text,
+    },
+  ];
+
+  const possibleCookiePreferences = [
+    {
+      key: "acceptedStatistics",
+      text: texts.accepted_statistics_text,
+    },
+  ];
   const [errors, setErrors] = React.useState({
     passworderror: "",
     newemailerror: "",
@@ -147,19 +149,21 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
   const changePassword = (event) => {
     event.preventDefault();
     if (passwordInputs.newpassword !== passwordInputs.confirmnewpassword) {
-      setErrors({ ...errors, passworderror: "Your new passwords don't match" });
+      setErrors({ ...errors, passworderror: texts.your_new_passwords_dont_match });
       setPasswordInputs({ ...passwordInputs, newpassword: "", confirmnewpassword: "" });
     } else {
       setErrors({ ...errors, passworderror: "" });
-      Axios.post(
-        process.env.API_URL + "/api/account_settings/",
-        {
+      apiRequest({
+        method: "post",
+        url: "/api/account_settings/",
+        payload: {
           password: passwordInputs.newpassword,
           confirm_password: passwordInputs.confirmnewpassword,
           old_password: passwordInputs.oldpassword,
         },
-        tokenConfig(token)
-      )
+        token: token,
+        locale: locale,
+      })
         .then(function (response) {
           setMessage(response.data.message);
           setErrors({
@@ -191,26 +195,28 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     if (newEmail === settings.email)
       setErrors({
         ...errors,
-        newemailerror: "Your new email can not be the same as your old email.",
+        newemailerror: texts.your_new_email_can_not_be_the_same_as_your_old_email,
       });
     else {
       setErrors({ ...errors, newemailerror: "" });
-      Axios.post(
-        process.env.API_URL + "/api/account_settings/",
-        { email: newEmail },
-        tokenConfig(token)
-      )
+      apiRequest({
+        method: "post",
+        url: "/api/account_settings/",
+        payload: { email: newEmail },
+        token: token,
+        locale: locale,
+      })
         .then(function () {
           redirect("/browse", {
             message:
-              "An E-Mail to confirm this E-Mail address change has been sent to your old E-Mail address.",
+              texts.an_e_mail_to_confirm_this_e_mail_address_change_has_been_sent_to_your_old_e_mail_address,
           });
         })
         .catch(function (error) {
           console.log(error);
           setErrors({
             ...errors,
-            newemailerror: "Error!",
+            newemailerror: texts.error + "!",
           });
           if (error) console.log(error.response);
         });
@@ -226,11 +232,12 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       )
     ) {
       setEmailPreferencesLoading(true);
-      Axios.post(
-        process.env.API_URL + "/api/account_settings/",
-        emailPreferences,
-        tokenConfig(token)
-      )
+      apiRequest({
+        url: "/api/account_settings/",
+        payload: emailPreferences,
+        token: token,
+        locale: locale,
+      })
         .then(function (response) {
           setEmailPreferencesLoading(false);
           setMessage(response.data.message);
@@ -248,14 +255,14 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           console.log(error);
           setErrors({
             ...errors,
-            emailpreferenceserror: "Error!",
+            emailpreferenceserror: texts.error + "!",
           });
           if (error) console.log(error.response);
         });
     } else
       setErrors({
         ...errors,
-        emailpreferenceserror: "You haven't made any changes.",
+        emailpreferenceserror: texts.you_havent_made_any_changes,
       });
   };
 
@@ -275,7 +282,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       }
     });
     if (hasChanges) {
-      setMessage("Cookie settings successfully updated.");
+      setMessage(texts.cookie_settings_successfully_updated);
       window.scrollTo(0, 0);
       setErrors({
         ...errors,
@@ -284,7 +291,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     } else
       setErrors({
         ...errors,
-        cookiepreferencesserror: "You haven't made any changes.",
+        cookiepreferencesserror: texts.you_havent_made_any_changes,
       });
   };
 
@@ -311,7 +318,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
   return (
     <>
       <Typography color="primary" variant="h5" component="h2">
-        Change Password
+        {texts.change_password}
       </Typography>
       <Divider />
       <form onSubmit={changePassword}>
@@ -326,7 +333,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           type="password"
           label="Old password"
           value={passwordInputs.oldpassword}
-          onChange={() => handlePasswordInputsChange(event, "oldpassword")}
+          onChange={(event) => handlePasswordInputsChange(event, "oldpassword")}
           required
         />
         <TextField
@@ -335,7 +342,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           type="password"
           label="New password"
           value={passwordInputs.newpassword}
-          onChange={() => handlePasswordInputsChange(event, "newpassword")}
+          onChange={(event) => handlePasswordInputsChange(event, "newpassword")}
           required
         />
         <TextField
@@ -344,26 +351,26 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           type="password"
           label="Confirm new password"
           value={passwordInputs.confirmnewpassword}
-          onChange={() => handlePasswordInputsChange(event, "confirmnewpassword")}
+          onChange={(event) => handlePasswordInputsChange(event, "confirmnewpassword")}
           required
         />
         <div className={classes.blockElement}>
           <Typography variant="body2" className={classes.marginBottom}>
-            Make sure it is at least 8 characters including a number and an uppercase letter.
+            {texts.make_sure_it_is_at_least_8_characters_including_a_number_and_an_uppercase_letter}
           </Typography>
           <Button variant="contained" color="primary" type="submit">
-            Change Password
+            {texts.change_password}
           </Button>
-          <Link href="/resetpassword">
+          <Link href={getLocalePrefix(locale) + "/resetpassword"}>
             <a className={`${classes.forgotPasswordLink} ${classes.primaryColor}`}>
-              I forgot my password
+              {texts.i_forgot_my_password}
             </a>
           </Link>
         </div>
       </form>
 
       <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
-        Change linked email
+        {texts.change_linked_email}Change linked email
       </Typography>
       <Divider />
       <form onSubmit={changeEmail}>
@@ -373,23 +380,22 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           </Typography>
         )}
         <Typography className={classes.blockElement} variant="body2">
-          Your linked email is {settings.email}
+          {texts.your_linked_email_is} {settings.email}
         </Typography>
         <TextField
           variant="outlined"
           className={classes.blockElement}
           type="email"
-          label="New Email"
+          label={texts.new_email}
           value={newEmail}
           onChange={handleNewEmailChange}
           required
         />
         <Button className={classes.blockElement} variant="contained" color="primary" type="submit">
-          Change email
+          {texts.change_email}
         </Button>
         <Typography className={classes.blockElement} variant="body2">
-          Changing your E-Mail will not change the E-Mail you use for Login. It will just change the
-          E-Mail that your E-Mails are delivered to.
+          {texts.change_email_text}
         </Typography>
       </form>
       <Typography
@@ -399,7 +405,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         component="h2"
         id="emailPreferences"
       >
-        Change email preferences
+        {texts.change_email_preferences}
       </Typography>
       <Divider />
       <div className={classes.blockElement}>
@@ -432,7 +438,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         disabled={emailPreferencesLoading}
       >
         {emailPreferencesLoading && <CircularProgress size={13} />}
-        Change preferences
+        {texts.change_preferences}
       </Button>
       <Typography
         className={classes.lowerHeaders}
@@ -441,7 +447,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         component="h2"
         id="cookiesettings"
       >
-        Change cookie settings
+        {texts.change_cookie_settings}
       </Typography>
       <Divider />
       <div className={classes.blockElement}>
@@ -455,7 +461,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
             control={
               <Checkbox
                 checked={cookiePreferences[key]}
-                onChange={() => handleCookiePreferenceChange(event, key)}
+                onChange={(event) => handleCookiePreferenceChange(event, key)}
                 name={key}
                 color="primary"
               />
@@ -472,7 +478,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         color="primary"
         onClick={changeCookiePreferences}
       >
-        Change Cookie Settings
+        {texts.change_cookie_settings}
       </Button>
       {/*<Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
         Change your profile url
@@ -504,20 +510,20 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         </Button>
       </form>*/}
       <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
-        Edit your profile page
+        {texts.edit_your_profile_page}
       </Typography>
       <Divider />
       <Button
-        href={"/editprofile"}
+        href={getLocalePrefix(locale) + "/editprofile"}
         className={`${classes.editProfilePageButton}`}
         variant="contained"
         color="primary"
       >
-        Edit profile page
+        {texts.edit_profile_page}
       </Button>
       <Typography variant="subtitle2" className={classes.deleteMessage}>
         <InfoOutlinedIcon />
-        If you wish to delete this account, send an E-Mail to support@climateconnect.earth
+        {texts.if_you_wish_to_delete_this_account}
       </Typography>
     </>
   );

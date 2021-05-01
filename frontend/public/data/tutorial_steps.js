@@ -1,8 +1,11 @@
-import { Button, CircularProgress, Link, makeStyles } from "@material-ui/core";
+import { Button, CircularProgress, makeStyles } from "@material-ui/core";
 import Router from "next/router";
-import React from "react";
+import React, { useContext } from "react";
 import Cookies from "universal-cookie";
+import UserContext from "../../src/components/context/UserContext";
+import { getLocalePrefix } from "../lib/apiOperations";
 import { startPrivateChat } from "../lib/messagingOperations";
+import getTexts from "../texts/texts";
 
 const useStyles = makeStyles((theme) => ({
   buttonContainer: {
@@ -46,11 +49,13 @@ export default function get_steps({
   const cookies = new Cookies();
   const token = cookies.get("token");
   const [loading, setLoading] = React.useState(false);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "tutorial", locale: locale, hubName: hubName, classes: classes });
 
   const handleConnectBtn = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const chat = await startPrivateChat({ url_slug: "thomasbove4" }, token);
+    const chat = await startPrivateChat({ url_slug: "thomasbove4" }, token, locale);
     if (chat && chat.chat_uuid) Router.push("/chat/" + chat.chat_uuid + "/");
     else setLoading(false);
   };
@@ -58,102 +63,70 @@ export default function get_steps({
   return [
     {
       step: 0,
-      headline: "Welcome to Climate Connect!",
+      headline: texts.welcome_to_climate_connect + "!",
       pages: ["/browse", "/hubs/", "/projects/"],
       text: (
         <span>
-          Climate Connect is a free collaboration platform for people taking climate action.
+          {texts.tutorial_welcome_to_climate_connect_text_first_part}
           <br />
-          Want to discover all the things you can do here?
+          {texts.tutorial_welcome_to_climate_connect_text_last_part}
         </span>
       ),
     },
     {
       step: 1,
-      headline: "Let's start with a question!",
+      headline: texts.tutorial_lets_start_with_a_question + "!",
       pages: ["/browse", "/hubs/", "/projects/"],
-      text: (
-        <span>
-          Are you already involved in climate action, for example as a volunteer or in your
-          professional life?
-        </span>
-      ),
+      text: <span>{texts.tutorial_lets_start_with_a_question_text}</span>,
       setsValue: "isActivist",
       possibleAnswers: {
         No: "false",
-        "No, but I'd like to": "soon",
+        [texts.no_but_i_would_like_to]: "soon",
         Yes: "true",
       },
     },
     {
       step: 2,
-      headline: "Welcome to the browse page!",
+      headline: texts.tutorial_welcome_to_the_browse_page + "!",
       pages: ["/browse"],
       texts: {
         isActivist: {
           true: (
             <span>
-              Great that {"you're"} already a climate hero! 🌎 <br />
-              Here you can browse through all climate projects created by Climate Connect users. You
-              can share your own (later 😉) or find the right people to connect with to multiply
-              your impact.
+              {texts.great_that_you_are_already_a_climate_hero} 🌎 <br />
+              {texts.here_you_can_browse}
             </span>
           ),
-          soon: (
-            <span>
-              {"That's"} exciting, you have come to the right place to get started! 🌎 We need smart
-              people like you to work together to solve this crisis. On this page you can browse
-              through all climate projects created by Climate Connect members.
-            </span>
-          ),
-          false: (
-            <span>
-              No worries, here is the right place to start off! On this page you can browse through
-              all climate projects created by Climate Connect members.
-            </span>
-          ),
+          soon: <span>{texts.tutorial_welcome_to_the_browse_page_text_for_answer_soon}</span>,
+          false: <span>{texts.tutorial_welcome_to_the_browse_page_text_for_answer_false}</span>,
         },
       },
     },
     {
       step: 3,
-      headline: `Welcome to the ${hubName} hub page!`,
+      headline: texts.welcome_to_the_hub_page,
       pages: ["/hubs/"],
+      preventUsingTypist: true,
       texts: {
         isActivist: {
           true: (
             <span>
-              Great that {"you're"} already a climate hero! 🌎 <br />
-              Here you can find climate action projects in the {hubName} field that were created by
-              Climate Connect members. You can find an overview of all projects on the{" "}
-              <Link href="/browse" target="_blank" className={classes.link}>
-                browse
-              </Link>{" "}
-              page.
+              {texts.great_that_you_are_already_a_climate_hero} 🌎 <br />
+              {texts.here_you_can_find_projects_in_hub}
             </span>
           ),
           soon: (
             <span>
-              {"That's"} exciting, you have come to the right place to get started! 🌎 We need smart
-              people like you to work together to solve this crisis.
+              {texts.welcome_to_the_hub_page_text_for_answer_soon_first_part}
               <br />
-              Here you can find climate action projects in the {hubName} field that were created by
-              Climate Connect members. You can find an overview of all projects on the{" "}
-              <Link href="/browse" target="_blank" className={classes.link}>
-                browse
-              </Link>{" "}
-              page.
+              {texts.welcome_to_the_hub_page_text_for_answer_soon_second_part}
             </span>
           ),
           false: (
             <span>
-              No worries, here is the right place to start off! <br />
-              On this page you can find climate action projects in the {hubName} field that were
-              created by Climate Connect members. You can find an overview of all projects on the{" "}
-              <Link href="/browse" target="_blank" className={classes.link}>
-                browse
-              </Link>{" "}
-              page.
+              {texts.welcome_to_the_hub_page_text_for_answer_false_first_part}
+              <br />
+              {texts.welcome_to_the_hub_page_text_for_answer_false_second_part}
             </span>
           ),
         },
@@ -161,251 +134,148 @@ export default function get_steps({
     },
     {
       step: 4,
-      headline: "The project cards!",
+      headline: texts.the_project_cards,
       pages: ["/browse", "/hubs/"],
       pointsAt: projectCardRef,
       texts: {
         isActivist: {
-          true: (
-            <span>
-              Find interesting climate projects to collaborate with or get inspired by! Hover over a
-              card to see a short summary of what the project is about.
-            </span>
-          ),
-          soon: (
-            <span>
-              Find interesting climate projects to join or maybe even get inspired to do something
-              similar at your location! Hover over a card to see a short summary of what the project
-              is about.
-            </span>
-          ),
-          false: (
-            <span>
-              Find interesting climate projects to join or maybe even get inspired to do something
-              similar at your location! Hover over a card to see a short summary of what the project
-              is about.
-            </span>
-          ),
+          true: <span>{texts.the_project_cards_text_for_answer_true}</span>,
+          soon: <span>{texts.the_project_cards_text_for_answer_soon}</span>,
+          false: <span>{texts.the_project_cards_text_for_answer_false}</span>,
         },
       },
     },
     {
       step: 5,
-      headline: "Filter and find what you're looking for",
+      headline: texts.filter_and_find_tutorial_headline,
       pages: ["/browse", "/hubs/"],
       pointsAt: filterButtonRef,
-      text: (
-        <span>
-          Click on the {'"Filter"'} button to filter the projects, for example by location or
-          category. Choose what you want to filter by and click {'"Apply"'} to see the results!
-        </span>
-      ),
+      text: <span>{texts.filter_and_find_tutorial_text}</span>,
       texts: {
         isActivist: {
-          true: (
-            <span>
-              Click on the {'"Filter"'} button to filter the projects, for example by location or
-              category. Choose what you want to filter by and click {'"Apply"'} to see the results!
-            </span>
-          ),
-          soon: (
-            <span>
-              Click on the {'"Filter"'} button to filter the projects, for example by location,
-              category or the skills they are looking for. Choose what you want to filter by and
-              click {'"Apply"'} to see the results!
-            </span>
-          ),
-          false: (
-            <span>
-              Click on the {'"Filter"'} button to filter the projects, for example by location or
-              category. Choose what you want to filter by and click {'"Apply"'} to see the results!
-            </span>
-          ),
+          true: <span>{texts.filter_and_find_tutorial_text_for_answer_true}</span>,
+          soon: <span>{texts.filter_and_find_tutorial_text_for_answer_soon}</span>,
+          false: <span>{texts.filter_and_find_tutorial_text_for_answer_false}</span>,
         },
       },
       placement: "top",
     },
     {
       step: 6,
-      headline: "Tabs",
+      headline: texts.tabs_tutorial_headline,
       pages: ["/browse", "/hubs/"],
       pointsAt: organizationsTabRef,
-      text: (
-        <span>
-          Click on another tab to see all active organizations or members of Climate Connect. These
-          are the faces behind the projects and the climate actors we strive to
-          empower.
-        </span>
-      ),
+      text: <span>{texts.tabs_tutorial_text}</span>,
       placement: "top",
     },
     {
       step: 7,
-      headline: "Climate action hubs",
+      headline: texts.hubs_tutorial_headline,
       pages: ["/browse"],
       pointsAt: hubsSubHeaderRef,
-      text: (
-        <span>
-          Find plentiful information and effective and interesting projects in a specific field by
-          clicking on one of the links to our hubs.
-        </span>
-      ),
+      text: <span>{texts.hubs_tutorial_text}</span>,
       placement: "bottom",
     },
     {
       step: 8,
-      headline: "Quick bits",
+      headline: texts.quick_bits_tutorial_headline,
       pages: ["/hubs/"],
       pointsAt: hubQuickInfoRef,
-      text: (
-        <span>
-          Every hub page provides a summary as well as detailed information about the impact of each
-          sector. Additional statistics help you to put each sector into perspective.
-        </span>
-      ),
+      text: <span>{texts.quick_bits_tutorial_text}</span>,
       placement: "bottom",
     },
     {
       step: 9,
-      headline: "Want to get involved in the sector?",
+      headline: texts.want_to_get_involved_in_this_sector_headline,
       pages: ["/hubs/"],
       pointsAt: hubProjectsButtonRef,
-      text: (
-        <span>
-          By clicking on {'"Show projects"'} you directly get to the projects from this sector that
-          have been shared by Climate Connect users.
-        </span>
-      ),
+      text: <span>{texts.want_to_get_involved_in_this_sector_text}</span>,
       placement: "top",
       triggerNext: "showProjectsButton",
     },
     {
       step: 10,
-      headline: "Click a project",
+      headline: texts.click_a_project_headline,
       pages: ["/hubs/"],
       pointsAt: projectCardRef,
-      text: <span>Click on a project to find out more about it!</span>,
+      text: <span>{texts.click_a_project_text}</span>,
       placement: "top",
     },
     {
       step: 11,
-      headline: "Welcome to the project page!",
+      headline: texts.welcome_to_the_project_page_headline,
       pages: ["/projects/"],
-      text: (
-        <span>
-          In the top section you can find a short summary ({"<240 characters"}) and the most
-          important information about the project. If the first impression is interesting, you can
-          dive deeper.
-        </span>
-      ),
+      text: <span>{texts.welcome_to_the_project_page_text}</span>,
       placement: "top",
     },
     {
       step: 12,
-      headline: "More Detailled information about the project",
+      headline: texts.detailled_info_about_project_headline,
       pages: ["/projects/"],
       pointsAt: projectDescriptionRef,
-      text: (
-        <span>
-          Here you can find more detailled information about the project, some projects even include
-          a video. If you have a question orthink something is missing you can get in contact with
-          the creator. (more on that later)
-        </span>
-      ),
+      text: <span>{texts.detailled_info_about_project_text}</span>,
       placement: "top-start",
     },
     {
       step: 13,
-      headline: "Collaboration",
+      headline: texts.collaboration_tutorial_headline,
       pages: ["/projects/"],
       pointsAt: collaborationSectionRef,
-      text: (
-        <span>
-          This section shows you if the project needs help in a specific area. If you are interested
-          to get involved click the...
-        </span>
-      ),
+      text: <span>{texts.collaboration_tutorial_text}</span>,
       placement: "top-start",
     },
     {
       step: 14,
-      headline: "...Contact button",
+      headline: "..." + texts.contact_button_tutorial_headline,
       pages: ["/projects/"],
       pointsAt: contactProjectCreatorButtonRef,
-      text: (
-        <span>
-          Get in contact with the project creator directly in a private chat. Ask them how to get
-          involved or any other question or suggestion you might have.
-          {"Don't"} hesitate to use this button frequently, working together is the only way{" "}
-          {"we're"} going to solve the climate crisis!
-        </span>
-      ),
+      text: <span>{texts.contact_button_tutorial_text}</span>,
       placement: "bottom",
     },
     {
       step: 15,
-      headline: "Meet the team and discuss the project",
+      headline: texts.meet_and_discuss_tutorial_headline,
       pages: ["/projects/"],
       pointsAt: projectTabsRef,
-      text: (
-        <span>
-          As an alternative to a direct message, you can comment and start a discussion. Also: find
-          out who is working on the project in the team tab.
-        </span>
-      ),
+      text: <span>{texts.meet_and_discuss_tutorial_text}</span>,
       placement: "top-start",
     },
     {
       step: 16,
-      headline: "Are you ready to join team climate?",
+      headline: texts.are_you_ready_tutorial_headline,
       pages: ["/browse", "/hubs/", "/projects/"],
       loggedIn: false,
       texts: {
         isActivist: {
-          true: (
-            <span>
-              Sign up to Climate Connect for free to join our international community of people
-              working together to solve the climate crisis. Share your own organization and/or
-              projects to get recognition, find new team members and spread your project worldwide.
-            </span>
-          ),
-          soon: (
-            <span>
-              Sign up to Climate Connect for free to join our international community of people
-              working together to solve the climate crisis.
-              {"You'll"} be able to find the right project to work on with your skillset to make the
-              biggest possible difference against climate change!
-            </span>
-          ),
+          true: <span>{texts.are_you_ready_tutorial_text_for_answer_true}</span>,
+          soon: <span>{texts.are_you_ready_tutorial_text_for_answer_soon}</span>,
           false: (
             <span>
-              Do you agree that we can only solve the climate crisis through collaboration? <br />
-              Sign up to Climate Connect for free to join our international community of people
-              working together to solve the climate crisis
+              {texts.are_you_ready_tutorial_text_for_answer_false_first_part}
+              <br />
+              {texts.are_you_ready_tutorial_text_for_answer_false_last_part}
             </span>
           ),
         },
       },
       button: (
         <div className={classes.buttonContainer}>
-          <Button href="/signup?from_tutorial=true" className={classes.signUpButton} size="large">
-            Sign up
+          <Button
+            href={getLocalePrefix(locale) + "/signup?from_tutorial=true"}
+            className={classes.signUpButton}
+            size="large"
+          >
+            {texts.sign_up}
           </Button>
         </div>
       ),
     },
     {
       step: 17,
-      headline: "Let's make an impact together!",
+      headline: texts.lets_make_an_impact_together_tutorial_headline,
       pages: ["/browse", "/hubs/", "/projects/"],
       loggedIn: true,
-      text: (
-        <span>
-          Great to have you on team climate. We would love to help you with any problem related to
-          climate action! Thomas, our community manager will gladly connect you to the right people
-          in the community!
-        </span>
-      ),
+      text: <span>{texts.lets_make_an_impact_together_tutorial_text}</span>,
       button: (
         <div className={classes.buttonContainer}>
           <Button className={classes.signUpButton} onClick={handleConnectBtn}>
@@ -414,12 +284,12 @@ export default function get_steps({
             ) : (
               <>
                 <img src="../images/thomas_profile_image.jpg" className={classes.thomasImage} />
-                Message Thomas
+                {texts.message_thomas}
               </>
             )}
           </Button>
           <Button className={classes.signUpButton} size="large" onClick={onClickForward}>
-            Finish
+            {texts.finish}
           </Button>
         </div>
       ),

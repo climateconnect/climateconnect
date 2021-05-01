@@ -1,10 +1,11 @@
-import React from "react";
-import Posts from "./../communication/Posts.js";
-import CommentInput from "../communication/CommentInput.js";
-import { Typography, Divider } from "@material-ui/core";
+import { Divider, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import tokenConfig from "../../../public/config/tokenConfig.js";
-import axios from "axios";
+import React, { useContext } from "react";
+import { apiRequest } from "../../../public/lib/apiOperations.js";
+import getTexts from "../../../public/texts/texts.js";
+import CommentInput from "../communication/CommentInput.js";
+import UserContext from "../context/UserContext.js";
+import Posts from "./../communication/Posts.js";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -17,6 +18,8 @@ const useStyles = makeStyles((theme) => {
 
 export default function CommentsContent({ user, project, token, setCurComments }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const comments = project.comments;
   const handleAddComment = (c) => {
     if (c.parent_comment_id) {
@@ -56,11 +59,14 @@ export default function CommentsContent({ user, project, token, setCurComments }
     clearInput();
     if (parent_comment) payload.parent_comment = parent_comment;
     try {
-      const resp = await axios.post(
-        process.env.API_URL + "/api/projects/" + project.url_slug + "/comment/",
-        payload,
-        tokenConfig(token)
-      );
+      const resp = await apiRequest({
+        url: "/api/projects/" + project.url_slug + "/comment/",
+        payload: payload,
+        method: "post",
+        token: token,
+        locale: locale,
+        shouldThrowError: true,
+      });
       handleAddComment(resp.data.comment);
       if (setDisplayReplies) setDisplayReplies(true);
     } catch (err) {
@@ -72,10 +78,12 @@ export default function CommentsContent({ user, project, token, setCurComments }
 
   const onDeleteComment = async (post) => {
     try {
-      await axios.delete(
-        process.env.API_URL + "/api/projects/" + project.url_slug + "/comment/" + post.id + "/",
-        tokenConfig(token)
-      );
+      await apiRequest({
+        method: "delete",
+        url: "/api/projects/" + project.url_slug + "/comment/" + post.id + "/",
+        token: token,
+        locale: locale,
+      });
       handleRemoveComment(post);
     } catch (err) {
       console.log(err);
@@ -87,7 +95,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
   return (
     <div>
       <CommentInput user={user} onSendComment={onSendComment} />
-      <Typography>{comments.length + " comments"}</Typography>
+      <Typography>{comments.length + " " + texts.comments}</Typography>
       <Divider className={classes.divider} />
       {comments && comments.length > 0 && (
         <Posts

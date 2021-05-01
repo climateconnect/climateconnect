@@ -1,8 +1,10 @@
-import React from "react";
 import { Container, Typography } from "@material-ui/core";
-import MultiLevelSelector from "../general/MultiLevelSelector";
 import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import BottomNavigation from "../general/BottomNavigation";
+import MultiLevelSelector from "../general/MultiLevelSelector";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -46,10 +48,12 @@ export default function SelectCategory({
   const [selectedCategories, setSelectedCategories] = React.useState(
     project.project_tags ? project.project_tags : []
   );
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
 
   const onClickNextStep = () => {
-    if (selectedCategories.length <= 0) alert("Please choose at least one category!");
-    else if (selectedCategories.length > 3) alert("You can only choose up to 3 categories.");
+    if (selectedCategories.length <= 0) alert(texts.please_choose_at_least_one_category);
+    else if (selectedCategories.length > 3) alert(texts.you_can_only_choose_up_to_3_categories);
     else {
       handleSetProjectData({ project_tags: selectedCategories });
       goToNextStep();
@@ -65,11 +69,10 @@ export default function SelectCategory({
     <Container maxWidth="lg">
       <div className={classes.appealBox}>
         <Typography className={classes.appealText}>
-          You can combine categories. For example if you fund treeplanting, select both{" "}
-          {"Afforestation/Reforestration"} and {"Funding"}
+          {texts.you_can_combine_categories_text}
         </Typography>
         <Typography className={classes.appealText}>
-          This way you can specify what you are doing and in which field.
+          {texts.this_way_you_can_specify_what_you_are_doing_and_in_which_field}
         </Typography>
       </div>
       <div className={classes.block}>

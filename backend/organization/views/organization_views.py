@@ -1,38 +1,52 @@
+import logging
+# Django imports
+from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
-from location.models import Location
-from location.utility import get_location, get_location_with_range
-from hubs.models.hub import Hub
-from organization.models.tags import ProjectTags
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
-from rest_framework.filters import SearchFilter
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.exceptions import NotFound
+from django.db.models import Q
+from django.utils.translation import gettext as _
 from django_filters.rest_framework import DjangoFilterBackend
 
-from django.contrib.auth.models import User
-from organization.serializers.organization import (
-    EditOrganizationSerializer, OrganizationSerializer, OrganizationMinimalSerializer, OrganizationMemberSerializer, 
-    UserOrganizationSerializer, OrganizationCardSerializer, OrganizationSitemapEntrySerializer
-)
-from organization.serializers.project import (ProjectFromProjectParentsSerializer,)
-from organization.serializers.tags import (OrganizationTagsSerializer)
-from climateconnect_api.serializers.user import UserProfileStubSerializer
-from organization.models import Organization, OrganizationMember, ProjectParents, OrganizationTags, OrganizationTagging
-from organization.permissions import (
-    AddOrganizationMemberPermission, ChangeOrganizationCreatorPermission,
-    OrganizationReadWritePermission, OrganizationReadWritePermission, OrganizationMemberReadWritePermission
-)
+# Backend app imports
 from climateconnect_api.models import Role, UserProfile
-from organization.pagination import (OrganizationsPagination, ProjectsPagination)
+from climateconnect_api.models.language import Language
 from climateconnect_api.pagination import MembersPagination
+from climateconnect_api.serializers.user import UserProfileStubSerializer
+from climateconnect_api.utility.translation import edit_translations, get_translations, translate_text
 from climateconnect_main.utility.general import get_image_from_data_url
-from climateconnect_api.models import Role
-from django.db.models import Q
-import logging
+
+from hubs.models.hub import Hub
+from location.models import Location
+from location.utility import get_location, get_location_with_range
+from organization.models import (Organization, OrganizationMember,
+                                 OrganizationTagging, OrganizationTags,
+                                 ProjectParents)
+from organization.models.tags import ProjectTags
+from organization.models.translations import OrganizationTranslation
+from organization.pagination import OrganizationsPagination, ProjectsPagination
+from organization.permissions import (AddOrganizationMemberPermission,
+                                      ChangeOrganizationCreatorPermission,
+                                      OrganizationMemberReadWritePermission,
+                                      OrganizationReadWritePermission)
+from organization.serializers.organization import (
+    EditOrganizationSerializer, OrganizationCardSerializer,
+    OrganizationMemberSerializer, OrganizationMinimalSerializer,
+    OrganizationSerializer, OrganizationSitemapEntrySerializer,
+    UserOrganizationSerializer)
+from organization.serializers.project import \
+    ProjectFromProjectParentsSerializer
+from organization.serializers.tags import OrganizationTagsSerializer
+from organization.utility.organization import create_organization_translation
+from rest_framework import status
+from rest_framework.exceptions import NotFound
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import (ListAPIView, ListCreateAPIView,
+                                     RetrieveUpdateDestroyAPIView)
+from rest_framework.pagination import PageNumberPagination
+# REST imports
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 logger = logging.getLogger(__name__)
 
 
@@ -46,19 +60,43 @@ class ListOrganizationsAPIView(ListAPIView):
     def get_serializer_class(self):
         return OrganizationCardSerializer
 
+    def get_serializer_context(self):
+        return {
+            'language_code': self.request.LANGUAGE_CODE
+        }
+
     def get_queryset(self):
         organizations  = Organization.objects.all()
 
         if 'hub' in self.request.query_params:
-            project_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
-            project_category_ids = list(map(lambda c: c.id, project_category))
-            project_tags = ProjectTags.objects.filter(id__in=project_category_ids)
-            project_tags_with_children = ProjectTags.objects.filter(Q(parent_tag__in=project_tags) | Q(id__in=project_tags))
-            organizations = organizations.filter(
-                Q(project_parent_org__project__tag_project__project_tag__in=project_tags_with_children) 
-                | 
-                Q(field_tag_organization__field_tag__in=project_tags_with_children)
-            ).distinct()
+            hub = Hub.objects.filter(url_slug=self.request.query_params['hub'])
+            if hub.exists():
+                if hub[0].hub_type == Hub.SECTOR_HUB_TYPE:
+                    project_category = Hub.objects.get(url_slug=self.request.query_params.get('hub')).filter_parent_tags.all()
+                    project_category_ids = list(map(lambda c: c.id, project_category))
+                    project_tags = ProjectTags.objects.filter(id__in=project_category_ids)
+                    project_tags_with_children = ProjectTags.objects.filter(Q(parent_tag__in=project_tags) | Q(id__in=project_tags))
+                    organizations = organizations.filter(
+                        Q(project_parent_org__project__tag_project__project_tag__in=project_tags_with_children) 
+                        | 
+                        Q(field_tag_organization__field_tag__in=project_tags_with_children)
+                    ).distinct()
+                elif hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
+                    location = hub[0].location.all()[0]
+                    organizations = organizations.filter(
+                        Q(location__country=location.country) 
+                        &
+                        (
+                            Q(location__multi_polygon__coveredby=(location.multi_polygon))
+                            |
+                            Q(location__centre_point__coveredby=(location.multi_polygon))
+                        )
+                    ).annotate(
+                        distance=Distance("location__centre_point", location.multi_polygon)
+                    ).order_by(
+                        'distance'
+                    )
+                
 
         if 'organization_type' in self.request.query_params:
             organization_type_names = self.request.query_params.get('organization_type').split(',')
@@ -108,17 +146,39 @@ class CreateOrganizationView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        required_params = ['name', 'team_members', 'location', 'image', 'organization_tags']
+        required_params = [
+            'name', 'team_members', 'location', 'image', 'organization_tags',
+            'translations', 'source_language'
+        ]
         for param in required_params:
             if param not in request.data:
                 return Response({
                     'message': 'Required parameter missing: {}'.format(param)
                 }, status=status.HTTP_400_BAD_REQUEST)
+        
+        texts = {"name": request.data['name']}
+        if 'short_description' in request.data:
+            texts['short_description'] = request.data['short_description']
 
+        try:
+            translations = get_translations(
+                texts, 
+                request.data['translations'],
+                request.data['source_language'],
+                ["name"]
+            )
+        except ValueError as ve:
+            translations = None
+            logger.error("TranslationFailed: Error translating texts, {}".format(ve))
+        
         organization, created = Organization.objects.get_or_create(name=request.data['name'])
 
         if created:
             organization.url_slug = organization.name.replace(" ", "") + str(organization.id)
+
+            # Add primary language to organization table. 
+            source_language = Language.objects.get(language_code=request.data['source_language'])
+            organization.language = source_language
 
             if 'image' in request.data:
                 organization.image = get_image_from_data_url(request.data['image'])[0]
@@ -146,6 +206,23 @@ class CreateOrganizationView(APIView):
             if 'website' in request.data:
                 organization.website = request.data['website']
             organization.save()
+
+            # Create organization translation
+            if translations:
+                for key in translations['translations']:
+                    if not key == "is_manual_translation":
+                        language_code = key
+                        texts = translations['translations'][language_code]
+                        language = Language.objects.get(language_code=language_code)
+                        if language_code in request.data['translations']:
+                            is_manual_translation = request.data['translations'][language_code]['is_manual_translation']
+                        else:
+                            is_manual_translation = False
+                        create_organization_translation(
+                            organization, language,
+                            texts, is_manual_translation
+                        )
+
             roles = Role.objects.all()
             for member in request.data['team_members']:
                 user_role = roles.filter(id=int(member['permission_type_id'])).first()
@@ -183,6 +260,7 @@ class CreateOrganizationView(APIView):
                 'message': 'Organization with name {} already exists'.format(request.data['name'])
             }, status=status.HTTP_400_BAD_REQUEST)
 
+
 class OrganizationAPIView(APIView):
     permission_classes = [OrganizationReadWritePermission]
     lookup_field = 'url_slug'
@@ -191,25 +269,35 @@ class OrganizationAPIView(APIView):
         try:
             organization = Organization.objects.get(url_slug=str(url_slug))            
         except Organization.DoesNotExist:
-            return Response({'message': 'Project not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': _('Organization not found:') + url_slug}, status=status.HTTP_404_NOT_FOUND)
         if('edit_view' in request.query_params):
-            serializer = EditOrganizationSerializer(organization, many=False)
+            serializer = EditOrganizationSerializer(
+                organization, many=False, 
+                context={'language_code': request.LANGUAGE_CODE}
+            )
         else:
-            serializer = OrganizationSerializer(organization, many=False)
+            serializer = OrganizationSerializer(
+                organization, many=False, context={'language_code': request.LANGUAGE_CODE}
+            )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, url_slug, format=None):
         try:
             organization = Organization.objects.get(url_slug=str(url_slug))            
         except Organization.DoesNotExist:
-            return Response({'message': 'Organization not found: {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
+            return Response({
+                'message': _('Organization not found:') + url_slug
+            }, status=status.HTTP_404_NOT_FOUND)
         pass_through_params = ['name', 'short_description', 'school', 'organ', 'website']
         for param in pass_through_params:
             if param in request.data:
                 setattr(organization, param, request.data[param])
-        
         if 'location' in request.data:
             organization.location = get_location(request.data['location'])
+        if 'language' in request.data:
+            language = Language.objects.filter(language_code=request.data['language'])
+            if language.exists():
+                organization.language = language[0]
         if 'image' in request.data:
             organization.image = get_image_from_data_url(request.data['image'])[0]
         if 'thumbnail_image' in request.data:
@@ -217,20 +305,55 @@ class OrganizationAPIView(APIView):
         if 'background_image' in request.data:
             organization.background_image = get_image_from_data_url(request.data['background_image'])[0]
         if 'parent_organization' in request.data:
-            if 'has_parent_organization' in request.data and request.data['has_parent_organization'] == False:
+            if 'has_parent_organization' in request.data \
+                and request.data['has_parent_organization'] == False:
                 organization.parent_organization = None
             else:
                 try:
                     parent_organization = Organization.objects.get(id=request.data['parent_organization'])
                 except Organization.DoesNotExist:
-                    return Response({'message': 'Parent org not found for organization {}'.format(url_slug)}, status=status.HTTP_404_NOT_FOUND)
+                    return Response({
+                        'message': _('Parent organization not found for organization') + url_slug
+                    }, status=status.HTTP_404_NOT_FOUND)
                 organization.parent_organization = parent_organization
-        old_organization_taggings = OrganizationTagging.objects.filter(organization=organization).values('organization_tag')
+
+        items_to_translate = [
+            {
+                'key': 'name',
+                'translation_key': 'name_translation'
+            },
+            {
+                'key': 'short_description',
+                'translation_key': 'short_description_translation'
+            },
+            {
+                'key': 'school',
+                'translation_key': 'school_translation'
+            },
+            {
+                'key': 'organ',
+                'translation_key': 'organ_translation'
+            }
+        ]
+
+        if 'translations' in request.data:
+            edit_translations(
+                items_to_translate,
+                request.data,
+                organization,
+                "organization"
+            )  
+
+        old_organization_taggings = OrganizationTagging.objects.filter(
+            organization=organization
+        ).values('organization_tag')
         if 'types' in request.data:
             for tag in old_organization_taggings:
                 if not tag['organization_tag'] in request.data['types']:
                     tag_to_delete = OrganizationTags.objects.get(id=tag['organization_tag'])
-                    OrganizationTagging.objects.filter(organization=organization, organization_tag=tag_to_delete).delete()
+                    OrganizationTagging.objects.filter(
+                        organization=organization, organization_tag=tag_to_delete
+                    ).delete()
             for tag_id in request.data['types']:
                 if not old_organization_taggings.filter(organization_tag=tag_id).exists():
                     try:
@@ -239,11 +362,10 @@ class OrganizationAPIView(APIView):
                             organization_tag=tag, organization=organization
                         )
                     except OrganizationTags.DoesNotExist:
-                        logger.error("Passed org tag id {} does not exists")
-            
+                        logger.error(_("Passed organization tag id does not exists: ") + tag_id)
 
         organization.save()
-        return Response({'message': 'Successfully updated organization.'}, status=status.HTTP_200_OK)
+        return Response({'message': _('Successfully updated organization.')}, status=status.HTTP_200_OK)
 
 
 class ListCreateOrganizationMemberView(ListCreateAPIView):
@@ -281,6 +403,7 @@ class UpdateOrganizationMemberView(RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer):
         serializer.save()
         return serializer.data
+
 
 class AddOrganizationMembersView(APIView):
     permission_classes = [AddOrganizationMemberPermission]
@@ -365,7 +488,10 @@ class PersonalOrganizationsView(ListAPIView):
         if not UserProfile.objects.filter(user=request.user).exists():
             raise NotFound(detail="Profile not found.", code=status.HTTP_404_NOT_FOUND)
         user_organization_members= OrganizationMember.objects.filter(user=request.user)
-        serializer = UserOrganizationSerializer(user_organization_members, many=True)
+        serializer = UserOrganizationSerializer(
+            user_organization_members, many=True,
+            context={'language_code': request.LANGUAGE_CODE}
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -407,6 +533,11 @@ class ListOrganizationTags(ListAPIView):
 class ListFeaturedOrganizations(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = OrganizationCardSerializer
+
+    def get_serializer_context(self):
+        return {
+            'language_code': self.request.LANGUAGE_CODE
+        }
 
     def get_queryset(self):
         return Organization.objects.filter(rating__lte=99)[0:4]

@@ -1,5 +1,7 @@
-import React from "react";
 import { Button, makeStyles } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   deleteProjectButton: {
@@ -14,6 +16,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DeleteProjectButton({ project, handleClickDeleteProjectPopup }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   return (
     <Button
       classes={{
@@ -23,7 +27,7 @@ export default function DeleteProjectButton({ project, handleClickDeleteProjectP
       color="error"
       onClick={handleClickDeleteProjectPopup}
     >
-      {project.is_draft ? "Delete Draft" : "Delete Project"}
+      {project.is_draft ? texts.delete_draft : texts.delete_project}
     </Button>
   );
 }

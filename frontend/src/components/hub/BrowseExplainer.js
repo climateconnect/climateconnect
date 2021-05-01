@@ -1,5 +1,7 @@
-import React from "react";
-import { makeStyles, Typography, Container } from "@material-ui/core";
+import { Container, makeStyles, Typography } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   browseExplainer: {
@@ -17,11 +19,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function BrowseExplainer() {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "hub", locale: locale });
   return (
     <Container>
       <Typography component="div" className={classes.browseExplainer}>
         <Typography component="h2" className={classes.headline}>
-          Find impactful climate change solutions created by Climate Connect users.
+          {texts.browse_explainer_text}
         </Typography>
       </Typography>
     </Container>

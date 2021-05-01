@@ -1,69 +1,77 @@
-import React, { useEffect } from "react";
-import Layout from "../src/components/layouts/layout";
-import Form from "./../src/components/general/Form";
-import axios from "axios";
-import { useContext } from "react";
-import UserContext from "./../src/components/context/UserContext";
-import { redirectOnLogin } from "../public/lib/profileOperations";
+import React, { useContext, useEffect } from "react";
+import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
+import { redirectOnLogin } from "../public/lib/profileOperations";
+import getTexts from "../public/texts/texts";
+import Layout from "../src/components/layouts/layout";
+import UserContext from "./../src/components/context/UserContext";
+import Form from "./../src/components/general/Form";
 
 export default function Signin() {
+  const { user, signIn, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale });
+
   const fields = [
     {
       required: true,
-      label: "Email",
+      label: texts.email,
       key: "username",
       type: "email",
     },
     {
       required: true,
-      label: "Password",
+      label: texts.password,
       key: "password",
       type: "password",
     },
   ];
 
   const messages = {
-    submitMessage: "Log in",
+    submitMessage: texts.log_in,
     bottomMessage: (
       <span>
-        New to Climate Connect? <a href="/signup">Click here to create an account</a>
+        {texts.new_to_climate_connect}{" "}
+        <a href={getLocalePrefix(locale) + "/signup"}>{texts.click_here_to_create_an_account}</a>
       </span>
     ),
   };
 
   const bottomLink = {
-    text: "Forgot your password?",
-    href: "/resetpassword",
+    text: texts.forgot_your_password,
+    href: getLocalePrefix(locale) + "/resetpassword",
   };
 
   const [errorMessage, setErrorMessage] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
-
-  const { user, signIn, API_URL } = useContext(UserContext);
 
   const [initialized, setInitialized] = React.useState(false);
   const [redirectUrl, setRedirectUrl] = React.useState();
   useEffect(function () {
     if (!initialized) {
       const params = getParams(window.location.href);
-      if (params.redirect) setRedirectUrl(decodeURIComponent(params.redirect));
+      if (params.redirect)
+        setRedirectUrl(getLocalePrefix(locale) + "/" + decodeURIComponent(params.redirect));
       setInitialized(true);
       //TODO: remove router
     }
     if (user) {
-      redirectOnLogin(user, redirectUrl);
+      redirectOnLogin(user, redirectUrl, locale);
     }
   });
   const handleSubmit = async (event, values) => {
     //don't redirect to the post url
     event.preventDefault();
     setIsLoading(true);
-    axios
-      .post(API_URL + "/login/", {
+    apiRequest({
+      method: "post",
+      url: "/login/",
+      payload: {
         username: values.username.toLowerCase(),
         password: values.password,
-      })
+      },
+      locale: locale,
+      shouldThrowError: true,
+    })
       .then(async function (response) {
         await signIn(response.data.token, response.data.expiry, redirectUrl);
       })
@@ -71,16 +79,7 @@ export default function Signin() {
         console.log(error);
         if (error.response && error.response.data) {
           if (error.response.data.type === "not_verified")
-            setErrorMessage(
-              <span>
-                You {"haven't"} activated you account yet. Click the link in the email we sent you
-                or{" "}
-                <a href="resend_verification_email" target="_blank">
-                  click here
-                </a>{" "}
-                to send the verification link again.
-              </span>
-            );
+            setErrorMessage(<span>{texts.not_verified_error_message}</span>);
           else setErrorMessage(error.response.data.message);
           setIsLoading(false);
         }
@@ -88,7 +87,7 @@ export default function Signin() {
   };
 
   return (
-    <Layout title="Log In" isLoading={isLoading} messageType="error">
+    <Layout title={texts.log_in} isLoading={isLoading} messageType="error">
       <Form
         fields={fields}
         messages={messages}

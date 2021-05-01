@@ -1,9 +1,12 @@
-import React from "react";
-import Router from "next/router";
-import EditAccountPage from "./../account/EditAccountPage";
-import organization_info_metadata from "./../../../public/data/organization_info_metadata.js";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
+import Router from "next/router";
+import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations.js";
+import getTexts from "../../../public/texts/texts.js";
+import UserContext from "../context/UserContext.js";
+import getOrganizationInfoMetadata from "./../../../public/data/organization_info_metadata.js";
+import EditAccountPage from "./../account/EditAccountPage";
 
 const useStyles = makeStyles(() => {
   return {
@@ -15,7 +18,7 @@ const useStyles = makeStyles(() => {
   };
 });
 
-const parseOrganizationInfo = (info) => {
+const parseOrganizationInfo = (info, organization_info_metadata) => {
   const ret = { info: {} };
   Object.keys(info).map((key) => {
     if (organization_info_metadata[key]) ret.info[key] = info[key];
@@ -32,8 +35,12 @@ export default function EnterDetailledOrganizationInfo({
   locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
+  loadingSubmit,
 }) {
-  const organization = parseOrganizationInfo(organizationInfo);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "organization", locale: locale });
+  const organization_info_metadata = getOrganizationInfoMetadata();
+  const organization = parseOrganizationInfo(organizationInfo, organization_info_metadata);
   const infoMetadata = {
     ...organization_info_metadata,
     location: {
@@ -53,7 +60,7 @@ export default function EnterDetailledOrganizationInfo({
       {!errorMessage && (
         <div>
           <Alert severity="success" className={classes.alert}>
-            Almost done! Here you can customize your organization page and add details
+            {texts.almost_done_here_you_can_customize_your_organization_page_and_add_details}
           </Alert>
         </div>
       )}
@@ -63,11 +70,12 @@ export default function EnterDetailledOrganizationInfo({
         possibleAccountTypes={[...tagOptions]}
         infoMetadata={infoMetadata}
         maxAccountTypes={2}
-        accountHref={"/organizations/" + organization.url_slug}
+        accountHref={getLocalePrefix(locale) + "/organizations/" + organization.url_slug}
         handleSubmit={handleSubmit}
-        submitMessage="Create"
+        submitMessage={texts.create}
         handleCancel={handleCancel}
         errorMessage={errorMessage}
+        loadingSubmit={loadingSubmit}
       />
     </div>
   );

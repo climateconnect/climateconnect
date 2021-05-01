@@ -1,16 +1,18 @@
-import React from "react";
-import { Typography, Container, TextField, Tooltip, IconButton } from "@material-ui/core";
-import RadioButtons from "../general/RadioButtons";
+import { Container, IconButton, TextField, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import DatePicker from "../general/DatePicker";
 import Switch from "@material-ui/core/Switch";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
-import CollaborateSection from "./CollaborateSection";
-import AddSummarySection from "./AddSummarySection";
-import AddPhotoSection from "./AddPhotoSection";
+import React, { useContext } from "react";
+import getCollaborationTexts from "../../../public/data/collaborationTexts";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import BottomNavigation from "../general/BottomNavigation";
+import DatePicker from "../general/DatePicker";
+import RadioButtons from "../general/RadioButtons";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
-import collaborationTexts from "../../../public/data/collaborationTexts";
+import AddPhotoSection from "./AddPhotoSection";
+import AddSummarySection from "./AddSummarySection";
+import CollaborateSection from "./CollaborateSection";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -62,20 +64,14 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const helpTexts = {
-  addPhoto:
-    "Upload a photo that represents your project. This way other climate protectors can see at a glance what your project is about. It is recommended to use a non-transparent image in 16:9 format",
-  short_description:
-    "Summarize your project in less than 240 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
-  description:
-    "Describe your project in more detail. What are you exactly doing? What is the climate impact of your project?",
-  collaboration:
-    "Select if you are would be open to accept help and work with other climate protectors on your project.",
-  addSkills:
-    "If you are looking for someone with specific skills to help you with your project, select these here.",
-  addConnections:
-    "Add connections that would be helpful for collaborators to have. Specifically this could be connections to organizations that could help accelerate your project.",
-};
+const getHelpTexts = (texts) => ({
+  addPhoto: texts.add_photo_helptext,
+  short_description: texts.short_description_helptext,
+  description: texts.description_helptext,
+  collaboration: texts.collaboration_helptext,
+  addSkills: texts.add_skills_helptext,
+  addConnections: texts.add_connections_helptext,
+});
 
 export default function EnterDetails({
   projectData,
@@ -91,6 +87,10 @@ export default function EnterDetails({
     connectionsDialog: false,
   });
   const classes = useStyles(projectData);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: projectData });
+  const collaborationTexts = getCollaborationTexts(texts);
+  const helpTexts = getHelpTexts(texts);
 
   const statusValues = statusOptions.map((s) => {
     return {
@@ -121,11 +121,11 @@ export default function EnterDetails({
 
   const validation = {
     short_description: {
-      name: "Short summary",
+      name: texts.short_summary,
       maxLength: 240,
     },
     description: {
-      name: "Description",
+      name: texts.description,
       maxLength: 4000,
     },
   };
@@ -144,7 +144,7 @@ export default function EnterDetails({
 
   const isProjectDataValid = (project) => {
     if (!project.image) {
-      alert("Please add an image!");
+      alert(texts.please_add_an_image);
       return false;
     } else return true;
   };
@@ -175,11 +175,11 @@ export default function EnterDetails({
             color="primary"
             className={classes.subHeader}
           >
-            General Information*
+            {texts.general_information}*
           </Typography>
           <div className={classes.block}>
             <Typography component="h2" variant="subtitle2" className={classes.inlineSubHeader}>
-              Your project is
+              {texts.your_project_is}
             </Typography>
             <div className={classes.inlineBlock}>
               <RadioButtons
@@ -191,13 +191,13 @@ export default function EnterDetails({
           </div>
           <div>
             <Typography component="h2" variant="subtitle2" className={classes.inlineSubHeader}>
-              Date
+              {texts.date}
             </Typography>
             <div className={classes.inlineBlock}>
               {statusesWithStartDate.includes(projectData.status.id) && (
                 <DatePicker
                   className={classes.datePicker}
-                  label="Start date"
+                  label={texts.start_date}
                   date={projectData.start_date}
                   handleChange={onStartDateChange}
                   required
@@ -206,7 +206,7 @@ export default function EnterDetails({
               {statusesWithEndDate.includes(projectData.status.id) && (
                 <DatePicker
                   className={classes.datePicker}
-                  label="End date"
+                  label={texts.end_date}
                   date={projectData.end_date}
                   handleChange={onEndDateChange}
                   required
@@ -244,7 +244,7 @@ export default function EnterDetails({
               color="primary"
               className={classes.subHeader}
             >
-              Project description
+              {texts.project_description}
               <Tooltip title={helpTexts.description} className={classes.tooltip}>
                 <IconButton>
                   <HelpOutlineIcon />
@@ -258,8 +258,8 @@ export default function EnterDetails({
               multiline
               rows={9}
               onChange={(event) => onDescriptionChange(event, "description")}
-              helperText={"Describe your project in detail. Please only use English!"}
-              placeholder={`Describe your project in more detail.\n\n-What are you trying to achieve?\n-How are you trying to achieve it\n-What were the biggest challenges?\n-What insights have you gained during the implementation?`}
+              helperText={texts.describe_your_project_in_detail_please_only_use_language}
+              placeholder={texts.describe_your_project_in_more_detail}
               value={projectData.description}
             />
           </div>
@@ -270,14 +270,14 @@ export default function EnterDetails({
               color="primary"
               className={classes.subHeader}
             >
-              Project website
+              {texts.project_website}
             </Typography>
             <TextField
               variant="outlined"
               onChange={(event) => onWebsiteChange(event)}
-              placeholder={`Project website`}
+              placeholder={texts.project_website}
               value={projectData.website}
-              helperText={"If your project has a website, you can enter it here."}
+              helperText={texts.if_your_project_has_a_website_you_can_enter_it_here}
             />
           </div>
           <div className={classes.block}>
@@ -287,7 +287,7 @@ export default function EnterDetails({
               color="primary"
               className={classes.subHeader}
             >
-              {collaborationTexts.allow[projectData.status.name]}
+              {collaborationTexts.allow[projectData.status.status_type]}
               <Tooltip title={helpTexts.collaboration} className={classes.tooltip}>
                 <IconButton>
                   <HelpOutlineIcon />

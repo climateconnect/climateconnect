@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
@@ -26,40 +28,41 @@ export default function FilterOverlay({
   const onClose = () => {
     unexpandFilters();
   };
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "filter_and_search", locale: locale });
   return (
     <GenericDialog
-      applyText="Apply filters"
+      applyText={texts.apply_filters}
       fullScreen
       onApply={handleApplyFilters}
       onClose={onClose}
       open={filtersExpanded ? filtersExpanded : false}
-      title="Filters"
+      title={texts.filters}
       topBarFixed
       useApplyButton
     >
       <Filters
-        possibleFilters={possibleFilters}
-        handleApplyFilters={handleApplyFilters}
-        handleValueChange={handleValueChange}
         currentFilters={currentFilters}
-        handleClickDialogOpen={handleClickDialogOpen}
-        open={open}
+        errorMessage={errorMessage}
+        handleApplyFilters={handleApplyFilters}
         handleClickDialogClose={handleClickDialogClose}
+        handleClickDialogOpen={handleClickDialogOpen}
         handleClickDialogSave={handleClickDialogSave}
+        handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+        handleValueChange={handleValueChange}
         isInOverlay
-        selectedItems={selectedItems}
-        // I believe this is only being used with the - MultiLevelSelectDialog?
-        setSelectedItems={setSelectedItems}
         locationInputRef={locationInputRef}
         locationOptionsOpen={locationOptionsOpen}
-        handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-        errorMessage={errorMessage}
+        open={open}
+        possibleFilters={possibleFilters}
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
       />
 
       <SelectedFilters
         currentFilters={currentFilters}
-        possibleFilters={possibleFilters}
         handleUnselectFilter={handleUnselectFilter}
+        possibleFilters={possibleFilters}
       />
     </GenericDialog>
   );

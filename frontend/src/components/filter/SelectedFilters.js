@@ -1,6 +1,9 @@
-import React from "react";
-import { Chip } from "@material-ui/core";
+import { Chip, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
+
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -23,6 +26,8 @@ export default function SelectedFilters({ currentFilters, possibleFilters, handl
   const classes = useStyles();
 
   // TODO: should probably refactor this to use .any
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "filter_and_search", locale: locale });
   const hasFilters = Object.keys(currentFilters).reduce((hasFilters, filter) => {
     if (currentFilters[filter] && currentFilters[filter].length) {
       hasFilters = true;
@@ -36,6 +41,8 @@ export default function SelectedFilters({ currentFilters, possibleFilters, handl
 
   return (
     <React.Fragment>
+      {/* TODO(piper): is this needed post merge May 1 */}
+      {/* {hasFilters && <Typography>{texts.selected_filters}</Typography>} */}
       {/* Now render a selected "Chip" component for every currently selected filter */}
       {Object.keys(currentFilters).map((key) => {
         let currentFilterValues = currentFilters[key];

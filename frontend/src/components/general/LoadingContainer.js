@@ -1,6 +1,8 @@
-import React from "react";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles(() => ({
   spinnerContainer: (props) => ({
@@ -20,12 +22,14 @@ export default function LoadingContainer({ headerHeight, footerHeight }) {
   const classes = useStyles({
     subtractedHeight: (headerHeight + footerHeight).toString(),
   });
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
   return (
     <div className={classes.spinnerContainer}>
       <div>
         <img className={classes.spinner} src="/images/logo.png" alt="Climate Connect logo" />
       </div>
-      <Typography component="div">Loading...</Typography>
+      <Typography component="div">{texts.loading_and_waiting}</Typography>
     </div>
   );
 }

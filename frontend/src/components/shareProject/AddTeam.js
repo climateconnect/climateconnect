@@ -1,11 +1,13 @@
-import React from "react";
 import { Container, IconButton } from "@material-ui/core";
-import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import { makeStyles } from "@material-ui/core/styles";
-import OrganizersContainer from "./OrganizersContainer";
-import BottomNavigation from "../general/BottomNavigation";
-import AddProjectMembersContainer from "./AddProjectMembersContainer";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import BottomNavigation from "../general/BottomNavigation";
+import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
+import AddProjectMembersContainer from "./AddProjectMembersContainer";
+import OrganizersContainer from "./OrganizersContainer";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -32,15 +34,24 @@ const useStyles = makeStyles((theme) => {
 export default function AddTeam({
   projectData,
   handleSetProjectData,
-  onSubmit,
-  saveAsDraft,
   goToPreviousStep,
+  goToNextStep,
   availabilityOptions,
   rolesOptions,
+  onSubmit,
+  saveAsDraft,
+  isLastStep,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
+  console.log(isLastStep);
   const onClickPreviousStep = () => {
     goToPreviousStep();
+  };
+
+  const onClickNextStep = () => {
+    goToNextStep();
   };
 
   //Prevent double entries
@@ -99,10 +110,10 @@ export default function AddTeam({
 
   return (
     <Container maxWidth="lg" className={classes.marginTop}>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={isLastStep ? onSubmit : onClickNextStep}>
         <div className={classes.searchBarContainer}>
           <AutoCompleteSearchBar
-            label="Search for your team members"
+            label={texts.search_for_your_team_members}
             className={`${classes.searchBar} ${classes.block}`}
             baseUrl={process.env.API_URL + "/api/members/?search="}
             clearOnSelect
@@ -111,7 +122,7 @@ export default function AddTeam({
             onSelect={handleAddMember}
             renderOption={renderSearchOption}
             getOptionLabel={(option) => option.first_name + " " + option.last_name}
-            helperText="Type the name of the team member you want to add next."
+            helperText={texts.type_the_name_of_the_team_member_you_want_to_add_next}
           />
         </div>
         <AddProjectMembersContainer
@@ -130,12 +141,20 @@ export default function AddTeam({
           handleAddOrganization={handleAddOrganization}
           handleRemoveOrganization={handleRemoveOrganization}
         />
-        <BottomNavigation
-          className={classes.block}
-          onClickPreviousStep={onClickPreviousStep}
-          nextStepButtonType="publish"
-          saveAsDraft={saveAsDraft}
-        />
+        {isLastStep ? (
+          <BottomNavigation
+            className={classes.block}
+            onClickPreviousStep={onClickPreviousStep}
+            nextStepButtonType="publish"
+            saveAsDraft={saveAsDraft}
+          />
+        ) : (
+          <BottomNavigation
+            className={classes.block}
+            onClickPreviousStep={onClickPreviousStep}
+            nextStepButtonType="submit"
+          />
+        )}
       </form>
     </Container>
   );

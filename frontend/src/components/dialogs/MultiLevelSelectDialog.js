@@ -1,10 +1,9 @@
-import React from "react";
 import PropTypes from "prop-types";
-
-import categoriesToChooseFrom from "../../../public/data/project_categories.json";
-import GenericDialog from "./GenericDialog";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import MultiLevelSelector from "../general/MultiLevelSelector";
-import skillsToChooseFrom from "../../../public/data/skills.json";
+import GenericDialog from "./GenericDialog";
 
 export default function MultiLevelSelectDialog({
   dragAble,
@@ -22,17 +21,29 @@ export default function MultiLevelSelectDialog({
    * update the persisted URL, refetch the data,
    * and close the dialog.
    */
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
+
+  // const handleClose = () => {
+  //   setSelectedItems(items ? items : []);
+  //   onClose();
+  // };
+
   const applySkills = () => {
     onSave(selectedItems);
     onClose();
   };
 
-  const itemNamePlural = type;
-  const possibleItems = itemsToChooseFrom
-    ? itemsToChooseFrom
-    : type === "skills"
-    ? skillsToChooseFrom
-    : type === "project categories" && categoriesToChooseFrom;
+  const itemNamePlural = texts[type];
+
+  const possibleItems = itemsToChooseFrom;
+
+  // TODO(piper): confirm this isn't needed post merge -  May 1
+  // const possibleItems = itemsToChooseFrom
+  //   ? itemsToChooseFrom
+  //   : type === "skills"
+  //   ? skillsToChooseFrom
+  //   : type === "project categories" && categoriesToChooseFrom;
 
   // Alphabetize options by name
   possibleItems.sort((a, b) => {
@@ -49,11 +60,11 @@ export default function MultiLevelSelectDialog({
 
   return (
     <GenericDialog
-      applyText={"Save"}
+      applyText={texts.save}
       onApply={applySkills}
       onClose={onClose}
       open={open}
-      title={"Add " + itemNamePlural}
+      title={texts.add + " " + itemNamePlural}
       topBarFixed
       useApplyButton={true}
     >

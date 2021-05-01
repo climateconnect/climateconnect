@@ -22,4 +22,4 @@ class ListHubsView(ListAPIView):
     serializer_class = HubStubSerializer
 
     def get_queryset(self):
-        return Hub.objects.all().filter(importance__gte=1)
+        return Hub.objects.filter(hub_type=Hub.SECTOR_HUB_TYPE).filter(importance__gte=1)
