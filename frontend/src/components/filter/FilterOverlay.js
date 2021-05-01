@@ -1,39 +1,41 @@
 import React from "react";
+
 import GenericDialog from "../dialogs/GenericDialog";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
 
 export default function FilterOverlay({
-  filtersExpanded,
-  unexpandFilters,
-  possibleFilters,
-  handleApplyFilters,
-  handleValueChange,
   currentFilters,
-  handleClickDialogOpen,
-  open,
+  errorMessage,
+  filtersExpanded,
+  handleApplyFilters,
   handleClickDialogClose,
+  handleClickDialogOpen,
+  handleClickDialogSave,
+  handleSetLocationOptionsOpen,
   handleUnselectFilter,
-  selectedItems,
-  setSelectedItems,
+  handleValueChange,
   locationInputRef,
   locationOptionsOpen,
-  handleSetLocationOptionsOpen,
-  errorMessage,
+  open,
+  possibleFilters,
+  selectedItems,
+  setSelectedItems,
+  unexpandFilters,
 }) {
   const onClose = () => {
     unexpandFilters();
   };
   return (
     <GenericDialog
-      fullScreen
-      open={filtersExpanded ? filtersExpanded : false}
-      useApplyButton
       applyText="Apply filters"
-      onClose={onClose}
-      title="Filters"
+      fullScreen
       onApply={handleApplyFilters}
+      onClose={onClose}
+      open={filtersExpanded ? filtersExpanded : false}
+      title="Filters"
       topBarFixed
+      useApplyButton
     >
       <Filters
         possibleFilters={possibleFilters}
@@ -43,6 +45,7 @@ export default function FilterOverlay({
         handleClickDialogOpen={handleClickDialogOpen}
         open={open}
         handleClickDialogClose={handleClickDialogClose}
+        handleClickDialogSave={handleClickDialogSave}
         isInOverlay
         selectedItems={selectedItems}
         // I believe this is only being used with the - MultiLevelSelectDialog?
@@ -52,6 +55,7 @@ export default function FilterOverlay({
         handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
         errorMessage={errorMessage}
       />
+
       <SelectedFilters
         currentFilters={currentFilters}
         possibleFilters={possibleFilters}

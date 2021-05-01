@@ -18,8 +18,7 @@ export default function MultiLevelSelectDialog({
   type,
 }) {
   /**
-   * When clicking "Save" to close the
-   * dialog, we want to apply the filters,
+   * When clicking "Save" we want to apply the filters,
    * update the persisted URL, refetch the data,
    * and close the dialog.
    */

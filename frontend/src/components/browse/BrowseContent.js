@@ -113,11 +113,6 @@ export default function BrowseContent({
   const [isFiltering, setIsFiltering] = useState(false);
   const [isFetchingMoreData, setIsFetchingMoreData] = useState(false);
 
-  const handleTabChange = (event, newValue) => {
-    window.location.hash = TYPES_BY_TAB_VALUE[newValue];
-    setTabValue(newValue);
-  };
-
   useEffect(() => {
     if (window.location.hash) {
       setHash(window.location.hash.replace("#", ""));
@@ -126,7 +121,7 @@ export default function BrowseContent({
   }, []);
 
   const router = useRouter();
-  const hasQueryParams = !!router.query;
+  const hasQueryParams = Object.entries(router.query).length !== 0;
 
   /**
    * Support the functionality of a user entering
@@ -146,7 +141,39 @@ export default function BrowseContent({
       // the MultiLevelSelect dialog's selection to that value somehow.
 
       // For each query param option, ensure that it's
-      // split into array before spreading onto the new filters object
+      // split into array before spreading onto the new filters object.
+      const queryObject = _.cloneDeep(router.query);
+      for (const [key, value] of Object.entries(queryObject)) {
+        if (value.indexOf(",") > 0) {
+          queryObject[key] = value.split(",");
+        }
+      }
+
+      const newFilters = { ...queryObject };
+
+      // TODO(piper): ensure these are being updated...
+      // Apply new filters with the query object immediately:
+      handleApplyNewFilters("projects", newFilters, false, state.urlEnding["projects"]);
+      // handleApplyNewFilters("organizations", newFilters, false, state.urlEnding["organizations"]);
+      // handleApplyNewFilters("members", newFilters, false, state.urlEnding["members"]);
+
+      // And then update state
+      hasFilteredFromQueryParams = true;
+    }
+  }, []);
+
+  const handleTabChange = (event, newValue) => {
+    // debugger;
+    if (hasQueryParams && !hasFilteredFromQueryParams) {
+      // Update the state of the visual filters, like Select, Dialog, etc
+      // Then actually fetch the data. We need a way to map what's
+      // in the query param, to what UI element is present on the screen. For
+      // example, if we have a MultiLevelSelect dialog representing categories
+      // and we have a ?&category=Food waste, then we need to update the
+      // the MultiLevelSelect dialog's selection to that value somehow.
+
+      // For each query param option, ensure that it's
+      // split into array before spreading onto the new filters object.
       const queryObject = _.cloneDeep(router.query);
       for (const [key, value] of Object.entries(queryObject)) {
         if (value.indexOf(",") > 0) {
@@ -158,11 +185,16 @@ export default function BrowseContent({
 
       // Apply new filters with the query object immediately:
       handleApplyNewFilters("projects", newFilters, false, state.urlEnding["projects"]);
+      // handleApplyNewFilters("organizations", newFilters, false, state.urlEnding["organizations"]);
+      // handleApplyNewFilters("members", newFilters, false, state.urlEnding["members"]);
 
       // And then update state
       hasFilteredFromQueryParams = true;
     }
-  }, []);
+
+    window.location.hash = TYPES_BY_TAB_VALUE[newValue];
+    setTabValue(newValue);
+  };
 
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
