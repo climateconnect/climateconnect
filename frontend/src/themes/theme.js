@@ -60,6 +60,13 @@ const theme = createMuiTheme(coreTheme, {
         fontSize: 14,
       },
     },
+    MuiChip: {
+      root: {
+        // Have the same border-radius as the other UI controls, like
+        // the select dropdowns, buttons, etc.
+        borderRadius: 4,
+      },
+    },
   },
   props: {
     MuiButton: {

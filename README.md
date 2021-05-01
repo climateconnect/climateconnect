@@ -6,7 +6,7 @@ The code for https://climateconnect.earth.
 
 ### Postgres
 
-1. Create a local Postgres database with your own username and password. 
+1. Create a local Postgres database with your own username and password.
 1. Install [PostGIS](https://postgis.net/install/) on your local machine
 1. Create the postgis extension within that database: run [`CREATE EXTENSION postgis;`](https://docs.djangoproject.com/en/3.1/ref/contrib/gis/install/postgis/)
 
@@ -98,6 +98,8 @@ python manage.py test <file_path> or <file_path + class_name>
 ```
 
 ### Frontend
+
+Check out our [frontend (FE) code style guidelines wiki](https://github.com/climateconnect/climateconnect/wiki/Frontend-Code-Style-Guide).
 
 1. `cd frontend`
 1. `yarn install` to download all npm packages

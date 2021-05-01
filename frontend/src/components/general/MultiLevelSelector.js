@@ -326,15 +326,7 @@ function ListToChooseWrapper({
   );
 }
 
-function SelectedList({
-  className,
-  dragAble,
-  itemNamePlural,
-  maxSelections,
-  moveItem,
-  onClickUnselect,
-  selected,
-}) {
+function SelectedList({ className, dragAble, maxSelections, moveItem, onClickUnselect, selected }) {
   const classes = useStyles({});
 
   const onDragEnd = (result) => {
@@ -394,31 +386,37 @@ function SelectedList({
 
   return (
     <div className={className}>
-      <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
-        {selected.length === 0
-          ? `Select between 1 and ${maxSelections}`
-          : `Selected ${selected.length} of ${maxSelections}`}
-      </Typography>
+      {/* TODO(piper): this should be an array not an object? */}
+      {selected && Array.isArray(selected) && (
+        <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
+          {/* TODO(Piper): fix bug-1 here; seems like multiple selected items are coming through  */}
+          {selected.length === 0
+            ? `Select between 1 and ${maxSelections}`
+            : `Selected ${selected.length} of ${maxSelections}`}
+        </Typography>
+      )}
       {/* Shows the list of selected items. For example on /browse when you select "Categories" */}
       <List className={classes.selectedList}>
-        {selected?.map((item, index) => (
-          // Only show the item if it's valid
-          <ListItem
-            key={index}
-            button
-            className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
-              classes.selectedItem
-            }`}
-            onClick={() => onClickUnselect(item)}
-            disableRipple
-          >
-            {/* If the .name property is undefined, render the item text directly */}
-            <ListItemText>{item.name || item}</ListItemText>
-            <ListItemIcon className={classes.selectedItemIcon}>
-              <CloseIcon />
-            </ListItemIcon>
-          </ListItem>
-        ))}
+        {selected &&
+          Array.isArray(selected) &&
+          selected?.map((item, index) => (
+            // Only show the item if it's valid
+            <ListItem
+              key={index}
+              button
+              className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
+                classes.selectedItem
+              }`}
+              onClick={() => onClickUnselect(item)}
+              disableRipple
+            >
+              {/* If the .name property is undefined, render the item text directly */}
+              <ListItemText>{item.name || item}</ListItemText>
+              <ListItemIcon className={classes.selectedItemIcon}>
+                <CloseIcon />
+              </ListItemIcon>
+            </ListItem>
+          ))}
       </List>
     </div>
   );
@@ -458,6 +456,8 @@ function ListToChooseFrom({
                     }
                     ${className}`}
       >
+        {/* Map over all potential items; for example this could be the list
+        of skills in the skills dialog */}
         {itemsToSelectFrom.map((item, index) => {
           // If current last item, is the last subcategory item
           // in the last item in the outer list, then ignore our
@@ -479,8 +479,19 @@ function ListToChooseFrom({
           // We need to keep the key property in tact with the list
           // item properties. OR we just check to see if the "name"s
           // match, in which case they should already be selected.
+
+          // convert selected to an Array if not
+          selected = Array.isArray(selected) ? selected : [selected];
+
           const isDisabled =
-            selected.filter((selectedItem) => selectedItem.name === item.name).length === 1;
+            selected.filter(
+              // If the item is a raw string, we also accept that if it matches
+              // the name of the selected item. For example, the array could be
+              // ["Crafts"].
+              (selectedItem) => selectedItem.name === item.name || selectedItem === item.name
+            ).length === 1;
+
+          console.log(item);
 
           return (
             <React.Fragment key={item.key}>
@@ -519,9 +530,11 @@ function ListToChooseFrom({
                 }}
                 selected={expanded === item.key}
                 onClick={() => {
-                  if (item.subcategories && item.subcategories.length)
+                  if (item.subcategories && item.subcategories.length) {
                     return onClickExpand(item.key);
-                  else return onClickSelect(item);
+                  }
+
+                  return onClickSelect(item);
                 }}
                 disableRipple
               >

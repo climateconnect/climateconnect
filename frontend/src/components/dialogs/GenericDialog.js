@@ -45,22 +45,23 @@ const useStyles = makeStyles((theme) => ({
 
 // This component should only be used by other "dialog" components
 export default function GenericDialog({
+  applyText,
+  children,
+  fullScreen,
+  maxWidth,
+  onApply,
   onClose,
   open,
   title,
-  useApplyButton,
-  onApply,
-  applyText,
-  children,
   topBarFixed,
-  fullScreen,
-  maxWidth,
+  useApplyButton,
 }) {
   const classes = useStyles({ useApplyButton: useApplyButton, fullScreen: fullScreen });
 
   const handleCancel = () => {
     onClose(false);
   };
+
   return (
     <Dialog
       className={`${classes.dialog} ${topBarFixed && classes.noScrollDialog}`}

@@ -6,7 +6,83 @@ import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
 import theme from "../../themes/theme";
-import { flatten } from "lodash";
+
+/**
+ * Util to return an array of all potential items associated with
+ * a given selected filter. Traverses itemsToChooseFrom, and subcategories
+ * associated with that filter.
+ */
+export const findAllItems = (currentPossibleFilter, selectedFiltersToCheck) => {
+  // Immediately just return the initial filter name,
+  // if we don't need to traverse subcategories or other items to choose from.
+  // I.e. there aren't nested items to look through
+  if (
+    !currentPossibleFilter.itemsToChooseFrom ||
+    currentPossibleFilter?.itemsToChooseFrom?.length === 0
+  ) {
+    // Handle the case where it could be a single item
+    return Array.from(selectedFiltersToCheck);
+  }
+
+  // Ensure we've accurate set membership, and iterate over all items to choose from...
+  let items = [];
+  currentPossibleFilter.itemsToChooseFrom.forEach((item) => {
+    if (selectedFiltersToCheck.has(item.name)) {
+      items.push(item);
+    }
+
+    // Check for subcategories as well
+    item?.subcategories?.forEach((subcategory) => {
+      if (selectedFiltersToCheck.has(subcategory.name)) {
+        items.push(subcategory);
+      }
+    });
+  });
+
+  return items;
+};
+
+/**
+ * For initially selected items (from the query param), we want
+ * to also propagate the complete filter object through
+ * to the selected items, beyond just the "name" property. The
+ * possibleFilters array includes other properties and
+ * metadata (like icon, iconName, title, etc.) beyond what we persist
+ * in the query params.
+ */
+export const reduceFilters = (currentFilters, possibleFilters) => {
+  const reduced = possibleFilters.reduce((accumulator, currentPossibleFilter) => {
+    if (currentPossibleFilter.type === "openMultiSelectDialogButton") {
+      if (
+        currentFilters &&
+        currentFilters[currentPossibleFilter.key] &&
+        // Handle "Skills" case where items need to be selected
+        currentFilters[currentPossibleFilter.key]?.length > 0
+      ) {
+        // Ensure the membership collection is built with an array if it's a single string
+        // like "energy" under the Category filter, or "crafts" under the Skills filter
+        let filtersToCheck;
+        if (Array.isArray(currentFilters[currentPossibleFilter.key])) {
+          filtersToCheck = new Set(currentFilters[currentPossibleFilter.key]);
+        } else {
+          filtersToCheck = new Set([currentFilters[currentPossibleFilter.key]]);
+        }
+
+        // If we currently have a filter set (e.g. category), then
+        // make sure we search through the possible sub items associated
+        // with that filter (e.g. itemsToChooseFrom, and subcategories)
+        const potentialItems = findAllItems(currentPossibleFilter, filtersToCheck);
+        accumulator[currentPossibleFilter.key] = potentialItems;
+      } else {
+        accumulator[currentPossibleFilter.key] = [];
+      }
+    }
+
+    return accumulator;
+  }, {});
+
+  return reduced;
+};
 
 export default function FilterContent({
   applyFilters,
@@ -40,26 +116,19 @@ export default function FilterContent({
     return map;
   }, {});
 
-  // Combine the filters together from current filters
+  // Update possible filters from current filters
   // that are present in the query param in the URL.  Some
   // types are arrays and expected as such
   // downstream; need to handle appropriately both on initiailization
   // and when merging in parameters from query param
   const router = useRouter();
   Object.entries(router.query).forEach(([key, value]) => {
-    // Handle specific types
-    if (Array.isArray(reducedPossibleFilters[key])) {
-      // Handle string values too. If there's something set, and it's strings concat'd -
-      // we need to make an array out of them
-      if (value && value.indexOf(",") > 0) {
-        const splitItems = value.split(",");
-        reducedPossibleFilters[key] = [...splitItems];
-      } else {
-        reducedPossibleFilters[key] = value;
-      }
-    } else if (typeof reducedPossibleFilters[key] === "string") {
-      // Handle string values too. If there's something set, and it's strings concat'd -
-      // we need to make an array out of them
+    if (
+      Array.isArray(reducedPossibleFilters[key]) ||
+      typeof reducedPossibleFilters[key] === "string"
+    ) {
+      // If the query value is concat'd -
+      // we need to make an array to set
       if (value && value.indexOf(",") > 0) {
         const splitItems = value.split(",");
         reducedPossibleFilters[key] = [...splitItems];
@@ -72,82 +141,37 @@ export default function FilterContent({
   const [open, setOpen] = React.useState({});
   const [currentFilters, setCurrentFilters] = React.useState(reducedPossibleFilters);
 
-  /**
-   * Util to return all potential items associated with
-   * a given selected filter. Traverses itemsToChooseFrom, and sub categories
-   * associated with that filter.
-   */
-  const findAllItems = (currentPossibleFilter, filtersToCheck) => {
-    // Immediately just return the initial filter
-    // if we don't need to traverse subcategories or other items to choose from
-    if (!currentPossibleFilter.itemsToChooseFrom) {
-      return currentPossibleFilter;
-    }
-
-    // Ensure we've accurate set membership, and iterate over all items to choose from...
-    let items = [];
-    currentPossibleFilter.itemsToChooseFrom.forEach((item) => {
-      if (filtersToCheck.has(item.name)) {
-        items.push(item);
-      }
-
-      // Check for subcategories as well
-      item?.subcategories.forEach((subcategory) => {
-        if (filtersToCheck.has(subcategory.name)) {
-          items.push(subcategory);
-        }
-      });
-    });
-
-    return items;
-  };
-
-  const [selectedItems, setSelectedItems] = React.useState(
-    // For initially selected items (from the query param), we want
-    // to also propagate the complete filter object through
-    // to the selected items, beyond just the "name" property. The
-    // possibleFilters array includes other properties and
-    // metadata (like icon, iconName, title, etc.) beyond what we persist
-    // in the query params.
-    possibleFilters.reduce((accumulator, currentPossibleFilter) => {
-      if (currentPossibleFilter.type === "openMultiSelectDialogButton") {
-        if (currentFilters && currentFilters[currentPossibleFilter.key]) {
-          // Ensure the membership collection is built with an array if it's a single string
-          // like "energy" for "category"
-          let filtersToCheck;
-          if (Array.isArray(currentFilters[currentPossibleFilter.key])) {
-            filtersToCheck = new Set(currentFilters[currentPossibleFilter.key]);
-          } else {
-            filtersToCheck = new Set([currentFilters[currentPossibleFilter.key]]);
-          }
-
-          // If we currently have a filter set (e.g. category), then
-          // make sure we search through the possible sub items associated
-          // with that filter (e.g. itemsToChooseFrom, and subcategories)
-          const potentialItems = findAllItems(currentPossibleFilter, filtersToCheck);
-          accumulator[currentPossibleFilter.key] = potentialItems;
-        } else {
-          accumulator[currentPossibleFilter.key] = [];
-        }
-      }
-
-      return accumulator;
-    }, {})
-  );
+  const reduced = reduceFilters(currentFilters, possibleFilters);
+  const [selectedItems, setSelectedItems] = React.useState(reduced);
 
   const handleClickDialogOpen = (prop) => {
     if (!open.prop) {
       setOpen({ ...open, [prop]: true });
-    } else setOpen({ ...open, [prop]: !open[prop] });
+    } else {
+      setOpen({ ...open, [prop]: !open[prop] });
+    }
   };
 
-  const handleClickDialogClose = (prop, results) => {
+  /**
+   * The logic filtering and update logic
+   * when we click "Apply" or "Save" in a
+   * multi-level select dialog.
+   */
+  const handleClickDialogSave = (prop, results) => {
     if (results) {
       const updatedFilters = { ...currentFilters, [prop]: results.map((x) => x.name) };
       setCurrentFilters(updatedFilters);
       applyFilters(type, updatedFilters, isSmallScreen);
     }
 
+    setOpen({ ...open, [prop]: false });
+  };
+
+  /**
+   * Handler when dismissing or closing (clicking the "X")
+   * a dialog or modal.
+   */
+  const handleClickDialogClose = (prop) => {
     setOpen({ ...open, [prop]: false });
   };
 
@@ -203,6 +227,7 @@ export default function FilterContent({
             errorMessage={errorMessage}
             filtersExpanded={filtersExpanded}
             handleApplyFilters={handleApplyFilters}
+            handleClickDialogSave={handleClickDialogSave}
             handleClickDialogClose={handleClickDialogClose}
             handleClickDialogOpen={handleClickDialogOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
@@ -223,6 +248,7 @@ export default function FilterContent({
             currentFilters={currentFilters}
             errorMessage={errorMessage}
             handleApplyFilters={handleApplyFilters}
+            handleClickDialogSave={handleClickDialogSave}
             handleClickDialogClose={handleClickDialogClose}
             handleClickDialogOpen={handleClickDialogOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
@@ -237,6 +263,7 @@ export default function FilterContent({
           <Filters
             currentFilters={currentFilters}
             handleApplyFilters={handleApplyFilters}
+            handleClickDialogSave={handleClickDialogSave}
             handleClickDialogClose={handleClickDialogClose}
             handleClickDialogOpen={handleClickDialogOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
@@ -254,6 +281,7 @@ export default function FilterContent({
           currentFilters={currentFilters}
           errorMessage={errorMessage}
           handleApplyFilters={handleApplyFilters}
+          handleClickDialogSave={handleClickDialogSave}
           handleClickDialogClose={handleClickDialogClose}
           handleClickDialogOpen={handleClickDialogOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}

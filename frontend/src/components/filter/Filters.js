@@ -78,9 +78,9 @@ const useStyles = makeStyles((theme) => {
 export default function Filters({
   currentFilters,
   errorMessage,
-  handleApplyFilters,
   handleClickDialogClose,
   handleClickDialogOpen,
+  handleClickDialogSave,
   handleSetLocationOptionsOpen,
   handleValueChange,
   isInOverlay,
@@ -89,6 +89,7 @@ export default function Filters({
   locationOptionsOpen,
   open,
   possibleFilters,
+
   selectedItems,
   setSelectedItems,
 }) {
@@ -106,6 +107,8 @@ export default function Filters({
       )}
 
       <div className={`${classes.flexContainer} ${isInOverlay && classes.verticalFlexContainer}`}>
+        {/* Map over the potential filters for each specific tab. For example, on the Members tab,
+         the possible filters might be the location filter object, and the skills filter object. */}
         {possibleFilters.map((filter) => {
           // Get the current values for each potential filter
           // from what could already be previously selected
@@ -192,6 +195,7 @@ export default function Filters({
               });
             };
 
+            // TODO: what is the showIf property used for?
             if (!filter.showIf || currentFilters[filter.showIf.key] === filter.showIf.value) {
               component = (
                 <div key={filter.key}>
@@ -202,10 +206,11 @@ export default function Filters({
                   >
                     {filter.title}
                   </Button>
+                  {/* For example, this could be the Skills dialog */}
                   <MultiLevelSelectDialog
-                    items={currentFilters[filter.key]}
                     itemsToChooseFrom={filter.itemsToChooseFrom}
-                    onClose={(selectedSkills) => handleClickDialogClose(filter.key, selectedSkills)}
+                    onClose={() => handleClickDialogClose(filter.key)}
+                    onSave={(selectedSkills) => handleClickDialogSave(filter.key, selectedSkills)}
                     open={open[filter.key] ? true : false}
                     selectedItems={curSelectedItems}
                     setSelectedItems={handleSetSelectedItems}
