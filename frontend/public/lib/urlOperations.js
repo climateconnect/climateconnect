@@ -35,7 +35,7 @@ const encodeQueryParamsFromFilters = (filters) => {
   Object.keys(filters).map((filterKey) => {
     if (filters[filterKey] && filters[filterKey].length > 0) {
       // Stringify array values
-      let filterValues = [filters[filterKey]].join();
+      const filterValues = [filters[filterKey]].join();
 
       // We also need to handle reserved characters, which
       // are not escaped by encodeURI as they're necessary

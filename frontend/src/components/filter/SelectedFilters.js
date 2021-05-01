@@ -1,4 +1,4 @@
-import { Chip, Tooltip, Typography } from "@material-ui/core";
+import { Chip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 

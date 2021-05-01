@@ -1,13 +1,10 @@
 // 3rd party or built-in imports
-import _ from "lodash";
-import axios from "axios";
 import NextCookies from "next-cookies";
 import React, { useRef, useState, useContext } from "react";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 
 // Relative imports
 import { apiRequest } from "../public/lib/apiOperations";
-import { buildUrlEndingFromFilters } from "../public/lib/filterOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
@@ -21,7 +18,6 @@ import { parseData } from "../public/lib/parsingOperations";
 import BrowseContent from "../src/components/browse/BrowseContent";
 import HubsSubHeader from "../src/components/indexPage/HubsSubHeader";
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
-import tokenConfig from "../public/config/tokenConfig";
 import TopOfPage from "../src/components/hooks/TopOfPage";
 import UserContext from "../src/components/context/UserContext";
 import WideLayout from "../src/components/layouts/WideLayout";

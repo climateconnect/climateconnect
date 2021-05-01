@@ -4,9 +4,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 
 import { encodeQueryParamsFromFilters } from "../../public/lib/urlOperations";
-import tokenConfig from "../../public/config/tokenConfig";
 import { apiRequest } from "../../public/lib/apiOperations";
-import { buildUrlEndingFromFilters } from "../../public/lib/filterOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,

@@ -25,7 +25,7 @@ export const findAllItems = (currentPossibleFilter, selectedFiltersToCheck) => {
   }
 
   // Ensure we've accurate set membership, and iterate over all items to choose from...
-  let items = [];
+  const items = [];
   currentPossibleFilter.itemsToChooseFrom.forEach((item) => {
     if (selectedFiltersToCheck.has(item.name)) {
       items.push(item);

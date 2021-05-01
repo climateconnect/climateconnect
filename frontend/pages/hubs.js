@@ -1,14 +1,11 @@
-import React from "react";
-import axios from "axios";
-import { Typography, Container, makeStyles, useMediaQuery } from "@material-ui/core";
+import React, { useContext } from "react";
+import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 
 import { apiRequest } from "../public/lib/apiOperations";
-import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import getTexts from "../public/texts/texts";
 import HubHeaderImage from "../src/components/hub/HubHeaderImage";
 import HubPreviews from "../src/components/hub/HubPreviews";
 import NavigationSubHeader from "../src/components/hub/NavigationSubHeader";
-import React, { useContext } from "react";
 import theme from "../src/themes/theme";
 import UserContext from "../src/components/context/UserContext";
 import WideLayout from "../src/components/layouts/WideLayout";
