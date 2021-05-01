@@ -23,8 +23,10 @@ context and knowledge of various test cases across the team and project contribu
    1. Ensure when clicking "X", menu is dismissed / canceled
    1. Ensure when clicking "Save", menu is dismissed, query params in URL are updated, filter and
       fetch of new resources from backend takes place
-1. Dismiss a selected filter tag (chip). Ensure
-   1. URL is updated (query param removed) correctly
-   1. Selected filter tag (chip) disappears
-   1. Resources (projects) are re-fetched and updated in the UI correctly
+1. Dismiss a selected filter tag (chip).
+   1. Ensure selected filter tag (chip) disappears
+   1. Ensure URL is updated (query param removed) correctly
+   1. Ensure resources (projects) are re-fetched and cards are updated in the UI correctly
+   1. Ensure opening a multi level selector dialog (e.g. Skills or Categories) has the state
+      reflected
    1. On refresh, you see selected filter / selected item state updated appropriately
