@@ -11,6 +11,7 @@ export default function MultiLevelSelectDialog({
   itemsToChooseFrom,
   maxSelections,
   onClose,
+  onSave,
   open,
   selectedItems,
   setSelectedItems,
@@ -23,7 +24,8 @@ export default function MultiLevelSelectDialog({
    * and close the dialog.
    */
   const applySkills = () => {
-    onClose(selectedItems);
+    onSave(selectedItems);
+    onClose();
   };
 
   const itemNamePlural = type;
