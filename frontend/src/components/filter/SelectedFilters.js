@@ -8,7 +8,6 @@ const useStyles = makeStyles((theme) => {
       display: "inline-flex",
       alignItems: "center",
       marginBottom: theme.spacing(1),
-      marginRight: theme.spacing(4),
       flexWrap: "wrap",
     },
     selectedToolTip: {
