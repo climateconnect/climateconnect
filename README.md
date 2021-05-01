@@ -138,7 +138,7 @@ And finally `yarn dev` to spin up the Next.js app! Check out our [frontend (FE) 
 
 #### Testing
 
-We use Jest as our testing framework write to tests for the FE code. Write
+We use Jest as our testing framework write to tests for FE code. Write
 test files with `.test.js` and execute them directly with
 
 ```sh
@@ -146,6 +146,12 @@ yarn jest path/to/testfile.test.js
 ```
 
 See npm scripts in `package.json`.
+
+We use `eslint` for linting. Watch files to fix lint issues with
+
+```sh
+yarn lint:watch
+```
 
 ## Deploy
 
