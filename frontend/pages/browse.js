@@ -2,7 +2,7 @@
 import _ from "lodash";
 import axios from "axios";
 import NextCookies from "next-cookies";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext } from "react";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 
 // Relative imports

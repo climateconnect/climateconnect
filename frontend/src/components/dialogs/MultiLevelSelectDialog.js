@@ -46,7 +46,7 @@ export default function MultiLevelSelectDialog({
   //   : type === "project categories" && categoriesToChooseFrom;
 
   // Alphabetize options by name
-  possibleItems.sort((a, b) => {
+  possibleItems?.sort((a, b) => {
     if (a?.name?.toUpperCase() < b?.name?.toUpperCase()) {
       return -1;
     }
