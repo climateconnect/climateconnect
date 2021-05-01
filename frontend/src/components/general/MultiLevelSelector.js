@@ -329,9 +329,7 @@ function ListToChooseWrapper({
 function SelectedList({ className, dragAble, maxSelections, moveItem, onClickUnselect, selected }) {
   const classes = useStyles({});
 
-  // Convert selected to array if it's not already
-  // selected = Array.isArray(selected) ? selected : [selected];
-  debugger;
+  // console.log("Selected from SelectedList in MultiLevelSelector: ", selected);
 
   const onDragEnd = (result) => {
     // dropped outside the list
@@ -388,12 +386,32 @@ function SelectedList({ className, dragAble, maxSelections, moveItem, onClickUns
     );
   }
 
+  // Convert selected to array if it's not already
+  // selected = Array.isArray(selected) ? selected : [selected];
+  // TODO(piper): fix this selection...
+  // debugger;
+  // TODO: why is skills being selected an object...
+  // console.log(selected);
+
+  /**
+   * {icon: {…}, iconName: "ExploreIcon", title: "Skills", type: "openMultiSelectDialogButton", key: "skills", …}
+icon: {$$typeof: Symbol(react.memo), type: {…}, compare: null, displayName: "GroupAddIcon", muiName: "SvgIcon"}
+iconName: "ExploreIcon"
+itemType: "skills"
+itemsToChooseFrom: undefined
+key: "skills"
+title: "Skills"
+tooltipText: "Filter by the skills a project is looking for"
+type: "openMultiSelectDialogButton"
+__proto__: Object
+   */
+
   return (
-    // Convert selected to array if it's not already
-    // selected = Array.isArray(selected) ? selected : [selected];
     <div className={className}>
-      {selected && (
+      {/* TODO(piper): this should be an array not an object? */}
+      {selected && Array.isArray(selected) && (
         <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
+          {/* TODO(Piper): fix bug-1 here; seems like multiple selected items are coming through  */}
           {selected.length === 0
             ? `Select between 1 and ${maxSelections}`
             : `Selected ${selected.length} of ${maxSelections}`}
@@ -460,6 +478,8 @@ function ListToChooseFrom({
                     }
                     ${className}`}
       >
+        {/* Map over all potential items; for example this could be the list
+        of skills in the skills dialog */}
         {itemsToSelectFrom.map((item, index) => {
           // If current last item, is the last subcategory item
           // in the last item in the outer list, then ignore our
@@ -486,7 +506,14 @@ function ListToChooseFrom({
           selected = Array.isArray(selected) ? selected : [selected];
 
           const isDisabled =
-            selected.filter((selectedItem) => selectedItem.name === item.name).length === 1;
+            selected.filter(
+              // If the item is a raw string, we also accept that if it matches
+              // the name of the selected item. For example, the array could be
+              // ["Crafts"].
+              (selectedItem) => selectedItem.name === item.name || selectedItem === item.name
+            ).length === 1;
+
+          console.log(item);
 
           return (
             <React.Fragment key={item.key}>
@@ -525,9 +552,11 @@ function ListToChooseFrom({
                 }}
                 selected={expanded === item.key}
                 onClick={() => {
-                  if (item.subcategories && item.subcategories.length)
+                  if (item.subcategories && item.subcategories.length) {
                     return onClickExpand(item.key);
-                  else return onClickSelect(item);
+                  }
+
+                  return onClickSelect(item);
                 }}
                 disableRipple
               >
