@@ -103,7 +103,7 @@ to update your migrations, and
 python manage.py createsuperuser
 ```
 
-if needed to create another super user for Django.
+to re-create a super user to be used in the Django admin panel.
 
 #### Testing
 
