@@ -14,6 +14,7 @@ import LoadingSpinner from "../general/LoadingSpinner";
 import NoItemsFound from "./NoItemsFound";
 import OrganizationPreviews from "../organization/OrganizationPreviews";
 import possibleFilters from "../../../public/data/possibleFilters";
+import ProfilePreviews from "../profile/ProfilePreviews";
 import ProjectPreviews from "../project/ProjectPreviews";
 import Tutorial from "../tutorial/Tutorial";
 import UserContext from "../context/UserContext";
