@@ -20,11 +20,8 @@ export const findAllItems = (currentPossibleFilter, selectedFiltersToCheck) => {
     !currentPossibleFilter.itemsToChooseFrom ||
     currentPossibleFilter?.itemsToChooseFrom?.length === 0
   ) {
-    // tODO(pipeR): 4/28 - 7:36 am
-    // how do we get the ID / parent and all that?
-    // Handle the case where it could be a single
+    // Handle the case where it could be a single item
     return Array.from(selectedFiltersToCheck);
-    // return currentPossibleFilter;
   }
 
   // Ensure we've accurate set membership, and iterate over all items to choose from...
@@ -55,8 +52,6 @@ export const findAllItems = (currentPossibleFilter, selectedFiltersToCheck) => {
  */
 export const reduceFilters = (currentFilters, possibleFilters) => {
   const reduced = possibleFilters.reduce((accumulator, currentPossibleFilter) => {
-    // TODO(piper): what about handling other types than OMSDB
-    // debugger;
     if (currentPossibleFilter.type === "openMultiSelectDialogButton") {
       if (
         currentFilters &&
@@ -72,10 +67,6 @@ export const reduceFilters = (currentFilters, possibleFilters) => {
         } else {
           filtersToCheck = new Set([currentFilters[currentPossibleFilter.key]]);
         }
-
-        // TODO(piper): has to be a bug here with selected items...
-        // this is bug-1 where we're passing the object down through
-        // 4/24 - 7:55 AM
 
         // If we currently have a filter set (e.g. category), then
         // make sure we search through the possible sub items associated
@@ -131,7 +122,6 @@ export default function FilterContent({
   // downstream; need to handle appropriately both on initiailization
   // and when merging in parameters from query param
   const router = useRouter();
-  // debugger;
   Object.entries(router.query).forEach(([key, value]) => {
     if (
       Array.isArray(reducedPossibleFilters[key]) ||
@@ -151,13 +141,8 @@ export default function FilterContent({
   const [open, setOpen] = React.useState({});
   const [currentFilters, setCurrentFilters] = React.useState(reducedPossibleFilters);
 
-  // debugger;
   const reduced = reduceFilters(currentFilters, possibleFilters);
-  // TODO(piper): I think selectedItems is getting called twice
-  //
   const [selectedItems, setSelectedItems] = React.useState(reduced);
-  console.log("Selected items today");
-  console.warn(selectedItems);
 
   const handleClickDialogOpen = (prop) => {
     if (!open.prop) {
@@ -182,18 +167,11 @@ export default function FilterContent({
     setOpen({ ...open, [prop]: false });
   };
 
-  // TODO: will likely remove
-  const handleClickDialogClose = (prop, results) => {
-    // TODO(piper): 4/29 - 10:10 am
-    // debugger;
-    // TODO: I don't think we actually want to update filters, when _dismissing_
-    // the dialog, that is not applying them.
-    // if (results) {
-    //   const updatedFilters = { ...currentFilters, [prop]: results.map((x) => x.name) };
-    //   setCurrentFilters(updatedFilters);
-    //   applyFilters(type, updatedFilters, isSmallScreen);
-    // }
-
+  /**
+   * Handler when dismissing or closing (clicking the "X")
+   * a dialog or modal.
+   */
+  const handleClickDialogClose = (prop) => {
     setOpen({ ...open, [prop]: false });
   };
 
@@ -233,7 +211,6 @@ export default function FilterContent({
 
     // Also re-select items
     if (selectedItems[filterKey]) {
-      // debugger;
       setSelectedItems({
         ...selectedItems,
         [filterKey]: selectedItems[filterKey].filter((i) => i.name !== filterName),

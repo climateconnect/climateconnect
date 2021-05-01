@@ -182,18 +182,13 @@ export default function Filters({
           if (filter.type === "openMultiSelectDialogButton") {
             // Only perform one React state change if there's an initial
             // set of selected categories
-            // TODO(piper): bug on not getting updated correctly the first time?
-            // debugger;
             const curSelectedItems = selectedItems[filter.key];
-            console.log("Currently selected items from Filters , with filter.key ", filter.key);
-            console.log(curSelectedItems);
 
             /**
              * Update the selected items object with new entries. New selected items is
              * an array of objects.
              */
             const handleSetSelectedItems = (newSelectedItems) => {
-              // debugger;
               setSelectedItems({
                 ...selectedItems,
                 [filter.key]: newSelectedItems,
@@ -214,13 +209,9 @@ export default function Filters({
                   {/* For example, this could be the Skills dialog */}
                   <MultiLevelSelectDialog
                     itemsToChooseFrom={filter.itemsToChooseFrom}
-                    // onSave={handleClickDialogSave}
+                    onClose={() => handleClickDialogClose(filter.key)}
                     onSave={(selectedSkills) => handleClickDialogSave(filter.key, selectedSkills)}
-                    onClose={(selectedSkills) => handleClickDialogClose(filter.key, selectedSkills)}
-                    // onClose={() => {}}
                     open={open[filter.key] ? true : false}
-                    // TODO(Piper): confirm these are the correct selected items...
-                    // and not an object being passed into the dialog
                     selectedItems={curSelectedItems}
                     setSelectedItems={handleSetSelectedItems}
                     type={filter.itemType}
