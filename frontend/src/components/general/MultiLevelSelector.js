@@ -329,8 +329,6 @@ function ListToChooseWrapper({
 function SelectedList({ className, dragAble, maxSelections, moveItem, onClickUnselect, selected }) {
   const classes = useStyles({});
 
-  // console.log("Selected from SelectedList in MultiLevelSelector: ", selected);
-
   const onDragEnd = (result) => {
     // dropped outside the list
     if (!result.destination) return;
@@ -385,26 +383,6 @@ function SelectedList({ className, dragAble, maxSelections, moveItem, onClickUns
       </DragDropContext>
     );
   }
-
-  // Convert selected to array if it's not already
-  // selected = Array.isArray(selected) ? selected : [selected];
-  // TODO(piper): fix this selection...
-  // debugger;
-  // TODO: why is skills being selected an object...
-  // console.log(selected);
-
-  /**
-   * {icon: {…}, iconName: "ExploreIcon", title: "Skills", type: "openMultiSelectDialogButton", key: "skills", …}
-icon: {$$typeof: Symbol(react.memo), type: {…}, compare: null, displayName: "GroupAddIcon", muiName: "SvgIcon"}
-iconName: "ExploreIcon"
-itemType: "skills"
-itemsToChooseFrom: undefined
-key: "skills"
-title: "Skills"
-tooltipText: "Filter by the skills a project is looking for"
-type: "openMultiSelectDialogButton"
-__proto__: Object
-   */
 
   return (
     <div className={className}>
