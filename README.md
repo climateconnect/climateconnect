@@ -69,19 +69,41 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
 
 #### Creating and Removing Test Data
 
-- If test data is needed, run this command: `python manage.py create_test_data --number_of_rows 4`
-- If you need to wipe your local database and start over:
-  `$ sudo -u postgres psql`
+If test data is needed, run
 
-  ```sql
-  postgres-# \connect $DATABASE_NAME
-  $DATABASE_NAME-# \dt
-  $DATABASE_NAME-# DROP SCHEMA public CASCADE;
-  $DATABASE_NAME-# CREATE SCHEMA public;
-  $DATABASE_NAME-# \q;
-  ```
+```sh
+python manage.py create_test_data --number_of_rows 4
+```
 
-  You will then need to run `python manage.py migrate` and `python manage.py createsuperuser` again after doing so.
+If you need to wipe your local database and start over, run
+
+```sh
+sudo -u postgres psql  # note this might differ slightly in name based on your postgres setup
+```
+
+And then at the `psql` prompt,
+
+```sql
+postgres-# \connect $DATABASE_NAME
+$DATABASE_NAME-# \dt
+$DATABASE_NAME-# DROP SCHEMA public CASCADE;
+$DATABASE_NAME-# CREATE SCHEMA public;
+$DATABASE_NAME-# \q;
+```
+
+Then run
+
+```sh
+python manage.py migrate
+```
+
+to update your migrations, and
+
+```sh
+python manage.py createsuperuser
+```
+
+if needed to create another super user for Django.
 
 #### Testing
 
@@ -99,22 +121,20 @@ python manage.py test <file_path> or <file_path + class_name>
 
 ### Frontend
 
-Check out our [frontend (FE) code style guidelines wiki](https://github.com/climateconnect/climateconnect/wiki/Frontend-Code-Style-Guide).
-
 1. `cd frontend`
 1. `yarn install` to download all npm packages
 1. Add a `.env` file for frontend environment variables. You can find variables you need to set in [`/frontend/next.config.js/`](https://github.com/climateconnect/climateconnect/blob/master/frontend/next.config.js)
 
-For local development, use the following contents for `.env`:
+For local development, use the following for `.env`:
 
 ```sh
-  API_HOST="localhost"
-  API_URL="http://127.0.0.1:8000"
-  BASE_URL_HOST=""
-  SOCKET_URL="ws://api.climateconnect.earth"
+API_HOST="localhost"
+API_URL="http://127.0.0.1:8000"
+BASE_URL_HOST=""
+SOCKET_URL="ws://api.climateconnect.earth"
 ```
 
-1. `yarn dev` to start developing
+And finally `yarn dev` to spin up the Next.js app! Check out our [frontend (FE) code style guidelines wiki](https://github.com/climateconnect/climateconnect/wiki/Frontend-Code-Style-Guide) to follow codebase best practices and contribute to a healthy and maintainable codebase.
 
 #### Testing
 
@@ -127,7 +147,7 @@ yarn jest path/to/testfile.test.js
 
 See npm scripts in `package.json`.
 
-## To Deploy
+## Deploy
 
 ### Frontend
 
