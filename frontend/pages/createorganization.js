@@ -8,7 +8,7 @@ import {
   getLocationValue,
   indicateWrongLocation,
   isLocationValid,
-  parseLocation
+  parseLocation,
 } from "../public/lib/locationOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -67,7 +67,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       short_description: "",
       website: "",
       about: "",
-      organization_size: ""
+      organization_size: "",
     },
     types: [],
   });

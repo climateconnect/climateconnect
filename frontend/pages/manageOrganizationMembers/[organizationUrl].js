@@ -42,7 +42,7 @@ export async function getServerSideProps(ctx) {
       rolesOptions: rolesOptions,
       availabilityOptions: availabilityOptions,
       token: token,
-    })
+    }),
   };
 }
 

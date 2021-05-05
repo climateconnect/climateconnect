@@ -87,7 +87,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
       ),
       de: (
         <>
-          Hier kannst du alle Projekte von Climate Connect Nutzern im {hubName} Hub finden.
+          Hier kannst du alle Projekte von Climate Connect Nutzer*innen im {hubName} Hub finden.
           Einen Überblick über alle Projekte erhälst du auf der{" "}
           <Link
             href={getLocalePrefix(locale) + "/browse"}

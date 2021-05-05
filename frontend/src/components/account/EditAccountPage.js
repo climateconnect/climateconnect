@@ -8,7 +8,7 @@ import {
   TextField,
   Tooltip,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
@@ -21,13 +21,14 @@ import {
   getCompressedJPG,
   getImageDialogHeight,
   getResizedImage,
-  whitenTransparentPixels
+  whitenTransparentPixels,
 } from "../../../public/lib/imageOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import ButtonLoader from "../general/ButtonLoader";
+import ActiveHubsSelect from "../hub/ActiveHubsSelect";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import LocationSearchBar from "../search/LocationSearchBar";
@@ -94,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     width: theme.spacing(40),
     margin: "0 auto",
-    [theme.breakpoints.up("sm")]: {
+    [theme.breakpoints.up("md")]: {
       margin: 0,
       display: "inline-block",
       width: "auto",
@@ -124,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
   accountInfo: {
     padding: 0,
     marginTop: theme.spacing(1),
-    [theme.breakpoints.up("sm")]: {
+    [theme.breakpoints.up("md")]: {
       paddingRight: theme.spacing(17),
     },
   },
@@ -145,7 +146,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
   },
   infoContainer: {
-    [theme.breakpoints.up("sm")]: {
+    [theme.breakpoints.up("md")]: {
       display: "flex",
     },
     position: "relative",
@@ -160,7 +161,7 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     right: theme.spacing(1),
     width: theme.spacing(18),
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       width: theme.spacing(14),
       fontSize: 10,
       textAlign: "center",
@@ -168,13 +169,13 @@ const useStyles = makeStyles((theme) => ({
   },
   saveButton: {
     top: theme.spacing(11.5),
-    [theme.breakpoints.up("sm")]: {
+    [theme.breakpoints.up("md")]: {
       top: theme.spacing(1),
     },
   },
   cancelButton: {
     top: theme.spacing(16.5),
-    [theme.breakpoints.up("sm")]: {
+    [theme.breakpoints.up("md")]: {
       top: theme.spacing(6.5),
     },
   },
@@ -213,8 +214,8 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(5),
   },
   detailledDescriptionContainer: {
-    marginTop: theme.spacing(5)
-  }
+    marginTop: theme.spacing(5),
+  },
 }));
 
 export default function EditAccountPage({
@@ -232,12 +233,13 @@ export default function EditAccountPage({
   deleteEmail,
   loadingSubmit,
   onClickCheckTranslations,
+  allHubs,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
   //used for previewing images in UploadImageDialog
@@ -377,16 +379,16 @@ export default function EditAccountPage({
       </div>
     );
   };
-  
+
   const displayAccountInfo = (info) => {
     return Object.keys(info).map((key) => {
       const i = getFullInfoElement(infoMetadata, key, info[key]);
 
       const handleChange = (event) => {
-        let newValue = event.target.value
-        if(i.type === "select"){
+        let newValue = event.target.value;
+        if (i.type === "select") {
           //On select fields, use the key as the new value since the text can have multiple languages
-          newValue = i.options.find(o=>o.name === event.target.value).key
+          newValue = i.options.find((o) => o.name === event.target.value).key;
         }
         setEditedAccount({
           ...editedAccount,
@@ -535,6 +537,45 @@ export default function EditAccountPage({
             />
           </div>
         );
+      } else if (i.type === "hubs") {
+        const onSelectNewHub = (event) => {
+          event.preventDefault();
+          const hub = allHubs.find((h) => h.name === event.target.value);
+          if (editedAccount?.info?.hubs?.filter((h) => h.url_slug === hub.url_slug)?.length === 0) {
+            setEditedAccount({
+              ...editedAccount,
+              info: {
+                ...editedAccount.info,
+                hubs: [...editedAccount.info.hubs, hub],
+              },
+            });
+          }
+        };
+        const onClickRemoveHub = (hub) => {
+          const hubsAfterRemoval = editedAccount?.info?.hubs.filter(
+            (h) => h.url_slug !== hub.url_slug
+          );
+          setEditedAccount({
+            ...editedAccount,
+            info: {
+              ...editedAccount.info,
+              hubs: hubsAfterRemoval,
+            },
+          });
+        };
+        return (
+          <ActiveHubsSelect
+            info={i}
+            hubsToSelectFrom={allHubs.filter(
+              (h) =>
+                editedAccount?.info?.hubs.filter((addedHub) => addedHub.url_slug === h.url_slug)
+                  .length === 0
+            )}
+            onClickRemoveHub={onClickRemoveHub}
+            selectedHubs={editedAccount.info.hubs}
+            onSelectNewHub={onSelectNewHub}
+          />
+        );
       } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
         return (
           <div key={key} className={classes.infoElement}>
@@ -624,17 +665,16 @@ export default function EditAccountPage({
   };
 
   const getDetailledDescription = () => {
-    const detailled_description_obj =  Object.keys(editedAccount.info).filter(i=>{
-      const el = getFullInfoElement(infoMetadata, i, editedAccount.info[i])
-      return el.type === "detailled_description"
-    })
-    if(detailled_description_obj.length > 0){
-      const key = detailled_description_obj[0]
-      return getFullInfoElement(infoMetadata, key, editedAccount.info[key])
-    }else
-      return null
-  }
-  const detailledDescription = getDetailledDescription()
+    const detailled_description_obj = Object.keys(editedAccount.info).filter((i) => {
+      const el = getFullInfoElement(infoMetadata, i, editedAccount.info[i]);
+      return el.type === "detailled_description";
+    });
+    if (detailled_description_obj.length > 0) {
+      const key = detailled_description_obj[0];
+      return getFullInfoElement(infoMetadata, key, editedAccount.info[key]);
+    } else return null;
+  };
+  const detailledDescription = getDetailledDescription();
 
   const handleValueChange = (event, key) => {
     setEditedAccount({
@@ -802,7 +842,7 @@ export default function EditAccountPage({
             )}
           </Container>
           <Container className={classes.accountInfo}>
-            {displayAccountInfo(editedAccount.info)}            
+            {displayAccountInfo(editedAccount.info)}
             {onClickCheckTranslations && (
               <div className={classes.checkTranslationsButtonContainer}>
                 <Button
@@ -814,11 +854,11 @@ export default function EditAccountPage({
                 </Button>
               </div>
             )}
-          </Container>          
+          </Container>
         </Container>
         <Container className={classes.detailledDescriptionContainer}>
           {detailledDescription && (
-            <DetailledDescriptionInput 
+            <DetailledDescriptionInput
               title={detailledDescription.name}
               helpText={detailledDescription.helptext}
               value={detailledDescription.value}
@@ -876,7 +916,6 @@ export default function EditAccountPage({
     </Container>
   );
 }
-
 
 const getTypes = (possibleAccountTypes, infoMetadata) => {
   return possibleAccountTypes.map((type) => {

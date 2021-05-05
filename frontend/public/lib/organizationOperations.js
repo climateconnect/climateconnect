@@ -9,16 +9,17 @@ export function parseOrganization(organization, editMode) {
     types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
     language: organization.language,
     translations: organization.translations,
+    hubs: organization.hubs,
     info: {
       location: organization.location,
       short_description: organization.short_description,
       website: organization.website,
       about: organization.about,
-      organization_size: organization.organization_size
+      organization_size: organization.organization_size,
+      hubs: organization.hubs,
     },
   };
-  if(editMode)
-    org.types = org.types.map((t) => t.key);
+  if (editMode) org.types = org.types.map((t) => t.key);
   const additional_info = organization.types.reduce((additionalInfoArray, t) => {
     const type = t.organization_tag;
     if (type.additional_info && type.additional_info.length > 0) {

@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => {
 
 export default function OrganizationMetaData({ organization, showOrganizationType }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext)
+  const { locale } = useContext(UserContext);
   const organization_info_metadata = getOrganizationInfoMetadata(locale, organization);
   const additionalInfo = organization.types.reduce((arr, type) => {
     if (type.additional_info) {

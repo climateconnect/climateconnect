@@ -192,6 +192,14 @@ class Organization(models.Model):
         verbose_name="Organization size", choices=ORGANIZATION_SIZE_OPTIONS, null=True, blank=True
     )
 
+    hubs = models.ManyToManyField(
+        "hubs.Hub",
+        related_name="organization_hubs",
+        help_text="Hubs that the organization is active in",
+        verbose_name="Hubs",
+        blank=True
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Organization"

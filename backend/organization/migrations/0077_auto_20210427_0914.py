@@ -5,8 +5,9 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
+    # manually changed this because of a merge. Without this manual change certain migrations would have had to be faked
     dependencies = [
-        ('organization', '0076_auto_20210422_2015'),
+        ('organization', '0077_auto_20210430_1031'),
     ]
 
     operations = [

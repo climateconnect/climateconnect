@@ -2,6 +2,7 @@ import Cookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
 import getOrganizationInfoMetadata from "../../public/data/organization_info_metadata.js";
 import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
+import { getAllHubs } from "../../public/lib/hubOperations.js";
 import { parseOrganization } from "../../public/lib/organizationOperations.js";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations.js";
 import getTexts from "../../public/texts/texts";
@@ -18,20 +19,22 @@ export async function getServerSideProps(ctx) {
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
   const url = encodeURI(ctx.query.organizationUrl);
-  const [organization, tagOptions] = await Promise.all([
+  const [organization, tagOptions, allHubs] = await Promise.all([
     getOrganizationByUrlIfExists(url, token, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
+    getAllHubs(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
       organization: organization,
       tagOptions: tagOptions,
+      allHubs: allHubs,
     }),
   };
 }
 
 //This route should only be accessible to admins of the organization
-export default function EditOrganizationPage({ organization, tagOptions }) {
+export default function EditOrganizationPage({ organization, tagOptions, allHubs }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata(locale, organization);
@@ -69,6 +72,7 @@ export default function EditOrganizationPage({ organization, tagOptions }) {
         handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
         errorMessage={errorMessage}
         initialTranslations={organization.translations}
+        allHubs={allHubs}
       />
     </WideLayout>
   );

@@ -48,12 +48,12 @@ const useStyles = makeStyles((theme) => ({
   sectionHeadlineWithButtonContainer: {
     display: "flex",
     justifyContent: "space-between",
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(3),
   },
   no_content_yet: {
     marginTop: theme.spacing(4),
-    marginBottom: theme.spacing(5)
-  }
+    marginBottom: theme.spacing(5),
+  },
 }));
 
 export async function getServerSideProps(ctx) {
@@ -71,7 +71,7 @@ export async function getServerSideProps(ctx) {
       projects: projects,
       members: members,
       organizationTypes: organizationTypes,
-    })
+    }),
   };
 }
 
@@ -185,7 +185,9 @@ function OrganizationLayout({
         {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
         ) : (
-          <Typography className={classes.no_content_yet}>{texts.this_organization_has_not_listed_any_projects_yet}</Typography>
+          <Typography className={classes.no_content_yet}>
+            {texts.this_organization_has_not_listed_any_projects_yet}
+          </Typography>
         )}
       </Container>
       <Divider className={classes.divider} />
@@ -199,13 +201,11 @@ function OrganizationLayout({
               className={classes.editButton}
               variant="contained"
               color="primary"
-              href={
-                getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
-              }
+              href={getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug}
             >
               {texts.manage_members}
             </Button>
-          )}          
+          )}
         </div>
         {members && members.length ? (
           <ProfilePreviews profiles={membersWithAdditionalInfo} showAdditionalInfo />

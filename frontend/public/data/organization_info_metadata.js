@@ -90,37 +90,43 @@ export default function getOrganizationInfoMetadata(locale, organization) {
       options: [
         {
           key: 0,
-          name: "1-10"
+          name: "1-10",
         },
         {
           key: 1,
-          name: "11-50"
+          name: "11-50",
         },
         {
           key: 2,
-          name: "51-100"
+          name: "51-100",
         },
         {
           key: 3,
-          name: "251-500"
+          name: "251-500",
         },
         {
           key: 4,
-          name: texts.large_medium_organization_size
+          name: texts.large_medium_organization_size,
         },
         {
           key: 5,
-          name: texts.large_organization_size
+          name: texts.large_organization_size,
         },
         {
           key: 6,
-          name: texts.very_large_organization_size
+          name: texts.very_large_organization_size,
         },
         {
           key: 7,
-          name: texts.huge_organization_size
+          name: texts.huge_organization_size,
         },
-      ]
-    }
+      ],
+    },
+    hubs: {
+      name: `${texts.sectors_of_activity}`,
+      key: "hubs",
+      type: "hubs",
+      helptext: texts.how_to_select_hubs,
+    },
   };
 }

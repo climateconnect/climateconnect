@@ -8,7 +8,7 @@ import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import {
   getTranslationsFromObject,
-  getTranslationsWithoutRedundantKeys
+  getTranslationsWithoutRedundantKeys,
 } from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
 import EditAccountPage from "../account/EditAccountPage";
@@ -32,16 +32,21 @@ export default function EditOrganizationRoot({
   handleSetLocationOptionsOpen,
   errorMessage,
   initialTranslations,
+  allHubs,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
   const token = cookies.get("token");
   const { locale, locales } = useContext(UserContext);
-  const STEPS = ["edit_organization", "edit_translations"];  
+  const STEPS = ["edit_organization", "edit_translations"];
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
 
   const [editedOrganization, setEditedOrganization] = useState({ ...organization });
-  const texts = getTexts({ page: "organization", locale: locale, organization: editedOrganization });
+  const texts = getTexts({
+    page: "organization",
+    locale: locale,
+    organization: editedOrganization,
+  });
   const [step, setStep] = useState(STEPS[0]);
   const [translations, setTranslations] = useState(
     initialTranslations ? getTranslationsFromObject(initialTranslations, "organization") : {}
@@ -164,6 +169,7 @@ export default function EditOrganizationRoot({
             handleCancel={handleCancel}
             errorMessage={errorMessage}
             onClickCheckTranslations={onClickCheckTranslations}
+            allHubs={allHubs}
           />
         ) : (
           <>
@@ -216,6 +222,7 @@ const parseForRequest = async (org) => {
     parsedOrg.background_image = await blobFromObjectUrl(org.background_image);
   if (org.thumbnail_image) parsedOrg.thumbnail_image = await blobFromObjectUrl(org.thumbnail_image);
   if (org.image) parsedOrg.image = await blobFromObjectUrl(org.image);
+  if (org.hubs) parsedOrg.hubs = org.hubs.map((h) => h.url_slug);
   return parsedOrg;
 };
 

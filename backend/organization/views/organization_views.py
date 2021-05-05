@@ -1,19 +1,20 @@
 import logging
-# Django imports
-from django.contrib.auth.models import User
-from django.contrib.gis.db.models.functions import Distance
-from django.db.models import Q
-from django.utils.translation import gettext as _
-from django_filters.rest_framework import DjangoFilterBackend
 
 # Backend app imports
 from climateconnect_api.models import Role, UserProfile
 from climateconnect_api.models.language import Language
 from climateconnect_api.pagination import MembersPagination
 from climateconnect_api.serializers.user import UserProfileStubSerializer
-from climateconnect_api.utility.translation import edit_translations, get_translations, translate_text
+from climateconnect_api.utility.translation import (edit_translations,
+                                                    get_translations,
+                                                    translate_text)
 from climateconnect_main.utility.general import get_image_from_data_url
-
+# Django imports
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models.functions import Distance
+from django.db.models import Q
+from django.utils.translation import gettext as _
+from django_filters.rest_framework import DjangoFilterBackend
 from hubs.models.hub import Hub
 from location.models import Location
 from location.utility import get_location, get_location_with_range
@@ -29,9 +30,8 @@ from organization.permissions import (AddOrganizationMemberPermission,
                                       OrganizationReadWritePermission)
 from organization.serializers.organization import (
     EditOrganizationSerializer, OrganizationCardSerializer,
-    OrganizationMemberSerializer,
-    OrganizationSerializer, OrganizationSitemapEntrySerializer,
-    UserOrganizationSerializer)
+    OrganizationMemberSerializer, OrganizationSerializer,
+    OrganizationSitemapEntrySerializer, UserOrganizationSerializer)
 from organization.serializers.project import \
     ProjectFromProjectParentsSerializer
 from organization.serializers.tags import OrganizationTagsSerializer
@@ -310,6 +310,16 @@ class OrganizationAPIView(APIView):
             organization.thumbnail_image = get_image_from_data_url(request.data['thumbnail_image'])[0]
         if 'background_image' in request.data:
             organization.background_image = get_image_from_data_url(request.data['background_image'])[0]
+        if 'hubs' in request.data:
+            for hub in organization.hubs.all():
+                if not hub.url_slug in request.data['hubs']:
+                    organization.hubs.remove(hub)
+            for hub_url_slug in request.data['hubs']:
+                try:
+                    hub = Hub.objects.get(url_slug=hub_url_slug)
+                    organization.hubs.add(hub)
+                except Hub.DoesNotExist:
+                    logger.error("Passed hub url_slug {} does not exists")
         if 'parent_organization' in request.data:
             if 'has_parent_organization' in request.data \
                 and request.data['has_parent_organization'] == False:
