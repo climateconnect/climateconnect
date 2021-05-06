@@ -401,14 +401,8 @@ function SelectedList({
 
   return (
     <div className={className}>
-      {/* TODO(piper): this should be an array not an object? */}
       {selected && Array.isArray(selected) && (
         <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
-          {/* TODO(Piper): fix bug-1 here; seems like multiple selected items are coming through  */}
-          {/* {selected.length === 0
-             ? `Select between 1 and ${maxSelections}`
-             : `Selected ${selected.length} of ${maxSelections}`} */}
-
           {selected.length > 0
             ? texts.selected + " " + itemNamePlural
             : texts.choose_between_on_and + maxSelections + " " + itemNamePlural + "!"}

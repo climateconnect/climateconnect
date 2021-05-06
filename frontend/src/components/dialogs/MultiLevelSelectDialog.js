@@ -38,13 +38,6 @@ export default function MultiLevelSelectDialog({
 
   const possibleItems = itemsToChooseFrom;
 
-  // TODO(piper): confirm this isn't needed post merge -  May 1
-  // const possibleItems = itemsToChooseFrom
-  //   ? itemsToChooseFrom
-  //   : type === "skills"
-  //   ? skillsToChooseFrom
-  //   : type === "project categories" && categoriesToChooseFrom;
-
   // Alphabetize options by name
   possibleItems?.sort((a, b) => {
     if (a?.name?.toUpperCase() < b?.name?.toUpperCase()) {

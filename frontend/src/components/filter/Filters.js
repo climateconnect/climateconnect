@@ -279,19 +279,6 @@ export default function Filters({
             return component;
           }
         })}
-        {/* TODO(piper): confirm if needed */}
-        {/* {withApplyButton && (
-          <div className={applyButtonFixedWidth && classes.applyButtonContainer}>
-            <Button
-              color="primary"
-              onClick={handleApplyFilters}
-              variant="contained"
-              className={classes.applyButton}
-            >
-              {texts.apply}
-            </Button>
-          </div>
-        )} */}
       </div>
     </>
   );

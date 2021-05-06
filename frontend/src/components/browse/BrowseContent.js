@@ -160,7 +160,6 @@ export default function BrowseContent({
 
       const newFilters = { ...queryObject };
 
-      // TODO(piper): ensure these are being updated...
       // Apply new filters with the query object immediately:
       handleApplyNewFilters("projects", newFilters, false, state.urlEnding["projects"]);
       // handleApplyNewFilters("organizations", newFilters, false, state.urlEnding["organizations"]);

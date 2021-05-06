@@ -41,8 +41,6 @@ export default function SelectedFilters({ currentFilters, possibleFilters, handl
 
   return (
     <React.Fragment>
-      {/* TODO(piper): is this needed post merge May 1 */}
-      {/* {hasFilters && <Typography>{texts.selected_filters}</Typography>} */}
       {/* Now render a selected "Chip" component for every currently selected filter */}
       {Object.keys(currentFilters).map((key) => {
         let currentFilterValues = currentFilters[key];
