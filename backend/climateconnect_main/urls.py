@@ -87,10 +87,12 @@ urls = [
     path('api/translate_many/', translation_views.TranslateManyTextsView.as_view(), name='translate-testing-api'),
     # Organization views
     path('api/', include('organization.urls')),
-    # chat messages views
+    # Chat messages views
     path('api/', include('chat_messages.urls')),
-    #hub views
+    # Hub views
     path('api/', include('hubs.urls')),
+    # Idea views
+    path('api/', include('ideas.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG == "True":
