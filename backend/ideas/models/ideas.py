@@ -1,7 +1,12 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 from organization.models.organization import Organization
 from hubs.models.hub import Hub
+from location.models import Location
+
+
+def idea_image_path(instance, filename):
+    return "ideas/{}/image/{}".format(instance.id, filename)
 
 
 class Idea(models.Model):
@@ -24,6 +29,32 @@ class Idea(models.Model):
         blank=True
     )
 
+    image = models.ImageField(
+        help_text="Image of an idea",
+        verbose_name="Image",
+        upload_to=idea_image_path,
+        null=True,
+        blank=True
+    )
+
+    thumbnail_image = models.ImageField(
+        help_text="Image shown in idea cards",
+        verbose_name="Thumbnail image",
+        upload_to=idea_image_path,
+        null=True,
+        blank=True
+    )
+
+    user = models.ForeignKey(
+        User,
+        help_text="Points to user who created the idea",
+        verbose_name="User",
+        related_name="idea_user",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
     organization = models.ForeignKey(
         Organization,
         help_text="Points to organization the idea is under",
@@ -42,6 +73,16 @@ class Idea(models.Model):
         null=True,
         blank=True,
         on_delete=models.SET_NULL
+    )
+
+    location = models.ForeignKey(
+        Location,
+        help_text="Points to location of the idea",
+        verbose_name="Location",
+        related_name="idea_location",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
     )
 
     created_at = models.DateTimeField(
