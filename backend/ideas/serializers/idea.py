@@ -23,8 +23,10 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
             return obj.hub.thumbnail_image
     
     def get_ratings(self, obj):
-        total_rating = sum(
-            idea_rating.rating for idea_rating in obj.rating_idea.all()
-        )
+        total_average = 0
+        if obj.rating_idea.count() > 0:
+            total_average = sum(
+                idea_rating.rating for idea_rating in obj.rating_idea.all()
+            ) //  obj.rating_idea.count()
 
-        return total_rating // obj.rating_idea.count()
+        return total_average
