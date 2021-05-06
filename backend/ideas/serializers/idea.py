@@ -10,13 +10,21 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Idea
         fields = [
-            'id', 'name', 'summary', 'thumbnail_image', 'hub_image'
+            'id', 'name', 'summary', 
+            'thumbnail_image', 'hub_image', 'ratings'
         ]
 
     def get_hub_image(self, obj):
-        return obj.hub.thumbnail_image
+        if not obj.hub:
+            return None
+        elif not obj.hub.thumbnail_image:
+            return None
+        else:
+            return obj.hub.thumbnail_image
     
     def get_ratings(self, obj):
-        return sum(
-            idea_rating.rating for idea_rating in obj.rating_idea.objects.all()
+        total_rating = sum(
+            idea_rating.rating for idea_rating in obj.rating_idea.all()
         )
+
+        return total_rating // obj.rating_idea.count()
