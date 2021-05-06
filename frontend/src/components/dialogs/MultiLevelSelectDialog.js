@@ -24,11 +24,6 @@ export default function MultiLevelSelectDialog({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
 
-  // const handleClose = () => {
-  //   setSelectedItems(items ? items : []);
-  //   onClose();
-  // };
-
   const applySkills = () => {
     onSave(selectedItems);
     onClose();
