@@ -108,6 +108,14 @@ export default function getHubTexts({ hubName }) {
       en: "Click here to minimize the info about the hub",
       de: "Klicke hier, um den Info-Bereich der Hub auszublenden",
     },
+    add_a_hub_where_you_are_active: {
+      en: "Add a Sector",
+      de: "Füge einen Sektor hinzu",
+    },
+    add_hubs_in_which_your_organization_is_active: {
+      en: "Add Hubs (sectors) in which your organization is active",
+      de: "Füge Hubs (Sektoren) hinzu, in denen deine Organisation aktiv ist",
+    },
   };
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };
   if (hubName === "Food") return { ...generalHubTexts, ...getFoodHubDescription() };

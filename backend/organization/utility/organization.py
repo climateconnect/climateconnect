@@ -35,6 +35,15 @@ def get_organization_short_description(organization: Organization, language_code
     
     return organization.short_description
 
+def get_organization_about_section(organization: Organization, language_code: str) -> str:
+    if language_code != organization.language.language_code and \
+        organization.translation_org.filter(language__language_code=language_code).exists():
+        return organization.translation_org.get(
+            language__language_code=language_code
+        ).about_translation
+    
+    return organization.about
+
 def get_organizationtag_name(tag: OrganizationTags, language_code: str) -> str:
     if language_code == "en":
         return tag.name
@@ -52,5 +61,7 @@ def create_organization_translation(
     )
     if 'short_description' in texts:
         org_translation.short_description_translation = texts['short_description']
+    if 'about' in texts:
+        org_translation.about_translation = texts['about']
     
     org_translation.save()

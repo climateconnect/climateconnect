@@ -30,6 +30,12 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "Please specify your location",
       de: "Bitte gib einen Standort an",
     },
+    how_to_summarize_organization: {
+      en:
+        "Give a short summary or what your organization is doing. This text will be displayed on your organization card.",
+      de:
+        "Beschreibe kurz deine Organisation und ihre Aktivitäten. Dieser Text wird auf der Organisationskarte deiner Organisation angezeigt werden.",
+    },
     how_to_describe_organization: {
       en:
         "Describe what your organization is doing, how you work and what impact you have on climate change. Please only use english!",
@@ -96,7 +102,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     manage_organizations_members: {
       en: "Manage organization's Members",
-      de: "Verwalte Mitglieder dieser Organisation",
+      de: "Verwalte die Mitglieder dieser Organisation",
     },
     you_have_to_log_in_to_manage_organization_members: {
       en: "You have to log in to manage an organization's members.",
@@ -112,7 +118,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     manage_members_of_organization_name: {
       en: `Manage members of ${organization?.name}`,
-      de: `Verwalte Mitglieder von ${organization?.name}`,
+      de: `Verwalte die Mitglieder von ${organization?.name}`,
     },
     search_for_your_organizations_members: {
       en: "Search for your organization's members",
@@ -135,8 +141,12 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: ", um die vollständigen Informationen zu dieser Organisation zu sehen",
     },
     this_organizations_projects: {
-      en: "This organization's Projects",
-      de: "Projekte dieser Organisation",
+      en: `Projects by ${organization?.name}`,
+      de: `Projekte von ${organization?.name}`,
+    },
+    members_of_organization: {
+      en: `Members of ${organization?.name}`,
+      de: `Mitglieder von ${organization?.name}`,
     },
     this_organization_has_not_listed_any_projects_yet: {
       en: "This organization has not listed any projects yet!",
@@ -177,7 +187,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     create_an_organization: {
       en: "Create an Organization",
-      de: "Erstelle eine Organisation",
+      de: "Organisation erstellen",
     },
     organization_name: {
       en: "Organization name",
@@ -221,6 +231,34 @@ export default function getOrganizationTexts({ organization, locale }) {
           werden alle leeren Felder automatisch übersetzt.
         </>
       ),
+    },
+    about: {
+      en: `About`,
+      de: `Über ${organization?.name}`,
+    },
+    large_medium_organization_size: {
+      en: "501-1,000",
+      de: "501-1.000",
+    },
+    large_organization_size: {
+      en: "1,001-5,000",
+      de: "1.001-5.000",
+    },
+    very_large_organization_size: {
+      en: "5,001-50,000",
+      de: "5.001-50.000",
+    },
+    huge_organization_size: {
+      en: "Over 50,000",
+      de: "Über 50.000",
+    },
+    organization_size: {
+      en: "Organization size",
+      de: "Größe der Organisation",
+    },
+    people: {
+      en: "people",
+      de: "Menschen",
     },
   };
 }
