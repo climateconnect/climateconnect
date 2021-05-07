@@ -36,6 +36,7 @@ export default function EnterDetailledOrganizationInfo({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   loadingSubmit,
+  allHubs,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
@@ -76,6 +77,7 @@ export default function EnterDetailledOrganizationInfo({
         handleCancel={handleCancel}
         errorMessage={errorMessage}
         loadingSubmit={loadingSubmit}
+        allHubs={allHubs}
       />
     </div>
   );
