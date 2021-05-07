@@ -1,3 +1,4 @@
+from organization.utility.organization import is_valid_organization_size
 import logging
 
 # Backend app imports
@@ -172,12 +173,10 @@ class CreateOrganizationView(APIView):
         except ValueError as ve:
             translations = None
             logger.error("TranslationFailed: Error translating texts, {}".format(ve))
-        
         organization, created = Organization.objects.get_or_create(name=request.data['name'])
 
         if created:
             organization.url_slug = organization.name.replace(" ", "") + str(organization.id)
-
             # Add primary language to organization table. 
             source_language = Language.objects.get(language_code=request.data['source_language'])
             organization.language = source_language
@@ -209,10 +208,18 @@ class CreateOrganizationView(APIView):
                 organization.about = request.data['about']
             if 'website' in request.data:
                 organization.website = request.data['website']
-            if 'organization_size' in request.data:
+            if 'organization_size' in request.data and is_valid_organization_size(request.data['organization_size']):
                 organization.organization_size = request.data['organization_size']
+            if 'hubs' in request.data:
+                hubs = []
+                for hub_url_slug in request.data['hubs']:
+                    try:
+                        hub = Hub.objects.get(url_slug=hub_url_slug)
+                        hubs.append(hub)
+                    except Hub.DoesNotExist:
+                        logger.error("Passed hub url_slug {} does not exists")
+                organization.hubs.set(hubs)
             organization.save()
-
             # Create organization translation
             if translations:
                 for key in translations['translations']:
@@ -228,7 +235,6 @@ class CreateOrganizationView(APIView):
                             organization, language,
                             texts, is_manual_translation
                         )
-
             roles = Role.objects.all()
             for member in request.data['team_members']:
                 user_role = roles.filter(id=int(member['permission_type_id'])).first()
