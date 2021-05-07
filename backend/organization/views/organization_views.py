@@ -1,6 +1,5 @@
 from organization.utility.organization import is_valid_organization_size
 import logging
-from pprint import pprint
 
 # Backend app imports
 from climateconnect_api.models import Role, UserProfile
