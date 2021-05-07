@@ -9,7 +9,7 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo,
+  membersWithAdditionalInfo
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { parseData } from "../../public/lib/parsingOperations";
@@ -120,11 +120,15 @@ export default function Hub({
   const contentRef = useRef(null);
 
   const [initialMembers, setInitialMembers] = useState(null);
+  const [initialIdeas, setInitialIdeas] = useState(null)
   useEffect(async function () {
     if (isLocationHub) {
       setInitialMembers(
         await getMembers({ page: 1, token: token, hubUrl: hubUrl, locale: locale })
       );
+      setInitialIdeas(
+        await getIdeas({ page: 1, token: token, hubUrl: hubUrl, locale: locale })
+      )
     }
   }, []);
 
@@ -279,6 +283,8 @@ export default function Hub({
             hubProjectsButtonRef={hubProjectsButtonRef}
             nextStepTriggeredBy={nextStepTriggeredBy}
             hubName={name}
+            showIdeas
+            initialIdeas={initialIdeas}
           />
         </div>
       </div>
@@ -314,6 +320,17 @@ const getHubData = async (url_slug, locale) => {
     return null;
   }
 };
+
+async function getIdeas({page, token, urlEnding, hubUrl, locale}) {
+  return await getDataFromServer({
+    type: "ideas",
+    page: page,
+    token: token,
+    urlEnding: urlEnding,
+    hubUrl: hubUrl,
+    locale: locale,
+  });
+}
 
 async function getProjects({ page, token, urlEnding, hubUrl, locale }) {
   return await getDataFromServer({

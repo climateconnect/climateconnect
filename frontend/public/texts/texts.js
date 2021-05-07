@@ -9,6 +9,7 @@ import getFaqTexts from "./faq_texts";
 import filter_and_search_texts from "./filter_and_search_texts.json";
 import general_texts from "./general_texts.json";
 import getHubTexts from "./getHubTexts";
+import idea_texts from "./idea_texts.json";
 import getLandingPageTexts from "./landing_page_texts";
 import navigation_texts from "./navigation_texts.json";
 import notification_texts from "./notification_texts.json";
@@ -43,6 +44,7 @@ export default function getTexts({
     filter_and_search: filter_and_search_texts,
     general: general_texts,
     hub: getHubTexts({ hubName: hubName }),
+    idea: idea_texts,
     landing_page: getLandingPageTexts({ classes: classes, isNarrowScreen: isNarrowScreen }),
     navigation: navigation_texts,
     notification: notification_texts,

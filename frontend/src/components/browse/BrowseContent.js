@@ -8,6 +8,7 @@ import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
 import FilterContent from "../filter/FilterContent";
 import LoadingSpinner from "../general/LoadingSpinner";
+import IdeaPreviews from "../ideas/IdeaPreviews";
 import FilterSection from "../indexPage/FilterSection";
 import OrganizationPreviews from "../organization/OrganizationPreviews";
 import ProfilePreviews from "../profile/ProfilePreviews";
@@ -36,6 +37,7 @@ export default function BrowseContent({
   initialMembers,
   initialOrganizations,
   initialProjects,
+  initialIdeas,
   applyNewFilters,
   filterChoices,
   loadMoreData,
@@ -49,6 +51,7 @@ export default function BrowseContent({
   hubProjectsButtonRef,
   nextStepTriggeredBy,
   hubName,
+  showIdeas,
 }) {
   const initialState = {
     items: {
@@ -84,12 +87,16 @@ export default function BrowseContent({
   const TYPES_BY_TAB_VALUE = hideMembers
     ? ["projects", "organizations"]
     : ["projects", "organizations", "members"];
+  if(showIdeas){
+    TYPES_BY_TAB_VALUE.push("ideas")
+  }
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const type_names = {
     projects: texts.projects,
     organizations: texts.organizations,
     members: texts.members,
+    ideas: texts.ideas
   };
   const [hash, setHash] = useState(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
@@ -280,16 +287,16 @@ export default function BrowseContent({
 
         <>
           <TabContent value={tabValue} index={0}>
-            {filtersExpanded && tabValue === 0 && (
+            {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("projects") && (
               <FilterContent
                 className={classes.tabContent}
-                type={TYPES_BY_TAB_VALUE[0]}
+                type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")]}
                 applyFilters={handleApplyNewFilters}
                 filtersExpanded={filtersExpanded}
                 errorMessage={errorMessage}
                 unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[0], filterChoices)}
-                locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[0]]}
+                possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")], filterChoices)}
+                locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")]]}
                 locationOptionsOpen={locationOptionsOpen}
                 handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
               />
@@ -315,17 +322,17 @@ export default function BrowseContent({
               <NoItemsFound type="projects" />
             )}
           </TabContent>
-          <TabContent value={tabValue} index={1} className={classes.tabContent}>
-            {filtersExpanded && tabValue === 1 && (
+          <TabContent value={tabValue} index={TYPES_BY_TAB_VALUE.indexOf("organizations")} className={classes.tabContent}>
+            {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("organizations") && (
               <FilterContent
                 className={classes.tabContent}
-                type={TYPES_BY_TAB_VALUE[1]}
+                type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")]}
                 applyFilters={handleApplyNewFilters}
                 errorMessage={errorMessage}
                 filtersExpanded={filtersExpanded}
                 unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[1], filterChoices)}
-                locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[1]]}
+                possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")], filterChoices)}
+                locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")]]}
                 locationOptionsOpen={locationOptionsOpen}
                 handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
               />
@@ -353,17 +360,17 @@ export default function BrowseContent({
           </TabContent>
 
           {!hideMembers && (
-            <TabContent value={tabValue} index={2} className={classes.tabContent}>
-              {filtersExpanded && tabValue === 2 && (
+            <TabContent value={tabValue} index={TYPES_BY_TAB_VALUE.indexOf("members")} className={classes.tabContent}>
+              {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("members") && (
                 <FilterContent
                   className={classes.tabContent}
-                  type={TYPES_BY_TAB_VALUE[2]}
+                  type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")]}
                   applyFilters={handleApplyNewFilters}
                   filtersExpanded={filtersExpanded}
                   errorMessage={errorMessage}
                   unexpandFilters={unexpandFilters}
-                  possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[2], filterChoices)}
-                  locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[2]]}
+                  possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")], filterChoices)}
+                  locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")]]}
                   locationOptionsOpen={locationOptionsOpen}
                   handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 />
@@ -390,6 +397,18 @@ export default function BrowseContent({
               )}
             </TabContent>
           )}
+          {
+            //IdeaPreviews is currently only a stub that just shows the "create idea" button
+            showIdeas && (
+              isFiltering ? (
+                <LoadingSpinner />
+              ) : state?.items?.members?.length ? (
+                <IdeaPreviews/>
+              ) : (
+                <NoItemsFound type="members" />
+              )
+            )
+          }
         </>
       </Container>
       <Tutorial
