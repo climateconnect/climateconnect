@@ -66,6 +66,8 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       location: {},
       short_description: "",
       website: "",
+      about: "",
+      organization_size: "",
     },
     types: [],
   });
@@ -394,6 +396,8 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
     location: o.info.location,
     website: o.info.website,
     short_description: o.info.short_description,
+    organization_size: o.info.organization_size,
+    about: o.info.about,
     organization_tags: o.types,
     translations: {
       ...translations,

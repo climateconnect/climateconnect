@@ -240,7 +240,7 @@ const InputShortDescription = ({ project, handleChangeProject, texts }) => {
       value={project.short_description}
       type="text"
       onChange={(event) =>
-        handleChangeProject(event.target.value.substring(0, 240), "short_description")
+        handleChangeProject(event.target.value.substring(0, 280), "short_description")
       }
       required
       helperText={texts.briefly_summarise_what_you_are_doing_up_to_240_characters}

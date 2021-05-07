@@ -12,6 +12,8 @@ def translate_organization(organization: Organization) -> None:
         texts['school'] = organization.school
     if organization.organ:
         texts['organ'] = organization.organ
+    if organization.about:
+        texts['about'] = organization.about
     
     try:
         translations = get_translations(texts, {}, 'en')
@@ -32,6 +34,8 @@ def translate_organization(organization: Organization) -> None:
                 org_translation.organ_translation = texts['organ']
             if 'school' in texts:
                 org_translation.school_translation = texts['school']
+            if 'about' in texts:
+                org_translation.about = texts['about']
             org_translation.save()
             print("Organization {} translation successful in language {}".format(
                 organization.name, language.name

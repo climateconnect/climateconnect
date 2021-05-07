@@ -35,6 +35,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    [theme.breakpoints.down("sm")]: {
+      flexDirection: "column",
+    },
   },
   centerText: {
     display: "flex",
@@ -46,9 +49,18 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "auto",
     display: "flex",
     alignItems: "center",
+    [theme.breakpoints.down("sm")]: {
+      marginLeft: 0,
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(2),
+    },
   },
   leftBox: {
     marginRight: "auto",
+    [theme.breakpoints.down("sm")]: {
+      marginRight: 0,
+      marginBottom: theme.spacing(1),
+    },
   },
   socialMediaLink: {
     height: 20,

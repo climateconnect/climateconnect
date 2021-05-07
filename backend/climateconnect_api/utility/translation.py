@@ -138,7 +138,7 @@ def edit_translations(
     languages_to_translate_to = Language.objects.filter(~Q(id=item.language.id))
     for language in languages_to_translate_to:
         language_code = language.language_code
-        if language_code in data['translations']:
+        if 'translations' in data and language_code in data['translations']:
             passed_lang_translation = data['translations'][language_code]
         else:
             passed_lang_translation = {}

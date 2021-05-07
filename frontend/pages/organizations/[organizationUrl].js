@@ -40,6 +40,20 @@ const useStyles = makeStyles((theme) => ({
   divider: {
     marginTop: theme.spacing(1),
   },
+  headline: {
+    fontSize: 23,
+    fontWeight: "bold",
+    marginBottom: theme.spacing(1),
+  },
+  sectionHeadlineWithButtonContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: theme.spacing(3),
+  },
+  no_content_yet: {
+    marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(5),
+  },
 }));
 
 export async function getServerSideProps(ctx) {
@@ -63,7 +77,7 @@ export async function getServerSideProps(ctx) {
 
 export default function OrganizationPage({ organization, projects, members, organizationTypes }) {
   const { user, locale } = useContext(UserContext);
-  const infoMetadata = getOrganizationInfoMetadata();
+  const infoMetadata = getOrganizationInfoMetadata(locale, organization);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   return (
     <WideLayout
@@ -160,8 +174,10 @@ function OrganizationLayout({
             {texts.send_message}
           </Button>
         )}
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
-          {texts.this_organizations_projects}:{" "}
+        <div className={classes.sectionHeadlineWithButtonContainer}>
+          <Typography color="primary" className={classes.headline} component="h2">
+            {texts.this_organizations_projects}
+          </Typography>
           <Button variant="contained" color="primary" href={getLocalePrefix(locale) + "/share"}>
             {texts.share_a_project}
           </Button>
@@ -169,27 +185,27 @@ function OrganizationLayout({
         {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
         ) : (
-          <Typography>{texts.this_organization_has_not_listed_any_projects_yet}</Typography>
+          <Typography className={classes.no_content_yet}>
+            {texts.this_organization_has_not_listed_any_projects_yet}
+          </Typography>
         )}
       </Container>
       <Divider className={classes.divider} />
       <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
+        <div className={classes.sectionHeadlineWithButtonContainer}>
+          <Typography color="primary" className={classes.headline} component="h2">
+            {texts.members_of_organization}
+          </Typography>
           {canEdit && (
-            <div>
-              <Button
-                className={classes.editButton}
-                variant="contained"
-                color="primary"
-                href={
-                  getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
-                }
-              >
-                {texts.manage_members}
-              </Button>
-            </div>
+            <Button
+              className={classes.editButton}
+              variant="contained"
+              color="primary"
+              href={getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug}
+            >
+              {texts.manage_members}
+            </Button>
           )}
-          {texts.members}:
         </div>
         {members && members.length ? (
           <ProfilePreviews profiles={membersWithAdditionalInfo} showAdditionalInfo />

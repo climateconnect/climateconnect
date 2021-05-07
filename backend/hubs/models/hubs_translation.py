@@ -75,7 +75,7 @@ class HubStatTranslation(models.Model):
         HubStat,
         related_name="translation_hub_stat",
         help_text="Points to hub stat table",
-        verbose_name="Hub stat translation",
+        verbose_name="Hub stat",
         on_delete=models.CASCADE
     )
 
