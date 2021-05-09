@@ -16,17 +16,18 @@ class Idea(models.Model):
         max_length=256
     )
 
-    summary = models.CharField(
+    url_slug = models.CharField(
+        help_text="URL slug for an idea",
+        verbose_name="URL Slug",
+        max_length=1024,
+        null=True,
+        blank=True
+    )
+
+    short_description = models.CharField(
         help_text="Summary of an idea",
         verbose_name="Summary",
         max_length=1024
-    )
-
-    description = models.TextField(
-        help_text="Detailed description of an idea",
-        verbose_name="Description",
-        null=True,
-        blank=True
     )
 
     image = models.ImageField(

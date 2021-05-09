@@ -10,7 +10,7 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Idea
         fields = [
-            'id', 'name', 'summary', 
+            'id', 'name', 'short_description', 
             'thumbnail_image', 'hub_image', 'ratings'
         ]
 

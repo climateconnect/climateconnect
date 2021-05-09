@@ -21,7 +21,7 @@ class IdeaTranslation(models.Model):
         on_delete=models.CASCADE
     )
 
-    name = models.CharField(
+    name_translation = models.CharField(
         help_text="Translation of idea's name",
         verbose_name="Name",
         max_length=350,
@@ -29,17 +29,10 @@ class IdeaTranslation(models.Model):
         blank=True
     )
 
-    summary = models.CharField(
+    short_description_translation = models.CharField(
         help_text="Translation of idea's summary",
         verbose_name="Summary",
         max_length=1200,
-        null=True,
-        blank=True
-    )
-
-    description = models.TextField(
-        help_text="Translation of idea's description",
-        verbose_name="Description",
         null=True,
         blank=True
     )
