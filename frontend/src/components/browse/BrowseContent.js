@@ -51,12 +51,13 @@ export default function BrowseContent({
   hubProjectsButtonRef,
   nextStepTriggeredBy,
   hubName,
-  showIdeas,
+  showIdeas
 }) {
   const initialState = {
     items: {
       projects: initialProjects ? [...initialProjects.projects] : [],
       organizations: initialOrganizations ? [...initialOrganizations.organizations] : [],
+      ideas: initialIdeas ? [...initialIdeas.ideas]: [],
       members:
         initialMembers && !hideMembers ? membersWithAdditionalInfo(initialMembers.members) : [],
     },
@@ -64,6 +65,7 @@ export default function BrowseContent({
       projects: !!initialProjects && initialProjects.hasMore,
       organizations: !!initialOrganizations && initialOrganizations.hasMore,
       members: !!initialMembers && initialMembers.hasMore,
+      ideas: !!initialIdeas && initialIdeas.hasMore
     },
     nextPages: {
       projects: 2,
@@ -87,8 +89,8 @@ export default function BrowseContent({
   const TYPES_BY_TAB_VALUE = hideMembers
     ? ["projects", "organizations"]
     : ["projects", "organizations", "members"];
-  if(showIdeas){
-    TYPES_BY_TAB_VALUE.push("ideas")
+  if(showIdeas) {
+    TYPES_BY_TAB_VALUE.push("ideas");
   }
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
@@ -145,6 +147,10 @@ export default function BrowseContent({
   const loadMoreMembers = async () => {
     await handleLoadMoreData("members");
   };
+
+  const loadMoreIdeas = async () => {
+    await handleLoadMoreData("ideas");
+  }
 
   const handleLoadMoreData = async (type) => {
     try {
@@ -399,15 +405,18 @@ export default function BrowseContent({
           )}
           {
             //IdeaPreviews is currently only a stub that just shows the "create idea" button
-            showIdeas && (
               isFiltering ? (
                 <LoadingSpinner />
-              ) : state?.items?.members?.length ? (
-                <IdeaPreviews/>
+              ) :  state?.items?.ideas?.length ? (
+                <IdeaPreviews
+                  hasMore={state.hasMore.ideas}
+                  loadFunc={loadMoreIdeas}
+                  parentHandlesGridItems
+                  ideas={state.items.ideas}
+                />
               ) : (
-                <NoItemsFound type="members" />
+                <NoItemsFound type="ideas" />
               )
-            )
           }
         </>
       </Container>

@@ -2,6 +2,7 @@ export function parseData({ type, data }) {
   if (type === "projects") return parseProjects(data);
   if (type === "organizations") return parseOrganizations(data);
   if (type === "members") return parseMembers(data);
+  if (type === "ideas") return parseIdeas(data);
 }
 
 const parseProjects = (projects) => {
@@ -14,6 +15,12 @@ const parseProjects = (projects) => {
 const parseMembers = (members) => {
   return members;
 };
+
+const parseIdeas = (ideas) => {
+  return ideas.map((idea) => ({
+    ...idea
+  }));
+}
 
 const parseOrganizations = (organizations) => {
   return organizations.map((organization) => ({

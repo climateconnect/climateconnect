@@ -52,6 +52,7 @@ export async function getServerSideProps(ctx) {
     hubData,
     initialProjects,
     initialOrganizations,
+    initialIdeas,
     project_categories,
     organization_types,
     skills,
@@ -60,6 +61,7 @@ export async function getServerSideProps(ctx) {
     getHubData(hubUrl, ctx.locale),
     getProjects({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
     getOrganizations({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
+    getIdeas({page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale}),
     getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
@@ -79,6 +81,7 @@ export async function getServerSideProps(ctx) {
       image_attribution: hubData.image_attribution,
       initialProjects: initialProjects,
       initialOrganizations: initialOrganizations,
+      initialIdeas: initialIdeas,
       filterChoices: {
         project_categories: project_categories,
         organization_types: organization_types,
@@ -99,6 +102,7 @@ export default function Hub({
   stats,
   initialProjects,
   initialOrganizations,
+  initialIdeas,
   filterChoices,
   subHeadline,
   image_attribution,
@@ -120,15 +124,11 @@ export default function Hub({
   const contentRef = useRef(null);
 
   const [initialMembers, setInitialMembers] = useState(null);
-  const [initialIdeas, setInitialIdeas] = useState(null)
   useEffect(async function () {
     if (isLocationHub) {
       setInitialMembers(
         await getMembers({ page: 1, token: token, hubUrl: hubUrl, locale: locale })
       );
-      setInitialIdeas(
-        await getIdeas({ page: 1, token: token, hubUrl: hubUrl, locale: locale })
-      )
     }
   }, []);
 
@@ -283,8 +283,8 @@ export default function Hub({
             hubProjectsButtonRef={hubProjectsButtonRef}
             nextStepTriggeredBy={nextStepTriggeredBy}
             hubName={name}
-            showIdeas
             initialIdeas={initialIdeas}
+            showIdeas={true}
           />
         </div>
       </div>

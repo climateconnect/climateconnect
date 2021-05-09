@@ -21,6 +21,7 @@ export default function IdeaPreviews({
   ideas
 }) {
   const classes = useStyles()
+  console.log(ideas);
   return (
     <>
       <InfiniteScroll
@@ -44,6 +45,7 @@ export default function IdeaPreviews({
 }
 
 function GridItem({ idea, isCreateCard }) {
+  console.log(idea);
   return (
     <Grid key={idea ? idea.url_slug : "createCard"} item xs={12} sm={6} md={3} lg={3} component="li">
       <IdeaPreview idea={idea} isCreateCard={isCreateCard} />

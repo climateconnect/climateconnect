@@ -86,7 +86,6 @@ function CreateCardContent() {
   const { locale } = useContext(UserContext)
   const texts = getTexts({page: "idea", locale: locale})
   const classes = useStyles()
-  console.log(texts)
   return (
     <div>
       <Typography color="primary" component="h2" className={classes.createCardHeadline}>
