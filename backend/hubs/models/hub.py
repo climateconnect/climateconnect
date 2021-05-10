@@ -5,6 +5,9 @@ from django.db import models
 def hub_image_path(instance, filename):
     return "hubs/{}/{}".format(instance.id, filename)
 
+def hub_logo_path(instance, filename):
+    return "hubs/{}/logo/{}".format(instance.id, filename)
+
 
 class HubStat(models.Model):
     name = models.CharField(
@@ -173,6 +176,14 @@ class Hub(models.Model):
         related_name="hub_location",
         help_text="For city hubs: for which locations is the CityHub",
         verbose_name="Location",
+        blank=True
+    )
+
+    logo = models.ImageField(
+        help_text="Logo image for ideasboard, projects etc",
+        verbose_name="Logo",
+        upload_to=hub_image_path,
+        null=True,
         blank=True
     )
 

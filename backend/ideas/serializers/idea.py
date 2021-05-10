@@ -10,17 +10,17 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Idea
         fields = [
-            'id', 'name', 'short_description', 
+            'id', 'name', 'url_slug', 'short_description', 
             'thumbnail_image', 'hub_image', 'ratings'
         ]
 
     def get_hub_image(self, obj):
         if not obj.hub:
             return None
-        elif not obj.hub.thumbnail_image:
+        elif not obj.hub.logo:
             return None
         else:
-            return obj.hub.thumbnail_image
+            return obj.hub.logo
     
     def get_ratings(self, obj):
         total_average = 0
