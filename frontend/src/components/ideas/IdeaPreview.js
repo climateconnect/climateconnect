@@ -58,7 +58,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 //This component is currently only capable of displaying the "add new idea" card and not a real idea preview card
-export default function IdeaPreview({isCreateCard}) {
+export default function IdeaPreview({idea, isCreateCard}) {
   const classes = useStyles({borderColor: isCreateCard && theme.palette.primary.light})
   const handleCardClick = (e) => {
     e.preventDefault()
@@ -72,30 +72,23 @@ export default function IdeaPreview({isCreateCard}) {
         className={`${classes.root} ${isCreateCard}`}
         variant="outlined"
       >
-        {
-          isCreateCard && (
-            <CreateCardContent />
-          )
-        }
+        <CreateCardContent idea={idea}/>
       </Card>
     </Link>
   )
 }
 
-function CreateCardContent() {
+function CreateCardContent(idea) {
   const { locale } = useContext(UserContext)
-  const texts = getTexts({page: "idea", locale: locale})
   const classes = useStyles()
+  console.log(idea)
   return (
     <div>
       <Typography color="primary" component="h2" className={classes.createCardHeadline}>
-        {texts.share_your_idea_and_find_the_right_collaborators}
+        {idea.idea.name}
       </Typography>
       <div className={classes.plusIconContainer}>
-        <AddIcon className={classes.addIcon}/>
-      </div>
-      <div className={classes.shareIdeaBottomSection}>
-        <EmojiObjectsIcon className={classes.ideaIcon}/>{texts.share_idea}
+        <Typography color="primary" component="h4">{idea.idea.short_description}</Typography>
       </div>
     </div>
   )

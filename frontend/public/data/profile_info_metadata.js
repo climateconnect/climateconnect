@@ -23,7 +23,7 @@ export default function getProfileInfoMetadata(locale) {
       type: "bio",
       key: "bio",
       missingMessage: texts.bio_user_profile_missing_message,
-      maxLength: 240,
+      maxLength: 280,
       weight: 1,
     },
     website: {

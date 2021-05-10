@@ -1,3 +1,4 @@
+from climateconnect_api.models.language import Language
 from location.models import Location
 from organization.models.tags import ProjectTags
 from django.db import models
@@ -55,6 +56,12 @@ class HubStat(models.Model):
         null=True,
         blank=True
     ) 
+
+    language = models.ForeignKey(
+        Language, related_name="hub_stat_language",
+        help_text="The original language of the hub stat", verbose_name="Language",
+        on_delete=models.CASCADE, null=True, blank=True
+    )
 
     class Meta:
         app_label = "hubs"
@@ -128,6 +135,14 @@ class Hub(models.Model):
         upload_to=hub_image_path
     )
 
+    icon = models.FileField(
+        help_text="The icon representing the hub in the small hub preview cards",
+        verbose_name="Icon",
+        null=True,
+        blank=True,
+        upload_to=hub_image_path
+    )
+
     thumbnail_image = models.ImageField(
         help_text="Image to show on hub card",
         verbose_name="Thumbnail image",
@@ -185,6 +200,12 @@ class Hub(models.Model):
         upload_to=hub_image_path,
         null=True,
         blank=True
+    )
+
+    language = models.ForeignKey(
+        Language, related_name="hub_language",
+        help_text="The original language of the hub", verbose_name="Language",
+        on_delete=models.CASCADE, null=True, blank=True
     )
 
     class Meta:

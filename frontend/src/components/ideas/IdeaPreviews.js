@@ -1,4 +1,5 @@
 import { Grid, makeStyles } from "@material-ui/core"
+import { Textsms } from "@material-ui/icons"
 import React from "react"
 import InfiniteScroll from "react-infinite-scroller"
 import LoadingSpinner from "../general/LoadingSpinner"
@@ -13,6 +14,11 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const toIdeaPreviews = (ideas) =>
+    ideas.map((idea) => (
+      <GridItem key={idea.url_slug} idea={idea} />
+    ));
+
 export default function IdeaPreviews({
   hasMore, 
   isFetchingMore, 
@@ -21,6 +27,7 @@ export default function IdeaPreviews({
   ideas
 }) {
   const classes = useStyles()
+  const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas));
   console.log(ideas);
   return (
     <>
@@ -37,7 +44,12 @@ export default function IdeaPreviews({
         pageStart={1}
         spacing={2}
       >
-        <GridItem isCreateCard/>
+        {parentHandlesGridItems
+          ? ideas && ideas.length > 0
+            ? toIdeaPreviews(ideas)
+            : 'test'
+          : gridItems
+        }
         {isFetchingMore && <LoadingSpinner isLoading key="idea-previews-spinner" />}
       </InfiniteScroll>
     </>

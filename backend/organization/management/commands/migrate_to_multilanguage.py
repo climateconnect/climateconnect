@@ -40,7 +40,7 @@ class Command(BaseCommand):
         # Make sure all required languages exist. If they don't, then create them
         for language in required_languages:
             if(not Language.objects.filter(language_code=language['language_code']).exists()):
-                Language.objects.create(language)
+                Language.objects.create(**language)
         
         english = Language.objects.get(language_code="en")
 

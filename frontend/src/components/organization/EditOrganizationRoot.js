@@ -32,16 +32,21 @@ export default function EditOrganizationRoot({
   handleSetLocationOptionsOpen,
   errorMessage,
   initialTranslations,
+  allHubs,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
   const token = cookies.get("token");
   const { locale, locales } = useContext(UserContext);
   const STEPS = ["edit_organization", "edit_translations"];
-  const texts = getTexts({ page: "organization", locale: locale });
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
 
   const [editedOrganization, setEditedOrganization] = useState({ ...organization });
+  const texts = getTexts({
+    page: "organization",
+    locale: locale,
+    organization: editedOrganization,
+  });
   const [step, setStep] = useState(STEPS[0]);
   const [translations, setTranslations] = useState(
     initialTranslations ? getTranslationsFromObject(initialTranslations, "organization") : {}
@@ -164,6 +169,7 @@ export default function EditOrganizationRoot({
             handleCancel={handleCancel}
             errorMessage={errorMessage}
             onClickCheckTranslations={onClickCheckTranslations}
+            allHubs={allHubs}
           />
         ) : (
           <>
@@ -178,6 +184,7 @@ export default function EditOrganizationRoot({
               handleChangeTranslationContent={handleChangeTranslations}
               translations={translations}
               targetLanguage={targetLanguage}
+              organization={organization}
               pageName="organization"
               introTextKey="translate_organization_intro"
               submitButtonText={texts.save}
@@ -186,6 +193,11 @@ export default function EditOrganizationRoot({
                   textKey: "info.short_description",
                   rows: 5,
                   headlineTextKey: "short_description",
+                },
+                {
+                  textKey: "info.about",
+                  rows: 9,
+                  headlineTextKey: "about",
                 },
               ]}
               changeTranslationLanguages={changeTranslationLanguages}
@@ -210,6 +222,7 @@ const parseForRequest = async (org) => {
     parsedOrg.background_image = await blobFromObjectUrl(org.background_image);
   if (org.thumbnail_image) parsedOrg.thumbnail_image = await blobFromObjectUrl(org.thumbnail_image);
   if (org.image) parsedOrg.image = await blobFromObjectUrl(org.image);
+  if (org.hubs) parsedOrg.hubs = org.hubs.map((h) => h.url_slug);
   return parsedOrg;
 };
 
