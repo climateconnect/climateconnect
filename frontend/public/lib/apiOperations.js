@@ -81,3 +81,22 @@ export function getLocalePrefix(locale) {
   if (locale === "en") return "";
   else return `/${locale}`;
 }
+
+export async function getRolesOptions (token, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/roles/",
+      token: token,
+      locale: locale,
+    });
+    if (resp.data.results.length === 0) return null;
+    else {
+      return resp.data.results;
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}

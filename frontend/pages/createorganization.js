@@ -2,6 +2,7 @@ import { makeStyles, Typography } from "@material-ui/core";
 import Cookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext, useRef, useState } from "react";
+import ROLE_TYPES from "../public/data/role_types";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getAllHubs } from "../public/lib/hubOperations";
 import { blobFromObjectUrl } from "../public/lib/imageOperations";
@@ -398,7 +399,7 @@ async function getTags(token, locale) {
 const parseOrganizationForRequest = async (o, user, rolesOptions, translations, sourceLanguage) => {
   const organization = {
     team_members: [
-      { user_id: user.id, permission_type_id: rolesOptions.find((r) => r.name === "Creator").id },
+      { user_id: user.id, permission_type_id: rolesOptions.find((r) => r.role_type === ROLE_TYPES.all_type).id },
     ],
     name: o.name,
     background_image: o.background_image,

@@ -24,7 +24,9 @@ export async function getServerSideProps(ctx) {
   ]);
   if (!chat) {
     return {
-      chat_id: null,
+      props: {
+        chat_id: null,
+      }
     };
   }
   return {
@@ -268,7 +270,7 @@ export default function Chat({
 const parseParticipantsWithRole = (participants, rolesOptions) => {
   return participants.map((p) => ({
     ...p,
-    role: rolesOptions.find((o) => o.name === p.role),
+    role: rolesOptions.find((o) => o.role_type === p.role.role_type),
   }));
 };
 

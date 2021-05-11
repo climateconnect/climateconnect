@@ -2,8 +2,9 @@ import { Button, makeStyles } from "@material-ui/core";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import SaveIcon from "@material-ui/icons/Save";
 import React, { useContext } from "react";
+import ROLE_TYPES from "../../../../public/data/role_types";
 import { apiRequest } from "../../../../public/lib/apiOperations";
-import { getAllChangedMembers } from "../../../../public/lib/manageMembers";
+import { getAllChangedMembers, hasGreaterRole } from "../../../../public/lib/manageMembers";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import ManageMembers from "../../manageMembers/ManageMembers";
@@ -45,13 +46,24 @@ export default function ChatMemberManagementOverlay({
     curUserRole: user_role,
   });
   const canEdit = (p) => {
-    const participant_role = p.role.name ? p.role : rolesOptions.find((o) => o.name === p.role);
-    return p.id === user.id || state.curUserRole.role_type > participant_role.role_type;
+    const participant_role = p.role.name ? p.role : rolesOptions.find((o) => o.role_type === p.role.role_type);
+    return p.id === user.id || hasGreaterRole(state.curUserRole.role_type, participant_role.role_type);
   };
 
-  const handleSetCurParticipants = (newValue) => setState({ ...state, curParticipants: newValue });
-  const handleSetCurUserRole = (newValue) => setState({ ...state, curUserRole: newValue });
-
+  const handleSetCurParticipants = (newValue, newUserRoleValue) => {
+    if(newUserRoleValue)
+      setState({
+        ...state,
+        curParticipants: newValue,
+        curUserRole: newUserRoleValue
+      })
+    else
+      setState({ ...state, curParticipants: newValue });
+  }
+  const handleSetCurUserRole = (newValue) => {
+    setState({ ...state, curUserRole: newValue });
+  }
+  console.log(state)
   const handleSubmit = (event) => {
     event.preventDefault();
     onSubmit()
@@ -151,11 +163,11 @@ export default function ChatMemberManagementOverlay({
   };
 
   const verifyInput = () => {
-    if (state.curParticipants.filter((cm) => cm.role.name === "Creator").length !== 1) {
+    if (state.curParticipants.filter((cm) => cm.role.role_type === ROLE_TYPES.all_type).length !== 1) {
       alert(texts.there_must_be_exactly_one_creator_of_an_organization);
       return false;
     }
-    if (!participants.filter((m) => m.role.name === "Creator").length === 1) {
+    if (!participants.filter((m) => m.role.role_type === ROLE_TYPES.all_type).length === 1) {
       alert(texts.error + ": " + texts.there_wasnt_a_creator);
       return false;
     }

@@ -2,11 +2,12 @@ import { Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
+import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
 import {
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions,
+  getStatusOptions
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -121,8 +122,8 @@ export default function EditProjectPage({
       </WideLayout>
     );
   else if (
-    members.find((m) => m.user && m.user.id === user.id).role.name != "Creator" &&
-    members.find((m) => m.user && m.user.id === user.id).role.name != "Administrator"
+    members.find((m) => m.user && m.user.id === user.id).role.role_type != ROLE_TYPES.all_type &&
+    members.find((m) => m.user && m.user.id === user.id).role.role_type != ROLE_TYPES.read_write_type
   )
     return (
       <WideLayout title={texts.no_permissions_to_edit_project} hideHeadline={true}>

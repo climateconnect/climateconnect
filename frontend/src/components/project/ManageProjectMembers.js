@@ -1,7 +1,9 @@
 import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
+import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
+import { hasGreaterRole } from "../../../public/lib/manageMembers";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ManageMembers from "../manageMembers/ManageMembers";
@@ -40,7 +42,11 @@ export default function ManageProjectMembers({
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [user_role, setUserRole] = React.useState(members.find((m) => m.id === user.id).role);
   if (!user_role) setUserRole(members.find((m) => m.id === user.id).role);
-
+  const handleSetCurrentMembers = (newValue, newUserRoleValue) => {
+    setCurrentMembers(newValue)
+    if(newUserRoleValue)
+      setUserRole(newUserRoleValue)
+  }
   const handleSubmit = (event) => {
     event.preventDefault();
     onSubmit()
@@ -76,8 +82,8 @@ export default function ManageProjectMembers({
   };
 
   const getAllChangedMembers = () => {
-    const oldCreatorId = members.filter((m) => m.role.name === "Creator")[0].id;
-    const newCreatorId = currentMembers.filter((m) => m.role.name === "Creator")[0].id;
+    const oldCreatorId = members.filter((m) => m.role.role_type === ROLE_TYPES.all_type)[0].id;
+    const newCreatorId = currentMembers.filter((m) => m.role.role_type === ROLE_TYPES.all_type)[0].id;
     const deletedMembers = members.filter((m) => !currentMembers.find((cm) => cm.id === m.id));
     const creatorChange =
       oldCreatorId != newCreatorId ? currentMembers.filter((cm) => cm.id === newCreatorId) : [];
@@ -108,11 +114,11 @@ export default function ManageProjectMembers({
   };
 
   const verifyInput = () => {
-    if (currentMembers.filter((cm) => cm.role.name === "Creator").length !== 1) {
+    if (currentMembers.filter((cm) => cm.role.role_type === ROLE_TYPES.all_type).length !== 1) {
       alert(texts.there_must_be_exactly_one_creator_of_a_project);
       return false;
     }
-    if (!members.filter((m) => m.role.name === "Creator").length === 1) {
+    if (!members.filter((m) => m.role.role_type === ROLE_TYPES.all_type).length === 1) {
       alert(texts.error_no_creator);
       return false;
     }
@@ -120,7 +126,7 @@ export default function ManageProjectMembers({
   };
 
   const canEdit = (member) => {
-    return member.id === user.id || user_role.role_type > member.role.role_type;
+    return member.id === user.id || hasGreaterRole(user_role.role_type, member.role.role_type);
   };
 
   const deleteMember = (m, locale) => {
@@ -174,7 +180,7 @@ export default function ManageProjectMembers({
         <ManageMembers
           currentMembers={currentMembers}
           rolesOptions={rolesOptions}
-          setCurrentMembers={setCurrentMembers}
+          setCurrentMembers={handleSetCurrentMembers}
           availabilityOptions={availabilityOptions}
           user={user}
           canEdit={canEdit}

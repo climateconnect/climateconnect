@@ -1,3 +1,4 @@
+from climateconnect_api.serializers.role import RoleSerializer
 from rest_framework import serializers
 from chat_messages.models import Message, MessageParticipants, MessageReceiver, Participant
 from climateconnect_api.models import UserProfile, Role
@@ -82,7 +83,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
         return UserProfileStubSerializer(user_profile).data
 
     def get_role(self, obj):
-        return obj.role.name
+        return RoleSerializer(obj.role).data
     
     def get_participant_id(self, obj):
         return obj.id

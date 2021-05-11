@@ -72,24 +72,24 @@ export default function getProfileTexts({ profile, locale }) {
         "Wähle aus, wie viele Stunden pro Woche der/die Benutzer*in im Durchschnitt zu diesem Projekt beiträgt.",
     },
     do_you_really_want_to_lose_creators_permissions: {
-      en: "Do you really want to lose Creator permissions?",
-      de: "Willst du wirklich deine Erstellerrechte verlieren?",
+      en: "Do you really want to lose Super Admin permissions?",
+      de: "Willst du wirklich deine Super-Admin-Rechte verlieren?",
     },
     there_is_always_one_org_member_with_creator_privileges: {
-      en: "There is always exactly one organization member with Creator privileges.",
-      de: "Es gibt immer genau ein Organisationsmitglied mit Erstellerrechten.",
+      en: "There is always exactly one organization member with Super Admin privileges.",
+      de: "Es gibt immer genau ein Organisationsmitglied mit Super-Admin-Rechten.",
     },
     there_is_always_one_project_member_with_creator_privileges: {
-      en: "There is always exactly one project member with Creator privileges.",
-      de: "Es gibt immer genau ein Projektmitglied mit Erstellerrechten.",
+      en: "There is always exactly one project member with Super Admin privileges.",
+      de: "Es gibt immer genau ein Projektmitglied mit Super-Admin-Rechten.",
     },
     creator_can_add_remove_and_edit_admins: {
-      en: "The Creator can add, remove and edit Administrators.",
-      de: "Der Ersteller kann Admins hinzufügen, entfernen und bearbeiten.",
+      en: "The Super Admin can add, remove and edit Administrators.",
+      de: "Der Super Admin kann Admins hinzufügen, entfernen und bearbeiten.",
     },
     if_you_make_person_admin_you_will_lose_privileges: {
-      en: `If you make ${profile?.name} the Creator you will lose your Creator permissions.`,
-      de: `Wenn du ${profile?.name} zum/zur Ersteller*in machst, verlierst du deine Erstellerrechte`,
+      en: `If you make ${profile?.name} the Super Admin you will lose your Super Admin permissions.`,
+      de: `Wenn du ${profile?.name} zum/zur Super Admin machst, verlierst du deine Super-Admin-Rechte`,
     },
     do_you_really_want_to_do_this: {
       en: "Do you really want to do this?",

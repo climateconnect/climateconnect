@@ -5,6 +5,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import humanizeDuration from "humanize-duration";
 import React, { useContext } from "react";
 import TimeAgo from "react-timeago";
+import ROLE_TYPES from "../../../public/data/role_types";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
@@ -139,7 +140,6 @@ export default function ProjectContent({
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
       : null;
-  console.log(locale);
   return (
     <div>
       <div className={classes.contentBlock}>
@@ -153,7 +153,7 @@ export default function ProjectContent({
               >
                 {texts.leave_project}
               </Button>
-              {user_permission && ["Creator", "Administrator"].includes(user_permission) && (
+              {user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission) && (
                 <Button
                   className={classes.editProjectButton}
                   variant="contained"
