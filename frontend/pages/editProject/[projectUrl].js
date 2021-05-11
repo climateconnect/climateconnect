@@ -7,7 +7,7 @@ import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOp
 import {
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions
+  getStatusOptions,
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -123,7 +123,8 @@ export default function EditProjectPage({
     );
   else if (
     members.find((m) => m.user && m.user.id === user.id).role.role_type != ROLE_TYPES.all_type &&
-    members.find((m) => m.user && m.user.id === user.id).role.role_type != ROLE_TYPES.read_write_type
+    members.find((m) => m.user && m.user.id === user.id).role.role_type !=
+      ROLE_TYPES.read_write_type
   )
     return (
       <WideLayout title={texts.no_permissions_to_edit_project} hideHeadline={true}>

@@ -46,24 +46,26 @@ export default function ChatMemberManagementOverlay({
     curUserRole: user_role,
   });
   const canEdit = (p) => {
-    const participant_role = p.role.name ? p.role : rolesOptions.find((o) => o.role_type === p.role.role_type);
-    return p.id === user.id || hasGreaterRole(state.curUserRole.role_type, participant_role.role_type);
+    const participant_role = p.role.name
+      ? p.role
+      : rolesOptions.find((o) => o.role_type === p.role.role_type);
+    return (
+      p.id === user.id || hasGreaterRole(state.curUserRole.role_type, participant_role.role_type)
+    );
   };
 
   const handleSetCurParticipants = (newValue, newUserRoleValue) => {
-    if(newUserRoleValue)
+    if (newUserRoleValue)
       setState({
         ...state,
         curParticipants: newValue,
-        curUserRole: newUserRoleValue
-      })
-    else
-      setState({ ...state, curParticipants: newValue });
-  }
+        curUserRole: newUserRoleValue,
+      });
+    else setState({ ...state, curParticipants: newValue });
+  };
   const handleSetCurUserRole = (newValue) => {
     setState({ ...state, curUserRole: newValue });
-  }
-  console.log(state)
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
     onSubmit()
@@ -163,7 +165,9 @@ export default function ChatMemberManagementOverlay({
   };
 
   const verifyInput = () => {
-    if (state.curParticipants.filter((cm) => cm.role.role_type === ROLE_TYPES.all_type).length !== 1) {
+    if (
+      state.curParticipants.filter((cm) => cm.role.role_type === ROLE_TYPES.all_type).length !== 1
+    ) {
       alert(texts.there_must_be_exactly_one_creator_of_an_organization);
       return false;
     }

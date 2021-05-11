@@ -2,7 +2,7 @@
 const ROLE_TYPES = {
   read_only_type: "read only",
   read_write_type: "read write",
-  all_type: "all"
-}
+  all_type: "all",
+};
 
-export default ROLE_TYPES
+export default ROLE_TYPES;

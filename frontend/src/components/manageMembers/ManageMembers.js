@@ -67,23 +67,21 @@ export default function ManageMembers({
   };
 
   const handleAddMember = (member) => {
-    setCurrentMembers(
-      [
-        ...currentMembers,
-        {
-          ...member,
-          role: rolesOptions.find((r) => r.role_type === ROLE_TYPES.read_only_type),
-          [role_property_name]: "",
-          edited: true,
-        },
-      ]
-    );
+    setCurrentMembers([
+      ...currentMembers,
+      {
+        ...member,
+        role: rolesOptions.find((r) => r.role_type === ROLE_TYPES.read_only_type),
+        [role_property_name]: "",
+        edited: true,
+      },
+    ]);
   };
   const handleChangeMember = (m) => {
     if (m.changeCreator) {
       handleCreatorChange(m);
     } else {
-      if(m.id === user.id) {
+      if (m.id === user.id) {
         setCurrentMembers(
           [
             ...currentMembers.map((c) => {
@@ -104,38 +102,43 @@ export default function ManageMembers({
   };
 
   const handleCreatorChange = (m) => {
-    if(setMembersAndUserRoleAtomically){
+    if (setMembersAndUserRoleAtomically) {
       setCurrentMembers(
         [
           ...currentMembers.map((c) => {
             if (c.url_slug === m.url_slug) return { ...m, edited: true };
             else if (c.id === user.id)
-              return { ...c, role: rolesOptions.find((r) => r.role_type === ROLE_TYPES.read_write_type), edited: true };
+              return {
+                ...c,
+                role: rolesOptions.find((r) => r.role_type === ROLE_TYPES.read_write_type),
+                edited: true,
+              };
             else return c;
           }),
-        ], 
+        ],
         rolesOptions.find((r) => r.role_type === ROLE_TYPES.read_write_type)
       );
-    } else{
+    } else {
       setCurrentMembers([
         ...currentMembers.map((c) => {
           if (c.url_slug === m.url_slug) return { ...m, edited: true };
           else if (c.id === user.id)
-            return { ...c, role: rolesOptions.find((r) => r.role_type === ROLE_TYPES.read_write_type), edited: true };
+            return {
+              ...c,
+              role: rolesOptions.find((r) => r.role_type === ROLE_TYPES.read_write_type),
+              edited: true,
+            };
           else return c;
         }),
-      ])
-      setUserRole(rolesOptions.find((r) => r.role_type === ROLE_TYPES.read_write_type))
+      ]);
+      setUserRole(rolesOptions.find((r) => r.role_type === ROLE_TYPES.read_write_type));
     }
   };
 
-
   const handleRemoveMember = (member) => {
-    setCurrentMembers(
-      [...currentMembers.filter((m) => m.id !== member.id)]
-    );
+    setCurrentMembers([...currentMembers.filter((m) => m.id !== member.id)]);
   };
-  
+
   return (
     <div>
       <div className={classes.searchBarContainer}>
@@ -152,32 +155,29 @@ export default function ManageMembers({
           helperText={texts.type_name_of_next_team_member}
         />
       </div>
-      {
-        currentMembers &&
-        currentMembers.length > 0 && (
-          <MemberContainer 
-            currentMembers={currentMembers}
-            rolesOptions={rolesOptions}
-            user_role={user_role}
-            user={user}
-            canEdit={canEdit}
-            handleRemoveMember={handleRemoveMember}
-            handleChangeMember={handleChangeMember}
-            availabilityOptions={availabilityOptions}
-            hideHoursPerWeek={hideHoursPerWeek}
-            isOrganization={isOrganization}
-            dontPickRole={dontPickRole}
-          />
-        )
-      }
+      {currentMembers && currentMembers.length > 0 && (
+        <MemberContainer
+          currentMembers={currentMembers}
+          rolesOptions={rolesOptions}
+          user_role={user_role}
+          user={user}
+          canEdit={canEdit}
+          handleRemoveMember={handleRemoveMember}
+          handleChangeMember={handleChangeMember}
+          availabilityOptions={availabilityOptions}
+          hideHoursPerWeek={hideHoursPerWeek}
+          isOrganization={isOrganization}
+          dontPickRole={dontPickRole}
+        />
+      )}
     </div>
   );
 }
 
 const MemberContainer = ({
-  currentMembers, 
-  rolesOptions, 
-  user_role, 
+  currentMembers,
+  rolesOptions,
+  user_role,
   user,
   canEdit,
   handleRemoveMember,
@@ -185,39 +185,43 @@ const MemberContainer = ({
   availabilityOptions,
   hideHoursPerWeek,
   isOrganization,
-  dontPickRole
+  dontPickRole,
 }) => {
-  const classes = useStyles()
+  const classes = useStyles();
   return (
     <div className={classes.memberContainer}>
-        {currentMembers.map((m, index) => {
-            const creatorRole = rolesOptions.find((r) => r.role_type === ROLE_TYPES.all_type);
-            const profile = m.id === user.id ? { ...m, role: user_role } : m;
-            return (
-              <MiniProfileInput
-                key={index}
-                className={classes.member}
-                profile={profile}
-                onDelete={
-                  canEdit(m) && m.role.role_type !== ROLE_TYPES.all_type ? () => handleRemoveMember(m) : null
-                }
-                availabilityOptions={availabilityOptions}
-                rolesOptions={
-                  !canEdit(m) || m.id === user.id
-                    ? rolesOptions
-                    : rolesOptions.filter((r) => getRoleWeight(r.role_type) < getRoleWeight(user_role.role_type))
-                }
-                fullRolesOptions={rolesOptions}
-                creatorRole={creatorRole}
-                onChange={handleChangeMember}
-                hideHoursPerWeek={hideHoursPerWeek}
-                editDisabled={!canEdit(m)}
-                isOrganization={isOrganization}
-                allowAppointingCreator={m.id !== user.id && user_role.role_type === ROLE_TYPES.all_type}
-                dontPickRole={dontPickRole}
-              />
-            );
-          })}
-      </div>
-  )
-}
+      {currentMembers.map((m, index) => {
+        const creatorRole = rolesOptions.find((r) => r.role_type === ROLE_TYPES.all_type);
+        const profile = m.id === user.id ? { ...m, role: user_role } : m;
+        return (
+          <MiniProfileInput
+            key={index}
+            className={classes.member}
+            profile={profile}
+            onDelete={
+              canEdit(m) && m.role.role_type !== ROLE_TYPES.all_type
+                ? () => handleRemoveMember(m)
+                : null
+            }
+            availabilityOptions={availabilityOptions}
+            rolesOptions={
+              !canEdit(m) || m.id === user.id
+                ? rolesOptions
+                : rolesOptions.filter(
+                    (r) => getRoleWeight(r.role_type) < getRoleWeight(user_role.role_type)
+                  )
+            }
+            fullRolesOptions={rolesOptions}
+            creatorRole={creatorRole}
+            onChange={handleChangeMember}
+            hideHoursPerWeek={hideHoursPerWeek}
+            editDisabled={!canEdit(m)}
+            isOrganization={isOrganization}
+            allowAppointingCreator={m.id !== user.id && user_role.role_type === ROLE_TYPES.all_type}
+            dontPickRole={dontPickRole}
+          />
+        );
+      })}
+    </div>
+  );
+};

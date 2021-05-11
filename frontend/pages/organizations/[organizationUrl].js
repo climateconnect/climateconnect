@@ -73,12 +73,18 @@ export async function getServerSideProps(ctx) {
       projects: projects,
       members: members,
       organizationTypes: organizationTypes,
-      rolesOptions: rolesOptions
+      rolesOptions: rolesOptions,
     }),
   };
 }
 
-export default function OrganizationPage({ organization, projects, members, organizationTypes, rolesOptions }) {
+export default function OrganizationPage({
+  organization,
+  projects,
+  members,
+  organizationTypes,
+  rolesOptions,
+}) {
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
@@ -120,9 +126,9 @@ function OrganizationLayout({
   const cookies = new Cookies();
 
   const getRoleName = (permission) => {
-    const permission_to_show = permission === "all" ? "read write" : permission
-    return rolesOptions.find(o=>o.role_type === permission_to_show).name
-  }
+    const permission_to_show = permission === "all" ? "read write" : permission;
+    return rolesOptions.find((o) => o.role_type === permission_to_show).name;
+  };
 
   const getMembersWithAdditionalInfo = (members) => {
     return members.map((m) => ({
@@ -159,7 +165,9 @@ function OrganizationLayout({
   const canEdit =
     user &&
     !!members.find((m) => m.id === user.id) &&
-    [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(members.find((m) => m.id === user.id).permission);
+    [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(
+      members.find((m) => m.id === user.id).permission
+    );
 
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
   return (

@@ -4,7 +4,7 @@ import {
   Container,
   makeStyles,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
@@ -86,7 +86,11 @@ export default function TranslateTexts({
   const { locale } = useContext(UserContext);
   //For the organization page, we need to retrieve the organization name to get the german text.
   //Therefore we pass organization even it this might not make sense in most cases.
-  const texts = getTexts({ page: pageName, locale: data.language ? data.language : locale, organization: organization });
+  const texts = getTexts({
+    page: pageName,
+    locale: data.language ? data.language : locale,
+    organization: organization,
+  });
   const targetLanguageTexts = getTexts({
     page: pageName,
     locale: targetLanguage,

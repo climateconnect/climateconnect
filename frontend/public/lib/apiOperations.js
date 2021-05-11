@@ -82,7 +82,7 @@ export function getLocalePrefix(locale) {
   else return `/${locale}`;
 }
 
-export async function getRolesOptions (token, locale) {
+export async function getRolesOptions(token, locale) {
   try {
     const resp = await apiRequest({
       method: "get",

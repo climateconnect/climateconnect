@@ -10,7 +10,7 @@ import {
   getLocationValue,
   indicateWrongLocation,
   isLocationValid,
-  parseLocation
+  parseLocation,
 } from "../public/lib/locationOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -72,7 +72,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions, al
       website: "",
       about: "",
       organization_size: "",
-      hubs: []
+      hubs: [],
     },
     types: [],
   });
@@ -399,7 +399,10 @@ async function getTags(token, locale) {
 const parseOrganizationForRequest = async (o, user, rolesOptions, translations, sourceLanguage) => {
   const organization = {
     team_members: [
-      { user_id: user.id, permission_type_id: rolesOptions.find((r) => r.role_type === ROLE_TYPES.all_type).id },
+      {
+        user_id: user.id,
+        permission_type_id: rolesOptions.find((r) => r.role_type === ROLE_TYPES.all_type).id,
+      },
     ],
     name: o.name,
     background_image: o.background_image,
@@ -409,7 +412,7 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
     website: o.info.website,
     short_description: o.info.short_description,
     organization_size: o.info.organization_size,
-    hubs: o.info.hubs.map(h=>h.url_slug),
+    hubs: o.info.hubs.map((h) => h.url_slug),
     about: o.info.about,
     organization_tags: o.types,
     translations: {

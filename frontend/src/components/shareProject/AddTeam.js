@@ -60,7 +60,11 @@ export default function AddTeam({
     handleSetProjectData({
       team_members: [
         ...projectData.team_members,
-        { ...member, role: rolesOptions.find((r) => r.role_type === ROLE_TYPES.read_only_type), role_in_project: "" },
+        {
+          ...member,
+          role: rolesOptions.find((r) => r.role_type === ROLE_TYPES.read_only_type),
+          role_in_project: "",
+        },
       ],
     });
   };

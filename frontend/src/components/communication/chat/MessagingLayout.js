@@ -20,8 +20,8 @@ const useStyles = makeStyles((theme) => {
     alert: {
       width: "100%",
       maxWidth: theme.breakpoints.values["md"],
-      margin: "0 auto"
-    }
+      margin: "0 auto",
+    },
   };
 });
 
@@ -74,7 +74,9 @@ export default function MessagingLayout({
     setCurMessage("");
     if (event) event.preventDefault();
   };
-  const canEditMembers = user_role.role_type === ROLE_TYPES.all_type || user_role.role_type === ROLE_TYPES.read_write_type;
+  const canEditMembers =
+    user_role.role_type === ROLE_TYPES.all_type ||
+    user_role.role_type === ROLE_TYPES.read_write_type;
 
   const handleMessageKeydown = (event) => {
     if (event.key === "Enter")

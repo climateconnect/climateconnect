@@ -26,7 +26,7 @@ export async function getServerSideProps(ctx) {
     return {
       props: {
         chat_id: null,
-      }
+      },
     };
   }
   return {

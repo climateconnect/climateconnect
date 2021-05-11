@@ -210,7 +210,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     },
     contact: {
       en: "Contact",
-      de: "Kontaktieren"
+      de: "Kontaktieren",
     },
     followers: {
       en: "Followers",

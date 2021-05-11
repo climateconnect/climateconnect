@@ -43,10 +43,9 @@ export default function ManageProjectMembers({
   const [user_role, setUserRole] = React.useState(members.find((m) => m.id === user.id).role);
   if (!user_role) setUserRole(members.find((m) => m.id === user.id).role);
   const handleSetCurrentMembers = (newValue, newUserRoleValue) => {
-    setCurrentMembers(newValue)
-    if(newUserRoleValue)
-      setUserRole(newUserRoleValue)
-  }
+    setCurrentMembers(newValue);
+    if (newUserRoleValue) setUserRole(newUserRoleValue);
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
     onSubmit()
@@ -83,7 +82,8 @@ export default function ManageProjectMembers({
 
   const getAllChangedMembers = () => {
     const oldCreatorId = members.filter((m) => m.role.role_type === ROLE_TYPES.all_type)[0].id;
-    const newCreatorId = currentMembers.filter((m) => m.role.role_type === ROLE_TYPES.all_type)[0].id;
+    const newCreatorId = currentMembers.filter((m) => m.role.role_type === ROLE_TYPES.all_type)[0]
+      .id;
     const deletedMembers = members.filter((m) => !currentMembers.find((cm) => cm.id === m.id));
     const creatorChange =
       oldCreatorId != newCreatorId ? currentMembers.filter((cm) => cm.id === newCreatorId) : [];

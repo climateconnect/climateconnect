@@ -33,14 +33,16 @@ export function getAllChangedMembers(oldMembers, newMembers, members_prop_name) 
 }
 
 export function hasGreaterRole(user_role_type, other_user_role_type) {
-  if(user_role_type === ROLE_TYPES.all_type)
-    return true
-  if(user_role_type === ROLE_TYPES.read_write_type && other_user_role_type === ROLE_TYPES.read_only_type)
-    return true
-  return false
+  if (user_role_type === ROLE_TYPES.all_type) return true;
+  if (
+    user_role_type === ROLE_TYPES.read_write_type &&
+    other_user_role_type === ROLE_TYPES.read_only_type
+  )
+    return true;
+  return false;
 }
 
 export function getRoleWeight(role_type) {
-  const role_types_array = Object.keys(ROLE_TYPES).map(k=>ROLE_TYPES[k])
-  return role_types_array.indexOf(role_type)
+  const role_types_array = Object.keys(ROLE_TYPES).map((k) => ROLE_TYPES[k]);
+  return role_types_array.indexOf(role_type);
 }

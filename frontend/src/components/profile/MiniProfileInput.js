@@ -77,7 +77,9 @@ export default function MiniProfileInput({
       options.filter((o) => o.id === creatorRole.id).length > 0
     ) {
       setOptions(
-        rolesOptions.map((r) => ({ ...r, key: r.id })).filter((r) => r.role_type !== ROLE_TYPES.all_type)
+        rolesOptions
+          .map((r) => ({ ...r, key: r.id }))
+          .filter((r) => r.role_type !== ROLE_TYPES.all_type)
       );
     }
   });
@@ -85,9 +87,10 @@ export default function MiniProfileInput({
   const [options, setOptions] = React.useState(
     profile.role.role_type === ROLE_TYPES.all_type
       ? fullRolesOptions.map((r) => ({ ...r, key: r.id }))
-      : rolesOptions.map((r) => ({ ...r, key: r.id })).filter((r) => r.role_type !== ROLE_TYPES.all_type)
+      : rolesOptions
+          .map((r) => ({ ...r, key: r.id }))
+          .filter((r) => r.role_type !== ROLE_TYPES.all_type)
   );
-
 
   const handleChangeRolePermissions = (event) => {
     onChange({ ...profile, role: rolesOptions.find((r) => r.name === event.target.value) });

@@ -153,16 +153,17 @@ export default function ProjectContent({
               >
                 {texts.leave_project}
               </Button>
-              {user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission) && (
-                <Button
-                  className={classes.editProjectButton}
-                  variant="contained"
-                  color="primary"
-                  href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
-                >
-                  {project.is_draft ? texts.edit_draft : texts.edit_project}
-                </Button>
-              )}
+              {user_permission &&
+                [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission) && (
+                  <Button
+                    className={classes.editProjectButton}
+                    variant="contained"
+                    color="primary"
+                    href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
+                  >
+                    {project.is_draft ? texts.edit_draft : texts.edit_project}
+                  </Button>
+                )}
             </div>
           )}
           {/* Note: created date is not the same as the start date, for projects */}
