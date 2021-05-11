@@ -113,8 +113,8 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: "Du hast die Mitglieder deiner Organisation erfolgreich aktualisiert",
     },
     there_must_be_exactly_one_creator_of_organization: {
-      en: "There must be exactly one creator of an organization.",
-      de: "Es muss genau eine(n) Ersteller*in einer Organisation geben.",
+      en: "There must be exactly one Super Admin of an organization.",
+      de: "Es muss genau eine(n) Super Admin einer Organisation geben.",
     },
     manage_members_of_organization_name: {
       en: `Manage members of ${organization?.name}`,

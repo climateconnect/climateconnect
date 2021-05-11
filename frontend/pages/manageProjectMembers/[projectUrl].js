@@ -2,6 +2,7 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
+import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
@@ -78,8 +79,8 @@ export default function manageProjectMembers({
       </WideLayout>
     );
   else if (
-    members.find((m) => m.id === user.id).role.name != "Creator" &&
-    members.find((m) => m.id === user.id).role.name != "Administrator"
+    members.find((m) => m.id === user.id).role.role_type != ROLE_TYPES.all_type &&
+    members.find((m) => m.id === user.id).role.role_type != ROLE_TYPES.read_write_type
   )
     return (
       <WideLayout title={texts.no_permission_to_manage_members_of_this_project} hideHeadline={true}>
@@ -154,7 +155,7 @@ function parseProjectMembers(members) {
       availability: m.availability,
       role_in_project: m.role_in_project ? m.role_in_project : "",
       location: member.location,
-      isCreator: m.role.role_type === 2,
+      isCreator: m.role.role_type === ROLE_TYPES.all_type,
     };
   });
 }

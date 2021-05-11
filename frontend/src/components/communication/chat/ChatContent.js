@@ -2,6 +2,7 @@ import { Button, IconButton, makeStyles, TextField, Tooltip } from "@material-ui
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import SendIcon from "@material-ui/icons/Send";
 import React, { useContext } from "react";
+import ROLE_TYPES from "../../../../public/data/role_types";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import MiniProfilePreview from "../../profile/MiniProfilePreview";
@@ -96,7 +97,7 @@ export default function ChatContent({
               />
             );
           })}
-          {user_role.name === "Creator" && (
+          {user_role.role_type === ROLE_TYPES.all_type && (
             <Button
               className={classes.manageMembersButton}
               startIcon={<GroupAddIcon />}

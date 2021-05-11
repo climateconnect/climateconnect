@@ -6,7 +6,8 @@ import NextCookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
+import ROLE_TYPES from "../../public/data/role_types";
+import { apiRequest, getLocalePrefix, getRolesOptions } from "../../public/lib/apiOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 import { parseOrganization } from "../../public/lib/organizationOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -59,11 +60,12 @@ const useStyles = makeStyles((theme) => ({
 export async function getServerSideProps(ctx) {
   const { token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, projects, members, organizationTypes] = await Promise.all([
+  const [organization, projects, members, organizationTypes, rolesOptions] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, token, ctx.locale),
     getProjectsByOrganization(organizationUrl, token, ctx.locale),
     getMembersByOrganization(organizationUrl, token, ctx.locale),
     getOrganizationTypes(),
+    getRolesOptions(token, ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -71,11 +73,18 @@ export async function getServerSideProps(ctx) {
       projects: projects,
       members: members,
       organizationTypes: organizationTypes,
+      rolesOptions: rolesOptions,
     }),
   };
 }
 
-export default function OrganizationPage({ organization, projects, members, organizationTypes }) {
+export default function OrganizationPage({
+  organization,
+  projects,
+  members,
+  organizationTypes,
+  rolesOptions,
+}) {
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
@@ -94,6 +103,7 @@ export default function OrganizationPage({ organization, projects, members, orga
           user={user}
           texts={texts}
           locale={locale}
+          rolesOptions={rolesOptions}
         />
       ) : (
         <PageNotFound itemName={texts.organization} />
@@ -110,9 +120,16 @@ function OrganizationLayout({
   user,
   texts,
   locale,
+  rolesOptions,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
+
+  const getRoleName = (permission) => {
+    const permission_to_show = permission === "all" ? "read write" : permission;
+    return rolesOptions.find((o) => o.role_type === permission_to_show).name;
+  };
+
   const getMembersWithAdditionalInfo = (members) => {
     return members.map((m) => ({
       ...m,
@@ -131,7 +148,7 @@ function OrganizationLayout({
           toolTipText: texts.role_in_organization,
         },
         {
-          text: m.permission,
+          text: getRoleName(m.permission),
           importance: "low",
         },
       ],
@@ -145,11 +162,12 @@ function OrganizationLayout({
     const chat = await startPrivateChat(creator, token, locale);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
-
   const canEdit =
     user &&
     !!members.find((m) => m.id === user.id) &&
-    ["Creator", "Administrator"].includes(members.find((m) => m.id === user.id).permission);
+    [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(
+      members.find((m) => m.id === user.id).permission
+    );
 
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
   return (
@@ -258,7 +276,7 @@ async function getMembersByOrganization(organizationUrl, token, locale) {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/organizations/" + organizationUrl + "/members/",
+      url: "/api/organizations/" + organizationUrl + "/members/?page=1&page_size=24",
       token: token,
       locale: locale,
     });
@@ -293,8 +311,8 @@ function parseOrganizationMembers(members) {
     return {
       ...member,
       name: member.first_name + " " + member.last_name,
-      permission: m.permission.name === "Creator" ? "Administrator" : m.permission.name,
-      isCreator: m.permission.name === "Creator",
+      permission: m.permission.role_type,
+      isCreator: m.permission.role_type === ROLE_TYPES.all_type,
       time_per_week: m.time_per_week,
       role_in_organization: m.role_in_organization,
       location: member.location,
