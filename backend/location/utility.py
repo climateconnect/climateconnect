@@ -233,8 +233,8 @@ def get_middle_part(address, order, suffixes):
     return ""
 
 def get_location_with_range(query_params): 
-    #print(query_params)
     filter_place_id = query_params.get('place')
+    location_type = query_params.get('loc_type')
     locations = Location.objects.filter(place_id=filter_place_id)
         # shrink polygon by 1 meter to exclude places that share a border
     # Example: Don't show projects from the USA when searching for Mexico
@@ -252,7 +252,7 @@ def get_location_with_range(query_params):
         location_in_db = location.multi_polygon.buffer(buffer_width)
     else:        
         location = locations[0]
-        location_in_db = location.multi_polygon.buffer(buffer_width)
+        location_in_db = location.multi_polygon.buffer(buffer_width) if location_type == 'relation' else location.centre_point 
     radius = 0
     if 'radius' in query_params:
         radius_value = query_params.get('radius')
