@@ -12,7 +12,9 @@ const coreTheme = createMuiTheme({
     yellow: {
       main: "#FFDE0A",
     },
-    background: { default: "#fff" },
+    background: {
+      default: "#FFF",
+    },
     action: {
       selected: "#387077",
     },

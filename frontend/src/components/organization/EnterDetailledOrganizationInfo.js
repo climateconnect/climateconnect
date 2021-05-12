@@ -36,10 +36,11 @@ export default function EnterDetailledOrganizationInfo({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   loadingSubmit,
+  allHubs,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
-  const organization_info_metadata = getOrganizationInfoMetadata();
+  const organization_info_metadata = getOrganizationInfoMetadata(locale, organizationInfo);
   const organization = parseOrganizationInfo(organizationInfo, organization_info_metadata);
   const infoMetadata = {
     ...organization_info_metadata,
@@ -76,6 +77,7 @@ export default function EnterDetailledOrganizationInfo({
         handleCancel={handleCancel}
         errorMessage={errorMessage}
         loadingSubmit={loadingSubmit}
+        allHubs={allHubs}
       />
     </div>
   );

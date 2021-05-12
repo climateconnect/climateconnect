@@ -6,17 +6,17 @@ import SchoolIcon from "@material-ui/icons/School";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import getTexts from "../texts/texts";
 
-export default function getOrganizationInfoMetadata(locale) {
-  const texts = getTexts({ page: "organization", locale: locale });
+export default function getOrganizationInfoMetadata(locale, organization) {
+  const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   return {
     short_description: {
       icon: DescriptionIcon,
       iconName: "DescriptionIcon",
-      name: texts.description,
+      name: `${texts.summary} (${texts.twohundred_eighty_chars_max})`,
       key: "short_description",
       type: "bio",
       weight: 1,
-      helptext: texts.how_to_describe_organization,
+      helptext: texts.how_to_summarize_organization,
     },
     location: {
       icon: PlaceIcon,
@@ -76,6 +76,57 @@ export default function getOrganizationInfoMetadata(locale) {
       show_if_ticked: "has_parent_organization",
       baseUrl: "/api/organizations/?search=",
       helperText: texts.edit_parent_organization_helper_text,
+    },
+    about: {
+      name: `${texts.about}`,
+      key: "about",
+      type: "detailled_description",
+      helptext: texts.how_to_describe_organization,
+    },
+    organization_size: {
+      name: `${texts.organization_size}`,
+      key: "organization_size",
+      type: "select",
+      options: [
+        {
+          key: 0,
+          name: "1-10",
+        },
+        {
+          key: 1,
+          name: "11-50",
+        },
+        {
+          key: 2,
+          name: "51-100",
+        },
+        {
+          key: 3,
+          name: "251-500",
+        },
+        {
+          key: 4,
+          name: texts.large_medium_organization_size,
+        },
+        {
+          key: 5,
+          name: texts.large_organization_size,
+        },
+        {
+          key: 6,
+          name: texts.very_large_organization_size,
+        },
+        {
+          key: 7,
+          name: texts.huge_organization_size,
+        },
+      ],
+    },
+    hubs: {
+      name: `${texts.sectors_of_activity}`,
+      key: "hubs",
+      type: "hubs",
+      helptext: texts.how_to_select_hubs,
     },
   };
 }

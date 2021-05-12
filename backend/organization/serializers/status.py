@@ -15,4 +15,5 @@ class ProjectStatusSerializer(serializers.ModelSerializer):
     return get_project_status(obj, get_language())
   
   def get_status_type(self, obj):
-    return ProjectStatus.PROJECT_STATUS_TYPES[obj.status_type][1]
+    project_status_name = list(filter(lambda x:x[0]==obj.status_type,ProjectStatus.PROJECT_STATUS_TYPES))[0][1]  
+    return project_status_name

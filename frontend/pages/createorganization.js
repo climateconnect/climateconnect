@@ -2,7 +2,9 @@ import { makeStyles, Typography } from "@material-ui/core";
 import Cookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext, useRef, useState } from "react";
+import ROLE_TYPES from "../public/data/role_types";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
+import { getAllHubs } from "../public/lib/hubOperations";
 import { blobFromObjectUrl } from "../public/lib/imageOperations";
 import {
   getLocationValue,
@@ -28,20 +30,22 @@ const useStyles = makeStyles((theme) => ({
 
 export async function getServerSideProps(ctx) {
   const { token } = Cookies(ctx);
-  const [tagOptions, rolesOptions] = await Promise.all([
+  const [tagOptions, rolesOptions, allHubs] = await Promise.all([
     await getTags(token, ctx.locale),
     await getRolesOptions(token, ctx.locale),
+    getAllHubs(ctx.locale),
   ]);
   return {
     props: {
       tagOptions: tagOptions,
       token: token,
       rolesOptions: rolesOptions,
+      allHubs: allHubs,
     },
   };
 }
 
-export default function CreateOrganization({ tagOptions, token, rolesOptions }) {
+export default function CreateOrganization({ tagOptions, token, rolesOptions, allHubs }) {
   const classes = useStyles();
   const [errorMessages, setErrorMessages] = React.useState({
     basicOrganizationInfo: "",
@@ -66,6 +70,9 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
       location: {},
       short_description: "",
       website: "",
+      about: "",
+      organization_size: "",
+      hubs: [],
     },
     types: [],
   });
@@ -309,6 +316,7 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
           locationOptionsOpen={locationOptionsOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           loadingSubmit={loadingSubmit}
+          allHubs={allHubs}
         />
       </WideLayout>
     );
@@ -335,7 +343,13 @@ export default function CreateOrganization({ tagOptions, token, rolesOptions }) 
               rows: 5,
               headlineTextKey: "short_description",
             },
+            {
+              textKey: "info.about",
+              rows: 10,
+              headlineTextKey: "about",
+            },
           ]}
+          organization={organizationInfo}
           changeTranslationLanguages={changeTranslationLanguages}
         />
       </WideLayout>
@@ -385,7 +399,10 @@ async function getTags(token, locale) {
 const parseOrganizationForRequest = async (o, user, rolesOptions, translations, sourceLanguage) => {
   const organization = {
     team_members: [
-      { user_id: user.id, permission_type_id: rolesOptions.find((r) => r.name === "Creator").id },
+      {
+        user_id: user.id,
+        permission_type_id: rolesOptions.find((r) => r.role_type === ROLE_TYPES.all_type).id,
+      },
     ],
     name: o.name,
     background_image: o.background_image,
@@ -394,6 +411,9 @@ const parseOrganizationForRequest = async (o, user, rolesOptions, translations, 
     location: o.info.location,
     website: o.info.website,
     short_description: o.info.short_description,
+    organization_size: o.info.organization_size,
+    hubs: o.info.hubs.map((h) => h.url_slug),
+    about: o.info.about,
     organization_tags: o.types,
     translations: {
       ...translations,

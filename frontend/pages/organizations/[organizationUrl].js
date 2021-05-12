@@ -6,7 +6,8 @@ import NextCookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
+import ROLE_TYPES from "../../public/data/role_types";
+import { apiRequest, getLocalePrefix, getRolesOptions } from "../../public/lib/apiOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 import { parseOrganization } from "../../public/lib/organizationOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -40,16 +41,31 @@ const useStyles = makeStyles((theme) => ({
   divider: {
     marginTop: theme.spacing(1),
   },
+  headline: {
+    fontSize: 23,
+    fontWeight: "bold",
+    marginBottom: theme.spacing(1),
+  },
+  sectionHeadlineWithButtonContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: theme.spacing(3),
+  },
+  no_content_yet: {
+    marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(5),
+  },
 }));
 
 export async function getServerSideProps(ctx) {
   const { token } = NextCookies(ctx);
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, projects, members, organizationTypes] = await Promise.all([
+  const [organization, projects, members, organizationTypes, rolesOptions] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, token, ctx.locale),
     getProjectsByOrganization(organizationUrl, token, ctx.locale),
     getMembersByOrganization(organizationUrl, token, ctx.locale),
     getOrganizationTypes(),
+    getRolesOptions(token, ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -57,13 +73,20 @@ export async function getServerSideProps(ctx) {
       projects: projects,
       members: members,
       organizationTypes: organizationTypes,
+      rolesOptions: rolesOptions,
     }),
   };
 }
 
-export default function OrganizationPage({ organization, projects, members, organizationTypes }) {
+export default function OrganizationPage({
+  organization,
+  projects,
+  members,
+  organizationTypes,
+  rolesOptions,
+}) {
   const { user, locale } = useContext(UserContext);
-  const infoMetadata = getOrganizationInfoMetadata();
+  const infoMetadata = getOrganizationInfoMetadata(locale, organization);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   return (
     <WideLayout
@@ -80,6 +103,7 @@ export default function OrganizationPage({ organization, projects, members, orga
           user={user}
           texts={texts}
           locale={locale}
+          rolesOptions={rolesOptions}
         />
       ) : (
         <PageNotFound itemName={texts.organization} />
@@ -96,9 +120,16 @@ function OrganizationLayout({
   user,
   texts,
   locale,
+  rolesOptions,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
+
+  const getRoleName = (permission) => {
+    const permission_to_show = permission === "all" ? "read write" : permission;
+    return rolesOptions.find((o) => o.role_type === permission_to_show).name;
+  };
+
   const getMembersWithAdditionalInfo = (members) => {
     return members.map((m) => ({
       ...m,
@@ -117,7 +148,7 @@ function OrganizationLayout({
           toolTipText: texts.role_in_organization,
         },
         {
-          text: m.permission,
+          text: getRoleName(m.permission),
           importance: "low",
         },
       ],
@@ -131,11 +162,12 @@ function OrganizationLayout({
     const chat = await startPrivateChat(creator, token, locale);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
-
   const canEdit =
     user &&
     !!members.find((m) => m.id === user.id) &&
-    ["Creator", "Administrator"].includes(members.find((m) => m.id === user.id).permission);
+    [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(
+      members.find((m) => m.id === user.id).permission
+    );
 
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
   return (
@@ -160,8 +192,10 @@ function OrganizationLayout({
             {texts.send_message}
           </Button>
         )}
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
-          {texts.this_organizations_projects}:{" "}
+        <div className={classes.sectionHeadlineWithButtonContainer}>
+          <Typography color="primary" className={classes.headline} component="h2">
+            {texts.this_organizations_projects}
+          </Typography>
           <Button variant="contained" color="primary" href={getLocalePrefix(locale) + "/share"}>
             {texts.share_a_project}
           </Button>
@@ -169,27 +203,27 @@ function OrganizationLayout({
         {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
         ) : (
-          <Typography>{texts.this_organization_has_not_listed_any_projects_yet}</Typography>
+          <Typography className={classes.no_content_yet}>
+            {texts.this_organization_has_not_listed_any_projects_yet}
+          </Typography>
         )}
       </Container>
       <Divider className={classes.divider} />
       <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
+        <div className={classes.sectionHeadlineWithButtonContainer}>
+          <Typography color="primary" className={classes.headline} component="h2">
+            {texts.members_of_organization}
+          </Typography>
           {canEdit && (
-            <div>
-              <Button
-                className={classes.editButton}
-                variant="contained"
-                color="primary"
-                href={
-                  getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug
-                }
-              >
-                {texts.manage_members}
-              </Button>
-            </div>
+            <Button
+              className={classes.editButton}
+              variant="contained"
+              color="primary"
+              href={getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug}
+            >
+              {texts.manage_members}
+            </Button>
           )}
-          {texts.members}:
         </div>
         {members && members.length ? (
           <ProfilePreviews profiles={membersWithAdditionalInfo} showAdditionalInfo />
@@ -242,7 +276,7 @@ async function getMembersByOrganization(organizationUrl, token, locale) {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/organizations/" + organizationUrl + "/members/",
+      url: "/api/organizations/" + organizationUrl + "/members/?page=1&page_size=24",
       token: token,
       locale: locale,
     });
@@ -277,8 +311,8 @@ function parseOrganizationMembers(members) {
     return {
       ...member,
       name: member.first_name + " " + member.last_name,
-      permission: m.permission.name === "Creator" ? "Administrator" : m.permission.name,
-      isCreator: m.permission.name === "Creator",
+      permission: m.permission.role_type,
+      isCreator: m.permission.role_type === ROLE_TYPES.all_type,
       time_per_week: m.time_per_week,
       role_in_organization: m.role_in_organization,
       location: member.location,

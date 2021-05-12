@@ -104,12 +104,12 @@
     "de": "Du hast die Teilnehmer*innen dieses Chats erfolgreich aktualisiert!"
   },
   "there_must_be_exactly_one_creator_of_an_organization": {
-    "en": "There must be exactly one creator of an organization.",
-    "de": "Es muss genau einen Ersteller oder eine Erstellerin einer Organisation geben"
+    "en": "There must be exactly one Super Admin of an organization.",
+    "de": "Es muss genau einen Super Admin einer Organisation geben"
   },
   "there_wasnt_a_creator": {
-    "en": "There wasn't a creator",
-    "de": "Es gab noch keine(n) Ersteller*in"
+    "en": "There wasn't a Super Admin",
+    "de": "Es gab noch keine(n) Super Admin"
   },
   "search_for_users_to_add_to_this_group_chat": {
     "en": "Search for users to add to this group chat",

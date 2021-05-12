@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 
-import { apiRequest } from "../public/lib/apiOperations";
+import { getAllHubs } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import HubHeaderImage from "../src/components/hub/HubHeaderImage";
 import HubPreviews from "../src/components/hub/HubPreviews";
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 export async function getServerSideProps(ctx) {
   return {
     props: {
-      hubs: await getHubs(ctx.locale),
+      hubs: await getAllHubs(ctx.locale),
     },
   };
 }
@@ -101,20 +101,4 @@ const LargeScreenExplainerText = ({ texts }) => {
       </span>
     </Typography>
   );
-};
-
-const getHubs = async (locale) => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/hubs/`,
-      locale: locale,
-    });
-    return resp.data.results;
-  } catch (err) {
-    if (err.response && err.response.data)
-      console.log("Error in getHubData: " + err.response.data.detail);
-    console.log(err);
-    return null;
-  }
 };
