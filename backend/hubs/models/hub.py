@@ -194,14 +194,6 @@ class Hub(models.Model):
         blank=True
     )
 
-    logo = models.ImageField(
-        help_text="Logo image for ideasboard, projects etc",
-        verbose_name="Logo",
-        upload_to=hub_image_path,
-        null=True,
-        blank=True
-    )
-
     language = models.ForeignKey(
         Language, related_name="hub_language",
         help_text="The original language of the hub", verbose_name="Language",
