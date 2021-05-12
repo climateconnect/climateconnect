@@ -9,7 +9,6 @@ import getFaqTexts from "./faq_texts";
 import filter_and_search_texts from "./filter_and_search_texts.json";
 import general_texts from "./general_texts.json";
 import getHubTexts from "./getHubTexts";
-import idea_texts from "./idea_texts.json";
 import getLandingPageTexts from "./landing_page_texts";
 import navigation_texts from "./navigation_texts.json";
 import notification_texts from "./notification_texts.json";
@@ -18,6 +17,7 @@ import getProfileTexts from "./profile_texts";
 import getProjectTexts from "./project_texts";
 import settings_texts from "./settings.json";
 import getTutorialTexts from "./tutorial_texts";
+import getIdeaTexts from "./idea_texts"
 
 export default function getTexts({
   page,
@@ -31,6 +31,7 @@ export default function getTexts({
   url_slug,
   user,
   goal,
+  idea
 }) {
   const texts = {
     about: getAboutTexts(classes),
@@ -44,7 +45,7 @@ export default function getTexts({
     filter_and_search: filter_and_search_texts,
     general: general_texts,
     hub: getHubTexts({ hubName: hubName }),
-    idea: idea_texts,
+    idea: getIdeaTexts({idea: idea, user: user, url_slug: url_slug, locale: locale}),
     landing_page: getLandingPageTexts({ classes: classes, isNarrowScreen: isNarrowScreen }),
     navigation: navigation_texts,
     notification: notification_texts,

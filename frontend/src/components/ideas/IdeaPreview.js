@@ -1,10 +1,9 @@
-import { Card, Link, makeStyles, Typography } from "@material-ui/core"
-import AddIcon from '@material-ui/icons/Add'
-import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects'
 import React, { useContext } from "react"
-import getTexts from "../../../public/texts/texts"
-import theme from "../../themes/theme"
-import UserContext from "../context/UserContext"
+
+import { Card, Link, makeStyles, Typography, CardMedia } from "@material-ui/core";
+import theme from "../../themes/theme";
+import UserContext from "../context/UserContext";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 
 const useStyles = makeStyles(theme => ({
   root: props => ({
@@ -79,16 +78,24 @@ export default function IdeaPreview({idea, isCreateCard}) {
 }
 
 function CreateCardContent(idea) {
-  const { locale } = useContext(UserContext)
-  const classes = useStyles()
-  console.log(idea)
+  const { locale } = useContext(UserContext);
+  const classes = useStyles();
   return (
     <div>
       <Typography color="primary" component="h2" className={classes.createCardHeadline}>
         {idea.idea.name}
       </Typography>
-      <div className={classes.plusIconContainer}>
+      <div>
         <Typography color="primary" component="h4">{idea.idea.short_description}</Typography>
+      </div>
+      <div>
+        {idea.idea.image === undefined ? (
+          <Typography color="secondary" component="h4">{idea.idea.short_description}</Typography>
+        ) : (
+          <CardMedia className={classes.media} title={idea.idea.url_slug} image={getImageUrl(idea.idea.image)}>
+            <img src={getImageUrl(idea.idea.image)} alt={idea.idea.name}/>
+          </CardMedia>
+        )}
       </div>
     </div>
   )

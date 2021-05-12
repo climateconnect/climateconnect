@@ -1,9 +1,10 @@
+import React, { useContext } from "react"
 import { Grid, makeStyles } from "@material-ui/core"
-import { Textsms } from "@material-ui/icons"
-import React from "react"
 import InfiniteScroll from "react-infinite-scroller"
 import LoadingSpinner from "../general/LoadingSpinner"
 import IdeaPreview from "./IdeaPreview"
+import UserContext from "../context/UserContext"
+import getTexts from "../../../public/texts/texts"
 
 const useStyles = makeStyles(theme => ({
   reset: {
@@ -28,6 +29,8 @@ export default function IdeaPreviews({
 }) {
   const classes = useStyles()
   const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas));
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({page: "idea", locale: locale});
   console.log(ideas);
   return (
     <>
@@ -47,7 +50,7 @@ export default function IdeaPreviews({
         {parentHandlesGridItems
           ? ideas && ideas.length > 0
             ? toIdeaPreviews(ideas)
-            : 'test'
+            : texts.no_ideas_found
           : gridItems
         }
         {isFetchingMore && <LoadingSpinner isLoading key="idea-previews-spinner" />}
