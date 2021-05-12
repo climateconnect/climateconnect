@@ -84,11 +84,17 @@ sudo -u postgres psql  # note this might differ slightly in name based on your p
 And then at the `psql` prompt,
 
 ```sql
+postgres-# \list
+```
+
+to show available databases. Once you've identified the Climate Connect database name (e.g. we'll call it `$DATABASE_NAME`), you can,
+
+```sql
 postgres-# \connect $DATABASE_NAME
 $DATABASE_NAME-# \dt
 $DATABASE_NAME-# DROP SCHEMA public CASCADE;
 $DATABASE_NAME-# CREATE SCHEMA public;
-$DATABASE_NAME-# \q;
+$DATABASE_NAME-# \q
 ```
 
 Then run
