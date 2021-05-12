@@ -2,6 +2,7 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import React, { useContext } from "react";
+import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MiniProfileInput from "../profile/MiniProfileInput";
@@ -66,11 +67,11 @@ export default function AddProjectMembersContainer({
                 key={index}
                 className={classes.member}
                 profile={m}
-                onDelete={m.role.name !== "Creator" && (() => handleRemoveMember(m))}
+                onDelete={m.role.role_type !== ROLE_TYPES.all_type && (() => handleRemoveMember(m))}
                 availabilityOptions={availabilityOptions}
                 rolesOptions={rolesOptions}
                 onChange={handleChangeMember}
-                creatorRole={rolesOptions.find((r) => r.name === "Creator")}
+                creatorRole={rolesOptions.find((r) => r.role_type === ROLE_TYPES.all_type)}
                 fullRolesOptions={rolesOptions}
               />
             );

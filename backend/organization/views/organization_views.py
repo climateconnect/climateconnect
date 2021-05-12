@@ -393,26 +393,6 @@ class OrganizationAPIView(APIView):
         return Response({'message': _('Successfully updated organization.')}, status=status.HTTP_200_OK)
 
 
-class ListCreateOrganizationMemberView(ListCreateAPIView):
-    permission_classes = [OrganizationReadWritePermission]
-    serializer_class = OrganizationMemberSerializer
-    pagination_class = PageNumberPagination
-    filter_backends = [SearchFilter]
-    search_fields = ['user__username', 'user__first_name', 'user__last_name']
-
-    def get_queryset(self):
-        try:
-            organization = Organization.objects.get(url_slug=str(self.kwargs['url_slug']))
-        except Organization.DoesNotExist:
-            raise NotFound('Organization not found')
-
-        return OrganizationMember.objects.filter(organization=organization)
-
-    def perform_create(self, serializer):
-        serializer.save()
-        return serializer.data
-
-
 class UpdateOrganizationMemberView(RetrieveUpdateDestroyAPIView):
     permission_classes = [OrganizationMemberReadWritePermission]
     serializer_class = OrganizationMemberSerializer
@@ -538,8 +518,8 @@ class ListOrganizationMembersAPIView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
     search_fields = ['organization__url_slug']
-    pagination_class = MembersPagination
     serializer_class = OrganizationMemberSerializer
+    pagination_class = MembersPagination
 
     def get_queryset(self):
         return OrganizationMember.objects.filter(

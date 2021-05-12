@@ -2,6 +2,7 @@ import { Button, makeStyles, Typography } from "@material-ui/core";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import React, { useContext } from "react";
+import ROLE_TYPES from "../../../public/data/role_types";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -60,7 +61,7 @@ export default function TeamContent({ project, leaveProject }) {
       <>
         {user && !!project.team.find((m) => m.id === user.id) && (
           <div>
-            {["Creator", "Administrator"].includes(
+            {[ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(
               project.team.find((m) => m.id === user.id).permission
             ) && (
               <Button

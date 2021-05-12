@@ -4,6 +4,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Cookies from "next-cookies";
 import React, { useContext, useEffect, useRef } from "react";
 import tokenConfig from "../../public/config/tokenConfig";
+import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, redirect } from "../../public/lib/apiOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
@@ -280,7 +281,7 @@ function ProjectLayout({
         ? project.team.find((m) => m.id === user.id).permission
         : null;
     const team_size = project?.team?.length;
-    if (user_permission === "Creator" && team_size > 1)
+    if (user_permission === ROLE_TYPES.all_type && team_size > 1)
       setMessage({
         message: `You can't leave a project as the creator. Please give the creator role to another team member by clicking "Manage Members" in the team tab`,
         messageType: "error",
@@ -510,7 +511,7 @@ function parseProjectMembers(projectMembers) {
       ...m.user,
       url_slug: m.user.url_slug,
       role: m.role_in_project,
-      permission: m.role.name,
+      permission: m.role.role_type,
       availability: m.availability,
       name: m.user.first_name + " " + m.user.last_name,
       location: m.user.location,

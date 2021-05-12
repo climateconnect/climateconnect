@@ -1,8 +1,9 @@
 import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
+import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
-import { getAllChangedMembers } from "../../../public/lib/manageMembers";
+import { getAllChangedMembers, hasGreaterRole } from "../../../public/lib/manageMembers";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ManageMembers from "../manageMembers/ManageMembers";
@@ -43,7 +44,7 @@ export default function ManageOrganizationMembers({
   if (!user_role) setUserRole(members.find((m) => m.id === user.id).role);
 
   const canEdit = (member) => {
-    return member.id === user.id || user_role.role_type > member.role.role_type;
+    return member.id === user.id || hasGreaterRole(user_role.role_type, member.role.role_type);
   };
 
   const handleSubmit = (event) => {
@@ -80,11 +81,11 @@ export default function ManageOrganizationMembers({
   };
 
   const verifyInput = () => {
-    if (currentMembers.filter((cm) => cm.role.name === "Creator").length !== 1) {
+    if (currentMembers.filter((cm) => cm.role.role_type === ROLE_TYPES.all_type).length !== 1) {
       alert(texts.there_must_be_exactly_one_creator_of_organization);
       return false;
     }
-    if (!members.filter((m) => m.role.name === "Creator").length === 1) {
+    if (!members.filter((m) => m.role.role_type === ROLE_TYPES.all_type).length === 1) {
       alert(texts.error_no_creator);
       return false;
     }

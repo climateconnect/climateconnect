@@ -10,6 +10,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
+import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
@@ -172,7 +173,7 @@ export default function EditProjectContent({
           />
           <Typography component="span">{texts.organizations_project}</Typography>
         </div>
-        {!isNarrowScreen && user_role.name === "Creator" && (
+        {!isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
           <DeleteProjectButton
             project={project}
             handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}

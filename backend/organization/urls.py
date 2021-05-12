@@ -31,11 +31,6 @@ urlpatterns = [
         name='create-organization-api-view'
     ),
     path(
-        'organizations/<str:url_slug>/members/',
-        organization_views.ListCreateOrganizationMemberView.as_view(),
-        name='list-create-organization-member-view'
-    ),
-    path(
         'organizations/<str:url_slug>/update_member/<int:pk>/',
         organization_views.UpdateOrganizationMemberView.as_view(),
         name='update-organization-member-view'

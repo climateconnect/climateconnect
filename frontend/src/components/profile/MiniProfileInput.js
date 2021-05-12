@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import React, { useContext, useEffect } from "react";
+import ROLE_TYPES from "../../../public/data/role_types";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -76,15 +77,19 @@ export default function MiniProfileInput({
       options.filter((o) => o.id === creatorRole.id).length > 0
     ) {
       setOptions(
-        rolesOptions.map((r) => ({ ...r, key: r.id })).filter((r) => r.name !== "Creator")
+        rolesOptions
+          .map((r) => ({ ...r, key: r.id }))
+          .filter((r) => r.role_type !== ROLE_TYPES.all_type)
       );
     }
   });
 
   const [options, setOptions] = React.useState(
-    profile.role.id === creatorRole.id
+    profile.role.role_type === ROLE_TYPES.all_type
       ? fullRolesOptions.map((r) => ({ ...r, key: r.id }))
-      : rolesOptions.map((r) => ({ ...r, key: r.id })).filter((r) => r.name !== "Creator")
+      : rolesOptions
+          .map((r) => ({ ...r, key: r.id }))
+          .filter((r) => r.role_type !== ROLE_TYPES.all_type)
   );
 
   const handleChangeRolePermissions = (event) => {
@@ -142,9 +147,9 @@ export default function MiniProfileInput({
         size="small"
         className={classes.field}
         disabled={
-          profile.edited && profile.role.id !== creatorRole.id
+          profile.edited && profile.role.role_type !== ROLE_TYPES.all_type
             ? false
-            : editDisabled || profile.role.id === creatorRole.id
+            : editDisabled || profile.role.role_type === ROLE_TYPES.all_type
         }
         options={options}
         controlledValue={profile.role}
@@ -153,7 +158,7 @@ export default function MiniProfileInput({
         onChange={handleChangeRolePermissions}
       />
       {allowAppointingCreator && (
-        <Button onClick={handleOpenConfirmCreatorDialog}>Make this user the Creator</Button>
+        <Button onClick={handleOpenConfirmCreatorDialog}>{texts.make_this_user_the_creator}</Button>
       )}
       {!dontPickRole && (
         <>
