@@ -99,7 +99,7 @@ def get_location(location_object):
 
 def get_multipolygon_from_geojson(geojson):
     input_polygon =  GEOSGeometry(str(geojson))
-    
+
     if isinstance(input_polygon,Polygon):
         return MultiPolygon(
             get_polygon_with_switched_coordinates(input_polygon)
@@ -141,7 +141,10 @@ def format_location(location_string, already_loaded):
     if already_loaded:
         location_object = location_string
     else:
-        location_object = json.loads(location_string)[0]
+        if type(location_string) == dict:
+            location_object = location_string
+        else:
+            location_object = json.loads(location_string)[0]
     location_name = format_location_name(location_object)
     return {
         'type': location_object['geojson']['type'],
@@ -231,6 +234,7 @@ def get_middle_part(address, order, suffixes):
 
 def get_location_with_range(query_params): 
     filter_place_id = query_params.get('place')
+    location_type = query_params.get('loc_type')
     locations = Location.objects.filter(place_id=filter_place_id)
         # shrink polygon by 1 meter to exclude places that share a border
     # Example: Don't show projects from the USA when searching for Mexico
@@ -248,7 +252,7 @@ def get_location_with_range(query_params):
         location_in_db = location.multi_polygon.buffer(buffer_width)
     else:        
         location = locations[0]
-        location_in_db = location.multi_polygon.buffer(buffer_width)
+        location_in_db = location.multi_polygon.buffer(buffer_width) if location_type == 'relation' else location.centre_point 
     radius = 0
     if 'radius' in query_params:
         radius_value = query_params.get('radius')
