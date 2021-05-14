@@ -171,7 +171,6 @@ export default function BrowseContent({
   }, []);
 
   const handleTabChange = (event, newValue) => {
-    // debugger;
     if (hasQueryParams && !hasFilteredFromQueryParams) {
       // Update the state of the visual filters, like Select, Dialog, etc
       // Then actually fetch the data. We need a way to map what's
