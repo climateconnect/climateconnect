@@ -1,4 +1,4 @@
-import { Button } from "@material-ui/core";
+import { Button, CircularProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
@@ -23,6 +23,9 @@ const useStyles = makeStyles((theme) => {
     draftButton: {
       marginRight: theme.spacing(2),
     },
+    translationLoader: {
+      color: "white",
+    },
   };
 });
 
@@ -34,6 +37,8 @@ export default function BottomNavigation({
   onClickNextStep,
   saveAsDraft,
   additionalButtons,
+  loadingSubmit,
+  loadingSubmitDraft,
 }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -94,21 +99,35 @@ export default function BottomNavigation({
             variant="contained"
             onClick={saveAsDraft}
             className={`${classes.backButton} ${classes.draftButton}`}
+            disabled={loadingSubmitDraft || loadingSubmit}
           >
-            {texts.save_as_draft}
+            {loadingSubmitDraft ? (
+              <CircularProgress className={classes.translationLoader} size={23} />
+            ) : (
+              texts.save_as_draft
+            )}
           </Button>
         )}
         <NextButtons
           nextStepButtonType={nextStepButtonType}
           onClickNextStep={onClickNextStep}
           texts={texts}
+          loadingSubmit={loadingSubmit}
+          loadingSubmitDraft={loadingSubmitDraft}
         />
       </div>
     </div>
   );
 }
 
-function NextButtons({ nextStepButtonType, onClickNextStep, texts }) {
+function NextButtons({
+  nextStepButtonType,
+  onClickNextStep,
+  texts,
+  loadingSubmit,
+  loadingSubmitDraft,
+}) {
+  const classes = useStyles();
   if (nextStepButtonType === "submit")
     return (
       <Button variant="contained" color="primary" type="submit">
@@ -123,8 +142,17 @@ function NextButtons({ nextStepButtonType, onClickNextStep, texts }) {
     );
   else if (nextStepButtonType === "publish")
     return (
-      <Button variant="contained" color="primary" type="submit">
-        {texts.publish}
+      <Button
+        variant="contained"
+        color="primary"
+        type="submit"
+        disabled={loadingSubmit || loadingSubmitDraft}
+      >
+        {loadingSubmit ? (
+          <CircularProgress className={classes.translationLoader} size={23} />
+        ) : (
+          texts.publish
+        )}
       </Button>
     );
   else
