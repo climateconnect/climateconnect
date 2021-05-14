@@ -834,5 +834,24 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Please log in or sign up to share a project",
       de: "Bitte logge dich ein oder registriere dich, um ein Projekt zu teilen",
     },
+    internal_server_error: {
+      en: "Internal Server Error",
+      de: "Interner Serverfehler",
+    },
+    error_when_publishing_project: {
+      en: (
+        <>
+          There has been an error when publishing your project.
+          <br />
+          Please contact contact@climateconnect.earth for support
+        </>
+      ),
+      de: (
+        <>
+          Beim Veröffentlichen deines Projektes gab es einen Fehler.
+          <br /> Bitte wende dich an contact@climateconnect.earth.
+        </>
+      ),
+    },
   };
 }
