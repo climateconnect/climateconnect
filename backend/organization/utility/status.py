@@ -1,7 +1,8 @@
 from organization.models import ProjectStatus
 
+
 def get_project_status(status: ProjectStatus, language_code: str) -> str:
-    if language_code == "en":
+    a = getattr(status, "name_{}_translation".format(language_code))
+    if language_code == "en" or a == None:
         return status.name
-    else:
-        return getattr(status, "name_{}_translation".format(language_code))
+    return a

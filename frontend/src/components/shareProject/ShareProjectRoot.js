@@ -100,22 +100,13 @@ export default function ShareProjectRoot({
     return steps[stepNumber];
   };
 
-  // TODO: is this still used?
-  // const [sourceLanguage, setSourceLanguage] = useState(locale);
+  const targetLanguage = locales.find((l) => l !== locale);
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
-
-  // eslint-disable-next-line no-unused-vars
-  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
   const [translations, setTranslations] = React.useState({});
   const [curStep, setCurStep] = React.useState(getStep(0));
   const [finished, setFinished] = React.useState(false);
 
-  // TODO: is this still used?
-  // const changeTranslationLanguages = ({ newLanguagesObject }) => {
-  //   if (newLanguagesObject.sourceLanguage)
-  //     setProject({ ...project, language: newLanguagesObject.sourceLanguage });
-  //   if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
-  // };
+  // TODO: Allow changing sourceLanguage, targetLanguage
 
   useEffect(() => {
     if (window) {

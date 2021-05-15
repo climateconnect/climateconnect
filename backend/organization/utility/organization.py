@@ -1,8 +1,9 @@
-from organization.models.tags import OrganizationTags
 from typing import Dict
+
 from climateconnect_api.models.language import Language
 
 from organization.models import Organization, OrganizationTranslation
+from organization.models.tags import OrganizationTags
 
 
 def check_organization(organization_id: str) -> Organization:
@@ -15,40 +16,43 @@ def check_organization(organization_id: str) -> Organization:
 
 def get_organization_name(organization: Organization, language_code: str) -> str:
     if organization.language and language_code != organization.language.language_code and \
-        organization.translation_org.filter(language__language_code=language_code).exists():
+            organization.translation_org.filter(language__language_code=language_code).exists():
         name_translation = organization.translation_org.get(
             language__language_code=language_code
         ).name_translation
-        
+
         if name_translation and len(name_translation) > 0:
             return name_translation
-    
+
     return organization.name
 
 
 def get_organization_short_description(organization: Organization, language_code: str) -> str:
     if organization.language and language_code != organization.language.language_code and \
-        organization.translation_org.filter(language__language_code=language_code).exists():
+            organization.translation_org.filter(language__language_code=language_code).exists():
         return organization.translation_org.get(
             language__language_code=language_code
         ).short_description_translation
-    
+
     return organization.short_description
+
 
 def get_organization_about_section(organization: Organization, language_code: str) -> str:
     if organization.language and language_code != organization.language.language_code and \
-        organization.translation_org.filter(language__language_code=language_code).exists():
+            organization.translation_org.filter(language__language_code=language_code).exists():
         return organization.translation_org.get(
             language__language_code=language_code
         ).about_translation
-    
+
     return organization.about
 
+
 def get_organizationtag_name(tag: OrganizationTags, language_code: str) -> str:
-    if language_code == "en":
+    a = getattr(tag, "name_{}_translation".format(language_code))
+    if language_code == "en" or a == None:
         return tag.name
-    else:
-        return getattr(tag, "name_{}_translation".format(language_code))
+    return a
+
 
 def create_organization_translation(
     organization: Organization, language: Language, texts: Dict,
@@ -63,8 +67,9 @@ def create_organization_translation(
         org_translation.short_description_translation = texts['short_description']
     if 'about' in texts:
         org_translation.about_translation = texts['about']
-    
+
     org_translation.save()
+
 
 def is_valid_organization_size(org_size) -> bool:
     for size_option in Organization.ORGANIZATION_SIZE_OPTIONS:

@@ -1,5 +1,6 @@
 // 3rd party or built-in imports
 import NextCookies from "next-cookies";
+import Cookies from "universal-cookie";
 import React, { useRef, useState, useContext } from "react";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 
@@ -48,7 +49,6 @@ export async function getServerSideProps(ctx) {
       projectsObject: projectsObject,
       organizationsObject: organizationsObject,
       membersObject: membersObject,
-      token: token ? token : null,
       filterChoices: {
         project_categories: project_categories,
         organization_types: organization_types,
@@ -65,10 +65,11 @@ export default function Browse({
   projectsObject,
   organizationsObject,
   membersObject,
-  token,
   filterChoices,
   hubs,
 }) {
+  const cookies = new Cookies();
+  const token = cookies.get("token");
   const { locale } = useContext(UserContext);
 
   // Initialize filters

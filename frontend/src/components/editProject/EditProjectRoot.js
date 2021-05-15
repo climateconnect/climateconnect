@@ -2,6 +2,7 @@ import { Container, Divider, Typography, useMediaQuery } from "@material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 import Router from "next/router";
 import React, { useContext, useRef, useState } from "react";
+
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
@@ -64,13 +65,10 @@ export default function EditProjectRoot({
     initialTranslations ? getTranslationsFromObject(initialTranslations, "project") : {}
   );
 
-  // eslint-disable-next-line no-unused-vars
-  const [sourceLanguage, setSourceLanguage] = useState(
-    project.language ? project.language : locale
-  );
+  const sourceLanguage = project.language ? project.language : locale;
+  const targetLanguage = locales.find((l) => l !== sourceLanguage);
 
-  // eslint-disable-next-line no-unused-vars
-  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== sourceLanguage));
+  // TODO: Allow changing sourceLanguage, targetLanguage
 
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
