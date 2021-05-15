@@ -1,4 +1,4 @@
-import Cookies from "next-cookies";
+import NextCookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
 import getOrganizationInfoMetadata from "../../public/data/organization_info_metadata.js";
 import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
@@ -12,7 +12,7 @@ import EditOrganizationRoot from "../../src/components/organization/EditOrganiza
 import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { token } = NextCookies(ctx);
   if (ctx.req && !token) {
     const texts = getTexts({ page: "organization", locale: ctx.locale });
     const message = texts.log_in_to_edit_organization;

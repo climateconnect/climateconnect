@@ -1,7 +1,8 @@
 import { makeStyles, Typography } from "@material-ui/core";
-import Cookies from "next-cookies";
+import NextCookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext, useRef, useState } from "react";
+import Cookies from "universal-cookie";
 import ROLE_TYPES from "../public/data/role_types";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getAllHubs } from "../public/lib/hubOperations";
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { token } = NextCookies(ctx);
   const [tagOptions, rolesOptions, allHubs] = await Promise.all([
     await getTags(token, ctx.locale),
     await getRolesOptions(token, ctx.locale),
@@ -38,14 +39,14 @@ export async function getServerSideProps(ctx) {
   return {
     props: {
       tagOptions: tagOptions,
-      token: token,
       rolesOptions: rolesOptions,
       allHubs: allHubs,
     },
   };
 }
 
-export default function CreateOrganization({ tagOptions, token, rolesOptions, allHubs }) {
+export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }) {
+  const token = new Cookies().get("token");
   const classes = useStyles();
   const [errorMessages, setErrorMessages] = React.useState({
     basicOrganizationInfo: "",
