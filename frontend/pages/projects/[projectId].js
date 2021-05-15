@@ -6,6 +6,7 @@ import React, { useContext, useEffect, useRef } from "react";
 import tokenConfig from "../../public/config/tokenConfig";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, redirect } from "../../public/lib/apiOperations";
+import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
@@ -72,14 +73,14 @@ export async function getServerSideProps(ctx) {
     token ? getIsUserFollowing(projectUrl, token, ctx.locale) : false,
   ]);
   return {
-    props: {
+    props: nullifyUndefinedValues({
       project: project,
       members: members,
       posts: posts,
       comments: comments,
       token: token,
       following: following,
-    },
+    }),
   };
 }
 
