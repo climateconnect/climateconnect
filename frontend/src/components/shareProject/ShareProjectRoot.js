@@ -2,6 +2,7 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Router from "next/router";
 import React, { useContext, useEffect, useState } from "react";
+
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
@@ -15,6 +16,7 @@ import EnterDetails from "./EnterDetails";
 import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import SelectCategory from "./SelectCategory";
 import ShareProject from "./ShareProject";
+
 const DEFAULT_STATUS = 2;
 
 const useStyles = makeStyles((theme) => {
@@ -98,18 +100,22 @@ export default function ShareProjectRoot({
     return steps[stepNumber];
   };
 
-  const [sourceLanguage, setSourceLanguage] = useState(locale);
+  // TODO: is this still used?
+  // const [sourceLanguage, setSourceLanguage] = useState(locale);
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
+
+  // eslint-disable-next-line no-unused-vars
   const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
   const [translations, setTranslations] = React.useState({});
   const [curStep, setCurStep] = React.useState(getStep(0));
   const [finished, setFinished] = React.useState(false);
 
-  const changeTranslationLanguages = ({ newLanguagesObject }) => {
-    if (newLanguagesObject.sourceLanguage)
-      setProject({ ...project, language: newLanguagesObject.sourceLanguage });
-    if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
-  };
+  // TODO: is this still used?
+  // const changeTranslationLanguages = ({ newLanguagesObject }) => {
+  //   if (newLanguagesObject.sourceLanguage)
+  //     setProject({ ...project, language: newLanguagesObject.sourceLanguage });
+  //   if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
+  // };
 
   useEffect(() => {
     if (window) {

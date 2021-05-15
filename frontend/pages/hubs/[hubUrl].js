@@ -270,15 +270,17 @@ export default function Hub({
             applySearch={applySearch}
             customSearchBarLabels={customSearchBarLabels}
             errorMessage={errorMessage}
-            filterChoices={filterChoices}
+            // TODO: is this still needed?
+            // filterChoices={filterChoices}
             handleSetErrorMessage={handleSetErrorMessage}
             hideMembers={!isLocationHub}
             hubName={name}
             hubProjectsButtonRef={hubProjectsButtonRef}
             hubQuickInfoRef={hubQuickInfoRef}
             initialMembers={initialMembers}
-            initialOrganizations={initialOrganizations}
-            initialProjects={initialProjects}
+            // TODO: is this still needed?
+            // initialOrganizations={initialOrganizations}
+            // initialProjects={initialProjects}
             loadMoreData={loadMoreData}
             nextStepTriggeredBy={nextStepTriggeredBy}
           />

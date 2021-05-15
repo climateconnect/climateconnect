@@ -27,6 +27,7 @@ export default function SelectedFilters({ currentFilters, possibleFilters, handl
 
   // TODO: should probably refactor this to use .any
   const { locale } = useContext(UserContext);
+  // eslint-disable-next-line no-unused-vars
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const hasFilters = Object.keys(currentFilters).reduce((hasFilters, filter) => {
     if (currentFilters[filter] && currentFilters[filter].length) {

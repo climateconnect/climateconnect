@@ -1,4 +1,4 @@
-import { findAllItems, reduceFilters } from "../../../src/components/filter/FilterContent";
+import { findAllItems } from "../../../src/components/filter/FilterContent";
 
 describe("FilterContent", () => {
   describe("findAllItems", () => {
@@ -56,10 +56,5 @@ describe("FilterContent", () => {
       const foundItems = findAllItems(stubFilter, filtersToCheck);
       expect(foundItems).toBe(stubFilter);
     });
-
-    // TODO
-    it("handles mixed filter types (e.g. categories and skills)", () => {});
-
-    it("handles non-nested and nested (e.g. subcategories or items to choose from) within the same filter", () => {});
   });
 });

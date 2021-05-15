@@ -8,7 +8,9 @@
  */
 const getFilterUrl = (activeFilters) => {
   const filteredParams = encodeQueryParamsFromFilters(activeFilters);
-  const filteredQueryParams = `?${filteredParams ? filteredParams : ""}`;
+
+  // Only include "?" if query params aren't nullish
+  const filteredQueryParams = filteredParams ? `?${filteredParams}` : "";
 
   // Build a URL with properties. E.g., /browse?...
   const origin = window?.location?.origin;
@@ -29,6 +31,8 @@ const encodeQueryParamsFromFilters = (filters) => {
     return;
   }
 
+  // TODO: should make this more robust, and if the filters
+  // object includes properties that are empty, shouldn't add the &
   let queryParamFragment = "&";
   Object.keys(filters).map((filterKey) => {
     if (filters[filterKey] && filters[filterKey].length > 0) {

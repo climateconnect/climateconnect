@@ -1,4 +1,4 @@
-import { encodeQueryParamsFromFilters } from "../../public/lib/urlOperations";
+import { encodeQueryParamsFromFilters, getFilterUrl } from "../../public/lib/urlOperations";
 
 describe.only("lib", () => {
   describe("encodeQueryParamsFromFilters", () => {
@@ -36,6 +36,25 @@ describe.only("lib", () => {
       };
       const queryParam = encodeQueryParamsFromFilters(stubFilters);
       expect(queryParam).toBe("&category=Gastronomy%2FCatering%2FTest%26More&");
+    });
+  });
+
+  describe("getFilterUrl", () => {
+    it("doesn't drop the hash link fragment ('#') when persisting ", () => {
+      const stubFilters = {
+        location: "",
+        skills: [],
+      };
+
+      // Stub window object properties
+      delete window.location;
+      global.window.location = {};
+      global.window.location.origin = "origin";
+      global.window.location.pathname = "/browse";
+      global.window.location.hash = "#members";
+
+      const newUrl = getFilterUrl(stubFilters);
+      expect(newUrl).toBe("origin/browse?&#members");
     });
   });
 });

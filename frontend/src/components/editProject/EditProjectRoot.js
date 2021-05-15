@@ -63,9 +63,13 @@ export default function EditProjectRoot({
   const [translations, setTranslations] = useState(
     initialTranslations ? getTranslationsFromObject(initialTranslations, "project") : {}
   );
+
+  // eslint-disable-next-line no-unused-vars
   const [sourceLanguage, setSourceLanguage] = useState(
     project.language ? project.language : locale
   );
+
+  // eslint-disable-next-line no-unused-vars
   const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== sourceLanguage));
 
   const handleSetLocationOptionsOpen = (bool) => {
