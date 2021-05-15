@@ -97,17 +97,12 @@ export default function ShareProjectRoot({
     return steps[stepNumber];
   };
 
-  const [sourceLanguage, setSourceLanguage] = useState(locale);
-  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
+  const targetLanguage = locales.find((l) => l !== locale);
   const [translations, setTranslations] = React.useState({});
   const [curStep, setCurStep] = React.useState(getStep(0));
   const [finished, setFinished] = React.useState(false);
 
-  const changeTranslationLanguages = ({ newLanguagesObject }) => {
-    if (newLanguagesObject.sourceLanguage)
-      setProject({ ...project, language: newLanguagesObject.sourceLanguage });
-    if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
-  };
+  // TODO: Allow changing sourceLanguage, targetLanguage
 
   useEffect(() => {
     if (window) {
