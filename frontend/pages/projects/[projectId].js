@@ -1,8 +1,9 @@
 import { Container, Tab, Tabs, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Cookies from "next-cookies";
+import NextCookies from "next-cookies";
 import React, { useContext, useEffect, useRef } from "react";
+import Cookies from "universal-cookie";
 import tokenConfig from "../../public/config/tokenConfig";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, redirect } from "../../public/lib/apiOperations";
@@ -63,7 +64,7 @@ const parseComments = (comments) => {
 };
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { token } = NextCookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectId);
   const [project, members, posts, comments, following] = await Promise.all([
     getProjectByIdIfExists(projectUrl, token, ctx.locale),
@@ -78,13 +79,13 @@ export async function getServerSideProps(ctx) {
       members: members,
       posts: posts,
       comments: comments,
-      token: token,
       following: following,
     }),
   };
 }
 
-export default function ProjectPage({ project, members, posts, comments, token, following }) {
+export default function ProjectPage({ project, members, posts, comments, following }) {
+  const token = new Cookies().get("token");
   const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
   const [isUserFollowing, setIsUserFollowing] = React.useState(following);

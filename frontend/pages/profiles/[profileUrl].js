@@ -1,8 +1,9 @@
 import { Button, Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Cookies from "next-cookies";
+import NextCookies from "next-cookies";
 import Router from "next/router";
 import React, { useContext } from "react";
+import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../public/lib/apiOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 import getTexts from "../../public/texts/texts";
@@ -79,7 +80,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { token } = NextCookies(ctx);
   const profileUrl = encodeURI(ctx.query.profileUrl);
   const [profile, organizations, projects] = await Promise.all([
     getProfileByUrlIfExists(profileUrl, token, ctx.locale),
@@ -91,12 +92,12 @@ export async function getServerSideProps(ctx) {
       profile: profile,
       organizations: organizations,
       projects: projects,
-      token: token,
     }),
   };
 }
 
-export default function ProfilePage({ profile, projects, organizations, token }) {
+export default function ProfilePage({ profile, projects, organizations }) {
+  const token = new Cookies().get("token");
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getProfileInfoMetadata(locale);
   const texts = getTexts({ page: "profile", locale: locale, profile: profile });
