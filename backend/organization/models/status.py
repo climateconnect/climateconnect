@@ -19,19 +19,20 @@ class ProjectStatus(models.Model):
     )
 
     IDEA_TYPE = 0
-    IN_PROGRESS_TYPE = 1  # User can read and write to project or organization.
-    FINISHED_TYPE = 2  # User can perform all actions. i.e.: Administrator type.
+    IN_PROGRESS_TYPE = 1  
+    FINISHED_TYPE = 2  
     CANCELLED_TYPE = 3
     RECURRING_TYPE = 4
+    DEFAULT_TYPE = 1000 # This type was just added to make sure the backend doesn't break locally for people who used the old script to generate test data
     PROJECT_STATUS_TYPES = (
         (IDEA_TYPE, 'idea'), (IN_PROGRESS_TYPE, 'inprogress'),
         (FINISHED_TYPE, 'finished'), (CANCELLED_TYPE, 'cancelled'),
-        (RECURRING_TYPE, 'recurring')
+        (RECURRING_TYPE, 'recurring'), (DEFAULT_TYPE, 'default')
     )
 
     status_type = models.IntegerField(
         help_text="Type of the status. Used as unique identifier", verbose_name="Status Type",
-        choices=PROJECT_STATUS_TYPES, null=True, blank=True
+        choices=PROJECT_STATUS_TYPES, default=DEFAULT_TYPE
     )
 
     has_end_date = models.BooleanField(

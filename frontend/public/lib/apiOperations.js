@@ -7,7 +7,7 @@ export async function apiRequest({
   url,
   token,
   payload,
-  shouldThrowError=true,
+  shouldThrowError = true,
   locale,
   headers,
 }) {
@@ -26,7 +26,7 @@ export async function apiRequest({
       const response = await axios[method](process.env.API_URL + url, payload, config);
       return response;
     } catch (error) {
-      console.log(error)
+      console.log(error);
       console.log(error?.response);
       if (shouldThrowError) throw error;
     }
@@ -80,4 +80,23 @@ export async function sendToLogin(ctx, message, locale, relativePath) {
 export function getLocalePrefix(locale) {
   if (locale === "en") return "";
   else return `/${locale}`;
+}
+
+export async function getRolesOptions(token, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/roles/",
+      token: token,
+      locale: locale,
+    });
+    if (resp.data.results.length === 0) return null;
+    else {
+      return resp.data.results;
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
 }

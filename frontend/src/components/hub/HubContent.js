@@ -4,7 +4,7 @@ import {
   Container,
   makeStyles,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
     border: "1px solid white",
   },
-  buttonContainer: props => ({
+  buttonContainer: (props) => ({
     display: props.isLocationHub ? "none" : "flex",
     justifyContent: "center",
     height: 40,
@@ -94,9 +94,9 @@ export default function HubContent({
   subHeadline,
   hubQuickInfoRef,
   hubProjectsButtonRef,
-  isLocationHub
+  isLocationHub,
 }) {
-  const classes = useStyles({ isLocationHub: isLocationHub});
+  const classes = useStyles({ isLocationHub: isLocationHub });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));

@@ -1,5 +1,5 @@
 import { makeStyles, Tooltip, Typography } from "@material-ui/core";
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from "@material-ui/icons/Close";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
       minHeight: 100,
       backgroundSize: "cover",
     },
-    position: "relative"
+    position: "relative",
   }),
   img: (props) => ({
     width: props.fullWidth ? "80%" : "50%",
@@ -31,8 +31,8 @@ const useStyles = makeStyles((theme) => ({
     right: theme.spacing(0.5),
     fontWeight: "bold",
     fontSize: 30,
-    cursor: "pointer"
-  }
+    cursor: "pointer",
+  },
 }));
 
 export default function HubHeaderImage({ image, source, fullWidth, onClose }) {
@@ -44,7 +44,7 @@ export default function HubHeaderImage({ image, source, fullWidth, onClose }) {
       <div className={classes.root}>
         {onClose && (
           <Tooltip title={texts.click_here_to_minimize_info}>
-            <CloseIcon color="primary" className={classes.closeButton} onClick={onClose}/>
+            <CloseIcon color="primary" className={classes.closeButton} onClick={onClose} />
           </Tooltip>
         )}
         <img src={image} className={classes.img} />

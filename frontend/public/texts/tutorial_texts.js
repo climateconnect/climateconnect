@@ -32,7 +32,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     tutorial_lets_start_with_a_question_text: {
       en: `Are you already involved in climate action, for example as a volunteer or in your
       professional life?`,
-      de: `Engagierst du dich bereits als Ehrenamtlicher oder im Berufsleben für den Klimaschutz?`,
+      de: `Engagierst du dich bereits ehrenamtlich oder beruflich für den Klimaschutz?`,
     },
     no_but_i_would_like_to: {
       en: "No, but I'd like to",
@@ -73,7 +73,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     here_you_can_find_projects_in_hub: {
       en: (
         <>
-          Here you can find climate action projects in the {hubName} field that were created by
+          Here you can find climate action projects in the {hubName} hub that were created by
           Climate Connect members. You can find an overview of all projects on the{" "}
           <Link
             href={getLocalePrefix(locale) + "/browse"}
@@ -87,7 +87,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
       ),
       de: (
         <>
-          Hier kannst du alle Projekte von Climate Connect Nutzern im Bereich {hubName} finden.
+          Hier kannst du alle Projekte von Climate Connect Nutzer*innen im {hubName} Hub finden.
           Einen Überblick über alle Projekte erhälst du auf der{" "}
           <Link
             href={getLocalePrefix(locale) + "/browse"}
@@ -274,9 +274,9 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
       de: "Willkommen auf der Projektseite!",
     },
     welcome_to_the_project_page_text: {
-      en: `In the top section you can find a short summary (<240 characters) and the most important information about the project. 
+      en: `In the top section you can find a short summary (<280 characters) and the most important information about the project. 
       If the first impression is interesting, you can dive deeper.`,
-      de: `Im oberen Bereich findest du eine kurze Zusammenfassung (<240 Zeichen) und die wichtigsten Informationen zum Projekt. 
+      de: `Im oberen Bereich findest du eine kurze Zusammenfassung (<280 Zeichen) und die wichtigsten Informationen zum Projekt. 
       Wenn es dich interessiert, kannst du mehr darüber erfahren.`,
     },
     detailled_info_about_project_headline: {

@@ -29,7 +29,7 @@ class ProjectTranslation(models.Model):
     short_description_translation = models.TextField(
         help_text="Translation of project's short description",
         verbose_name="Short description translation",
-        max_length=480, null=True, blank=True
+        max_length=560, null=True, blank=True
     )
 
     description_translation = models.TextField(
@@ -92,10 +92,16 @@ class OrganizationTranslation(models.Model):
         max_length=1024, null=True, blank=True
     )
 
+    about_translation = models.TextField(
+        help_text="Translation of about section in organization page",
+        verbose_name="About section translation",
+        null=True, blank=True
+    )
+
     short_description_translation = models.TextField(
         help_text="Translation of short description",
         verbose_name="Short description translation",
-        null=True, blank=True
+        max_length=560, null=True, blank=True
     )
 
     school_translation = models.CharField(

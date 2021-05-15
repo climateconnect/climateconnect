@@ -113,8 +113,8 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de: "Du hast dein Team erfolgreich aktualisiert",
     },
     there_must_be_exactly_one_creator_of_a_project: {
-      en: "There must be exactly one creator of a project.",
-      de: "Für ein Projekt muss es genau eine*n Ersteller*in geben.",
+      en: "There must be exactly one Super Admin of a project.",
+      de: "Für ein Projekt muss es genau eine(n) Super Admin geben.",
     },
     manage_members_of_project: {
       en: `Manage members of ${project?.name}`,
@@ -146,8 +146,8 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       ),
     },
     you_cant_leave_a_project_as_the_creator: {
-      en: `You can't leave a project as the creator. Please give the creator role to another team member by clicking "Manage Members" in the team tab`,
-      de: `Du kannst das Projekt als Ersteller*in nicht verlassen. Bitte übertrage diese Rolle auf ein anderes Teammitglied, indem du "Mitglieder verwalten" im Team-Tab drückst`,
+      en: `You can't leave a project as the Super Admin. Please give the Super Admin role to another team member by clicking "Manage Members" in the team tab`,
+      de: `Du kannst das Projekt als Super Admin nicht verlassen. Bitte übertrage diese Rolle auf ein anderes Teammitglied, indem du "Mitglieder verwalten" im Team-Tab klickst`,
     },
     do_you_really_want_to_unfollow: {
       en: "Do you really want to unfollow?",
@@ -200,10 +200,6 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de:
         "Bitte erstelle ein Konto oder melde dich an, um die Verantwortlichen des Projektes zu kontaktieren.",
     },
-    summary: {
-      en: "Summary",
-      de: "Zusammenfassung",
-    },
     contact_the_projects_creator_with_just_one_click: {
       en: "Contact the project's creator with just one click!",
       de: "Kontaktiere die Verantwortlichen mit nur einem Klick",
@@ -211,6 +207,10 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     contact_creator: {
       en: "Contact creator",
       de: "Verantwortliche Kontaktieren",
+    },
+    contact: {
+      en: "Contact",
+      de: "Kontaktieren",
     },
     followers: {
       en: "Followers",
@@ -415,8 +415,8 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
         "Wenn du dein Projekt löscht, geht es verloren. Bist du dir sicher, dass du es löschen möchtest?",
     },
     briefly_summarise_what_you_are_doing_up_to_240_characters: {
-      en: "Briefly summarise what you are doing (up to 240 characters)\n\nPlease only use English!",
-      de: "Fass kurz zusammen, was ihr tun (bis zu 240 Zeichen)",
+      en: "Briefly summarise what you are doing (up to 280 characters)\n\nPlease only use English!",
+      de: "Fass kurz zusammen, was ihr tun (bis zu 280 Zeichen)",
     },
     project_categories: {
       en: "Project categories",
@@ -602,8 +602,8 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de: "Fasse dein Projekt zusammen",
     },
     briefly_summarise_what_you_are_doing: {
-      en: "Briefly summarise what you are doing (up to 240 characters)",
-      de: "Fasse kurz zusammen, was du tust (bis zu 240 Zeichen)",
+      en: "Briefly summarise what you are doing (up to 280 characters)",
+      de: "Fasse kurz zusammen, was du tust (bis zu 280 Zeichen)",
     },
     search_for_your_team_members: {
       en: "Search for your team members",
@@ -637,9 +637,9 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     },
     short_description_helptext: {
       en:
-        "Summarize your project in less than 240 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
+        "Summarize your project in less than 280 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
       de:
-        "Fasse dein Projekt in weniger als 240 Zeichen zusammen. Andere Klimaschützer*innen sollen verstehen, was dein Projekt erreichen will.",
+        "Fasse dein Projekt in weniger als 280 Zeichen zusammen. Andere Klimaschützer*innen sollen verstehen, was dein Projekt erreichen will.",
     },
     description_helptext: {
       en:
@@ -824,15 +824,34 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     },
     allow_collaboration: {
       en: "Allow collaboration",
-      de: "Zusammenarbeit zulassen"
+      de: "Zusammenarbeit zulassen",
     },
     dont_allow_collaboration: {
       en: "Don't allow collaboration",
-      de: "Keine Zusammenarbeit gewünscht"
+      de: "Keine Zusammenarbeit gewünscht",
     },
     please_log_in_or_sign_up_to_share_a_project: {
       en: "Please log in or sign up to share a project",
-      de: "Bitte logge dich ein oder registriere dich, um ein Projekt zu teilen"
-    }
+      de: "Bitte logge dich ein oder registriere dich, um ein Projekt zu teilen",
+    },
+    internal_server_error: {
+      en: "Internal Server Error",
+      de: "Interner Serverfehler",
+    },
+    error_when_publishing_project: {
+      en: (
+        <>
+          There has been an error when publishing your project.
+          <br />
+          Please contact contact@climateconnect.earth for support
+        </>
+      ),
+      de: (
+        <>
+          Beim Veröffentlichen deines Projektes gab es einen Fehler.
+          <br /> Bitte wende dich an contact@climateconnect.earth.
+        </>
+      ),
+    },
   };
 }

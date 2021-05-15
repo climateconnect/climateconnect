@@ -284,8 +284,8 @@
     "de": "Mehr auswählen"
   },
   "error_no_creator": {
-    "en": "Error: There wasn't a creator. Please contact contact@climateconnect.earth to resolve this issue.",
-    "de": "Fehler: Es gab keine*n Ersteller*in. Bitte schreibe an contact@climateconnect.earth damit wir das Problem beheben können."
+    "en": "Error: There wasn't a Super Admin. Please contact contact@climateconnect.earth to resolve this issue.",
+    "de": "Fehler: Es gab keine(n) Super Admin. Bitte schreibe an contact@climateconnect.earth damit wir das Problem beheben können."
   },
   "not_all_your_updates_have_worked": {
     "en": "Not all your updates have worked.",
@@ -301,7 +301,7 @@
   },
   "create_an_organization": {
     "en": "Create an organization",
-    "de": "Erstelle eine Organisation"
+    "de": "Organisation erstellen"
   },
   "you_are": {
     "en": "You are",
@@ -662,5 +662,17 @@
   "check_translations": {
     "en": "Check Translations",
     "de": "Übersetzungen überprüfen"
+  },
+  "summary": {
+    "en": "Summary",
+    "de": "Zusammenfassung"
+  },
+  "twohundred_eighty_chars_max": {
+    "en": "280 characters max",
+    "de": "Maximal 280 Zeichen"
+  },
+  "make_this_user_the_creator": {
+    "en": "Make this user the Super Admin",
+    "de": "Zum Super Admin machen"
   }
 }

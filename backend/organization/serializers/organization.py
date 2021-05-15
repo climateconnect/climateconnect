@@ -1,3 +1,4 @@
+from hubs.serializers.hub import HubStubSerializer
 from organization.serializers.translation import OrganizationTranslationSerializer
 from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
@@ -8,8 +9,23 @@ from rest_framework import serializers
 from organization.models import Organization, OrganizationMember, OrganizationTranslation
 from organization.serializers.tags import OrganizationTaggingSerializer
 from organization.utility.organization import (
-    get_organization_name, get_organization_short_description)
+    get_organization_name, get_organization_short_description, get_organization_about_section)
 
+class OrganizationStubSerializer(serializers.ModelSerializer):
+    location = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Organization
+        fields = ('id', 'name', 'url_slug', 'thumbnail_image', 'location')
+
+    def get_name(self, obj):
+        return get_organization_name(obj, get_language())
+
+    def get_location(self, obj):
+        if obj.location == None:
+            return None
+        return obj.location.name
 
 class OrganizationSerializer(serializers.ModelSerializer):
     types = serializers.SerializerMethodField()
@@ -17,13 +33,17 @@ class OrganizationSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
+    about = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
+    hubs = serializers.SerializerMethodField()
 
     class Meta:
         model = Organization
         fields = ('id', 'types', 'name', 'url_slug', 'image', 
             'background_image', 'parent_organization', 'location',
-            'short_description', 'organ', 'school', 'website', 'language'
+            'short_description', 'organ', 'school', 'website', 
+            'language', 'about', 'organization_size',
+            'hubs'
         )
 
     def get_name(self, obj):
@@ -48,11 +68,19 @@ class OrganizationSerializer(serializers.ModelSerializer):
     def get_language(self, obj):
         return obj.language.language_code
 
+    def get_about(self, obj):
+        return get_organization_about_section(obj, get_language())
+    
+    def get_hubs(self, obj):
+        serializer = HubStubSerializer(obj.hubs, many=True)
+        return serializer.data
+
 
 class EditOrganizationSerializer(OrganizationSerializer):
     location = serializers.SerializerMethodField()
     translations = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
+    about = serializers.SerializerMethodField()
     organ = serializers.SerializerMethodField()
     school = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
@@ -76,6 +104,8 @@ class EditOrganizationSerializer(OrganizationSerializer):
             return {}
     def get_short_description(self, obj):
         return obj.short_description
+    def get_about(self, obj):
+        return obj.about
     def get_organ(self, obj):
         return obj.organ
     def get_school(self, obj):
@@ -86,25 +116,6 @@ class EditOrganizationSerializer(OrganizationSerializer):
         fields = OrganizationSerializer.Meta.fields + ('location', 'translations')
 
 
-class OrganizationMinimalSerializer(serializers.ModelSerializer):
-    location = serializers.SerializerMethodField()
-    name = serializers.SerializerMethodField()
-    class Meta:
-        model = Organization
-        fields = (
-            'id', 'name', 'url_slug', 'image', 'short_description', 
-            'background_image', 'location', 'website'
-        )
-    
-    def get_name(self, obj):
-        return get_organization_name(obj, get_language())
-
-    def get_location(self, obj):
-        if obj.location == None:
-            return None
-        return obj.location.name
-
-
 class OrganizationCardSerializer(serializers.ModelSerializer):
     types = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
@@ -112,7 +123,7 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = (
-            'id', 'name', 'url_slug', 'thumbnail_image', 'location', 'types'
+            'id', 'name', 'url_slug', 'thumbnail_image', 'location', 'types', 'short_description'
         )
     
     def get_name(self, obj):
@@ -123,26 +134,12 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
             return None
         return obj.location.name
 
+    def get_short_description(self, obj):
+        return get_organization_short_description(obj, get_language())
+
     def get_types(self, obj):
         serializer = OrganizationTaggingSerializer(obj.tag_organization, many=True)
         return serializer.data
-
-
-class OrganizationStubSerializer(serializers.ModelSerializer):
-    location = serializers.SerializerMethodField()
-    name = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Organization
-        fields = ('id', 'name', 'url_slug', 'thumbnail_image', 'location')
-
-    def get_name(self, obj):
-        return get_organization_name(obj, get_language())
-
-    def get_location(self, obj):
-        if obj.location == None:
-            return None
-        return obj.location.name
 
 
 class OrganizationMemberSerializer(serializers.ModelSerializer):

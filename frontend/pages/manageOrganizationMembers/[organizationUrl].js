@@ -2,7 +2,10 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
-import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
+import ROLE_TYPES from "../../public/data/role_types";
+import { apiRequest, getRolesOptions, sendToLogin } from "../../public/lib/apiOperations";
+import { parseOrganization } from "../../public/lib/organizationOperations";
+import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import LoginNudge from "../../src/components/general/LoginNudge";
@@ -34,13 +37,13 @@ export async function getServerSideProps(ctx) {
     getAvailabilityOptions(token, ctx.locale),
   ]);
   return {
-    props: {
+    props: nullifyUndefinedValues({
       organization: organization,
       members: members,
       rolesOptions: rolesOptions,
       availabilityOptions: availabilityOptions,
       token: token,
-    },
+    }),
   };
 }
 
@@ -79,8 +82,8 @@ export default function manageOrganizationMembers({
       </WideLayout>
     );
   else if (
-    members.find((m) => m.id === user.id).role.name != "Creator" &&
-    members.find((m) => m.id === user.id).role.name != "Administrator"
+    members.find((m) => m.id === user.id).role.role_type !== ROLE_TYPES.all_type &&
+    members.find((m) => m.id === user.id).role.role_type !== ROLE_TYPES.read_write_type
   )
     return (
       <WideLayout title={texts.no_permission_to_manage_members_of_this_org} hideHeadline={true}>
@@ -127,7 +130,7 @@ async function getMembersByOrganization(organizationUrl, token, locale) {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/organizations/" + organizationUrl + "/members/",
+      url: "/api/organizations/" + organizationUrl + "/members/?page=1&page_size=24",
       token: token,
       locale: locale,
     });
@@ -154,46 +157,10 @@ function parseOrganizationMembers(members) {
       time_per_week: m.time_per_week,
       role_in_organization: m.role_in_organization ? m.role_in_organization : "",
       location: member.location,
-      isCreator: m.permission.role_type === 2,
+      isCreator: m.permission.role_type === ROLE_TYPES.all_type,
     };
   });
 }
-
-function parseOrganization(organization) {
-  return {
-    url_slug: organization.url_slug,
-    background_image: organization.background_image,
-    name: organization.name,
-    image: organization.image,
-    types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
-    info: {
-      location: organization.location,
-      short_description: organization.short_description,
-      school: organization.school,
-      organ: organization.organ,
-      parent_organization: organization.parent_organization,
-    },
-  };
-}
-
-const getRolesOptions = async (token, locale) => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/roles/",
-      token: token,
-      locale: locale,
-    });
-    if (resp.data.results.length === 0) return null;
-    else {
-      return resp.data.results;
-    }
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-};
 
 const getAvailabilityOptions = async (token, locale) => {
   try {

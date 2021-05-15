@@ -106,6 +106,7 @@ export default function get_steps({
       step: 3,
       headline: texts.welcome_to_the_hub_page,
       pages: ["/hubs/"],
+      preventUsingTypist: true,
       texts: {
         isActivist: {
           true: (

@@ -195,7 +195,7 @@ const SocialLinks = () => {
   );
 };
 
-const SiteLinks = ({texts, locale}) => {
+const SiteLinks = ({ texts, locale }) => {
   const classes = useStyles();
   return (
     <div className={classes.siteLinks}>

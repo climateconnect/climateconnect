@@ -1,3 +1,4 @@
+from climateconnect_api.models.language import Language
 from organization.models.tags import ProjectTagging, ProjectTags
 from organization.models.project import ProjectParents
 from django.core.management.base import BaseCommand
@@ -12,9 +13,23 @@ from organization.models import (
     ProjectStatus, Project, Organization
 )
 
+def create_language_test_data():
+    print("creating languages...")
+    if not Language.objects.filter(language_code='en').exists():
+        Language.objects.create(name='english', native_name='english', language_code='en', currency='$')
+        print("English language created")
+    else:
+        print("English language already exists")
+
+    if not Language.objects.filter(language_code='de').exists():
+        Language.objects.create(name='german', native_name='Deutsch', language_code='de', currency='€')
+        print("German language created")
+    else:
+        print("German language already exists")
 
 def create_test_user_data(number_of_rows: int):
     print("Creating users...")
+    english_language = Language.objects.filter(language_code='en')[0]
     for i in range(number_of_rows):
         username = "test{}@test.com".format(i)
         name = "test {}".format(i)
@@ -27,7 +42,7 @@ def create_test_user_data(number_of_rows: int):
             UserProfile.objects.create(
                 user=user, name=name, url_slug=url_slug,
                 country="Germany", is_profile_verified=True,
-                city="Test {}".format(i)
+                city="Test {}".format(i), language=english_language
             )
             print("{} User created".format(username))
         else:
@@ -79,20 +94,20 @@ def create_project_status_test_data():
     # Creating 2 project status
     print("Creating project status...")
     if not ProjectStatus.objects.filter(name='In Progress').exists():
-        ProjectStatus.objects.create(name='In Progress', has_end_date=True, has_start_date=True)
+        ProjectStatus.objects.create(name='In Progress', status_type=1, has_end_date=True, has_start_date=True)
         print("In Progress status created.")
     else:
         print("In Progress project status already exists.")
 
     if not ProjectStatus.objects.filter(name='Recurring').exists():
-        ProjectStatus.objects.create(name='Recurring', has_end_date=False, has_start_date=True)
+        ProjectStatus.objects.create(name='Recurring', status_type=4, has_end_date=False, has_start_date=True)
         print("Recurring project status created.")
     else:
         print("Recurring project status already exists.")
 
-
 def create_organization_test_data(number_of_rows: int):
     print("Creating orgranization data...")
+    english_language = Language.objects.filter(language_code='en')[0]
     for i in range(number_of_rows):
         name = "Test Org {}".format(i)
         url_slug = name.replace(" ", "")
@@ -100,7 +115,7 @@ def create_organization_test_data(number_of_rows: int):
             Organization.objects.create(
                 name=name, url_slug=url_slug,
                 country="Germany", short_description="This is a test organization",
-                city="Test {}".format(i)
+                city="Test {}".format(i), language=english_language
             )
             print("{} organization created.".format(name))
         else:
@@ -130,6 +145,7 @@ def create_project_tags_test_data():
 
 def create_project_test_data(number_of_rows: int):
     print("Creating project data...")
+    english_language = Language.objects.filter(language_code='en')[0]
 
     for i in range(number_of_rows):
         name = "Test project {}".format(i)
@@ -153,6 +169,7 @@ def create_project_test_data(number_of_rows: int):
                 start_date=one_year_and_one_day_ago,
                 status=ProjectStatus.objects.get(name="In Progress"),
                 url_slug=url_slug,
+                language=english_language
             )
 
             parent_user = User.objects.all()[i]

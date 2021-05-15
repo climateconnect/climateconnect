@@ -1,6 +1,7 @@
 import { makeStyles } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import React, { useContext, useState } from "react";
+import ROLE_TYPES from "../../../../public/data/role_types";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import ChatContent from "./ChatContent";
@@ -15,6 +16,11 @@ const useStyles = makeStyles((theme) => {
     },
     showParticipantsButton: {
       cursor: "pointer",
+    },
+    alert: {
+      width: "100%",
+      maxWidth: theme.breakpoints.values["md"],
+      margin: "0 auto",
     },
   };
 });
@@ -68,7 +74,9 @@ export default function MessagingLayout({
     setCurMessage("");
     if (event) event.preventDefault();
   };
-  const canEditMembers = user_role.name === "Creator" || user_role.name === "Administrator";
+  const canEditMembers =
+    user_role.role_type === ROLE_TYPES.all_type ||
+    user_role.role_type === ROLE_TYPES.read_write_type;
 
   const handleMessageKeydown = (event) => {
     if (event.key === "Enter")

@@ -95,12 +95,13 @@ export default function SelectField({
                 />
               </MenuItem>
             );
-          else
+          else {
             return (
               <option value={value.name} key={index} data-key={value.key}>
                 {value.name}
               </option>
             );
+          }
         })}
     </TextField>
   );

@@ -4,7 +4,7 @@ import {
   Container,
   makeStyles,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import _ from "lodash";
 import React, { useContext, useEffect, useState } from "react";
@@ -55,11 +55,11 @@ const useStyles = makeStyles((theme) => ({
   },
   submitOptions: {
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   saveAsDraftButton: {
-    marginTop: theme.spacing(1)
-  }
+    marginTop: theme.spacing(1),
+  },
 }));
 
 // @textsToTranslate: Metadata object showing which keys of the data object are translateable.
@@ -79,12 +79,23 @@ export default function TranslateTexts({
   submitButtonText,
   saveAsDraft,
   loadingSubmit,
-  loadingSubmitDraft
+  loadingSubmitDraft,
+  organization,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: pageName, locale: locale });
-  const targetLanguageTexts = getTexts({ page: pageName, locale: targetLanguage });
+  //For the organization page, we need to retrieve the organization name to get the german text.
+  //Therefore we pass organization even it this might not make sense in most cases.
+  const texts = getTexts({
+    page: pageName,
+    locale: data.language ? data.language : locale,
+    organization: organization,
+  });
+  const targetLanguageTexts = getTexts({
+    page: pageName,
+    locale: targetLanguage,
+    organization: organization,
+  });
   const [waitingForTranslation, setWaitingForTranslation] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
@@ -148,7 +159,7 @@ export default function TranslateTexts({
       translations[targetLanguage].is_manual_translation
     ) {
       setConfirmDialogOpen(true);
-      return
+      return;
     }
     setWaitingForTranslation(true);
     try {
@@ -188,8 +199,7 @@ export default function TranslateTexts({
 
   const onConfirmDialogClose = async (confirmed) => {
     setConfirmDialogOpen(false);
-    if (confirmed) 
-      await automaticallyTranslateTexts(true);
+    if (confirmed) await automaticallyTranslateTexts(true);
   };
   return (
     <Container className={classes.root}>
@@ -215,27 +225,39 @@ export default function TranslateTexts({
             )}
           </Button>
           <div className={classes.submitOptions}>
-            <Button variant="contained" color="primary" type="submit" disabled={loadingSubmit || loadingSubmitDraft}>
-              {
-                loadingSubmit ? (
-                  <CircularProgress className={classes.translationLoader} size={23} />
-                ) : (submitButtonText ? submitButtonText : texts.skip_and_publish)
-              }
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              disabled={loadingSubmit || loadingSubmitDraft}
+            >
+              {loadingSubmit ? (
+                <CircularProgress className={classes.translationLoader} size={23} />
+              ) : submitButtonText ? (
+                submitButtonText
+              ) : (
+                texts.skip_and_publish
+              )}
             </Button>
-            {saveAsDraft &&(
-              <Button variant="contained" disabled={loadingSubmit || loadingSubmitDraft} onClick={saveAsDraft} className={classes.saveAsDraftButton}>
-                {
-                  loadingSubmitDraft ? (
-                    <CircularProgress className={classes.translationLoader} size={23} />
-                  ) : texts.save_as_draft                  
-                }
-              </Button>  
-            )} 
+            {saveAsDraft && (
+              <Button
+                variant="contained"
+                disabled={loadingSubmit || loadingSubmitDraft}
+                onClick={saveAsDraft}
+                className={classes.saveAsDraftButton}
+              >
+                {loadingSubmitDraft ? (
+                  <CircularProgress className={classes.translationLoader} size={23} />
+                ) : (
+                  texts.save_as_draft
+                )}
+              </Button>
+            )}
           </div>
         </div>
         <div className={classes.translationBlocksHeader}>
           {textsToTranslate.map((textObj, index) => {
-            if (textObj.isArray){
+            if (textObj.isArray) {
               return data[textObj.textKey].map((entry, index) => (
                 <TranslationBlock
                   key={index}
@@ -253,7 +275,7 @@ export default function TranslateTexts({
                   targetLanguageTexts={targetLanguageTexts}
                 />
               ));
-            }else
+            } else
               return (
                 <TranslationBlock
                   key={index}
@@ -306,14 +328,14 @@ function TranslationBlock({
     : dataKey;
 
   const changeOriginalText = (newValue, dataKey) => {
-    if(!isInArray){
-      handleOriginalTextChange(newValue, dataKey)
-    } else{
-      const newArrayValue = data[dataKey]
-      newArrayValue[indexInArray] = newValue
-      handleOriginalTextChange(newArrayValue, dataKey)
+    if (!isInArray) {
+      handleOriginalTextChange(newValue, dataKey);
+    } else {
+      const newArrayValue = data[dataKey];
+      newArrayValue[indexInArray] = newValue;
+      handleOriginalTextChange(newArrayValue, dataKey);
     }
-  }
+  };
   return (
     <div className={classes.translationBlock}>
       <TranslationBlockElement

@@ -8,7 +8,7 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo
+  membersWithAdditionalInfo,
 } from "../public/lib/getOptions";
 import { parseData } from "../public/lib/parsingOperations";
 import { nullifyUndefinedValues } from "../public/lib/profileOperations";
@@ -54,7 +54,7 @@ export async function getServerSideProps(ctx) {
       },
       hideInfo: hideInfo === "true",
       hubs: hubs,
-    })
+    }),
   };
 }
 

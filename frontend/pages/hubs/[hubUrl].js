@@ -9,7 +9,7 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo
+  membersWithAdditionalInfo,
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { parseData } from "../../public/lib/parsingOperations";
@@ -85,8 +85,8 @@ export async function getServerSideProps(ctx) {
         skills: skills,
         project_statuses: project_statuses,
       },
-    }
-  }
+    },
+  };
 }
 
 export default function Hub({
@@ -119,12 +119,14 @@ export default function Hub({
   };
   const contentRef = useRef(null);
 
-  const [initialMembers, setInitialMembers] = useState(null)
-  useEffect(async function(){
-    if(isLocationHub){
-      setInitialMembers(await getMembers({page: 1, token: token, hubUrl: hubUrl, locale: locale}))
+  const [initialMembers, setInitialMembers] = useState(null);
+  useEffect(async function () {
+    if (isLocationHub) {
+      setInitialMembers(
+        await getMembers({ page: 1, token: token, hubUrl: hubUrl, locale: locale })
+      );
     }
-  }, [])
+  }, []);
 
   //Refs and state for tutorial
   const hubQuickInfoRef = useRef(null);
@@ -137,9 +139,13 @@ export default function Hub({
   };
 
   const customSearchBarLabels = {
-    projects: isLocationHub ? texts.search_projects_in_location : texts.search_for_solutions_in_sector,
-    organizations: isLocationHub ? texts.search_organization_in_location : texts.search_for_organizations_in_sector,
-    profiles: texts.search_profiles_in_location
+    projects: isLocationHub
+      ? texts.search_projects_in_location
+      : texts.search_for_solutions_in_sector,
+    organizations: isLocationHub
+      ? texts.search_organization_in_location
+      : texts.search_for_organizations_in_sector,
+    profiles: texts.search_profiles_in_location,
   };
 
   const loadMoreData = async (type, page, urlEnding) => {
@@ -228,16 +234,20 @@ export default function Hub({
   };
 
   const closeHubHeaderImage = (e) => {
-    e.preventDefault()
-    console.log("closing hub header image")
-  }
+    e.preventDefault();
+    console.log("closing hub header image");
+  };
 
   return (
     <WideLayout title={headline} fixedHeader headerBackground="#FFF">
       <div className={classes.contentUnderHeader}>
         <NavigationSubHeader hubName={name} />
         {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
-        <HubHeaderImage image={getImageUrl(image)} source={image_attribution} onClose={closeHubHeaderImage}/>
+        <HubHeaderImage
+          image={getImageUrl(image)}
+          source={image_attribution}
+          onClose={closeHubHeaderImage}
+        />
         <HubContent
           hubQuickInfoRef={hubQuickInfoRef}
           headline={headline}
@@ -294,7 +304,7 @@ const getHubData = async (url_slug, locale) => {
       method: "get",
       url: `/api/hubs/${url_slug}/`,
       locale: locale,
-      shouldThrowError: true
+      shouldThrowError: true,
     });
     return resp.data;
   } catch (err) {
