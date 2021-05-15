@@ -1,5 +1,5 @@
 const getLocationFilterUrl = (location) => {
-  /*Pass place id. If the place id is found in our db we can use it's polygon, 
+  /*Pass place id. If the place id is found in our db we can use it's polygon,
   otherwise make a request to the location API with the backend */
   return `place=${location.place_id}&osm=${location.osm_id}&loc_type=${location.osm_type}&`;
 };

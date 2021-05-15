@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
-import { persistFiltersInURL } from "../../../public/lib/urlOperations";
+import { getFilterUrl } from "../../../public/lib/urlOperations";
 import FilterContent from "../filter/FilterContent";
 import FilterSection from "../indexPage/FilterSection";
 import getTexts from "../../../public/texts/texts";
@@ -253,11 +253,16 @@ export default function BrowseContent({
   /**
    * Sets loading state to true to until the results are
    * returned from applying the new filters. Then updates the
-   * state.
+   * state, and persists the new filters as query params in the URL.
    */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
-    // Save these filters as query params to the URL
-    persistFiltersInURL(newFilters);
+    const newUrl = getFilterUrl(newFilters);
+
+    // Only push state if there's a URL change. Be sure to account for the
+    // hash link / fragment on the end of the URL (e.g. #skills).
+    if (newUrl !== window?.location?.href) {
+      window.history.pushState({}, "", newUrl);
+    }
 
     if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
       indicateWrongLocation(
