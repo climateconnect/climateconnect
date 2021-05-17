@@ -21,7 +21,8 @@ class Idea(models.Model):
         verbose_name="URL Slug",
         max_length=1024,
         null=True,
-        blank=True
+        blank=True,
+        unique=True
     )
 
     short_description = models.CharField(
