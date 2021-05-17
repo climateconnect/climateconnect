@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from ideas.models import (
     Idea, IdeaTranslation, IdeaComment,
-    IdeaRating
+    IdeaRating, IdeaSupporter
 )
 
 
@@ -31,3 +31,4 @@ class IdeaCommentAdmin(admin.ModelAdmin):
 
 admin.site.register(IdeaComment, IdeaCommentAdmin)
 admin.site.register(IdeaRating, admin.ModelAdmin)
+admin.site.register(IdeaSupporter, admin.ModelAdmin)

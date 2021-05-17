@@ -32,7 +32,7 @@ class IdeaView(APIView):
         if not idea:
             return Response({'message': 'Idea not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = IdeaMinimalSerializer(idea)
+        serializer = IdeaSerializer(idea)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -46,7 +46,5 @@ class IdeaView(APIView):
         if serializer.is_valid():
             idea = serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        print(serializer.errors)
-        
+         
         return Response(None, status=status.HTTP_400_BAD_REQUEST)
