@@ -2,18 +2,18 @@ import { makeStyles, Typography } from "@material-ui/core";
 import NextCookies from "next-cookies";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-
-import { encodeQueryParamsFromFilters } from "../../public/lib/urlOperations";
 import { apiRequest } from "../../public/lib/apiOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo,
+  membersWithAdditionalInfo
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
-import { parseData } from "../../public/lib/parsingOperations";
+import { getLocationFilteredBy } from "../../public/lib/locationOperations";
+import { getInfoMetadataByType, parseData } from "../../public/lib/parsingOperations";
+import { encodeQueryParamsFromFilters } from "../../public/lib/urlOperations";
 import getTexts from "../../public/texts/texts";
 import BrowseContent from "../../src/components/browse/BrowseContent";
 import UserContext from "../../src/components/context/UserContext";
@@ -25,6 +25,7 @@ import HubHeaderImage from "../../src/components/hub/HubHeaderImage";
 import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
+
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -57,6 +58,7 @@ export async function getServerSideProps(ctx) {
     organization_types,
     skills,
     project_statuses,
+    location_filtered_by,
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
     getProjects({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
@@ -65,6 +67,7 @@ export async function getServerSideProps(ctx) {
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
+    getLocationFilteredBy(ctx.query),
   ]);
   return {
     props: {
@@ -86,6 +89,7 @@ export async function getServerSideProps(ctx) {
         skills: skills,
         project_statuses: project_statuses,
       },
+      initialLocationFilter: location_filtered_by,
     },
   };
 }
@@ -101,16 +105,37 @@ export default function Hub({
   statBoxTitle,
   stats,
   subHeadline,
+  initialLocationFilter,
+  filterChoices
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("token");
-  const [filters, setFilters] = useState({
-    projects: {},
-    members: {},
-    organizations: {},
-  });
+
+  const getInitialFilters = () => {
+    if (initialLocationFilter) {
+      return {
+        projects: {
+          location: initialLocationFilter,
+        },
+        members: {
+          location: initialLocationFilter,
+        },
+        organizations: {
+          location: initialLocationFilter,
+        },
+      };
+    } else {
+      return {
+        projects: {},
+        members: {},
+        organizations: {},
+      };
+    }
+  };
+
+  const [filters, setFilters] = useState(getInitialFilters());
   const [errorMessage, setErrorMessage] = useState("");
   const handleSetErrorMessage = (newMessage) => {
     setErrorMessage(newMessage);
@@ -176,7 +201,7 @@ export default function Hub({
     }
 
     setFilters({ ...filters, [type]: newFilters });
-    const newUrlEnding = encodeQueryParamsFromFilters(newFilters);
+    const newUrlEnding = encodeQueryParamsFromFilters(newFilters, getInfoMetadataByType(type, locale));
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }
@@ -209,7 +234,6 @@ export default function Hub({
 
   const applySearch = async (type, searchValue, oldUrlEnding) => {
     const newSearchQueryParam = `&search=${searchValue}`;
-    console.log(newSearchQueryParam);
     if (oldUrlEnding === newSearchQueryParam) {
       console.log("it's the same!");
       return;
@@ -271,12 +295,13 @@ export default function Hub({
             customSearchBarLabels={customSearchBarLabels}
             errorMessage={errorMessage}
             // TODO: is this still needed?
-            // filterChoices={filterChoices}
+            filterChoices={filterChoices}
             handleSetErrorMessage={handleSetErrorMessage}
             hideMembers={!isLocationHub}
             hubName={name}
             hubProjectsButtonRef={hubProjectsButtonRef}
             hubQuickInfoRef={hubQuickInfoRef}
+            initialLocationFilter={initialLocationFilter}
             initialMembers={initialMembers}
             // TODO: is this still needed?
             // initialOrganizations={initialOrganizations}
