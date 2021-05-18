@@ -98,8 +98,8 @@ export default function ShareProjectRoot({
     return steps[stepNumber];
   };
 
-  const targetLanguage = locales.find((l) => l !== locale);
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
+  const targetLanguage = locales.find((l) => l !== locale);
   const [translations, setTranslations] = React.useState({});
   const [curStep, setCurStep] = React.useState(getStep(0));
   const [finished, setFinished] = React.useState(false);
