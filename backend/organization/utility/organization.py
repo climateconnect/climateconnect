@@ -48,10 +48,12 @@ def get_organization_about_section(organization: Organization, language_code: st
 
 
 def get_organizationtag_name(tag: OrganizationTags, language_code: str) -> str:
-    a = getattr(tag, "name_{}_translation".format(language_code))
-    if language_code == "en" or a == None:
-        return tag.name
-    return a
+    lang_translation_attr = "name_{}_translation".format(language_code)
+    if hasattr(tag, lang_translation_attr):
+        translation = getattr(tag, lang_translation_attr)
+        if language_code != "en" and translation != None:
+            return translation
+    return tag.name
 
 
 def create_organization_translation(
