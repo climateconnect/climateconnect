@@ -18,7 +18,7 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
         name=data['name'],
         short_description=data['short_description'],
         collaborators_welcome=data['collaborators_welcome'],
-        status_id = data['status']
+        status_id=data['status']
     )
     # Add all non required parameters if they exists in the request.
     if 'start_date' in data:
@@ -33,7 +33,8 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
     if 'image' in data:
         project.image = get_image_from_data_url(data['image'])[0]
     if 'thumbnail_image' in data:
-        project.thumbnail_image = get_image_from_data_url(data['thumbnail_image'])[0]
+        project.thumbnail_image = get_image_from_data_url(
+            data['thumbnail_image'])[0]
     if 'description' in data:
         project.description = data['description']
     if 'end_date' in data:
@@ -53,58 +54,63 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
                 skill = Skill.objects.get(id=int(skill_id))
                 project.skills.add(skill)
             except Skill.DoesNotExist:
-                logger.error("Passed skill ID {} does not exists".format(skill_id))
+                logger.error(
+                    "Passed skill ID {} does not exists".format(skill_id))
                 continue
     project.save()
     return project
 
+
 def get_project_helpful_connections(project: Project, language_code: str) -> str:
     if language_code != project.language.language_code and \
-        project.translation_project.filter(language__language_code=language_code).exists():
+            project.translation_project.filter(language__language_code=language_code).exists():
         return project.translation_project.get(
             language__language_code=language_code
         ).helpful_connections_translation
-    
+
     return project.helpful_connections
+
 
 def get_project_name(project: Project, language_code: str) -> str:
     if language_code != project.language.language_code and \
-        project.translation_project.filter(language__language_code=language_code).exists():
+            project.translation_project.filter(language__language_code=language_code).exists():
         return project.translation_project.get(
             language__language_code=language_code
         ).name_translation
-    
+
     return project.name
 
 
 def get_project_short_description(project: Project, language_code: str) -> str:
     if language_code != project.language.language_code and \
-        project.translation_project.filter(language__language_code=language_code).exists():
+            project.translation_project.filter(language__language_code=language_code).exists():
         return project.translation_project.get(
             language__language_code=language_code
         ).short_description_translation
-    
+
     return project.short_description
 
 
 def get_project_description(project: Project, language_code: str) -> str:
     if language_code != project.language.language_code and \
-        project.translation_project.filter(language__language_code=language_code).exists():
+            project.translation_project.filter(language__language_code=language_code).exists():
         return project.translation_project.get(
             language__language_code=language_code
         ).description_translation
-    
+
     return project.description
 
 
 def get_projecttag_name(tag: ProjectTags, language_code: str) -> str:
-    if language_code == "en":
-        return tag.name
-    else:
-        return getattr(tag, "name_{}_translation".format(language_code))
+    lang_translation_attr = "name_{}_translation".format(language_code)
+    if hasattr(tag, lang_translation_attr):
+        translation = getattr(tag, lang_translation_attr)
+        if language_code != "en" and translation != None:
+            return translation
+    return tag.name
 
 
-def get_project_translations(data:Dict):
+def get_project_translations(data: Dict):
     texts = {
         'name': data['name'],
         'short_description': data['short_description']
@@ -116,7 +122,7 @@ def get_project_translations(data:Dict):
     try:
         return get_translations(
             texts,
-            data['translations'], 
+            data['translations'],
             data['source_language']
         )
     except ValueError:

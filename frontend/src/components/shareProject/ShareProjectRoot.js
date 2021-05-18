@@ -7,6 +7,7 @@ import { apiRequest } from "../../../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import GenericDialog from "../dialogs/GenericDialog";
 import TranslateTexts from "../general/TranslateTexts";
 import StepsTracker from "./../general/StepsTracker";
 import AddTeam from "./AddTeam";
@@ -97,17 +98,13 @@ export default function ShareProjectRoot({
     return steps[stepNumber];
   };
 
-  const [sourceLanguage, setSourceLanguage] = useState(locale);
-  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== locale));
+  const [errorDialogOpen, setErrorDialogOpen] = useState(false);
+  const targetLanguage = locales.find((l) => l !== locale);
   const [translations, setTranslations] = React.useState({});
   const [curStep, setCurStep] = React.useState(getStep(0));
   const [finished, setFinished] = React.useState(false);
 
-  const changeTranslationLanguages = ({ newLanguagesObject }) => {
-    if (newLanguagesObject.sourceLanguage)
-      setProject({ ...project, language: newLanguagesObject.sourceLanguage });
-    if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
-  };
+  // TODO: Allow changing sourceLanguage, targetLanguage
 
   useEffect(() => {
     if (window) {
@@ -173,13 +170,13 @@ export default function ShareProjectRoot({
       setFinished(true);
     } catch (error) {
       console.log(error);
+      setErrorDialogOpen(true);
       setProject({ ...project, error: true });
       setLoadingSubmit(false);
       console.log(error?.response?.data);
       if (error) console.log(error.response);
     }
   };
-
   const saveAsDraft = async (event) => {
     event.preventDefault();
     setLoadingSubmitDraft(true);
@@ -193,18 +190,23 @@ export default function ShareProjectRoot({
       .then(function (response) {
         setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
         setLoadingSubmitDraft(false);
+        setFinished(true);
       })
       .catch(function (error) {
         console.log(error);
+        setErrorDialogOpen(true);
         setProject({ ...project, error: true });
-        setLoadingSubmit(false);
+        setLoadingSubmitDraft(false);
         if (error) console.log(error.response);
       });
-    setFinished(true);
   };
 
   const handleSetProject = (newProjectData) => {
     setProject({ ...project, ...newProjectData });
+  };
+
+  const handleCloseErrorDialog = () => {
+    setErrorDialogOpen(false);
   };
 
   const textsToTranslate = [
@@ -283,6 +285,8 @@ export default function ShareProjectRoot({
               onSubmit={submitProject}
               saveAsDraft={saveAsDraft}
               isLastStep={steps[steps.length - 1].key === "addTeam"}
+              loadingSubmit={loadingSubmit}
+              loadingSubmitDraft={loadingSubmitDraft}
             />
           )}
           {curStep.key === "translate" && (
@@ -314,6 +318,15 @@ export default function ShareProjectRoot({
             hasError={project.error}
           />
         </>
+      )}
+      {project.error && (
+        <GenericDialog
+          open={errorDialogOpen}
+          onClose={handleCloseErrorDialog}
+          title={texts.internal_server_error}
+        >
+          <Typography>{texts.error_when_publishing_project}</Typography>
+        </GenericDialog>
       )}
     </>
   );
