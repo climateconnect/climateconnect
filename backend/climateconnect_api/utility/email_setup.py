@@ -214,7 +214,7 @@ def unregister_newsletter_contact(email_address):
         contact_id = result['Data'][0]['ID']
         remove_contact_from_list(contact_id, settings.MAILJET_NEWSLETTER_LIST_ID)
     else:
-        print(contact.status_code)
+        logging.error(contact.status_code)
 
 
 def remove_contact_from_list(contact_id, list_id):

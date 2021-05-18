@@ -1,3 +1,4 @@
+import logging
 from django.conf import settings
 
 from climateconnect_api.models.user import UserProfile
@@ -57,4 +58,4 @@ def create_email_notification(receiver, chat, message_content, sender, notificat
                 return
         return email_notification
     else:
-        print("can't send because we recently sent a notification")
+        logging.error("can't send because we recently sent a notification")

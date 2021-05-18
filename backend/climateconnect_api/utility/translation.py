@@ -1,3 +1,4 @@
+import logging
 from climateconnect_api.models.user import UserProfileTranslation
 from django.db.models.query_utils import Q
 from organization.models.translations import OrganizationTranslation, ProjectTranslation
@@ -19,7 +20,7 @@ def get_locale(language_code):
         "DE": "de"
     }
     if(language_code not in LANGUAGE_CODE_MAP):
-       print('Unsupported language: ' + language_code)
+       logging.error('Unsupported language: ' + language_code)
        return "en"
     return LANGUAGE_CODE_MAP[language_code]
 
