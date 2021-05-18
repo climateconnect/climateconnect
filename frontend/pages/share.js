@@ -1,5 +1,6 @@
-import Cookies from "next-cookies";
+import NextCookies from "next-cookies";
 import React, { useContext } from "react";
+import Cookies from "universal-cookie";
 import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
 import { nullifyUndefinedValues } from "../public/lib/profileOperations";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
@@ -10,7 +11,7 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { token } = NextCookies(ctx);
   if (ctx.req && !token) {
     const texts = getTexts({ page: "project", locale: ctx.locale });
     const message = texts.please_log_in_or_sign_up_to_share_a_project;
@@ -39,7 +40,6 @@ export async function getServerSideProps(ctx) {
       skillsOptions: skillsOptions,
       rolesOptions: rolesOptions,
       statusOptions: statusOptions,
-      token: token,
     }),
   };
 }
@@ -51,8 +51,8 @@ export default function Share({
   skillsOptions,
   rolesOptions,
   statusOptions,
-  token,
 }) {
+  const token = new Cookies().get("token");
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const [errorMessage, setErrorMessage] = React.useState("");

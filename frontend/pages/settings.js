@@ -1,5 +1,6 @@
-import Cookies from "next-cookies";
+import NextCookies from "next-cookies";
 import React, { useContext } from "react";
+import Cookies from "universal-cookie";
 import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import SettingsPage from "../src/components/account/SettingsPage";
@@ -8,16 +9,16 @@ import LoginNudge from "../src/components/general/LoginNudge";
 import Layout from "../src/components/layouts/layout";
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { token } = NextCookies(ctx);
   return {
     props: {
       settings: await getSettings(token, ctx.locale),
-      token: token,
     },
   };
 }
 
-export default function Settings({ settings, token }) {
+export default function Settings({ settings }) {
+  const token = new Cookies().get("token");
   const { user } = useContext(UserContext);
   const [message, setMessage] = React.useState("");
   const [currentSettings, setCurrentSettings] = React.useState(settings);

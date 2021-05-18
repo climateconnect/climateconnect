@@ -63,10 +63,10 @@ export default function EditProjectRoot({
   const [translations, setTranslations] = useState(
     initialTranslations ? getTranslationsFromObject(initialTranslations, "project") : {}
   );
-  const [sourceLanguage, setSourceLanguage] = useState(
-    project.language ? project.language : locale
-  );
-  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== sourceLanguage));
+  const sourceLanguage = project.language ? project.language : locale;
+  const targetLanguage = locales.find((l) => l !== sourceLanguage);
+
+  // TODO: Allow changing sourceLanguage, targetLanguage
 
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
