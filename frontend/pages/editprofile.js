@@ -21,14 +21,12 @@ export async function getServerSideProps(ctx) {
     props: {
       skillsOptions: skillsOptions,
       availabilityOptions: availabilityOptions,
-      token: token,
       user: userProfile,
     },
   };
 }
 
 export default function EditProfilePage({ skillsOptions, availabilityOptions, user }) {
-  console.log(user);
   const { locale } = useContext(UserContext);
   let infoMetadata = getProfileInfoMetadata(locale);
   const texts = getTexts({ page: "profile", locale: locale });

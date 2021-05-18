@@ -1,5 +1,6 @@
-import Cookies from "next-cookies";
+import NextCookies from "next-cookies";
 import React, { useContext, useEffect } from "react";
+import Cookies from "universal-cookie";
 import tokenConfig from "../../public/config/tokenConfig";
 import { apiRequest, redirect, sendToLogin } from "../../public/lib/apiOperations";
 import { getMessageFromServer } from "../../public/lib/messagingOperations";
@@ -11,7 +12,7 @@ import PageNotFound from "../../src/components/general/PageNotFound";
 import FixedHeightLayout from "../../src/components/layouts/FixedHeightLayout";
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { token } = NextCookies(ctx);
   const texts = getTexts({ page: "chat", locale: ctx.locale });
   if (ctx.req && !token) {
     const message = texts.login_required;
@@ -31,7 +32,6 @@ export async function getServerSideProps(ctx) {
   }
   return {
     props: {
-      token: token,
       chat_uuid: ctx.query.chatUUID,
       chatParticipants: parseParticipantsWithRole(chat.participants, rolesOptions),
       title: chat.title,
@@ -48,7 +48,6 @@ export async function getServerSideProps(ctx) {
 export default function Chat({
   chatParticipants,
   title,
-  token,
   chatUUID,
   messages,
   nextLink,
@@ -56,6 +55,7 @@ export default function Chat({
   rolesOptions,
   chat_id,
 }) {
+  const token = new Cookies().get("token");
   const { chatSocket, user, socketConnectionState, locale } = useContext(UserContext);
   const [participants, setParticipants] = React.useState(chatParticipants);
   const [state, setState] = React.useState({

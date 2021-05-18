@@ -42,6 +42,8 @@ export default function AddTeam({
   onSubmit,
   saveAsDraft,
   isLastStep,
+  loadingSubmit,
+  loadingSubmitDraft,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -152,6 +154,8 @@ export default function AddTeam({
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="publish"
             saveAsDraft={saveAsDraft}
+            loadingSubmit={loadingSubmit}
+            loadingSubmitDraft={loadingSubmitDraft}
           />
         ) : (
           <BottomNavigation
