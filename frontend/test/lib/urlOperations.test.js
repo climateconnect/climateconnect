@@ -45,7 +45,7 @@ describe.only("lib", () => {
           place_id: 258698828,
           osm_id: 62403,
           display_name: "Erlangen, Bavaria, Germany",
-          osm_type: "relation"
+          osm_type: "relation",
         },
       };
       const queryParam = encodeQueryParamsFromFilters(
