@@ -1,3 +1,4 @@
+import getOrganizationInfoMetadata from "../../public/data/organization_info_metadata";
 import { encodeQueryParamsFromFilters, getFilterUrl } from "../../public/lib/urlOperations";
 
 describe.only("lib", () => {
@@ -36,6 +37,22 @@ describe.only("lib", () => {
       };
       const queryParam = encodeQueryParamsFromFilters(stubFilters);
       expect(queryParam).toBe("&category=Gastronomy%2FCatering%2FTest%26More&");
+    });
+
+    it("properly parses location objects into query string", () => {
+      const stubFilters = {
+        location: {
+          place_id: 258698828,
+          osm_id: 62403,
+          display_name: "Erlangen, Bavaria, Germany",
+          osm_type: "relation"
+        },
+      };
+      const queryParam = encodeQueryParamsFromFilters(
+        stubFilters,
+        getOrganizationInfoMetadata("en")
+      );
+      expect(queryParam).toBe("&place=258698828&osm=62403&loc_type=relation&");
     });
   });
 
