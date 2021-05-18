@@ -1,23 +1,23 @@
-import _ from "lodash";
 import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
+import _ from "lodash";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
-
-import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
+import possibleFilters from "../../../public/data/possibleFilters";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
+import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
+import { getInfoMetadataByType } from "../../../public/lib/parsingOperations";
 import { getFilterUrl } from "../../../public/lib/urlOperations";
-import FilterContent from "../filter/FilterContent";
-import FilterSection from "../indexPage/FilterSection";
 import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
+import UserContext from "../context/UserContext";
+import FilterContent from "../filter/FilterContent";
 import LoadingSpinner from "../general/LoadingSpinner";
-import NoItemsFound from "./NoItemsFound";
+import FilterSection from "../indexPage/FilterSection";
 import OrganizationPreviews from "../organization/OrganizationPreviews";
-import possibleFilters from "../../../public/data/possibleFilters";
 import ProfilePreviews from "../profile/ProfilePreviews";
 import ProjectPreviews from "../project/ProjectPreviews";
 import Tutorial from "../tutorial/Tutorial";
-import UserContext from "../context/UserContext";
+import NoItemsFound from "./NoItemsFound";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -53,6 +53,7 @@ export default function BrowseContent({
   initialProjects,
   loadMoreData,
   nextStepTriggeredBy,
+  initialLocationFilter,
 }) {
   const initialState = {
     items: {
@@ -151,14 +152,19 @@ export default function BrowseContent({
 
       // For each query param option, ensure that it's
       // split into array before spreading onto the new filters object.
-      const queryObject = _.cloneDeep(router.query);
+      const queryObject = { ..._.cloneDeep(router.query) };
       for (const [key, value] of Object.entries(queryObject)) {
         if (value.indexOf(",") > 0) {
           queryObject[key] = value.split(",");
         }
       }
+      const newFilters = {
+        ...queryObject,
+      };
 
-      const newFilters = { ...queryObject };
+      if (queryObject.place) {
+        //filters contain a location! Locations have 3 parameters to identity themselves: loc_type, place and osm
+      }
 
       // Apply new filters with the query object immediately:
       handleApplyNewFilters("projects", newFilters, false, state.urlEnding["projects"]);
@@ -256,7 +262,7 @@ export default function BrowseContent({
    * state, and persists the new filters as query params in the URL.
    */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
-    const newUrl = getFilterUrl(newFilters);
+    const newUrl = getFilterUrl(newFilters, getInfoMetadataByType(type));
 
     // Only push state if there's a URL change. Be sure to account for the
     // hash link / fragment on the end of the URL (e.g. #skills).
@@ -383,6 +389,7 @@ export default function BrowseContent({
                 possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[0], filterChoices)}
                 type={TYPES_BY_TAB_VALUE[0]}
                 unexpandFilters={unexpandFilters}
+                initialLocationFilter={initialLocationFilter}
               />
             )}
             {/*
@@ -420,6 +427,7 @@ export default function BrowseContent({
                 possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[1], filterChoices)}
                 type={TYPES_BY_TAB_VALUE[1]}
                 unexpandFilters={unexpandFilters}
+                initialLocationFilter={initialLocationFilter}
               />
             )}
 

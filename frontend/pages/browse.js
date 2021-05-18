@@ -1,9 +1,8 @@
 // 3rd party or built-in imports
-import NextCookies from "next-cookies";
-import Cookies from "universal-cookie";
-import React, { useRef, useState, useContext } from "react";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
-
+import NextCookies from "next-cookies";
+import React, { useContext, useRef, useState } from "react";
+import Cookies from "universal-cookie";
 // Relative imports
 import { apiRequest } from "../public/lib/apiOperations";
 import {
@@ -11,16 +10,17 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo,
+  membersWithAdditionalInfo
 } from "../public/lib/getOptions";
-import { encodeQueryParamsFromFilters } from "../public/lib/urlOperations";
+import { getLocationFilteredBy } from "../public/lib/locationOperations";
+import { getInfoMetadataByType, parseData } from "../public/lib/parsingOperations";
 import { nullifyUndefinedValues } from "../public/lib/profileOperations";
-import { parseData } from "../public/lib/parsingOperations";
+import { encodeQueryParamsFromFilters } from "../public/lib/urlOperations";
 import BrowseContent from "../src/components/browse/BrowseContent";
+import UserContext from "../src/components/context/UserContext";
+import TopOfPage from "../src/components/hooks/TopOfPage";
 import HubsSubHeader from "../src/components/indexPage/HubsSubHeader";
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
-import TopOfPage from "../src/components/hooks/TopOfPage";
-import UserContext from "../src/components/context/UserContext";
 import WideLayout from "../src/components/layouts/WideLayout";
 
 export async function getServerSideProps(ctx) {
@@ -34,6 +34,7 @@ export async function getServerSideProps(ctx) {
     skills,
     project_statuses,
     hubs,
+    location_filtered_by,
   ] = await Promise.all([
     getProjects(1, token, "", ctx.locale),
     getOrganizations(1, token, "", ctx.locale),
@@ -43,6 +44,7 @@ export async function getServerSideProps(ctx) {
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
     getHubs(ctx.locale),
+    getLocationFilteredBy(ctx.query),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -57,6 +59,7 @@ export async function getServerSideProps(ctx) {
       },
       hideInfo: hideInfo === "true",
       hubs: hubs,
+      initialLocationFilter: location_filtered_by,
     }),
   };
 }
@@ -67,17 +70,36 @@ export default function Browse({
   membersObject,
   filterChoices,
   hubs,
+  initialLocationFilter,
 }) {
   const cookies = new Cookies();
   const token = cookies.get("token");
   const { locale } = useContext(UserContext);
 
+  const getInitialFilters = () => {
+    if (initialLocationFilter) {
+      return {
+        projects: {
+          location: initialLocationFilter,
+        },
+        members: {
+          location: initialLocationFilter,
+        },
+        organizations: {
+          location: initialLocationFilter,
+        },
+      };
+    } else {
+      return {
+        projects: {},
+        members: {},
+        organizations: {},
+      };
+    }
+  };
+
   // Initialize filters
-  const [filters, setFilters] = useState({
-    projects: {},
-    members: {},
-    organizations: {},
-  });
+  const [filters, setFilters] = useState(getInitialFilters());
   const [errorMessage, setErrorMessage] = useState("");
 
   /**
@@ -95,14 +117,14 @@ export default function Browse({
     if (filters === newFilters) {
       return;
     }
-
     setFilters({ ...filters, [type]: newFilters });
-
-    const newUrlEnding = encodeQueryParamsFromFilters(newFilters);
+    const newUrlEnding = encodeQueryParamsFromFilters(
+      newFilters,
+      getInfoMetadataByType(type, locale)
+    );
     if (oldUrlEnding === newUrlEnding) {
       return null;
     }
-
     setErrorMessage(null);
 
     try {
@@ -208,6 +230,7 @@ export default function Browse({
           initialOrganizations={organizationsObject}
           initialProjects={projectsObject}
           loadMoreData={loadMoreData}
+          initialLocationFilter={initialLocationFilter}
         />
       </WideLayout>
     </>

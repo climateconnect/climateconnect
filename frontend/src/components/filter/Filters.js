@@ -1,12 +1,11 @@
 import { Button, TextField, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
-
 import getTexts from "../../../public/texts/texts";
-import LocationSearchBar from "../search/LocationSearchBar";
+import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import SelectField from "../general/SelectField";
-import UserContext from "../context/UserContext";
+import LocationSearchBar from "../search/LocationSearchBar";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -90,7 +89,6 @@ export default function Filters({
   locationOptionsOpen,
   open,
   possibleFilters,
-
   selectedItems,
   setSelectedItems,
 }) {

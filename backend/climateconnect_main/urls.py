@@ -91,6 +91,7 @@ urls = [
     path('api/', include('chat_messages.urls')),
     #hub views
     path('api/', include('hubs.urls')),
+    path('api/', include('location.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG == "True":

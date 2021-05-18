@@ -1,3 +1,7 @@
+import getProjectInfoMetadata from "../data/getProjectInfoMetadata";
+import getOrganizationInfoMetadata from "../data/organization_info_metadata";
+import profile_info_metadata from "../data/profile_info_metadata";
+
 export function parseData({ type, data }) {
   if (type === "projects") return parseProjects(data);
   if (type === "organizations") return parseOrganizations(data);
@@ -28,4 +32,10 @@ const parseOrganizations = (organizations) => {
 export function getMessageFromUrl(message) {
   if (typeof message === "object") return message;
   else return decodeURIComponent(message).replaceAll("+", " ");
+}
+
+export function getInfoMetadataByType(type, locale) {
+  if (type === "organizations") return getOrganizationInfoMetadata(locale);
+  if (type === "profiles") return profile_info_metadata(locale);
+  if (type === "projects") return getProjectInfoMetadata();
 }

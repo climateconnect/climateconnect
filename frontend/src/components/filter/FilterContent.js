@@ -1,11 +1,10 @@
-import React from "react";
-import { useRouter } from "next/router";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-
+import { useRouter } from "next/router";
+import React from "react";
+import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
-import theme from "../../themes/theme";
 
 /**
  * Util to return an array of all potential items associated with
@@ -95,6 +94,7 @@ export default function FilterContent({
   possibleFilters,
   type,
   unexpandFilters,
+  initialLocationFilter,
 }) {
   const isMediumScreen = useMediaQuery(theme.breakpoints.between("xs", "md"));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
@@ -123,7 +123,12 @@ export default function FilterContent({
   // and when merging in parameters from query param
   const router = useRouter();
   Object.entries(router.query).forEach(([key, value]) => {
-    if (
+    const locationQueryParams = ["place", "loc_type", "osm"];
+    if (locationQueryParams.includes(key) && initialLocationFilter) {
+      if (!reducedPossibleFilters.location) {
+        reducedPossibleFilters.location = initialLocationFilter;
+      }
+    } else if (
       Array.isArray(reducedPossibleFilters[key]) ||
       typeof reducedPossibleFilters[key] === "string"
     ) {
@@ -140,7 +145,6 @@ export default function FilterContent({
 
   const [open, setOpen] = React.useState({});
   const [currentFilters, setCurrentFilters] = React.useState(reducedPossibleFilters);
-
   const reduced = reduceFilters(currentFilters, possibleFilters);
   const [selectedItems, setSelectedItems] = React.useState(reduced);
 
@@ -295,14 +299,11 @@ export default function FilterContent({
           setSelectedItems={setSelectedItems}
         />
       )}
-
-      {
-        <SelectedFilters
-          currentFilters={currentFilters}
-          handleUnselectFilter={handleUnselectFilter}
-          possibleFilters={possibleFilters}
-        />
-      }
+      <SelectedFilters
+        currentFilters={currentFilters}
+        handleUnselectFilter={handleUnselectFilter}
+        possibleFilters={possibleFilters}
+      />
     </div>
   );
 }
