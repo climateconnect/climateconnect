@@ -1,36 +1,35 @@
-import React, { useContext } from "react"
-import { Grid, makeStyles } from "@material-ui/core"
-import InfiniteScroll from "react-infinite-scroller"
-import LoadingSpinner from "../general/LoadingSpinner"
-import IdeaPreview from "./IdeaPreview"
-import UserContext from "../context/UserContext"
-import getTexts from "../../../public/texts/texts"
+import { Grid, makeStyles } from "@material-ui/core";
+import React, { useContext } from "react";
+import InfiniteScroll from "react-infinite-scroller";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import LoadingSpinner from "../general/LoadingSpinner";
+import IdeaPreview from "./IdeaPreview";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   reset: {
     margin: 0,
     padding: 0,
     listStyleType: "none",
     width: "100%",
   },
-}))
+}));
 
-const toIdeaPreviews = (ideas) =>
-    ideas.map((idea) => (
-      <GridItem key={idea.url_slug} idea={idea} />
-    ));
+const toIdeaPreviews = (ideas) => ideas.map((idea) => <GridItem key={idea.url_slug} idea={idea} />);
 
 export default function IdeaPreviews({
-  hasMore, 
-  isFetchingMore, 
-  loadMore, 
+  hasMore,
+  isFetchingMore,
+  loadMore,
   parentHandlesGridItems,
-  ideas
+  ideas,
+  allHubs,
+  userOrganizations,
 }) {
-  const classes = useStyles()
+  const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas));
   const { locale } = useContext(UserContext);
-  const texts = getTexts({page: "idea", locale: locale});
+  const texts = getTexts({ page: "idea", locale: locale });
   console.log(ideas);
   return (
     <>
@@ -47,23 +46,31 @@ export default function IdeaPreviews({
         pageStart={1}
         spacing={2}
       >
-        {parentHandlesGridItems
-          ? ideas && ideas.length > 0
-            ? toIdeaPreviews(ideas)
-            : texts.no_ideas_found
-          : gridItems
-        }
+        <GridItem isCreateCard allHubs={allHubs} userOrganizations={userOrganizations} />
+        {parentHandlesGridItems ? toIdeaPreviews(ideas) : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="idea-previews-spinner" />}
       </InfiniteScroll>
     </>
-  )
+  );
 }
 
-function GridItem({ idea, isCreateCard }) {
-  console.log(idea);
+function GridItem({ idea, isCreateCard, allHubs, userOrganizations }) {
   return (
-    <Grid key={idea ? idea.url_slug : "createCard"} item xs={12} sm={6} md={3} lg={3} component="li">
-      <IdeaPreview idea={idea} isCreateCard={isCreateCard} />
+    <Grid
+      key={idea ? idea.url_slug : "createCard"}
+      item
+      xs={12}
+      sm={6}
+      md={3}
+      lg={3}
+      component="li"
+    >
+      <IdeaPreview
+        allHubs={allHubs}
+        idea={idea}
+        isCreateCard={isCreateCard}
+        userOrganizations={userOrganizations}
+      />
     </Grid>
   );
 }

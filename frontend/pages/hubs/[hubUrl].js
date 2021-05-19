@@ -9,8 +9,9 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo
+  membersWithAdditionalInfo,
 } from "../../public/lib/getOptions";
+import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { parseData } from "../../public/lib/parsingOperations";
 import getTexts from "../../public/texts/texts";
@@ -57,15 +58,17 @@ export async function getServerSideProps(ctx) {
     organization_types,
     skills,
     project_statuses,
+    allHubs,
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
     getProjects({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
     getOrganizations({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
-    getIdeas({page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale}),
+    getIdeas({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
     getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
+    getAllHubs(ctx.locale),
   ]);
   return {
     props: {
@@ -88,6 +91,7 @@ export async function getServerSideProps(ctx) {
         skills: skills,
         project_statuses: project_statuses,
       },
+      allHubs,
     },
   };
 }
@@ -107,6 +111,7 @@ export default function Hub({
   subHeadline,
   image_attribution,
   isLocationHub,
+  allHubs,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -285,6 +290,7 @@ export default function Hub({
             hubName={name}
             initialIdeas={initialIdeas}
             showIdeas={true}
+            allHubs={allHubs}
           />
         </div>
       </div>
@@ -321,7 +327,7 @@ const getHubData = async (url_slug, locale) => {
   }
 };
 
-async function getIdeas({page, token, urlEnding, hubUrl, locale}) {
+async function getIdeas({ page, token, urlEnding, hubUrl, locale }) {
   return await getDataFromServer({
     type: "ideas",
     page: page,
