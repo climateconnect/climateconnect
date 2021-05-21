@@ -18,9 +18,9 @@ const parseMembers = (members) => {
 
 const parseIdeas = (ideas) => {
   return ideas.map((idea) => ({
-    ...idea
+    ...idea,
   }));
-}
+};
 
 const parseOrganizations = (organizations) => {
   return organizations.map((organization) => ({

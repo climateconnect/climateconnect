@@ -1,8 +1,10 @@
 import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import Cookies from "universal-cookie";
 import possibleFilters from "../../../public/data/possibleFilters";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
+import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
@@ -51,13 +53,14 @@ export default function BrowseContent({
   hubProjectsButtonRef,
   nextStepTriggeredBy,
   hubName,
-  showIdeas
+  showIdeas,
+  allHubs,
 }) {
   const initialState = {
     items: {
       projects: initialProjects ? [...initialProjects.projects] : [],
       organizations: initialOrganizations ? [...initialOrganizations.organizations] : [],
-      ideas: initialIdeas ? [...initialIdeas.ideas]: [],
+      ideas: initialIdeas ? [...initialIdeas.ideas] : [],
       members:
         initialMembers && !hideMembers ? membersWithAdditionalInfo(initialMembers.members) : [],
     },
@@ -65,7 +68,7 @@ export default function BrowseContent({
       projects: !!initialProjects && initialProjects.hasMore,
       organizations: !!initialOrganizations && initialOrganizations.hasMore,
       members: !!initialMembers && initialMembers.hasMore,
-      ideas: !!initialIdeas && initialIdeas.hasMore
+      ideas: !!initialIdeas && initialIdeas.hasMore,
     },
     nextPages: {
       projects: 2,
@@ -78,7 +81,7 @@ export default function BrowseContent({
       members: "",
     },
   };
-
+  const token = new Cookies().get("token");
   //saving these refs for the tutorial
   const firstProjectCardRef = useRef(null);
   const filterButtonRef = useRef(null);
@@ -89,7 +92,7 @@ export default function BrowseContent({
   const TYPES_BY_TAB_VALUE = hideMembers
     ? ["projects", "organizations"]
     : ["projects", "organizations", "members"];
-  if(showIdeas) {
+  if (showIdeas) {
     TYPES_BY_TAB_VALUE.push("ideas");
   }
   const { locale } = useContext(UserContext);
@@ -98,7 +101,7 @@ export default function BrowseContent({
     projects: texts.projects,
     organizations: texts.organizations,
     members: texts.members,
-    ideas: texts.ideas
+    ideas: texts.ideas,
   };
   const [hash, setHash] = useState(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
@@ -110,10 +113,17 @@ export default function BrowseContent({
     members: useRef(null),
   };
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
+  const [userOrganizations, setUserOrganizations] = useState(null);
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
   };
-
+  useEffect(async function () {
+    if (tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas") && userOrganizations === null) {
+      setUserOrganizations("");
+      const userOrgsFromServer = await getUserOrganizations(token, locale);
+      setUserOrganizations(userOrgsFromServer);
+    }
+  });
   // We have 2 distinct loading states: filtering, and loading more data. For
   // each state, we want to treat the loading spinner a bit differently, hence
   // why we have two separate pieces of state
@@ -150,7 +160,7 @@ export default function BrowseContent({
 
   const loadMoreIdeas = async () => {
     await handleLoadMoreData("ideas");
-  }
+  };
 
   const handleLoadMoreData = async (type) => {
     try {
@@ -301,8 +311,13 @@ export default function BrowseContent({
                 filtersExpanded={filtersExpanded}
                 errorMessage={errorMessage}
                 unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")], filterChoices)}
-                locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")]]}
+                possibleFilters={possibleFilters(
+                  TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")],
+                  filterChoices
+                )}
+                locationInputRef={
+                  locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")]]
+                }
                 locationOptionsOpen={locationOptionsOpen}
                 handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
               />
@@ -328,7 +343,11 @@ export default function BrowseContent({
               <NoItemsFound type="projects" />
             )}
           </TabContent>
-          <TabContent value={tabValue} index={TYPES_BY_TAB_VALUE.indexOf("organizations")} className={classes.tabContent}>
+          <TabContent
+            value={tabValue}
+            index={TYPES_BY_TAB_VALUE.indexOf("organizations")}
+            className={classes.tabContent}
+          >
             {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("organizations") && (
               <FilterContent
                 className={classes.tabContent}
@@ -337,8 +356,13 @@ export default function BrowseContent({
                 errorMessage={errorMessage}
                 filtersExpanded={filtersExpanded}
                 unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")], filterChoices)}
-                locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")]]}
+                possibleFilters={possibleFilters(
+                  TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")],
+                  filterChoices
+                )}
+                locationInputRef={
+                  locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")]]
+                }
                 locationOptionsOpen={locationOptionsOpen}
                 handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
               />
@@ -366,7 +390,11 @@ export default function BrowseContent({
           </TabContent>
 
           {!hideMembers && (
-            <TabContent value={tabValue} index={TYPES_BY_TAB_VALUE.indexOf("members")} className={classes.tabContent}>
+            <TabContent
+              value={tabValue}
+              index={TYPES_BY_TAB_VALUE.indexOf("members")}
+              className={classes.tabContent}
+            >
               {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("members") && (
                 <FilterContent
                   className={classes.tabContent}
@@ -375,8 +403,13 @@ export default function BrowseContent({
                   filtersExpanded={filtersExpanded}
                   errorMessage={errorMessage}
                   unexpandFilters={unexpandFilters}
-                  possibleFilters={possibleFilters(TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")], filterChoices)}
-                  locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")]]}
+                  possibleFilters={possibleFilters(
+                    TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")],
+                    filterChoices
+                  )}
+                  locationInputRef={
+                    locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")]]
+                  }
                   locationOptionsOpen={locationOptionsOpen}
                   handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 />
@@ -403,21 +436,27 @@ export default function BrowseContent({
               )}
             </TabContent>
           )}
-          {
-            //IdeaPreviews is currently only a stub that just shows the "create idea" button
+          <TabContent
+            value={tabValue}
+            index={TYPES_BY_TAB_VALUE.indexOf("ideas")}
+            className={classes.tabContent}
+          >
+            {
+              //IdeaPreviews is currently only a stub that just shows the "create idea" button
               isFiltering ? (
                 <LoadingSpinner />
-              ) :  state?.items?.ideas?.length ? (
+              ) : (
                 <IdeaPreviews
                   hasMore={state.hasMore.ideas}
                   loadFunc={loadMoreIdeas}
                   parentHandlesGridItems
                   ideas={state.items.ideas}
+                  allHubs={allHubs}
+                  userOrganizations={userOrganizations}
                 />
-              ) : (
-                <NoItemsFound type="ideas" />
               )
-          }
+            }
+          </TabContent>
         </>
       </Container>
       <Tutorial
