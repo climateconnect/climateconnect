@@ -362,7 +362,7 @@ function FollowButton({
           onClick={toggleShowFollowers}
         >
           <Typography className={classes.followersText}>
-            <span className={classes.followerNumber}>{project.number_of_followers}</span>
+            <span className={classes.followerNumber}>{project.number_of_followers} </span>
             {project.number_of_followers > 1 ? texts.followers : texts.follower}
           </Typography>
         </Link>

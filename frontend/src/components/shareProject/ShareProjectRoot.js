@@ -2,7 +2,6 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Router from "next/router";
 import React, { useContext, useEffect, useState } from "react";
-
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
@@ -16,6 +15,7 @@ import EnterDetails from "./EnterDetails";
 import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import SelectCategory from "./SelectCategory";
 import ShareProject from "./ShareProject";
+
 
 const DEFAULT_STATUS = 2;
 
@@ -100,8 +100,8 @@ export default function ShareProjectRoot({
     return steps[stepNumber];
   };
 
-  const targetLanguage = locales.find((l) => l !== locale);
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
+  const targetLanguage = locales.find((l) => l !== locale);
   const [translations, setTranslations] = React.useState({});
   const [curStep, setCurStep] = React.useState(getStep(0));
   const [finished, setFinished] = React.useState(false);

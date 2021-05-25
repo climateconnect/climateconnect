@@ -102,10 +102,12 @@ def get_project_description(project: Project, language_code: str) -> str:
 
 
 def get_projecttag_name(tag: ProjectTags, language_code: str) -> str:
-    a = getattr(tag, "name_{}_translation".format(language_code))
-    if language_code == "en" or a == None:
-        return tag.name
-    return a
+    lang_translation_attr = "name_{}_translation".format(language_code)
+    if hasattr(tag, lang_translation_attr):
+        translation = getattr(tag, lang_translation_attr)
+        if language_code != "en" and translation != None:
+            return translation
+    return tag.name
 
 
 def get_project_translations(data: Dict):
