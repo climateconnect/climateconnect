@@ -17,7 +17,7 @@ class IdeaTranslation(models.Model):
         Language,
         help_text="Points to the language idea is translated for",
         verbose_name="Language",
-        related_name="idea_language",
+        related_name="translation_language",
         on_delete=models.CASCADE
     )
 

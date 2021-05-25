@@ -53,7 +53,7 @@ export default function getIdeaTexts() {
     },
     choose_a_location: {
       en: "Choose a location",
-      de: "Wähle eine Ort",
+      de: "Suche einen Ort",
     },
     personal_idea: {
       en: "Personal Idea",
@@ -77,5 +77,25 @@ export default function getIdeaTexts() {
       en: "Next Step",
       de: "Weiter",
     },
+    your_idea_is_being_created: {
+      en: "Your Idea is being created...",
+      de: "Deine Idee wird erstellt..."
+    },
+    sending_your_idea_to_our_server: {
+      en: "Sending your idea to our server",
+      de: "Deine Idee wird an unseren Server geschickt..."
+    },
+    saving_your_idea_in_our_database: {
+      en: "Saving your idea in our database",
+      de: "Deine Idee wird in unserer Datenbank gespeichert..."
+    },
+    preparing_your_idea_to_be_published: {
+      en: "Preparing your idea to be published",
+      de: "Die Veröffentlichung deiner Idee wird vorbereitet"
+    },
+    publishing_your_idea: {
+      en: "Publishing your idea",
+      de: "Deine Idee wird veröffentlicht"
+    }
   };
 }

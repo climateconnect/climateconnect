@@ -1,17 +1,23 @@
-from rest_framework.generics import ListAPIView
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.filters import SearchFilter
+import logging
 
+from climateconnect_api.models import Language
+from climateconnect_api.utility.translation import get_translations
+from django.db.utils import IntegrityError
+from hubs.models.hub import Hub
 from ideas.models import Idea
-from ideas.serializers.idea import (
-    IdeaMinimalSerializer, IdeaSerializer
-)
 from ideas.pagination import IdeasBoardPagination
 from ideas.permissions import IdeaReadWritePermission
-from ideas.utility.idea import verify_idea
+from ideas.serializers.idea import IdeaMinimalSerializer, IdeaSerializer
+from ideas.utility.idea import create_idea, verify_idea
+from rest_framework import status
+from rest_framework.exceptions import ValidationError
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+logger = logging.getLogger(__name__)
 
 
 class IdeasBoardView(ListAPIView):
@@ -48,3 +54,31 @@ class IdeaView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
          
         return Response(None, status=status.HTTP_400_BAD_REQUEST)
+    
+class CreateIdeaView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        required_params = [
+            'name', 'short_description', 'hub', 
+            'location', 'source_language'
+        ]
+        for param in required_params:
+            if param not in request.data:
+                raise ValidationError('Required parameter missing: ' + param)
+        texts = {
+            "name": request.data['name'], 
+            "short_description": request.data['short_description']
+        }
+        try:
+            translations = get_translations(
+                texts, 
+                {},
+                request.data['source_language']
+            )
+            language = Language.objects.get(language_code=translations['source_language'])
+        except ValueError as ve:
+            translations = None
+            logger.error("TranslationFailed: Error translating texts, {}".format(ve))
+        idea = create_idea(request.data, language, request.user)
+        return Response(idea, status=status.HTTP_200_OK)

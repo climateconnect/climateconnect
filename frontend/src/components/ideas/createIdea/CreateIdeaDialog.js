@@ -1,10 +1,14 @@
 import { makeStyles } from "@material-ui/core";
 import React, { useContext, useRef, useState } from "react";
+import Cookies from "universal-cookie";
+import { apiRequest, redirect } from "../../../../public/lib/apiOperations";
+import { blobFromObjectUrl } from "../../../../public/lib/imageOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../../public/lib/locationOperations";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import GenericDialog from "../../dialogs/GenericDialog";
 import LoadingSpinner from "../../general/LoadingSpinner";
+import IdeaCreationLoadingScreen from "./IdeaCreationLoadingScreen";
 import IdeaInfoStep from "./IdeaInfoStep";
 import IdeaMetadataStep from "./IdeaMetadataStep";
 
@@ -16,6 +20,9 @@ const useStyles = makeStyles((theme) => ({
   titleText: {
     fontWeight: "600",
     color: theme.palette.secondary.main,
+    [theme.breakpoints.down("xs")]: {
+      fontSize: 18
+    }
   },
   dialogContentClass: {
     paddingTop: 0,
@@ -26,7 +33,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizations }) {
-  const classes = useStyles({ userOrganzations: userOrganizations });
+  const [waitingForCreation, setWaitingForCreation] = useState(false)
+  const classes = useStyles({ userOrganization: userOrganizations });
+  const token = new Cookies().get("token")
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
   const [idea, setIdea] = useState({
@@ -44,6 +53,11 @@ export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizat
   const [errorMessage, setErrorMessage] = useState(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const locationInputRef = useRef(null);
+
+  const handleClose = (e) => {
+    if(!waitingForCreation)
+      onClose(e)
+  }
 
   const handleStepForward = () => {
     setStep(STEPS[STEPS.indexOf(step) + 1]);
@@ -67,19 +81,40 @@ export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizat
     setIdea({ ...idea, is_organizations_idea: !idea.is_organizations_idea });
   };
 
-  const onSubmitIdea = (e) => {
+  const onSubmitIdea = async (e) => {
     e.preventDefault();
     if (!isLocationValid(idea.location)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage, texts);
       return;
+    }
+    try{
+      setWaitingForCreation(true)
+      const payload = await parseIdeaForCreateRequest(idea, locale)
+      await apiRequest({
+        method: "post",
+        url: "/api/create_idea/",
+        payload: payload,
+        token: token,
+        locale: locale
+      })
+      //TODO: link idea!
+      redirect(window.location.pathname, {
+        message: "Congratulations! Your idea " + idea.name + " has been created!"
+      }, window.location.hash)
+      setWaitingForCreation(false)
+    } catch(e) {
+      console.log("there has been an error :,(")
+      setWaitingForCreation(false)
+      setErrorMessage("There has been an error while creating your idea. Please contact contact@climateconnect.earth")
+      console.log(e)
     }
   };
 
   return (
     <GenericDialog
       open={open}
-      onClose={onClose}
-      title={texts.share_your_idea}
+      onClose={handleClose}
+      title={waitingForCreation ? texts.your_idea_is_being_created : texts.share_your_idea}
       paperClassName={classes.root}
       closeButtonRightSide
       closeButtonSmall
@@ -87,31 +122,60 @@ export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizat
       dialogContentClass={classes.dialogContentClass}
     >
       <LoadingSpinner className={classes.loadingSpinner} isLoading={userOrganizations === null} />
-      <div className={classes.content}>
-        {step === "idea_info" && (
-          <IdeaInfoStep
-            idea={idea}
-            handleValueChange={handleValueChange}
-            updateImages={updateImages}
-            goToNextStep={handleStepForward}
-          />
-        )}
-        {step === "idea_metadata" && (
-          <IdeaMetadataStep
-            idea={idea}
-            handleValueChange={handleValueChange}
-            handleIsOrganizationsIdeaChange={handleIsOrganizationsIdeaChange}
-            locationOptionsOpen={locationOptionsOpen}
-            locationInputRef={locationInputRef}
-            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-            userOrganizations={userOrganizations}
-            allHubs={allHubs}
-            onSubmitIdea={onSubmitIdea}
-            goBack={handleStepBackwards}
-            errorMessage={errorMessage}
-          />
-        )}
-      </div>
+      {waitingForCreation ?
+          <IdeaCreationLoadingScreen />
+        :
+          <div className={classes.content}>
+            {step === "idea_info" && (
+              <IdeaInfoStep
+                idea={idea}
+                handleValueChange={handleValueChange}
+                updateImages={updateImages}
+                goToNextStep={handleStepForward}
+              />
+            )}
+            {step === "idea_metadata" && (
+              <IdeaMetadataStep
+                idea={idea}
+                handleValueChange={handleValueChange}
+                handleIsOrganizationsIdeaChange={handleIsOrganizationsIdeaChange}
+                locationOptionsOpen={locationOptionsOpen}
+                locationInputRef={locationInputRef}
+                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                userOrganizations={userOrganizations}
+                allHubs={allHubs}
+                onSubmitIdea={onSubmitIdea}
+                goBack={handleStepBackwards}
+                errorMessage={errorMessage}
+              />
+            )}
+          </div>
+      }
     </GenericDialog>
   );
+}
+
+const parseIdeaForCreateRequest = async (idea, locale) => {
+  const parsedIdea = {
+    ...idea,
+    hub: idea.hub.url_slug,
+    source_language: locale
+  }
+
+  if(idea.parent_organization && idea.is_organizations_idea) {
+    parsedIdea.parent_organization = idea.parent_organization.id
+  } else {
+    delete parsedIdea.parent_organization
+  }
+  if(idea.image)
+    parsedIdea.image = await blobFromObjectUrl(idea.image)
+  else
+    delete parsedIdea.image
+
+  if(idea.thumbnail_image)
+    parsedIdea.thumbnail_image = await blobFromObjectUrl(idea.thumbnail_image)
+  else
+    delete parsedIdea.thumbnail_image
+  
+  return parsedIdea
 }

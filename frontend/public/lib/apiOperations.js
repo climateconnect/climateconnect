@@ -60,11 +60,15 @@ export async function resendEmail(email, onSuccess, onError) {
     });
 }
 
-export async function redirect(url, messages) {
-  Router.push({
+export async function redirect(url, messages, hash) {
+  const payload = {
     pathname: url,
     query: messages,
-  });
+    forceRedirect: true
+  }
+  if(hash)
+    payload.hash = hash
+  Router.push(payload);
 }
 
 export async function sendToLogin(ctx, message, locale, relativePath) {

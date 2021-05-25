@@ -1,6 +1,9 @@
-import { Button, makeStyles, Typography } from "@material-ui/core";
+import { Button, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import React, { useContext } from "react";
+import { parseLocation } from "../../../../public/lib/locationOperations";
 import getTexts from "../../../../public/texts/texts";
+import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
 import SelectField from "../../general/SelectField";
 import Switcher from "../../general/Switcher";
@@ -24,8 +27,8 @@ const useStyles = makeStyles((theme) => ({
   },
   motivationText: {
     marginBottom: theme.spacing(2),
-    fontSize: 17,
-    fontWeight: 600,
+    fontSize: 14,
+    fontWeight: 500,
   },
   chooseIsOrganizationsProject: {
     marginBottom: theme.spacing(2),
@@ -33,6 +36,9 @@ const useStyles = makeStyles((theme) => ({
   errorMessage: {
     textAlign: "center",
   },
+  chooseOrganizationField: {
+    marginTop: theme.spacing(2)
+  }
 }));
 
 export default function IdeaMetadataStep({
@@ -49,8 +55,10 @@ export default function IdeaMetadataStep({
   errorMessage,
 }) {
   const classes = useStyles();
+  const isTinyScreen = useMediaQuery('(max-width:400px')
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"))
   return (
     <form onSubmit={onSubmitIdea}>
       <Typography className={classes.motivationText}>
@@ -72,6 +80,7 @@ export default function IdeaMetadataStep({
           <SelectField
             size="small"
             label={texts.choose_your_organization}
+            className={classes.chooseOrganizationField}
             options={userOrganizations}
             controlled
             onChange={(e) =>
@@ -91,7 +100,7 @@ export default function IdeaMetadataStep({
         className={classes.textField}
         value={idea.location}
         onChange={(newValue) => handleValueChange(newValue, "location")}
-        onSelect={(location) => handleValueChange(location, "location")}
+        onSelect={(location) => handleValueChange(parseLocation(location), "location")}
         handleSetOpen={handleSetLocationOptionsOpen}
         open={locationOptionsOpen}
         locationInputRef={locationInputRef}
@@ -104,15 +113,15 @@ export default function IdeaMetadataStep({
         label={texts.choose_a_category}
         options={allHubs}
         controlled
-        onChange={(e) => handleValueChange(e.target.value, "hub")}
+        onChange={(e) => handleValueChange(allHubs.find(h => h.name ===  e.target.value), "hub")}
         controlledValue={idea.hub}
       />
       <div className={classes.buttonBar}>
         <Button variant="contained" onClick={goBack}>
-          {texts.back}
+          {isNarrowScreen ? <ArrowBackIcon /> : texts.back}
         </Button>
         <Button type="submit" variant="contained" color="primary" className={classes.publishButton}>
-          {texts.publish}
+          {isTinyScreen ? texts.save : texts.publish}
         </Button>
       </div>
     </form>

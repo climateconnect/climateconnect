@@ -16,6 +16,10 @@ const useStyles = makeStyles((theme) => ({
   },
   uploadImageField: {
     marginBottom: theme.spacing(2),
+    [theme.breakpoints.down("xs")]: {
+      margin: "0 auto",
+      marginTop: theme.spacing(1)
+    }
   },
   motivationText: {
     marginBottom: theme.spacing(2),
@@ -24,6 +28,9 @@ const useStyles = makeStyles((theme) => ({
   },
   imageAnDescriptionWrapper: {
     display: "flex",
+    [theme.breakpoints.down("xs")]: {
+      flexDirection: "column"
+    }
   },
   descriptionContainer: {
     flexGrow: 1,

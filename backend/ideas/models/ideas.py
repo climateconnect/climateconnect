@@ -1,3 +1,4 @@
+from climateconnect_api.models.language import Language
 from django.db import models
 from django.contrib.auth.models import User
 from organization.models.organization import Organization
@@ -82,6 +83,16 @@ class Idea(models.Model):
         help_text="Points to location of the idea",
         verbose_name="Location",
         related_name="idea_location",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    language = models.ForeignKey(
+        Language,
+        help_text="Points to language in which the idea was submitted",
+        verbose_name="Language",
+        related_name="idea_language",
         on_delete=models.SET_NULL,
         null=True,
         blank=True
