@@ -1,5 +1,6 @@
-import { Card, CardMedia, makeStyles, Typography } from "@material-ui/core";
+import { Card, CardMedia, makeStyles, Typography, Grid } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import React, { useContext, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -7,6 +8,7 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import CreateIdeaDialog from "./createIdea/CreateIdeaDialog";
+import randomColor from 'randomcolor';
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -58,11 +60,17 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 23,
     marginTop: -3,
   },
+  ratingIcon: {
+    width: '50px',
+    height: '50px',
+    opacity: 1
+  }
 }));
 
 //This component is currently only capable of displaying the "add new idea" card and not a real idea preview card
 export default function IdeaPreview({ idea, isCreateCard, allHubs, userOrganizations }) {
-  const classes = useStyles({ borderColor: isCreateCard && theme.palette.primary.light });
+  const color = randomColor();
+  const classes = useStyles({ borderColor: !isCreateCard && color});
   const [open, setOpen] = useState(false);
   const handleCardClick = (e) => {
     e.preventDefault();
@@ -121,13 +129,21 @@ function IdeaCardContent(idea) {
       <Typography color="primary" component="h2" className={classes.createCardHeadline}>
         {idea.idea.name}
       </Typography>
+      <Grid container>
+        <Grid item xs={6}>
+          <CardMedia 
+            className={classes.media} 
+            title={idea.idea.url_slug}
+          >
+            <img src={idea.idea.hub_image} alt={idea.idea.name}/>
+          </CardMedia>
+        </Grid>
+        <Grid item xs={6}>
+          <FavoriteBorderIcon className={classes.ratingIcon}/>
+        </Grid>
+      </Grid>
       <div>
-        <Typography color="primary" component="h4">
-          {idea.idea.short_description}
-        </Typography>
-      </div>
-      <div>
-        {idea.idea.image === undefined ? (
+        {idea.idea.image === undefined || idea.idea.image === null ? (
           <Typography color="secondary" component="h4">
             {idea.idea.short_description}
           </Typography>
@@ -137,7 +153,7 @@ function IdeaCardContent(idea) {
             title={idea.idea.url_slug}
             image={getImageUrl(idea.idea.image)}
           >
-            <img src={getImageUrl(idea.idea.image)} alt={idea.idea.name} />
+            <img src={getImageUrl(idea.idea.image)} alt={idea.idea.name}/>
           </CardMedia>
         )}
       </div>

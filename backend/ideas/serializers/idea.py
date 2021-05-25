@@ -77,8 +77,8 @@ class IdeaSerializer(serializers.ModelSerializer):
             ).data
         }
     
-    def create(self, validated_date):
-        return Idea(**validated_date)
+    def create(self, validated_data):
+        return Idea(**validated_data)
 
     def update(self, instance, validated_data):
         name = validated_data.get('name')
