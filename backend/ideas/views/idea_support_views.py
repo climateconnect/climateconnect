@@ -33,3 +33,20 @@ class IdeaRatingView(APIView):
             IdeaRatingSerializer(idea_rating).data,
             status=status.HTTP_201_CREATED
         )
+
+
+class IdeaSupportView(APIView):
+    permission_classes = [IdeaSupporterPermission]
+
+    def post(self, request, url_slug):
+        idea = verify_idea(url_slug=url_slug)
+        if not idea:
+            return Response({
+                'message': 'Idea not found.'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        IdeaSupporter.objects.get_or_create(
+            idea=idea, user=request.user
+        )
+
+        return Response(None, status=status.HTTP_201_CREATED)
