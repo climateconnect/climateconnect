@@ -30,7 +30,6 @@ export default function IdeaPreviews({
   const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
-  console.log(ideas);
   return (
     <>
       <InfiniteScroll
