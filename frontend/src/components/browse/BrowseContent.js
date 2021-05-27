@@ -10,7 +10,7 @@ import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
 import FilterContent from "../filter/FilterContent";
 import LoadingSpinner from "../general/LoadingSpinner";
-import IdeaPreviews from "../ideas/IdeaPreviews";
+import IdeasBoard from "../ideas/IdeasBoard";
 import FilterSection from "../indexPage/FilterSection";
 import OrganizationPreviews from "../organization/OrganizationPreviews";
 import ProfilePreviews from "../profile/ProfilePreviews";
@@ -446,10 +446,9 @@ export default function BrowseContent({
               isFiltering ? (
                 <LoadingSpinner />
               ) : (
-                <IdeaPreviews
+                <IdeasBoard
                   hasMore={state.hasMore.ideas}
                   loadFunc={loadMoreIdeas}
-                  parentHandlesGridItems
                   ideas={state.items.ideas}
                   allHubs={allHubs}
                   userOrganizations={userOrganizations}

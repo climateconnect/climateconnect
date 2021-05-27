@@ -15,7 +15,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const toIdeaPreviews = (ideas) => ideas.map((idea) => <GridItem key={idea.url_slug} idea={idea} />);
+const toIdeaPreviews = (ideas, onClickIdea) => {
+  return ideas.map((idea) => <GridItem onClickIdea={onClickIdea} key={idea.url_slug} idea={idea} />)
+};
 
 export default function IdeaPreviews({
   hasMore,
@@ -25,12 +27,12 @@ export default function IdeaPreviews({
   ideas,
   allHubs,
   userOrganizations,
+  onClickIdea,
 }) {
   const classes = useStyles();
-  const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas));
+  const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas, onClickIdea));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
-  console.log(ideas);
   return (
     <>
       <InfiniteScroll
@@ -47,14 +49,14 @@ export default function IdeaPreviews({
         spacing={2}
       >
         <GridItem isCreateCard allHubs={allHubs} userOrganizations={userOrganizations} />
-        {parentHandlesGridItems ? toIdeaPreviews(ideas) : gridItems}
+        {parentHandlesGridItems ? toIdeaPreviews(ideas, onClickIdea) : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="idea-previews-spinner" />}
       </InfiniteScroll>
     </>
   );
 }
 
-function GridItem({ idea, isCreateCard, allHubs, userOrganizations }) {
+function GridItem({ idea, isCreateCard, allHubs, userOrganizations, onClickIdea }) {
   return (
     <Grid
       key={idea ? idea.url_slug : "createCard"}
@@ -70,6 +72,7 @@ function GridItem({ idea, isCreateCard, allHubs, userOrganizations }) {
         idea={idea}
         isCreateCard={isCreateCard}
         userOrganizations={userOrganizations}
+        onClickIdea={onClickIdea}
       />
     </Grid>
   );
