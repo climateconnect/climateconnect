@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from climateconnect_main.utility.general import get_image_from_data_url
+from climateconnect_api.serializers.user import UserProfileMinimalSerializer
 from location.utility import get_location
 from ideas.models import Idea, IdeaSupporter
 
@@ -18,12 +19,13 @@ class IdeaSupportedMinimalSerializer(serializers.ModelSerializer):
 class IdeaMinimalSerializer(serializers.ModelSerializer):
     hub_image = serializers.SerializerMethodField()
     ratings = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
 
     class Meta:
         model = Idea
         fields = [
             'id', 'name', 'url_slug', 'short_description', 
-            'thumbnail_image', 'hub_image', 'ratings', 'image'
+            'thumbnail_image', 'hub_image', 'ratings', 'image', 'user'
         ]
 
     def get_hub_image(self, obj):
@@ -40,6 +42,12 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
             ) //  obj.rating_idea.count()
 
         return total_average
+    
+    def get_user(self, obj):
+        if obj.user and obj.user.user_profile:
+            return UserProfileMinimalSerializer(obj.user.user_profile).data
+        
+        return None
 
 
 class IdeaSerializer(serializers.ModelSerializer):

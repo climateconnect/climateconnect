@@ -1,13 +1,13 @@
-import { Card, CardMedia, makeStyles, Typography, Grid } from "@material-ui/core";
+import { Card, CardMedia, Grid, makeStyles, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import React, { useContext, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
-import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import CreateIdeaDialog from "./createIdea/CreateIdeaDialog";
+import theme from '../../themes/theme';
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 //This component is currently only capable of displaying the "add new idea" card and not a real idea preview card
-export default function IdeaPreview({ idea, isCreateCard, allHubs, userOrganizations }) {
+export default function IdeaPreview({ idea, isCreateCard, allHubs, userOrganizations , onClickIdea}) {
   const colors = [
     theme.palette.primary.main, theme.palette.primary.light,
     theme.palette.secondary.main, theme.palette.secondary.light
@@ -79,6 +79,8 @@ export default function IdeaPreview({ idea, isCreateCard, allHubs, userOrganizat
     e.preventDefault();
     if (isCreateCard) {
       setOpen(true);
+    } else {
+      onClickIdea(idea)
     }
   };
   const onClose = () => {

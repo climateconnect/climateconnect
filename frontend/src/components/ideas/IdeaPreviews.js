@@ -15,7 +15,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const toIdeaPreviews = (ideas) => ideas.map((idea) => <GridItem key={idea.url_slug} idea={idea} />);
+const toIdeaPreviews = (ideas, onClickIdea, isNarrowScreen) => {
+  return ideas.map(
+    (idea) => <GridItem onClickIdea={onClickIdea} key={idea.url_slug} 
+    idea={idea} isNarrowScreen={isNarrowScreen} />
+  )
+};
 
 export default function IdeaPreviews({
   hasMore,
@@ -25,9 +30,13 @@ export default function IdeaPreviews({
   ideas,
   allHubs,
   userOrganizations,
+  onClickIdea,
+  isNarrowScreen
 }) {
   const classes = useStyles();
-  const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas));
+  console.log(isNarrowScreen)
+  console.log(parentHandlesGridItems)
+  const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas, onClickIdea, isNarrowScreen));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
   return (
@@ -46,22 +55,23 @@ export default function IdeaPreviews({
         spacing={2}
       >
         <GridItem isCreateCard allHubs={allHubs} userOrganizations={userOrganizations} />
-        {parentHandlesGridItems ? toIdeaPreviews(ideas) : gridItems}
+        {parentHandlesGridItems ? toIdeaPreviews(ideas, onClickIdea, isNarrowScreen) : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="idea-previews-spinner" />}
       </InfiniteScroll>
     </>
   );
 }
 
-function GridItem({ idea, isCreateCard, allHubs, userOrganizations }) {
+function GridItem({ idea, isCreateCard, allHubs, userOrganizations, onClickIdea, isNarrowScreen }) {
+  console.log("dip", isNarrowScreen)
   return (
     <Grid
       key={idea ? idea.url_slug : "createCard"}
       item
       xs={12}
       sm={6}
-      md={3}
-      lg={3}
+      md={!isNarrowScreen ? 6: 3}
+      lg={!isNarrowScreen ? 6: 3}
       component="li"
     >
       <IdeaPreview
@@ -69,6 +79,7 @@ function GridItem({ idea, isCreateCard, allHubs, userOrganizations }) {
         idea={idea}
         isCreateCard={isCreateCard}
         userOrganizations={userOrganizations}
+        onClickIdea={onClickIdea}
       />
     </Grid>
   );
