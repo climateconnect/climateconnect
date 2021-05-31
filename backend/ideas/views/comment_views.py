@@ -9,7 +9,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
-from climateconnect_api.pagination import GeneralizedPagination
 from ideas.models import IdeaComment
 from ideas.serializers.comment import IdeaCommentSerializer
 from ideas.utility.idea import verify_idea
@@ -21,7 +20,6 @@ logger = logging.getLogger(__name__)
 class IdeaCommentsView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = IdeaCommentSerializer
-    pagination_class = GeneralizedPagination
 
     def get(self, request, url_slug):
         idea = verify_idea(url_slug=url_slug)
