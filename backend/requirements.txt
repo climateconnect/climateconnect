@@ -3,7 +3,7 @@ amqp==5.0.3
 asgiref==3.2.4
 async-timeout==3.0.1
 attrs==19.3.0
-autobahn==20.7.1
+autobahn==20.12.3
 Automat==20.2.0
 azure-common==1.1.25
 azure-storage-blob==2.1.0
@@ -36,7 +36,7 @@ flake8==3.7.9
 h11==0.11.0
 hiredis==1.1.0
 httptools==0.1.1
-hyperlink==19.0.0
+hyperlink==20.0.1
 idna==2.9
 incremental==17.5.0
 kombu==5.0.2
