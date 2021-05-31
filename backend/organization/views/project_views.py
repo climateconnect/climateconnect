@@ -26,7 +26,7 @@ from organization.models import (Organization, OrganizationTagging,
 from organization.models.translations import ProjectTranslation
 from organization.pagination import (MembersPagination,
                                      ProjectCommentPagination,
-                                     ProjectPostPagination, ProjectsPagination)
+                                     ProjectPostPagination, ProjectsPagination, ProjectsSitemapPagination)
 from organization.permissions import (AddProjectMemberPermission,
                                       ChangeProjectCreatorPermission,
                                       ProjectMemberReadWritePermission,
@@ -732,6 +732,7 @@ class ListFeaturedProjects(ListAPIView):
 class ListProjectsForSitemap(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectSitemapEntrySerializer
+    pagination_class = ProjectsSitemapPagination
 
     def get_queryset(self):
         return Project.objects.filter(is_draft=False,is_active=True)
