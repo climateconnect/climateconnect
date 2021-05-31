@@ -14,3 +14,8 @@ class NotificationsPagination(PageNumberPagination):
   page_size = 20
   page_size_query_param = 'page_size'
   max_page_size = 200
+
+class MembersSitemapPagination(PageNumberPagination):
+  page_size = 500
+  page_size_query_param = 'page_size'
+  max_page_size = 1000

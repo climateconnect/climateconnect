@@ -1,6 +1,6 @@
 import globby from "globby";
 import React from "react";
-import { apiRequest } from "../public/lib/apiOperations";
+import { apiRequest } from "../../public/lib/apiOperations";
 
 const NOT_LISTED = [
   "/_app",
@@ -65,10 +65,15 @@ const STATIC_PAGE_PROPS = {
   },
 };
 
-async function createSitemap(projectEntries, organizationEntries, memberEntries) {
-  const staticPages = (await globby(["pages/*.js"]))
+async function createSitemap(projectEntries, organizationEntries, memberEntries, language_code) {
+  let staticPages = (await globby(["pages/*.js"]))
     .map((pageUrl) => pageUrl.replace("pages", "").replace(".js", ""))
     .filter((pageUrl) => !NOT_LISTED.includes(pageUrl));
+  if(language_code) {
+    staticPages = staticPages.map((pageUrl) => {
+      return `/${language_code}${pageUrl}`
+    })
+  }
   const BASE_URL = process.env.BASE_URL ? process.env.BASE_URL : "https://climateconnect.earth";
   return `<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -107,15 +112,20 @@ const renderEntry = (BASE_URL, url, priority, changefreq, lastmod) => {
 };
 
 export async function getServerSideProps(ctx) {
+  //We need the ".xml" at the end of the file to display an xml file in the browser.
+  //But for dynamic pages in nextjs the filename always has to be [variable].js. 
+  //Therefore our variable "language_code" mus include a ".xml" at the end and therefore the variable is called language_code_dot_xml
+  const language_code_parsed = ctx.query.language_code_dot_xml.replace(".xml", "")
+  const language_code = language_code_parsed === "en" ? "" : language_code_parsed
   const [projectEntries, organizationEntries, memberEntries] = await Promise.all([
-    getEntries("projects", ctx.locale),
-    getEntries("organizations", ctx.locale),
-    getEntries("members", ctx.locale),
+    getEntries("projects", ctx.locale, language_code),
+    getEntries("organizations", ctx.locale, language_code),
+    getEntries("members", ctx.locale, language_code),
   ]);
   const res = ctx.res;
   res.setHeader("Content-Type", "text/xml");
   //const projects = await getProjects(0, token)
-  res.write(await createSitemap(projectEntries, organizationEntries, memberEntries));
+  res.write(await createSitemap(projectEntries, organizationEntries, memberEntries, language_code));
   res.end();
 
   //Don't forget this line, even if it seems useless.
@@ -124,27 +134,28 @@ export async function getServerSideProps(ctx) {
   return { props: {} };
 }
 
-const getEntries = async (entryTypePlural, locale) => {
+const getEntries = async (entryTypePlural, locale, language_code_for_url) => {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/sitemap/" + entryTypePlural + "/",
+      url: "/api/sitemap/" + entryTypePlural + "/?page_size=1000",
       locale: locale,
     });
     if (resp.data.length === 0) return null;
     else {
-      return parseEntries(entryTypePlural, resp.data.results);
+      return parseEntries(entryTypePlural, resp.data.results, language_code_for_url);
     }
   } catch (err) {
     console.log(err);
   }
 };
 
-const parseEntries = (entryTypePlural, entries) => {
+//language code for url is for providing sitemaps in different languages. 
+const parseEntries = (entryTypePlural, entries, language_code_for_url) => {
   const firstLevelPath = entryTypePlural === "members" ? "profiles" : entryTypePlural;
   return entries.map((e) => {
     return {
-      url_slug: "/" + firstLevelPath + "/" + encodeURIComponent(e.url_slug),
+      url_slug: `/${language_code_for_url ? `${language_code_for_url.replace(".xml", "")}/` : ""}${firstLevelPath}/${encodeURIComponent(e.url_slug)}`,
       updated_at: e.updated_at,
     };
   });

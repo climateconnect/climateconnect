@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from climateconnect_api.models import Availability, Skill, UserProfile
 from climateconnect_api.models.language import Language
 from climateconnect_api.models.user import UserProfileTranslation
-from climateconnect_api.pagination import MembersPagination
+from climateconnect_api.pagination import MembersPagination, MembersSitemapPagination
 from climateconnect_api.permissions import UserPermission
 from climateconnect_api.serializers.user import (
     EditUserProfileSerializer, PersonalProfileSerializer,
@@ -466,6 +466,7 @@ class SetNewPassword(APIView):
 class ListMembersForSitemap(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = UserProfileSitemapEntrySerializer
+    pagination_class = MembersSitemapPagination
 
     def get_queryset(self):
         return UserProfile.objects.filter(is_profile_verified=True)
