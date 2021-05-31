@@ -6,9 +6,6 @@ from django.db import models
 def hub_image_path(instance, filename):
     return "hubs/{}/{}".format(instance.id, filename)
 
-def hub_logo_path(instance, filename):
-    return "hubs/{}/logo/{}".format(instance.id, filename)
-
 
 class HubStat(models.Model):
     name = models.CharField(
