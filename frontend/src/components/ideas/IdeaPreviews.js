@@ -34,8 +34,6 @@ export default function IdeaPreviews({
   isNarrowScreen
 }) {
   const classes = useStyles();
-  console.log(isNarrowScreen)
-  console.log(parentHandlesGridItems)
   const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas, onClickIdea, isNarrowScreen));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
@@ -63,7 +61,6 @@ export default function IdeaPreviews({
 }
 
 function GridItem({ idea, isCreateCard, allHubs, userOrganizations, onClickIdea, isNarrowScreen }) {
-  console.log("dip", isNarrowScreen)
   return (
     <Grid
       key={idea ? idea.url_slug : "createCard"}
