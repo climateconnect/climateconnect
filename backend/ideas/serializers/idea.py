@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from climateconnect_main.utility.general import get_image_from_data_url
-from climateconnect_api.serializers.user import UserProfileMinimalSerializer
+from climateconnect_api.serializers.user import UserProfileStubSerializer
 from location.utility import get_location
 from ideas.models import Idea, IdeaSupporter
 
@@ -45,7 +45,7 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     
     def get_user(self, obj):
         if obj.user and obj.user.user_profile:
-            return UserProfileMinimalSerializer(obj.user.user_profile).data
+            return UserProfileStubSerializer(obj.user.user_profile).data
         
         return None
 
