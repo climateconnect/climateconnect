@@ -69,10 +69,10 @@ async function createSitemap(projectEntries, organizationEntries, memberEntries,
   let staticPages = (await globby(["pages/*.js"]))
     .map((pageUrl) => pageUrl.replace("pages", "").replace(".js", ""))
     .filter((pageUrl) => !NOT_LISTED.includes(pageUrl));
-  if(language_code) {
+  if (language_code) {
     staticPages = staticPages.map((pageUrl) => {
-      return `/${language_code}${pageUrl}`
-    })
+      return `/${language_code}${pageUrl}`;
+    });
   }
   const BASE_URL = process.env.BASE_URL ? process.env.BASE_URL : "https://climateconnect.earth";
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -113,10 +113,10 @@ const renderEntry = (BASE_URL, url, priority, changefreq, lastmod) => {
 
 export async function getServerSideProps(ctx) {
   //We need the ".xml" at the end of the file to display an xml file in the browser.
-  //But for dynamic pages in nextjs the filename always has to be [variable].js. 
+  //But for dynamic pages in nextjs the filename always has to be [variable].js.
   //Therefore our variable "language_code" mus include a ".xml" at the end and therefore the variable is called language_code_dot_xml
-  const language_code_parsed = ctx.query.language_code_dot_xml.replace(".xml", "")
-  const language_code = language_code_parsed === "en" ? "" : language_code_parsed
+  const language_code_parsed = ctx.query.language_code_dot_xml.replace(".xml", "");
+  const language_code = language_code_parsed === "en" ? "" : language_code_parsed;
   const [projectEntries, organizationEntries, memberEntries] = await Promise.all([
     getEntries("projects", ctx.locale, language_code),
     getEntries("organizations", ctx.locale, language_code),
@@ -150,12 +150,14 @@ const getEntries = async (entryTypePlural, locale, language_code_for_url) => {
   }
 };
 
-//language code for url is for providing sitemaps in different languages. 
+//language code for url is for providing sitemaps in different languages.
 const parseEntries = (entryTypePlural, entries, language_code_for_url) => {
   const firstLevelPath = entryTypePlural === "members" ? "profiles" : entryTypePlural;
   return entries.map((e) => {
     return {
-      url_slug: `/${language_code_for_url ? `${language_code_for_url.replace(".xml", "")}/` : ""}${firstLevelPath}/${encodeURIComponent(e.url_slug)}`,
+      url_slug: `/${
+        language_code_for_url ? `${language_code_for_url.replace(".xml", "")}/` : ""
+      }${firstLevelPath}/${encodeURIComponent(e.url_slug)}`,
       updated_at: e.updated_at,
     };
   });
