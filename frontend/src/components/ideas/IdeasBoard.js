@@ -29,6 +29,10 @@ export default function IdeasBoard({
     //then setIdea(idea)
     setIdea(idea);
   }
+  const onClose = () => {
+    setIdea(null);
+  }
+
   return (
     <div className={classes.root}>
       <IdeaPreviews
@@ -51,7 +55,7 @@ export default function IdeasBoard({
       {
         idea && isNarrowScreen && (
           /* display mobile idea */
-          <EditIdea idea={idea}/>
+          <EditIdea idea={idea} onIdeaClose={onClose}/>
         )
       }
     </div>

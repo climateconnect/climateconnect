@@ -34,8 +34,6 @@ export default function IdeaPreviews({
   hasIdeaOpen
 }) {
   const classes = useStyles();
-  console.log(hasIdeaOpen)
-  console.log(parentHandlesGridItems)
   const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas, onClickIdea, hasIdeaOpen));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
@@ -63,7 +61,6 @@ export default function IdeaPreviews({
 }
 
 function GridItem({ idea, isCreateCard, allHubs, userOrganizations, onClickIdea, hasIdeaOpen }) {
-  console.log("dip", hasIdeaOpen)
   return (
     <Grid
       key={idea ? idea.url_slug : "createCard"}
