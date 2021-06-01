@@ -1,7 +1,7 @@
 import { makeStyles, useMediaQuery } from "@material-ui/core"
 import React, { useState } from "react"
-import IdeaPreviews from "./IdeaPreviews"
 import EditIdea from './EditIdea'
+import IdeaPreviews from "./IdeaPreviews"
 
 const useStyles = makeStyles(theme => ({
   root: props => ({
@@ -39,7 +39,7 @@ export default function IdeasBoard({
         allHubs={allHubs}
         userOrganizations={userOrganizations}
         onClickIdea={onClickIdea}
-        isNarrowScreen={isNarrowScreen}
+        hasIdeaOpen={!!idea}
       />
       {
         idea && !isNarrowScreen && (

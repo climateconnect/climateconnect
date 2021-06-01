@@ -5,9 +5,9 @@ import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import React, { useContext, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
+import theme from '../../themes/theme';
 import UserContext from "../context/UserContext";
 import CreateIdeaDialog from "./createIdea/CreateIdeaDialog";
-import theme from '../../themes/theme';
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -63,6 +63,10 @@ const useStyles = makeStyles((theme) => ({
     width: '50px',
     height: '50px',
     opacity: 1
+  },
+  hubIcon: {
+    color: theme.palette.primary.main,
+    fill: theme.palette.primary.main
   }
 }));
 
@@ -140,7 +144,7 @@ function IdeaCardContent(idea) {
             className={classes.media} 
             title={idea.idea.url_slug}
           >
-            <img src={idea.idea.hub_image} alt={idea.idea.name}/>
+            {idea.idea.hub_image && <span className={classes.hubIcon} dangerouslySetInnerHTML={{__html: idea.idea.hub_image[0]}} />}
           </CardMedia>
         </Grid>
         <Grid item xs={6}>

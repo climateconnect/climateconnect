@@ -15,10 +15,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const toIdeaPreviews = (ideas, onClickIdea, isNarrowScreen) => {
+const toIdeaPreviews = (ideas, onClickIdea, hasIdeaOpen) => {
   return ideas.map(
     (idea) => <GridItem onClickIdea={onClickIdea} key={idea.url_slug} 
-    idea={idea} isNarrowScreen={isNarrowScreen} />
+    idea={idea} hasIdeaOpen={hasIdeaOpen} />
   )
 };
 
@@ -31,12 +31,12 @@ export default function IdeaPreviews({
   allHubs,
   userOrganizations,
   onClickIdea,
-  isNarrowScreen
+  hasIdeaOpen
 }) {
   const classes = useStyles();
-  console.log(isNarrowScreen)
+  console.log(hasIdeaOpen)
   console.log(parentHandlesGridItems)
-  const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas, onClickIdea, isNarrowScreen));
+  const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas, onClickIdea, hasIdeaOpen));
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
   return (
@@ -54,24 +54,24 @@ export default function IdeaPreviews({
         pageStart={1}
         spacing={2}
       >
-        <GridItem isCreateCard allHubs={allHubs} userOrganizations={userOrganizations} />
-        {parentHandlesGridItems ? toIdeaPreviews(ideas, onClickIdea, isNarrowScreen) : gridItems}
+        <GridItem isCreateCard allHubs={allHubs} userOrganizations={userOrganizations} hasIdeaOpen={hasIdeaOpen} />
+        {parentHandlesGridItems ? toIdeaPreviews(ideas, onClickIdea, hasIdeaOpen) : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="idea-previews-spinner" />}
       </InfiniteScroll>
     </>
   );
 }
 
-function GridItem({ idea, isCreateCard, allHubs, userOrganizations, onClickIdea, isNarrowScreen }) {
-  console.log("dip", isNarrowScreen)
+function GridItem({ idea, isCreateCard, allHubs, userOrganizations, onClickIdea, hasIdeaOpen }) {
+  console.log("dip", hasIdeaOpen)
   return (
     <Grid
       key={idea ? idea.url_slug : "createCard"}
       item
       xs={12}
       sm={6}
-      md={!isNarrowScreen ? 6: 3}
-      lg={!isNarrowScreen ? 6: 3}
+      md={hasIdeaOpen ? 6: 3}
+      lg={hasIdeaOpen ? 6: 3}
       component="li"
     >
       <IdeaPreview
