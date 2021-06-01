@@ -1,7 +1,7 @@
 import { makeStyles, useMediaQuery } from "@material-ui/core"
 import React, { useState } from "react"
-import EditIdea from './EditIdea'
 import IdeaPreviews from "./IdeaPreviews"
+import IdeaRoot from "./IdeaRoot"
 
 const useStyles = makeStyles(theme => ({
   root: props => ({
@@ -48,14 +48,14 @@ export default function IdeasBoard({
       {
         idea && !isNarrowScreen && (
           <div className={classes.idea}>
-            <EditIdea idea={idea}/>
+            <IdeaRoot idea={idea} onIdeaClose={onClose}/>
           </div>
         )
       }
       {
         idea && isNarrowScreen && (
           /* display mobile idea */
-          <EditIdea idea={idea} onIdeaClose={onClose}/>
+          <IdeaRoot idea={idea} onIdeaClose={onClose}/>
         )
       }
     </div>

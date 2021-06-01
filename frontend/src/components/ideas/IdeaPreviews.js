@@ -67,8 +67,8 @@ function GridItem({ idea, isCreateCard, allHubs, userOrganizations, onClickIdea,
       item
       xs={12}
       sm={6}
-      md={hasIdeaOpen ? 6: 3}
-      lg={hasIdeaOpen ? 6: 3}
+      md={hasIdeaOpen ? 6: 2}
+      lg={hasIdeaOpen ? 6: 2}
       component="li"
     >
       <IdeaPreview

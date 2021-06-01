@@ -1,8 +1,8 @@
-import React from 'react';
-import {Avatar, Card, Grid, makeStyles, Typography} from '@material-ui/core';
+import { Avatar, Card, Grid, makeStyles, Typography } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import React from 'react';
+import { getImageUrl } from "../../../public/lib/imageOperations";
 import theme from '../../themes/theme';
-import { getImageUrl } from "../../../public/lib/imageOperations"
 
 
 const useStyles = makeStyles({
@@ -34,7 +34,7 @@ const useStyles = makeStyles({
     }
 })
 
-export default function EditIdea({idea, onIdeaClose}) {
+export default function IdeaRoot({idea, onIdeaClose}) {
     const classes = useStyles();
     console.log(idea.user.thumbnail_image)
     const ideaCreator = `${idea.user.first_name} ${idea.user.last_name}`

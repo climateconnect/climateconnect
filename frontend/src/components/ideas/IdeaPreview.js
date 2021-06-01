@@ -1,23 +1,23 @@
-import { Card, CardMedia, Grid, makeStyles, Typography } from "@material-ui/core";
+import { Card, CardMedia, makeStyles, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
-import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import React, { useContext, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from '../../themes/theme';
 import UserContext from "../context/UserContext";
 import CreateIdeaDialog from "./createIdea/CreateIdeaDialog";
+import IdeaRatingIcon from "./IdeaRatingIcon";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
     border: `3px solid ${props.borderColor}`,
-    padding: theme.spacing(1.5),
     textAlign: "center",
     borderRadius: theme.spacing(2),
     background: "#F8F8F8",
     position: "relative",
     cursor: "pointer",
+    boxShadow: "3px 3px 6px #00000029"
   }),
   createCardHeadline: {
     fontWeight: 600,
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
   plusIconContainer: {
     marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(4.5),
+    marginBottom: theme.spacing(6.5),
   },
   addIcon: {
     fontSize: 40,
@@ -66,8 +66,22 @@ const useStyles = makeStyles((theme) => ({
   },
   hubIcon: {
     color: theme.palette.primary.main,
-    fill: theme.palette.primary.main
-  }
+    fill: theme.palette.primary.main,
+    marginRight: theme.spacing(1.5)
+  },
+  placeholderImg: {
+    visibility: "hidden",
+    width: "100%",
+  },
+  topSection: {
+    padding: theme.spacing(1)
+  },
+  categoryAndRatingWrapper: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: theme.spacing(1),
+  },
 }));
 
 //This component is currently only capable of displaying the "add new idea" card and not a real idea preview card
@@ -135,22 +149,15 @@ function IdeaCardContent(idea) {
   const classes = useStyles();
   return (
     <div>
-      <Typography color="primary" component="h2" className={classes.createCardHeadline}>
-        {idea.idea.name}
-      </Typography>
-      <Grid container>
-        <Grid item xs={6}>
-          <CardMedia 
-            className={classes.media} 
-            title={idea.idea.url_slug}
-          >
-            {idea.idea.hub_image && <span className={classes.hubIcon} dangerouslySetInnerHTML={{__html: idea.idea.hub_image[0]}} />}
-          </CardMedia>
-        </Grid>
-        <Grid item xs={6}>
-          <FavoriteBorderIcon className={classes.ratingIcon}/>
-        </Grid>
-      </Grid>
+      <div className={classes.topSection}>
+        <Typography color="secondary" component="h2" className={classes.createCardHeadline}>
+          {idea.idea.name}
+        </Typography>
+        <div className={classes.categoryAndRatingWrapper}>
+          {idea.idea.hub_image && <span className={classes.hubIcon} dangerouslySetInnerHTML={{__html: idea.idea.hub_image[0]}} />}
+          <IdeaRatingIcon rating={idea.rating || Math.floor(Math.random()*100)} />
+        </div>
+      </div>
       <div>
         {idea.idea.image === undefined || idea.idea.image === null ? (
           <Typography color="secondary" component="h4">
@@ -158,11 +165,10 @@ function IdeaCardContent(idea) {
           </Typography>
         ) : (
           <CardMedia
-            className={classes.media}
-            title={idea.idea.url_slug}
+            title={idea.idea.url_slug}            
             image={getImageUrl(idea.idea.image)}
           >
-            <img src={getImageUrl(idea.idea.image)} alt={idea.idea.name}/>
+            <img src={getImageUrl(idea.idea.image)} alt={idea.idea.name} className={classes.placeholderImg}/>
           </CardMedia>
         )}
       </div>

@@ -113,6 +113,7 @@ class Idea(models.Model):
     class Meta:
         verbose_name = "Idea"
         verbose_name_plural = "Ideas"
+        ordering = ["-id"]
     
     def __str__(self):
         return "{}: {}".format(self.id, self.name)
