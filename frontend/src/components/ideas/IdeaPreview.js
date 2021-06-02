@@ -82,15 +82,18 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginTop: theme.spacing(1),
   },
+  shortDescription: {
+    padding: theme.spacing(0.5)
+  }
 }));
 
 //This component is currently only capable of displaying the "add new idea" card and not a real idea preview card
-export default function IdeaPreview({ idea, isCreateCard, allHubs, userOrganizations , onClickIdea}) {
+export default function IdeaPreview({ idea, isCreateCard, allHubs, userOrganizations , onClickIdea, index}) {
   const colors = [
     theme.palette.primary.main, theme.palette.primary.light,
-    theme.palette.secondary.main, theme.palette.secondary.light
+    theme.palette.secondary.main, theme.palette.yellow.main
   ]
-  const color = colors[Math.floor(Math.random() * colors.length)];
+  const color = isCreateCard ? theme.palette.primary.main : colors[(index + idea.name.length) % 4];
   const classes = useStyles({ borderColor: !isCreateCard && color});
   const [open, setOpen] = useState(false);
   const handleCardClick = (e) => {
@@ -160,7 +163,7 @@ function IdeaCardContent(idea) {
       </div>
       <div>
         {idea.idea.image === undefined || idea.idea.image === null ? (
-          <Typography color="secondary" component="h4">
+          <Typography color="secondary" component="h4" className={classes.shortDescription}>
             {idea.idea.short_description}
           </Typography>
         ) : (

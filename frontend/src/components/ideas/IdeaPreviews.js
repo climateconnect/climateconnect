@@ -1,12 +1,10 @@
 import { Grid, makeStyles } from "@material-ui/core";
-import React, { useContext } from "react";
+import React from "react";
 import InfiniteScroll from "react-infinite-scroller";
-import getTexts from "../../../public/texts/texts";
-import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import IdeaPreview from "./IdeaPreview";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(({
   reset: {
     margin: 0,
     padding: 0,
@@ -17,15 +15,14 @@ const useStyles = makeStyles((theme) => ({
 
 const toIdeaPreviews = (ideas, onClickIdea, hasIdeaOpen) => {
   return ideas.map(
-    (idea) => <GridItem onClickIdea={onClickIdea} key={idea.url_slug} 
+    (idea, index) => <GridItem index={index} onClickIdea={onClickIdea} key={idea.url_slug} 
     idea={idea} hasIdeaOpen={hasIdeaOpen} />
   )
 };
 
 export default function IdeaPreviews({
   hasMore,
-  isFetchingMore,
-  loadMore,
+  loadFunc,
   parentHandlesGridItems,
   ideas,
   allHubs,
@@ -35,8 +32,27 @@ export default function IdeaPreviews({
 }) {
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas, onClickIdea, hasIdeaOpen));
-  const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "idea", locale: locale });
+  
+  const [isFetchingMore, setIsFetchingMore] = React.useState(false);
+
+  if (!loadFunc) {
+    hasMore = false;
+  }
+
+  const loadMore = async () => {
+    // Sometimes InfiniteScroll calls loadMore twice really fast. Therefore
+    // to improve performance, we aim to guard against subsequent
+    // fetches to the API by maintaining a local state flag.
+    if (!isFetchingMore) {
+      setIsFetchingMore(true);
+      const newIdeas = await loadFunc();
+      if (!parentHandlesGridItems) {
+        setGridItems([...gridItems, ...toIdeaPreviews(newIdeas)]);
+      }
+      setIsFetchingMore(false);
+    }
+  };
+  
   return (
     <>
       <InfiniteScroll
@@ -60,14 +76,14 @@ export default function IdeaPreviews({
   );
 }
 
-function GridItem({ idea, isCreateCard, allHubs, userOrganizations, onClickIdea, hasIdeaOpen }) {
+function GridItem({ idea, isCreateCard, allHubs, userOrganizations, onClickIdea, hasIdeaOpen, index }) {
   return (
     <Grid
       key={idea ? idea.url_slug : "createCard"}
       item
-      xs={12}
-      sm={6}
-      md={hasIdeaOpen ? 6: 2}
+      xs={6}
+      sm={4}
+      md={hasIdeaOpen ? 6: 3}
       lg={hasIdeaOpen ? 6: 2}
       component="li"
     >
@@ -77,6 +93,7 @@ function GridItem({ idea, isCreateCard, allHubs, userOrganizations, onClickIdea,
         isCreateCard={isCreateCard}
         userOrganizations={userOrganizations}
         onClickIdea={onClickIdea}
+        index={index}
       />
     </Grid>
   );

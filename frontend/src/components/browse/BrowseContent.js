@@ -74,11 +74,13 @@ export default function BrowseContent({
       projects: 2,
       members: 2,
       organizations: 2,
+      ideas: 2
     },
     urlEnding: {
       projects: "",
       organizations: "",
       members: "",
+      ideas: ""
     },
   };
   const token = new Cookies().get("token");
@@ -166,7 +168,6 @@ export default function BrowseContent({
     try {
       setIsFetchingMoreData(true);
       const res = await loadMoreData(type, state.nextPages[type], state.urlEnding[type]);
-
       // TODO: these setState and hooks calls should likely be memoized and combined
       setIsFetchingMoreData(false);
       setState({
@@ -442,7 +443,6 @@ export default function BrowseContent({
             className={classes.tabContent}
           >
             {
-              //IdeaPreviews is currently only a stub that just shows the "create idea" button
               isFiltering ? (
                 <LoadingSpinner />
               ) : (

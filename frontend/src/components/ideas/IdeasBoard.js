@@ -3,7 +3,7 @@ import React, { useState } from "react"
 import IdeaPreviews from "./IdeaPreviews"
 import IdeaRoot from "./IdeaRoot"
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(({
   root: props => ({
     display: props.ideaOpen ? "flex" : "default"
   }),
