@@ -24,15 +24,20 @@ class IdeaRatingView(APIView):
                 'message': 'Missing parameter'
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        idea_rating = IdeaRating.objects.create(
-            idea=idea, user=request.user,
-            rating=request.data['rating']
+        idea_rating, created = IdeaRating.objects.get_or_create(
+            idea=idea, user= request.user
         )
 
-        return Response(
-            IdeaRatingSerializer(idea_rating).data,
-            status=status.HTTP_201_CREATED
-        )
+        idea_rating.rating = request.data['rating']
+        idea_rating.save()
+
+        average_rating = sum(
+            idea_rating.rating for idea_rating in idea.rating_idea.all()
+        ) // idea.rating_idea.count
+
+        return Response({
+            "average_rating": average_rating
+        }, status=status.HTTP_201_CREATED)
 
 
 class IdeaSupportView(APIView):

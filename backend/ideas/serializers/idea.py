@@ -20,12 +20,14 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     hub_image = serializers.SerializerMethodField()
     ratings = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
 
     class Meta:
         model = Idea
         fields = [
             'id', 'name', 'url_slug', 'short_description', 
-            'thumbnail_image', 'hub_image', 'ratings', 'image', 'user'
+            'thumbnail_image', 'hub_image', 'ratings', 'image', 'user',
+            'location'
         ]
 
     def get_hub_image(self, obj):
@@ -46,6 +48,12 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     def get_user(self, obj):
         if obj.user and obj.user.user_profile:
             return UserProfileStubSerializer(obj.user.user_profile).data
+        
+        return None
+    
+    def get_location(self, obj):
+        if obj.location:
+            return obj.location.name
         
         return None
 
