@@ -1,3 +1,4 @@
+import { getLocationFilterKeys } from "../data/locationFilters";
 import { apiRequest } from "./apiOperations";
 
 export function getNameFromLocation(location) {
@@ -220,7 +221,7 @@ export function getLocationValue(values, locationKey) {
 //When filtering by location, the url only holds the place_id, osm_id and loc_type, but not the name
 //This function is used to retrieve the whole location object
 export async function getLocationFilteredBy(query) {
-  const required_params = ["place", "osm", "loc_type"];
+  const required_params = getLocationFilterKeys();
   //Return no if we didn't filter by any location
   for (const param of required_params) {
     if (!Object.keys(query).includes(param)) return null;
