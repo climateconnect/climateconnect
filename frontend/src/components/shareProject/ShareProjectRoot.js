@@ -16,7 +16,6 @@ import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import SelectCategory from "./SelectCategory";
 import ShareProject from "./ShareProject";
 
-
 const DEFAULT_STATUS = 2;
 
 const useStyles = makeStyles((theme) => {

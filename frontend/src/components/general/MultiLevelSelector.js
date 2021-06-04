@@ -13,10 +13,8 @@ import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import CloseIcon from "@material-ui/icons/Close";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import React, { useContext } from "react";
-
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
@@ -503,8 +501,6 @@ function ListToChooseFrom({
               // ["Crafts"].
               (selectedItem) => selectedItem.name === item.name || selectedItem === item.name
             ).length === 1;
-
-          console.log(item);
 
           return (
             <React.Fragment key={item.key}>
