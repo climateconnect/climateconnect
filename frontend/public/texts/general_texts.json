@@ -47,6 +47,10 @@
     "en": "Project Categories",
     "de": "Projektkategorien"
   },
+  "add_project_categories": {
+    "en": "Add project categories",
+    "de": "Projektkategorien hinzufügen"
+  },
   "save": {
     "en": "Save",
     "de": "Speichern"
@@ -129,7 +133,7 @@
   },
   "please_choose_one_of_the_location_options": {
     "en": "Please choose one of the location options",
-    "de": "Bitte wähle eine der Optionen für den Org"
+    "de": "Bitte wähle eine der Optionen für den Ort"
   },
   "organization_type": {
     "en": "Organization type",
