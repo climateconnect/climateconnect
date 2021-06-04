@@ -1,6 +1,8 @@
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useRouter } from "next/router";
 import React from "react";
+import { getLocationFilterKeys } from "../../../public/data/locationFilters";
+import { getReducedPossibleFilters } from "../../../public/lib/parsingOperations";
 import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
@@ -95,6 +97,8 @@ export default function FilterContent({
   type,
   unexpandFilters,
   initialLocationFilter,
+  filters,
+  handleUpdateFilters,
 }) {
   const isMediumScreen = useMediaQuery(theme.breakpoints.between("xs", "md"));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
@@ -105,16 +109,7 @@ export default function FilterContent({
     possibleFilters.length
   );
 
-  const reducedPossibleFilters = possibleFilters.reduce((map, obj) => {
-    // Handle initializing to an array for multiselects, otherwise an empty string
-    if (obj.type === "multiselect" || obj.type === "openMultiSelectDialogButton") {
-      map[obj.key] = [];
-    } else {
-      map[obj.key] = "";
-    }
-
-    return map;
-  }, {});
+  const reducedPossibleFilters = getReducedPossibleFilters(possibleFilters);
 
   // Update possible filters from current filters
   // that are present in the query param in the URL.  Some
@@ -123,29 +118,23 @@ export default function FilterContent({
   // and when merging in parameters from query param
   const router = useRouter();
   Object.entries(router.query).forEach(([key, value]) => {
-    const locationQueryParams = ["place", "loc_type", "osm"];
+    const locationQueryParams = getLocationFilterKeys();
     if (locationQueryParams.includes(key) && initialLocationFilter) {
       if (!reducedPossibleFilters.location) {
         reducedPossibleFilters.location = initialLocationFilter;
       }
-    } else if (
-      Array.isArray(reducedPossibleFilters[key]) ||
-      typeof reducedPossibleFilters[key] === "string"
-    ) {
+    } else if (Array.isArray(reducedPossibleFilters[key])) {
       // If the query value is concat'd -
-      // we need to make an array to set
-      if (value && value.indexOf(",") > 0) {
-        const splitItems = value.split(",");
-        reducedPossibleFilters[key] = [...splitItems];
-      } else {
-        reducedPossibleFilters[key] = value;
-      }
+      // split into multiple items
+      const splitItems = value.split(",");
+      reducedPossibleFilters[key] = [...splitItems];
+    } else {
+      reducedPossibleFilters[key] = value;
     }
   });
 
   const [open, setOpen] = React.useState({});
-  const [currentFilters, setCurrentFilters] = React.useState(reducedPossibleFilters);
-  const reduced = reduceFilters(currentFilters, possibleFilters);
+  const reduced = reduceFilters(filters, possibleFilters);
   const [selectedItems, setSelectedItems] = React.useState(reduced);
 
   const handleClickDialogOpen = (prop) => {
@@ -163,8 +152,8 @@ export default function FilterContent({
    */
   const handleClickDialogSave = (prop, results) => {
     if (results) {
-      const updatedFilters = { ...currentFilters, [prop]: results.map((x) => x.name) };
-      setCurrentFilters(updatedFilters);
+      const updatedFilters = { ...filters, [prop]: results.map((x) => x.name) };
+      handleUpdateFilters(updatedFilters);
       applyFilters(type, updatedFilters, isSmallScreen);
     }
 
@@ -180,13 +169,13 @@ export default function FilterContent({
   };
 
   const handleValueChange = (key, newValue) => {
-    const updatedFilters = { ...currentFilters, [key]: newValue };
+    const updatedFilters = { ...filters, [key]: newValue };
     applyFilters(type, updatedFilters, isSmallScreen);
-    setCurrentFilters(updatedFilters);
+    handleUpdateFilters(updatedFilters);
   };
 
   const handleApplyFilters = () => {
-    applyFilters(type, currentFilters, isSmallScreen);
+    applyFilters(type, filters, isSmallScreen);
   };
 
   /**
@@ -197,13 +186,13 @@ export default function FilterContent({
   const handleUnselectFilter = (filterName, filterKey) => {
     // Ensure that the filtered value is an array, e.g.
     // we can't filter on a raw string like "Energy".
-    if (!Array.isArray(currentFilters[filterKey])) {
-      currentFilters[filterKey] = [currentFilters[filterKey]];
+    if (!Array.isArray(filters[filterKey])) {
+      filters[filterKey] = [filters[filterKey]];
     }
 
-    const prunedFilters = currentFilters[filterKey].filter((f) => f !== filterName);
+    const prunedFilters = filters[filterKey].filter((f) => f !== filterName);
     const updatedFilters = {
-      ...currentFilters,
+      ...filters,
       [filterKey]: prunedFilters,
     };
 
@@ -211,7 +200,7 @@ export default function FilterContent({
     // window state to reflect the currently active filters, and fetch
     // the updated data from the server
     applyFilters(type, updatedFilters, isSmallScreen);
-    setCurrentFilters(updatedFilters);
+    handleUpdateFilters(updatedFilters);
 
     // Also re-select items
     if (selectedItems[filterKey]) {
@@ -227,10 +216,10 @@ export default function FilterContent({
       {isSmallScreen ? (
         <>
           <FilterOverlay
-            currentFilters={currentFilters}
+            handleApplyFilters={handleApplyFilters}
+            currentFilters={filters}
             errorMessage={errorMessage}
             filtersExpanded={filtersExpanded}
-            handleApplyFilters={handleApplyFilters}
             handleClickDialogSave={handleClickDialogSave}
             handleClickDialogClose={handleClickDialogClose}
             handleClickDialogOpen={handleClickDialogOpen}
@@ -249,9 +238,8 @@ export default function FilterContent({
       ) : isMediumScreen && possibleFilters.length > 3 ? (
         <>
           <Filters
-            currentFilters={currentFilters}
+            currentFilters={filters}
             errorMessage={errorMessage}
-            handleApplyFilters={handleApplyFilters}
             handleClickDialogSave={handleClickDialogSave}
             handleClickDialogClose={handleClickDialogClose}
             handleClickDialogOpen={handleClickDialogOpen}
@@ -265,8 +253,7 @@ export default function FilterContent({
             setSelectedItems={setSelectedItems}
           />
           <Filters
-            currentFilters={currentFilters}
-            handleApplyFilters={handleApplyFilters}
+            currentFilters={filters}
             handleClickDialogSave={handleClickDialogSave}
             handleClickDialogClose={handleClickDialogClose}
             handleClickDialogOpen={handleClickDialogOpen}
@@ -282,9 +269,8 @@ export default function FilterContent({
         </>
       ) : (
         <Filters
-          currentFilters={currentFilters}
+          currentFilters={filters}
           errorMessage={errorMessage}
-          handleApplyFilters={handleApplyFilters}
           handleClickDialogSave={handleClickDialogSave}
           handleClickDialogClose={handleClickDialogClose}
           handleClickDialogOpen={handleClickDialogOpen}
@@ -300,7 +286,7 @@ export default function FilterContent({
         />
       )}
       <SelectedFilters
-        currentFilters={currentFilters}
+        currentFilters={filters}
         handleUnselectFilter={handleUnselectFilter}
         possibleFilters={possibleFilters}
       />

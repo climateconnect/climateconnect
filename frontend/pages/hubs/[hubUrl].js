@@ -1,18 +1,23 @@
 import { makeStyles, Typography } from "@material-ui/core";
-import NextCookies from "next-cookies";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
+import possibleFilters from "../../public/data/possibleFilters";
 import { apiRequest } from "../../public/lib/apiOperations";
+import { getUnaffectedTabs, hasDifferingValues } from "../../public/lib/filterOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo
+  membersWithAdditionalInfo,
 } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { getLocationFilteredBy } from "../../public/lib/locationOperations";
-import { getInfoMetadataByType, parseData } from "../../public/lib/parsingOperations";
+import {
+  getInfoMetadataByType,
+  getReducedPossibleFilters,
+  parseData,
+} from "../../public/lib/parsingOperations";
 import { encodeQueryParamsFromFilters } from "../../public/lib/urlOperations";
 import getTexts from "../../public/texts/texts";
 import BrowseContent from "../../src/components/browse/BrowseContent";
@@ -25,7 +30,6 @@ import HubHeaderImage from "../../src/components/hub/HubHeaderImage";
 import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
-
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -49,11 +53,8 @@ const useStyles = makeStyles((theme) => ({
 //potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hubUrl;
-  const { token } = NextCookies(ctx);
   const [
     hubData,
-    initialProjects,
-    initialOrganizations,
     project_categories,
     organization_types,
     skills,
@@ -61,8 +62,6 @@ export async function getServerSideProps(ctx) {
     location_filtered_by,
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
-    getProjects({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
-    getOrganizations({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
     getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
@@ -81,8 +80,6 @@ export async function getServerSideProps(ctx) {
       stats: hubData.stats,
       statBoxTitle: hubData.stat_box_title,
       image_attribution: hubData.image_attribution,
-      initialProjects: initialProjects,
-      initialOrganizations: initialOrganizations,
       filterChoices: {
         project_categories: project_categories,
         organization_types: organization_types,
@@ -106,7 +103,7 @@ export default function Hub({
   stats,
   subHeadline,
   initialLocationFilter,
-  filterChoices
+  filterChoices,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -114,42 +111,19 @@ export default function Hub({
   const token = new Cookies().get("token");
 
   const getInitialFilters = () => {
-    if (initialLocationFilter) {
-      return {
-        projects: {
-          location: initialLocationFilter,
-        },
-        members: {
-          location: initialLocationFilter,
-        },
-        organizations: {
-          location: initialLocationFilter,
-        },
-      };
-    } else {
-      return {
-        projects: {},
-        members: {},
-        organizations: {},
-      };
-    }
+    return getReducedPossibleFilters(
+      possibleFilters({ key: "all", filterChoices: filterChoices, locale: locale }),
+      initialLocationFilter
+    );
   };
 
   const [filters, setFilters] = useState(getInitialFilters());
+  const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWhereApplied] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const handleSetErrorMessage = (newMessage) => {
     setErrorMessage(newMessage);
   };
   const contentRef = useRef(null);
-
-  const [initialMembers, setInitialMembers] = useState(null);
-  useEffect(async function () {
-    if (isLocationHub) {
-      setInitialMembers(
-        await getMembers({ page: 1, token: token, hubUrl: hubUrl, locale: locale })
-      );
-    }
-  }, []);
 
   //Refs and state for tutorial
   const hubQuickInfoRef = useRef(null);
@@ -195,16 +169,52 @@ export default function Hub({
     }
   };
 
-  const applyNewFilters = async (type, newFilters, closeFilters, oldUrlEnding) => {
-    if (filters === newFilters) {
+  const applyNewFilters = async (type, newFilters, closeFilters) => {
+    if (
+      !hasDifferingValues({
+        obj: filters,
+        newObj: newFilters,
+        type: type,
+        filterChoices: filterChoices,
+        locale: locale,
+      }) &&
+      tabsWhereFiltersWereApplied.includes(type)
+    ) {
       return;
     }
 
-    setFilters({ ...filters, [type]: newFilters });
-    const newUrlEnding = encodeQueryParamsFromFilters(newFilters, getInfoMetadataByType(type, locale));
-    if (oldUrlEnding === newUrlEnding) {
-      return null;
+    if (
+      !hasDifferingValues({
+        obj: filters,
+        newObj: newFilters,
+        type: type,
+        filterChoices: filterChoices,
+        locale: locale,
+      })
+    ) {
+      setTabsWhereFiltersWhereApplied([...tabsWhereFiltersWereApplied, type]);
+    } else {
+      //If there was a change to the filters, we'll only remove the affected tabs from the tabs that were affected by the change
+      //e.g. your cannot browse organizations by project category at the moment, so if you change this filter and then switch to the organizations tab
+      //this should not trigger a reload of the organzations
+      const unaffectedTabs = getUnaffectedTabs({
+        tabs: tabsWhereFiltersWereApplied,
+        filterChoices: filterChoices,
+        locale: locale,
+        filters: filters,
+        newFilters: newFilters,
+        type: type,
+      });
+      setTabsWhereFiltersWhereApplied([...unaffectedTabs, type]);
     }
+    setFilters({ ...filters, ...newFilters });
+
+    const newUrlEnding = encodeQueryParamsFromFilters({
+      filters: newFilters,
+      infoMetadata: getInfoMetadataByType(type, locale),
+      filterChoices: filterChoices,
+      locale: locale,
+    });
     handleSetErrorMessage("");
     try {
       const filteredItemsObject = await getDataFromServer({
@@ -232,37 +242,19 @@ export default function Hub({
     }
   };
 
-  const applySearch = async (type, searchValue, oldUrlEnding) => {
-    const newSearchQueryParam = `&search=${searchValue}`;
-    if (oldUrlEnding === newSearchQueryParam) {
-      console.log("it's the same!");
-      return;
-    }
-    try {
-      const filteredItemsObject = await getDataFromServer({
-        type: type,
-        page: 1,
-        token: token,
-        urlEnding: newSearchQueryParam,
-        hubUrl: hubUrl,
-        locale: locale,
-      });
-      if (type === "members") {
-        filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
-      }
-      return {
-        filteredItemsObject: filteredItemsObject,
-        newUrlEnding: newSearchQueryParam,
-      };
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const closeHubHeaderImage = (e) => {
     e.preventDefault();
     console.log("closing hub header image");
   };
+
+  const handleUpdateFilterValues = (valuesToUpdate) => {
+    setFilters({
+      ...filters,
+      ...valuesToUpdate,
+    });
+  };
+
+  console.log(filters);
 
   return (
     <WideLayout title={headline} fixedHeader headerBackground="#FFF">
@@ -291,10 +283,10 @@ export default function Hub({
           {!isLocationHub && <BrowseExplainer />}
           <BrowseContent
             applyNewFilters={applyNewFilters}
-            applySearch={applySearch}
             customSearchBarLabels={customSearchBarLabels}
             errorMessage={errorMessage}
-            // TODO: is this still needed?
+            filters={filters}
+            handleUpdateFilterValues={handleUpdateFilterValues}
             filterChoices={filterChoices}
             handleSetErrorMessage={handleSetErrorMessage}
             hideMembers={!isLocationHub}
@@ -302,7 +294,6 @@ export default function Hub({
             hubProjectsButtonRef={hubProjectsButtonRef}
             hubQuickInfoRef={hubQuickInfoRef}
             initialLocationFilter={initialLocationFilter}
-            initialMembers={initialMembers}
             // TODO: is this still needed?
             // initialOrganizations={initialOrganizations}
             // initialProjects={initialProjects}
@@ -343,39 +334,6 @@ const getHubData = async (url_slug, locale) => {
     return null;
   }
 };
-
-async function getProjects({ page, token, urlEnding, hubUrl, locale }) {
-  return await getDataFromServer({
-    type: "projects",
-    page: page,
-    token: token,
-    urlEnding: urlEnding,
-    hubUrl: hubUrl,
-    locale: locale,
-  });
-}
-
-async function getOrganizations({ page, token, urlEnding, hubUrl, locale }) {
-  return await getDataFromServer({
-    type: "organizations",
-    page: page,
-    token: token,
-    urlEnding: urlEnding,
-    hubUrl: hubUrl,
-    locale: locale,
-  });
-}
-
-async function getMembers({ page, token, urlEnding, hubUrl, locale }) {
-  return await getDataFromServer({
-    type: "members",
-    page: page,
-    token: token,
-    urlEnding: urlEnding,
-    hubUrl: hubUrl,
-    locale: locale,
-  });
-}
 
 async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale }) {
   let url = `/api/${type}/?page=${page}&hub=${hubUrl}`;
