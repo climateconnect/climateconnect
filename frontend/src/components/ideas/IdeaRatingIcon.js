@@ -1,5 +1,7 @@
-import { makeStyles } from "@material-ui/core"
-import React from "react"
+import { makeStyles, Tooltip } from "@material-ui/core"
+import React, { useContext } from "react"
+import getTexts from "../../../public/texts/texts"
+import UserContext from "../context/UserContext"
 
 const useStyles = makeStyles(theme=> ({
   heartContainer: {
@@ -39,18 +41,27 @@ const useStyles = makeStyles(theme=> ({
   })
 }))
 
-export default function IdeaRatingIcon({rating}) {
+export default function IdeaRatingIcon({rating, number_of_ratings}) {
   const classes = useStyles({rating: rating})
+  const { locale } = useContext(UserContext)
+  const texts = getTexts({page: "idea", locale: locale, idea: {
+    rating: {
+      rating_score: rating,
+      number_of_ratings: number_of_ratings
+    }
+  }})
   return (
-    <div className={classes.heartContainer}>
-      <div className={`${classes.heartIconContainer} ${classes.greyHeartIconContainer}`}>
-      <div className={classes.greyHeartIconDisplayBox} />
-        <img src={"/images/planet-earth-grey.svg"} className={`${classes.heartIcon} ${classes.greyHeartIcon}`}/>
+    <Tooltip title={number_of_ratings > 0 ? texts.x_people_rated_this_idea : texts.nobody_has_rated_this_idea_yet}>
+      <div className={classes.heartContainer}>
+        <div className={`${classes.heartIconContainer} ${classes.greyHeartIconContainer}`}>
+        <div className={classes.greyHeartIconDisplayBox} />
+          <img src={"/images/planet-earth-grey.svg"} className={`${classes.heartIcon} ${classes.greyHeartIcon}`}/>
+        </div>
+        <div className={`${classes.heartIconContainer} ${classes.coloredHeartIconContainer}`}>
+          <div className={classes.coloredHeartIconDisplayBox} />
+          <img src={"/images/planet-earth-heart.svg"} className={`${classes.heartIcon} ${classes.coloredHeartIcon}`}/>
+        </div>
       </div>
-      <div className={`${classes.heartIconContainer} ${classes.coloredHeartIconContainer}`}>
-        <div className={classes.coloredHeartIconDisplayBox} />
-        <img src={"/images/planet-earth-heart.svg"} className={`${classes.heartIcon} ${classes.coloredHeartIcon}`}/>
-      </div>
-    </div>
+    </Tooltip>
   )
 }

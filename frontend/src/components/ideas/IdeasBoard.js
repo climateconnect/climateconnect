@@ -20,23 +20,25 @@ export default function IdeasBoard({
   loadFunc,
   ideas,
   allHubs,
-  userOrganizations
+  userOrganizations,
+  handleUpdateIdeaRating
 }) {  
   const [idea, setIdea] = useState(null)
-  const [ideaRating, setIdeaRating] = useState(null);
   const classes = useStyles({ideaOpen: idea !== null})
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-
   const onClickIdea = async (idea) => {
     //catch idea from api
     //then setIdea(idea)
     setIdea(idea);
-    setIdeaRating(idea.ratings);
   }
+
   const onClose = () => {
     setIdea(null);
   }
-  console.log(ideaRating);
+
+  const handleUpdateRating = (newRating) => {
+    handleUpdateIdeaRating(idea, newRating)
+  }
 
   return (
     <div className={classes.root}>
@@ -61,7 +63,7 @@ export default function IdeasBoard({
       {
         idea && isNarrowScreen && (
           /* display mobile idea */
-          <IdeaRoot idea={idea} onIdeaClose={onClose} ideaRating={ideaRating}/>
+          <IdeaRoot idea={idea} onIdeaClose={onClose} onRatingChange={handleUpdateRating}/>
         )
       }
     </div>

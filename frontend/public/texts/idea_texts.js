@@ -1,4 +1,4 @@
-export default function getIdeaTexts() {
+export default function getIdeaTexts({idea}) {
   return {
     share_your_idea_and_find_the_right_collaborators: {
       en: "Share your idea and find the right collaborators!",
@@ -100,6 +100,16 @@ export default function getIdeaTexts() {
     the_ideas_creator: {
       en: "The idea's creator",
       de: "ErstellerIn der Idee"
+    },
+    x_people_rated_this_idea: {
+      en: `${idea?.rating?.number_of_ratings} ${idea?.rating?.number_of_ratings.length > 1 ? "users have " : "user has "}
+      rated this idea with an average score of ${idea?.rating?.rating_score}/100`,
+      de: `${idea?.rating?.number_of_ratings} ${idea?.rating?.number_of_ratings.length > 1 ? "Personen haben " : "Person hat "}
+      diese Idee mit einer durchschnittlichen Bewertung von ${idea?.rating?.rating_score} bewertet`
+    },
+    nobody_has_rated_this_idea_yet: {
+      en: "Nobody has rated this idea yet",
+      de: "Diese Idee hat noch niemand bewertet"
     }
   };
 }

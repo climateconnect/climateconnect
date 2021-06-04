@@ -1,5 +1,6 @@
 import { makeStyles, Tooltip } from "@material-ui/core"
 import React from "react"
+import { getImageUrl } from "../../../public/lib/imageOperations"
 
 const useStyles = makeStyles(theme => ({
   hubIcon: {
@@ -11,10 +12,9 @@ const useStyles = makeStyles(theme => ({
 
 export default function IdeaHubIcon({idea, className}) {
   const classes = useStyles()
-  console.log(idea.hub)
   return (
-    <Tooltip>
-      <img src={idea.hub.icon} className={`${classes.hubIcon} ${className}`} />
+    <Tooltip title={idea.hub.name}>
+      <img src={getImageUrl(idea.hub.icon)} className={`${classes.hubIcon} ${className}`} />
     </Tooltip>
   )
 }

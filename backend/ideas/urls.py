@@ -8,6 +8,7 @@ from ideas.views.comment_views import (
     UpdateDestroyIdeaCommentView
 )
 from ideas.views.idea_support_views import (
+    GetPersonalIdeaRatingView,
     IdeaRatingView,
 )
 
@@ -24,5 +25,9 @@ urlpatterns = [
     path(
         'ideas/<str:url_slug>/ratings/', IdeaRatingView.as_view(),
         name='idea-rating-view'
+    ),
+    path(
+        'ideas/<str:url_slug>/my_rating/', GetPersonalIdeaRatingView.as_view(),
+        name='get-my-idea-rating-view'
     )
 ]

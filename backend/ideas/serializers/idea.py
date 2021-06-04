@@ -19,7 +19,7 @@ class IdeaSupportedMinimalSerializer(serializers.ModelSerializer):
 
 class IdeaMinimalSerializer(serializers.ModelSerializer):
     hub = serializers.SerializerMethodField()
-    ratings = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
 
@@ -27,7 +27,7 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
         model = Idea
         fields = [
             'id', 'name', 'url_slug', 'short_description', 
-            'thumbnail_image', 'hub', 'ratings', 'image', 'user',
+            'thumbnail_image', 'hub', 'rating', 'image', 'user',
             'location'
         ]
 
@@ -42,14 +42,18 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
             return None
         return obj.location.name
     
-    def get_ratings(self, obj):
+    def get_rating(self, obj):
         total_average = 0
-        if obj.rating_idea.count() > 0:
+        number_of_ratings = obj.rating_idea.count()
+        if number_of_ratings > 0:
             total_average = sum(
                 idea_rating.rating for idea_rating in obj.rating_idea.all()
             ) //  obj.rating_idea.count()
 
-        return total_average
+        return {
+            'number_of_ratings': number_of_ratings,
+            'rating_score': total_average
+        }
     
     def get_user(self, obj):
         if obj.user and obj.user.user_profile:

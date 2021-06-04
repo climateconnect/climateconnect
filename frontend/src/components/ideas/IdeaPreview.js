@@ -130,11 +130,13 @@ function CreateCardContent() {
   const classes = useStyles();
   return (
     <div>
-      <Typography color="primary" component="h2" className={classes.createCardHeadline}>
-        {texts.share_your_idea_and_find_the_right_collaborators}
-      </Typography>
-      <div className={classes.plusIconContainer}>
-        <AddIcon className={classes.addIcon} />
+      <div className={classes.topSection}>
+        <Typography color="primary" component="h2" className={classes.createCardHeadline}>
+          {texts.share_your_idea_and_find_the_right_collaborators}
+        </Typography>
+        <div className={classes.plusIconContainer}>
+          <AddIcon className={classes.addIcon} />
+        </div>
       </div>
       <div className={classes.shareIdeaBottomSection}>
         <EmojiObjectsIcon className={classes.ideaIcon} />
@@ -153,8 +155,8 @@ function IdeaCardContent(idea) {
           {idea.idea.name}
         </Typography>
         <div className={classes.categoryAndRatingWrapper}>
-          {idea.idea.hub_image && <IdeaHubIcon idea={idea.idea} />}
-          <IdeaRatingIcon rating={idea.rating || Math.floor(Math.random()*100)} />
+          {idea.idea.hub && <IdeaHubIcon idea={idea.idea} />}
+          <IdeaRatingIcon rating={idea.idea.rating.rating_score} number_of_ratings={idea.idea.rating.number_of_ratings}/>
         </div>
       </div>
       <div>
