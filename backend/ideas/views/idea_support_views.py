@@ -26,8 +26,7 @@ class IdeaRatingView(APIView):
             return Response({
                 'message': 'Missing parameter'
             }, status=status.HTTP_400_BAD_REQUEST)
-
-        if int(request.data['rating']) >= 100 or int(request.data['rating']) <= 0:
+        if int(request.data['rating']) > 100 or int(request.data['rating']) < 0:
             return Response({
                 'message': 'Unsupported value for parameter rating'
             }, status=status.HTTP_400_BAD_REQUEST)

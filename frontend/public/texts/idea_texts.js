@@ -110,6 +110,10 @@ export default function getIdeaTexts({idea}) {
     nobody_has_rated_this_idea_yet: {
       en: "Nobody has rated this idea yet",
       de: "Diese Idee hat noch niemand bewertet"
+    },
+    join: {
+      en: "Join",
+      de: "Mitmachen"
     }
   };
 }
