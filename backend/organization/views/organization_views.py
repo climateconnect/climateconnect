@@ -103,7 +103,7 @@ class ListOrganizationsAPIView(ListAPIView):
             organization_type_names = self.request.query_params.get('organization_type').split(',')
             organization_types = OrganizationTags.objects.filter(name__in=organization_type_names)
             organization_taggings = OrganizationTagging.objects.filter(organization_tag__in=organization_types)
-            organizations = organizations.filter(tag_organization__in=organization_taggings).distinct('id')
+            organizations = organizations.filter(tag_organization__in=organization_taggings).distinct()
 
         if 'place' in self.request.query_params and 'osm' in self.request.query_params:
             location_data = get_location_with_range(self.request.query_params)
