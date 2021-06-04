@@ -56,6 +56,12 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
             return UserProfileStubSerializer(obj.user.user_profile).data
         
         return None
+    
+    def get_location(self, obj):
+        if obj.location:
+            return obj.location.name
+        
+        return None
 
 
 class IdeaSerializer(serializers.ModelSerializer):

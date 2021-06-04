@@ -48,6 +48,25 @@ export default function IdeaRoot({idea, onIdeaClose}) {
   const handleIdeaEditClose = (e) => {
     onIdeaClose(e)
   }
+  const handleRatingChange = (event, newRating) => {
+    event.preventDefault();
+    console.log(newRating);
+    /* const payload = {
+        rating: newRating
+    }
+    try {
+        const response = await apiRequest({
+            method: "post",
+            url: `/api/ideas/${idea.url_slug}/rating/`,
+            payload: payload,
+            token: token,
+            locale: locale
+        })
+        setIdeaRating(response.data.rating)
+    } catch(err) {
+        console.log(err);
+    } */
+} 
   const { locale } = useContext(UserContext)
   const texts = getTexts({page: "idea", locale: locale})
   return (
@@ -66,6 +85,12 @@ export default function IdeaRoot({idea, onIdeaClose}) {
           <Tooltip title={texts.location}><LocationOnIcon /></Tooltip>
           <Typography variant="body1" className={classes.locationText}>{idea.location}</Typography>
         </div>
+        <div>
+          <Slider value={ideaRating} 
+              onChange={handleRatingChange} 
+              aria-labelledby="continuous-slider" 
+          />
+      </div>
       </div>
     </Card>
   )
