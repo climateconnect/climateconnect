@@ -1,3 +1,6 @@
+import { getLocationFilterKeys } from "../data/locationFilters";
+import possibleFilters from "../data/possibleFilters";
+
 /**
  * For example when filtering by location="San Francisco", the url should
  * automatically change to active filters. This enables filtered searches
@@ -6,8 +9,13 @@
  * Builds a URL with the new filters, e.g. something like:
  * http://localhost:3000/browse?&country=Austria&city=vienna&
  */
-const getFilterUrl = (activeFilters, infoMetadata) => {
-  const filteredParams = encodeQueryParamsFromFilters(activeFilters, infoMetadata);
+const getFilterUrl = ({ activeFilters, infoMetadata, filterChoices, locale }) => {
+  const filteredParams = encodeQueryParamsFromFilters({
+    filters: activeFilters,
+    infoMetadata: infoMetadata,
+    filterChoices: filterChoices,
+    locale: locale,
+  });
   // Only include "?" if query params aren't nullish
   const filteredQueryParams = filteredParams ? `?${filteredParams}` : "";
 
@@ -19,12 +27,24 @@ const getFilterUrl = (activeFilters, infoMetadata) => {
   return newUrl;
 };
 
+const getFilterName = (filter, key, filterChoices) => {
+  const keyToFilterChoicesKeyMap = {
+    organization_type: "organization_types",
+    skills: "skills",
+    status: "project_statuses",
+    category: "project_categories",
+  };
+  return filterChoices[keyToFilterChoicesKeyMap[key]].find((fc) => {
+    return fc.name === filter;
+  }).original_name;
+};
+
 /**
  * Used to build query params to the end of a URL.
  * Originally used in places like applying filters from
  * search categories.
  */
-const encodeQueryParamsFromFilters = (filters, infoMetadata) => {
+const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, locale }) => {
   if (!filters || Object.entries(filters).length === 0) {
     return;
   }
@@ -33,6 +53,7 @@ const encodeQueryParamsFromFilters = (filters, infoMetadata) => {
   let queryParamFragment = "&";
   Object.keys(filters).map((filterKey) => {
     const type = infoMetadata && infoMetadata[filterKey]?.type;
+    const locationFilterkeys = getLocationFilterKeys();
     //Submitted location filters should always be in the form of an object
     //Simplified example: {place_id: 12323423, display_name: "Test"}
     //When a location is just a string, the filter is not submitted yet (e.g. "New Y")
@@ -41,10 +62,29 @@ const encodeQueryParamsFromFilters = (filters, infoMetadata) => {
         const encodedFragment = `place=${filters[filterKey].place_id}&osm=${filters[filterKey].osm_id}&loc_type=${filters[filterKey].osm_type}&`;
         queryParamFragment += encodedFragment;
       }
-    } else if (filters[filterKey] && filters[filterKey].length > 0) {
+    } else if (
+      //search and radius are supposed to be saved as just strings
+      !["search", "radius"].includes(filterKey) &&
+      filterKey !== "radius" &&
+      filters[filterKey] &&
+      filters[filterKey].length > 0 &&
+      !locationFilterkeys.includes(filterKey)
+    ) {
       // Stringify array values
-      const filterValues = [filters[filterKey]].join();
+      let filterValues;
 
+      if (Array.isArray(filters[filterKey])) {
+        filterValues = [
+          filters[filterKey].map((filter) => getFilterName(filter, filterKey, filterChoices)),
+        ].join();
+      } else {
+        const options = possibleFilters({
+          key: "all",
+          filterChoices: filterChoices,
+          locale: locale,
+        }).find((f) => f.key === filterKey).options;
+        filterValues = options.find((o) => o.name === filters[filterKey]).original_name;
+      }
       // We also need to handle reserved characters, which
       // are not escaped by encodeURI as they're necessary
       // to form a complete URI (notably, ";,/?:@&=+$#";).
@@ -55,10 +95,29 @@ const encodeQueryParamsFromFilters = (filters, infoMetadata) => {
       const encodedValue = encodeURIComponent(filterValues);
       const encodedFragment = `${encodedKey}=${encodedValue}&`;
       queryParamFragment += encodedFragment;
+    } else if (
+      ["search", "radius"].includes(filterKey) &&
+      filters[filterKey] &&
+      filters[filterKey].length > 0
+    ) {
+      const encodedKey = encodeURIComponent(filterKey);
+      const encodedValue = encodeURIComponent(
+        filterKey === "radius" ? filters[filterKey].replace("km", "") : filters[filterKey]
+      );
+      const encodedFragment = `${encodedKey}=${encodedValue}&`;
+      queryParamFragment += encodedFragment;
     }
   });
-
   return queryParamFragment;
 };
 
-export { getFilterUrl, encodeQueryParamsFromFilters };
+const getSearchParams = (searchString) => {
+  const urlSearchParams = new URLSearchParams(searchString);
+  const params = {};
+  for (const [key, value] of urlSearchParams) {
+    params[key] = value;
+  }
+  return params;
+};
+
+export { getFilterUrl, encodeQueryParamsFromFilters, getSearchParams };
