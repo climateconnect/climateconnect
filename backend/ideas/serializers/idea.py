@@ -1,3 +1,4 @@
+from hubs.serializers.hub import HubStubSerializer
 from rest_framework import serializers
 
 from climateconnect_main.utility.general import get_image_from_data_url
@@ -17,22 +18,29 @@ class IdeaSupportedMinimalSerializer(serializers.ModelSerializer):
 
 
 class IdeaMinimalSerializer(serializers.ModelSerializer):
-    hub_image = serializers.SerializerMethodField()
+    hub = serializers.SerializerMethodField()
     ratings = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
 
     class Meta:
         model = Idea
         fields = [
             'id', 'name', 'url_slug', 'short_description', 
-            'thumbnail_image', 'hub_image', 'ratings', 'image', 'user'
+            'thumbnail_image', 'hub', 'ratings', 'image', 'user',
+            'location'
         ]
 
-    def get_hub_image(self, obj):
-        if obj.hub and obj.hub.icon:
-            return obj.hub.icon
+    def get_hub(self, obj):
+        if obj.hub:
+            return HubStubSerializer(obj.hub).data
         
         return None
+
+    def get_location(self, obj):
+        if obj.location == None:
+            return None
+        return obj.location.name
     
     def get_ratings(self, obj):
         total_average = 0

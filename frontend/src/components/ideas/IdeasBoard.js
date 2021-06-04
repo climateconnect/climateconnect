@@ -5,11 +5,14 @@ import IdeaRoot from "./IdeaRoot"
 
 const useStyles = makeStyles(({
   root: props => ({
-    display: props.ideaOpen ? "flex" : "default"
+    display: props.ideaOpen ? "flex" : "default",
+    flex: "1 1 0px"
   }),
   idea: {
-    flexGrow: 2,
-    width: "70%"
+    flex: "1 1 0px"
+  },
+  ideaPreviews: {
+    flex: "1 1 0px"
   }
 }))
 export default function IdeasBoard({
@@ -24,7 +27,6 @@ export default function IdeasBoard({
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   const onClickIdea = async (idea) => {
-    console.log(idea)
     //catch idea from api
     //then setIdea(idea)
     setIdea(idea);
@@ -44,6 +46,7 @@ export default function IdeasBoard({
         userOrganizations={userOrganizations}
         onClickIdea={onClickIdea}
         hasIdeaOpen={!!idea}
+        className={classes.ideaPreviews}
       />
       {
         idea && !isNarrowScreen && (

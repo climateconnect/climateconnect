@@ -7,6 +7,7 @@ import getTexts from "../../../public/texts/texts";
 import theme from '../../themes/theme';
 import UserContext from "../context/UserContext";
 import CreateIdeaDialog from "./createIdea/CreateIdeaDialog";
+import IdeaHubIcon from "./IdeaHubIcon";
 import IdeaRatingIcon from "./IdeaRatingIcon";
 
 const useStyles = makeStyles((theme) => ({
@@ -63,11 +64,6 @@ const useStyles = makeStyles((theme) => ({
     width: '50px',
     height: '50px',
     opacity: 1
-  },
-  hubIcon: {
-    color: theme.palette.primary.main,
-    fill: theme.palette.primary.main,
-    marginRight: theme.spacing(1.5)
   },
   placeholderImg: {
     visibility: "hidden",
@@ -157,7 +153,7 @@ function IdeaCardContent(idea) {
           {idea.idea.name}
         </Typography>
         <div className={classes.categoryAndRatingWrapper}>
-          {idea.idea.hub_image && <span className={classes.hubIcon} dangerouslySetInnerHTML={{__html: idea.idea.hub_image[0]}} />}
+          {idea.idea.hub_image && <IdeaHubIcon idea={idea.idea} />}
           <IdeaRatingIcon rating={idea.rating || Math.floor(Math.random()*100)} />
         </div>
       </div>

@@ -28,7 +28,8 @@ export default function IdeaPreviews({
   allHubs,
   userOrganizations,
   onClickIdea,
-  hasIdeaOpen
+  hasIdeaOpen,
+  className
 }) {
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas, onClickIdea, hasIdeaOpen));
@@ -56,7 +57,7 @@ export default function IdeaPreviews({
   return (
     <>
       <InfiniteScroll
-        className={classes.reset}
+        className={`${classes.reset} ${className}`}
         component="ul"
         container
         // TODO: fix this: InfiniteScroll is throwing a React error:
@@ -84,7 +85,7 @@ function GridItem({ idea, isCreateCard, allHubs, userOrganizations, onClickIdea,
       xs={6}
       sm={4}
       md={hasIdeaOpen ? 6: 3}
-      lg={hasIdeaOpen ? 6: 2}
+      lg={hasIdeaOpen ? 4: 2}
       component="li"
     >
       <IdeaPreview

@@ -96,6 +96,10 @@ export default function getIdeaTexts() {
     publishing_your_idea: {
       en: "Publishing your idea",
       de: "Deine Idee wird veröffentlicht"
+    },
+    the_ideas_creator: {
+      en: "The idea's creator",
+      de: "ErstellerIn der Idee"
     }
   };
 }

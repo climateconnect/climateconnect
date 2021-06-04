@@ -21,9 +21,16 @@ const useStyles = makeStyles((theme) => {
     smallProfileName: {
       fontSize: 14,
     },
+    mediumProfileName: {
+      fontSize: 16
+    },
     smallAvatar: {
       height: 20,
       width: 20,
+    },
+    mediumAvatar: {
+      height: 30,
+      width: 30,
     },
     wrapper: {
       display: "inline-flex",
@@ -78,12 +85,12 @@ function Content({ profile, avatarClassName, size }) {
       <div className={classes.avatarWrapper}>
         <Avatar
           src={getImageUrl(profile.thumbnail_image)}
-          className={`${size === "small" && classes.smallAvatar} ${avatarClassName}`}
+          className={`${size === "small" && classes.smallAvatar} ${size === "medium" && classes.mediumAvatar} ${avatarClassName}`}
         />
       </div>
       <Typography
         color="inherit"
-        className={`${classes.profileName} ${size === "small" && classes.smallProfileName}`}
+        className={`${classes.profileName} ${size === "medium" && classes.mediumProfileName} ${size === "small" && classes.smallProfileName}`}
         variant="h6"
       >
         {profile.first_name + " " + profile.last_name}
