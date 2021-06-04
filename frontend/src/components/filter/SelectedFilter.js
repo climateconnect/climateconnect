@@ -26,12 +26,18 @@ export default function SelectedFilter({
 }) {
   const classes = useStyles();
   let currentFilterValues = currentFilters[filterKey];
+  const possibleFilterKeys = possibleFilters.map((entry) => entry.key);
   // Get the metadata associated with the filter (e.g. what type it is, like "Category")
   const filterMetadata = possibleFilters.find((f) => f.key === filterKey);
-
   //When the location is a string the filter is not submitted yet (the user is just typing)
   //Therefore only show location as a selected filter if it's an object
-  if (filterMetadata.type === "location" && typeof currentFilterValues !== "object") {
+  if (filterMetadata?.type === "location" && typeof currentFilterValues !== "object") {
+    return <></>;
+  }
+  if (filterMetadata?.type === "select") {
+    return <></>;
+  }
+  if (filterKey === "search") {
     return <></>;
   }
   if (!currentFilterValues || !currentFilterValues.length) {
@@ -45,14 +51,15 @@ export default function SelectedFilter({
   return (
     <div key={filterKey} className={classes.selectedBlock}>
       {/* Handle strings like "Energy" as being selected too */}
-      {currentFilterValues.map((filter) => (
-        <Chip
-          className={classes.selectedChip}
-          key={filter}
-          label={filter}
-          onDelete={() => handleUnselectFilter(filter, filterMetadata.key)}
-        />
-      ))}
+      {possibleFilterKeys.includes(filterKey) &&
+        currentFilterValues.map((filter) => (
+          <Chip
+            className={classes.selectedChip}
+            key={filter}
+            label={filter}
+            onDelete={() => handleUnselectFilter(filter, filterMetadata.key)}
+          />
+        ))}
     </div>
   );
 }
