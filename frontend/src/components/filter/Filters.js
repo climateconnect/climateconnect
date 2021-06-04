@@ -1,6 +1,7 @@
 import { Button, TextField, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
+import getRadiusFilterOptions from "../../../public/data/radiusFilterOptions";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
@@ -98,7 +99,7 @@ export default function Filters({
     justifyContent: justifyContent ? justifyContent : "space-around",
     filterElementMargin: justifyContent && justifyContent != "space-around" ? 1 : 0,
   });
-
+  const radiusFilterOptions = getRadiusFilterOptions();
   return (
     <>
       {errorMessage && (
@@ -154,6 +155,8 @@ export default function Filters({
                   }`}
                   multiple={filter.type === "multiselect"}
                   values={filter.type === "multiselect" && currentFilters[filter.key]}
+                  controlled={filter.type === "select"}
+                  controlledValue={filter.type === "select" && currentFilters[filter.key]}
                   label={
                     <div className={classes.iconLabel}>
                       <filter.icon fontSize="inherit" />
@@ -216,6 +219,7 @@ export default function Filters({
                     selectedItems={curSelectedItems}
                     setSelectedItems={handleSetSelectedItems}
                     type={filter.itemType}
+                    title={texts["add_" + filter.itemType.replace(" ", "_")]}
                   />
                 </div>
               );
@@ -248,12 +252,14 @@ export default function Filters({
                     </div>
                   }
                 />
-                <TextField
+                <SelectField
                   key={filter.key}
                   className={classes.radiusField}
                   label={texts.radius_km}
+                  options={radiusFilterOptions}
                   type={filter.type}
-                  value={currentFilters.radius}
+                  controlled
+                  controlledValue={{ name: currentFilters.radius }}
                   variant="outlined"
                   size="small"
                   onChange={(event) => handleValueChange("radius", event.target.value)}
