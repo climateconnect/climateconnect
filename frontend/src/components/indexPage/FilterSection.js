@@ -1,7 +1,7 @@
 import { Button, makeStyles } from "@material-ui/core";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import TuneIcon from "@material-ui/icons/Tune";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
@@ -52,9 +52,17 @@ export default function FilterSection({
   type,
   customSearchBarLabels,
   filterButtonRef,
+  searchValue,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+  const [value, setValue] = useState(searchValue);
+  useEffect(
+    function () {
+      setValue(searchValue);
+    },
+    [searchValue]
+  );
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const searchBarLabels = {
     projects: texts.search_projects,
@@ -71,6 +79,11 @@ export default function FilterSection({
     setFiltersExpanded(!filtersExpanded);
   };
 
+  const handleChangeValue = (e) => {
+    e.preventDefault();
+    setValue(e.target.value);
+  };
+
   return (
     <div className={classes.filterSection}>
       <div className={classes.filterSectionFirstLine}>
@@ -83,6 +96,8 @@ export default function FilterSection({
             // the underlying search bar.
             onSubmit={onSubmit}
             type={type}
+            value={value}
+            onChange={handleChangeValue}
           />
         </div>
         <Button
