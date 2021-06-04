@@ -265,6 +265,25 @@ export default function BrowseContent({
     [initialMembers]
   );
 
+  const handleUpdateIdeaRating = (idea, newRating) => {
+    const ideaInState = state.items.ideas.find(si => si.url_slug === idea.url_slug)
+    const ideaIndex = state.items.ideas.indexOf(ideaInState)
+    setState({
+      ...state,
+      items: {
+        ...state.items,
+        ideas: [
+          ...state.items.ideas.slice(0, ideaIndex),
+          {
+            ...idea,
+            rating: newRating
+          },
+          ...state.items.ideas.slice(ideaIndex+1)
+        ]
+      }
+    })
+  }
+
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   return (
@@ -452,6 +471,7 @@ export default function BrowseContent({
                   ideas={state.items.ideas}
                   allHubs={allHubs}
                   userOrganizations={userOrganizations}
+                  onUpdateIdeaRating={handleUpdateIdeaRating}
                 />
               )
             }

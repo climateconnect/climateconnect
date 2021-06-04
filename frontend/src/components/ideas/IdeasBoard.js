@@ -1,5 +1,5 @@
 import { makeStyles, useMediaQuery } from "@material-ui/core"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import IdeaPreviews from "./IdeaPreviews"
 import IdeaRoot from "./IdeaRoot"
 
@@ -21,11 +21,18 @@ export default function IdeasBoard({
   ideas,
   allHubs,
   userOrganizations,
-  handleUpdateIdeaRating
+  onUpdateIdeaRating
 }) {  
   const [idea, setIdea] = useState(null)
   const classes = useStyles({ideaOpen: idea !== null})
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  
+  useEffect(function(){
+    if(idea && ideas.filter(i=>i.url_slug === idea.url_slug).length === 1) {
+      setIdea(ideas.filter(i=>i.url_slug === idea.url_slug)[0])
+    }
+  }, [ideas])
+
   const onClickIdea = async (idea) => {
     //catch idea from api
     //then setIdea(idea)
@@ -37,7 +44,7 @@ export default function IdeasBoard({
   }
 
   const handleUpdateRating = (newRating) => {
-    handleUpdateIdeaRating(idea, newRating)
+    onUpdateIdeaRating(idea, newRating)
   }
 
   return (
@@ -56,7 +63,7 @@ export default function IdeasBoard({
       {
         idea && !isNarrowScreen && (
           <div className={classes.idea}>
-            <IdeaRoot idea={idea} onIdeaClose={onClose}/>
+            <IdeaRoot idea={idea} onIdeaClose={onClose} onRatingChange={handleUpdateRating}/>
           </div>
         )
       }

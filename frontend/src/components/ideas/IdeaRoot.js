@@ -1,4 +1,4 @@
-import { Card, makeStyles, Tooltip, Typography } from '@material-ui/core';
+import { Button, Card, makeStyles, Tooltip, Typography } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import React, { useContext, useEffect, useState } from 'react';
@@ -46,7 +46,7 @@ const useStyles = makeStyles({
     marginRight: theme.spacing(1)
   },
   ratingSlider: {
-    height: 10
+    height: 10,
   },
   loadingSpinner: {
     width: 40,
@@ -59,7 +59,7 @@ const useStyles = makeStyles({
   }
 })
 
-export default function IdeaRoot({idea, onIdeaClose}) {
+export default function IdeaRoot({idea, onIdeaClose, onRatingChange}) {
   const classes = useStyles();
   const token = new Cookies().get("token")
 
@@ -79,36 +79,31 @@ export default function IdeaRoot({idea, onIdeaClose}) {
       setUserRating(await getUserRatingFromServer(idea, token, locale))
       setLoading(false)
     }
-    setAverageRating({
-      rating_score: idea.rating?.rating_score,
-      number_of_ratings: idea.rating?.number_of_ratings
-    })
-  }, [idea])
+  }, [idea.url_slug])
 
-  const [averageRating, setAverageRating] = useState({
-    rating_score: idea.rating?.rating_score,
-    number_of_ratings: idea.rating?.number_of_ratings
-  })
   const handleRatingChange = (event, newRating) => {
     event.preventDefault();
     setUserRating({...userRating, rating_score: newRating})
   } 
 
   const calculateNewAverageRatingLocally = (newRating) => {
-    return (idea.rating?.rating_score * idea.rating?.number_of_ratings + newRating) / (idea.rating?.number_of_ratings + 1)
+    const oldScoreExcludingUsersRating = userRating.has_rated ? idea.rating?.rating_score - userRating.rating_score : idea.rating?.rating_score
+    const oldNumberOfRatingsExcludingUsersRating = userRating.has_rated ? idea.rating?.number_of_ratings - 1 : idea.rating?.number_of_ratings
+    const sumOfAllRatings = (oldScoreExcludingUsersRating * oldNumberOfRatingsExcludingUsersRating + newRating)
+    const numberOfRatings = userRating.has_rated ? idea.rating?.number_of_ratings : idea.ratings?.number_of_ratings + 1
+    return sumOfAllRatings / numberOfRatings
   }
 
   const handleRateProject = async (event, newRating) => {
-    console.log("setting average rating!")
     //calculating new rating locally so we can give instant feedback to the user
-    setAverageRating({
+    const calculatedNewAverageRating = {
       rating_score: calculateNewAverageRatingLocally(newRating),
-      number_of_ratings: userRating.has_rated ? averageRating.number_of_ratings : averageRating.number_of_ratings + 1
-    })
+      number_of_ratings: userRating.has_rated ? idea.rating?.number_of_ratings : idea.rating?.number_of_ratings + 1
+    }
+    onRatingChange(calculatedNewAverageRating)
     const payload = {
       rating: newRating
     }
-    console.log(`/api/ideas/${idea.url_slug}/ratings/`)
     try {
       const response = await apiRequest({
         method: "post",
@@ -117,8 +112,7 @@ export default function IdeaRoot({idea, onIdeaClose}) {
         token: token,
         locale: locale
       })
-      console.log(response.data)
-      setAverageRating(response.data.average_rating)
+      onRatingChange(response.data.average_rating)
     } catch(err) {
       console.log(err);
     }
@@ -126,6 +120,8 @@ export default function IdeaRoot({idea, onIdeaClose}) {
 
   const { locale } = useContext(UserContext)
   const texts = getTexts({page: "idea", locale: locale})
+  console.log(idea.rating?.rating_score)
+  console.log(idea)
   return (
     <Card variant="outlined" className={classes.root}>
       {loading ? 
@@ -151,13 +147,17 @@ export default function IdeaRoot({idea, onIdeaClose}) {
             <div className={classes.topItem}>
               <IdeaRatingSlider 
                 value={userRating.rating_score} 
-                averageRating={averageRating?.rating_score}
+                averageRating={idea.rating?.rating_score}
                 onChange={handleRatingChange}
                 onChangeCommitted={handleRateProject}
                 aria-labelledby="continuous-slider"
                 valueLabelDisplay="auto"
                 track={false}
+                className={classes.ratingSlider}
               />
+            </div>
+            <div className={classes.topItem}>
+              <Button color="primary"  label={texts.join} />
             </div>
           </div>
         </>
@@ -168,8 +168,6 @@ export default function IdeaRoot({idea, onIdeaClose}) {
 
 const getUserRatingFromServer = async(idea, token, locale) => {
   try {
-    console.log(idea)
-    console.log(token)
     const response = await apiRequest({
       method: "get",
       url: `/api/ideas/${idea.url_slug}/my_rating/`,
