@@ -1,14 +1,6 @@
-import logging
+# Python imports
 
-from climateconnect_api.models import Language
-from climateconnect_api.utility.translation import get_translations
-from django.db.utils import IntegrityError
-from hubs.models.hub import Hub
-from ideas.models import Idea
-from ideas.pagination import IdeasBoardPagination
-from ideas.permissions import IdeaReadWritePermission
-from ideas.serializers.idea import IdeaMinimalSerializer, IdeaSerializer
-from ideas.utility.idea import create_idea, verify_idea
+# Django/Django REST imports
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
@@ -17,6 +9,18 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+# Climate connect imports
+from climateconnect_api.models import Language
+from climateconnect_api.utility.translation import get_translations
+from chat_messages.utility.chat_setup import create_private_or_group_chat
+from hubs.models.hub import Hub
+from ideas.models import Idea
+from ideas.pagination import IdeasBoardPagination
+from ideas.permissions import IdeaReadWritePermission
+from ideas.serializers.idea import IdeaMinimalSerializer, IdeaSerializer
+from ideas.utility.idea import create_idea, verify_idea
+
+import logging
 logger = logging.getLogger(__name__)
 
 
@@ -54,7 +58,8 @@ class IdeaView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
          
         return Response(None, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 class CreateIdeaView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -81,4 +86,7 @@ class CreateIdeaView(APIView):
             translations = None
             logger.error("TranslationFailed: Error translating texts, {}".format(ve))
         idea = create_idea(request.data, language, request.user)
+        # Creating group chat for the idea.
+        # create_private_or_group_chat(creator=request.user, group_chat_name=idea.name)
+        
         return Response(idea, status=status.HTTP_200_OK)

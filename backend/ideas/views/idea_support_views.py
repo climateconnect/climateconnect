@@ -66,6 +66,7 @@ class IdeaSupportView(APIView):
 
         return Response(None, status=status.HTTP_201_CREATED)
 
+
 class GetPersonalIdeaRatingView(APIView):
     permission_classes = [IsAuthenticated]
 

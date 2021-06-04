@@ -1,6 +1,19 @@
+# Python imports
+from typing import Optional
+import uuid
 from datetime import datetime
-from climateconnect_api.models.notification import UserNotification, Notification
-from chat_messages.models.message import MessageReceiver
+
+# Django/Django REST imports
+from django.contrib.auth.models import User
+from django.db.models import QuerySet
+
+from climateconnect_api.models import Role, Notification, UserNotification
+from chat_messages.models import MessageParticipants, Participant, MessageReceiver
+
+# Logging
+import logging
+logger = logging.getLogger(__name__)
+
 
 def set_read(messages, user, is_private_message):
     if not messages:
@@ -21,3 +34,24 @@ def set_read(messages, user, is_private_message):
             user_notification = unread_user_notifications[0]
             user_notification.read_at = datetime.now()
             user_notification.save()
+
+
+def create_private_or_group_chat(
+    creator: User, group_chat_name: str, participants: Optional[QuerySet]
+) -> None:
+    chat = MessageParticipants.objects.create(
+        chat_uuid=uuid.uuid4(),
+        name=group_chat_name
+    )
+
+    creator_role = Role.objects.get(role_type=Role.ALL_TYPE)
+    member_role = Role.objects.get(role_type=Role.READ_ONLY_TYPE)
+
+    # Adding creator to the group chat.
+    Participant.objects.create(user=creator, chat=chat, role=creator_role)
+    logger.info(f"NewChat: Creator {creator.id} added to chat {chat.id}")
+
+    if participants:
+        for participant in participants:
+            Participant.objects.create(user=participant, chat=chat, role=member_role)
+            logger.info(f"NewChat: Participant {participant.id} added to chat {chat.id}")
