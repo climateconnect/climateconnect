@@ -15,6 +15,7 @@ export default function MultiLevelSelectDialog({
   selectedItems,
   setSelectedItems,
   type,
+  title,
 }) {
   /**
    * When clicking "Save" we want to apply the filters,
@@ -52,7 +53,7 @@ export default function MultiLevelSelectDialog({
       onApply={applySkills}
       onClose={onClose}
       open={open}
-      title={texts.add + " " + itemNamePlural}
+      title={title ? title : texts.add + " " + itemNamePlural}
       topBarFixed
       useApplyButton={true}
     >
