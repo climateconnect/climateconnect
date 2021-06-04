@@ -105,10 +105,6 @@ class ListProjectsView(ListAPIView):
                             |
                             Q(loc__centre_point__coveredby=(location.multi_polygon))
                         )
-                    ).annotate(
-                        distance=Distance("loc__centre_point", location.multi_polygon)
-                    ).order_by(
-                        'distance'
                     )
 
         if 'collaboration' in self.request.query_params:
