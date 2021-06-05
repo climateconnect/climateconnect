@@ -81,12 +81,15 @@ class CreateIdeaView(APIView):
                 {},
                 request.data['source_language']
             )
-            language = Language.objects.get(language_code=translations['source_language'])
         except ValueError as ve:
             translations = None
             logger.error("TranslationFailed: Error translating texts, {}".format(ve))
+        
+        if translations:
+            language = Language.objects.get(language_code=translations['source_language'])
+        
         idea = create_idea(request.data, language, request.user)
         # Creating group chat for the idea.
-        # create_private_or_group_chat(creator=request.user, group_chat_name=idea.name)
+        create_private_or_group_chat(creator=request.user, group_chat_name=idea.name)
         
         return Response(idea, status=status.HTTP_200_OK)

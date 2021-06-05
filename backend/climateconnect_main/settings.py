@@ -246,3 +246,27 @@ LOCALES = ['en', 'de']
 LOCALE_PATHS = [
     BASE_DIR + '/translations',
 ]
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    
+    'fromatters': {
+        'Simple_Format': '{levelname} {message}',
+        'style': '{'
+    },
+
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO'
+        }
+    }
+}

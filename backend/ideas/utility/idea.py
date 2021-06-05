@@ -26,13 +26,15 @@ def verify_idea(url_slug: str) -> Optional[Idea]:
     
     return idea
 
-def create_idea(data: dict, language: Language, creator: User) -> Idea:
+
+def create_idea(data: dict, language: Optional[Language], creator: User) -> Idea:
     idea = Idea.objects.create(
         name=data['name'], short_description=data['short_description'],
         language=language, user= creator
     )
     url_slug = url_slug = data['name'].lower().replace(" ", "-")
     add_additional_create_idea_params(idea, data, url_slug)
+
 
 def add_additional_create_idea_params(idea: Idea, data: dict, url_slug:str) -> None:
     idea.url_slug = url_slug
@@ -42,7 +44,9 @@ def add_additional_create_idea_params(idea: Idea, data: dict, url_slug:str) -> N
         idea.delete()
         raise ValidationError('Hub does not exist: ' + data['hub'])
     idea.hub = hub
-    idea.location = get_location(data['location'])
+    if 'location' in data:
+        idea.location = get_location(data['location'])
+    
     if 'image' in data and 'thumbnail_image' in data:
         idea.image = get_image_from_data_url(data['image'])[0]
         idea.thumbnail_image = get_image_from_data_url(data['thumbnail_image'])[0]
@@ -53,6 +57,7 @@ def add_additional_create_idea_params(idea: Idea, data: dict, url_slug:str) -> N
             idea.delete()
             raise ValidationError('Organization does not exist!')
         idea.organization = organization
+
     try:
         idea.save()
     except IntegrityError:
