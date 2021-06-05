@@ -89,7 +89,11 @@ class CreateIdeaView(APIView):
             language = Language.objects.get(language_code=translations['source_language'])
         
         idea = create_idea(request.data, language, request.user)
+
+        print(idea)
         # Creating group chat for the idea.
-        create_private_or_group_chat(creator=request.user, group_chat_name=idea.name)
-        
-        return Response(idea, status=status.HTTP_200_OK)
+        if idea:
+            create_private_or_group_chat(creator=request.user, group_chat_name=idea.name)
+
+        serializer = IdeaSerializer(idea) 
+        return Response(serializer.data, status=status.HTTP_200_OK)

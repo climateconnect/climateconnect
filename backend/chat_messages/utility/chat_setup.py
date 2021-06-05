@@ -37,7 +37,8 @@ def set_read(messages, user, is_private_message):
 
 
 def create_private_or_group_chat(
-    creator: User, group_chat_name: str, participants: Optional[QuerySet]
+    creator: User, group_chat_name: str,
+    participants: Optional[QuerySet] = None
 ) -> None:
     chat = MessageParticipants.objects.create(
         chat_uuid=uuid.uuid4(),

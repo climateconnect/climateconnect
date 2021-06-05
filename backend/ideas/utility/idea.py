@@ -34,6 +34,7 @@ def create_idea(data: dict, language: Optional[Language], creator: User) -> Idea
     )
     url_slug = url_slug = data['name'].lower().replace(" ", "-")
     add_additional_create_idea_params(idea, data, url_slug)
+    return idea
 
 
 def add_additional_create_idea_params(idea: Idea, data: dict, url_slug:str) -> None:
