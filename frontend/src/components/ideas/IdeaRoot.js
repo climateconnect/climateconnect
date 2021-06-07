@@ -15,9 +15,13 @@ import IdeaJoinButton from "./IdeaJoinButton";
 import IdeaRatingSlider from "./IdeaRatingSlider";
 
 const useStyles = makeStyles({
-  root: {
+  root: props => ({
     borderColor: theme.palette.primary.main,
-  },
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: props.containerOffsetTop < 110 ? 110 - props.containerOffsetTop : 0
+  }),
   contentWrapper: {
     padding: theme.spacing(1),
   },
@@ -58,8 +62,10 @@ const useStyles = makeStyles({
   },
   loadingSpinnerContainer: {
     height: "50vh",
+    width: "100%",
     display: "flex",
     justifyContent: "center",
+    padding: theme.spacing(1),
   },
   interactionsCounter: {
     fontWeight: 600,
@@ -72,8 +78,9 @@ export default function IdeaRoot({
   onRatingChange,
   handleAddComments,
   handleRemoveComment,
+  containerOffsetTop,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({containerOffsetTop: containerOffsetTop});
   const token = new Cookies().get("token");
 
   const handleIdeaEditClose = (e) => {
@@ -84,6 +91,8 @@ export default function IdeaRoot({
   const [userRating, setUserRating] = useState({
     rating_score: 0,
     has_rated: idea.rating?.has_rated,
+    //userRating updates live when users pull the heart. last_locked_rating_score only updates when they let go of the mouse
+    last_locked_rating_score: 0
   });
   const [hasJoinedIdea, setHasJoinedIdea] = useState({
     has_joined: false,
@@ -99,10 +108,10 @@ export default function IdeaRoot({
           getIdeaCommentsFromServer(idea, token, locale),
           getHasJoinedIdea(idea, token, locale)
         ]);
-        setUserRating(userRating);
+        setUserRating({...userRating, last_locked_rating_score: userRating.rating_score});
         setHasJoinedIdea({has_joined: hasJoinedIdea.has_joined, chat_uuid: hasJoinedIdea.chat_uuid})
         handleAddComments(comments);
-        setLoading(false);
+        setLoading(false)
       }
     },
     [idea.url_slug]
@@ -113,30 +122,8 @@ export default function IdeaRoot({
     setUserRating({ ...userRating, rating_score: newRating });
   };
 
-  const calculateNewAverageRatingLocally = (newRating) => {
-    const oldScoreExcludingUsersRating = userRating.has_rated
-      ? idea.rating?.rating_score - userRating.rating_score
-      : idea.rating?.rating_score;
-    const oldNumberOfRatingsExcludingUsersRating = userRating.has_rated
-      ? idea.rating?.number_of_ratings - 1
-      : idea.rating?.number_of_ratings;
-    const sumOfAllRatings =
-      oldScoreExcludingUsersRating * oldNumberOfRatingsExcludingUsersRating + newRating;
-    const numberOfRatings = userRating.has_rated
-      ? idea.rating?.number_of_ratings
-      : idea.ratings?.number_of_ratings + 1;
-    return sumOfAllRatings / numberOfRatings;
-  };
-
   const handleRateProject = async (event, newRating) => {
-    //calculating new rating locally so we can give instant feedback to the user
-    const calculatedNewAverageRating = {
-      rating_score: calculateNewAverageRatingLocally(newRating),
-      number_of_ratings: userRating.has_rated
-        ? idea.rating?.number_of_ratings
-        : idea.rating?.number_of_ratings + 1,
-    };
-    onRatingChange(calculatedNewAverageRating);
+    setUserRating({...userRating, has_rated: true, last_locked_rating_score: newRating})
     const payload = {
       rating: newRating,
     };
@@ -161,9 +148,11 @@ export default function IdeaRoot({
   return (
     <Card variant="outlined" className={classes.root}>
       {loading ? (
-        <div className={classes.loadingSpinnerContainer}>
+        <div className={classes.contentWrapper}>
           <CloseIcon className={classes.closeStyle} onClick={handleIdeaEditClose} />
-          <LoadingSpinner isLoading className={classes.loadingSpinner} />
+          <div className={classes.loadingSpinnerContainer}>
+            <LoadingSpinner isLoading className={classes.loadingSpinner} />
+          </div>
         </div>
       ) : (
         <>
