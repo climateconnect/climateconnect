@@ -1,4 +1,4 @@
-export default function getIdeaTexts({idea}) {
+export default function getIdeaTexts({ idea }) {
   return {
     share_your_idea_and_find_the_right_collaborators: {
       en: "Share your idea and find the right collaborators!",
@@ -79,41 +79,61 @@ export default function getIdeaTexts({idea}) {
     },
     your_idea_is_being_created: {
       en: "Your Idea is being created...",
-      de: "Deine Idee wird erstellt..."
+      de: "Deine Idee wird erstellt...",
     },
     sending_your_idea_to_our_server: {
       en: "Sending your idea to our server",
-      de: "Deine Idee wird an unseren Server geschickt..."
+      de: "Deine Idee wird an unseren Server geschickt...",
     },
     saving_your_idea_in_our_database: {
       en: "Saving your idea in our database",
-      de: "Deine Idee wird in unserer Datenbank gespeichert..."
+      de: "Deine Idee wird in unserer Datenbank gespeichert...",
     },
     preparing_your_idea_to_be_published: {
       en: "Preparing your idea to be published",
-      de: "Die Veröffentlichung deiner Idee wird vorbereitet"
+      de: "Die Veröffentlichung deiner Idee wird vorbereitet",
     },
     publishing_your_idea: {
       en: "Publishing your idea",
-      de: "Deine Idee wird veröffentlicht"
+      de: "Deine Idee wird veröffentlicht",
     },
     the_ideas_creator: {
       en: "The idea's creator",
-      de: "ErstellerIn der Idee"
+      de: "ErstellerIn der Idee",
     },
     x_people_rated_this_idea: {
-      en: `${idea?.rating?.number_of_ratings} ${idea?.rating?.number_of_ratings.length > 1 ? "users have " : "user has "}
+      en: `${idea?.rating?.number_of_ratings} ${
+        idea?.rating?.number_of_ratings.length > 1 ? "users have " : "user has "
+      }
       rated this idea with an average score of ${idea?.rating?.rating_score}/100`,
-      de: `${idea?.rating?.number_of_ratings} ${idea?.rating?.number_of_ratings.length > 1 ? "Personen haben " : "Person hat "}
-      diese Idee mit einer durchschnittlichen Bewertung von ${idea?.rating?.rating_score} bewertet`
+      de: `${idea?.rating?.number_of_ratings} ${
+        idea?.rating?.number_of_ratings.length > 1 ? "Personen haben " : "Person hat "
+      }
+      diese Idee mit einer durchschnittlichen Bewertung von ${idea?.rating?.rating_score} bewertet`,
     },
     nobody_has_rated_this_idea_yet: {
       en: "Nobody has rated this idea yet",
-      de: "Diese Idee hat noch niemand bewertet"
+      de: "Diese Idee hat noch niemand bewertet",
     },
-    join: {
-      en: "Join",
-      de: "Mitmachen"
+    join_in: {
+      en: "Join In",
+      de: "Mitmachen",
+    },
+    interactions: {
+      en: "Interactions",
+      de: "Interaktionen",
+    },
+    do_you_want_to_join: {
+      en: "Join the group chat to discuss the idea?",
+      de: "Dem Gruppenchat beitreten, um über die Umsetzung der Idee zu sprechen?",
+    },
+    do_you_want_to_join_text: {
+      en: "If you join in you will be added to a group chat will all the other people clicked the \"Join In\" button. Do you want to join in?",
+      de: "Wenn du mitmachst, wirst du zu einem Gruppenchat mit allen anderen, die \"Mitmachen\" geklickt haben, hinzugefügt. Möchtest du mitmachen?"
+    },
+    go_to_group_chat: {
+      en: "Go to Group chat",
+      de: "Gruppenchat öffnen"
     }
   };
 }

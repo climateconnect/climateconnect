@@ -30,6 +30,10 @@ export default function getCommunicationTexts() {
       en: "Write a comment",
       de: "Kommentar schreiben",
     },
+    start_a_discussion: {
+      en: "Start a discussion",
+      de: "Starte eine Diskussion",
+    },
     your_comment_cannot_be_empty: {
       en: "Your comment cannot be empty",
       de: "Dein Kommentar kann nicht leer sein",
