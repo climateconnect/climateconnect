@@ -5,9 +5,10 @@ from django.utils import timezone
 
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied, ParseError, NotFound
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from ideas.models import IdeaComment
 from ideas.serializers.comment import IdeaCommentSerializer
@@ -16,22 +17,21 @@ from ideas.utility.idea import verify_idea
 import logging
 logger = logging.getLogger(__name__)
 
-
-class IdeaCommentsView(APIView):
-    permission_classes = [IsAuthenticated]
+class ListIdeaCommentsView(ListAPIView):
+    permission_classes = [AllowAny]
     serializer_class = IdeaCommentSerializer
 
-    def get(self, request, url_slug):
-        idea = verify_idea(url_slug=url_slug)
+    def get_queryset(self):
+        idea = verify_idea(url_slug=self.kwargs['url_slug'])
         if not idea:
             raise NotFound(detail="Idea not found.")
 
-        idea_comments = IdeaComment.objects.filter(
-            idea__url_slug=self.kwargs['url_slug'], parent_comment__isnull=True,
+        return IdeaComment.objects.filter(
+            idea__url_slug=self.kwargs['url_slug'],
             is_abusive=False, deleted_at__isnull=True
         ).order_by('-id', 'updated_at', 'created_at')
-        serializer = IdeaCommentSerializer(idea_comments, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+class IdeaCommentsView(APIView):
+    permission_classes = [IsAuthenticated]
     
     def post(self, request, url_slug):
         idea = verify_idea(url_slug=url_slug)
