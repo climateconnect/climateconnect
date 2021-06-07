@@ -42,6 +42,7 @@ export default function MessagingLayout({
   chat_id,
   handleChatWindowClose,
   leaveChat,
+  relatedIdea,
 }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -143,6 +144,7 @@ export default function MessagingLayout({
           handleMessageKeydown={handleMessageKeydown}
           onSendMessage={onSendMessage}
           handleToggleMemberManagementExpanded={handleToggleMemberManagementExpanded}
+          relatedIdea={relatedIdea}
         />
       ) : (
         <ChatMemberManagementOverlay

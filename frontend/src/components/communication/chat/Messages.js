@@ -109,11 +109,19 @@ class Messages extends React.Component {
                 message={message}
                 key={index}
                 classes={this.props.classes}
-                chatting_partner={this.props.chatting_partner}
                 isPrivateChat={this.props.isPrivateChat}
               />
             );
           })
+        ) : this.props.relatedIdea ? (
+          <div className={this.props.classes.noHistoryText}>
+            <p>
+              {this.props.texts.here_you_can_discuss + ' "' + this.props.relatedIdea.name + '"'}
+              .<br />
+              {this.props.texts.everybody_who_clicked_join_is_in_this_group}.
+            </p>
+            <p>{this.props.texts.write_a_message_to_get_the_conversation_started}</p>
+          </div>
         ) : this.props.isPrivateChat ? (
           <div className={this.props.classes.noHistoryText}>
             <p>
@@ -140,7 +148,7 @@ class Messages extends React.Component {
 Messages.propTypes = {
   classes: PropTypes.object.isRequired,
   messages: PropTypes.array.isRequired,
-  chatting_partner: PropTypes.object.isRequired,
+  chatting_partner: PropTypes.object,
   className: PropTypes.string.isRequired,
   loadFunc: PropTypes.func.isRequired,
   hasMore: PropTypes.bool.isRequired,
