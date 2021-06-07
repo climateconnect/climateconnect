@@ -9,7 +9,7 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo
+  membersWithAdditionalInfo,
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -155,7 +155,7 @@ export default function Hub({
       ? texts.search_organization_in_location
       : texts.search_for_organizations_in_sector,
     profiles: texts.search_profiles_in_location,
-    ideas: texts.search_ideas_in_location
+    ideas: texts.search_ideas_in_location,
   };
 
   const loadMoreData = async (type, page, urlEnding) => {

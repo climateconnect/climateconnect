@@ -4,20 +4,25 @@ import InfiniteScroll from "react-infinite-scroller";
 import LoadingSpinner from "../general/LoadingSpinner";
 import IdeaPreview from "./IdeaPreview";
 
-const useStyles = makeStyles(({
+const useStyles = makeStyles({
   reset: {
     margin: 0,
     padding: 0,
     listStyleType: "none",
     width: "100%",
   },
-}));
+});
 
 const toIdeaPreviews = (ideas, onClickIdea, hasIdeaOpen) => {
-  return ideas.map(
-    (idea, index) => <GridItem index={index} onClickIdea={onClickIdea} key={idea.url_slug} 
-    idea={idea} hasIdeaOpen={hasIdeaOpen} />
-  )
+  return ideas.map((idea, index) => (
+    <GridItem
+      index={index}
+      onClickIdea={onClickIdea}
+      key={idea.url_slug}
+      idea={idea}
+      hasIdeaOpen={hasIdeaOpen}
+    />
+  ));
 };
 
 export default function IdeaPreviews({
@@ -29,11 +34,11 @@ export default function IdeaPreviews({
   userOrganizations,
   onClickIdea,
   hasIdeaOpen,
-  className
+  className,
 }) {
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas, onClickIdea, hasIdeaOpen));
-  
+
   const [isFetchingMore, setIsFetchingMore] = React.useState(false);
 
   if (!loadFunc) {
@@ -53,7 +58,7 @@ export default function IdeaPreviews({
       setIsFetchingMore(false);
     }
   };
-  
+
   return (
     <>
       <InfiniteScroll
@@ -69,7 +74,12 @@ export default function IdeaPreviews({
         pageStart={1}
         spacing={2}
       >
-        <GridItem isCreateCard allHubs={allHubs} userOrganizations={userOrganizations} hasIdeaOpen={hasIdeaOpen} />
+        <GridItem
+          isCreateCard
+          allHubs={allHubs}
+          userOrganizations={userOrganizations}
+          hasIdeaOpen={hasIdeaOpen}
+        />
         {parentHandlesGridItems ? toIdeaPreviews(ideas, onClickIdea, hasIdeaOpen) : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="idea-previews-spinner" />}
       </InfiniteScroll>
@@ -77,15 +87,23 @@ export default function IdeaPreviews({
   );
 }
 
-function GridItem({ idea, isCreateCard, allHubs, userOrganizations, onClickIdea, hasIdeaOpen, index }) {
+function GridItem({
+  idea,
+  isCreateCard,
+  allHubs,
+  userOrganizations,
+  onClickIdea,
+  hasIdeaOpen,
+  index,
+}) {
   return (
     <Grid
       key={idea ? idea.url_slug : "createCard"}
       item
       xs={6}
       sm={4}
-      md={hasIdeaOpen ? 6: 3}
-      lg={hasIdeaOpen ? 4: 2}
+      md={hasIdeaOpen ? 6 : 3}
+      lg={hasIdeaOpen ? 4 : 2}
       component="li"
     >
       <IdeaPreview

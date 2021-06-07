@@ -1,5 +1,5 @@
 import { Button, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import React, { useContext } from "react";
 import { parseLocation } from "../../../../public/lib/locationOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -37,8 +37,8 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
   chooseOrganizationField: {
-    marginTop: theme.spacing(2)
-  }
+    marginTop: theme.spacing(2),
+  },
 }));
 
 export default function IdeaMetadataStep({
@@ -55,10 +55,10 @@ export default function IdeaMetadataStep({
   errorMessage,
 }) {
   const classes = useStyles();
-  const isTinyScreen = useMediaQuery('(max-width:400px')
+  const isTinyScreen = useMediaQuery("(max-width:400px");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"))
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <form onSubmit={onSubmitIdea}>
       <Typography className={classes.motivationText}>
@@ -113,7 +113,12 @@ export default function IdeaMetadataStep({
         label={texts.choose_a_category}
         options={allHubs}
         controlled
-        onChange={(e) => handleValueChange(allHubs.find(h => h.name ===  e.target.value), "hub")}
+        onChange={(e) =>
+          handleValueChange(
+            allHubs.find((h) => h.name === e.target.value),
+            "hub"
+          )
+        }
         controlledValue={idea.hub}
       />
       <div className={classes.buttonBar}>

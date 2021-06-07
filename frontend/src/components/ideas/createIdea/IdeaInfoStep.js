@@ -18,8 +18,8 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     [theme.breakpoints.down("xs")]: {
       margin: "0 auto",
-      marginTop: theme.spacing(1)
-    }
+      marginTop: theme.spacing(1),
+    },
   },
   motivationText: {
     marginBottom: theme.spacing(2),
@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme) => ({
   imageAnDescriptionWrapper: {
     display: "flex",
     [theme.breakpoints.down("xs")]: {
-      flexDirection: "column"
-    }
+      flexDirection: "column",
+    },
   },
   descriptionContainer: {
     flexGrow: 1,

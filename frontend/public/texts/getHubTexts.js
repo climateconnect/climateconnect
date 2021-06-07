@@ -13,7 +13,7 @@ export default function getHubTexts({ hubName }) {
     },
     search_ideas_in_location: {
       en: "Find inspiring climate ideas from " + hubName,
-      de: "Finde inspirierende Klimaschutz-Ideen aus " + hubName
+      de: "Finde inspirierende Klimaschutz-Ideen aus " + hubName,
     },
     search_for_organizations_in_sector: {
       en: "Search for climate organizations in the " + hubName + " sector",

@@ -1,7 +1,7 @@
-import { makeStyles, Slider, Typography } from "@material-ui/core"
-import React from "react"
+import { makeStyles, Slider, Typography } from "@material-ui/core";
+import React from "react";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     color: theme.palette.primary.main,
     height: theme.spacing(1.75),
@@ -16,29 +16,29 @@ const useStyles = makeStyles(theme => ({
     zIndex: 1,
     marginTop: -14,
     ["&:hover"]: {
-      boxShadow: "none"
+      boxShadow: "none",
     },
-    marginLeft: -23
+    marginLeft: -23,
   },
   active: {
-    boxShadow: "none !important"
+    boxShadow: "none !important",
   },
   focusVisible: {
-    boxShadow: "none !important"
+    boxShadow: "none !important",
   },
   valueLabel: {
-    left: theme.spacing(1)
+    left: theme.spacing(1),
   },
   rail: {
     height: theme.spacing(1.75),
     borderRadius: theme.spacing(1.75),
     backgroundColor: theme.palette.secondary.light,
-    opacity: 0.25
+    opacity: 0.25,
   },
   wrapper: {
-    position: "relative"
+    position: "relative",
   },
-  averageRatingContainer: props => ({
+  averageRatingContainer: (props) => ({
     position: "absolute",
     top: 14,
     left: 0,
@@ -52,21 +52,18 @@ const useStyles = makeStyles(theme => ({
     top: -3,
     right: theme.spacing(0.5),
     color: "white",
-    fontSize: 12
-  }
-}))
+    fontSize: 12,
+  },
+}));
 
 export default function IdeaRatingSlider(props) {
-  const classes = useStyles({ averageRating: props.averageRating })
+  const classes = useStyles({ averageRating: props.averageRating });
   return (
     <div className={classes.wrapper}>
-      <Slider 
-        {...props}
-        classes={classes}  
-      />
+      <Slider {...props} classes={classes} />
       <div className={classes.averageRatingContainer}>
         <Typography className={classes.averageCharacter}>Ø</Typography>
       </div>
     </div>
-  )
+  );
 }

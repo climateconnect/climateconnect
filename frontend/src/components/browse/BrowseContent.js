@@ -74,13 +74,13 @@ export default function BrowseContent({
       projects: 2,
       members: 2,
       organizations: 2,
-      ideas: 2
+      ideas: 2,
     },
     urlEnding: {
       projects: "",
       organizations: "",
       members: "",
-      ideas: ""
+      ideas: "",
     },
   };
   const token = new Cookies().get("token");
@@ -266,8 +266,8 @@ export default function BrowseContent({
   );
 
   const handleUpdateIdeaRating = (idea, newRating) => {
-    const ideaInState = state.items.ideas.find(si => si.url_slug === idea.url_slug)
-    const ideaIndex = state.items.ideas.indexOf(ideaInState)
+    const ideaInState = state.items.ideas.find((si) => si.url_slug === idea.url_slug);
+    const ideaIndex = state.items.ideas.indexOf(ideaInState);
     setState({
       ...state,
       items: {
@@ -276,13 +276,13 @@ export default function BrowseContent({
           ...state.items.ideas.slice(0, ideaIndex),
           {
             ...idea,
-            rating: newRating
+            rating: newRating,
           },
-          ...state.items.ideas.slice(ideaIndex+1)
-        ]
-      }
-    })
-  }
+          ...state.items.ideas.slice(ideaIndex + 1),
+        ],
+      },
+    });
+  };
 
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
@@ -461,20 +461,18 @@ export default function BrowseContent({
             index={TYPES_BY_TAB_VALUE.indexOf("ideas")}
             className={classes.tabContent}
           >
-            {
-              isFiltering ? (
-                <LoadingSpinner />
-              ) : (
-                <IdeasBoard
-                  hasMore={state.hasMore.ideas}
-                  loadFunc={loadMoreIdeas}
-                  ideas={state.items.ideas}
-                  allHubs={allHubs}
-                  userOrganizations={userOrganizations}
-                  onUpdateIdeaRating={handleUpdateIdeaRating}
-                />
-              )
-            }
+            {isFiltering ? (
+              <LoadingSpinner />
+            ) : (
+              <IdeasBoard
+                hasMore={state.hasMore.ideas}
+                loadFunc={loadMoreIdeas}
+                ideas={state.items.ideas}
+                allHubs={allHubs}
+                userOrganizations={userOrganizations}
+                onUpdateIdeaRating={handleUpdateIdeaRating}
+              />
+            )}
           </TabContent>
         </>
       </Container>

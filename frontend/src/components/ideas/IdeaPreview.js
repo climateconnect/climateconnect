@@ -4,7 +4,7 @@ import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import React, { useContext, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
-import theme from '../../themes/theme';
+import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import CreateIdeaDialog from "./createIdea/CreateIdeaDialog";
 import IdeaHubIcon from "./IdeaHubIcon";
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     background: "#F8F8F8",
     position: "relative",
     cursor: "pointer",
-    boxShadow: "3px 3px 6px #00000029"
+    boxShadow: "3px 3px 6px #00000029",
   }),
   createCardHeadline: {
     fontWeight: 600,
@@ -61,16 +61,16 @@ const useStyles = makeStyles((theme) => ({
     marginTop: -3,
   },
   ratingIcon: {
-    width: '50px',
-    height: '50px',
-    opacity: 1
+    width: "50px",
+    height: "50px",
+    opacity: 1,
   },
   placeholderImg: {
     visibility: "hidden",
     width: "100%",
   },
   topSection: {
-    padding: theme.spacing(1)
+    padding: theme.spacing(1),
   },
   categoryAndRatingWrapper: {
     display: "flex",
@@ -79,25 +79,34 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
   shortDescription: {
-    padding: theme.spacing(0.5)
-  }
+    padding: theme.spacing(0.5),
+  },
 }));
 
 //This component is currently only capable of displaying the "add new idea" card and not a real idea preview card
-export default function IdeaPreview({ idea, isCreateCard, allHubs, userOrganizations , onClickIdea, index}) {
+export default function IdeaPreview({
+  idea,
+  isCreateCard,
+  allHubs,
+  userOrganizations,
+  onClickIdea,
+  index,
+}) {
   const colors = [
-    theme.palette.primary.main, theme.palette.primary.light,
-    theme.palette.secondary.main, theme.palette.yellow.main
-  ]
+    theme.palette.primary.main,
+    theme.palette.primary.light,
+    theme.palette.secondary.main,
+    theme.palette.yellow.main,
+  ];
   const color = isCreateCard ? theme.palette.primary.main : colors[(index + idea.name.length) % 4];
-  const classes = useStyles({ borderColor: !isCreateCard && color});
+  const classes = useStyles({ borderColor: !isCreateCard && color });
   const [open, setOpen] = useState(false);
   const handleCardClick = (e) => {
     e.preventDefault();
     if (isCreateCard) {
       setOpen(true);
     } else {
-      onClickIdea(idea)
+      onClickIdea(idea);
     }
   };
   const onClose = () => {
@@ -156,7 +165,10 @@ function IdeaCardContent(idea) {
         </Typography>
         <div className={classes.categoryAndRatingWrapper}>
           {idea.idea.hub && <IdeaHubIcon idea={idea.idea} />}
-          <IdeaRatingIcon rating={idea.idea.rating.rating_score} number_of_ratings={idea.idea.rating.number_of_ratings}/>
+          <IdeaRatingIcon
+            rating={idea.idea.rating.rating_score}
+            number_of_ratings={idea.idea.rating.number_of_ratings}
+          />
         </div>
       </div>
       <div>
@@ -165,11 +177,12 @@ function IdeaCardContent(idea) {
             {idea.idea.short_description}
           </Typography>
         ) : (
-          <CardMedia
-            title={idea.idea.url_slug}            
-            image={getImageUrl(idea.idea.image)}
-          >
-            <img src={getImageUrl(idea.idea.image)} alt={idea.idea.name} className={classes.placeholderImg}/>
+          <CardMedia title={idea.idea.url_slug} image={getImageUrl(idea.idea.image)}>
+            <img
+              src={getImageUrl(idea.idea.image)}
+              alt={idea.idea.name}
+              className={classes.placeholderImg}
+            />
           </CardMedia>
         )}
       </div>

@@ -21,8 +21,8 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "600",
     color: theme.palette.secondary.main,
     [theme.breakpoints.down("xs")]: {
-      fontSize: 18
-    }
+      fontSize: 18,
+    },
   },
   dialogContentClass: {
     paddingTop: 0,
@@ -33,9 +33,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizations }) {
-  const [waitingForCreation, setWaitingForCreation] = useState(false)
+  const [waitingForCreation, setWaitingForCreation] = useState(false);
   const classes = useStyles({ userOrganization: userOrganizations });
-  const token = new Cookies().get("token")
+  const token = new Cookies().get("token");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
   const [idea, setIdea] = useState({
@@ -55,9 +55,8 @@ export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizat
   const locationInputRef = useRef(null);
 
   const handleClose = (e) => {
-    if(!waitingForCreation)
-      onClose(e)
-  }
+    if (!waitingForCreation) onClose(e);
+  };
 
   const handleStepForward = () => {
     setStep(STEPS[STEPS.indexOf(step) + 1]);
@@ -87,26 +86,32 @@ export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizat
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage, texts);
       return;
     }
-    try{
-      setWaitingForCreation(true)
-      const payload = await parseIdeaForCreateRequest(idea, locale)
+    try {
+      setWaitingForCreation(true);
+      const payload = await parseIdeaForCreateRequest(idea, locale);
       await apiRequest({
         method: "post",
         url: "/api/create_idea/",
         payload: payload,
         token: token,
-        locale: locale
-      })
+        locale: locale,
+      });
       //TODO: link idea!
-      redirect(window.location.pathname, {
-        message: "Congratulations! Your idea " + idea.name + " has been created!"
-      }, window.location.hash)
-      setWaitingForCreation(false)
-    } catch(e) {
-      console.log("there has been an error :,(")
-      setWaitingForCreation(false)
-      setErrorMessage("There has been an error while creating your idea. Please contact contact@climateconnect.earth")
-      console.log(e)
+      redirect(
+        window.location.pathname,
+        {
+          message: "Congratulations! Your idea " + idea.name + " has been created!",
+        },
+        window.location.hash
+      );
+      setWaitingForCreation(false);
+    } catch (e) {
+      console.log("there has been an error :,(");
+      setWaitingForCreation(false);
+      setErrorMessage(
+        "There has been an error while creating your idea. Please contact contact@climateconnect.earth"
+      );
+      console.log(e);
     }
   };
 
@@ -122,35 +127,35 @@ export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizat
       dialogContentClass={classes.dialogContentClass}
     >
       <LoadingSpinner className={classes.loadingSpinner} isLoading={userOrganizations === null} />
-      {waitingForCreation ?
-          <IdeaCreationLoadingScreen />
-        :
-          <div className={classes.content}>
-            {step === "idea_info" && (
-              <IdeaInfoStep
-                idea={idea}
-                handleValueChange={handleValueChange}
-                updateImages={updateImages}
-                goToNextStep={handleStepForward}
-              />
-            )}
-            {step === "idea_metadata" && (
-              <IdeaMetadataStep
-                idea={idea}
-                handleValueChange={handleValueChange}
-                handleIsOrganizationsIdeaChange={handleIsOrganizationsIdeaChange}
-                locationOptionsOpen={locationOptionsOpen}
-                locationInputRef={locationInputRef}
-                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-                userOrganizations={userOrganizations}
-                allHubs={allHubs}
-                onSubmitIdea={onSubmitIdea}
-                goBack={handleStepBackwards}
-                errorMessage={errorMessage}
-              />
-            )}
-          </div>
-      }
+      {waitingForCreation ? (
+        <IdeaCreationLoadingScreen />
+      ) : (
+        <div className={classes.content}>
+          {step === "idea_info" && (
+            <IdeaInfoStep
+              idea={idea}
+              handleValueChange={handleValueChange}
+              updateImages={updateImages}
+              goToNextStep={handleStepForward}
+            />
+          )}
+          {step === "idea_metadata" && (
+            <IdeaMetadataStep
+              idea={idea}
+              handleValueChange={handleValueChange}
+              handleIsOrganizationsIdeaChange={handleIsOrganizationsIdeaChange}
+              locationOptionsOpen={locationOptionsOpen}
+              locationInputRef={locationInputRef}
+              handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+              userOrganizations={userOrganizations}
+              allHubs={allHubs}
+              onSubmitIdea={onSubmitIdea}
+              goBack={handleStepBackwards}
+              errorMessage={errorMessage}
+            />
+          )}
+        </div>
+      )}
     </GenericDialog>
   );
 }
@@ -159,23 +164,20 @@ const parseIdeaForCreateRequest = async (idea, locale) => {
   const parsedIdea = {
     ...idea,
     hub: idea.hub.url_slug,
-    source_language: locale
-  }
+    source_language: locale,
+  };
 
-  if(idea.parent_organization && idea.is_organizations_idea) {
-    parsedIdea.parent_organization = idea.parent_organization.id
+  if (idea.parent_organization && idea.is_organizations_idea) {
+    parsedIdea.parent_organization = idea.parent_organization.id;
   } else {
-    delete parsedIdea.parent_organization
+    delete parsedIdea.parent_organization;
   }
-  if(idea.image)
-    parsedIdea.image = await blobFromObjectUrl(idea.image)
-  else
-    delete parsedIdea.image
+  if (idea.image) parsedIdea.image = await blobFromObjectUrl(idea.image);
+  else delete parsedIdea.image;
 
-  if(idea.thumbnail_image)
-    parsedIdea.thumbnail_image = await blobFromObjectUrl(idea.thumbnail_image)
-  else
-    delete parsedIdea.thumbnail_image
-  
-  return parsedIdea
-}
+  if (idea.thumbnail_image)
+    parsedIdea.thumbnail_image = await blobFromObjectUrl(idea.thumbnail_image);
+  else delete parsedIdea.thumbnail_image;
+
+  return parsedIdea;
+};

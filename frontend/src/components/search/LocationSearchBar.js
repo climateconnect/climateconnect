@@ -26,7 +26,6 @@ export default function LocationSearchBar({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const getValue = (newValue, inputValue) => {
-    console.log(inputValue, newValue)
     if (!newValue) {
       return inputValue ? inputValue : "";
     } else if (typeof newValue === "object") {

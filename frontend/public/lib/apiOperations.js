@@ -64,10 +64,9 @@ export async function redirect(url, messages, hash) {
   const payload = {
     pathname: url,
     query: messages,
-    forceRedirect: true
-  }
-  if(hash)
-    payload.hash = hash
+    forceRedirect: true,
+  };
+  if (hash) payload.hash = hash;
   Router.push(payload);
 }
 
