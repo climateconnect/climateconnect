@@ -2,6 +2,7 @@ import { Divider, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations.js";
+import { getCommentsObjectAfterAddingComment } from "../../../public/lib/communicationOperations.js";
 import getTexts from "../../../public/texts/texts.js";
 import CommentInput from "../communication/CommentInput.js";
 import UserContext from "../context/UserContext.js";
@@ -21,27 +22,13 @@ export default function CommentsContent({ user, project, token, setCurComments }
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const comments = project.comments;
-  const handleAddComment = (c) => {
-    if (c.parent_comment_id) {
-      const parent_comment = project.comments.find((pc) => pc.id === c.parent_comment_id);
-      const newCurComments = [
-        ...project.comments.filter((c) => c.id !== parent_comment.id),
-        { ...parent_comment, replies: [...parent_comment.replies, c] },
-      ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-      setCurComments(newCurComments);
-    } else {
-      setCurComments([
-        c,
-        ...project.comments.filter(
-          (oc) =>
-            !(oc.content === c.content && oc.author_user.id === c.author_user.id && oc.unconfirmed)
-        ),
-      ]);
-    }
-  };
 
   const handleRemoveComment = (c) => {
     setCurComments([...project.comments.filter((pc) => pc.id !== c.id)]);
+  };
+
+  const handleAddComment = (c) => {
+    setCurComments(getCommentsObjectAfterAddingComment(c, project.comments));
   };
 
   const onSendComment = async (curComment, parent_comment, clearInput, setDisplayReplies) => {
@@ -94,7 +81,7 @@ export default function CommentsContent({ user, project, token, setCurComments }
 
   return (
     <div>
-      <CommentInput user={user} onSendComment={onSendComment} />
+      <CommentInput user={user} onSendComment={onSendComment} hasComments={comments.length > 0} />
       <Typography>{comments.length + " " + texts.comments}</Typography>
       <Divider className={classes.divider} />
       {comments && comments.length > 0 && (
