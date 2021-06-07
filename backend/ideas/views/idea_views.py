@@ -1,6 +1,19 @@
 # Python imports
 
 # Django/Django REST imports
+import logging
+
+from chat_messages.models.message import MessageParticipants, Participant
+from chat_messages.utility.chat_setup import create_private_or_group_chat
+# Climate connect imports
+from climateconnect_api.models import Language, Role
+from climateconnect_api.utility.translation import get_translations
+from hubs.models.hub import Hub
+from ideas.models import Idea
+from ideas.pagination import IdeasBoardPagination
+from ideas.permissions import IdeaReadWritePermission
+from ideas.serializers.idea import IdeaMinimalSerializer, IdeaSerializer
+from ideas.utility.idea import create_idea, verify_idea
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
@@ -9,18 +22,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-# Climate connect imports
-from climateconnect_api.models import Language
-from climateconnect_api.utility.translation import get_translations
-from chat_messages.utility.chat_setup import create_private_or_group_chat
-from hubs.models.hub import Hub
-from ideas.models import Idea
-from ideas.pagination import IdeasBoardPagination
-from ideas.permissions import IdeaReadWritePermission
-from ideas.serializers.idea import IdeaMinimalSerializer, IdeaSerializer
-from ideas.utility.idea import create_idea, verify_idea
-
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -90,10 +91,46 @@ class CreateIdeaView(APIView):
         
         idea = create_idea(request.data, language, request.user)
 
-        print(idea)
         # Creating group chat for the idea.
         if idea:
-            create_private_or_group_chat(creator=request.user, group_chat_name=idea.name)
-
+            create_private_or_group_chat(creator=request.user, group_chat_name=idea.name, related_idea=idea)
         serializer = IdeaSerializer(idea) 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(str(serializer.data), status=status.HTTP_200_OK)
+
+class JoinIdeaChatView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, url_slug):
+        idea = verify_idea(url_slug)
+        if not idea:
+            return Response({'message': 'Idea not found'}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            chat = MessageParticipants.objects.get(related_idea=idea.id)
+            try:
+                Participant.objects.get(user=request.user, chat=chat)
+            except Participant.DoesNotExist:
+                Participant.objects.create(user=request.user, chat=chat, role=Role.READ_ONLY_TYPE)
+        except MessageParticipants.DoesNotExist:
+            return Response({'message': 'Group chat not found'}, status=status.HTTP_404_NOT_FOUND)
+        # Participant.objects.get_or_create(user=request.user, chat=idea.related_idea_message_participant)
+        return Response({'chat_uuid': chat.chat_uuid}, status=status.HTTP_200_OK)
+
+class GetHaveIJoinedIdeaView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, url_slug):
+        idea = verify_idea(url_slug)
+        if not idea:
+            return Response({'message': 'Idea not found'}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            chat = MessageParticipants.objects.get(related_idea=idea.id)
+            participant = Participant.objects.filter(user=request.user, chat=chat)
+            if participant.exists():
+                return Response({
+                    'chat_uuid': chat.chat_uuid, 
+                    'has_joined': True
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({'has_joined': False}, status=status.status.HTTP_200_OK)
+        except MessageParticipants.DoesNotExist:
+            return Response({'message': 'Group chat not found'}, status=status.HTTP_404_NOT_FOUND)
