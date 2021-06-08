@@ -111,8 +111,7 @@ class CreateIdeaView(APIView):
         # Creating group chat for the idea.
         if idea:
             create_private_or_group_chat(creator=request.user, group_chat_name=idea.name, related_idea=idea)
-        serializer = IdeaSerializer(idea) 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(idea.url_slug, status=status.HTTP_200_OK)
 
 
 class JoinIdeaChatView(APIView):
@@ -138,8 +137,10 @@ class GetHaveIJoinedIdeaView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, url_slug):
+        print("checking whether I joined")
         idea = verify_idea(url_slug)
         if not idea:
+            print("There is no idea with the url slug " + url_slug)
             return Response({'message': 'Idea not found'}, status=status.HTTP_404_NOT_FOUND)
         try:
             chat = MessageParticipants.objects.get(related_idea=idea.id)

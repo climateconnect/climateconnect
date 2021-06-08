@@ -35,6 +35,7 @@ export default function IdeaPreviews({
   onClickIdea,
   hasIdeaOpen,
   className,
+  hubLocation,
 }) {
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas, onClickIdea, hasIdeaOpen));
@@ -79,6 +80,7 @@ export default function IdeaPreviews({
           allHubs={allHubs}
           userOrganizations={userOrganizations}
           hasIdeaOpen={hasIdeaOpen}
+          hubLocation={hubLocation}
         />
         {parentHandlesGridItems ? toIdeaPreviews(ideas, onClickIdea, hasIdeaOpen) : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="idea-previews-spinner" />}
@@ -95,6 +97,7 @@ function GridItem({
   onClickIdea,
   hasIdeaOpen,
   index,
+  hubLocation,
 }) {
   return (
     <Grid
@@ -113,6 +116,7 @@ function GridItem({
         userOrganizations={userOrganizations}
         onClickIdea={onClickIdea}
         index={index}
+        hubLocation={hubLocation}
       />
     </Grid>
   );

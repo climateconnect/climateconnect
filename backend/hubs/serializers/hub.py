@@ -1,3 +1,5 @@
+from location.models import Location
+from location.serializers import LocationSerializer
 from django.utils.translation import get_language
 from hubs.utility.hub import get_hub_attribute, get_hub_stat_attribute
 from rest_framework import serializers
@@ -15,6 +17,7 @@ class HubSerializer(serializers.ModelSerializer):
     image_attribution = serializers.SerializerMethodField()
     quick_info = serializers.SerializerMethodField()
     stat_box_title = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
 
     class Meta:
         model = Hub
@@ -58,6 +61,11 @@ class HubSerializer(serializers.ModelSerializer):
     
     def get_stat_box_title(self, obj):
         return get_hub_attribute(obj, "stat_box_title", get_language())
+
+    def get_location(self, obj):
+        if obj.location:
+            return LocationSerializer(obj.location.all(), many=True).data
+        return None
 
 class HubStubSerializer(serializers.ModelSerializer):
     hub_type = serializers.SerializerMethodField()

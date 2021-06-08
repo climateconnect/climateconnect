@@ -26,8 +26,12 @@ export default function IdeasBoard({
   userOrganizations,
   onUpdateIdeaRating,
   initialIdeaUrlSlug,
+  hubLocation,
 }) {
-  const getInitialIdea = (initialIdeaUrlSlug) => {    
+  const getInitialIdea = (initialIdeaUrlSlug) => {   
+    //Short circuit if there is no idea open 
+    if(!initialIdeaUrlSlug)
+      return null
     const initialIdeaObject = ideas.filter((i) => i.url_slug === initialIdeaUrlSlug)
     if(initialIdeaObject.length !== 0) {
       return initialIdeaObject[0]
@@ -86,6 +90,7 @@ export default function IdeasBoard({
         onClickIdea={onClickIdea}
         hasIdeaOpen={!!idea}
         className={classes.ideaPreviews}
+        hubLocation={hubLocation}
       />
       {idea && !isNarrowScreen && (
         <div className={classes.idea} ref={(node) => {
@@ -99,7 +104,7 @@ export default function IdeasBoard({
             onRatingChange={handleUpdateRating}
             handleAddComments={handleAddComments}
             handleRemoveComment={handleRemoveComment}
-            containerOffsetTop={containerOffsetTop.screen}
+            containerOffsetTop={containerOffsetTop}
           />
         </div>
       )}
