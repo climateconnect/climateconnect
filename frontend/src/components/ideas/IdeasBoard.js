@@ -25,8 +25,15 @@ export default function IdeasBoard({
   allHubs,
   userOrganizations,
   onUpdateIdeaRating,
+  initialIdeaUrlSlug,
 }) {
-  const [idea, setIdea] = useState(null);
+  const getInitialIdea = (initialIdeaUrlSlug) => {    
+    const initialIdeaObject = ideas.filter((i) => i.url_slug === initialIdeaUrlSlug)
+    if(initialIdeaObject.length !== 0) {
+      return initialIdeaObject[0]
+    }
+  }
+  const [idea, setIdea] = useState(getInitialIdea(initialIdeaUrlSlug));
   const [ideaContainerEl, setIdeaContainerEl] = useState(null)
   const containerOffsetTop = ElementSpaceToTop({el: ideaContainerEl})
   const classes = useStyles({ ideaOpen: idea !== null });
@@ -42,6 +49,7 @@ export default function IdeasBoard({
 
   const onClickIdea = async (idea) => {
     setIdea({...idea});
+    window.history.pushState({}, "", `${window.location.origin}${window.location.pathname}?idea=${idea.url_slug}${window.location.hash}`)
   };
 
   const onClose = () => {

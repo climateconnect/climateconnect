@@ -1,4 +1,4 @@
-import { Card, CardMedia, makeStyles, Typography } from "@material-ui/core";
+import { Card, CardMedia, Link, makeStyles, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import React, { useContext, useState } from "react";
@@ -11,6 +11,12 @@ import IdeaHubIcon from "./IdeaHubIcon";
 import IdeaRatingIcon from "./IdeaRatingIcon";
 
 const useStyles = makeStyles((theme) => ({
+  noUnderline: {
+    textDecoration: "inherit",
+    "&:hover": {
+      textDecoration: "inherit",
+    },
+  },
   root: (props) => ({
     border: `3px solid ${props.borderColor}`,
     textAlign: "center",
@@ -18,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     background: "#F8F8F8",
     position: "relative",
     cursor: "pointer",
-    boxShadow: "3px 3px 6px #00000029",
+    boxShadow: "3px 3px 6px #00000029"    
   }),
   createCardHeadline: {
     fontWeight: 600,
@@ -114,13 +120,18 @@ export default function IdeaPreview({
   };
   return (
     <>
-      <Card
-        className={`${classes.root} ${isCreateCard}`}
-        variant="outlined"
+      <Link 
+        className={classes.noUnderline}
         onClick={handleCardClick}
+        href={`${window.location.origin}${window.location.pathname}?idea=${idea?.url_slug}${window.location.hash}`}
       >
-        {isCreateCard ? <CreateCardContent /> : <IdeaCardContent idea={idea} />}
-      </Card>
+        <Card
+          className={classes.root}
+          variant="outlined"        
+        >
+          {isCreateCard ? <CreateCardContent /> : <IdeaCardContent idea={idea} />}
+        </Card>      
+      </Link>
       {isCreateCard && (
         <CreateIdeaDialog
           open={open}
