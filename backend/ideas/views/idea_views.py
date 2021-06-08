@@ -15,7 +15,7 @@ from ideas.models import Idea
 from ideas.pagination import IdeasBoardPagination
 from ideas.permissions import IdeaReadWritePermission
 from ideas.serializers.idea import IdeaMinimalSerializer, IdeaSerializer
-from ideas.utility.idea import create_idea, verify_idea
+from ideas.utility.idea import create_idea, verify_idea, idea_translations
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
@@ -93,15 +93,24 @@ class CreateIdeaView(APIView):
             translations = None
             logger.error("TranslationFailed: Error translating texts, {}".format(ve))
         
+        language = None
         if translations:
             language = Language.objects.get(language_code=translations['source_language'])
         
         idea = create_idea(request.data, language, request.user)
 
+        # translate idea
+        if translations:
+            idea_translations(
+                idea=idea, translations=translations['translations'],
+                source_language=language
+            )
+
         # Creating group chat for the idea.
         if idea:
             create_private_or_group_chat(creator=request.user, group_chat_name=idea.name, related_idea=idea)
         return Response(idea.url_slug, status=status.HTTP_200_OK)
+
 
 class JoinIdeaChatView(APIView):
     permission_classes = [IsAuthenticated]
@@ -120,6 +129,7 @@ class JoinIdeaChatView(APIView):
             return Response({'message': 'Group chat not found'}, status=status.HTTP_404_NOT_FOUND)
         # Participant.objects.get_or_create(user=request.user, chat=idea.related_idea_message_participant)
         return Response({'chat_uuid': chat.chat_uuid}, status=status.HTTP_200_OK)
+
 
 class GetHaveIJoinedIdeaView(APIView):
     permission_classes = [IsAuthenticated]
