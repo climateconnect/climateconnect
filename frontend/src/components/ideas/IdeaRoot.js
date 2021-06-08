@@ -1,4 +1,4 @@
-import { Card, makeStyles, Tooltip, Typography } from "@material-ui/core";
+import { Button, Card, makeStyles, Tooltip, Typography } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import React, { useContext, useEffect, useState } from "react";
@@ -70,6 +70,10 @@ const useStyles = makeStyles({
   interactionsCounter: {
     fontWeight: 600,
   },
+  buttonsContainer: {
+    display: "flex",
+    justifyContent: "space-between"
+  }
 });
 
 export default function IdeaRoot({
@@ -109,7 +113,7 @@ export default function IdeaRoot({
           getHasJoinedIdea(idea, token, locale)
         ]);
         setUserRating({...userRating, last_locked_rating_score: userRating.rating_score});
-        setHasJoinedIdea({has_joined: hasJoinedIdea.has_joined, chat_uuid: hasJoinedIdea.chat_uuid})
+        setHasJoinedIdea({has_joined: hasJoinedIdea?.has_joined, chat_uuid: hasJoinedIdea?.chat_uuid})
         handleAddComments(comments);
         setLoading(false)
       }
@@ -196,8 +200,9 @@ export default function IdeaRoot({
                   className={classes.ratingSlider}
                 />
               </div>
-              <div className={classes.topItem}>
+              <div className={`${classes.topItem} ${classes.buttonsContainer}`}>
                 <IdeaJoinButton idea={idea} has_joined={hasJoinedIdea.has_joined} chat_uuid={hasJoinedIdea.chat_uuid}/>
+                <Button variant="contained" color="primary">{texts.edit_idea}</Button>
               </div>
             </div>
           </div>

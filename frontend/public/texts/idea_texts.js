@@ -134,6 +134,10 @@ export default function getIdeaTexts({ idea }) {
     go_to_group_chat: {
       en: "Go to Group chat",
       de: "Gruppenchat öffnen"
+    },
+    edit_idea: {
+      en: "Edit idea",
+      de: "Idee bearbeiten"
     }
   };
 }

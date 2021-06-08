@@ -8,6 +8,8 @@ from chat_messages.utility.chat_setup import create_private_or_group_chat
 # Climate connect imports
 from climateconnect_api.models import Language, Role
 from climateconnect_api.utility.translation import get_translations
+from django.db.models import Case, Value, When
+from django.db.models.query import QuerySet
 from hubs.models.hub import Hub
 from ideas.models import Idea
 from ideas.pagination import IdeasBoardPagination
@@ -31,7 +33,12 @@ class IdeasBoardView(ListAPIView):
     filter_backends = [SearchFilter]
     search_fields = ['name']
     serializer_class = IdeaMinimalSerializer
-    queryset = Idea.objects.all()
+
+    def get_queryset(self):
+        queryset = Idea.objects.all()
+        if 'idea' in self.request.query_params:
+            queryset = queryset.order_by(Case(When(url_slug=self.request.query_params.get('idea'), then=0), default=1))
+        return queryset
 
 
 # This is API view is used to edit one idea
