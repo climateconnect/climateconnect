@@ -110,7 +110,7 @@ class IdeaSerializer(serializers.ModelSerializer):
         return None
 
     def get_user(self, obj):
-        thumbnail_image = obj.user.user_profile.thumbnail_image
+        thumbnail_image = obj.user.user_profile.thumbnail_image.url
         return {
             'first_name': obj.user.first_name,
             'last_name': obj.user.last_name,

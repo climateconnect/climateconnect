@@ -1,21 +1,10 @@
 # Python imports
-
-# Django/Django REST imports
 import logging
 
-from chat_messages.models.message import MessageParticipants, Participant
-from chat_messages.utility.chat_setup import create_private_or_group_chat
-# Climate connect imports
-from climateconnect_api.models import Language, Role
-from climateconnect_api.utility.translation import get_translations
+# Django/Django REST imports
+from django.utils.translation import get_language
 from django.db.models import Case, Value, When
 from django.db.models.query import QuerySet
-from hubs.models.hub import Hub
-from ideas.models import Idea
-from ideas.pagination import IdeasBoardPagination
-from ideas.permissions import IdeaReadWritePermission
-from ideas.serializers.idea import IdeaMinimalSerializer, IdeaSerializer
-from ideas.utility.idea import create_idea, verify_idea, idea_translations
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
@@ -23,6 +12,18 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+# Climate connect imports
+from climateconnect_api.models import Language, Role
+from climateconnect_api.utility.translation import get_translations
+from chat_messages.models.message import MessageParticipants, Participant
+from chat_messages.utility.chat_setup import create_private_or_group_chat
+from hubs.models.hub import Hub
+from ideas.models import Idea
+from ideas.pagination import IdeasBoardPagination
+from ideas.permissions import IdeaReadWritePermission
+from ideas.serializers.idea import IdeaMinimalSerializer, IdeaSerializer
+from ideas.utility.idea import create_idea, verify_idea, idea_translations
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +56,7 @@ class IdeaView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def patch(self, request, url_slug, format=None):
+        print(get_language())
         idea = verify_idea(url_slug)
         if not idea:
             return Response({'message': 'Idea not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -110,7 +112,7 @@ class CreateIdeaView(APIView):
         if idea:
             create_private_or_group_chat(creator=request.user, group_chat_name=idea.name, related_idea=idea)
         serializer = IdeaSerializer(idea) 
-        return Response(str(serializer.data), status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class JoinIdeaChatView(APIView):
