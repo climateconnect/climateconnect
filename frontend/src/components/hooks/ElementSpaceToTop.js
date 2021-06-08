@@ -5,7 +5,11 @@ export default function ElementSpaceToTop({ el }) {
   const [top, setTop] = useState({
     page: null,
     screen: null,
+    pageBottom: null,
+    screenBottom: null
   });
+
+  const [initialized, setInitialized] = useState(false)
 
   useEffect(() => {
     let ticking = false;
@@ -17,6 +21,8 @@ export default function ElementSpaceToTop({ el }) {
         setTop({
           screen: rect.top,
           page: scrollY + rect.top,
+          screenBottom: rect.bottom,
+          pageBottom: rect.bottom + window.innerHeight
         });
       }
       ticking = false;
@@ -30,6 +36,12 @@ export default function ElementSpaceToTop({ el }) {
     };
 
     window.addEventListener("scroll", onScroll);
+
+    if(!initialized) {
+      window.requestAnimationFrame(updateTopOfPage);
+      setInitialized(true)
+      ticking = true;
+    }
 
     return () => window.removeEventListener("scroll", onScroll);
   });

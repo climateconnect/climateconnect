@@ -1,14 +1,16 @@
-import { Button, Card, makeStyles, Tooltip, Typography } from "@material-ui/core";
+import { Button, Card, makeStyles, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
+import EditIdeaRoot from "./editIdea/EditIdeaRoot";
 import IdeaCommentsSection from "./IdeaCommentsSection";
 import IdeaHubIcon from "./IdeaHubIcon";
 import IdeaJoinButton from "./IdeaJoinButton";
@@ -19,11 +21,16 @@ const useStyles = makeStyles({
     borderColor: theme.palette.primary.main,
     position: "absolute",
     left: 0,
+    background: (props.loading || props.isEditing) ? "white" : "#E9E9E9",
     right: 0,
-    top: props.containerOffsetTop < 110 ? 110 - props.containerOffsetTop : 0
+    top: props.offsetTop < 110 ? 110 - props.offsetTop : 0,
+    bottom: props.offsetTop < 110 ? (props.offsetBottom + theme.spacing(1)) : "default",
+    overflowY: "auto"
   }),
   contentWrapper: {
     padding: theme.spacing(1),
+    background: "white",
+    paddingBottom: theme.spacing(3)
   },
   closeStyle: {
     cursor: "pointer",
@@ -73,7 +80,15 @@ const useStyles = makeStyles({
   buttonsContainer: {
     display: "flex",
     justifyContent: "space-between"
-  }
+  },
+  ideaImage: {
+    width: "40%",
+    float: "right",
+    marginRight: theme.spacing(1)
+  },
+  imageAndShortDescriptionWrapper: {
+    marginTop: theme.spacing(2),
+  },
 });
 
 export default function IdeaRoot({
@@ -84,10 +99,10 @@ export default function IdeaRoot({
   handleRemoveComment,
   containerOffsetTop,
 }) {
-  const classes = useStyles({containerOffsetTop: containerOffsetTop});
   const token = new Cookies().get("token");
+  const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"))
 
-  const handleIdeaEditClose = (e) => {
+  const handleIdeaClose = (e) => {
     onIdeaClose(e);
   };
 
@@ -102,6 +117,20 @@ export default function IdeaRoot({
     has_joined: false,
     chat_uuid: null
   })
+  const [isEditing, setIsEditing] = useState(false)
+
+  const handleClickEditIdea = (e) => {
+    e.preventDefault()
+    setIsEditing(true)
+  }
+
+  const classes = useStyles({
+    offsetTop: containerOffsetTop.screen, 
+    offsetBottom: containerOffsetTop.screenBottom - containerOffsetTop.pageBottom + containerOffsetTop.screenBottom,
+    loading: loading,
+    isMediumScreen: isMediumScreen,
+    isEditing: isEditing
+  });
 
   useEffect(
     async function () {
@@ -145,33 +174,45 @@ export default function IdeaRoot({
     }
   };
 
+  const cancelEdit = () => {
+    setIsEditing(false)
+  }
+
   const handleAddComment = (comment) => handleAddComments([comment]);
 
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
+  console.log(idea.thumbnail_image)
   return (
     <Card variant="outlined" className={classes.root}>
       {loading ? (
         <div className={classes.contentWrapper}>
-          <CloseIcon className={classes.closeStyle} onClick={handleIdeaEditClose} />
+          <CloseIcon className={classes.closeStyle} onClick={handleIdeaClose} />
           <div className={classes.loadingSpinnerContainer}>
             <LoadingSpinner isLoading className={classes.loadingSpinner} />
           </div>
         </div>
-      ) : (
+      ) : isEditing ? (
+        <EditIdeaRoot idea={idea} cancelEdit={cancelEdit}/>
+      ) :(
         <>
           <div className={classes.contentWrapper}>
-            <CloseIcon className={classes.closeStyle} onClick={handleIdeaEditClose} />
-            <div className={classes.ideaInfo}>
+            <CloseIcon className={classes.closeStyle} onClick={handleIdeaClose} />
+            <div className={classes.ideaInfo}>              
               <div className={classes.titleAndHubIconWrapper}>
                 <Typography color="secondary" className={classes.name} component="h2">
                   {idea.name}
                 </Typography>
                 <IdeaHubIcon idea={idea} className={classes.ideaHubIcon} />
               </div>
-              <Typography variant="body1" className={classes.topItem}>
-                {idea.short_description}
-              </Typography>
+              <div className={classes.imageAndShortDescriptionWrapper}>
+                {idea.thumbnail_image &&(
+                  <img src={getImageUrl(idea.thumbnail_image)} className={classes.ideaImage}/>
+                )}
+                <Typography variant="body1">
+                  {idea.short_description}
+                </Typography>
+              </div>
               <Tooltip title={texts.the_ideas_creator}>
                 <MiniProfilePreview className={classes.topItem} profile={idea.user} size="medium" />
               </Tooltip>
@@ -202,11 +243,11 @@ export default function IdeaRoot({
               </div>
               <div className={`${classes.topItem} ${classes.buttonsContainer}`}>
                 <IdeaJoinButton idea={idea} has_joined={hasJoinedIdea.has_joined} chat_uuid={hasJoinedIdea.chat_uuid}/>
-                <Button variant="contained" color="primary">{texts.edit_idea}</Button>
+                <Button onClick={handleClickEditIdea} variant="contained" color="primary">{texts.edit_idea}</Button>
               </div>
             </div>
           </div>
-          <div className={classes.topItem}>
+          <div>
             <IdeaCommentsSection
               idea={idea}
               handleAddComment={handleAddComment}
