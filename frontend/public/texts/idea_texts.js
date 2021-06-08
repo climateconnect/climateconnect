@@ -138,6 +138,10 @@ export default function getIdeaTexts({ idea }) {
     edit_idea: {
       en: "Edit idea",
       de: "Idee bearbeiten"
+    },
+    edit_your_idee: {
+      en: "Edit Your Idea",
+      de: "Bearbeite deine Idee"
     }
   };
 }
