@@ -1,3 +1,5 @@
+from climateconnect_api.models import language
+from django.utils.translation import get_language
 from hubs.serializers.hub import HubStubSerializer
 from rest_framework import serializers
 
@@ -5,6 +7,10 @@ from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from location.utility import get_location
 from ideas.models import Idea, IdeaSupporter
+from ideas.utility.idea import (
+    get_idea_name, get_idea_short_description,
+    idea_translations
+)
 
 
 class IdeaSupportedMinimalSerializer(serializers.ModelSerializer):
@@ -22,6 +28,8 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
 
     class Meta:
         model = Idea
@@ -30,6 +38,12 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
             'thumbnail_image', 'hub', 'rating', 'image', 'user',
             'location'
         ]
+    
+    def get_name(self, obj):
+        return get_idea_name(obj, get_language())
+    
+    def get_short_description(self, obj):
+        return get_idea_short_description(obj, get_language())
 
     def get_hub(self, obj):
         if obj.hub:
@@ -72,6 +86,8 @@ class IdeaSerializer(serializers.ModelSerializer):
     supported_by_users = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
     hub_image = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
 
     class Meta:
         model = Idea
@@ -80,7 +96,13 @@ class IdeaSerializer(serializers.ModelSerializer):
             'supported_by_users', 'thumbnail_image',
             'user', 'url_slug'
         )
+
+    def get_name(self, obj):
+        return get_idea_name(obj, get_language())
     
+    def get_short_description(self, obj):
+        return get_idea_short_description(obj, get_language())
+
     def get_hub_image(self, obj):
         if obj.hub and obj.hub.icon:
             return obj.hub.icon

@@ -49,6 +49,12 @@ class IdeaTranslation(models.Model):
         auto_now=True
     )
 
+    is_manual_translation = models.BooleanField(
+        help_text="Was idea translated manually or automatically?",
+        verbose_name="Is manual translation?",
+        default=False
+    )
+
     class Meta:
         verbose_name = "Idea translation"
         verbose_name_plural = "Idea translations"

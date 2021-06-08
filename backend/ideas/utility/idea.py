@@ -1,18 +1,16 @@
 import logging
-from typing import Optional
+from typing import Dict, Optional
+from climateconnect_api.models import language
 
 from climateconnect_api.models.language import Language
 from climateconnect_main.utility.general import get_image_from_data_url
 from django.contrib.auth.models import User
-from django.db import transaction
 from django.db.utils import IntegrityError
 from hubs.models import Hub
-from ideas.models import Idea
-from location.models import Location
+from ideas.models import Idea, IdeaTranslation
 from location.utility import get_location
 from organization.models import Organization
 from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
 
 logger = logging.getLogger(__name__)
 
@@ -72,3 +70,59 @@ def add_additional_create_idea_params(idea: Idea, data: dict, url_slug:str) -> N
             add_additional_create_idea_params(idea, data, url_slug + str(idea.id))
     # organization if it's an organization's idea!
     # Don't forget to list ideas in the user profile
+
+
+def idea_translations(
+    idea: Idea, translations: Dict, source_language: Language
+) -> None:
+    for language_code in translations:
+        try:
+            language = Language.objects.get(
+                language_code=language_code
+            )
+        except Language.DoesNotExist:
+            language = None
+        
+        if language and language != source_language:
+            idea_translation, created = IdeaTranslation.objects.get_or_create(
+                idea=idea,
+                language=language
+            )
+
+            idea_translation.is_manual_translation =\
+                translations[language_code]['is_manual_translation']
+
+            if created:
+                idea_translation.name_translation = translations[language_code]['name']
+                idea_translation.short_description_translation =\
+                    translations[language_code]['short_description']
+            else:
+                if translations[language_code]['name'] != idea_translation.name_translation:
+                    idea_translation.name_translation = translations[language_code]['name']
+                
+                if translations[language_code]['short_description'] !=\
+                    idea_translation.short_description_translation:
+                    idea_translation.short_description_translation =\
+                        translations[language_code]['short_description']
+            
+            idea_translation.save()
+
+
+def get_idea_name(idea: Idea, language_code: str) -> str:
+    if language_code != idea.language.language_code and\
+        idea.translate_idea.filter(language__language_code=language_code).exists():
+        return idea.translate_idea.filter(
+            language__language_code=language_code
+        ).first().name_translation
+    
+    return idea.name
+
+
+def get_idea_short_description(idea: Idea, language_code: str) -> str:
+    if language_code != idea.language.language_code and\
+        idea.translate_idea.filter(language__language_code=language_code).exists():
+        return idea.translate_idea.filter(
+            language__language_code=language_code
+        ).first().short_description_translation
+    
+    return idea.short_description
