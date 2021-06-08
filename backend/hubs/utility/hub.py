@@ -21,6 +21,5 @@ def get_hub_stat_attribute(hub_stat: HubStat, attribute_name, language_code: str
         )
         attribute_translation = getattr(translation, attribute_name + "_translation")
         if attribute_translation and len(attribute_translation) > 0:
-            print(attribute_translation)
             return attribute_translation
     return getattr(hub_stat, attribute_name)

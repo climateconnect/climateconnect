@@ -32,7 +32,14 @@ const useStyles = makeStyles((theme) => ({
   }),
 }));
 
-export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizations }) {
+const getTypeFromLocation = location => {
+  if (location?.multi_polygon)
+    return "Polygon"
+  else
+    return "Point"
+}
+
+export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizations, hubLocation }) {
   const [waitingForCreation, setWaitingForCreation] = useState(false);
   const classes = useStyles({ userOrganization: userOrganizations });
   const token = new Cookies().get("token");
@@ -44,9 +51,14 @@ export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizat
     image: "",
     thumbnail_image: "",
     hub: "",
-    location: "",
     is_organizations_idea: false,
     parent_organization: null,
+    location: hubLocation && {
+      ...hubLocation,
+      type: getTypeFromLocation(hubLocation),
+      lon: parseFloat(hubLocation.centre_point.replace("SRID=4326;POINT (", "").split(" ")[0]),
+      lat: parseFloat(hubLocation.centre_point.replace("SRID=4326;POINT (", "").split(" ")[1].replace(")", ""))
+    }
   });
   const STEPS = ["idea_info", "idea_metadata"];
   const [step, setStep] = useState(STEPS[0]);
@@ -89,18 +101,20 @@ export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizat
     try {
       setWaitingForCreation(true);
       const payload = await parseIdeaForCreateRequest(idea, locale);
-      await apiRequest({
+      const response = await apiRequest({
         method: "post",
         url: "/api/create_idea/",
         payload: payload,
         token: token,
         locale: locale,
       });
+      const url_slug = response.data
       //TODO: link idea!
       redirect(
         window.location.pathname,
         {
           message: "Congratulations! Your idea " + idea.name + " has been created!",
+          idea: url_slug
         },
         window.location.hash
       );
@@ -112,6 +126,7 @@ export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizat
         "There has been an error while creating your idea. Please contact contact@climateconnect.earth"
       );
       console.log(e);
+      console.log(e.response)
     }
   };
 
@@ -152,6 +167,7 @@ export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizat
               onSubmitIdea={onSubmitIdea}
               goBack={handleStepBackwards}
               errorMessage={errorMessage}
+              hubLocation={hubLocation}
             />
           )}
         </div>

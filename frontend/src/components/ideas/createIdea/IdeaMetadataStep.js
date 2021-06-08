@@ -52,7 +52,7 @@ export default function IdeaMetadataStep({
   allHubs,
   onSubmitIdea,
   goBack,
-  errorMessage,
+  errorMessage
 }) {
   const classes = useStyles();
   const isTinyScreen = useMediaQuery("(max-width:400px");
@@ -106,6 +106,7 @@ export default function IdeaMetadataStep({
         locationInputRef={locationInputRef}
         smallInput
         helperText={texts.create_idea_location_helper_text}
+        disabled
       />
       <Typography className={classes.headline}>Hub*</Typography>
       <SelectField

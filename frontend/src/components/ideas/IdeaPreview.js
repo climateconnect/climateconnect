@@ -97,6 +97,7 @@ export default function IdeaPreview({
   userOrganizations,
   onClickIdea,
   index,
+  hubLocation,
 }) {
   const colors = [
     theme.palette.primary.main,
@@ -138,6 +139,7 @@ export default function IdeaPreview({
           onClose={onClose}
           allHubs={allHubs}
           userOrganizations={userOrganizations}
+          hubLocation={hubLocation}
         />
       )}
     </>

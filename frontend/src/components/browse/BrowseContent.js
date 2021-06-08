@@ -56,6 +56,7 @@ export default function BrowseContent({
   showIdeas,
   allHubs,
   initialIdeaUrlSlug,
+  hubLocation,
 }) {
   const initialState = {
     items: {
@@ -473,6 +474,7 @@ export default function BrowseContent({
                 userOrganizations={userOrganizations}
                 onUpdateIdeaRating={handleUpdateIdeaRating}
                 initialIdeaUrlSlug={initialIdeaUrlSlug}
+                hubLocation={hubLocation}
               />
             )}
           </TabContent>

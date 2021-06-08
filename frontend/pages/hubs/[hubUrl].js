@@ -83,6 +83,7 @@ export async function getServerSideProps(ctx) {
       stats: hubData.stats,
       statBoxTitle: hubData.stat_box_title,
       image_attribution: hubData.image_attribution,
+      hubLocation: hubData.location && hubData.location[0],
       initialProjects: initialProjects,
       initialOrganizations: initialOrganizations,
       initialIdeas: initialIdeas,
@@ -114,7 +115,8 @@ export default function Hub({
   image_attribution,
   isLocationHub,
   allHubs,
-  initialIdeaUrlSlug
+  initialIdeaUrlSlug,
+  hubLocation
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -296,6 +298,7 @@ export default function Hub({
             showIdeas={true}
             allHubs={allHubs}
             initialIdeaUrlSlug={initialIdeaUrlSlug}
+            hubLocation={hubLocation}
           />
         </div>
       </div>

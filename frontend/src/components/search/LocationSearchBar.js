@@ -22,6 +22,7 @@ export default function LocationSearchBar({
   handleSetOpen,
   locationInputRef,
   textFieldClassName,
+  disabled
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
@@ -203,6 +204,7 @@ export default function LocationSearchBar({
       filterOptions={handleFilterOptions}
       getOptionDisabled={handleGetOptionDisabled}
       renderOption={renderSearchOption}
+      disabled={disabled}
       noOptionsText={!searchValue && !inputValue ? texts.start_typing + "..." : texts.no_options}
       renderInput={(params) => (
         <TextField
