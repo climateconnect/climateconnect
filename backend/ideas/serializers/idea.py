@@ -1,12 +1,9 @@
-from climateconnect_api.models import language
+
 from climateconnect_api.serializers.user import UserProfileStubSerializer
-from climateconnect_main.utility.general import get_image_from_data_url
 from django.utils.translation import get_language
 from hubs.serializers.hub import HubStubSerializer
 from ideas.models import Idea, IdeaSupporter
-from ideas.utility.idea import (get_idea_name, get_idea_short_description,
-                                idea_translations)
-from location.utility import get_location
+from ideas.utility.idea import get_idea_name, get_idea_short_description
 from rest_framework import serializers
 
 
@@ -107,7 +104,7 @@ class IdeaSerializer(serializers.ModelSerializer):
         return None
 
     def get_user(self, obj):
-        thumbnail_image = obj.user.user_profile.thumbnail_image
+        thumbnail_image = obj.user.user_profile.thumbnail_image.url
         return {
             'first_name': obj.user.first_name,
             'last_name': obj.user.last_name,
@@ -121,33 +118,3 @@ class IdeaSerializer(serializers.ModelSerializer):
                 obj.supported_idea.all(), many=True
             ).data
         }
-    
-    def create(self, validated_data):
-        return Idea(**validated_data)
-
-    def update(self, instance, validated_data):
-        name = validated_data.get('name')
-        short_description = validated_data.get('short_description')
-        image_url = validated_data.get('image', None)
-        thumbnail_image_url = validated_data.get('thumbnail_image', None)
-        loc = validated_data.get('loc', None)
-        
-        if name and instance.name != name:
-            instance.name = name
-        
-        if short_description and instance.short_description != short_description:
-            instance.short_description = short_description
-
-        if image_url is not None:
-            image = get_image_from_data_url(image_url)[0]
-            instance.image = image
-        
-        if thumbnail_image_url:
-            thumbnail_image = get_image_from_data_url(thumbnail_image_url)[0]
-            instance.thumbnail_image = thumbnail_image
-
-        if loc:
-            instance.location = get_location(loc)
-
-        instance.save()
-        return instance

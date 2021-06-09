@@ -1,21 +1,10 @@
 # Python imports
-
-# Django/Django REST imports
 import logging
 
-from chat_messages.models.message import MessageParticipants, Participant
-from chat_messages.utility.chat_setup import create_private_or_group_chat
-# Climate connect imports
-from climateconnect_api.models import Language, Role
-from climateconnect_api.utility.translation import get_translations
+# Django/Django REST imports
+from django.utils.translation import get_language
 from django.db.models import Case, Value, When
 from django.db.models.query import QuerySet
-from hubs.models.hub import Hub
-from ideas.models import Idea
-from ideas.pagination import IdeasBoardPagination
-from ideas.permissions import IdeaReadWritePermission
-from ideas.serializers.idea import IdeaMinimalSerializer, IdeaSerializer
-from ideas.utility.idea import create_idea, verify_idea, idea_translations
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
@@ -23,6 +12,21 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+# Climate connect imports
+from climateconnect_api.models import Language, Role
+from climateconnect_api.utility.translation import get_translations
+from climateconnect_main.utility.general import get_image_from_data_url
+from chat_messages.models.message import MessageParticipants, Participant
+from chat_messages.utility.chat_setup import create_private_or_group_chat
+from hubs.models.hub import Hub
+from ideas.models import Idea
+from ideas.pagination import IdeasBoardPagination
+from ideas.permissions import IdeaReadWritePermission
+from ideas.serializers.idea import IdeaMinimalSerializer, IdeaSerializer
+from ideas.utility.idea import create_idea, verify_idea, idea_translations
+from location.utility import get_location
+from organization.models import Organization
 
 logger = logging.getLogger(__name__)
 
@@ -55,17 +59,77 @@ class IdeaView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def patch(self, request, url_slug, format=None):
+        required_params = ['source_language']
+        for param in required_params:
+            if param not in request.data:
+                raise ValidationError(detail=f'Required parameter is missing {param}')
+
         idea = verify_idea(url_slug)
         if not idea:
             return Response({'message': 'Idea not found'}, status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = IdeaSerializer(data=request.data)
 
-        if serializer.is_valid():
-            idea = serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-         
-        return Response(None, status=status.HTTP_400_BAD_REQUEST)
+        if 'name' in request.data and idea.name != request.data['name']:
+            idea.name = request.data['name']
+
+        if 'short_description' in request.data and\
+            idea.short_description != request.data['short_description']:
+            idea.short_description = request.data['short_description']
+
+        if 'image_url' in request.data and request.data['image_url'] is not None:
+            image = get_image_from_data_url(request.data['image_url'] )[0]
+            idea.image = image
+
+        if 'thumbnail_image_url' in request.data and request.data['thumbnail_image_url']:
+            thumbnail_image = get_image_from_data_url(
+                request.data['thumbnail_image_url']
+            )[0]
+            idea.thumbnail_image = thumbnail_image
+
+        if 'loc' in request.data and request.data['loc']:
+            idea.location = get_location(request.data['loc'])
+
+        if 'hub' in request.data:
+            try:
+                hub = Hub.objects.get(url_slug=request.data['hub'])
+            except Hub.DoesNotExist:
+                hub = None
+
+            if hub:
+                idea.hub = hub
+
+        if 'parent_organization' in request.data:
+            try:
+                organization = Organization.objects.get(id=data['parent_organization'])
+            except Organization.DoesNotExist:
+                organization = None
+
+            if organization:
+                idea.organization = organization
+        
+        idea.save()
+
+        # TODO (Dip 8-6-2021): Transfer this logic to celery task.
+        texts = {
+            "name": idea.name, 
+            "short_description": idea.short_description
+        }
+        try:
+            translations = get_translations(
+                texts, {}, request.data['source_language']
+            )
+        except ValueError as ve:
+            translations = None
+            logger.error("TranslationFailed: Error translating texts, {}".format(ve))
+
+        if translations:
+            language = Language.objects.get(language_code=request.data['source_language'])
+            idea_translations(
+                idea=idea, translations=translations['translations'],
+                source_language=language
+            )
+
+        serializer = IdeaSerializer(idea)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CreateIdeaView(APIView):
