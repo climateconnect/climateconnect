@@ -1,16 +1,13 @@
 from climateconnect_api.models import language
+from climateconnect_api.serializers.user import UserProfileStubSerializer
+from climateconnect_main.utility.general import get_image_from_data_url
 from django.utils.translation import get_language
 from hubs.serializers.hub import HubStubSerializer
-from rest_framework import serializers
-
-from climateconnect_main.utility.general import get_image_from_data_url
-from climateconnect_api.serializers.user import UserProfileStubSerializer
-from location.utility import get_location
 from ideas.models import Idea, IdeaSupporter
-from ideas.utility.idea import (
-    get_idea_name, get_idea_short_description,
-    idea_translations
-)
+from ideas.utility.idea import (get_idea_name, get_idea_short_description,
+                                idea_translations)
+from location.utility import get_location
+from rest_framework import serializers
 
 
 class IdeaSupportedMinimalSerializer(serializers.ModelSerializer):
@@ -36,7 +33,7 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'url_slug', 'short_description', 
             'thumbnail_image', 'hub', 'rating', 'image', 'user',
-            'location'
+            'location', 'created_at'
         ]
     
     def get_name(self, obj):
