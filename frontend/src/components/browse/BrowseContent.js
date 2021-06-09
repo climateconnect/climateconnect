@@ -1,4 +1,5 @@
 import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
+import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import possibleFilters from "../../../public/data/possibleFilters";
@@ -32,6 +33,14 @@ const useStyles = makeStyles((theme) => {
     mainContentDivider: {
       marginBottom: theme.spacing(3),
     },
+    ideasTabLabel: {
+      display: "flex",
+      alignItems: "center"
+    },
+    ideasIcon: {
+      marginRight: theme.spacing(1),
+      color: theme.palette.primary.main
+    }
   };
 });
 
@@ -85,6 +94,7 @@ export default function BrowseContent({
       ideas: "",
     },
   };
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const token = new Cookies().get("token");
   //saving these refs for the tutorial
   const firstProjectCardRef = useRef(null);
@@ -103,7 +113,7 @@ export default function BrowseContent({
   const texts = getTexts({ page: "general", locale: locale });
   const type_names = {
     projects: texts.projects,
-    organizations: texts.organizations,
+    organizations:  isNarrowScreen ? texts.orgs : texts.organizations,
     members: texts.members,
     ideas: texts.ideas,
   };
@@ -284,9 +294,7 @@ export default function BrowseContent({
         ],
       },
     });
-  };
-
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  };  
 
   return (
     <LoadingContext.Provider
@@ -302,6 +310,7 @@ export default function BrowseContent({
           type={TYPES_BY_TAB_VALUE[tabValue]}
           customSearchBarLabels={customSearchBarLabels}
           filterButtonRef={filterButtonRef}
+          hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
         />
         <Tabs
           variant={isNarrowScreen ? "fullWidth" : "standard"}
@@ -316,6 +325,9 @@ export default function BrowseContent({
               label: type_names[t],
               className: classes.tab,
             };
+            if(index === TYPES_BY_TAB_VALUE.indexOf("ideas")) {
+              tabProps.label = <div className={classes.ideasTabLabel}><EmojiObjectsIcon className={classes.ideasIcon}/> {type_names[t]}</div>
+            }
             if (index === 1) tabProps.ref = organizationsTabRef;
             return <Tab {...tabProps} key={index} />;
           })}
