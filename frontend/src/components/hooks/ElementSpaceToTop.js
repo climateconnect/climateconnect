@@ -38,7 +38,7 @@ export default function ElementSpaceToTop({ el }) {
     window.addEventListener("scroll", onScroll);
 
     if(!initialized) {
-      window.requestAnimationFrame(updateTopOfPage);
+      updateTopOfPage();
       setInitialized(true)
       ticking = true;
     }
