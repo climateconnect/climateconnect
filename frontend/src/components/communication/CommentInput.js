@@ -6,7 +6,7 @@ import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
-import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
+import UserMentionableMessageInput from "./UserMentionableMessageInput";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -104,16 +104,11 @@ export default function CommentInput({ user, onSendComment, parent_comment, onCa
             />
           </div>
           <div>
-            <AutoCompleteSearchBar
-              label={autoCompleteLookupStr}
+            <UserMentionableMessageInput
               baseUrl={process.env.API_URL + "/api/members/?search="}
-              clearOnSelect
-              freeSolo
-              filterOut={getUsersToFilerOut()}
-              onSelect={handleTagUser}
-              renderOption={renderSearchOption}
-              getOptionLabel={(option) => option.first_name + " " + option.last_name}
-              helperText={texts.type_the_name_of_the_users_you_want_to_message}
+              value={curComment}
+              onChange={onCurCommentChange}
+              placeholder={texts.write_a_comment + "..."}
             />
           </div>
           <div className={classes.commentButtonContainer}>
