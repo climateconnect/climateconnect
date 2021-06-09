@@ -682,5 +682,17 @@
   "make_this_user_the_creator": {
     "en": "Make this user the Super Admin",
     "de": "Zum Super Admin machen"
+  },
+  "do_you_really_want_to_go_back": {
+    "en": "Do you really want to go back?",
+    "de": "Möchtest du wirklich zurück gehen?"
+  },
+  "if_you_go_back_you_will_lose_your_unsaved_changes": {
+    "en": "If you go back you will lose your unsaved changes",
+    "de": "Wenn du zurück gehst, gehen deine nicht gespeicherten Änderungen verloren."
+  },
+  "orgs": {
+    "en": "Orgs",
+    "de": "Orgs"
   }
 }

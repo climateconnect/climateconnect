@@ -2,9 +2,9 @@ import { Card, CardMedia, Link, makeStyles, Typography } from "@material-ui/core
 import AddIcon from "@material-ui/icons/Add";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import React, { useContext, useState } from "react";
+import { getIdeaBorderColor } from "../../../public/lib/ideaOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
-import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import CreateIdeaDialog from "./createIdea/CreateIdeaDialog";
 import IdeaHubIcon from "./IdeaHubIcon";
@@ -99,13 +99,7 @@ export default function IdeaPreview({
   index,
   hubLocation,
 }) {
-  const colors = [
-    theme.palette.primary.main,
-    theme.palette.primary.light,
-    theme.palette.secondary.main,
-    theme.palette.yellow.main,
-  ];
-  const color = isCreateCard ? theme.palette.primary.main : colors[(index + idea.name.length) % 4];
+  const color = getIdeaBorderColor({idea: idea, index: index, isCreateCard: isCreateCard})
   const classes = useStyles({ borderColor: !isCreateCard && color });
   const [open, setOpen] = useState(false);
   const handleCardClick = (e) => {

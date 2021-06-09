@@ -5,6 +5,8 @@ const useStyles = makeStyles((theme) => ({
   root: {
     color: theme.palette.primary.main,
     height: theme.spacing(1.75),
+    paddingTop: 13,
+    paddingBottom: 13
   },
   thumb: {
     height: 40,
@@ -40,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
   averageRatingContainer: (props) => ({
     position: "absolute",
-    top: 14,
+    top: 13,
     left: 0,
     height: theme.spacing(1.75),
     width: `${props.averageRating}%`,

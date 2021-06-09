@@ -4,10 +4,12 @@ import LocationOnIcon from "@material-ui/icons/LocationOn";
 import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
+import { getIdeaBorderColor } from "../../../public/lib/ideaOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
+import DateDisplay from "../general/DateDisplay";
 import LoadingSpinner from "../general/LoadingSpinner";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import EditIdeaRoot from "./editIdea/EditIdeaRoot";
@@ -16,27 +18,40 @@ import IdeaHubIcon from "./IdeaHubIcon";
 import IdeaJoinButton from "./IdeaJoinButton";
 import IdeaRatingSlider from "./IdeaRatingSlider";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   root: props => ({
-    borderColor: theme.palette.primary.main,
+    borderColor: props.borderColor,
+    borderWidth: 3,
     position: "absolute",
     left: 0,
     background: (props.loading || props.isEditing) ? "white" : "#E9E9E9",
     right: 0,
-    top: props.offsetTop < 110 ? 110 - props.offsetTop : 0,
+    top: (props.offsetTop < 110 && props.offsetTop !== null)  ? 110 - props.offsetTop : 0,
     bottom: props.offsetTop < 110 ? (props.offsetBottom + theme.spacing(1)) : "default",
-    overflowY: "auto"
+    overflowY: "auto",
+    [theme.breakpoints.down("sm")]: {
+      borderRadius: "30px 30px 0px 0px",
+      borderWidth: 0,
+      position: "relative"
+    }
   }),
   contentWrapper: {
     padding: theme.spacing(1),
     background: "white",
-    paddingBottom: theme.spacing(3)
+    paddingBottom: theme.spacing(3),
+    [theme.breakpoints.down("sm")]: {
+      paddingTop: theme.spacing(0),
+      paddingLeft: theme.spacing(2),
+    }
   },
   closeStyle: {
     cursor: "pointer",
   },
   ideaInfo: {
     marginLeft: theme.spacing(4),
+    [theme.breakpoints.down("sm")]: {
+      marginLeft: 0
+    }
   },
   name: {
     fontWeight: "bold",
@@ -89,7 +104,22 @@ const useStyles = makeStyles({
   imageAndShortDescriptionWrapper: {
     marginTop: theme.spacing(2),
   },
-});
+  creatorProfilePreview: {
+    display: "inline-block"
+  },
+  creatorAndCreatedAtWrapper: {
+    display: "flex",
+    alignItems: "center"
+  },
+  createdAtText: {
+    marginLeft: theme.spacing(0.5),
+    marginTop: -6
+  },
+  by: {
+    marginRight: theme.spacing(0.75),
+    marginLeft: 0
+  }
+}));
 
 export default function IdeaRoot({
   idea,
@@ -98,13 +128,16 @@ export default function IdeaRoot({
   handleAddComments,
   handleRemoveComment,
   containerOffsetTop,
+  userOrganizations,
+  allHubs
 }) {
   const token = new Cookies().get("token");
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"))
-
+  const borderColor = getIdeaBorderColor({idea: idea, index: idea.index})
+  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"))
   const handleIdeaClose = (e) => {
     onIdeaClose(e);
   };
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"))
 
   const [loading, setLoading] = useState(!!token);
   const [userRating, setUserRating] = useState({
@@ -125,11 +158,11 @@ export default function IdeaRoot({
   }
 
   const classes = useStyles({
-    offsetTop: containerOffsetTop.screen, 
-    offsetBottom: containerOffsetTop.screenBottom - containerOffsetTop.pageBottom + containerOffsetTop.screenBottom,
+    offsetTop: containerOffsetTop?.screen, 
+    offsetBottom: containerOffsetTop?.screenBottom - containerOffsetTop?.pageBottom + containerOffsetTop?.screenBottom,
     loading: loading,
-    isMediumScreen: isMediumScreen,
-    isEditing: isEditing
+    isEditing: isEditing,
+    borderColor: borderColor
   });
 
   useEffect(
@@ -180,9 +213,12 @@ export default function IdeaRoot({
 
   const handleAddComment = (comment) => handleAddComments([comment]);
 
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "idea", locale: locale });
-  console.log(idea.thumbnail_image)
+  const texts = getTexts({ page: "idea", locale: locale, idea: idea });
   return (
     <Card variant="outlined" className={classes.root}>
       {loading ? (
@@ -193,7 +229,7 @@ export default function IdeaRoot({
           </div>
         </div>
       ) : isEditing ? (
-        <EditIdeaRoot idea={idea} cancelEdit={cancelEdit}/>
+        <EditIdeaRoot idea={idea} cancelEdit={cancelEdit} userOrganizations={userOrganizations} allHubs={allHubs}/>
       ) :(
         <>
           <div className={classes.contentWrapper}>
@@ -213,9 +249,11 @@ export default function IdeaRoot({
                   {idea.short_description}
                 </Typography>
               </div>
-              <Tooltip title={texts.the_ideas_creator}>
-                <MiniProfilePreview className={classes.topItem} profile={idea.user} size="medium" />
-              </Tooltip>
+              <div className={`${classes.topItem} ${classes.creatorAndCreatedAtWrapper}`}>
+                {isNarrowScreen && <Typography className={`${classes.createdAtText} ${classes.by}`}>{capitalizeFirstLetter(texts.by)}</Typography>}
+                <MiniProfilePreview profile={idea.user} size="medium" />
+                <Typography className={classes.createdAtText}>{isNarrowScreen ? <> <DateDisplay date={new Date(idea?.created_at)} short/></> : texts.shared_this_idea_x_days_ago}</Typography>
+              </div>
               <div className={`${classes.topItem} ${classes.location}`}>
                 <Tooltip title={texts.location}>
                   <LocationOnIcon />
@@ -243,7 +281,7 @@ export default function IdeaRoot({
               </div>
               <div className={`${classes.topItem} ${classes.buttonsContainer}`}>
                 <IdeaJoinButton idea={idea} has_joined={hasJoinedIdea.has_joined} chat_uuid={hasJoinedIdea.chat_uuid}/>
-                <Button onClick={handleClickEditIdea} variant="contained" color="primary">{texts.edit_idea}</Button>
+                <Button onClick={handleClickEditIdea} variant="contained" color="primary">{isMediumScreen ? texts.edit : texts.edit_idea}</Button>
               </div>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { getCommentsObjectAfterAddingComments } from "../../../public/lib/commun
 import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 import IdeaPreviews from "./IdeaPreviews";
 import IdeaRoot from "./IdeaRoot";
+import MobileIdeaPage from "./MobileIdeaPage";
 
 const useStyles = makeStyles({
   root: (props) => ({
@@ -15,7 +16,7 @@ const useStyles = makeStyles({
     position: "relative"
   },
   ideaPreviews: {
-    flex: "1 1 0px",
+    flex: "1 1 0px"
   },
 });
 export default function IdeasBoard({
@@ -52,7 +53,7 @@ export default function IdeasBoard({
   );
 
   const onClickIdea = async (idea) => {
-    setIdea({...idea});
+    setIdea({...idea, index: ideas.indexOf(idea)});
     window.history.pushState({}, "", `${window.location.origin}${window.location.pathname}?idea=${idea.url_slug}${window.location.hash}`)
   };
 
@@ -105,17 +106,21 @@ export default function IdeasBoard({
             handleAddComments={handleAddComments}
             handleRemoveComment={handleRemoveComment}
             containerOffsetTop={containerOffsetTop}
+            userOrganizations={userOrganizations}
+            allHubs={allHubs}
           />
         </div>
       )}
       {idea && isNarrowScreen && (
         /* display mobile idea */
-        <IdeaRoot
+        <MobileIdeaPage
           idea={idea}
           onIdeaClose={onClose}
           onRatingChange={handleUpdateRating}
           handleAddComments={handleAddComments}
           handleRemoveComment={handleRemoveComment}
+          userOrganizations={userOrganizations}
+          allHubs={allHubs}
         />
       )}
     </div>

@@ -1,4 +1,11 @@
+import React from "react";
+import DateDisplay from "../../src/components/general/DateDisplay";
+
+const ONE_WEEK_IN_MINISECONDS = 1000 * 60 * 60 * 24 * 7;
+
 export default function getIdeaTexts({ idea }) {
+  const olderThanOneWeek = new Date() - new Date(idea?.created_at) > ONE_WEEK_IN_MINISECONDS;
+  
   return {
     share_your_idea_and_find_the_right_collaborators: {
       en: "Share your idea and find the right collaborators!",
@@ -49,7 +56,7 @@ export default function getIdeaTexts({ idea }) {
     },
     create_idea_location_helper_text: {
       en: "The location where you want to implement this idea or just the location where you live",
-      de: "Der Ort, an dem du deine Idee umsetzen möchtest oder einfach der Ort wo du lebst",
+      de: "Der Ort, an dem du deine Idee umsetzen möchtest oder einfach der Ort, an dem du lebst",
     },
     choose_a_location: {
       en: "Choose a location",
@@ -135,13 +142,29 @@ export default function getIdeaTexts({ idea }) {
       en: "Go to Group chat",
       de: "Gruppenchat öffnen"
     },
+    open_chat: {
+      en: "Open Chat",
+      de: "Chat öffnen"
+    },
     edit_idea: {
       en: "Edit idea",
       de: "Idee bearbeiten"
     },
+    edit: {
+      en: "Edit",
+      de: "Bearbeiten"
+    },
     edit_your_idee: {
       en: "Edit Your Idea",
       de: "Bearbeite deine Idee"
+    },
+    shared_this_idea_x_days_ago: {
+      en: <>
+        created this idea {olderThanOneWeek && "on "}<DateDisplay date={new Date(idea?.created_at)} short/>.
+      </>,
+      de: <>
+        hat diese Idee {olderThanOneWeek && "am "}<DateDisplay date={new Date(idea?.created_at)} short/> erstellt.
+      </>
     }
   };
 }
