@@ -42,6 +42,10 @@ export default function LanguageSelect({ transparentHeader }) {
     setOpen(true);
   };
 
+  const handleToggleOpen = () => {
+    setOpen(!open)
+  }
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -74,6 +78,7 @@ export default function LanguageSelect({ transparentHeader }) {
         ref={buttonRef}
         aria-owns="language-select"
         aria-haspopup="true"
+        onClick={handleToggleOpen}
       >
         <LanguageIcon className={classes.languageIcon} />
         {locale}

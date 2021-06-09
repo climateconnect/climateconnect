@@ -1,8 +1,9 @@
-import { Button, makeStyles } from "@material-ui/core";
+import { Button, makeStyles, useMediaQuery } from "@material-ui/core";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 import { joinIdeaGroupChat } from "../../../public/lib/messagingOperations";
 import getTexts from "../../../public/texts/texts";
+import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 
@@ -18,6 +19,7 @@ export default function IdeaJoinButton({idea, has_joined, chat_uuid}) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
   const [open, setOpen] = useState(false)
+  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"))
   
   const onClickJoinButton = (e) => {
     e.preventDefault();
@@ -37,7 +39,7 @@ export default function IdeaJoinButton({idea, has_joined, chat_uuid}) {
       {
         has_joined ? 
           <Button color="primary" variant="contained" href={`/chat/${chat_uuid}/`} target="_blank">
-            {texts.go_to_group_chat}
+            {isMediumScreen ? texts.open_chat : texts.go_to_group_chat}
           </Button>
         :
           <Button color="primary" variant="contained" onClick={onClickJoinButton}>

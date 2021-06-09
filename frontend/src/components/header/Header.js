@@ -17,7 +17,7 @@ import {
   Paper,
   Popper,
   SwipeableDrawer,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -517,6 +517,7 @@ function NarrowScreenLinks({
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
   );
+  console.log(linksOutsideDrawer)
   return (
     <>
       <Box>
@@ -572,13 +573,17 @@ function NarrowScreenLinks({
                         <Notification key={index} isPlaceholder />
                       )}
                     </NotificationsBox>
-                  )}
+                  )}                  
                 </>
               ) : (
                 <span className={classes.menuLink}>
-                  <Button color="primary" {...buttonProps} key={index}>
-                    {link.text}
-                  </Button>
+                  {link.type === "languageSelect" ? (
+                      <LanguageSelect transparentHeader={transparentHeader} />
+                    ) : (
+                    <Button color="primary" {...buttonProps} key={index}>
+                      {link.text}
+                    </Button>
+                  )}
                 </span>
               )}
             </React.Fragment>

@@ -8,11 +8,22 @@ import UserContext from "../context/UserContext";
 
 const ONE_WEEK_IN_MINISECONDS = 1000 * 60 * 60 * 24 * 7;
 
-export default function DateDisplay({ date, className }) {
+const shorten = (strings, languageCode) => {
+  const about_in_language = {
+    en: "about ",
+    de: "etwa "
+  }
+  return Object.keys(strings).reduce((shortenedStrings, curKey) => {
+    shortenedStrings[curKey] = strings[curKey] ? strings[curKey].replace(about_in_language[languageCode], "") : strings[curKey]
+    return shortenedStrings
+  }, {})
+}
+
+export default function DateDisplay({ date, className, short }) {
   const { locale } = useContext(UserContext);
   const formatters = {
-    de: germanStrings,
-    en: englishStrings,
+    de: short ? shorten(germanStrings, "de") : germanStrings,
+    en: short ? shorten(englishStrings, "en") : englishStrings,
   };
   const formatter = buildFormatter(formatters[locale]);
   const olderThanOneWeek = new Date() - date > ONE_WEEK_IN_MINISECONDS;
