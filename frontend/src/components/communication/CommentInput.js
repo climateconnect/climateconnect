@@ -1,10 +1,12 @@
-import { Avatar, Button, TextField } from "@material-ui/core";
+import { Avatar, Button, IconButton, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import React, { useContext } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
+import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -36,7 +38,22 @@ export default function CommentInput({ user, onSendComment, parent_comment, onCa
   const [curComment, setCurComment] = React.useState("");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
-  const onCurCommentChange = (e) => setCurComment(e.target.value);
+
+  var autoCompleteEnabled = false;
+  var autoCompleteLookupStr = "";
+  const onCurCommentChange = (e) => {
+    var maybeIsACLookup = e.target.value.split(" ").slice(-1)[0];
+    if (maybeIsACLookup.startsWith("@")) {
+      autoCompleteEnabled = true;
+      autoCompleteLookupStr = maybeIsACLookup.substring(1);
+
+      // auto-complete search bar component
+      // AutoCompleteSearchBar
+      //
+      // should be a drawer pulled out from bottom of text box
+    }
+    setCurComment(e.target.value);
+  };
 
   const handleMessageKeydown = (event) => {
     if (event.key === "Enter" && event.ctrlKey) handleSendComment(event, curComment);
@@ -51,6 +68,21 @@ export default function CommentInput({ user, onSendComment, parent_comment, onCa
   const clearInput = () => {
     setCurComment("");
     if (onCancel) onCancel();
+  };
+
+  const getUsersToFilerOut = () => {};
+
+  const handleTagUser = () => {};
+
+  const renderSearchOption = (option) => {
+    return (
+      <React.Fragment>
+        <IconButton>
+          <AddCircleOutlineIcon />
+        </IconButton>
+        {option.first_name + " " + option.last_name}
+      </React.Fragment>
+    );
   };
 
   if (user)
@@ -69,6 +101,19 @@ export default function CommentInput({ user, onSendComment, parent_comment, onCa
               onChange={onCurCommentChange}
               onKeyDown={handleMessageKeydown}
               required
+            />
+          </div>
+          <div>
+            <AutoCompleteSearchBar
+              label={autoCompleteLookupStr}
+              baseUrl={process.env.API_URL + "/api/members/?search="}
+              clearOnSelect
+              freeSolo
+              filterOut={getUsersToFilerOut()}
+              onSelect={handleTagUser}
+              renderOption={renderSearchOption}
+              getOptionLabel={(option) => option.first_name + " " + option.last_name}
+              helperText={texts.type_the_name_of_the_users_you_want_to_message}
             />
           </div>
           <div className={classes.commentButtonContainer}>
