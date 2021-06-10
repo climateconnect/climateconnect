@@ -99,10 +99,11 @@ const useStyles = makeStyles(theme => ({
   ideaImage: {
     width: "40%",
     float: "right",
-    marginRight: theme.spacing(1)
+    marginLeft: theme.spacing(1)
   },
   imageAndShortDescriptionWrapper: {
     marginTop: theme.spacing(2),
+    overflow: "auto"
   },
   creatorProfilePreview: {
     display: "inline-block"
@@ -155,6 +156,7 @@ export default function IdeaRoot({
   const handleClickEditIdea = (e) => {
     e.preventDefault()
     setIsEditing(true)
+    window.history.pushState({}, "", `${window.location.origin}${window.location.pathname}?idea=${idea.url_slug}&edit=true${window.location.hash}`)
   }
 
   const classes = useStyles({

@@ -2,7 +2,7 @@ import { Drawer, makeStyles } from "@material-ui/core"
 import React from "react"
 import IdeaRoot from "./IdeaRoot"
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   drawer: {
     maxHeight: "90vh",
     borderRadius: "30px 30px 0px 0px",
