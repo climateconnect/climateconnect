@@ -50,7 +50,8 @@ CUSTOM_APPS = [
     'chat_messages',
     'hubs',
     'location',
-    'ideas'
+    'ideas',
+    'climate_match'
 ]
 
 LIBRARY_APPS = [
