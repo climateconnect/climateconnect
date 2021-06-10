@@ -8,6 +8,7 @@ import { getIdeaBorderColor } from "../../../public/lib/ideaOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import DateDisplay from "../general/DateDisplay";
 import LoadingSpinner from "../general/LoadingSpinner";
@@ -41,7 +42,8 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: theme.spacing(3),
     [theme.breakpoints.down("sm")]: {
       paddingTop: theme.spacing(0),
-      paddingLeft: theme.spacing(2),
+      paddingLeft: theme.spacing(3),
+      paddingRight: theme.spacing(3)
     }
   },
   closeStyle: {
@@ -134,12 +136,13 @@ export default function IdeaRoot({
 }) {
   const token = new Cookies().get("token");
   const borderColor = getIdeaBorderColor({idea: idea, index: idea.index})
+  const { user } = useContext(UserContext)
+  const { showFeedbackMessage } = useContext(FeedbackContext)
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"))
   const handleIdeaClose = (e) => {
     onIdeaClose(e);
   };
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"))
-
   const [loading, setLoading] = useState(!!token);
   const [userRating, setUserRating] = useState({
     rating_score: 0,
@@ -191,6 +194,10 @@ export default function IdeaRoot({
   };
 
   const handleRateProject = async (event, newRating) => {
+    if(!user) {
+      showFeedbackMessage({message: texts.please_sign_in_to_rate_an_idea, promptSignUp: true, newHash: window.location.hash})
+      return
+    }
     setUserRating({...userRating, has_rated: true, last_locked_rating_score: newRating})
     const payload = {
       rating: newRating,
@@ -284,7 +291,7 @@ export default function IdeaRoot({
               </div>
               <div className={`${classes.topItem} ${classes.buttonsContainer}`}>
                 <IdeaJoinButton idea={idea} has_joined={hasJoinedIdea.has_joined} chat_uuid={hasJoinedIdea.chat_uuid}/>
-                <Button onClick={handleClickEditIdea} variant="contained" color="primary">{isMediumScreen ? texts.edit : texts.edit_idea}</Button>
+                {user && idea?.user?.id === user?.id &&  <Button onClick={handleClickEditIdea} variant="contained" color="primary">{isMediumScreen ? texts.edit : texts.edit_idea}</Button>}
               </div>
             </div>
           </div>

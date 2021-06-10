@@ -135,7 +135,7 @@ export default function BrowseContent({
     if (tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas") && userOrganizations === null) {
       setUserOrganizations("");
       const userOrgsFromServer = await getUserOrganizations(token, locale);
-      setUserOrganizations(userOrgsFromServer);
+      setUserOrganizations(userOrgsFromServer || []);
     }
   });
   // We have 2 distinct loading states: filtering, and loading more data. For

@@ -40,7 +40,7 @@ export default function getCommunicationTexts() {
     },
     to_write_a_comment: {
       en: "to write a comment",
-      de: "einen Kommentar schreiben",
+      de: ", um einen Kommentar zu schreiben",
     },
     project_status: {
       en: "Project status",

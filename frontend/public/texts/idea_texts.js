@@ -165,6 +165,14 @@ export default function getIdeaTexts({ idea }) {
       de: <>
         hat diese Idee {olderThanOneWeek && "am "}<DateDisplay date={new Date(idea?.created_at)} short/> erstellt.
       </>
+    },
+    please_sign_up_or_log_in_to_join_an_idea: {
+      en: "Please sign up or log in to join an idea!",
+      de: "Bitte melde dich an, um bei einer Idee mitumachen!"
+    },
+    please_sign_in_to_rate_an_idea: {
+      en: "Please sign up or log in to rate an idea!",
+      de: "Bitte melde dich an, um eine Idee zu bewerten!"
     }
   };
 }

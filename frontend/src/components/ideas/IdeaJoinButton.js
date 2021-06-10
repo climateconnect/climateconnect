@@ -4,6 +4,7 @@ import Cookies from "universal-cookie";
 import { joinIdeaGroupChat } from "../../../public/lib/messagingOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 
@@ -16,14 +17,19 @@ const useStyles = makeStyles(() => ({
 export default function IdeaJoinButton({idea, has_joined, chat_uuid}) {
   const classes = useStyles();
   const token = new Cookies().get("token")
-  const { locale } = useContext(UserContext);
+  const { locale, user } = useContext(UserContext);
+  const { showFeedbackMessage } = useContext(FeedbackContext)
   const texts = getTexts({ page: "idea", locale: locale });
   const [open, setOpen] = useState(false)
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"))
   
   const onClickJoinButton = (e) => {
     e.preventDefault();
-    setOpen(true)
+    if (!user){
+      showFeedbackMessage({message: texts.please_sign_up_or_log_in_to_join_an_idea, promptSignUp: true, newHash: window.location.hash})
+    } else {
+      setOpen(true)
+    }
   };
 
   const handleClickDialogClose = async (hasConfirmed) => {
