@@ -41,7 +41,7 @@ class IdeasBoardView(ListAPIView):
     def get_queryset(self):
         queryset = Idea.objects.all()
         if 'idea' in self.request.query_params:
-            queryset = queryset.order_by(Case(When(url_slug=self.request.query_params.get('idea'), then=0), default=1))
+            queryset = queryset.order_by(Case(When(url_slug=self.request.query_params.get('idea'), then=0), default=1), '-id')
         return queryset
 
 
@@ -59,11 +59,6 @@ class IdeaView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def patch(self, request, url_slug, format=None):
-        required_params = ['source_language']
-        for param in required_params:
-            if param not in request.data:
-                raise ValidationError(detail=f'Required parameter is missing {param}')
-
         idea = verify_idea(url_slug)
         if not idea:
             return Response({'message': 'Idea not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -75,18 +70,18 @@ class IdeaView(APIView):
             idea.short_description != request.data['short_description']:
             idea.short_description = request.data['short_description']
 
-        if 'image_url' in request.data and request.data['image_url'] is not None:
-            image = get_image_from_data_url(request.data['image_url'] )[0]
+        if 'image' in request.data and request.data['image'] is not None:
+            image = get_image_from_data_url(request.data['image'] )[0]
             idea.image = image
 
-        if 'thumbnail_image_url' in request.data and request.data['thumbnail_image_url']:
+        if 'thumbnail_image' in request.data and request.data['thumbnail_image']:
             thumbnail_image = get_image_from_data_url(
-                request.data['thumbnail_image_url']
+                request.data['thumbnail_image']
             )[0]
             idea.thumbnail_image = thumbnail_image
 
-        if 'loc' in request.data and request.data['loc']:
-            idea.location = get_location(request.data['loc'])
+        if 'location' in request.data and request.data['location']:
+            idea.location = get_location(request.data['location'])
 
         if 'hub' in request.data:
             try:
@@ -99,7 +94,7 @@ class IdeaView(APIView):
 
         if 'parent_organization' in request.data:
             try:
-                organization = Organization.objects.get(id=data['parent_organization'])
+                organization = Organization.objects.get(id=request.data['parent_organization'])
             except Organization.DoesNotExist:
                 organization = None
 
@@ -115,17 +110,16 @@ class IdeaView(APIView):
         }
         try:
             translations = get_translations(
-                texts, {}, request.data['source_language']
+                texts, {}, idea.language.language_code
             )
         except ValueError as ve:
             translations = None
             logger.error("TranslationFailed: Error translating texts, {}".format(ve))
 
         if translations:
-            language = Language.objects.get(language_code=request.data['source_language'])
             idea_translations(
                 idea=idea, translations=translations['translations'],
-                source_language=language
+                source_language=idea.language
             )
 
         serializer = IdeaSerializer(idea)
