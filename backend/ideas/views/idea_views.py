@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 class IdeasBoardView(ListAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     pagination_class = IdeasBoardPagination
     filter_backends = [SearchFilter]
     search_fields = ['name']
