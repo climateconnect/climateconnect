@@ -1,5 +1,7 @@
-import React from "react";
-import { Typography, Container, makeStyles } from "@material-ui/core";
+import { Container, makeStyles, Typography } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../../public/texts/texts";
+import UserContext from "../../context/UserContext";
 import ExplainerElement from "../ExplainerElement";
 
 const useStyles = makeStyles((theme) => ({
@@ -59,47 +61,53 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Goals({ headlineClass }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "about", locale: locale });
   return (
     <Container className={classes.root}>
       <Typography color="primary" component="h1" className={headlineClass}>
-        Our Goals
+        {texts.our_goals}
       </Typography>
       <div className={classes.wrapper}>
         <div className={classes.imageOuterWrapper}>
           <div className={classes.imageWrapper}>
-            <img src="/images/about-goal.svg" className={classes.image} />
+            <img
+              src="/images/about-goal.svg"
+              className={classes.image}
+              alt={texts.climate_actors_connecting_over_the_internet}
+            />
           </div>
         </div>
         <div className={classes.explainerElementsWrapper}>
           <ExplainerElement
             text={
               <>
-                <b>Connect Everyone Working On Climate Action</b>
+                <b>{texts.connect_everyone_working_on_climate_action}</b>
               </>
             }
             horizontal
             icon="/icons/floating_sign_group.svg"
-            alt="Group of People icon"
+            alt={texts.group_of_people_icon}
           />
           <ExplainerElement
             text={
               <>
-                <b>Accelerate Climate Action Worldwide</b>
+                <b>{texts.accelerate_climate_action_worldwide}</b>
               </>
             }
             horizontal
             icon="/icons/floating_sign_group.svg"
-            alt="Group of People icon"
+            alt={texts.group_of_people_icon}
           />
           <ExplainerElement
             text={
               <>
-                <b>One Platform For All Climate Actors</b>
+                <b>{texts.one_platform_for_all_climate_actors}</b>
               </>
             }
             horizontal
             icon="/icons/floating_sign_group.svg"
-            alt="Group of People icon"
+            alt={texts.group_of_people_icon}
           />
         </div>
       </div>

@@ -1,33 +1,42 @@
-import React from "react";
 import {
-  Container,
   Avatar,
-  Chip,
   Button,
-  TextField,
-  Typography,
-  Tooltip,
-  IconButton,
-  useMediaQuery,
   Checkbox,
+  Chip,
+  Container,
+  IconButton,
+  TextField,
+  Tooltip,
+  Typography,
+  useMediaQuery,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import ControlPointIcon from "@material-ui/icons/ControlPoint";
-import UploadImageDialog from "./../dialogs/UploadImageDialog";
-import ConfirmDialog from "./../dialogs/ConfirmDialog";
-import SelectField from "./../general/SelectField";
-import SelectDialog from "./../dialogs/SelectDialog";
-import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
-import imageCompression from "browser-image-compression";
-import { getImageDialogHeight } from "../../../public/lib/imageOperations";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
-import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import Alert from "@material-ui/lab/Alert";
-import LocationSearchBar from "../search/LocationSearchBar";
+import React, { useContext } from "react";
+import {
+  getCompressedJPG,
+  getImageDialogHeight,
+  getResizedImage,
+  whitenTransparentPixels,
+} from "../../../public/lib/imageOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
+import ButtonLoader from "../general/ButtonLoader";
+import ActiveHubsSelect from "../hub/ActiveHubsSelect";
+import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
+import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
+import LocationSearchBar from "../search/LocationSearchBar";
+import ConfirmDialog from "./../dialogs/ConfirmDialog";
+import SelectDialog from "./../dialogs/SelectDialog";
+import UploadImageDialog from "./../dialogs/UploadImageDialog";
+import SelectField from "./../general/SelectField";
+import DetailledDescriptionInput from "./DetailledDescriptionInput";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 const DEFAULT_AVATAR_IMAGE = "/images/background1.jpg";
@@ -86,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     width: theme.spacing(40),
     margin: "0 auto",
-    [theme.breakpoints.up("sm")]: {
+    [theme.breakpoints.up("md")]: {
       margin: 0,
       display: "inline-block",
       width: "auto",
@@ -116,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
   accountInfo: {
     padding: 0,
     marginTop: theme.spacing(1),
-    [theme.breakpoints.up("sm")]: {
+    [theme.breakpoints.up("md")]: {
       paddingRight: theme.spacing(17),
     },
   },
@@ -137,7 +146,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
   },
   infoContainer: {
-    [theme.breakpoints.up("sm")]: {
+    [theme.breakpoints.up("md")]: {
       display: "flex",
     },
     position: "relative",
@@ -152,7 +161,7 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     right: theme.spacing(1),
     width: theme.spacing(18),
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       width: theme.spacing(14),
       fontSize: 10,
       textAlign: "center",
@@ -160,13 +169,13 @@ const useStyles = makeStyles((theme) => ({
   },
   saveButton: {
     top: theme.spacing(11.5),
-    [theme.breakpoints.up("sm")]: {
+    [theme.breakpoints.up("md")]: {
       top: theme.spacing(1),
     },
   },
   cancelButton: {
     top: theme.spacing(16.5),
-    [theme.breakpoints.up("sm")]: {
+    [theme.breakpoints.up("md")]: {
       top: theme.spacing(6.5),
     },
   },
@@ -200,6 +209,13 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginTop: theme.spacing(10),
   },
+  checkTranslationsButtonContainer: {
+    display: "flex",
+    marginTop: theme.spacing(5),
+  },
+  detailledDescriptionContainer: {
+    marginTop: theme.spacing(5),
+  },
 }));
 
 export default function EditAccountPage({
@@ -215,10 +231,15 @@ export default function EditAccountPage({
   skillsOptions,
   splitName,
   deleteEmail,
+  loadingSubmit,
+  onClickCheckTranslations,
+  allHubs,
 }) {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "account", locale: locale });
   const [selectedFiles, setSelectedFiles] = React.useState({ avatar: "", background: "" });
   const [editedAccount, setEditedAccount] = React.useState({ ...account });
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
   //used for previewing images in UploadImageDialog
@@ -242,14 +263,31 @@ export default function EditAccountPage({
 
   const handleBackgroundClose = (image) => {
     setOpen({ ...open, backgroundDialog: false });
-    if (image && image instanceof HTMLCanvasElement)
-      setEditedAccount({ ...editedAccount, background_image: image.toDataURL() });
+    if (image && image instanceof HTMLCanvasElement) {
+      if (image && image instanceof HTMLCanvasElement) {
+        whitenTransparentPixels(image);
+        image.toBlob(async function (blob) {
+          const resizedBlob = URL.createObjectURL(blob);
+          setEditedAccount({ ...editedAccount, background_image: resizedBlob });
+        }, "image/jpeg");
+      }
+    }
   };
 
-  const handleAvatarClose = (image) => {
+  const handleAvatarClose = async (image) => {
     setOpen({ ...open, avatarDialog: false });
     if (image && image instanceof HTMLCanvasElement) {
-      setEditedAccount({ ...editedAccount, image: image.toDataURL() });
+      whitenTransparentPixels(image);
+      image.toBlob(async function (blob) {
+        const resizedBlob = URL.createObjectURL(blob);
+        const thumbnailBlob = await getResizedImage(
+          URL.createObjectURL(blob),
+          120,
+          120,
+          "image/jpeg"
+        );
+        setEditedAccount({ ...editedAccount, image: resizedBlob, thumbnail_image: thumbnailBlob });
+      }, "image/jpeg");
     }
   };
 
@@ -344,10 +382,17 @@ export default function EditAccountPage({
 
   const displayAccountInfo = (info) => {
     return Object.keys(info).map((key) => {
+      const i = getFullInfoElement(infoMetadata, key, info[key]);
+
       const handleChange = (event) => {
+        let newValue = event.target.value;
+        if (i.type === "select") {
+          //On select fields, use the key as the new value since the text can have multiple languages
+          newValue = i.options.find((o) => o.name === event.target.value).key;
+        }
         setEditedAccount({
           ...editedAccount,
-          info: { ...editedAccount.info, [key]: event.target.value },
+          info: { ...editedAccount.info, [key]: newValue },
         });
       };
 
@@ -392,7 +437,6 @@ export default function EditAccountPage({
           },
         });
       };
-      const i = getFullInfoElement(infoMetadata, key, info[key]);
       if (i.type === "array") {
         return displayInfoArrayData(key, i);
       } else if (i.type === "select") {
@@ -434,7 +478,7 @@ export default function EditAccountPage({
             {i.value && (
               <>
                 <Typography className={`${classes.subtitle} ${classes.infoElement}`}>
-                  Parent organization:
+                  {texts.parent_organization}:
                 </Typography>
                 <MiniOrganizationPreview
                   organization={i.value}
@@ -480,11 +524,10 @@ export default function EditAccountPage({
           );
         }
         return (
-          <div className={classes.infoElement}>
+          <div className={classes.infoElement} key={i.key}>
             <LocationSearchBar
               label={i.name}
               required
-              key={i.key}
               value={editedAccount.info.location}
               onChange={handleChangeLocationString}
               onSelect={handleChangeLocation}
@@ -494,7 +537,46 @@ export default function EditAccountPage({
             />
           </div>
         );
-      } else if (key != "parent_organization" && i.type === "text") {
+      } else if (i.type === "hubs") {
+        const onSelectNewHub = (event) => {
+          event.preventDefault();
+          const hub = allHubs.find((h) => h.name === event.target.value);
+          if (editedAccount?.info?.hubs?.filter((h) => h.url_slug === hub.url_slug)?.length === 0) {
+            setEditedAccount({
+              ...editedAccount,
+              info: {
+                ...editedAccount.info,
+                hubs: [...editedAccount.info.hubs, hub],
+              },
+            });
+          }
+        };
+        const onClickRemoveHub = (hub) => {
+          const hubsAfterRemoval = editedAccount?.info?.hubs.filter(
+            (h) => h.url_slug !== hub.url_slug
+          );
+          setEditedAccount({
+            ...editedAccount,
+            info: {
+              ...editedAccount.info,
+              hubs: hubsAfterRemoval,
+            },
+          });
+        };
+        return (
+          <ActiveHubsSelect
+            info={i}
+            hubsToSelectFrom={allHubs.filter(
+              (h) =>
+                editedAccount?.info?.hubs.filter((addedHub) => addedHub.url_slug === h.url_slug)
+                  .length === 0
+            )}
+            onClickRemoveHub={onClickRemoveHub}
+            selectedHubs={editedAccount.info.hubs}
+            onSelectNewHub={onSelectNewHub}
+          />
+        );
+      } else if (key != "parent_organization" && ["text", "bio"].includes(i.type)) {
         return (
           <div key={key} className={classes.infoElement}>
             <Typography className={classes.subtitle}>
@@ -517,20 +599,15 @@ export default function EditAccountPage({
   const onBackgroundChange = async (backgroundEvent) => {
     const file = backgroundEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
-      alert("Please upload either a png or a jpg file.");
-    const options = {
-      maxSizeMB: 1,
-      maxWidthOrHeight: 1280,
-      useWebWorker: true,
-    };
+      alert(texts.please_upload_either_a_png_or_a_jpg_file);
 
     try {
-      const compressedFile = await imageCompression(file, options);
+      const compressedImage = await getCompressedJPG(file, 1);
 
       setTempImages(() => {
         return {
           ...tempImages,
-          background_image: URL.createObjectURL(compressedFile),
+          background_image: compressedImage,
         };
       });
       handleDialogClickOpen("backgroundDialog");
@@ -542,19 +619,14 @@ export default function EditAccountPage({
   const onAvatarChange = async (avatarEvent) => {
     const file = avatarEvent.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
-      alert("Please upload either a png or a jpg file.");
-    const options = {
-      maxSizeMB: 0.5,
-      maxWidthOrHeight: 600,
-      useWebWorker: true,
-    };
+      alert(texts.please_upload_either_a_png_or_a_jpg_file);
 
     try {
-      const compressedFile = await imageCompression(file, options);
+      const compressedImage = await getCompressedJPG(file, 0.5);
       setTempImages(() => {
         return {
           ...tempImages,
-          image: URL.createObjectURL(compressedFile),
+          image: compressedImage,
         };
       });
       handleDialogClickOpen("avatarDialog");
@@ -591,6 +663,26 @@ export default function EditAccountPage({
     event.preventDefault();
     handleSubmit(editedAccount);
   };
+
+  const getDetailledDescription = () => {
+    const detailled_description_obj = Object.keys(editedAccount.info).filter((i) => {
+      const el = getFullInfoElement(infoMetadata, i, editedAccount.info[i]);
+      return el.type === "detailled_description";
+    });
+    if (detailled_description_obj.length > 0) {
+      const key = detailled_description_obj[0];
+      return getFullInfoElement(infoMetadata, key, editedAccount.info[key]);
+    } else return null;
+  };
+  const detailledDescription = getDetailledDescription();
+
+  const handleValueChange = (event, key) => {
+    setEditedAccount({
+      ...editedAccount,
+      info: { ...editedAccount.info, [key]: event.target.value },
+    });
+  };
+
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <form onSubmit={handleFormSubmit}>
@@ -622,7 +714,11 @@ export default function EditAccountPage({
               </div>
             ) : (
               <div className={classes.avatarButtonContainer}>
-                <Chip color="primary" label="Add background image" icon={<ControlPointIcon />} />
+                <Chip
+                  color="primary"
+                  label={texts.add_background_image}
+                  icon={<ControlPointIcon />}
+                />
               </div>
             )}
           </label>
@@ -634,7 +730,7 @@ export default function EditAccountPage({
             variant="contained"
             type="submit"
           >
-            {submitMessage ? submitMessage : "Save"}
+            {loadingSubmit ? <ButtonLoader /> : submitMessage ? submitMessage : "Save"}
           </Button>
           <Button
             className={`${classes.cancelButton} ${classes.actionButton}`}
@@ -656,7 +752,7 @@ export default function EditAccountPage({
                   accept=".png,.jpeg,.jpg"
                   value={selectedFiles["avatar"]}
                   onClick={() => handleFileInputClick("avatar")}
-                  onSubmit={() => handleFileSubmit(event, "avatar")}
+                  onSubmit={(event) => handleFileSubmit(event, "avatar")}
                 />
                 <Avatar
                   alt={editedAccount.name}
@@ -673,7 +769,7 @@ export default function EditAccountPage({
                 ) : (
                   <div className={classes.avatarButtonContainer}>
                     <Chip
-                      label="Add Image"
+                      label={texts.add_image}
                       color="primary"
                       icon={<ControlPointIcon />}
                       className={classes.cursorPointer}
@@ -692,7 +788,7 @@ export default function EditAccountPage({
                   onChange={(event) => handleTextFieldChange("first_name", event.target.value)}
                   multiline
                   required
-                  label={"First name"}
+                  label={texts.first_name}
                 />
                 <TextField
                   className={classes.name}
@@ -701,7 +797,7 @@ export default function EditAccountPage({
                   onChange={(event) => handleTextFieldChange("last_name", event.target.value)}
                   multiline
                   required
-                  label={"Last name"}
+                  label={texts.last_name}
                 />
               </>
             ) : (
@@ -734,7 +830,7 @@ export default function EditAccountPage({
                   getTypesOfAccount(editedAccount, possibleAccountTypes, infoMetadata).length <
                     maxAccountTypes && (
                     <Chip
-                      label="Add Type"
+                      label={texts.add_type}
                       color={
                         editedAccount.types && editedAccount.types.length ? "default" : "primary"
                       }
@@ -747,13 +843,35 @@ export default function EditAccountPage({
           </Container>
           <Container className={classes.accountInfo}>
             {displayAccountInfo(editedAccount.info)}
+            {onClickCheckTranslations && (
+              <div className={classes.checkTranslationsButtonContainer}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => onClickCheckTranslations(editedAccount)}
+                >
+                  {texts.check_translations}
+                </Button>
+              </div>
+            )}
           </Container>
+        </Container>
+        <Container className={classes.detailledDescriptionContainer}>
+          {detailledDescription && (
+            <DetailledDescriptionInput
+              title={detailledDescription.name}
+              helpText={detailledDescription.helptext}
+              value={detailledDescription.value}
+              onChange={handleValueChange}
+              infoKey={detailledDescription.key}
+            />
+          )}
         </Container>
         {children}
         {deleteEmail && (
           <Typography variant="subtitle2" className={classes.deleteMessage}>
             <InfoOutlinedIcon />
-            If you wish to delete this account, send an E-Mail to {deleteEmail}
+            {texts.if_you_wish_to_delete} {deleteEmail}
           </Typography>
         )}
       </form>
@@ -778,11 +896,11 @@ export default function EditAccountPage({
         <SelectDialog
           onClose={handleAddTypeClose}
           open={open.addTypeDialog}
-          title="Add Type"
+          title={texts.add_type}
           values={getTypes(possibleAccountTypes, infoMetadata).filter(
             (type) => editedAccount.types && !editedAccount.types.includes(type.key)
           )}
-          label={"Choose type"}
+          label={texts.choose_type}
           supportAdditionalInfo={true}
           className={classes.dialogWidth}
         />
@@ -790,18 +908,14 @@ export default function EditAccountPage({
       <ConfirmDialog
         open={open.confirmExitDialog}
         onClose={handleConfirmExitClose}
-        title="Exit"
-        text="Do you really want to exit without saving?"
-        cancelText="No"
-        confirmText="Yes"
+        title={texts.exit}
+        text={texts.do_you_really_want_to_exit_without_saving}
+        cancelText={texts.no}
+        confirmText={texts.yes}
       />
     </Container>
   );
 }
-
-const getFullInfoElement = (infoMetadata, key, value) => {
-  return { ...infoMetadata[key], value: value };
-};
 
 const getTypes = (possibleAccountTypes, infoMetadata) => {
   return possibleAccountTypes.map((type) => {
@@ -818,4 +932,8 @@ const getTypesOfAccount = (account, possibleAccountTypes, infoMetadata) => {
   return getTypes(possibleAccountTypes, infoMetadata).filter((type) =>
     account.types.includes(type.key)
   );
+};
+
+const getFullInfoElement = (infoMetadata, key, value) => {
+  return { ...infoMetadata[key], value: value };
 };

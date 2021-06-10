@@ -1,5 +1,7 @@
-import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import FixedPreviewCards from "./FixedPreviewCards";
 
 const useStyles = makeStyles((theme) => ({
@@ -23,19 +25,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubsBox({ hubs }) {
+export default function HubsBox({ hubs, isLoading }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "hub", locale: locale, classes: classes });
   return (
     <div className={classes.root}>
       <Typography color="primary" component="h1" className={classes.headline}>
-        Find solutions for each sector in our hubs
+        {texts.find_climate_projects_in_each_sector_in_our_hubs}
       </Typography>
       <Typography color="secondary" className={classes.explainerText}>
-        Discover facts and concrete climate actions, projects and solutions Climate Connect users
-        are working on by vising the Hubs. Get a rundown of every main field of action in the fight
-        against climate change.
+        {texts.find_climate_projects_in_each_sector_in_our_hubs_text}
       </Typography>
-      <FixedPreviewCards elements={hubs} type="hub" />
+      <FixedPreviewCards isLoading={isLoading} elements={hubs} type="hub" />
     </div>
   );
 }

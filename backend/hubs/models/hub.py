@@ -1,8 +1,11 @@
+from climateconnect_api.models.language import Language
+from location.models import Location
 from organization.models.tags import ProjectTags
 from django.db import models
 
 def hub_image_path(instance, filename):
     return "hubs/{}/{}".format(instance.id, filename)
+
 
 class HubStat(models.Model):
     name = models.CharField(
@@ -33,7 +36,7 @@ class HubStat(models.Model):
         max_length=1024,
         null=True,
         blank=True
-    )
+    )    
 
     source_link = models.CharField(
         help_text="Link to the source of the stat",
@@ -51,12 +54,19 @@ class HubStat(models.Model):
         blank=True
     ) 
 
+    language = models.ForeignKey(
+        Language, related_name="hub_stat_language",
+        help_text="The original language of the hub stat", verbose_name="Language",
+        on_delete=models.CASCADE, null=True, blank=True
+    )
+
     class Meta:
         app_label = "hubs"
         verbose_name = "HubStat"
         verbose_name_plural = "HubStats"
     def __str__(self):
         return "%s" % (self.name)    
+
 
 class Hub(models.Model):
     name = models.CharField(
@@ -90,6 +100,17 @@ class Hub(models.Model):
         blank=True
     )
 
+    SECTOR_HUB_TYPE = 0
+    LOCATION_HUB_TYPE = 1  # User can read and write to project or organization.
+    HUB_TYPES = (
+        (SECTOR_HUB_TYPE, 'sector hub'), (LOCATION_HUB_TYPE, 'location hub')
+    )
+
+    hub_type = models.IntegerField(
+        help_text="Type of hub", verbose_name="Hub Type",
+        choices=HUB_TYPES, default=SECTOR_HUB_TYPE
+    )
+
     segway_text = models.TextField(
         help_text="Segway text between the info and the solutions",
         verbose_name="Segway text"
@@ -106,6 +127,14 @@ class Hub(models.Model):
     image = models.ImageField(
         help_text="Hub image",
         verbose_name="Image",
+        null=True,
+        blank=True,
+        upload_to=hub_image_path
+    )
+
+    icon = models.FileField(
+        help_text="The icon representing the hub in the small hub preview cards",
+        verbose_name="Icon",
         null=True,
         blank=True,
         upload_to=hub_image_path
@@ -152,6 +181,20 @@ class Hub(models.Model):
         max_length=1024,
         null=True,
         blank=True
+    )
+
+    location = models.ManyToManyField(
+        Location,
+        related_name="hub_location",
+        help_text="For city hubs: for which locations is the CityHub",
+        verbose_name="Location",
+        blank=True
+    )
+
+    language = models.ForeignKey(
+        Language, related_name="hub_language",
+        help_text="The original language of the hub", verbose_name="Language",
+        on_delete=models.CASCADE, null=True, blank=True
     )
 
     class Meta:

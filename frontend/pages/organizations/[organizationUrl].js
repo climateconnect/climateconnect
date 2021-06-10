@@ -1,27 +1,25 @@
-import React from "react";
-import { Typography, Container, Button, Divider } from "@material-ui/core";
+import { Button, Container, Divider, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import AccountBoxIcon from "@material-ui/icons/AccountBox";
+import LocationOnIcon from "@material-ui/icons/LocationOn";
 import NextCookies from "next-cookies";
-import axios from "axios";
-import { useContext } from "react";
-import UserContext from "./../../src/components/context/UserContext";
-
-import WideLayout from "../../src/components/layouts/WideLayout";
+import Router from "next/router";
+import React, { useContext } from "react";
+import Cookies from "universal-cookie";
+import ROLE_TYPES from "../../public/data/role_types";
+import { apiRequest, getLocalePrefix, getRolesOptions } from "../../public/lib/apiOperations";
+import { startPrivateChat } from "../../public/lib/messagingOperations";
+import { parseOrganization } from "../../public/lib/organizationOperations";
+import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
+import getTexts from "../../public/texts/texts";
 import AccountPage from "../../src/components/account/AccountPage";
+import LoginNudge from "../../src/components/general/LoginNudge";
+import PageNotFound from "../../src/components/general/PageNotFound";
+import WideLayout from "../../src/components/layouts/WideLayout";
 import ProfilePreviews from "../../src/components/profile/ProfilePreviews";
 import ProjectPreviews from "../../src/components/project/ProjectPreviews";
-
-import TEMP_INFOMETADATA from "./../../public/data/organization_info_metadata.js";
-import tokenConfig from "../../public/config/tokenConfig";
-
-import LocationOnIcon from "@material-ui/icons/LocationOn";
-import AccountBoxIcon from "@material-ui/icons/AccountBox";
-import LoginNudge from "../../src/components/general/LoginNudge";
-import { parseOrganization } from "../../public/lib/organizationOperations";
-import { startPrivateChat } from "../../public/lib/messagingOperations";
-import Router from "next/router";
-import Cookies from "universal-cookie";
-import PageNotFound from "../../src/components/general/PageNotFound";
+import getOrganizationInfoMetadata from "./../../public/data/organization_info_metadata.js";
+import UserContext from "./../../src/components/context/UserContext";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -43,20 +41,57 @@ const useStyles = makeStyles((theme) => ({
   divider: {
     marginTop: theme.spacing(1),
   },
+  headline: {
+    fontSize: 23,
+    fontWeight: "bold",
+    marginBottom: theme.spacing(1),
+  },
+  sectionHeadlineWithButtonContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: theme.spacing(3),
+  },
+  no_content_yet: {
+    marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(5),
+  },
 }));
+
+export async function getServerSideProps(ctx) {
+  const { token } = NextCookies(ctx);
+  const organizationUrl = encodeURI(ctx.query.organizationUrl);
+  const [organization, projects, members, organizationTypes, rolesOptions] = await Promise.all([
+    getOrganizationByUrlIfExists(organizationUrl, token, ctx.locale),
+    getProjectsByOrganization(organizationUrl, token, ctx.locale),
+    getMembersByOrganization(organizationUrl, token, ctx.locale),
+    getOrganizationTypes(),
+    getRolesOptions(token, ctx.locale),
+  ]);
+  return {
+    props: nullifyUndefinedValues({
+      organization: organization,
+      projects: projects,
+      members: members,
+      organizationTypes: organizationTypes,
+      rolesOptions: rolesOptions,
+    }),
+  };
+}
 
 export default function OrganizationPage({
   organization,
   projects,
   members,
   organizationTypes,
-  infoMetadata,
+  rolesOptions,
 }) {
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const infoMetadata = getOrganizationInfoMetadata(locale, organization);
+  const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   return (
     <WideLayout
-      title={organization ? organization.name : "Not Found"}
-      description={organization.name + " | " + organization.info.shortdescription}
+      title={organization ? organization.name : texts.not_found_error}
+      description={organization.name + " | " + organization.info.short_description}
     >
       {organization ? (
         <OrganizationLayout
@@ -66,36 +101,35 @@ export default function OrganizationPage({
           organizationTypes={organizationTypes}
           infoMetadata={infoMetadata}
           user={user}
+          texts={texts}
+          locale={locale}
+          rolesOptions={rolesOptions}
         />
       ) : (
-        <PageNotFound itemName="Organization" />
+        <PageNotFound itemName={texts.organization} />
       )}
     </WideLayout>
   );
 }
 
-OrganizationPage.getInitialProps = async (ctx) => {
-  const { token } = NextCookies(ctx);
-  const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, projects, members, organizationTypes, infoMetadata] = await Promise.all([
-    getOrganizationByUrlIfExists(organizationUrl, token),
-    getProjectsByOrganization(organizationUrl, token),
-    getMembersByOrganization(organizationUrl, token),
-    getOrganizationTypes(),
-    getOrganizationInfoMetadata(),
-  ]);
-  return {
-    organization: organization,
-    projects: projects,
-    members: members,
-    organizationTypes: organizationTypes,
-    infoMetadata: infoMetadata,
-  };
-};
-
-function OrganizationLayout({ organization, projects, members, infoMetadata, user }) {
+function OrganizationLayout({
+  organization,
+  projects,
+  members,
+  infoMetadata,
+  user,
+  texts,
+  locale,
+  rolesOptions,
+}) {
   const classes = useStyles();
   const cookies = new Cookies();
+
+  const getRoleName = (permission) => {
+    const permission_to_show = permission === "all" ? "read write" : permission;
+    return rolesOptions.find((o) => o.role_type === permission_to_show).name;
+  };
+
   const getMembersWithAdditionalInfo = (members) => {
     return members.map((m) => ({
       ...m,
@@ -111,10 +145,10 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
           icon: AccountBoxIcon,
           iconName: "AccountBoxIcon",
           importance: "high",
-          toolTipText: "Role in organization",
+          toolTipText: texts.role_in_organization,
         },
         {
-          text: m.permission,
+          text: getRoleName(m.permission),
           importance: "low",
         },
       ],
@@ -125,84 +159,92 @@ function OrganizationLayout({ organization, projects, members, infoMetadata, use
     e.preventDefault();
     const token = cookies.get("token");
     const creator = members.filter((m) => m.isCreator === true)[0];
-    const chat = await startPrivateChat(creator, token);
+    const chat = await startPrivateChat(creator, token, locale);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
-
   const canEdit =
     user &&
     !!members.find((m) => m.id === user.id) &&
-    ["Creator", "Administrator"].includes(members.find((m) => m.id === user.id).permission);
+    [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(
+      members.find((m) => m.id === user.id).permission
+    );
 
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
   return (
     <AccountPage
       account={organization}
       default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={"/editOrganization/" + organization.url_slug}
+      editHref={getLocalePrefix(locale) + "/editOrganization/" + organization.url_slug}
       type="organization"
       infoMetadata={infoMetadata}
       isOwnAccount={canEdit}
-      editText={"Edit organization"}
+      editText={texts.edit_organization}
     >
       {!user && (
         <LoginNudge
           className={classes.loginNudge}
-          whatToDo="see this organization's full information"
+          whatToDo={texts.to_see_this_organizations_full_information}
         />
       )}
       <Container>
         {user && !canEdit && (
           <Button variant="contained" color="primary" onClick={handleConnectBtn}>
-            Message
+            {texts.send_message}
           </Button>
         )}
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
-          This {"organization's"} Projects:{" "}
-          <Button variant="contained" color="primary" href="/share">
-            Share a project
+        <div className={classes.sectionHeadlineWithButtonContainer}>
+          <Typography color="primary" className={classes.headline} component="h2">
+            {texts.this_organizations_projects}
+          </Typography>
+          <Button variant="contained" color="primary" href={getLocalePrefix(locale) + "/share"}>
+            {texts.share_a_project}
           </Button>
         </div>
         {projects && projects.length ? (
           <ProjectPreviews projects={projects} />
         ) : (
-          <Typography>This organization has not listed any projects yet!</Typography>
+          <Typography className={classes.no_content_yet}>
+            {texts.this_organization_has_not_listed_any_projects_yet}
+          </Typography>
         )}
       </Container>
       <Divider className={classes.divider} />
       <Container>
-        <div className={`${classes.subtitle} ${classes.cardHeadline}`}>
+        <div className={classes.sectionHeadlineWithButtonContainer}>
+          <Typography color="primary" className={classes.headline} component="h2">
+            {texts.members_of_organization}
+          </Typography>
           {canEdit && (
-            <div>
-              <Button
-                className={classes.editButton}
-                variant="contained"
-                color="primary"
-                href={"/manageOrganizationMembers/" + organization.url_slug}
-              >
-                Manage members
-              </Button>
-            </div>
+            <Button
+              className={classes.editButton}
+              variant="contained"
+              color="primary"
+              href={getLocalePrefix(locale) + "/manageOrganizationMembers/" + organization.url_slug}
+            >
+              {texts.manage_members}
+            </Button>
           )}
-          Members:
         </div>
         {members && members.length ? (
           <ProfilePreviews profiles={membersWithAdditionalInfo} showAdditionalInfo />
         ) : (
-          <Typography>None of the members of this organization has signed up yet!</Typography>
+          <Typography>
+            {texts.none_of_the_members_of_this_organization_has_signed_up_yet}
+          </Typography>
         )}
       </Container>
     </AccountPage>
   );
 }
 
-// These will likely become asynchronous in the future (a database lookup or similar) so it's marked as `async`, even though everything it does is synchronous.
-async function getOrganizationByUrlIfExists(organizationUrl, token) {
+async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/organizations/" + organizationUrl + "/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/",
+      token: token,
+      locale: locale,
+    });
     return parseOrganization(resp.data);
   } catch (err) {
     console.log(err);
@@ -211,12 +253,14 @@ async function getOrganizationByUrlIfExists(organizationUrl, token) {
   }
 }
 
-async function getProjectsByOrganization(organizationUrl, token) {
+async function getProjectsByOrganization(organizationUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/organizations/" + organizationUrl + "/projects/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/projects/",
+      token: token,
+      locale: locale,
+    });
     if (!resp.data) return null;
     else {
       return parseProjectStubs(resp.data.results);
@@ -228,12 +272,14 @@ async function getProjectsByOrganization(organizationUrl, token) {
   }
 }
 
-async function getMembersByOrganization(organizationUrl, token) {
+async function getMembersByOrganization(organizationUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/organizations/" + organizationUrl + "/members/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/members/?page=1&page_size=24",
+      token: token,
+      locale: locale,
+    });
     if (!resp.data) return null;
     else {
       return parseOrganizationMembers(resp.data.results);
@@ -247,10 +293,6 @@ async function getMembersByOrganization(organizationUrl, token) {
 
 async function getOrganizationTypes() {
   return [];
-}
-
-async function getOrganizationInfoMetadata() {
-  return TEMP_INFOMETADATA;
 }
 
 function parseProjectStubs(projects) {
@@ -269,8 +311,8 @@ function parseOrganizationMembers(members) {
     return {
       ...member,
       name: member.first_name + " " + member.last_name,
-      permission: m.permission.name === "Creator" ? "Administrator" : m.permission.name,
-      isCreator: m.permission.name === "Creator",
+      permission: m.permission.role_type,
+      isCreator: m.permission.role_type === ROLE_TYPES.all_type,
       time_per_week: m.time_per_week,
       role_in_organization: m.role_in_organization,
       location: member.location,

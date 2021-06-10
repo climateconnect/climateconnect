@@ -1,8 +1,9 @@
 import { Container, makeStyles, Typography } from "@material-ui/core";
-
-import React from "react";
-import LockOpenIcon from "@material-ui/icons/LockOpen";
 import GroupWorkOutlinedIcon from "@material-ui/icons/GroupWorkOutlined";
+import LockOpenIcon from "@material-ui/icons/LockOpen";
+import React, { useContext } from "react";
+import getTexts from "../../../../public/texts/texts";
+import UserContext from "../../context/UserContext";
 import Value from "./Value";
 
 const useStyles = makeStyles((theme) => ({
@@ -86,29 +87,29 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Values({ headlineClass }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "about", locale: locale });
   return (
     <div className={classes.root}>
       <Container className={classes.wrapper}>
         <div>
-          <Typography className={`${headlineClass} ${classes.headline}`}>Our Values</Typography>
+          <Typography className={`${headlineClass} ${classes.headline}`}>
+            {texts.our_values}
+          </Typography>
           <Typography className={classes.textBody}>
-            Climate Connect is a <span className={classes.yellow}>donation based</span> NGO - we
-            dedicate all our work to make an impact on climate change. Being an independent
-            organisation allows us to work with{" "}
-            <span className={classes.yellow}>everyone involved in fighting climate change.</span>{" "}
-            This is also why we include our community as much as possible. Our codebase is{" "}
-            <span className={classes.yellow}>open source</span>, we organize regular network events
-            and let our users help us decide what steps to take next.
+            {texts.climate_connect_is_a_donation_funded_ngo}{" "}
+            {texts.being_an_independent_organisation_allows_us_to_work_with}{" "}
+            {texts.this_is_also_why_we_include_our_community_as_much_as_possible}
           </Typography>
         </div>
         <div className={classes.valuesListWrapper}>
           <div className={classes.leftValuesWrapper}>
-            <Value iconSrc="/icons/donate-icon-bold.svg" text="Free & Non-Profit" />
-            <Value icon={{ src: LockOpenIcon }} text="Open Source" />
+            <Value iconSrc="/icons/donate-icon-bold.svg" text={texts.free_and_nonprofit} />
+            <Value icon={{ src: LockOpenIcon }} text={texts.open_source} />
           </div>
           <div className={classes.rightValuesWrapper}>
-            <Value icon={{ src: GroupWorkOutlinedIcon }} text="Community driven" />
-            <Value iconSrc="/icons/independent-icon.svg" text="Independent" />
+            <Value icon={{ src: GroupWorkOutlinedIcon }} text={texts.community_driven} />
+            <Value iconSrc="/icons/independent-icon.svg" text={texts.independent} />
           </div>
           <div className={classes.bigCloudContainer}>
             <img src="/images/about-values-cloud.svg" className={classes.bigCloudImg} />

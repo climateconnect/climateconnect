@@ -1,6 +1,5 @@
-import React from "react";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-
+import React from "react";
 import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
 import Filters from "./Filters";
@@ -34,8 +33,6 @@ export default function FilterContent({
       return map;
     }, {})
   );
-
-  console.log(currentFilters);
 
   const [open, setOpen] = React.useState({});
 

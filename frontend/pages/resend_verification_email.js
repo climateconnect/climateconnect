@@ -1,8 +1,9 @@
-import { resendEmail } from "../public/lib/apiOperations";
-import React from "react";
-import Layout from "../src/components/layouts/layout";
+import React, { useContext } from "react";
+import { redirect, resendEmail } from "../public/lib/apiOperations";
+import getTexts from "../public/texts/texts";
+import UserContext from "../src/components/context/UserContext";
 import Form from "../src/components/general/Form";
-import { redirect } from "../public/lib/apiOperations";
+import Layout from "../src/components/layouts/layout";
 
 const fields = [
   {
@@ -13,12 +14,13 @@ const fields = [
   },
 ];
 
-const messages = {
-  submitMessage: "Send verification E-Mail again",
-};
-
 export default function ResendVerificationEmail() {
   const [errorMessage, setErrorMessage] = React.useState(null);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "settings", locale: locale });
+  const messages = {
+    submitMessage: texts.send_verification_email_again,
+  };
 
   const handleSubmit = async (event, values) => {
     event.preventDefault();
@@ -37,7 +39,7 @@ export default function ResendVerificationEmail() {
 
   return (
     <div>
-      <Layout title="Resend verification Email">
+      <Layout title={texts.resend_verification_email}>
         <Form
           fields={fields}
           messages={messages}

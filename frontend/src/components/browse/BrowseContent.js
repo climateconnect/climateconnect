@@ -1,17 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Container, Tabs, Tab, Divider, useMediaQuery, makeStyles } from "@material-ui/core";
-
-import FilterSection from "../indexPage/FilterSection";
-import FilterContent from "../filter/FilterContent";
-import ProjectPreviews from "../project/ProjectPreviews";
-import ProfilePreviews from "../profile/ProfilePreviews";
-import OrganizationPreviews from "../organization/OrganizationPreviews";
+import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import possibleFilters from "../../../public/data/possibleFilters";
-import NoItemsFound from "./NoItemsFound";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
-import LoadingSpinner from "../general/LoadingSpinner";
-import LoadingContext from "../context/LoadingContext";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
+import getTexts from "../../../public/texts/texts";
+import LoadingContext from "../context/LoadingContext";
+import UserContext from "../context/UserContext";
+import FilterContent from "../filter/FilterContent";
+import LoadingSpinner from "../general/LoadingSpinner";
+import FilterSection from "../indexPage/FilterSection";
+import OrganizationPreviews from "../organization/OrganizationPreviews";
+import ProfilePreviews from "../profile/ProfilePreviews";
+import ProjectPreviews from "../project/ProjectPreviews";
+import Tutorial from "../tutorial/Tutorial";
+import NoItemsFound from "./NoItemsFound";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -42,6 +44,11 @@ export default function BrowseContent({
   customSearchBarLabels,
   handleSetErrorMessage,
   errorMessage,
+  hubsSubHeaderRef,
+  hubQuickInfoRef,
+  hubProjectsButtonRef,
+  nextStepTriggeredBy,
+  hubName,
 }) {
   const initialState = {
     items: {
@@ -66,11 +73,24 @@ export default function BrowseContent({
       members: "",
     },
   };
+
+  //saving these refs for the tutorial
+  const firstProjectCardRef = useRef(null);
+  const filterButtonRef = useRef(null);
+  const organizationsTabRef = useRef(null);
+
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
   const TYPES_BY_TAB_VALUE = hideMembers
     ? ["projects", "organizations"]
     : ["projects", "organizations", "members"];
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
+  const type_names = {
+    projects: texts.projects,
+    organizations: texts.organizations,
+    members: texts.members,
+  };
   const [hash, setHash] = useState(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
   const [filtersExpanded, setFiltersExpanded] = useState(false);
@@ -102,10 +122,6 @@ export default function BrowseContent({
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(window.location.hash.replace("#", "")));
     }
   }, []);
-
-  function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
 
   const unexpandFilters = () => {
     setFiltersExpanded(false);
@@ -161,7 +177,12 @@ export default function BrowseContent({
    */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
     if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
-      indicateWrongLocation(locationInputRefs[type], setLocationOptionsOpen, handleSetErrorMessage);
+      indicateWrongLocation(
+        locationInputRefs[type],
+        setLocationOptionsOpen,
+        handleSetErrorMessage,
+        texts
+      );
       return;
     }
     handleSetErrorMessage("");
@@ -202,6 +223,24 @@ export default function BrowseContent({
     }
   };
 
+  /*This is specifically for location hubs: 
+    Sector hubs don't show members
+    We only know whether a hub is a location hub after loading initial props
+    Therefore we only catch members on location hubs after they are initialized.
+  */
+  useEffect(
+    function () {
+      if (initialMembers) {
+        setState({
+          ...state,
+          items: { ...state.items, members: membersWithAdditionalInfo(initialMembers.members) },
+          hasMore: { ...state.hasMore, members: initialMembers.hasMore },
+        });
+      }
+    },
+    [initialMembers]
+  );
+
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   return (
@@ -217,6 +256,7 @@ export default function BrowseContent({
           setFiltersExpanded={setFiltersExpanded}
           type={TYPES_BY_TAB_VALUE[tabValue]}
           customSearchBarLabels={customSearchBarLabels}
+          filterButtonRef={filterButtonRef}
         />
         <Tabs
           variant={isNarrowScreen ? "fullWidth" : "standard"}
@@ -226,9 +266,14 @@ export default function BrowseContent({
           textColor="primary"
           centered={true}
         >
-          {TYPES_BY_TAB_VALUE.map((t, index) => (
-            <Tab label={capitalizeFirstLetter(t)} className={classes.tab} key={index} />
-          ))}
+          {TYPES_BY_TAB_VALUE.map((t, index) => {
+            const tabProps = {
+              label: type_names[t],
+              className: classes.tab,
+            };
+            if (index === 1) tabProps.ref = organizationsTabRef;
+            return <Tab {...tabProps} key={index} />;
+          })}
         </Tabs>
 
         <Divider className={classes.mainContentDivider} />
@@ -264,6 +309,7 @@ export default function BrowseContent({
                 loadFunc={loadMoreProjects}
                 parentHandlesGridItems
                 projects={state.items.projects}
+                firstProjectCardRef={firstProjectCardRef}
               />
             ) : (
               <NoItemsFound type="projects" />
@@ -346,6 +392,19 @@ export default function BrowseContent({
           )}
         </>
       </Container>
+      <Tutorial
+        fixedPosition
+        pointerRefs={{
+          projectCardRef: firstProjectCardRef,
+          filterButtonRef: filterButtonRef,
+          organizationsTabRef: organizationsTabRef,
+          hubsSubHeaderRef: hubsSubHeaderRef,
+          hubQuickInfoRef: hubQuickInfoRef,
+          hubProjectsButtonRef: hubProjectsButtonRef,
+        }}
+        hubName={hubName}
+        nextStepTriggeredBy={nextStepTriggeredBy}
+      />
     </LoadingContext.Provider>
   );
 }

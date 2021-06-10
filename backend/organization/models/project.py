@@ -4,6 +4,7 @@ from django.contrib.postgres.fields import ArrayField
 
 from organization.models import (Organization,)
 from climateconnect_api.models import (Skill,)
+from climateconnect_api.models.language import Language
 
 
 def project_image_path(instance, filename):
@@ -79,15 +80,15 @@ class Project(models.Model):
         auto_now=True
     )
 
-    short_description = models.CharField(
+    short_description = models.TextField(
         help_text="Points to short description about the project",
         verbose_name="Short Description",
         null=True,
         blank=True,
-        max_length=240
+        max_length=280
     )
 
-    description = models.CharField(
+    description = models.TextField(
         help_text="Points to detailed description about the project",
         verbose_name="Description",
         null=True,
@@ -169,6 +170,14 @@ class Project(models.Model):
         verbose_name="Is an Active Project",
         default=True,
         null=False
+    )
+
+    language = models.ForeignKey(
+        Language, related_name="project_language",
+        help_text="Original project language",
+        verbose_name="Language",
+        null=True, blank=True,
+        on_delete=models.SET_NULL
     )
 
     class Meta:

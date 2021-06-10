@@ -1,5 +1,7 @@
-import React from "react";
 import { makeStyles } from "@material-ui/core";
+import React, { useContext } from "react";
+import getTexts from "../../../../public/texts/texts";
+import UserContext from "../../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   teamRoot: {
@@ -22,11 +24,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function WhoWeAreContent() {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "donate", locale: locale, classes: classes });
   return (
     <div className={classes.teamRoot}>
       <div className={classes.imageContainer}>
         <div className={classes.imageWrapper}>
-          <img src="/images/team.jpg" alt="Climate Connect's core team: A group of 9 people wearing Climate Connect T-Shirts" className={classes.image} />
+          <img src="/images/team.jpg" alt={texts.our_team_image_text} className={classes.image} />
         </div>
       </div>
     </div>

@@ -1,13 +1,15 @@
-import React from "react";
-import { makeStyles, Typography, Button, useMediaQuery, Container } from "@material-ui/core";
-import LightBigButton from "../staticpages/LightBigButton";
-import AlternatingText from "../general/AlternatingText";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import UserContext from "../context/UserContext";
+import AlternatingText from "../general/AlternatingText";
+import LightBigButton from "../staticpages/LightBigButton";
 
 const useStyles = makeStyles((theme) => ({
-  imageContainer: {
-    background: `url('/images/landing_image.jpg')`,
+  imageContainer: (props) => ({
+    background: `url('/images/${props.imageSource}')`,
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
     position: "relative",
@@ -23,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
       backgroundSize: "cover",
       backgroundPosition: "0px 0px",
     },
-  },
+  }),
   img: {
     width: "100%",
     maxWidth: 1500,
@@ -85,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
       textAlign: "center",
     },
     ["@media (max-width: 500px)"]: {
-      fontSize: 20,
+      fontSize: 17,
     },
   },
   titleTextContainer: {
@@ -100,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
       textAlign: "center",
     },
     ["@media (max-width: 500px)"]: {
-      fontSize: 19,
+      fontSize: 17,
     },
   },
   titleTextFirstLine: {
@@ -110,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
       justifyContent: "center",
     },
     ["@media (max-width: 500px)"]: {
-      fontSize: 19,
+      fontSize: 17,
     },
   },
   titleTextSubHeader: {
@@ -141,10 +143,12 @@ const useStyles = makeStyles((theme) => ({
       height: 50,
     },
     [theme.breakpoints.down("xs")]: {
-      fontSize: 16,
+      height: 40,
+      fontSize: 17,
+      marginTop: theme.spacing(1),
     },
     ["@media (max-width: 400px)"]: {
-      fontSize: 14,
+      fontSize: 17,
     },
   },
   showMoreIcon: {
@@ -172,37 +176,51 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LandingTopBox({ scrollToContent }) {
-  const classes = useStyles();
+export default function LandingTopBox() {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({
+    page: "landing_page",
+    locale: locale,
+    classes: classes,
+    isNarrowScreen: isNarrowScreen,
+  });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isVeryLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
+  const imageSource = isNarrowScreen
+    ? "landing_image_small.jpg"
+    : isVeryLargeScreen
+    ? "landing_image_extra_large.jpg"
+    : "landing_image_extra_large.jpg";
+  const classes = useStyles({ imageSource: imageSource });
   return (
     <div>
       <div className={classes.imageContainer}>
-        <img src="/images/landing_image.jpg" alt="Photo of earth from space at night with some connecting waypoints" className={classes.img} />
+        <img
+          src={`/images/${imageSource}`}
+          alt={texts.landing_page_photo_alt}
+          className={classes.img}
+        />
       </div>
       <Container className={classes.textContainerWrapper}>
         <div className={classes.textContainer}>
           <Typography className={classes.titleTextContainer} component="h1">
             <div className={classes.titleTextFirstLine}>
-              <AlternatingText classes={classes} mobile={isNarrowScreen} /> climate change
+              <AlternatingText classes={classes} mobile={isNarrowScreen} />
             </div>
-            solutions from around the world
+            {texts.from_around_the_world}
           </Typography>
-          <Typography component="h2" className={classes.titleTextSubHeader}>
-            Join the global climate action network to connect all
-            {!isNarrowScreen ? <br /> : " "}
-            climate actors on our planet - the only one we have
-          </Typography>
+          {!isNarrowScreen && (
+            <Typography component="h2" className={classes.titleTextSubHeader}>
+              {texts.landing_page_text}
+            </Typography>
+          )}
           <div className={classes.exploreButtonContainer}>
-            <LightBigButton href="/browse" className={classes.exploreButton}>
-              {"Explore climate solutions"}
+            <LightBigButton
+              href={getLocalePrefix(locale) + "/browse"}
+              className={classes.exploreButton}
+            >
+              {isNarrowScreen ? texts.explore : texts.explore_climate_projects}
             </LightBigButton>
-          </div>
-          <div className={classes.showMoreButtonContainer}>
-            <Button className={classes.showMoreButton} onClick={scrollToContent}>
-              <ExpandMoreIcon className={classes.showMoreIcon} />
-              <Typography className={classes.showMoreText}>Find out more</Typography>
-            </Button>
           </div>
         </div>
       </Container>

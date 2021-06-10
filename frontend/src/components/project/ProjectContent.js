@@ -1,21 +1,21 @@
-import React, { useContext } from "react";
-import TimeAgo from "react-timeago";
-import humanizeDuration from "humanize-duration";
-import { Typography, Button, Link } from "@material-ui/core";
+import { Button, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-
-import { yearAndDayFormatter } from "../../utils/formatting";
-import DateDisplay from "./../general/DateDisplay";
-import Posts from "./../communication/Posts.js";
-import ProjectStatus from "./ProjectStatus";
-
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-
-import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
-import MiniProfilePreview from "../profile/MiniProfilePreview";
+import humanizeDuration from "humanize-duration";
+import React, { useContext } from "react";
+import TimeAgo from "react-timeago";
+import ROLE_TYPES from "../../../public/data/role_types";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
+import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
+import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
+import MiniProfilePreview from "../profile/MiniProfilePreview";
+import Posts from "./../communication/Posts.js";
+import DateDisplay from "./../general/DateDisplay";
+import ProjectStatus from "./ProjectStatus";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -125,16 +125,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectContent({ project, leaveProject }) {
+export default function ProjectContent({
+  project,
+  leaveProject,
+  projectDescriptionRef,
+  collaborationSectionRef,
+}) {
   const classes = useStyles();
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showFullDescription, setShowFullDescription] = React.useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
   const user_permission =
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
       : null;
-
   return (
     <div>
       <div className={classes.contentBlock}>
@@ -146,28 +151,33 @@ export default function ProjectContent({ project, leaveProject }) {
                 variant="contained"
                 onClick={leaveProject}
               >
-                Leave project
+                {texts.leave_project}
               </Button>
-              {user_permission && ["Creator", "Administrator"].includes(user_permission) && (
-                <Button
-                  className={classes.editProjectButton}
-                  variant="contained"
-                  color="primary"
-                  href={"/editProject/" + project.url_slug}
-                >
-                  {project.is_draft ? "Edit Draft" : "Edit Project"}
-                </Button>
-              )}
+              {user_permission &&
+                [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission) && (
+                  <Button
+                    className={classes.editProjectButton}
+                    variant="contained"
+                    color="primary"
+                    href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
+                  >
+                    {project.is_draft ? texts.edit_draft : texts.edit_project}
+                  </Button>
+                )}
             </div>
           )}
           {/* Note: created date is not the same as the start date, for projects */}
           <Typography>
-            Created: <DateDisplay date={new Date(project.creation_date)} />
+            {texts.created}: <DateDisplay date={new Date(project.creation_date)} />
           </Typography>
           <div>
             <Typography component="span">
-              Started{" "}
-              <TimeAgo date={new Date(project.start_date)} formatter={yearAndDayFormatter} /> by
+              {texts.started + " "}
+              <TimeAgo
+                date={new Date(project.start_date)}
+                formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
+              />{" "}
+              {texts.by}
             </Typography>
             {project.isPersonalProject ? (
               <MiniProfilePreview
@@ -176,7 +186,7 @@ export default function ProjectContent({ project, leaveProject }) {
                 size="small"
               />
             ) : (
-              <Link href={"/organizations/" + project.creator.url_slug}>
+              <Link href={getLocalePrefix(locale) + "/organizations/" + project.creator.url_slug}>
                 <MiniOrganizationPreview
                   size="small"
                   className={classes.creator}
@@ -187,7 +197,7 @@ export default function ProjectContent({ project, leaveProject }) {
             )}
             {project.collaborating_organizations && project.collaborating_organizations.length > 0 && (
               <div>
-                <span> In collaboration with</span>
+                <span> {texts.in_collaboration_with}</span>
                 {project.collaborating_organizations.map((o) => (
                   <MiniOrganizationPreview
                     key={o.id}
@@ -201,14 +211,16 @@ export default function ProjectContent({ project, leaveProject }) {
           </div>
           {project.end_date && project.status.key === "finished" && (
             <Typography>
-              Finished <TimeAgo date={new Date(project.end_date)} />. Total Duration:{" "}
+              {texts.finished} <TimeAgo date={new Date(project.end_date)} />. {texts.total_duration}
+              :{" "}
               {humanizeDuration(new Date(project.end_date) - new Date(project.start_date), {
                 largest: 1,
+                language: locale,
               })}
             </Typography>
           )}
           {project.end_date && project.status.key === "cancelled" && (
-            <Typography>Cancelled :(</Typography>
+            <Typography>{texts.cancelled} :(</Typography>
           )}
         </div>
         <div className={classes.statusContainer}>
@@ -216,8 +228,14 @@ export default function ProjectContent({ project, leaveProject }) {
         </div>
       </div>
       <div className={classes.contentBlock}>
-        <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
-          Project description
+        <Typography
+          component="h2"
+          variant="h6"
+          color="primary"
+          ref={projectDescriptionRef}
+          className={classes.subHeader}
+        >
+          {texts.project_description}
         </Typography>
         <Typography component="div">
           {project.description ? (
@@ -232,7 +250,7 @@ export default function ProjectContent({ project, leaveProject }) {
             )
           ) : (
             <Typography variant="body2">
-              {"This project hasn't added a description yet."}
+              {texts.this_project_hasnt_added_a_description_yet}
             </Typography>
           )}
         </Typography>
@@ -240,34 +258,34 @@ export default function ProjectContent({ project, leaveProject }) {
           <Button className={classes.expandButton} onClick={handleToggleFullDescriptionClick}>
             {showFullDescription ? (
               <div>
-                <ExpandLessIcon className={classes.icon} /> Show less
+                <ExpandLessIcon className={classes.icon} /> {texts.show_less}
               </div>
             ) : (
               <div>
-                <ExpandMoreIcon className={classes.icon} /> Show more
+                <ExpandMoreIcon className={classes.icon} /> {texts.show_more}
               </div>
             )}
           </Button>
         )}
       </div>
-      <div className={classes.contentBlock}>
+      <div className={classes.contentBlock} ref={collaborationSectionRef}>
         <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
-          Collaboration
+          {texts.collaboration}
         </Typography>
         {project.collaborators_welcome ? (
-          <CollaborateContent project={project} />
+          <CollaborateContent project={project} texts={texts} />
         ) : (
           <Typography className={classes.openToCollabBool}>
-            This project is not looking for collaborators right now.
+            {texts.this_project_is_not_looking_for_collaborators_right_now}
           </Typography>
         )}
       </div>
       <div className={classes.contentBlock}>
         <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
-          Progress
+          {texts.progress}
         </Typography>
         <Typography variant="body2" fontStyle="italic" fontWeight="bold">
-          Follow the project to be notified when they make an update post.
+          {texts.follow_the_project_to_be_notified_when_they_make_an_update_post}
         </Typography>
         {project.timeline_posts && project.timeline_posts.length > 0 && (
           <div className={classes.progressContent}>
@@ -282,21 +300,20 @@ export default function ProjectContent({ project, leaveProject }) {
   );
 }
 
-function CollaborateContent({ project }) {
+function CollaborateContent({ project, texts }) {
   const classes = useStyles();
   return (
     <>
       <Typography variant="body2" className={classes.info}>
-        To fight climate change, we all need to work together! If you like the project, offer to
-        work with the team to make it a success!
+        {texts.to_fight_climate_change_we_all_need_to_work_together}
       </Typography>
       <Typography className={classes.openToCollabBool}>
-        This project is open to collaborators.
+        {texts.this_project_is_open_to_collaborators}
       </Typography>
       <div>
         <div className={classes.collabSection}>
           <Typography component="h3" color="primary" className={classes.subSubHeader}>
-            Helpful skills for collaborating
+            {texts.helpful_skills_for_collaborating}
           </Typography>
           <ul className={classes.collabList}>
             {project.helpful_skills &&
@@ -309,7 +326,7 @@ function CollaborateContent({ project }) {
         {project.helpful_connections && project.helpful_connections.length > 0 && (
           <div className={classes.collabSection}>
             <Typography component="h3" color="primary" className={classes.subSubHeader}>
-              Connections to these organizations could help the project:
+              {texts.connections_to_these_organizations_could_help_the_project}:
             </Typography>
             <ul className={classes.collabList}>
               {project.helpful_connections.map((connection, index) => {

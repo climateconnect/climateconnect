@@ -4,16 +4,16 @@ import EmailIcon from "@material-ui/icons/Email";
 import ExploreIcon from "@material-ui/icons/Explore";
 import LanguageIcon from "@material-ui/icons/Language";
 import PlaceIcon from "@material-ui/icons/Place";
-import Axios from "axios";
 import Router from "next/router";
 import React, { useContext, useEffect } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
-import tokenConfig from "../../../public/config/tokenConfig";
-import { redirect } from "../../../public/lib/apiOperations";
+import ROLE_TYPES from "../../../public/data/role_types";
+import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
+import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
@@ -75,23 +75,25 @@ export default function ProjectOverview({
   handleToggleFollowProject,
   isUserFollowing,
   followingChangePending,
+  contactProjectCreatorButtonRef,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
-  const { user, notifications, setNotificationsRead, refreshNotifications } = useContext(
+  const { user, notifications, setNotificationsRead, refreshNotifications, locale } = useContext(
     UserContext
   );
+  const texts = getTexts({ page: "project", locale: locale, project: project });
   const token = cookies.get("token");
   const handleClickContact = async (event) => {
     event.preventDefault();
-    const creator = project.team.filter((m) => m.permission === "Creator")[0];
-    if(!user) {
+    const creator = project.team.filter((m) => m.permission === ROLE_TYPES.all_type)[0];
+    if (!user) {
       return redirect("/signin", {
         redirect: window.location.pathname + window.location.search,
-        errorMessage: "Please create an account or log in to contact a project's organizer.",
-      });      
+        errorMessage: texts.please_create_an_account_or_log_in_to_contact_a_projects_organizer,
+      });
     }
-    const chat = await startPrivateChat(creator, token);
+    const chat = await startPrivateChat(creator, token, locale);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
   const user_permission =
@@ -99,7 +101,7 @@ export default function ProjectOverview({
       ? project.team.find((m) => m.id === user.id).permission
       : null;
   const hasAdminPermissions =
-    user_permission && ["Creator", "Administrator"].includes(user_permission);
+    user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission);
 
   const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
   const [followers, setFollowers] = React.useState([]);
@@ -107,11 +109,11 @@ export default function ProjectOverview({
   const toggleShowFollowers = async () => {
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
-      const retrievedFollowers = await getFollowers(project, token);
+      const retrievedFollowers = await getFollowers(project, token, locale);
       const notification_to_set_read = notifications.filter(
         (n) => n.notification_type === 4 && n.project.url_slug === project.url_slug
       );
-      await setNotificationsRead(token, notification_to_set_read);
+      await setNotificationsRead(token, notification_to_set_read, locale);
       await refreshNotifications();
       setFollowers(retrievedFollowers);
       setInitiallyCaughtFollowers(true);
@@ -137,6 +139,8 @@ export default function ProjectOverview({
           hasAdminPermissions={hasAdminPermissions}
           toggleShowFollowers={toggleShowFollowers}
           followingChangePending={followingChangePending}
+          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+          texts={texts}
         />
       ) : (
         <LargeScreenOverview
@@ -147,6 +151,8 @@ export default function ProjectOverview({
           hasAdminPermissions={hasAdminPermissions}
           toggleShowFollowers={toggleShowFollowers}
           followingChangePending={followingChangePending}
+          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+          texts={texts}
         />
       )}
       <ProjectFollowersDialog
@@ -170,6 +176,8 @@ function SmallScreenOverview({
   hasAdminPermissions,
   toggleShowFollowers,
   followingChangePending,
+  contactProjectCreatorButtonRef,
+  texts,
 }) {
   const classes = useStyles();
   return (
@@ -177,17 +185,17 @@ function SmallScreenOverview({
       <img
         className={classes.fullWidthImage}
         src={getImageUrl(project.image)}
-        alt={project.name + "'s project image"}
+        alt={texts.project_image_of_project + " " + project.name}
       />
       <div className={classes.blockProjectInfo}>
         <Typography component="h1" variant="h3" className={classes.smallScreenHeader}>
           {project.name}
         </Typography>
 
-        <Typography>{project?.shortdescription}</Typography>
+        <Typography>{project?.short_description}</Typography>
         <div className={classes.projectInfoEl}>
           <Typography>
-            <Tooltip title="Location">
+            <Tooltip title={texts.location}>
               <PlaceIcon color="primary" className={classes.icon} />
             </Tooltip>{" "}
             {project.location}
@@ -196,7 +204,7 @@ function SmallScreenOverview({
         {project.website && (
           <div className={classes.projectInfoEl}>
             <Typography>
-              <Tooltip title="Website">
+              <Tooltip title={texts.website}>
                 <LanguageIcon color="primary" className={classes.icon} />
               </Tooltip>{" "}
               <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
@@ -205,7 +213,7 @@ function SmallScreenOverview({
         )}
         <div className={classes.projectInfoEl}>
           <Typography>
-            <Tooltip title="Categories">
+            <Tooltip title={texts.categories}>
               <ExploreIcon color="primary" className={classes.icon} />
             </Tooltip>{" "}
             {project.tags.join(", ")}
@@ -219,6 +227,7 @@ function SmallScreenOverview({
             hasAdminPermissions={hasAdminPermissions}
             toggleShowFollowers={toggleShowFollowers}
             followingChangePending={followingChangePending}
+            texts={texts}
           />
           {!hasAdminPermissions && (
             <Button
@@ -226,8 +235,9 @@ function SmallScreenOverview({
               variant="contained"
               color="primary"
               onClick={handleClickContact}
+              ref={contactProjectCreatorButtonRef}
             >
-              Contact
+              {texts.contact}
             </Button>
           )}
         </div>
@@ -244,6 +254,8 @@ function LargeScreenOverview({
   hasAdminPermissions,
   toggleShowFollowers,
   followingChangePending,
+  contactProjectCreatorButtonRef,
+  texts,
 }) {
   const classes = useStyles();
   return (
@@ -255,18 +267,18 @@ function LargeScreenOverview({
         <img
           className={classes.inlineImage}
           src={getImageUrl(project.image)}
-          alt={project.name + "'s project image"}
+          alt={texts.project_image_of_project + " " + project.name}
         />
         <div className={classes.inlineProjectInfo}>
           <Typography component="h2" variant="h5" className={classes.subHeader}>
-            Summary
+            {texts.summary}
           </Typography>
           <Typography component="div">
-            <MessageContent content={project?.shortdescription} />
+            <MessageContent content={project?.short_description} />
           </Typography>
           <div className={classes.projectInfoEl}>
             <Typography>
-              <Tooltip title="Location">
+              <Tooltip title={texts.location}>
                 <PlaceIcon color="primary" className={classes.icon} />
               </Tooltip>{" "}
               {project.location}
@@ -275,7 +287,7 @@ function LargeScreenOverview({
           {project.website && (
             <div className={classes.projectInfoEl}>
               <Typography>
-                <Tooltip title="Website">
+                <Tooltip title={texts.website}>
                   <LanguageIcon color="primary" className={classes.icon} />
                 </Tooltip>{" "}
                 <Linkify componentDecorator={componentDecorator}>{project.website}</Linkify>
@@ -284,7 +296,7 @@ function LargeScreenOverview({
           )}
           <div className={classes.projectInfoEl}>
             <Typography>
-              <Tooltip title="Categories">
+              <Tooltip title={texts.categories}>
                 <ExploreIcon color="primary" className={classes.icon} />
               </Tooltip>{" "}
               {project.tags.join(", ")}
@@ -298,17 +310,19 @@ function LargeScreenOverview({
               hasAdminPermissions={hasAdminPermissions}
               toggleShowFollowers={toggleShowFollowers}
               followingChangePending={followingChangePending}
+              texts={texts}
             />
             {!hasAdminPermissions && (
-              <Tooltip title="Contact the project's creator with just one click!">
+              <Tooltip title={texts.contact_the_projects_creator_with_just_one_click}>
                 <Button
                   className={classes.contactProjectButton}
                   variant="contained"
                   color="primary"
                   onClick={handleClickContact}
                   startIcon={<EmailIcon />}
+                  ref={contactProjectCreatorButtonRef}
                 >
-                  Contact creator
+                  {texts.contact_creator}
                 </Button>
               </Tooltip>
             )}
@@ -326,6 +340,7 @@ function FollowButton({
   hasAdminPermissions,
   toggleShowFollowers,
   followingChangePending,
+  texts,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   return (
@@ -337,7 +352,7 @@ function FollowButton({
         disabled={followingChangePending}
       >
         {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
-        {isUserFollowing ? "Following" : "Follow"}
+        {isUserFollowing ? texts.following : texts.follow}
       </Button>
       {project.number_of_followers > 0 && (
         <Link
@@ -347,8 +362,8 @@ function FollowButton({
           onClick={toggleShowFollowers}
         >
           <Typography className={classes.followersText}>
-            <span className={classes.followerNumber}>{project.number_of_followers}</span> Follower
-            {project.number_of_followers > 1 && "s"}
+            <span className={classes.followerNumber}>{project.number_of_followers} </span>
+            {project.number_of_followers > 1 ? texts.followers : texts.follower}
           </Typography>
         </Link>
       )}
@@ -356,12 +371,14 @@ function FollowButton({
   );
 }
 
-const getFollowers = async (project, token) => {
+const getFollowers = async (project, token, locale) => {
   try {
-    const resp = await Axios.get(
-      process.env.API_URL + "/api/projects/" + project.url_slug + "/followers/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + project.url_slug + "/followers/",
+      token: token,
+      locale: locale,
+    });
     return resp.data.results;
   } catch (err) {
     console.log(err);

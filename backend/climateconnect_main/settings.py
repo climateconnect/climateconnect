@@ -89,6 +89,7 @@ NORMAL_MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -104,11 +105,12 @@ CORS_ORIGIN_WHITELIST = [
     "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
     "https://alpha.climateconnect.earth",
     "https://climateconnect.earth",
+    "https://test3425.climateconnect.earth",
     "https://www.climateconnect.earth",
     "https://www.cc-test-domain.com",
     "https://cc-test-domain.com",
     "http://cc-test-domain.com",
-    "https://climateconnect-frontend.azurewebsites.net"
+    "https://test-climateconnect-frontend.azurewebsites.net"
 ]
 APPEND_SLASH = False
 
@@ -219,6 +221,7 @@ PROJECT_FOLLOWER_TEMPLATE_ID = env('PROJECT_FOLLOWER_TEMPLATE_ID')
 MAILJET_NEWSLETTER_LIST_ID = env('MAILJET_NEWSLETTER_LIST_ID')
 LOCATION_SERVICE_BASE_URL = env('LOCATION_SERVICE_BASE_URL')
 ENABLE_LEGACY_LOCATION_FORMAT = env('ENABLE_LEGACY_LOCATION_FORMAT')
+DEEPL_API_KEY = env('DEEPL_API_KEY')
 
 ASGI_APPLICATION = 'climateconnect_main.routing.application'
 CHANNEL_LAYERS = {
@@ -237,3 +240,8 @@ CHANNEL_LAYERS = {
 # For Celery we use Redis as a broker URL
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
 CELERY_TIMEZONE = "UTC"
+LOCALES = ['en', 'de']
+
+LOCALE_PATHS = [
+    BASE_DIR + '/translations',
+]

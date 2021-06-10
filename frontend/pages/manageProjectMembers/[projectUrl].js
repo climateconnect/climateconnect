@@ -1,16 +1,15 @@
-import Layout from "../../src/components/layouts/layout";
-import React from "react";
-import tokenConfig from "../../public/config/tokenConfig";
-import axios from "axios";
-import { useContext } from "react";
-import Cookies from "next-cookies";
-import UserContext from "../../src/components/context/UserContext";
-import WideLayout from "../../src/components/layouts/WideLayout";
-import LoginNudge from "../../src/components/general/LoginNudge";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import Cookies from "next-cookies";
+import React, { useContext } from "react";
+import ROLE_TYPES from "../../public/data/role_types";
+import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
+import getTexts from "../../public/texts/texts";
+import UserContext from "../../src/components/context/UserContext";
+import LoginNudge from "../../src/components/general/LoginNudge";
+import Layout from "../../src/components/layouts/layout";
+import WideLayout from "../../src/components/layouts/WideLayout";
 import ManageProjectMembers from "../../src/components/project/ManageProjectMembers";
-import { sendToLogin } from "../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -21,6 +20,31 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+export async function getServerSideProps(ctx) {
+  const { token } = Cookies(ctx);
+  const texts = getTexts({ page: "project", locale: ctx.locale });
+  if (ctx.req && !token) {
+    const message = texts.you_have_to_log_in_to_manage_a_projects_members;
+    return sendToLogin(ctx, message);
+  }
+  const projectUrl = encodeURI(ctx.query.projectUrl);
+  const [project, members, rolesOptions, availabilityOptions] = await Promise.all([
+    getProjectByUrlIfExists(projectUrl, token, ctx.locale),
+    getMembersByProject(projectUrl, token, ctx.locale),
+    getRolesOptions(token, ctx.locale),
+    getAvailabilityOptions(token, ctx.locale),
+  ]);
+  return {
+    props: {
+      project: project,
+      members: members,
+      rolesOptions: rolesOptions,
+      availabilityOptions: availabilityOptions,
+      token: token,
+    },
+  };
+}
+
 export default function manageProjectMembers({
   project,
   members,
@@ -28,7 +52,8 @@ export default function manageProjectMembers({
   rolesOptions,
   token,
 }) {
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
   const classes = useStyles();
   const [currentMembers, setCurrentMembers] = React.useState(
     members ? [...members.sort((a, b) => b.role.role_type - a.role.role_type)] : []
@@ -36,41 +61,37 @@ export default function manageProjectMembers({
   if (!user)
     return (
       <WideLayout
-        title="Please Log In to Manage the Members of this Climate Solution"
+        title={texts.please_log_in + " " + texts.to_manage_the_members_of_this_project}
         hideHeadline={true}
       >
-        <LoginNudge fullPage whatToDo="manage the members of this project" />
+        <LoginNudge fullPage whatToDo={texts.to_manage_the_members_of_this_project} />
       </WideLayout>
     );
   else if (!members.find((m) => m.id === user.id))
     return (
       <WideLayout
-        title="Please Log In to Manage the Members of an Climate Solution"
+        title={texts.please_log_in + " " + texts.to_manage_the_members_of_this_project}
         hideHeadline={true}
       >
         <Typography variant="h4" color="primary" className={classes.headline}>
-          You are not a member of this project. Go to{" "}
-          <a href={"/projects/" + project.url_slug}>the project page</a> and click join to join it.
+          {texts.you_are_not_a_member_of_this_project}{" "}
         </Typography>
       </WideLayout>
     );
   else if (
-    members.find((m) => m.id === user.id).role.name != "Creator" &&
-    members.find((m) => m.id === user.id).role.name != "Administrator"
+    members.find((m) => m.id === user.id).role.role_type != ROLE_TYPES.all_type &&
+    members.find((m) => m.id === user.id).role.role_type != ROLE_TYPES.read_write_type
   )
     return (
-      <WideLayout
-        title="No Permission to Manage Members of this Climate Solution"
-        hideHeadline={true}
-      >
+      <WideLayout title={texts.no_permission_to_manage_members_of_this_project} hideHeadline={true}>
         <Typography variant="h4" color="primary" className={classes.headline}>
-          You need to be an administrator of the project to manage project members.
+          {texts.you_need_to_be_an_administrator_of_the_project_to_manage_project_members}
         </Typography>
       </WideLayout>
     );
   else {
     return (
-      <Layout title="Manage Solution's Members" hideHeadline>
+      <Layout title={texts.manage_projects_members} hideHeadline>
         <ManageProjectMembers
           user={user}
           members={members}
@@ -86,34 +107,14 @@ export default function manageProjectMembers({
   }
 }
 
-manageProjectMembers.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  if (ctx.req && !token) {
-    const message = "You have to log in to manage a project's members.";
-    return sendToLogin(ctx, message);
-  }
-  const projectUrl = encodeURI(ctx.query.projectUrl);
-  const [project, members, rolesOptions, availabilityOptions] = await Promise.all([
-    getProjectByUrlIfExists(projectUrl, token),
-    getMembersByProject(projectUrl, token),
-    getRolesOptions(token),
-    getAvailabilityOptions(token),
-  ]);
-  return {
-    project: project,
-    members: members,
-    rolesOptions: rolesOptions,
-    availabilityOptions: availabilityOptions,
-    token: token,
-  };
-};
-
-async function getProjectByUrlIfExists(projectUrl, token) {
+async function getProjectByUrlIfExists(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/",
+      token: token,
+      locale: locale,
+    });
     return parseProject(resp.data);
   } catch (err) {
     //console.log(err);
@@ -122,12 +123,14 @@ async function getProjectByUrlIfExists(projectUrl, token) {
   }
 }
 
-async function getMembersByProject(projectUrl, token) {
+async function getMembersByProject(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/members/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/members/",
+      token: token,
+      locale: locale,
+    });
     if (!resp.data) return null;
     else {
       return parseProjectMembers(resp.data.results);
@@ -152,7 +155,7 @@ function parseProjectMembers(members) {
       availability: m.availability,
       role_in_project: m.role_in_project ? m.role_in_project : "",
       location: member.location,
-      isCreator: m.role.role_type === 2,
+      isCreator: m.role.role_type === ROLE_TYPES.all_type,
     };
   });
 }
@@ -166,7 +169,7 @@ function parseProject(project) {
     status: project.status,
     location: project.location,
     description: project.description,
-    shortdescription: project.short_description,
+    short_description: project.short_description,
     collaborators_welcome: project.collaborators_welcome,
     start_date: project.start_date,
     end_date: project.end_date,
@@ -183,9 +186,15 @@ function parseProject(project) {
     ),
   };
 }
-const getRolesOptions = async (token) => {
+
+const getRolesOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/roles/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -197,9 +206,14 @@ const getRolesOptions = async (token) => {
   }
 };
 
-const getAvailabilityOptions = async (token) => {
+const getAvailabilityOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/availability/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/availability/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;

@@ -1,0 +1,46 @@
+{
+  "add_type": {
+    "en": "Add Type",
+    "de": "Typ hinzufügen"
+  },
+  "choose_type": {
+    "en": "Choose an organization type",
+    "de": "Wähle einen Organisationstyp aus"
+  },
+  "parent_organization": {
+    "en": "Parent organization",
+    "de": "Mutterorganisation"
+  },
+  "please_upload_either_a_png_or_a_jpg_file": {
+    "en": "Please upload either a png or a jpg file.",
+    "de": "Bitte wähle entweder eine PNG oder JPG Datei aus."
+  },
+  "add_background_image": {
+    "en": "Add background image",
+    "de": "Hintergrundbild hinzufügen"
+  },
+  "add_image": {
+    "en": "Add image",
+    "de": "Bild hinzufügen"
+  },
+  "first_name": {
+    "en": "First name",
+    "de": "Vorname"
+  },
+  "last_name": {
+    "en": "Last name",
+    "de": "Nachname"
+  },
+  "if_you_wish_to_delete": {
+    "en": "If you wish to delete this account, send an E-Mail to",
+    "de": "Wenn du diesen Account löschen möchtest, sende bitte eine E-Mail an"
+  },
+  "exit": {
+    "en": "Exit",
+    "de": "Seite verlassen"
+  },
+  "do_you_really_want_to_exit_without_saving": {
+    "en": "Do you really want to exit without saving?",
+    "de": "Möchtest du die Seite wirklich verlassen, ohne zu speichern?"
+  }
+}

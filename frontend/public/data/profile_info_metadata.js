@@ -1,57 +1,61 @@
 import PlaceIcon from "@material-ui/icons/Place";
+import getTexts from "../texts/texts";
 
-export default {
-  availability: {
-    name: "Availability",
-    key: "availability",
-    type: "select",
-    missingMessage: "This user hasn't specified their availibility yet.",
-  },
-  skills: {
-    name: "Skills",
-    key: "skills",
-    type: "array",
-    addText: "Add skill",
-    missingMessage: "This user hasn't added their skills yet",
-    maxEntries: 8,
-  },
-  bio: {
-    name: "Bio",
-    type: "bio",
-    key: "bio",
-    missingMessage: "This user hasn't added a bio yet.",
-    maxLength: 240,
-    weight: 1,
-  },
-  website: {
-    name: "Website",
-    type: "text",
-    key: "bio",
-    maxLength: 240,
-    linkify: true,
-  },
-  location: {
-    name: "Location",
-    key: "location",
-    icon: PlaceIcon,
-    missingMessage: "This user hasn't specified their location yet.",
-    type: "location",
-    weight: 0,
-    legacy: {
-      city: {
-        icon: PlaceIcon,
-        iconName: "PlaceIcon",
-        name: "City",
-        type: "text",
-        key: "city",
-      },
-      country: {
-        icon: PlaceIcon,
-        iconName: "PlaceIcon",
-        name: "Country",
-        key: "country",
-        type: "text",
+export default function getProfileInfoMetadata(locale) {
+  const texts = getTexts({ page: "profile", locale: locale });
+  return {
+    availability: {
+      name: texts.availability,
+      key: "availability",
+      type: "select",
+      missingMessage: texts.availability_user_profile_missing_message,
+    },
+    skills: {
+      name: texts.skills,
+      key: "skills",
+      type: "array",
+      addText: texts.add_skill,
+      missingMessage: texts.skills_user_profile_missing_message,
+      maxEntries: 8,
+    },
+    bio: {
+      name: texts.bio,
+      type: "bio",
+      key: "bio",
+      missingMessage: texts.bio_user_profile_missing_message,
+      maxLength: 280,
+      weight: 1,
+    },
+    website: {
+      name: texts.website,
+      type: "text",
+      key: "bio",
+      maxLength: 240,
+      linkify: true,
+    },
+    location: {
+      name: texts.location,
+      key: "location",
+      icon: PlaceIcon,
+      missingMessage: texts.location_user_profile_missing_message,
+      type: "location",
+      weight: 0,
+      legacy: {
+        city: {
+          icon: PlaceIcon,
+          iconName: "PlaceIcon",
+          name: texts.city,
+          type: "text",
+          key: "city",
+        },
+        country: {
+          icon: PlaceIcon,
+          iconName: "PlaceIcon",
+          name: texts.country,
+          key: "country",
+          type: "text",
+        },
       },
     },
-  },
-};
+  };
+}

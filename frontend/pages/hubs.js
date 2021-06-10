@@ -1,10 +1,12 @@
-import React from "react";
-import WideLayout from "../src/components/layouts/WideLayout";
+import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import React, { useContext } from "react";
+import { getAllHubs } from "../public/lib/hubOperations";
+import getTexts from "../public/texts/texts";
+import UserContext from "../src/components/context/UserContext";
 import HubHeaderImage from "../src/components/hub/HubHeaderImage";
-import { Typography, Container, makeStyles, useMediaQuery } from "@material-ui/core";
-import NavigationSubHeader from "../src/components/hub/NavigationSubHeader";
-import axios from "axios";
 import HubPreviews from "../src/components/hub/HubPreviews";
+import NavigationSubHeader from "../src/components/hub/NavigationSubHeader";
+import WideLayout from "../src/components/layouts/WideLayout";
 import theme from "../src/themes/theme";
 
 const useStyles = makeStyles((theme) => ({
@@ -38,71 +40,64 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+export async function getServerSideProps(ctx) {
+  return {
+    props: {
+      hubs: await getAllHubs(ctx.locale),
+    },
+  };
+}
+
 export default function Hubs({ hubs }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "hub", locale: locale });
   return (
-    <WideLayout largeFooter noSpaceBottom title="Climate Solution Hubs">
+    <WideLayout largeFooter noSpaceBottom title={texts.climate_action_hubs}>
       <NavigationSubHeader />
-      <HubHeaderImage image="/images/hubs_background.jpg" alt="Beautiful flat landscape with many hot air balloons taking off" fullWidth />
+      <HubHeaderImage
+        image="/images/hubs_background.jpg"
+        alt={texts.hubs_overview_image_alt}
+        fullWidth
+      />
       <Container>
         <Typography color="primary" component="h1" className={classes.h1}>
-          Find climate solutions in each hub
+          {texts.find_climate_solutions_in_each_hub}
         </Typography>
         {!isNarrowScreen && (
           <Typography component="h2" className={classes.h2}>
-            Find the best ways to tackle climate change in each sector
+            {texts.find_the_best_ways_to_tackle_climate_change_in_each_sector}
           </Typography>
         )}
-        {isNarrowScreen ? <MobileExplainerText /> : <LargeScreenExplainerText />}
+        {isNarrowScreen ? (
+          <MobileExplainerText texts={texts} />
+        ) : (
+          <LargeScreenExplainerText texts={texts} />
+        )}
         <HubPreviews hubs={hubs} className={classes.hubPreviews} />
       </Container>
     </WideLayout>
   );
 }
 
-const MobileExplainerText = () => {
+const MobileExplainerText = ({ texts }) => {
   const classes = useStyles();
   return (
     <Typography className={classes.explainerText}>
-      Find information and concrete solutions on how to effectively fight climate change in each
-      sector.
+      {texts.hubs_overview_mobile_explainer_text}
     </Typography>
   );
 };
 
-const LargeScreenExplainerText = () => {
+const LargeScreenExplainerText = ({ texts }) => {
   const classes = useStyles();
   return (
     <Typography className={classes.explainerText}>
-      On the hub pages you can find information on how to effectively fight climate change in each
-      sector. You can find concrete and impactful solutions created by Climate Connect users. Get
-      inspired and see possible actions how to fight climate change and get involved in a project
-      you like. Who knows, maybe you will even find a really cool project that is already working
-      great somewhere else and can reproduce it in your home town! Contact the {"solutions'"}{" "}
-      creators directly on the {"solutions'"} pages to start a conversation!
+      {texts.hubs_overview_largescreen_explainer_text_first_part}
       <span className={classes.callToAction}>
-        Have fun exploring what is possible to save our planet! Remember: The clock is ticking and
-        every tenth of an degree matters.
+        {texts.hubs_overview_largescreen_explainer_text_last_part}
       </span>
     </Typography>
   );
-};
-
-Hubs.getInitialProps = async () => {
-  return {
-    hubs: await getHubs(),
-  };
-};
-
-const getHubs = async () => {
-  try {
-    const resp = await axios.get(`${process.env.API_URL}/api/hubs/`);
-    return resp.data.results;
-  } catch (err) {
-    if (err.response && err.response.data)
-      console.log("Error in getHubData: " + err.response.data.detail);
-    console.log(err);
-    return null;
-  }
 };

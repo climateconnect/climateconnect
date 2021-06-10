@@ -1,18 +1,20 @@
 import {
-  Container,
-  Typography,
-  makeStyles,
   Button,
   Collapse,
+  Container,
+  makeStyles,
+  Typography,
   useMediaQuery,
 } from "@material-ui/core";
-import React from "react";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import StatBox from "./StatBox";
-import MessageContent from "../communication/MessageContent";
-import ElementOnScreen from "../hooks/ElementOnScreen";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import MessageContent from "../communication/MessageContent";
+import UserContext from "../context/UserContext";
+import ElementOnScreen from "../hooks/ElementOnScreen";
+import StatBox from "./StatBox";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,12 +73,12 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
     border: "1px solid white",
   },
-  buttonContainer: {
-    display: "flex",
+  buttonContainer: (props) => ({
+    display: props.isLocationHub ? "none" : "flex",
     justifyContent: "center",
     height: 40,
     marginTop: theme.spacing(2),
-  },
+  }),
   quickInfo: {
     fontSize: 17,
   },
@@ -90,8 +92,13 @@ export default function HubContent({
   statBoxTitle,
   scrollToSolutions,
   subHeadline,
+  hubQuickInfoRef,
+  hubProjectsButtonRef,
+  isLocationHub,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ isLocationHub: isLocationHub });
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "hub", locale: locale });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [expanded, setExpanded] = React.useState(false);
   const handleClickExpand = () => {
@@ -124,7 +131,7 @@ export default function HubContent({
           <Typography component="h2" className={classes.textHeadline}>
             {subHeadline}
           </Typography>
-          <div className={classes.quickInfo}>
+          <div className={classes.quickInfo} ref={hubQuickInfoRef}>
             <MessageContent content={quickInfo} />
           </div>
           <div>
@@ -135,12 +142,12 @@ export default function HubContent({
               {expanded ? (
                 <>
                   <ExpandLessIcon />
-                  Less Info{" "}
+                  {texts.less_info}{" "}
                 </>
               ) : (
                 <>
                   <ExpandMoreIcon />
-                  More Info
+                  {texts.more_info}
                 </>
               )}
             </Button>
@@ -160,8 +167,9 @@ export default function HubContent({
           variant="contained"
           color="primary"
           onClick={scrollToSolutions}
+          ref={hubProjectsButtonRef}
         >
-          <ExpandMoreIcon /> Show Solutions
+          <ExpandMoreIcon /> {texts.show_projects}
         </Button>
       </div>
     </Container>

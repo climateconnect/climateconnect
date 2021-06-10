@@ -1,23 +1,32 @@
-import React from "react";
-import { Container, Avatar, Typography, Chip, Button, Link, Tooltip } from "@material-ui/core";
+import { Avatar, Button, Chip, Container, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
-import Linkify from "react-linkify";
-import MessageContent from "../communication/MessageContent";
 import PlaceIcon from "@material-ui/icons/Place";
+import React, { useContext } from "react";
+import Linkify from "react-linkify";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
+import MessageContent from "../communication/MessageContent";
+import UserContext from "../context/UserContext";
+import MiniHubPreviews from "../hub/MiniHubPreviews";
+import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
+import DetailledDescription from "./DetailledDescription";
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
     height: theme.spacing(20),
     width: theme.spacing(20),
     margin: "0 auto",
-    marginTop: theme.spacing(-11),
+    marginTop: theme.spacing(-15),
     fontSize: 50,
     border: "4px solid white",
     backgroundcolor: "white",
     "& img": {
       objectFit: "contain",
       backgroundColor: "white",
+    },
+    [theme.breakpoints.up("sm")]: {
+      marginRight: theme.spacing(5),
+      marginLeft: theme.spacing(5),
     },
   },
   avatarWithInfo: {
@@ -26,17 +35,19 @@ const useStyles = makeStyles((theme) => ({
     margin: "0 auto",
     [theme.breakpoints.up("sm")]: {
       margin: 0,
+      marginLeft: theme.spacing(-5),
       display: "inline-block",
       width: "auto",
     },
   },
-  accountInfo: {
+  accountInfo: (props) => ({
     padding: 0,
     marginTop: theme.spacing(1),
     [theme.breakpoints.up("sm")]: {
       paddingRight: theme.spacing(15),
     },
-  },
+    marginRight: props.isOwnAccount ? theme.spacing(10) : 0,
+  }),
   name: {
     fontWeight: "bold",
     padding: theme.spacing(1),
@@ -90,6 +101,10 @@ const useStyles = makeStyles((theme) => ({
   infoIcon: {
     marginBottom: -4,
   },
+  detailledDescription: {
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3),
+  },
 }));
 
 export default function AccountPage({
@@ -101,7 +116,9 @@ export default function AccountPage({
   isOwnAccount,
   editText,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ isOwnAccount: isOwnAccount });
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale });
   const componentDecorator = (href, text, key) => (
     <Link
       color="primary"
@@ -131,8 +148,12 @@ export default function AccountPage({
             if (value.name)
               return (
                 <div key={index} className={classes.subtitle}>
-                  {account.name} is a suborganization of{" "}
-                  <Link color="inherit" href={"/organizations/" + value.url_slug} target="_blank">
+                  {account.name} {texts.is_a_suborganization_of}{" "}
+                  <Link
+                    color="inherit"
+                    href={getLocalePrefix(locale) + "/organizations/" + value.url_slug}
+                    target="_blank"
+                  >
                     <MiniOrganizationPreview organization={value} size="small" />
                   </Link>
                 </div>
@@ -165,18 +186,19 @@ export default function AccountPage({
                 <MessageContent content={value ? value + additionalText : i.missingMessage} />
               </div>
             );
-          } else if (i.type === "location" && value) {
+          } else if (i.type === "hubs") {
+            return <MiniHubPreviews hubs={i.value} />;
+          } else if (i.type === "select" && value) {
+            const textValue = i.options ? i.options.find((o) => o?.key === value).name : value;
             return (
               <div key={index}>
+                <div className={classes.subtitle}>{i.name}:</div>
                 <div className={classes.content}>
-                  <Tooltip title="Location">
-                    <PlaceIcon color="primary" className={classes.infoIcon} />
-                  </Tooltip>
-                  {value ? value + additionalText : i.missingMessage}
+                  {textValue ? textValue + additionalText : i.missingMessage}
                 </div>
               </div>
             );
-          } else if (value) {
+          } else if (value && !["detailled_description", "location"].includes(i.type)) {
             return (
               <div key={index}>
                 <div className={classes.subtitle}>{i.name}:</div>
@@ -188,7 +210,23 @@ export default function AccountPage({
           }
         }
       });
-
+  const getDetailledDescription = () => {
+    const detailled_description_obj = Object.keys(account.info).filter((i) => {
+      const el = getFullInfoElement(infoMetadata, i, account.info[i]);
+      return el.type === "detailled_description";
+    });
+    if (detailled_description_obj.length > 0) {
+      const key = detailled_description_obj[0];
+      return getFullInfoElement(infoMetadata, key, account.info[key]);
+    } else return null;
+  };
+  const detailledDescription = getDetailledDescription();
+  const locationKeys = Object.keys(account.info).filter((key) => {
+    const infoElement = getFullInfoElement(infoMetadata, key, account.info[key]);
+    return infoElement.type === "location";
+  });
+  const location = locationKeys.length > 0 ? account.info[locationKeys[0]] : null;
+  const locationAdditionalText = location?.additionalText ? location.additionalText : "";
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div
@@ -210,7 +248,7 @@ export default function AccountPage({
             variant="contained"
             href={editHref}
           >
-            {editText ? editText : "Edit Profile"}
+            {editText ? editText : texts.edit_profile}
           </Button>
         )}
         <Container className={classes.avatarWithInfo}>
@@ -224,6 +262,16 @@ export default function AccountPage({
           <Typography variant="h5" className={classes.name}>
             {account.name}
           </Typography>
+          {location && (
+            <div>
+              <div className={classes.content}>
+                <Tooltip title="Location">
+                  <PlaceIcon color="primary" className={classes.infoIcon} />
+                </Tooltip>
+                {location ? location + locationAdditionalText : location.missingMessage}
+              </div>
+            </div>
+          )}
           {account.types && (
             <Container className={classes.noPadding}>
               {account.types.map((type) => (
@@ -234,12 +282,19 @@ export default function AccountPage({
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
       </Container>
+      {detailledDescription && (
+        <Container>
+          <DetailledDescription
+            title={detailledDescription.name}
+            value={detailledDescription.value}
+            className={classes.detailledDescription}
+          />
+        </Container>
+      )}
       {children}
     </Container>
   );
 }
-
-//below functions will be replaced with db call later --> potentially retrieve these props directly on the page instead of on the component
 
 const getFullInfoElement = (infoMetadata, key, value) => {
   return { ...infoMetadata[key], value: value };

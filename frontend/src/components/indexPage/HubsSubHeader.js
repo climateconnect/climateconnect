@@ -1,6 +1,9 @@
-import React from "react";
-import { makeStyles, Link, Container, useMediaQuery, Button } from "@material-ui/core";
+import { Button, Container, Link, makeStyles, useMediaQuery } from "@material-ui/core";
+import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,25 +31,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubsSubHeader({ hubs }) {
+export default function HubsSubHeader({ hubs, subHeaderRef }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "navigation", locale: locale });
   return (
-    <div className={classes.root}>
+    <div className={classes.root} ref={subHeaderRef}>
       <Container className={classes.container}>
         {isNarrowScreen ? (
-          <Button className={classes.viewHubsButton} variant="contained" href={`/hubs/`}>
-            View sector hubs
+          <Button
+            className={classes.viewHubsButton}
+            variant="contained"
+            href={`${getLocalePrefix(locale)}/hubs/`}
+          >
+            {texts.view_sector_hubs}
           </Button>
         ) : (
-          <Link className={classes.link} key={"/hubs"} href={`/hubs/`}>
-            All Hubs
+          <Link className={classes.link} key={"/hubs"} href={`${getLocalePrefix(locale)}/hubs/`}>
+            {texts.all_hubs}
           </Link>
         )}
         {hubs &&
           !isNarrowScreen &&
           hubs.map((hub) => (
-            <Link className={classes.link} key={hub.url_slug} href={`/hubs/${hub.url_slug}`}>
+            <Link
+              className={classes.link}
+              key={hub.url_slug}
+              href={`${getLocalePrefix(locale)}/hubs/${hub.url_slug}`}
+            >
               {hub.name}
             </Link>
           ))}

@@ -1,0 +1,678 @@
+{
+  "click_here_to_log_in": {
+    "en": "Click here to log in",
+    "de": "Klicke hier, um dich einzuloggen"
+  },
+  "yes": {
+    "en": "Yes",
+    "de": "Ja"
+  },
+  "no": {
+    "en": "No",
+    "de": "Nein"
+  },
+  "not_found_error": {
+    "en": "Not found",
+    "de": "Nicht gefunden"
+  },
+  "error": {
+    "en": "Error",
+    "de": "Fehler"
+  },
+  "location": {
+    "en": "Location",
+    "de": "Ort"
+  },
+  "city": {
+    "en": "City",
+    "de": "Stadt"
+  },
+  "country": {
+    "en": "Country",
+    "de": "Land"
+  },
+  "website": {
+    "en": "Website",
+    "de": "Webseite"
+  },
+  "description": {
+    "en": "Description",
+    "de": "Beschreibung"
+  },
+  "skills": {
+    "en": "Skills",
+    "de": "Fähigkeiten"
+  },
+  "project categories": {
+    "en": "Project Categories",
+    "de": "Projektkategorien"
+  },
+  "save": {
+    "en": "Save",
+    "de": "Speichern"
+  },
+  "add": {
+    "en": "Add",
+    "de": "Hinzufügen"
+  },
+  "click_here": {
+    "en": "Click here",
+    "de": "Klicke hier"
+  },
+  "go_to_the": {
+    "en": "Go to the",
+    "de": "Gehe zur"
+  },
+  "go_back": {
+    "en": "Go back",
+    "de": "Zurück"
+  },
+  "default_description": {
+    "en": "Free and non-profit climate action platform. Share, find and work on impactful, innovative and inspiring solutions to reduce and stop global warming. Join #teamclimate now!",
+    "de": "Kostenlose und gemeinnützige Klimaschutzplattform. Teile, finde und arbeite an wirkungsvollen, innovativen und inspirierenden Lösungen, um die globale Erwärmung zu reduzieren und zu stoppen. Komm ins #teamclimate!"
+  },
+  "default_title": {
+    "en": "Global Platform for Climate Change Solutions | Climate Connect",
+    "de": "Globale Plattform für Klimaschutz | Climate Connect"
+  },
+  "loading_and_waiting": {
+    "en": "Loading...",
+    "de": "Lädt..."
+  },
+  "privacy_policy": {
+    "en": "Privacy policy",
+    "de": "Datenschutzrichtlinien"
+  },
+  "and": {
+    "en": "and",
+    "de": "und"
+  },
+  "terms_of_use": {
+    "en": "terms of use",
+    "de": "AGBs"
+  },
+  "image": {
+    "en": "Image",
+    "de": "Bild"
+  },
+  "source": {
+    "en": "Source",
+    "de": "Quelle"
+  },
+  "sources": {
+    "en": "Sources",
+    "de": "Quellen"
+  },
+  "solutions": {
+    "en": "Solutions",
+    "de": "Lösungen"
+  },
+  "projects": {
+    "en": "Projects",
+    "de": "Projekte"
+  },
+  "project": {
+    "en": "Project",
+    "de": "Projekt"
+  },
+  "organizations": {
+    "en": "Organizations",
+    "de": "Organisationen"
+  },
+  "members": {
+    "en": "Members",
+    "de": "Mitglieder"
+  },
+  "hubs": {
+    "en": "Hubs",
+    "de": "Hubs"
+  },
+  "please_choose_one_of_the_location_options": {
+    "en": "Please choose one of the location options",
+    "de": "Bitte wähle eine der Optionen für den Org"
+  },
+  "organization_type": {
+    "en": "Organization type",
+    "de": "Organisationsart"
+  },
+  "status": {
+    "en": "Status",
+    "de": "Status"
+  },
+  "categories": {
+    "en": "Categories",
+    "de": "Kategorien"
+  },
+  "collaboration": {
+    "en": "Collaboration",
+    "de": "Zusammenarbeit"
+  },
+  "donate": {
+    "en": "Donate",
+    "de": "Spenden"
+  },
+  "share_request": {
+    "en": "Share",
+    "de": "Teile"
+  },
+  "share": {
+    "en": "Share",
+    "de": "Teilen"
+  },
+  "share_a_project": {
+    "en": "Share a project",
+    "de": "Projekt teilen"
+  },
+  "inbox": {
+    "en": "Inbox",
+    "de": "Posteingang"
+  },
+  "log_in": {
+    "en": "Log in",
+    "de": "Einloggen"
+  },
+  "log_out": {
+    "en": "Log out",
+    "de": "Ausloggen"
+  },
+  "sign_up": {
+    "en": "Sign Up",
+    "de": "Registrieren"
+  },
+  "sign_up_and_make_a_change": {
+    "en": "Sign up & make a change",
+    "de": "Mach mit"
+  },
+  "my_profile": {
+    "en": "My Profile",
+    "de": "Mein Profil"
+  },
+  "faq": {
+    "en": "FAQ",
+    "de": "FAQ"
+  },
+  "my_projects": {
+    "en": "My Projects",
+    "de": "Meine Projekte"
+  },
+  "my_organizations": {
+    "en": "My Organizations",
+    "de": "Meine Organisationen"
+  },
+  "settings": {
+    "en": "Settings",
+    "de": "Einstellungen"
+  },
+  "profile_image_of": {
+    "en": "Profile image of",
+    "de": "Profilbild von"
+  },
+  "climate_connect_logo": {
+    "en": "Climate Connect logo",
+    "de": "Climate Connect Logo"
+  },
+  "congratulations": {
+    "en": "Congratulations!",
+    "de": "Herzlichen Glückwunsch!"
+  },
+  "send_message": {
+    "en": "Send Message",
+    "de": "Nachricht senden"
+  },
+  "send": {
+    "en": "Send",
+    "de": "Senden"
+  },
+  "availability": {
+    "en": "Availability",
+    "de": "Verfügbarkeit"
+  },
+  "back": {
+    "en": "Back",
+    "de": "Zurück"
+  },
+  "next": {
+    "en": "Next",
+    "de": "Weiter"
+  },
+  "next_step": {
+    "en": "Next Step",
+    "de": "Nächster Schritt"
+  },
+  "finish": {
+    "en": "Finish",
+    "de": "Fertigstellen"
+  },
+  "finished": {
+    "en": "Finished",
+    "de": "Fertig"
+  },
+  "please": {
+    "en": "Please",
+    "de": "Bitte"
+  },
+  "please_log_in": {
+    "en": "Please log in",
+    "de": "Bitte melde dich an"
+  },
+  "or": {
+    "en": "or",
+    "de": "oder"
+  },
+  "cancel": {
+    "en": "Cancel",
+    "de": "Abbrechen"
+  },
+  "cancelled": {
+    "en": "Cancelled",
+    "de": "Abgebrochen"
+  },
+  "permissions": {
+    "en": "Permissions",
+    "de": "Berechtigungen"
+  },
+  "hours": {
+    "en": "Hours",
+    "de": "Stunden"
+  },
+  "remove": {
+    "en": "Remove",
+    "de": "Entfernen"
+  },
+  "select_more": {
+    "en": "Select more",
+    "de": "Mehr auswählen"
+  },
+  "error_no_creator": {
+    "en": "Error: There wasn't a Super Admin. Please contact contact@climateconnect.earth to resolve this issue.",
+    "de": "Fehler: Es gab keine(n) Super Admin. Bitte schreibe an contact@climateconnect.earth damit wir das Problem beheben können."
+  },
+  "not_all_your_updates_have_worked": {
+    "en": "Not all your updates have worked.",
+    "de": "Nicht alle deine Updates haben funktioniert."
+  },
+  "organization": {
+    "en": "Organization",
+    "de": "Organisation"
+  },
+  "page": {
+    "en": "Page",
+    "de": "Seite"
+  },
+  "create_an_organization": {
+    "en": "Create an organization",
+    "de": "Organisation erstellen"
+  },
+  "you_are": {
+    "en": "You are",
+    "de": "Du bist"
+  },
+  "this_user_is": {
+    "en": "This user is",
+    "de": "Diese*r Benutzer*in ist"
+  },
+  "save_changes": {
+    "en": "Save Changes",
+    "de": "Änderungen speichern"
+  },
+  "changes_might_not_be_saved": {
+    "en": "Changes you made might not be saved.",
+    "de": "Möglicherweise werden nicht alle Änderungen gespeichert."
+  },
+  "created": {
+    "en": "Created",
+    "de": "Erstellt"
+  },
+  "create": {
+    "en": "Create",
+    "de": "Erstellen"
+  },
+  "started": {
+    "en": "Started",
+    "de": "Gestartet"
+  },
+  "show_less": {
+    "en": "Show less",
+    "de": "Weniger anzeigen"
+  },
+  "show_more": {
+    "en": "Show more",
+    "de": "Mehr anzeigen"
+  },
+  "comments": {
+    "en": "Comments",
+    "de": "Kommentare"
+  },
+  "manage_members": {
+    "en": "Manage members",
+    "de": "Mitglieder verwalten"
+  },
+  "something_went_wrong": {
+    "en": "Something went wrong. Please contact our support at contact@climateconnect.earth.",
+    "de": "Etwas ist schiefgelaufen. Bitte wende Dich an unseren Support unter contact@climateconnect.earth."
+  },
+  "get_inspired": {
+    "en": "Get inspired",
+    "de": "Lass dich inspirieren"
+  },
+  "january": {
+    "en": "January",
+    "de": "Januar"
+  },
+  "february": {
+    "en": "February",
+    "de": "Februar"
+  },
+  "march": {
+    "en": "March",
+    "de": "März"
+  },
+  "april": {
+    "en": "April",
+    "de": "April"
+  },
+  "may": {
+    "en": "May",
+    "de": "Mai"
+  },
+  "june": {
+    "en": "June",
+    "de": "Juni"
+  },
+  "july": {
+    "en": "July",
+    "de": "Juli"
+  },
+  "august": {
+    "en": "August",
+    "de": "August"
+  },
+  "september": {
+    "en": "September",
+    "de": "September"
+  },
+  "october": {
+    "en": "October",
+    "de": "Oktober"
+  },
+  "november": {
+    "en": "November",
+    "de": "November"
+  },
+  "november_short": {
+    "en": "Nov.",
+    "de": "Nov."
+  },
+  "december": {
+    "en": "December",
+    "de": "Dezember"
+  },
+  "email": {
+    "en": "Email",
+    "de": "E-Mail"
+  },
+  "email_address": {
+    "en": "Email address",
+    "de": "E-Mail Adresse"
+  },
+  "password": {
+    "en": "Password",
+    "de": "Passwort"
+  },
+  "i_forgot_my_password": {
+    "en": "I forgot my password",
+    "de": "Ich habe mein Passwort vergessen"
+  },
+  "you_are_being_redirected_to_the_climate_connect_youtube_livestream": {
+    "en": "You are being redirected to the Climate Connect YouTube livestream",
+    "de": "Du wirst zum Climate Connect YouTube-Livestream weitergeleitet"
+  },
+  "you_are_being_redirected_to_the_climate_connect_zoom": {
+    "en": "You are being redirected to the Climate Connect zoom",
+    "de": "Du wirst zum Climate Connect Zoom weitergeleitet"
+  },
+  "no_results": {
+    "en": "No Results",
+    "de": "Kein Ergebnis"
+  },
+  "apply": {
+    "en": "Apply",
+    "de": "Anwenden"
+  },
+  "upload_an_image": {
+    "en": "Upload an image",
+    "de": "Bild hochladen"
+  },
+  "start_date": {
+    "en": "Start date",
+    "de": "Startdatum"
+  },
+  "end_date": {
+    "en": "End date",
+    "de": "Enddatum"
+  },
+  "date": {
+    "en": "Date",
+    "de": "Datum"
+  },
+  "edit_skills": {
+    "en": "Edit skills",
+    "de": "Fähigkeiten bearbeiten"
+  },
+  "add_skills": {
+    "en": "Add Skills",
+    "de": "Fähigkeiten hinzufügen"
+  },
+  "add_photo": {
+    "en": "Add Photo",
+    "de": "Foto hinzufügen"
+  },
+  "please_upload_either_a_png_or_a_jpg_file": {
+    "en": "Please upload either a png or a jpg file.",
+    "de": "Bitte lade entweder eine png- oder eine jpg-Datei hoch."
+  },
+  "upload_image": {
+    "en": "Upload Image",
+    "de": "Bild hochladen"
+  },
+  "change_image": {
+    "en": "Change image",
+    "de": "Bild ändern"
+  },
+  "find": {
+    "en": "Find",
+    "de": "Finde"
+  },
+  "work_on": {
+    "en": "Work on",
+    "de": "Arbeite an"
+  },
+  "get_inspired_by": {
+    "en": "Get inspired by",
+    "de": "Lass dich inspirieren durch"
+  },
+  "replicate": {
+    "en": "Replicate",
+    "de": "Verbreite"
+  },
+  "join": {
+    "en": "Join",
+    "de": "Mach mit bei"
+  },
+  "join_now": {
+    "en": "Join now",
+    "de": "Jetzt anmelden"
+  },
+  "collaborate_with": {
+    "en": "Collaborate with",
+    "de": "Mach mit bei"
+  },
+  "the_most_effective_climate_project": {
+    "en": "the most effective climate projects",
+    "de": "die effektivsten Klimaprojekte"
+  },
+  "climate_projects": {
+    "en": "climate projects",
+    "de": "Klimaprojekte"
+  },
+  "image_for": {
+    "en": "Image for",
+    "de": "Bild von"
+  },
+  "climate_action_platform": {
+    "en": "Climate action platform",
+    "de": "Klimaschutzplattform"
+  },
+  "climate_action_platform_text": {
+    "en": "Bringing everyone involved in climate action together.",
+    "de": "Wir bringen alle Klimaschützer zusammen."
+  },
+  "get_inspired_text": {
+    "en": "Find inspiring climate projects to work on. See where you can make the biggest difference.",
+    "de": "Finde inspirierende Klimaprojekte, an denen du mitarbeiten kannst. Finde heraus, wo du den größten Unterschied machen kannst."
+  },
+  "share_your_solutions": {
+    "en": "Share your solutions",
+    "de": "Teile deine Klimaprojekte"
+  },
+  "share_your_solutions_text_1": {
+    "en": "Share your projects & ideas with the climate community!",
+    "de": "Teile deine Projekte & Ideen mit der Klima-Community!"
+  },
+  "share_your_solutions_text_2": {
+    "en": "Find volunteers, partners and customers.",
+    "de": "Finde Freiwillige, Partner und Kunden."
+  },
+  "spread_solutions_globally": {
+    "en": "Spread solutions globally",
+    "de": "Verbreite Klimaprojekte auf globaler Ebene"
+  },
+  "spread_solutions_globally_text_1": {
+    "en": "Many great local solutions would work in many places!",
+    "de": "Viele effektive lokale Klimaprojekte würden an vielen Orten funktionieren!"
+  },
+  "spread_solutions_globally_text_2": {
+    "en": "Share and find solutions to spread them worldwide.",
+    "de": "Teile und finde Klimaprojekte, um sie weltweit zu verbreiten"
+  },
+  "connect_with_the_right_people": {
+    "en": "Connect with the right people",
+    "de": "Verbinde dich mit den richtigen Menschen"
+  },
+  "connect_with_the_right_people_text": {
+    "en": "Filter for projects and people based on your skills, needs and interests. Maximize your positive impact on our planet.",
+    "de": "Filtere nach Projekten und Personen basierend auf deinen Fähigkeiten, Bedürfnissen und Interessen. Maximiere deinen positiven Einfluss auf unseren Planeten."
+  },
+  "world_wide_collaboration": {
+    "en": "World wide collaboration",
+    "de": "Weltweite Zusammenarbeit"
+  },
+  "world_wide_collaboration_text_1": {
+    "en": "We need to all work together to protect our planet.",
+    "de": "Wir müssen alle zusammenarbeiten, um unseren Planeten zu schützen."
+  },
+  "world_wide_collaboration_text_2": {
+    "en": "Be part of the global climate community!",
+    "de": "Sei ein Teil der globalen Klimagemeinschaft!"
+  },
+  "our_team": {
+    "en": "Our Team",
+    "de": "Unser Team"
+  },
+  "our_team_image_text": {
+    "en": "Climate Connect's core team: A group of 9 people wearing Climate Connect T-Shirts",
+    "de": "Climate Connect's Kernteam: Eine Gruppe von 9 Personen, die ein Climmate Connect T-Shirt tragen"
+  },
+  "group_icon_alt": {
+    "en": "Icon displaying 2 people",
+    "de": "Symbol, das 2 Personen zeigt"
+  },
+  "by": {
+    "en": "by",
+    "de": "von"
+  },
+  "select_1_to_3_categories_that_fit_your_project": {
+    "en": "Select 1-3 categories that fit your project",
+    "de": "Wähle 1-3 Kategorien, die zu deinem Projekt passen"
+  },
+  "project_details": {
+    "en": "Project Details",
+    "de": "Projektdetails"
+  },
+  "add_your_team": {
+    "en": "Add your team",
+    "de": "Füge dein Team hinzu"
+  },
+  "step_1_basic_information": {
+    "en": "Step 1: Basic Information",
+    "de": "Schritt 1: Grundlegende Informationen"
+  },
+  "already_have_an_account": {
+    "en": "Already have an account?",
+    "de": "Hast du schon einen Account?"
+  },
+  "here_you_can_create_your_personal_account": {
+    "en": "Here you can create your personal account.",
+    "de": "Hier kannst du deinen persönlichen Account erstellen"
+  },
+  "you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up": {
+    "en": "You will have an opportunity to create/add an organization once signed up.",
+    "de": "Du hast die Möglichkeit, eine Organisation zu erstellen/hinzufügen, sobald du dich angemeldet hast."
+  },
+  "edit_profile": {
+    "en": "Edit Profile",
+    "de": "Profil bearbeiten"
+  },
+  "languages": {
+    "en": "Languages",
+    "de": "Sprachen"
+  },
+  "translate": {
+    "en": "Translate",
+    "de": "Übersetzen"
+  },
+  "automatically_translate": {
+    "en": "Automatically translate",
+    "de": "Automatisch Übersetzen"
+  },
+  "skip_and_publish": {
+    "en": "Publish",
+    "de": "Veröffentlichen"
+  },
+  "short_description": {
+    "en": "Short description",
+    "de": "Kurzbeschreibung"
+  },
+  "not_found_lowercase": {
+    "en": "not found.",
+    "de": "nicht gefunden."
+  },
+  "return_to_home": {
+    "en": "Return to home.",
+    "de": "Zurück zur Startseite"
+  },
+  "confirm_overwrite_all_texts_headline": {
+    "en": "Do you really want to overwrite your manual translations?",
+    "de": "Willst du wirklich deine manuellen Übersetzungen überschreiben?"
+  },
+  "confirm_overwrite_all_texts": {
+    "en": "Are you sure that you want to replace all the texts you manually translated with an automatic translation?",
+    "de": "Bist du sicher, dass du alle von dir übersetzten Texte durch eine automatische Übersetzung überschreiben möchtest?"
+  },
+  "check_translations": {
+    "en": "Check Translations",
+    "de": "Übersetzungen überprüfen"
+  },
+  "summary": {
+    "en": "Summary",
+    "de": "Zusammenfassung"
+  },
+  "twohundred_eighty_chars_max": {
+    "en": "280 characters max",
+    "de": "Maximal 280 Zeichen"
+  },
+  "make_this_user_the_creator": {
+    "en": "Make this user the Super Admin",
+    "de": "Zum Super Admin machen"
+  }
+}

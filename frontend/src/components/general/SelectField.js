@@ -1,7 +1,9 @@
-import React from "react";
-import { TextField, MenuItem, Checkbox, ListItemText } from "@material-ui/core";
+import { Checkbox, ListItemText, MenuItem, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles({
   white: {
@@ -26,6 +28,8 @@ export default function SelectField({
   controlledValue,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
 
   if (!defaultValue) defaultValue = "";
   const [value, setValue] = React.useState({
@@ -65,7 +69,7 @@ export default function SelectField({
       SelectProps={{
         native: !multiple,
         multiple: multiple,
-        renderValue: !multiple ? null : () => "Select more",
+        renderValue: !multiple ? null : () => texts.select_more,
         MenuProps: MenuProps,
       }}
       InputProps={InputProps}
@@ -91,12 +95,13 @@ export default function SelectField({
                 />
               </MenuItem>
             );
-          else
+          else {
             return (
               <option value={value.name} key={index} data-key={value.key}>
                 {value.name}
               </option>
             );
+          }
         })}
     </TextField>
   );

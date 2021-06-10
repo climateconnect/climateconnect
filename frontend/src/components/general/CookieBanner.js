@@ -1,7 +1,9 @@
-import React, { useContext } from "react";
+import { Button, Checkbox, Container, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography, Checkbox, Container, Button, useMediaQuery } from "@material-ui/core";
+import React, { useContext } from "react";
 import Cookies from "universal-cookie";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => {
@@ -68,7 +70,8 @@ const useStyles = makeStyles((theme) => {
 
 export default function CookieBanner({ closeBanner }) {
   const classes = useStyles();
-  const { updateCookies } = useContext(UserContext);
+  const { updateCookies, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "cookie", locale: locale });
   const [checked, setChecked] = React.useState({ necessary: true, statistics: false });
   const cookies = new Cookies();
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
@@ -105,32 +108,27 @@ export default function CookieBanner({ closeBanner }) {
     <div className={classes.root}>
       <Container maxWidth="lg">
         <Typography variant="h6" color="secondary" className={classes.headline}>
-          Cookie information and settings
+          {texts.cookie_banner_headline}
         </Typography>
-        {!isNarrowScreen && (
-          <Typography variant="body2">
-            We use cookies in order to offer you an optimal service and to further improve our
-            websites on the basis of statistics.
-          </Typography>
-        )}
+        {!isNarrowScreen && <Typography variant="body2">{texts.cookie_explanation}</Typography>}
         <Typography variant="body2">
-          For more information check out our{" "}
-          <a href="privacy" target="_blank">
-            privacy policy
+          {texts.for_more_information_check_out_our}{" "}
+          <a href={getLocalePrefix(locale) + "privacy"} target="_blank" rel="noreferrer">
+            {texts.privacy_policy}
           </a>{" "}
-          and{" "}
-          <a href="terms" target="_blank">
-            terms of use
+          {texts.and}{" "}
+          <a href={getLocalePrefix(locale) + "terms"} target="_blank" rel="noreferrer">
+            {texts.terms_of_use}
           </a>
         </Typography>
         <Checkbox checked={checked.necessary} disabled color="primary" />
-        Necessary
+        {texts.cookies_necessary}
         <Checkbox color="primary" checked={checked.statistics} onChange={onStatisticsChange} />
-        Statistics
+        {texts.cookies_statistics}
         <span className={classes.buttons}>
           <div className={classes.leftButtonContainer}>
             <Button variant="contained" className={classes.leftButton} onClick={confirmSelection}>
-              Confirm Selection
+              {texts.confirm_selection}
             </Button>
           </div>
           <div className={classes.rightButtonContainer}>
@@ -140,7 +138,7 @@ export default function CookieBanner({ closeBanner }) {
               variant="contained"
               onClick={enableAll}
             >
-              Enable all cookies
+              {texts.enable_all_cookies}
             </Button>
           </div>
         </span>

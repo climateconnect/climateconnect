@@ -6,12 +6,15 @@ const coreTheme = createMuiTheme({
     primary: {
       main: "#207178",
       light: "#66BCB5",
+      extraLight: "#D7F7F5",
     },
     secondary: { main: "#484848" },
     yellow: {
       main: "#FFDE0A",
     },
-    background: { default: "#fff" },
+    background: {
+      default: "#FFF",
+    },
     action: {
       selected: "#387077",
     },

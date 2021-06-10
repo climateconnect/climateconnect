@@ -1,12 +1,48 @@
+import NextCookies from "next-cookies";
 import React, { useContext } from "react";
-import WideLayout from "../src/components/layouts/WideLayout";
-import axios from "axios";
-import tokenConfig from "../public/config/tokenConfig";
-import Cookies from "next-cookies";
-import LoginNudge from "../src/components/general/LoginNudge";
-import UserContext from "../src/components/context/UserContext";
-import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
+import Cookies from "universal-cookie";
+import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
+import { nullifyUndefinedValues } from "../public/lib/profileOperations";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
+import getTexts from "../public/texts/texts";
+import UserContext from "../src/components/context/UserContext";
+import LoginNudge from "../src/components/general/LoginNudge";
+import WideLayout from "../src/components/layouts/WideLayout";
+import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
+
+export async function getServerSideProps(ctx) {
+  const { token } = NextCookies(ctx);
+  if (ctx.req && !token) {
+    const texts = getTexts({ page: "project", locale: ctx.locale });
+    const message = texts.please_log_in_or_sign_up_to_share_a_project;
+    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
+  }
+  const [
+    availabilityOptions,
+    userOrganizations,
+    categoryOptions,
+    skillsOptions,
+    rolesOptions,
+    statusOptions,
+  ] = await Promise.all([
+    getAvailabilityOptions(token, ctx.locale),
+    getUserOrganizations(token, ctx.locale),
+    getCategoryOptions(token, ctx.locale),
+    getSkillsOptions(token, ctx.locale),
+    getRolesOptions(token, ctx.locale),
+    getStatusOptions(token, ctx.locale),
+  ]);
+  return {
+    props: nullifyUndefinedValues({
+      availabilityOptions: availabilityOptions,
+      userOrganizations: userOrganizations,
+      categoryOptions: categoryOptions,
+      skillsOptions: skillsOptions,
+      rolesOptions: rolesOptions,
+      statusOptions: statusOptions,
+    }),
+  };
+}
 
 export default function Share({
   availabilityOptions,
@@ -15,22 +51,23 @@ export default function Share({
   skillsOptions,
   rolesOptions,
   statusOptions,
-  token,
 }) {
-  const { user } = useContext(UserContext);
+  const token = new Cookies().get("token");
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const [errorMessage, setErrorMessage] = React.useState("");
 
   const handleSetErrorMessage = (newMessage) => setErrorMessage(newMessage);
   if (!user)
     return (
-      <WideLayout title="Please Log In to Share your Climate Solution" hideHeadline={true}>
-        <LoginNudge fullPage whatToDo="share a project" />
+      <WideLayout title={texts.please_log_in + " " + texts.to_share_a_project} hideHeadline={true}>
+        <LoginNudge fullPage whatToDo={texts.to_share_a_project} />
       </WideLayout>
     );
   else {
     return (
       <WideLayout
-        title="Share your Climate Solution"
+        title={texts.share_your_climate_solution}
         hideHeadline={true}
         message={errorMessage}
         messageType={errorMessage && "error"}
@@ -51,37 +88,14 @@ export default function Share({
   }
 }
 
-Share.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  const [
-    availabilityOptions,
-    userOrganizations,
-    categoryOptions,
-    skillsOptions,
-    rolesOptions,
-    statusOptions,
-  ] = await Promise.all([
-    getAvailabilityOptions(token),
-    getUserOrganizations(token),
-    getCategoryOptions(token),
-    getSkillsOptions(token),
-    getRolesOptions(token),
-    getStatusOptions(token),
-  ]);
-  return {
-    availabilityOptions: availabilityOptions,
-    userOrganizations: userOrganizations,
-    categoryOptions: categoryOptions,
-    skillsOptions: skillsOptions,
-    rolesOptions: rolesOptions,
-    statusOptions: statusOptions,
-    token: token,
-  };
-};
-
-const getAvailabilityOptions = async (token) => {
+const getAvailabilityOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/availability/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/availability/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -93,9 +107,14 @@ const getAvailabilityOptions = async (token) => {
   }
 };
 
-const getCategoryOptions = async (token) => {
+const getCategoryOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/projecttags/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projecttags/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return parseOptions(resp.data.results, "parent_tag");
@@ -107,9 +126,14 @@ const getCategoryOptions = async (token) => {
   }
 };
 
-const getSkillsOptions = async (token) => {
+const getSkillsOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/skills/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/skills/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return parseOptions(resp.data.results, "parent_skill");
@@ -121,9 +145,14 @@ const getSkillsOptions = async (token) => {
   }
 };
 
-const getRolesOptions = async (token) => {
+const getRolesOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/roles/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -135,9 +164,14 @@ const getRolesOptions = async (token) => {
   }
 };
 
-const getStatusOptions = async (token) => {
+const getStatusOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/api/projectstatus/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projectstatus/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
@@ -149,12 +183,14 @@ const getStatusOptions = async (token) => {
   }
 };
 
-const getUserOrganizations = async (token) => {
+const getUserOrganizations = async (token, locale) => {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/my_organizations/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/my_organizations/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.length === 0) return null;
     else {
       return resp.data.map((o) => o.organization);

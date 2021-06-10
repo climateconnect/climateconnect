@@ -1,21 +1,23 @@
-import React, { useEffect, useContext } from "react";
-import { Container, Tabs, Tab, Typography } from "@material-ui/core";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { Container, Tab, Tabs, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Cookies from "next-cookies";
-
-import WideLayout from "../../src/components/layouts/WideLayout";
-import ProjectOverview from "../../src/components/project/ProjectOverview";
-import ProjectContent from "../../src/components/project/ProjectContent";
-import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
-import ProjectCommentsContent from "../../src/components/project/ProjectCommentsContent";
-
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import NextCookies from "next-cookies";
+import React, { useContext, useEffect, useRef } from "react";
+import Cookies from "universal-cookie";
 import tokenConfig from "../../public/config/tokenConfig";
-import axios from "axios";
-import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
+import ROLE_TYPES from "../../public/data/role_types";
+import { apiRequest, redirect } from "../../public/lib/apiOperations";
+import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
+import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
+import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
 import PageNotFound from "../../src/components/general/PageNotFound";
-import { redirect } from "../../public/lib/apiOperations";
+import WideLayout from "../../src/components/layouts/WideLayout";
+import ProjectCommentsContent from "../../src/components/project/ProjectCommentsContent";
+import ProjectContent from "../../src/components/project/ProjectContent";
+import ProjectOverview from "../../src/components/project/ProjectOverview";
+import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
+import Tutorial from "../../src/components/tutorial/Tutorial";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,17 +63,40 @@ const parseComments = (comments) => {
     });
 };
 
-export default function ProjectPage({ project, members, posts, comments, token, following }) {
+export async function getServerSideProps(ctx) {
+  const { token } = NextCookies(ctx);
+  const projectUrl = encodeURI(ctx.query.projectId);
+  const [project, members, posts, comments, following] = await Promise.all([
+    getProjectByIdIfExists(projectUrl, token, ctx.locale),
+    token ? getProjectMembersByIdIfExists(projectUrl, token, ctx.locale) : [],
+    getPostsByProject(projectUrl, token, ctx.locale),
+    getCommentsByProject(projectUrl, token, ctx.locale),
+    token ? getIsUserFollowing(projectUrl, token, ctx.locale) : false,
+  ]);
+  return {
+    props: nullifyUndefinedValues({
+      project: project,
+      members: members,
+      posts: posts,
+      comments: comments,
+      following: following,
+    }),
+  };
+}
+
+export default function ProjectPage({ project, members, posts, comments, following }) {
+  const token = new Cookies().get("token");
   const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
   const [isUserFollowing, setIsUserFollowing] = React.useState(following);
   const [followingChangePending, setFollowingChangePending] = React.useState(false);
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
 
   const handleWindowClose = (e) => {
     if (curComments.filter((c) => c.unconfirmed).length > 0 || followingChangePending) {
       e.preventDefault();
-      return (e.returnValue = "Changes you made might not be saved.");
+      return (e.returnValue = texts.changes_might_not_be_saved);
     }
   };
 
@@ -85,10 +110,10 @@ export default function ProjectPage({ project, members, posts, comments, token, 
 
   return (
     <WideLayout
-      description={project?.shortdescription}
+      description={project?.short_description}
       message={message?.message}
       messageType={message?.messageType}
-      title={project ? project.name : "Solution Not Found"}
+      title={project ? project.name : texts.project + " " + texts.not_found}
     >
       {project ? (
         <ProjectLayout
@@ -101,33 +126,14 @@ export default function ProjectPage({ project, members, posts, comments, token, 
           setCurComments={setCurComments}
           followingChangePending={followingChangePending}
           setFollowingChangePending={setFollowingChangePending}
+          texts={texts}
         />
       ) : (
-        <PageNotFound itemName="Project" />
+        <PageNotFound itemName={texts.project} />
       )}
     </WideLayout>
   );
 }
-
-ProjectPage.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  const projectUrl = encodeURI(ctx.query.projectId);
-  const [project, members, posts, comments, following] = await Promise.all([
-    getProjectByIdIfExists(projectUrl, token),
-    token ? getProjectMembersByIdIfExists(projectUrl, token) : [],
-    getPostsByProject(projectUrl, token),
-    getCommentsByProject(projectUrl, token),
-    token ? getIsUserFollowing(projectUrl, token) : false,
-  ]);
-  return {
-    project: project,
-    members: members,
-    posts: posts,
-    comments: comments,
-    token: token,
-    following: following,
-  };
-};
 
 function ProjectLayout({
   project,
@@ -139,12 +145,20 @@ function ProjectLayout({
   setCurComments,
   followingChangePending,
   setFollowingChangePending,
+  texts,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const [hash, setHash] = React.useState(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({ follow: false, leave: false });
   const typesByTabValue = ["project", "team", "comments"];
+
+  //refs for tutorial
+  const projectDescriptionRef = useRef(null);
+  const collaborationSectionRef = useRef(null);
+  const contactProjectCreatorButtonRef = useRef(null);
+  const projectTabsRef = useRef(null);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -157,7 +171,7 @@ function ProjectLayout({
 
   // pagination will only return 12 members
   const teamTabLabel = () => {
-    let teamLabel = "Team";
+    let teamLabel = texts.team;
     if (project && project.team) {
       if (project.team.length === 12) {
         teamLabel += ` (${project.team.length}+)`;
@@ -170,12 +184,15 @@ function ProjectLayout({
 
   // pagination will only return 10 comments
   const commentsTabLabel = () => {
-    let commentsLabel = "Comments";
+    let commentsLabel = texts.comments;
+    const number_of_parent_comments = project.comments.length;
+    const number_of_replies = project.comments.reduce((total, p) => total + p?.replies?.length, 0);
+    const number_of_coments = number_of_parent_comments + number_of_replies;
     if (project && project.comments) {
       if (project.comments.length === 10) {
-        commentsLabel += ` (${project.comments.length}+)`;
-      } else if (project?.team?.length < 10 && project.comments.length > 0) {
-        commentsLabel += ` (${project.comments.length})`;
+        commentsLabel += ` (${number_of_coments}+)`;
+      } else if (project?.team?.length < 10 && number_of_coments > 0) {
+        commentsLabel += ` (${number_of_coments})`;
       }
     }
     return commentsLabel;
@@ -195,19 +212,21 @@ function ProjectLayout({
   const leaveProject = async () => {
     try {
       console.log(tokenConfig(token));
-      const resp = await axios.post(
-        process.env.API_URL + "/api/projects/" + project.url_slug + "/leave/",
-        {},
-        tokenConfig(token)
-      );
+      const resp = await apiRequest({
+        method: "post",
+        url: "/api/projects/" + project.url_slug + "/leave/",
+        payload: {},
+        token: token,
+        locale: locale,
+      });
       console.log(resp);
       if (resp.status === 200)
         setMessage({
-          message: <span>You have successfully left the project.</span>,
+          message: <span>{texts.you_have_successfully_left_the_project}</span>,
           messageType: "success",
         });
       redirect(`/projects/${project.url_slug}`, {
-        message: "You have successfully left the project.",
+        message: texts.you_have_successfully_left_the_project,
       });
     } catch (e) {
       console.log(e?.response?.data?.message);
@@ -226,11 +245,7 @@ function ProjectLayout({
   const handleToggleFollowProject = () => {
     if (!token)
       setMessage({
-        message: (
-          <span>
-            Please <a href="/signin">log in</a> to follow a project.
-          </span>
-        ),
+        message: <span>{texts.please_log_in_to_follow_a_project}</span>,
         messageType: "error",
       });
     else if (isUserFollowing) setConfirmDialogOpen({ ...confirmDialogOpen, follow: true });
@@ -241,12 +256,13 @@ function ProjectLayout({
     const new_value = !isUserFollowing;
     setIsUserFollowing(new_value);
     setFollowingChangePending(true);
-    axios
-      .post(
-        process.env.API_URL + "/api/projects/" + project.url_slug + "/set_follow/",
-        { following: new_value },
-        tokenConfig(token)
-      )
+    apiRequest({
+      method: "post",
+      url: "/api/projects/" + project.url_slug + "/set_follow/",
+      payload: { following: new_value },
+      token: token,
+      locale: locale,
+    })
       .then(function (response) {
         setIsUserFollowing(response.data.following);
         setFollowingChangePending(false);
@@ -267,10 +283,9 @@ function ProjectLayout({
         ? project.team.find((m) => m.id === user.id).permission
         : null;
     const team_size = project?.team?.length;
-    if (user_permission === "Creator" && team_size > 1)
+    if (user_permission === ROLE_TYPES.all_type && team_size > 1)
       setMessage({
-        message:
-          'You can\'t leave a project as the creator. Please give the creator role to another team member by clicking "Manage Members" in the team tab',
+        message: `You can't leave a project as the creator. Please give the creator role to another team member by clicking "Manage Members" in the team tab`,
         messageType: "error",
       });
     else setConfirmDialogOpen({ ...confirmDialogOpen, leave: true });
@@ -284,17 +299,18 @@ function ProjectLayout({
         handleToggleFollowProject={handleToggleFollowProject}
         isUserFollowing={isUserFollowing}
         followingChangePending={followingChangePending}
+        contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
       />
 
       <Container className={classes.noPadding}>
-        <div className={classes.tabsWrapper}>
+        <div className={classes.tabsWrapper} ref={projectTabsRef}>
           <Tabs
             variant={isNarrowScreen ? "fullWidth" : "standard"}
             value={tabValue}
             onChange={handleTabChange}
             indicatorColor="primary"
           >
-            <Tab label="Project" className={classes.tab} />
+            <Tab label={texts.project} className={classes.tab} />
             <Tab label={teamTabLabel()} className={classes.tab} />
             <Tab label={commentsTabLabel()} className={classes.tab} />
           </Tabs>
@@ -303,7 +319,12 @@ function ProjectLayout({
 
       <Container className={classes.tabContent}>
         <TabContent value={tabValue} index={0}>
-          <ProjectContent project={project} leaveProject={requestLeaveProject} />
+          <ProjectContent
+            project={project}
+            leaveProject={requestLeaveProject}
+            projectDescriptionRef={projectDescriptionRef}
+            collaborationSectionRef={collaborationSectionRef}
+          />
         </TabContent>
         <TabContent value={tabValue} index={1}>
           <ProjectTeamContent project={project} leaveProject={requestLeaveProject} />
@@ -320,12 +341,10 @@ function ProjectLayout({
       <ConfirmDialog
         open={confirmDialogOpen.follow}
         onClose={onFollowDialogClose}
-        title="Do you really want to unfollow?"
+        title={texts.do_you_really_want_to_unfollow}
         text={
           <span className={classes.dialogText}>
-            Are you sure that you want to unfollow this project?
-            <br />
-            You {"won't"} receive updates about it anymore
+            {texts.are_you_sure_that_you_want_to_unfollow_this_project}
           </span>
         }
         confirmText="Yes"
@@ -334,24 +353,30 @@ function ProjectLayout({
       <ConfirmDialog
         open={confirmDialogOpen.leave}
         onClose={onConfirmDialogClose}
-        title="Do you really want to leave this project?"
+        title={texts.do_you_really_want_to_leave_this_project}
         text={
           <span className={classes.dialogText}>
-            Are you sure that you want to leave this project?
+            {texts.are_you_sure_that_you_want_to_leave_this_project}
             <br />
-            You {"won't"} be part of the team anymore.
+            {texts.you_wont_be_part_of_the_team_anymore}
             {project?.team?.length === 1 && (
               <Typography color="error">
-                <b>
-                  Danger: You are the only member of this project. <br /> If you leave the project
-                  it will be deactivated.
-                </b>
+                <b>{texts.you_are_the_only_member_of_this_project}</b>
               </Typography>
             )}
           </span>
         }
         confirmText="Yes"
         cancelText="No"
+      />
+      <Tutorial
+        fixedPosition
+        pointerRefs={{
+          projectDescriptionRef: projectDescriptionRef,
+          collaborationSectionRef: collaborationSectionRef,
+          contactProjectCreatorButtonRef: contactProjectCreatorButtonRef,
+          projectTabsRef: projectTabsRef,
+        }}
       />
     </div>
   );
@@ -361,12 +386,14 @@ function TabContent({ value, index, children }) {
   return <div hidden={value !== index}>{children}</div>;
 }
 
-async function getProjectByIdIfExists(projectUrl, token) {
+async function getProjectByIdIfExists(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.length === 0) return null;
     else {
       return parseProject(resp.data);
@@ -377,12 +404,14 @@ async function getProjectByIdIfExists(projectUrl, token) {
   }
 }
 
-async function getIsUserFollowing(projectUrl, token) {
+async function getIsUserFollowing(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/am_i_following/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/am_i_following/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.length === 0) return null;
     else {
       //TODO: get comments and timeline posts and project taggings
@@ -394,12 +423,14 @@ async function getIsUserFollowing(projectUrl, token) {
   }
 }
 
-async function getPostsByProject(projectUrl, token) {
+async function getPostsByProject(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/posts/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/posts/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.length === 0) return null;
     else {
       return resp.data.results;
@@ -410,12 +441,14 @@ async function getPostsByProject(projectUrl, token) {
   }
 }
 
-async function getCommentsByProject(projectUrl, token) {
+async function getCommentsByProject(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/comments/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/comments/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.length === 0) return null;
     else {
       return resp.data.results;
@@ -426,12 +459,14 @@ async function getCommentsByProject(projectUrl, token) {
   }
 }
 
-async function getProjectMembersByIdIfExists(projectUrl, token) {
+async function getProjectMembersByIdIfExists(projectUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/projects/" + projectUrl + "/members/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/members/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return parseProjectMembers(resp.data.results);
@@ -451,7 +486,7 @@ function parseProject(project) {
     status: project.status,
     location: project.location,
     description: project.description,
-    shortdescription: project.short_description,
+    short_description: project.short_description,
     collaborators_welcome: project.collaborators_welcome,
     start_date: project.start_date,
     end_date: project.end_date,
@@ -478,7 +513,7 @@ function parseProjectMembers(projectMembers) {
       ...m.user,
       url_slug: m.user.url_slug,
       role: m.role_in_project,
-      permission: m.role.name,
+      permission: m.role.role_type,
       availability: m.availability,
       name: m.user.first_name + " " + m.user.last_name,
       location: m.user.location,

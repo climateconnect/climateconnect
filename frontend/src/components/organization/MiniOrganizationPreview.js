@@ -1,7 +1,9 @@
-import React from "react";
-import { Typography, IconButton } from "@material-ui/core";
+import { IconButton, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 
 const useStyles = makeStyles((theme) => ({
@@ -43,13 +45,15 @@ export default function MiniOrganizationPreview({
 }
 
 function Content({ organization, size, onDelete }) {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   const classes = useStyles();
   return (
     <span className={classes.wrapper}>
       <img
-        src={getImageUrl(organization.image)}
+        src={getImageUrl(organization.thumbnail_image)}
         className={`${classes.orgImage} ${size === "small" && classes.smallOrgImage}`}
-        alt={organization.name + "'s logo"}
+        alt={texts.organizations_logo}
       />
       {size === "small" ? (
         <>{organization.name}</>

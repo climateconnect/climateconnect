@@ -1,35 +1,38 @@
-import React from "react";
-import Layout from "../src/components/layouts/layout";
+import React, { useContext } from "react";
+import { apiRequest, redirect } from "../public/lib/apiOperations";
+import getTexts from "../public/texts/texts";
+import UserContext from "../src/components/context/UserContext";
 import Form from "../src/components/general/Form";
-import axios from "axios";
-import tokenConfig from "../public/config/tokenConfig";
-import { redirect } from "../public/lib/apiOperations";
-
-const fields = [
-  {
-    required: true,
-    label: "Enter your login email",
-    key: "email",
-    type: "email",
-  },
-];
-
-const messages = {
-  submitMessage: "Send password reset email",
-};
+import Layout from "../src/components/layouts/layout";
 
 export default function ResetPassword() {
   const [errorMessage, setErrorMessage] = React.useState(null);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "settings", locale: locale });
+
+  const messages = {
+    submitMessage: texts.send_password_reset_email,
+  };
+
+  const fields = [
+    {
+      required: true,
+      label: texts.enter_your_login_email,
+      key: "email",
+      type: "email",
+    },
+  ];
 
   const handleSubmit = async (event, values) => {
     event.preventDefault();
     if (values.email) {
       try {
-        const response = await axios.post(
-          process.env.API_URL + "/api/send_reset_password_email/",
-          { email: values.email },
-          tokenConfig
-        );
+        const response = await apiRequest({
+          method: "post",
+          url: "/api/send_reset_password_email/",
+          payload: { email: values.email },
+          locale: locale,
+        });
         redirect("/browse", {
           message: response.data.message,
         });
@@ -38,12 +41,12 @@ export default function ResetPassword() {
         if (error.response && error.response && error.response.data)
           setErrorMessage(error.response.data.message);
       }
-    } else setErrorMessage("You didn't enter an email.");
+    } else setErrorMessage(texts.you_didnt_enter_an_email);
   };
 
   return (
     <div>
-      <Layout title="Reset Password">
+      <Layout title={texts.reset_password}>
         <Form
           fields={fields}
           messages={messages}

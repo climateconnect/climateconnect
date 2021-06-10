@@ -1,8 +1,7 @@
-import React from "react";
-import { mount } from "enzyme";
 import { ThemeProvider } from "@material-ui/core/styles";
-
-import Header from "../../../src/components/general/Header";
+import { mount } from "enzyme";
+import React from "react";
+import Header from "../../../src/components/header/Header";
 import theme from "../../../src/themes/theme";
 
 describe("Header Component", () => {

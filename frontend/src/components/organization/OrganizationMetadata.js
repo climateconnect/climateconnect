@@ -1,9 +1,10 @@
-import React from "react";
 import { Box, Tooltip, Typography } from "@material-ui/core";
-import PlaceIcon from "@material-ui/icons/Place";
-import ExploreIcon from "@material-ui/icons/Explore";
 import { makeStyles } from "@material-ui/core/styles";
-import organization_info_metadata from "../../../public/data/organization_info_metadata";
+import ExploreIcon from "@material-ui/icons/Explore";
+import PlaceIcon from "@material-ui/icons/Place";
+import React, { useContext } from "react";
+import getOrganizationInfoMetadata from "../../../public/data/organization_info_metadata";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -39,6 +40,8 @@ const useStyles = makeStyles((theme) => {
 
 export default function OrganizationMetaData({ organization, showOrganizationType }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const organization_info_metadata = getOrganizationInfoMetadata(locale, organization);
   const additionalInfo = organization.types.reduce((arr, type) => {
     if (type.additional_info) {
       type.additional_info.map((i) => {

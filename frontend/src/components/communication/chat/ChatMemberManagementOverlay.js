@@ -1,11 +1,13 @@
-import React, { useContext } from "react";
-import { makeStyles, Button } from "@material-ui/core";
-import ManageMembers from "../../manageMembers/ManageMembers";
-import UserContext from "../../context/UserContext";
+import { Button, makeStyles } from "@material-ui/core";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import SaveIcon from "@material-ui/icons/Save";
-import { getAllChangedMembers } from "../../../../public/lib/manageMembers";
+import React, { useContext } from "react";
+import ROLE_TYPES from "../../../../public/data/role_types";
 import { apiRequest } from "../../../../public/lib/apiOperations";
+import { getAllChangedMembers, hasGreaterRole } from "../../../../public/lib/manageMembers";
+import getTexts from "../../../../public/texts/texts";
+import UserContext from "../../context/UserContext";
+import ManageMembers from "../../manageMembers/ManageMembers";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,35 +39,46 @@ export default function ChatMemberManagementOverlay({
   toggleMemberManagementExpanded,
 }) {
   const classes = useStyles();
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "chat", locale: locale });
   const [state, setState] = React.useState({
     curParticipants: participants,
     curUserRole: user_role,
   });
-  const { user } = useContext(UserContext);
   const canEdit = (p) => {
-    const participant_role = p.role.name ? p.role : rolesOptions.find((o) => o.name === p.role);
-    return p.id === user.id || state.curUserRole.role_type > participant_role.role_type;
+    const participant_role = p.role.name
+      ? p.role
+      : rolesOptions.find((o) => o.role_type === p.role.role_type);
+    return (
+      p.id === user.id || hasGreaterRole(state.curUserRole.role_type, participant_role.role_type)
+    );
   };
 
-  const handleSetCurParticipants = (newValue) => setState({ ...state, curParticipants: newValue });
-  const handleSetCurUserRole = (newValue) => setState({ ...state, curUserRole: newValue });
-
+  const handleSetCurParticipants = (newValue, newUserRoleValue) => {
+    if (newUserRoleValue)
+      setState({
+        ...state,
+        curParticipants: newValue,
+        curUserRole: newUserRoleValue,
+      });
+    else setState({ ...state, curParticipants: newValue });
+  };
+  const handleSetCurUserRole = (newValue) => {
+    setState({ ...state, curUserRole: newValue });
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
     onSubmit()
       .then(() => {
         setParticipants(state.curParticipants);
         toggleMemberManagementExpanded(
-          "You have successfully updated this chat's participants!",
+          texts.you_have_successfully_updated_this_chats_participants,
           "success"
         );
       })
       .catch((e) => {
         console.log(e);
-        toggleMemberManagementExpanded(
-          "Something went wrong! Contact contact@climateconnect.earth if this happens repeatedly!",
-          "error"
-        );
+        toggleMemberManagementExpanded(texts.something_went_wrong, "error");
       });
   };
 
@@ -78,56 +91,59 @@ export default function ChatMemberManagementOverlay({
     );
     return Promise.all(
       allChangedMembers.map((m) => {
-        if (m.operation === "delete") deleteMember(m);
-        if (m.operation === "update") updateMember(m);
+        if (m.operation === "delete") deleteMember(m, locale);
+        if (m.operation === "update") updateMember(m, locale);
         if (m.operation === "create") {
-          createMembers(m.chat_participants);
+          createMembers(m.chat_participants, locale);
         }
         if (m.operation === "creator_change") {
-          updateCreator(m.new_creator);
+          updateCreator(m.new_creator, locale);
         }
       })
     );
   };
 
-  const deleteMember = (m) => {
-    apiRequest(
-      "delete",
-      "/api/chat/" + chat_uuid + "/update_member/" + m.participant_id + "/",
-      token,
-      null,
-      true
-    );
+  const deleteMember = (m, locale) => {
+    apiRequest({
+      method: "delete",
+      url: "/api/chat/" + chat_uuid + "/update_member/" + m.participant_id + "/",
+      token: token,
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
-  const updateMember = (m) => {
-    apiRequest(
-      "patch",
-      "/api/chat/" + chat_uuid + "/update_member/" + m.participant_id + "/",
-      token,
-      parseMemberForUpdateRequest(m),
-      true
-    );
+  const updateMember = (m, locale) => {
+    apiRequest({
+      method: "patch",
+      url: "/api/chat/" + chat_uuid + "/update_member/" + m.participant_id + "/",
+      token: token,
+      payload: parseMemberForUpdateRequest(m),
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
-  const createMembers = (chat_participants) => {
-    apiRequest(
-      "post",
-      "/api/chat/" + chat_uuid + "/add_members/",
-      token,
-      parseMembersForCreateRequest(chat_participants),
-      true
-    );
+  const createMembers = (chat_participants, locale) => {
+    apiRequest({
+      method: "post",
+      url: "/api/chat/" + chat_uuid + "/add_members/",
+      token: token,
+      payload: parseMembersForCreateRequest(chat_participants),
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
-  const updateCreator = (new_creator) => {
-    apiRequest(
-      "post",
-      "/api/chat/" + chat_uuid + "/change_creator/",
-      token,
-      parseMemberForUpdateRequest(new_creator),
-      true
-    );
+  const updateCreator = (new_creator, locale) => {
+    apiRequest({
+      method: "post",
+      url: "/api/chat/" + chat_uuid + "/change_creator/",
+      token: token,
+      payload: parseMemberForUpdateRequest(new_creator),
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
   const parseMembersForCreateRequest = (members) => {
@@ -149,12 +165,14 @@ export default function ChatMemberManagementOverlay({
   };
 
   const verifyInput = () => {
-    if (state.curParticipants.filter((cm) => cm.role.name === "Creator").length !== 1) {
-      alert("There must be exactly one creator of an organization.");
+    if (
+      state.curParticipants.filter((cm) => cm.role.role_type === ROLE_TYPES.all_type).length !== 1
+    ) {
+      alert(texts.there_must_be_exactly_one_creator_of_an_organization);
       return false;
     }
-    if (!participants.filter((m) => m.role.name === "Creator").length === 1) {
-      alert("error(There wasn't a creator)");
+    if (!participants.filter((m) => m.role.role_type === ROLE_TYPES.all_type).length === 1) {
+      alert(texts.error + ": " + texts.there_wasnt_a_creator);
       return false;
     }
     return true;
@@ -169,7 +187,7 @@ export default function ChatMemberManagementOverlay({
           startIcon={<ArrowBackIcon />}
           onClick={toggleMemberManagementExpanded}
         >
-          Go back
+          {texts.go_back}
         </Button>
         <Button
           color="primary"
@@ -178,7 +196,7 @@ export default function ChatMemberManagementOverlay({
           className={classes.saveIcon}
           type="submit"
         >
-          Save
+          {texts.save}
         </Button>
       </div>
       <ManageMembers
@@ -191,7 +209,7 @@ export default function ChatMemberManagementOverlay({
         setUserRole={handleSetCurUserRole}
         hideHoursPerWeek
         canEdit={canEdit}
-        label="Search for users to add to this group chat"
+        label={texts.search_for_users_to_add_to_this_group_chat}
         dontPickRole
       />
     </form>

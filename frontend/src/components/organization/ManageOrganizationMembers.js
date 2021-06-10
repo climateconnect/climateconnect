@@ -1,9 +1,12 @@
-import React from "react";
-import { Typography, Button } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
+import ROLE_TYPES from "../../../public/data/role_types";
+import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
+import { getAllChangedMembers, hasGreaterRole } from "../../../public/lib/manageMembers";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import ManageMembers from "../manageMembers/ManageMembers";
-import { apiRequest, redirect } from "../../../public/lib/apiOperations";
-import { getAllChangedMembers } from "../../../public/lib/manageMembers";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -35,11 +38,13 @@ export default function ManageOrganizationMembers({
   availabilityOptions,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   const [user_role, setUserRole] = React.useState(members.find((m) => m.id === user.id).role);
   if (!user_role) setUserRole(members.find((m) => m.id === user.id).role);
 
   const canEdit = (member) => {
-    return member.id === user.id || user_role.role_type > member.role.role_type;
+    return member.id === user.id || hasGreaterRole(user_role.role_type, member.role.role_type);
   };
 
   const handleSubmit = (event) => {
@@ -47,13 +52,13 @@ export default function ManageOrganizationMembers({
     onSubmit()
       .then(() => {
         redirect("/organizations/" + organization.url_slug, {
-          message: "You have successfully updated your organization members",
+          message: texts.successfully_updated_org_members,
         });
       })
       .catch((e) => {
         console.log(e);
         redirect("/organizations/" + organization.url_slug, {
-          errorMessage: "Not all your updates have worked.",
+          errorMessage: texts.not_all_your_updates_have_worked,
         });
       });
   };
@@ -63,74 +68,77 @@ export default function ManageOrganizationMembers({
     const allChangedMembers = getAllChangedMembers(members, currentMembers, "organization_members");
     return Promise.all(
       allChangedMembers.map((m) => {
-        if (m.operation === "delete") deleteMember(m);
-        if (m.operation === "update") updateMember(m);
+        if (m.operation === "delete") deleteMember(m, locale);
+        if (m.operation === "update") updateMember(m, locale);
         if (m.operation === "create") {
-          createMembers(m.organization_members);
+          createMembers(m.organization_members, locale);
         }
         if (m.operation === "creator_change") {
-          updateCreator(m.new_creator);
+          updateCreator(m.new_creator, locale);
         }
       })
     );
   };
 
   const verifyInput = () => {
-    if (currentMembers.filter((cm) => cm.role.name === "Creator").length !== 1) {
-      alert("There must be exactly one creator of an organization.");
+    if (currentMembers.filter((cm) => cm.role.role_type === ROLE_TYPES.all_type).length !== 1) {
+      alert(texts.there_must_be_exactly_one_creator_of_organization);
       return false;
     }
-    if (!members.filter((m) => m.role.name === "Creator").length === 1) {
-      alert("error(There wasn't a creator)");
+    if (!members.filter((m) => m.role.role_type === ROLE_TYPES.all_type).length === 1) {
+      alert(texts.error_no_creator);
       return false;
     }
     return true;
   };
 
-  const deleteMember = (m) => {
-    apiRequest(
-      "delete",
-      "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
-      token,
-      null,
-      true
-    );
+  const deleteMember = (m, locale) => {
+    apiRequest({
+      method: "delete",
+      url: "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
+      token: token,
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
   const updateMember = (m) => {
-    apiRequest(
-      "patch",
-      "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
-      token,
-      parseMemberForUpdateRequest(m, organization),
-      true
-    );
+    apiRequest({
+      method: "patch",
+      url: "/api/organizations/" + organization.url_slug + "/update_member/" + m.member_id + "/",
+      token: token,
+      payload: parseMemberForUpdateRequest(m, organization),
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
   const createMembers = (organization_members) => {
-    apiRequest(
-      "post",
-      "/api/organizations/" + organization.url_slug + "/add_members/",
-      token,
-      parseMembersForCreateRequest(organization_members, organization),
-      true
-    );
+    apiRequest({
+      method: "post",
+      url: "/api/organizations/" + organization.url_slug + "/add_members/",
+      token: token,
+      payload: parseMembersForCreateRequest(organization_members, organization),
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
   const updateCreator = (new_creator) => {
-    apiRequest(
-      "post",
-      "/api/organizations/" + organization.url_slug + "/change_creator/",
-      token,
-      parseMemberForUpdateRequest(new_creator, organization),
-      true
-    );
+    apiRequest({
+      method: "post",
+      url: "/api/organizations/" + organization.url_slug + "/change_creator/",
+      token: token,
+      payload: parseMemberForUpdateRequest(new_creator, organization),
+      shouldThrowError: true,
+      locale: locale,
+    });
   };
 
   return (
     <>
       <Typography variant="h4" color="primary" className={classes.headline}>
-        Manage members of {organization.name}
+        {texts.manage_members_of_organization_name}
       </Typography>
       <form onSubmit={handleSubmit}>
         <ManageMembers
@@ -150,14 +158,14 @@ export default function ManageOrganizationMembers({
           <div className={classes.buttons}>
             <Button
               className={classes.button}
-              href={"/organizations/" + organization.url_slug}
+              href={getLocalePrefix(locale) + "/organizations/" + organization.url_slug}
               variant="contained"
               color="secondary"
             >
-              Cancel
+              {texts.cancel}
             </Button>
             <Button className={classes.button} variant="contained" color="primary" type="submit">
-              Save
+              {texts.save}
             </Button>
           </div>
         </div>

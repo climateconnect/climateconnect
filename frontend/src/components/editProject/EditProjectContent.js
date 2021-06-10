@@ -1,22 +1,25 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import SelectField from "../general/SelectField";
-import DatePicker from "../general/DatePicker";
 import {
-  Switch,
-  Typography,
-  TextField,
-  List,
-  Chip,
   Button,
+  Chip,
+  List,
+  Switch,
+  TextField,
+  Typography,
   useMediaQuery,
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from "react";
+import getCollaborationTexts from "../../../public/data/collaborationTexts";
+import ROLE_TYPES from "../../../public/data/role_types";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import ConfirmDialog from "../dialogs/ConfirmDialog";
+import EnterTextDialog from "../dialogs/EnterTextDialog";
+import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
+import DatePicker from "../general/DatePicker";
+import SelectField from "../general/SelectField";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
-import collaborationTexts from "../../../public/data/collaborationTexts";
-import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
-import EnterTextDialog from "../dialogs/EnterTextDialog";
-import ConfirmDialog from "../dialogs/ConfirmDialog";
 import DeleteProjectButton from "./DeleteProjectButton";
 
 const useStyles = makeStyles((theme) => ({
@@ -70,6 +73,9 @@ export default function EditProjectContent({
   deleteProject,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
+  const collaborationTexts = getCollaborationTexts(texts);
   const [selectedItems, setSelectedItems] = React.useState(
     project.skills ? [...project.skills] : []
   );
@@ -112,7 +118,7 @@ export default function EditProjectContent({
 
   const handleConnectionsDialogClose = (connection) => {
     if (project.helpful_connections && project.helpful_connections.includes(connection))
-      alert("You can not add the same connection twice.");
+      alert(texts.you_can_not_add_the_same_connection_twice);
     else {
       if (connection)
         handleSetProject({
@@ -156,7 +162,7 @@ export default function EditProjectContent({
       <div className={classes.block}>
         <div className={classes.block}>
           <Typography component="span">
-            {isNarrowScreen ? "Personal" : "Personal Project"}
+            {isNarrowScreen ? texts.personal : texts.personal_project}
           </Typography>
           <Switch
             checked={!project.is_personal_project}
@@ -165,9 +171,9 @@ export default function EditProjectContent({
             inputProps={{ "aria-label": "secondary checkbox" }}
             color="primary"
           />
-          <Typography component="span">{"Organization's project"}</Typography>
+          <Typography component="span">{texts.organizations_project}</Typography>
         </div>
-        {!isNarrowScreen && user_role.name === "Creator" && (
+        {!isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
           <DeleteProjectButton
             project={project}
             handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}
@@ -203,7 +209,7 @@ export default function EditProjectContent({
                 )
               }
               options={userOrganizations}
-              label="Created by"
+              label={texts.created_by}
               className={classes.select}
               required
             />
@@ -220,7 +226,7 @@ export default function EditProjectContent({
               )
             }
             options={statusOptions}
-            label="Project status"
+            label={texts.project_status}
             className={classes.select}
             required
           />
@@ -229,7 +235,7 @@ export default function EditProjectContent({
           {statusesWithStartDate.includes(project.status.id) && (
             <DatePicker
               className={classes.startDate}
-              label="Start date"
+              label={texts.start_date}
               date={project.start_date}
               handleChange={(newDate) => handleChangeProject(newDate, "start_date")}
               required
@@ -238,7 +244,7 @@ export default function EditProjectContent({
           {statusesWithEndDate.includes(project.status.id) && (
             <DatePicker
               className={classes.datePicker}
-              label="End date"
+              label={texts.end_date}
               date={project.start_date}
               handleChange={(newDate) => handleChangeProject(newDate, "end_date")}
               required
@@ -253,12 +259,12 @@ export default function EditProjectContent({
             fullWidth
             multiline
             rows={9}
-            label="Project description"
+            label={texts.project_description}
             onChange={(event) =>
               handleChangeProject(event.target.value.substring(0, 4000), "description")
             }
-            helperText={"Describe your project in detail. Please only use English!"}
-            placeholder={`Describe your project in more detail.\n\n-What are you trying to achieve?\n-How are you trying to achieve it\n-What were the biggest challenges?\n-What insights have you gained during the implementation?`}
+            helperText={texts.describe_your_project_in_detail_please_only_use_english}
+            placeholder={texts.describe_your_project_in_more_detail}
             value={project.description ? project.description : ""}
           />
         </div>
@@ -303,7 +309,7 @@ export default function EditProjectContent({
                   </List>
                 )}
                 <Button variant="contained" color="primary" onClick={onClickSkillsDialogOpen}>
-                  {project.skills && project.skills.length ? "Edit skills" : "Add Skills"}
+                  {project.skills && project.skills.length ? texts.edit_skills : texts.add_skills}
                 </Button>
               </div>
             </div>
@@ -331,7 +337,7 @@ export default function EditProjectContent({
                 </List>
               )}
               <Button variant="contained" color="primary" onClick={onClickConnectionsDialogOpen}>
-                Add Connections
+                {texts.add_connections}
               </Button>
             </div>
           </>
@@ -350,17 +356,17 @@ export default function EditProjectContent({
         open={open.connections}
         onClose={handleConnectionsDialogClose}
         maxLength={25}
-        applyText="Add"
-        inputLabel="Connection"
-        title="Add a helpful connection"
+        applyText={texts.add}
+        inputLabel={texts.connection}
+        title={texts.add_a_helpful_connection}
       />
       <ConfirmDialog
         open={open.delete}
         onClose={handleDeleteProjectDialogClose}
-        cancelText="No"
-        confirmText="Yes"
-        title="Do you really want to delete your project?"
-        text="If you delete your project, it will be lost. Are you sure that you want to delete it?"
+        cancelText={texts.no}
+        confirmText={texts.yes}
+        title={texts.do_you_really_want_to_delete_your_project}
+        text={texts.if_you_delete_your_project_it_will_be_lost}
       />
     </div>
   );

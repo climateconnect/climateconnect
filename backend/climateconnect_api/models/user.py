@@ -2,6 +2,7 @@ from django.db import models
 from climateconnect_api.models.common import (
     Availability, Skill
 )
+from climateconnect_api.models.language import Language
 from location.models import Location
 
 
@@ -43,6 +44,14 @@ class UserProfile(models.Model):
     image = models.ImageField(
         help_text="Points to user's profile picture",
         verbose_name="Profile Image",
+        upload_to=profile_image_path,
+        null=True,
+        blank=True
+    )
+
+    thumbnail_image = models.ImageField(
+        help_text="The small image that shows on the user preview",
+        verbose_name="Thumbnail Image",
         upload_to=profile_image_path,
         null=True,
         blank=True
@@ -204,6 +213,37 @@ class UserProfile(models.Model):
         blank=True
     )
 
+    from_tutorial = models.BooleanField(
+        help_text="Check whether the user signed up by clicking the \"sign up\" link in the tutorial",
+        verbose_name="Signed up through tutorial?", 
+        null=True, 
+        blank=True, 
+        default=False
+    )
+
+    is_activist = models.CharField(
+        help_text="Options: [\"yes\", \"soon\", \"no\"]. Soon means they said they're interested in becoming active.",
+        verbose_name="Is already active in climate action?", 
+        null=True, 
+        blank=True,
+        max_length=8
+    )
+
+    last_completed_tutorial_step = models.SmallIntegerField(
+        help_text="Last tutorial step the user completed (16=finished)",
+        verbose_name="Last completed tutorial step", 
+        null=True, 
+        blank=True
+    )
+
+    language = models.ForeignKey(
+        Language, related_name="profile_language",
+        help_text="Points to user's original language",
+        verbose_name="Language",
+        null=True, blank=True,
+        on_delete=models.SET_NULL
+    )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "User Profile"
@@ -214,3 +254,45 @@ class UserProfile(models.Model):
         return "%s %s [profile id: %d]" % (
             self.user.first_name, self.user.last_name, self.id
         )
+
+
+class UserProfileTranslation(models.Model):
+    user_profile = models.ForeignKey(
+        UserProfile, related_name="profile_translation",
+        help_text="Points to user profile object", verbose_name="User profile",
+        on_delete=models.CASCADE
+    )
+
+    language = models.ForeignKey(
+        Language, related_name="profile_translatiion_lang",
+        help_text="Points to language object", verbose_name="Language",
+        on_delete=models.CASCADE
+    )
+
+    biography_translation = models.TextField(
+        help_text="Translation of user bio", verbose_name="Biography translation",
+        null=True, blank=True
+    )
+
+    is_manual_translation = models.BooleanField(
+        help_text="Did the user manually translate this or was it automatically translated with DeepL?",
+        verbose_name="Is manual translation?", default=False
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True, help_text="Time when translation object was created",
+        verbose_name="Created at"
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True, help_text="Time when translation object was updated",
+        verbose_name="Updated at"
+    )
+
+    class Meta:
+        verbose_name = "User profile translation"
+        verbose_name_plural = "User profile translations"
+        unique_together = [['user_profile', 'language']]
+    
+    def __str__(self):
+        return "{}: {} translation of user {}".format(self.id, self.language.name, self.user_profile.name)

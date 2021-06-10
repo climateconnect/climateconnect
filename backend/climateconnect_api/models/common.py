@@ -65,6 +65,12 @@ class Availability(models.Model):
         max_length=512
     )
 
+    name_de_translation = models.CharField(
+        help_text="German translation of user's availability",
+        verbose_name="Name DE translation",
+        max_length=512, null=True, blank=True
+    )
+
     key = models.CharField(
         help_text="Key for user' availability",
         verbose_name="Key",
@@ -99,6 +105,12 @@ class Skill(models.Model):
         help_text="Name of the skill",
         verbose_name="Name",
         max_length=512
+    )
+
+    name_de_translation = models.CharField(
+        help_text="Deutsch translation of name column", 
+        verbose_name="Name DE translation",
+        max_length=512, null=True, blank=True
     )
 
     # Skill name has spaces and we use skill filters for projects and users.
@@ -136,6 +148,12 @@ class Skill(models.Model):
         max_length=128,
         null=True,
         blank=True
+    )
+
+    details_de_translation = models.CharField(
+        help_text="Deutsch translation for details columns",
+        verbose_name="Details DE translation",
+        max_length=128, null=True, blank=True
     )
 
     class Meta:

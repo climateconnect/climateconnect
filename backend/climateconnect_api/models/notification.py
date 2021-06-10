@@ -5,6 +5,7 @@ from organization.models.followers import ProjectFollower
 from organization.models.project import Project
 from django.contrib.auth.models import User
 
+
 class Notification(models.Model):
     BROADCAST = 0
     PRIVATE_MESSAGE = 1
@@ -81,6 +82,7 @@ class Notification(models.Model):
         verbose_name_plural = "Notifications"
         ordering = ["-id"]
 
+
 class UserNotification(models.Model):
     user = models.ForeignKey(
         User, related_name="user_notification_user",
@@ -101,6 +103,7 @@ class UserNotification(models.Model):
         help_text="Time when the notification was sent to the user",
         verbose_name="Created at", auto_now_add=True
     )
+
 
 class EmailNotification(models.Model):
     user = models.ForeignKey(

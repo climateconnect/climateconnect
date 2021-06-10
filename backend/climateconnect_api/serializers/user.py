@@ -1,3 +1,8 @@
+from rest_framework.fields import SerializerMethodField
+from climateconnect_api.utility.user import get_user_profile_biography
+from django.utils.translation import get_language
+from climateconnect_api.serializers.translation import UserProfileTranslationSerializer
+from climateconnect_api.models.user import UserProfileTranslation
 from rest_framework import serializers
 from django.conf import settings
 
@@ -50,6 +55,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
     availability = AvailabilitySerializer()
     skills = SkillSerializer(many=True)
+    language = serializers.SerializerMethodField()
+    biography = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -57,7 +64,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'id', 'first_name', 'last_name',
             'url_slug', 'image', 'background_image',
             'biography', 'is_profile_verified',
-            'availability', 'skills', 'website', 'location'
+            'availability', 'skills', 'website', 'location',
+            'language'
         )
 
     def get_id(self, obj):
@@ -74,8 +82,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
             return None
         return obj.location.name
 
+    def get_language(self, obj):
+        return obj.language.language_code
+
+    def get_biography(self, obj):
+        return get_user_profile_biography(obj, get_language())
+
 class EditUserProfileSerializer(UserProfileSerializer):
     location = serializers.SerializerMethodField()
+    translations = serializers.SerializerMethodField()
+    biography = serializers.SerializerMethodField()
     def get_location(self, obj):
         if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
             return {
@@ -86,8 +102,19 @@ class EditUserProfileSerializer(UserProfileSerializer):
             if obj.location == None:
                 return None
             return obj.location.name
+    
+    def get_translations(self, obj):
+        translations = UserProfileTranslation.objects.filter(user_profile=obj)
+        if translations.exists():
+            serializer = UserProfileTranslationSerializer(translations, many=True)
+            return serializer.data
+        else:
+            return {}
+
+    def get_biography(self, obj):
+        return obj.biography
     class Meta(UserProfileSerializer.Meta):
-        fields = UserProfileSerializer.Meta.fields + ('location',)
+        fields = UserProfileSerializer.Meta.fields + ('location', 'translations')
 
 
 class UserProfileMinimalSerializer(serializers.ModelSerializer):
@@ -129,7 +156,7 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = (
             'id', 'first_name', 'last_name',
-            'url_slug', 'image', 'location'
+            'url_slug', 'thumbnail_image', 'location'
         )
 
     def get_id(self, obj):

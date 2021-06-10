@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
-import Head from "next/head";
+import { CircularProgress, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
-import Cookies from "universal-cookie";
-import { useMediaQuery, Typography } from "@material-ui/core";
-
-import CookieBanner from "../general/CookieBanner";
+import Head from "next/head";
+import { Router } from "next/router";
+import React, { useContext, useEffect } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import FeedbackButton from "../feedback/FeedbackButton";
+import CookieBanner from "../general/CookieBanner";
 
 const useStyles = makeStyles((theme) => ({
   leaveSpaceForFooter: {
@@ -41,18 +42,27 @@ export default function LayoutWrapper({
   const [initialized, setInitialized] = React.useState(false);
   const isSmallerThanMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const [loading, setLoading] = React.useState(true);
-  const cookies = new Cookies();
   const [bannerOpen, setBannerOpen] = React.useState(true);
-  const acceptedNecessary = cookies.get("acceptedNecessary");
+  const { acceptedNecessary, locale, isLoading } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
   const closeBanner = () => setBannerOpen(false);
+  Router.events.on("routeChangeStart", () => {
+    setLoading(true);
+  });
+  Router.events.on("routeChangeComplete", () => {
+    setLoading(false);
+  });
+  Router.events.on("routeChangeError", () => {
+    setLoading(false);
+  });
+
   useEffect(function () {
     if (!initialized) setInitialized(true);
     if (loading) {
       setLoading(false);
     }
-  });
-  const defaultDescription =
-    "Free and non-profit climate action platform. Share, find and work on impactful, innovative and inspiring solutions to reduce and stop global warming. Join #teamclimate now!";
+  }, []);
+  const defaultDescription = texts.defaultDescription;
   return (
     <>
       <Head>
@@ -66,22 +76,20 @@ export default function LayoutWrapper({
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
         />
         <meta property="og:image" content="https://climateconnect.earth/images/landing_image.jpg" />
-        <meta
-          property="og:title"
-          content="Global Platform for Climate Change Solutions | Climate Connect"
-        />
+        <meta property="og:title" content={texts.default_title} />
         <meta property="og:type" content="website" />
 
         <meta name="description" content={description ? description : defaultDescription} />
       </Head>
       {/* If theme is falsy, slience the MUI console.warning for having an undefined theme */}
       <ThemeProvider theme={theme}>
-        {loading ? (
+        {loading || isLoading ? (
           <div className={classes.spinnerContainer}>
             <div>
               <img className={classes.spinner} src="/images/logo.png" />
             </div>
-            <Typography component="div">Loading...</Typography>
+            <CircularProgress />
+            <Typography component="div">{texts.loading_and_waiting}</Typography>
           </div>
         ) : (
           <div className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}>

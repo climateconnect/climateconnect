@@ -1,15 +1,17 @@
-import React, { useRef } from "react";
-import Form from "../general/Form";
-import { Typography, Link } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import React, { useContext, useRef } from "react";
 import {
-  isLocationValid,
-  parseLocation,
-  indicateWrongLocation,
   getLocationFields,
   getLocationValue,
+  indicateWrongLocation,
+  isLocationValid,
+  parseLocation,
 } from "../../../public/lib/locationOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import Form from "../general/Form";
 
 const useStyles = makeStyles((theme) => ({
   orgBottomLink: {
@@ -52,6 +54,8 @@ export default function Share({
   setMessage,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
 
@@ -76,15 +80,15 @@ export default function Share({
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const fields = [
     {
-      falseLabel: "Personal Project",
-      trueLabel: "Organization's project",
+      falseLabel: texts.personal_project,
+      trueLabel: texts.organizations_project,
       key: "is_organization_project",
       type: "switch",
       checked: project.is_organization_project,
     },
     {
       required: true,
-      label: "Organization",
+      label: texts.organization,
       select: {
         values: organizationOptions,
         defaultValue: parent_organization_name,
@@ -92,18 +96,14 @@ export default function Share({
       key: "parent_organization",
       bottomLink: (
         <Typography className={classes.orgBottomLink}>
-          If your organization does not exist yet{" "}
-          <Link href="/createorganization" underline="always">
-            click here
-          </Link>{" "}
-          to create it.
+          {texts.if_your_organization_does_not_exist_yet_click_here}
         </Typography>
       ),
       onlyShowIfChecked: "is_organization_project",
     },
     {
       required: true,
-      label: "Title (Use a short, english title, e.g. 'Generating energy from ocean waves')",
+      label: texts.title_with_explanation_and_example,
       type: "text",
       key: "name",
       value: project.name,
@@ -111,7 +111,7 @@ export default function Share({
         <Typography className={classes.BottomLinkFlex}>
           <InfoOutlinedIcon className={classes.infoIcon} />
           <Typography component="span">
-            Use a title that makes people curious to learn more about your project
+            {texts.use_a_title_that_makes_people_curious_to_learn_more_about_your_project}
           </Typography>
         </Typography>
       ),
@@ -122,10 +122,11 @@ export default function Share({
       handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
       values: project,
       locationKey: "loc",
+      texts: texts,
     }),
   ];
   const messages = {
-    submitMessage: "Next Step",
+    submitMessage: texts.next_step,
   };
 
   const getOrgObject = (org) => {
@@ -143,7 +144,7 @@ export default function Share({
     );
     //Short circuit if the location is not valid and we're not in legacy mode
     if (!legacyModeEnabled && !isLocationValid(values.loc)) {
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage);
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage, texts);
       return;
     }
     const loc_value = getLocationValue(values, "loc");
@@ -166,15 +167,17 @@ export default function Share({
   };
   return (
     <>
-      <div className={classes.appealBox}>
-        <Typography color="secondary" className={classes.appealText}>
-          Please make sure to only use English when sharing a project.
-        </Typography>
-        <Typography color="secondary" className={classes.appealText}>
-          This way most people can benefit from your ideas and experiences to fight climate change
-          together!
-        </Typography>
-      </div>
+      {locale === "en" && (
+        <div className={classes.appealBox}>
+          <Typography color="secondary" className={classes.appealText}>
+            Please make sure to only use English when sharing a project.
+          </Typography>
+          <Typography color="secondary" className={classes.appealText}>
+            This way most people can benefit from your ideas and experiences to fight climate change
+            together!
+          </Typography>
+        </div>
+      )}
       <Form
         className={classes.form}
         fields={fields}

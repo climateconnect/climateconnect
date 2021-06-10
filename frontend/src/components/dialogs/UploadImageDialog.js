@@ -1,10 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
 import { Slider } from "@material-ui/core";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import PropTypes from "prop-types";
+import React, { useContext } from "react";
 //Package AvatarEditor returns an object {default: defaultFunction} instead of a function which triggers a warning. This is why we use <AvatarEditor.default> in the exported function.
 import AvatarEditor from "react-avatar-editor";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import GenericDialog from "./GenericDialog";
 
 const useStyles = makeStyles({
@@ -28,6 +30,8 @@ export default function UploadImageDialog({
   mobileHeight,
   mediumHeight,
 }) {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
   const classes = useStyles();
   const theme = useTheme();
   const defaultValue = 25;
@@ -82,7 +86,7 @@ export default function UploadImageDialog({
       aria-labelledby="simple-dialog-title"
       open={open}
       fullScreen={fullScreen}
-      title={"Upload an image"}
+      title={texts.upload_an_image}
       useApplyButton={true}
       applyText="Apply"
       onApply={applyImage}

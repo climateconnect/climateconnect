@@ -1,16 +1,24 @@
-import React, { useContext, useRef, useState } from "react";
+import Router from "next/router";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import Cookies from "universal-cookie";
+import { apiRequest } from "../public/lib/apiOperations";
+import { getParams } from "../public/lib/generalOperations";
+import {
+  getLocationValue,
+  indicateWrongLocation,
+  isLocationValid,
+  parseLocation,
+} from "../public/lib/locationOperations";
+import { redirectOnLogin } from "../public/lib/profileOperations";
+import {
+  getLastCompletedTutorialStep,
+  getLastStepBeforeSkip,
+} from "../public/lib/tutorialOperations";
+import getTexts from "../public/texts/texts";
+import UserContext from "../src/components/context/UserContext";
+import Layout from "../src/components/layouts/layout";
 import BasicInfo from "../src/components/signup/BasicInfo";
 import AddInfo from "./../src/components/signup/AddInfo";
-import axios from "axios";
-import Router from "next/router";
-import Layout from "../src/components/layouts/layout";
-import UserContext from "../src/components/context/UserContext";
-import {
-  parseLocation,
-  isLocationValid,
-  indicateWrongLocation,
-  getLocationValue,
-} from "../public/lib/locationOperations";
 
 export default function Signup() {
   const { ReactGA } = useContext(UserContext);
@@ -24,7 +32,17 @@ export default function Signup() {
     location: {},
     newsletter: "",
   });
-
+  const cookies = new Cookies();
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale });
+  //Information about the completion state of the tutorial
+  const tutorialCookie = cookies.get("finishedTutorialSteps");
+  const isClimateActorCookie = cookies.get("tutorialVariables");
+  const curTutorialStep = getLastCompletedTutorialStep(tutorialCookie);
+  const lastCompletedTutorialStep =
+    curTutorialStep === -1
+      ? getLastStepBeforeSkip(cookies.get("lastStepBeforeSkipTutorial"))
+      : curTutorialStep;
   const steps = ["basicinfo", "personalinfo"];
   const [curStep, setCurStep] = useState(steps[0]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -41,6 +59,12 @@ export default function Signup() {
   );
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(function () {
+    if (user) {
+      redirectOnLogin(user, "/", locale);
+    }
+  });
+
   const handleBasicInfoSubmit = (event, values) => {
     event.preventDefault();
     setUserInfo({
@@ -51,14 +75,15 @@ export default function Signup() {
     });
     //TODO: add check if email is still available
     if (values.password !== values.repeatpassword)
-      setErrorMessages({ ...errorMessages, [steps[0]]: "Passwords don't match." });
+      setErrorMessages({ ...errorMessages, [steps[0]]: texts.passwords_dont_match });
     else setCurStep(steps[1]);
   };
 
   const handleAddInfoSubmit = (event, values) => {
     event.preventDefault();
+    const params = getParams(window?.location?.href);
     if (!isLocationValid(values.location)) {
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage);
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage, texts);
       return;
     }
     const location = getLocationValue(values, "location");
@@ -76,16 +101,23 @@ export default function Signup() {
       last_name: values.last_name.trim(),
       location: parseLocation(location),
       send_newsletter: values.sendNewsletter,
+      from_tutorial: params?.from_tutorial === "true",
+      is_activist: isClimateActorCookie?.isActivist,
+      last_completed_tutorial_step: lastCompletedTutorialStep,
+      source_language: locale,
     };
-    const config = {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
     };
     setIsLoading(true);
-    axios
-      .post(process.env.API_URL + "/signup/", payload, config)
+    apiRequest({
+      method: "post",
+      url: "/signup/",
+      payload: payload,
+      headers: headers,
+      locale: locale,
+    })
       .then(function () {
         ReactGA.event({
           category: "User",
@@ -117,7 +149,7 @@ export default function Signup() {
 
   return (
     <Layout
-      title="Sign Up"
+      title={texts.sign_up}
       isLoading={isLoading}
       message={errorMessage}
       messageType={errorMessage && "error"}

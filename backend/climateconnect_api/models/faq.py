@@ -1,10 +1,17 @@
 from django.db import models
 
+
 class FaqSection(models.Model):
     name = models.CharField(
         help_text="Points to section name. Each section has its own tab on the FAQ page",
         verbose_name="Name",
         max_length=128
+    )
+
+    name_de_translation = models.CharField(
+        help_text="Translation of name field in deutsch",
+        verbose_name="Name DE translation",
+        max_length=128, null=True, blank=True
     )
 
     created_at = models.DateTimeField(
@@ -36,6 +43,7 @@ class FaqSection(models.Model):
             self.name
         )
 
+
 class FaqQuestion(models.Model):
     section = models.ForeignKey(
         FaqSection,
@@ -50,9 +58,21 @@ class FaqQuestion(models.Model):
         help_text="The question text",
     )
 
+    question_de_translation = models.TextField(
+        help_text='Deutsch translation of question column',
+        verbose_name="Question DE translation",
+        null=True, blank=True
+    )
+
     answer = models.TextField(
         help_text="The answer text",
         verbose_name="Answer",
+    )
+
+    answer_de_translation = models.TextField(
+        help_text="Deutsch translation of answer column",
+        verbose_name="Answer DE translation",
+        null=True, blank=True
     )
 
     rating = models.PositiveSmallIntegerField(

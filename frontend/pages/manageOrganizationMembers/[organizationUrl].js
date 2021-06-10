@@ -1,16 +1,17 @@
-import Layout from "../../src/components/layouts/layout";
-import React from "react";
-import tokenConfig from "../../public/config/tokenConfig";
-import axios from "axios";
-import { useContext } from "react";
-import Cookies from "next-cookies";
-import UserContext from "../../src/components/context/UserContext";
-import WideLayout from "../../src/components/layouts/WideLayout";
-import LoginNudge from "../../src/components/general/LoginNudge";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import Cookies from "next-cookies";
+import React, { useContext } from "react";
+import ROLE_TYPES from "../../public/data/role_types";
+import { apiRequest, getRolesOptions, sendToLogin } from "../../public/lib/apiOperations";
+import { parseOrganization } from "../../public/lib/organizationOperations";
+import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
+import getTexts from "../../public/texts/texts";
+import UserContext from "../../src/components/context/UserContext";
+import LoginNudge from "../../src/components/general/LoginNudge";
+import Layout from "../../src/components/layouts/layout";
+import WideLayout from "../../src/components/layouts/WideLayout";
 import ManageOrganizationMembers from "../../src/components/organization/ManageOrganizationMembers";
-import { sendToLogin } from "../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -21,6 +22,31 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+export async function getServerSideProps(ctx) {
+  const { token } = Cookies(ctx);
+  const texts = getTexts({ page: "organization", locale: ctx.locale });
+  if (ctx.req && !token) {
+    const message = texts.you_have_to_log_in_to_manage_organization_members;
+    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
+  }
+  const organizationUrl = encodeURI(ctx.query.organizationUrl);
+  const [organization, members, rolesOptions, availabilityOptions] = await Promise.all([
+    getOrganizationByUrlIfExists(organizationUrl, token, ctx.locale),
+    getMembersByOrganization(organizationUrl, token, ctx.locale),
+    getRolesOptions(token, ctx.locale),
+    getAvailabilityOptions(token, ctx.locale),
+  ]);
+  return {
+    props: nullifyUndefinedValues({
+      organization: organization,
+      members: members,
+      rolesOptions: rolesOptions,
+      availabilityOptions: availabilityOptions,
+      token: token,
+    }),
+  };
+}
+
 export default function manageOrganizationMembers({
   organization,
   members,
@@ -28,7 +54,8 @@ export default function manageOrganizationMembers({
   rolesOptions,
   token,
 }) {
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   const classes = useStyles();
   const [currentMembers, setCurrentMembers] = React.useState(
     members ? [...members.sort((a, b) => b.role.role_type - a.role.role_type)] : []
@@ -36,39 +63,38 @@ export default function manageOrganizationMembers({
   if (!user)
     return (
       <WideLayout
-        title="Please Log In to Manage the Members of this Organization"
+        title={texts.please_log_in + " " + texts.to_manage_org_members}
         hideHeadline={true}
       >
-        <LoginNudge fullPage whatToDo="manage the members of this organization" />
+        <LoginNudge fullPage whatToDo={texts.to_manage_org_members} />
       </WideLayout>
     );
   else if (!members.find((m) => m.id === user.id))
     return (
       <WideLayout
-        title="Please Log In to Manage the Members of an Organization"
+        title={texts.please_log_in + " " + texts.to_manage_org_members}
         hideHeadline={true}
       >
         <Typography variant="h4" color="primary" className={classes.headline}>
-          You are not a member of this organization. Go to{" "}
-          <a href={"/organizations/" + organization.url_slug}>the organization page</a> and click
-          join to join it.
+          {texts.you_are_not_a_member_of_this_organization}{" "}
+          {texts.go_to_org_page_and_click_join_to_join_it}
         </Typography>
       </WideLayout>
     );
   else if (
-    members.find((m) => m.id === user.id).role.name != "Creator" &&
-    members.find((m) => m.id === user.id).role.name != "Administrator"
+    members.find((m) => m.id === user.id).role.role_type !== ROLE_TYPES.all_type &&
+    members.find((m) => m.id === user.id).role.role_type !== ROLE_TYPES.read_write_type
   )
     return (
-      <WideLayout title="No Permission to Manage Members of this Organization" hideHeadline={true}>
+      <WideLayout title={texts.no_permission_to_manage_members_of_this_org} hideHeadline={true}>
         <Typography variant="h4" color="primary" className={classes.headline}>
-          You need to be an administrator of the organization to manage organization members.
+          {texts.need_to_be_admin_to_manage_org_members}
         </Typography>
       </WideLayout>
     );
   else {
     return (
-      <Layout title="Manage organization's Members" hideHeadline>
+      <Layout title={texts.manage_organizations_members} hideHeadline>
         <ManageOrganizationMembers
           user={user}
           members={members}
@@ -84,34 +110,14 @@ export default function manageOrganizationMembers({
   }
 }
 
-manageOrganizationMembers.getInitialProps = async (ctx) => {
-  const { token } = Cookies(ctx);
-  if (ctx.req && !token) {
-    const message = "You have to log in to manage an organization's members.";
-    return sendToLogin(ctx, message);
-  }
-  const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, members, rolesOptions, availabilityOptions] = await Promise.all([
-    getOrganizationByUrlIfExists(organizationUrl, token),
-    getMembersByOrganization(organizationUrl, token),
-    getRolesOptions(token),
-    getAvailabilityOptions(token),
-  ]);
-  return {
-    organization: organization,
-    members: members,
-    rolesOptions: rolesOptions,
-    availabilityOptions: availabilityOptions,
-    token: token,
-  };
-};
-
-async function getOrganizationByUrlIfExists(organizationUrl, token) {
+async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/organizations/" + organizationUrl + "/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/",
+      token: token,
+      locale: locale,
+    });
     return parseOrganization(resp.data);
   } catch (err) {
     //console.log(err);
@@ -120,12 +126,14 @@ async function getOrganizationByUrlIfExists(organizationUrl, token) {
   }
 }
 
-async function getMembersByOrganization(organizationUrl, token) {
+async function getMembersByOrganization(organizationUrl, token, locale) {
   try {
-    const resp = await axios.get(
-      process.env.API_URL + "/api/organizations/" + organizationUrl + "/members/",
-      tokenConfig(token)
-    );
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/members/?page=1&page_size=24",
+      token: token,
+      locale: locale,
+    });
     if (!resp.data) return null;
     else {
       return parseOrganizationMembers(resp.data.results);
@@ -149,45 +157,19 @@ function parseOrganizationMembers(members) {
       time_per_week: m.time_per_week,
       role_in_organization: m.role_in_organization ? m.role_in_organization : "",
       location: member.location,
-      isCreator: m.permission.role_type === 2,
+      isCreator: m.permission.role_type === ROLE_TYPES.all_type,
     };
   });
 }
 
-function parseOrganization(organization) {
-  return {
-    url_slug: organization.url_slug,
-    background_image: organization.background_image,
-    name: organization.name,
-    image: organization.image,
-    types: organization.types.map((t) => ({ ...t.organization_tag, key: t.organization_tag.id })),
-    info: {
-      location: organization.location,
-      shortdescription: organization.short_description,
-      school: organization.school,
-      organ: organization.organ,
-      parent_organization: organization.parent_organization,
-    },
-  };
-}
-
-const getRolesOptions = async (token) => {
+const getAvailabilityOptions = async (token, locale) => {
   try {
-    const resp = await axios.get(process.env.API_URL + "/roles/", tokenConfig(token));
-    if (resp.data.results.length === 0) return null;
-    else {
-      return resp.data.results;
-    }
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-};
-
-const getAvailabilityOptions = async (token) => {
-  try {
-    const resp = await axios.get(process.env.API_URL + "/availability/", tokenConfig(token));
+    const resp = await apiRequest({
+      method: "get",
+      url: "/availability/",
+      token: token,
+      locale: locale,
+    });
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;

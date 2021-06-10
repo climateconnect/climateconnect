@@ -1,10 +1,13 @@
+import { Button, makeStyles, Typography } from "@material-ui/core";
+import AccountBoxIcon from "@material-ui/icons/AccountBox";
+import LocationOnIcon from "@material-ui/icons/LocationOn";
 import React, { useContext } from "react";
-import ProfilePreviews from "./../profile/ProfilePreviews";
-import { Typography, Button, makeStyles } from "@material-ui/core";
+import ROLE_TYPES from "../../../public/data/role_types";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
-import AccountBoxIcon from "@material-ui/icons/AccountBox";
+import ProfilePreviews from "./../profile/ProfilePreviews";
 
 const useStyles = makeStyles((theme) => ({
   editButton: {
@@ -20,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function getTeamWithAdditionalInfo(team) {
+function getTeamWithAdditionalInfo(team, texts) {
   return team.map((m) => {
     const additionalInfo = [];
     if (m.location)
@@ -29,7 +32,7 @@ function getTeamWithAdditionalInfo(team) {
         importance: "high",
         icon: LocationOnIcon,
         iconName: "LocationOnIcon",
-        toolTipText: "Location",
+        toolTipText: texts.location,
       });
     if (m.role)
       additionalInfo.push({
@@ -37,7 +40,7 @@ function getTeamWithAdditionalInfo(team) {
         importance: "high",
         icon: AccountBoxIcon,
         iconName: "AccountBoxIcon",
-        toolTipText: "Role in project",
+        toolTipText: texts.role_in_project,
       });
     if (m.availability && m.availability !== "not_specified")
       additionalInfo.push({
@@ -49,24 +52,25 @@ function getTeamWithAdditionalInfo(team) {
 }
 
 export default function TeamContent({ project, leaveProject }) {
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles();
-  if (!user) return <LoginNudge whatToDo="see this project's team  members" />;
+  if (!user) return <LoginNudge whatToDo={texts.to_see_this_projects_team_members} />;
   else if (project.team)
     return (
       <>
         {user && !!project.team.find((m) => m.id === user.id) && (
           <div>
-            {["Creator", "Administrator"].includes(
+            {[ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(
               project.team.find((m) => m.id === user.id).permission
             ) && (
               <Button
                 className={classes.editButton}
                 variant="contained"
                 color="primary"
-                href={"/manageProjectMembers/" + project.url_slug}
+                href={getLocalePrefix(locale) + "/manageProjectMembers/" + project.url_slug}
               >
-                Manage members
+                {texts.manage_members}
               </Button>
             )}
             <Button
@@ -74,16 +78,16 @@ export default function TeamContent({ project, leaveProject }) {
               variant="contained"
               onClick={leaveProject}
             >
-              Leave project
+              {texts.leave_project}
             </Button>
           </div>
         )}
         <ProfilePreviews
-          profiles={getTeamWithAdditionalInfo(project.team)}
+          profiles={getTeamWithAdditionalInfo(project.team, texts)}
           allowMessage
           showAdditionalInfo={true}
         />
       </>
     );
-  else return <Typography>We could not find any members of this project.</Typography>;
+  else return <Typography>{texts.we_could_not_find_any_members_of_this_project}</Typography>;
 }

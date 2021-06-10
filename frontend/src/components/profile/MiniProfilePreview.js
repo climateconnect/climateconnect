@@ -1,8 +1,10 @@
-import React from "react";
-import { Link, Avatar, Typography, IconButton } from "@material-ui/core";
+import { Avatar, IconButton, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { getImageUrl } from "./../../../public/lib/imageOperations";
 import ClearIcon from "@material-ui/icons/Clear";
+import React, { useContext } from "react";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import UserContext from "../context/UserContext";
+import { getImageUrl } from "./../../../public/lib/imageOperations";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -43,12 +45,13 @@ export default function MiniProfilePreview({
   onDelete,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
   if (!nolink)
     return (
       <div className={classes.wrapper}>
         <Link
           color="inherit"
-          href={"/profiles/" + profile.url_slug}
+          href={getLocalePrefix(locale) + "/profiles/" + profile.url_slug}
           className={`${classes.avatarWithInfo} ${className}`}
         >
           <Content profile={profile} avatarClassName={avatarClassName} size={size} />
@@ -74,7 +77,7 @@ function Content({ profile, avatarClassName, size }) {
     <span className={classes.contentWrapper}>
       <div className={classes.avatarWrapper}>
         <Avatar
-          src={getImageUrl(profile.image)}
+          src={getImageUrl(profile.thumbnail_image)}
           className={`${size === "small" && classes.smallAvatar} ${avatarClassName}`}
         />
       </div>

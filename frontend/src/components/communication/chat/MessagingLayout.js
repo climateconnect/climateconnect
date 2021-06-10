@@ -1,10 +1,12 @@
-import React, { useContext, useState } from "react";
 import { makeStyles } from "@material-ui/core";
-import UserContext from "../../context/UserContext";
-import ChatHeader from "./ChatHeader";
-import ChatContent from "./ChatContent";
-import ChatMemberManagementOverlay from "./ChatMemberManagementOverlay";
 import Alert from "@material-ui/lab/Alert";
+import React, { useContext, useState } from "react";
+import ROLE_TYPES from "../../../../public/data/role_types";
+import getTexts from "../../../../public/texts/texts";
+import UserContext from "../../context/UserContext";
+import ChatContent from "./ChatContent";
+import ChatHeader from "./ChatHeader";
+import ChatMemberManagementOverlay from "./ChatMemberManagementOverlay";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -14,6 +16,11 @@ const useStyles = makeStyles((theme) => {
     },
     showParticipantsButton: {
       cursor: "pointer",
+    },
+    alert: {
+      width: "100%",
+      maxWidth: theme.breakpoints.values["md"],
+      margin: "0 auto",
     },
   };
 });
@@ -37,12 +44,13 @@ export default function MessagingLayout({
   leaveChat,
 }) {
   const classes = useStyles();
-  const { user } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "chat", locale: locale });
 
   const handleWindowClose = (e) => {
     if (curMessage && curMessage.length > 0) {
       e.preventDefault();
-      return (e.returnValue = "You have an unsent message. Are you sure you want to leave?.");
+      return (e.returnValue = texts.you_have_an_unsent_message_are_you_sure_you_want_to_leave);
     } else handleChatWindowClose();
   };
 
@@ -66,7 +74,9 @@ export default function MessagingLayout({
     setCurMessage("");
     if (event) event.preventDefault();
   };
-  const canEditMembers = user_role.name === "Creator" || user_role.name === "Administrator";
+  const canEditMembers =
+    user_role.role_type === ROLE_TYPES.all_type ||
+    user_role.role_type === ROLE_TYPES.read_write_type;
 
   const handleMessageKeydown = (event) => {
     if (event.key === "Enter")

@@ -1,6 +1,6 @@
 # flake8: noqa
 from climateconnect_api.models.user import (
-    UserProfile,
+    UserProfile, UserProfileTranslation
 )
 from climateconnect_api.models.common import (
     Availability, Skill
@@ -15,3 +15,5 @@ from climateconnect_api.models.notification import (
 from climateconnect_api.models.donation import (
     Donation, DonationGoal
 )
+
+from climateconnect_api.models.language import Language

@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
-import { Avatar, Typography, Tooltip, IconButton, TextField, Button } from "@material-ui/core";
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
-import SelectField from "../general/SelectField";
+import { Avatar, Button, IconButton, TextField, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
-import ConfirmDialog from "../dialogs/ConfirmDialog";
+import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
+import React, { useContext, useEffect } from "react";
+import ROLE_TYPES from "../../../public/data/role_types";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import ConfirmDialog from "../dialogs/ConfirmDialog";
+import SelectField from "../general/SelectField";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -65,6 +68,8 @@ export default function MiniProfileInput({
 }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "profile", locale: locale, profile: profile });
 
   useEffect(() => {
     if (
@@ -72,15 +77,19 @@ export default function MiniProfileInput({
       options.filter((o) => o.id === creatorRole.id).length > 0
     ) {
       setOptions(
-        rolesOptions.map((r) => ({ ...r, key: r.id })).filter((r) => r.name !== "Creator")
+        rolesOptions
+          .map((r) => ({ ...r, key: r.id }))
+          .filter((r) => r.role_type !== ROLE_TYPES.all_type)
       );
     }
   });
 
   const [options, setOptions] = React.useState(
-    profile.role.id === creatorRole.id
+    profile.role.role_type === ROLE_TYPES.all_type
       ? fullRolesOptions.map((r) => ({ ...r, key: r.id }))
-      : rolesOptions.map((r) => ({ ...r, key: r.id })).filter((r) => r.name !== "Creator")
+      : rolesOptions
+          .map((r) => ({ ...r, key: r.id }))
+          .filter((r) => r.role_type !== ROLE_TYPES.all_type)
   );
 
   const handleChangeRolePermissions = (event) => {
@@ -126,21 +135,21 @@ export default function MiniProfileInput({
         {profile.first_name + " " + profile.last_name}
       </Typography>
       <Typography className={classes.fieldLabel} color="primary">
-        Permissions
-        <Tooltip title={"Choose what permissions the user has on the project."}>
+        {texts.permissions}
+        <Tooltip title={texts.choose_what_permissions_the_user_should_have}>
           <IconButton>
             <HelpOutlineIcon className={classes.tooltip} />
           </IconButton>
         </Tooltip>
       </Typography>
       <SelectField
-        label="Pick user's permissions"
+        label={texts.pick_users_permissions}
         size="small"
         className={classes.field}
         disabled={
-          profile.edited && profile.role.id !== creatorRole.id
+          profile.edited && profile.role.role_type !== ROLE_TYPES.all_type
             ? false
-            : editDisabled || profile.role.id === creatorRole.id
+            : editDisabled || profile.role.role_type === ROLE_TYPES.all_type
         }
         options={options}
         controlledValue={profile.role}
@@ -149,13 +158,19 @@ export default function MiniProfileInput({
         onChange={handleChangeRolePermissions}
       />
       {allowAppointingCreator && (
-        <Button onClick={handleOpenConfirmCreatorDialog}>Make this user the Creator</Button>
+        <Button onClick={handleOpenConfirmCreatorDialog}>{texts.make_this_user_the_creator}</Button>
       )}
       {!dontPickRole && (
         <>
           <Typography color="primary" className={classes.fieldLabel}>
-            Role in project
-            <Tooltip title={"Pick or describe what the user's role in the project is."}>
+            {isOrganization ? texts.role_in_organization : texts.role_in_project}
+            <Tooltip
+              title={
+                isOrganization
+                  ? texts.pick_or_describe_role_in_organization
+                  : texts.pick_or_describe_role_in_project
+              }
+            >
               <IconButton>
                 <HelpOutlineIcon className={classes.tooltip} />
               </IconButton>
@@ -165,7 +180,7 @@ export default function MiniProfileInput({
             size="small"
             variant="outlined"
             className={classes.field}
-            label="Pick or type user's role"
+            label={texts.pick_or_type_users_role}
             onChange={isOrganization ? handleChangeRoleInOrganization : handleChangeRoleInProject}
             value={isOrganization ? profile.role_in_organization : profile.role_in_project}
             disabled={profile.added ? false : editDisabled}
@@ -175,10 +190,12 @@ export default function MiniProfileInput({
       {!hideHoursPerWeek && (
         <>
           <Typography className={classes.fieldLabel} color="primary">
-            Hour contributed per week
+            {texts.hours_contributed_per_week}
             <Tooltip
               title={
-                "Pick how many hours per week the user contributes to this project on average."
+                isOrganization
+                  ? texts.pick_how_many_hours_user_contributes_to_org
+                  : texts.pick_how_many_hours_user_contributes_to_project
               }
             >
               <IconButton>
@@ -187,7 +204,7 @@ export default function MiniProfileInput({
             </Tooltip>
           </Typography>
           <SelectField
-            label="Hours"
+            label={texts.hours}
             size="small"
             className={classes.field}
             options={availabilityOptions}
@@ -199,7 +216,7 @@ export default function MiniProfileInput({
       )}
       {editDisabled && !profile.added && (
         <Typography color="secondary" className={classes.cantEdit}>
-          You {"can't"} edit/remove this member
+          {texts.cant_edit_or_remove_member}
         </Typography>
       )}
       {onDelete && (
@@ -209,29 +226,31 @@ export default function MiniProfileInput({
           className={classes.removeButton}
           onClick={onDelete}
         >
-          Remove
+          {texts.remove}
         </Button>
       )}
       <ConfirmDialog
         open={open}
         onClose={handleConfirmTransferCreator}
-        title='Do you really want to lose "Creator" permissions?'
+        title={texts.do_you_really_want_to_lose_creators_permissions}
         text={
           <Typography component="div" className={classes.dialogText}>
-            There is always exactly one organization member with Creator priviliges.
+            {isOrganization
+              ? texts.there_is_always_one_org_member_with_creator_privileges
+              : texts.there_is_always_one_project_member_with_creator_privileges}
             <br />
-            The Creator can add, remove and edit Administrators.
+            {texts.creator_can_add_remove_and_edit_admins}
             <br />
             <p>
               <Typography component="span" color="error">
-                If you make {profile.name} the Creator you will lose your Creator permissions.
+                {texts.if_you_make_person_admin_you_will_lose_privileges}
               </Typography>
             </p>
-            Do you really want to do this?
+            {texts.do_you_really_want_to_do_this}
           </Typography>
         }
-        cancelText="No"
-        confirmText="Yes"
+        cancelText={texts.no}
+        confirmText={texts.yes}
       />
     </div>
   );
