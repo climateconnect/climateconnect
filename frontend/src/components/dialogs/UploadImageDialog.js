@@ -7,9 +7,10 @@ import React, { useContext } from "react";
 import AvatarEditor from "react-avatar-editor";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import LoadingSpinner from "../general/LoadingSpinner";
 import GenericDialog from "./GenericDialog";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   avatarEditor: {
     margin: "0 auto",
     display: "block",
@@ -18,7 +19,13 @@ const useStyles = makeStyles({
     display: "block",
     margin: "0 auto",
   },
-});
+  loadingSpinner: {
+    paddingBottom: theme.spacing(8),
+  },
+  dialog: {
+    position: "relative",
+  },
+}));
 
 export default function UploadImageDialog({
   onClose,
@@ -29,6 +36,7 @@ export default function UploadImageDialog({
   height,
   mobileHeight,
   mediumHeight,
+  loading,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
@@ -91,27 +99,31 @@ export default function UploadImageDialog({
       applyText="Apply"
       onApply={applyImage}
     >
-      <div className={classes.dialogContent}>
-        <AvatarEditor
-          className={classes.avatarEditor}
-          image={imageUrl}
-          ref={setEditorRef}
-          width={widthToUse}
-          height={heightToUse}
-          border={50}
-          color={[0, 0, 0, 0.6]} // RGBA
-          scale={scale}
-          rotate={0}
-          borderRadius={borderRadius ? borderRadius : 0}
-        />
-        <Slider
-          aria-label="Image size"
-          defaultValue={defaultValue}
-          className={classes.slider}
-          onChange={handleSliderChange}
-          style={{ maxWidth: sliderMaxWidth }}
-        />
-      </div>
+      {loading ? (
+        <LoadingSpinner className={classes.loadingSpinner} isLoading />
+      ) : (
+        <div className={classes.dialogContent}>
+          <AvatarEditor
+            className={classes.avatarEditor}
+            image={imageUrl}
+            ref={setEditorRef}
+            width={widthToUse}
+            height={heightToUse}
+            border={50}
+            color={[0, 0, 0, 0.6]} // RGBA
+            scale={scale}
+            rotate={0}
+            borderRadius={borderRadius ? borderRadius : 0}
+          />
+          <Slider
+            aria-label="Image size"
+            defaultValue={defaultValue}
+            className={classes.slider}
+            onChange={handleSliderChange}
+            style={{ maxWidth: sliderMaxWidth }}
+          />
+        </div>
+      )}
     </GenericDialog>
   );
 }

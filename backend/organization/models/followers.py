@@ -2,6 +2,7 @@ from django.db import models
 from organization.models.project import Project
 from django.contrib.auth.models import User
 
+
 class ProjectFollower(models.Model):
     project = models.ForeignKey(
         Project,

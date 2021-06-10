@@ -1,3 +1,4 @@
+import { apiRequest } from "./apiOperations";
 import { getImageUrl } from "./imageOperations";
 
 export function parseOrganization(organization, editMode) {
@@ -37,4 +38,25 @@ export function parseOrganization(organization, editMode) {
   else org.info.parent_organization = null;
   org.info.has_parent_organization = hasParentOrganization;
   return org;
+}
+
+export async function getUserOrganizations(token, locale) {
+  //short circuit if the user is not logged in
+  if (!token) return null;
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/my_organizations/",
+      token: token,
+      locale: locale,
+    });
+    if (resp.data.length === 0) return null;
+    else {
+      return resp.data.map((o) => o.organization);
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
 }

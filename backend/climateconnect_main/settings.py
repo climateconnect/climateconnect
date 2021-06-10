@@ -49,7 +49,8 @@ CUSTOM_APPS = [
     'organization', 
     'chat_messages',
     'hubs',
-    'location'
+    'location',
+    'ideas'
 ]
 
 LIBRARY_APPS = [
@@ -229,7 +230,7 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [{
-                "address": (env('REDIS_HOST'), env('REDIS_PORT')),
+                "address": (env('REDIS_HOST'), env('REDIS_PORT', 6379)),
                 "password": env('REDIS_PASSWORD'),
                 "ssl": True
             }]
@@ -245,3 +246,27 @@ LOCALES = ['en', 'de']
 LOCALE_PATHS = [
     BASE_DIR + '/translations',
 ]
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    
+    'fromatters': {
+        'Simple_Format': '{levelname} {message}',
+        'style': '{'
+    },
+
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO'
+        }
+    }
+}

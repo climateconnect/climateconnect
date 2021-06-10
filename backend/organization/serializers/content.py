@@ -68,3 +68,20 @@ class ProjectCommentSerializer(serializers.ModelSerializer):
   def get_replies(self, obj):
     serializer = ProjectCommentSerializer(obj.comment_parent, many=True)
     return serializer.data
+
+# Writing a new generalized serializer that we can use in multiple places.
+class CommentSerializer(serializers.ModelSerializer):
+  author_user = serializers.SerializerMethodField()
+  replies = serializers.SerializerMethodField()
+  class Meta:
+    model = Comment
+    fields = (
+      'id', 'parent_comment_id', 'author_user', 'content',
+      'is_abusive', 'created_at', 'updated_at', 'replies'
+    )
+
+  def get_author_user(self, obj):
+    return UserProfileStubSerializer(obj.author_user.user_profile).data
+  
+  def get_replies(self, obj):
+    return CommentSerializer(obj.comment_parent.filter(deleted_at__isnull=True), many=True).data

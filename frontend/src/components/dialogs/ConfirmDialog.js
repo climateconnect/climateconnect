@@ -1,7 +1,7 @@
-import React from "react";
-import PropTypes from "prop-types";
 import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import PropTypes from "prop-types";
+import React from "react";
 import GenericDialog from "./GenericDialog";
 
 const useStyles = makeStyles((theme) => ({
@@ -14,8 +14,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ConfirmDialog(props) {
-  const { onClose, open, cancelText, confirmText, text, title, className } = props;
+export default function ConfirmDialog({
+  onClose,
+  open,
+  cancelText,
+  confirmText,
+  text,
+  title,
+  className,
+}) {
   const classes = useStyles();
 
   const handleCancel = () => {
@@ -27,7 +34,7 @@ export default function ConfirmDialog(props) {
   };
 
   return (
-    <GenericDialog onClose={handleCancel} open={open} title={title} className={className}>
+    <GenericDialog onClose={handleCancel} open={open} title={title} dialogContentClass={className}>
       <Typography>{text}</Typography>
       <div className={classes.buttonsContainer}>
         <Button
