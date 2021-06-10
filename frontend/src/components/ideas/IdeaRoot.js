@@ -211,6 +211,7 @@ export default function IdeaRoot({
 
   const cancelEdit = () => {
     setIsEditing(false)
+    window.history.pushState({}, "", `${window.location.origin}${window.location.pathname}?idea=${idea.url_slug}${window.location.hash}`)
   }
 
   const handleAddComment = (comment) => handleAddComments([comment]);

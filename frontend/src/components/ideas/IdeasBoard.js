@@ -59,6 +59,7 @@ export default function IdeasBoard({
 
   const onClose = () => {
     setIdea(null);
+    window.history.pushState({}, "", `${window.location.origin}${window.location.pathname}${window.location.hash}`)
   };
 
   const handleUpdateRating = (newRating) => {
