@@ -9,7 +9,7 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo
+  membersWithAdditionalInfo,
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -64,7 +64,13 @@ export async function getServerSideProps(ctx) {
     getHubData(hubUrl, ctx.locale),
     getProjects({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
     getOrganizations({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
-    getIdeas({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale, urlEnding: ideaToOpen ? `&idea=${ideaToOpen}` : "" }),
+    getIdeas({
+      page: 1,
+      token: token,
+      hubUrl: hubUrl,
+      locale: ctx.locale,
+      urlEnding: ideaToOpen ? `&idea=${ideaToOpen}` : "",
+    }),
     getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
@@ -94,7 +100,7 @@ export async function getServerSideProps(ctx) {
         project_statuses: project_statuses,
       },
       allHubs,
-      initialIdeaUrlSlug: ideaToOpen ? ideaToOpen : null
+      initialIdeaUrlSlug: ideaToOpen ? ideaToOpen : null,
     },
   };
 }
@@ -116,7 +122,7 @@ export default function Hub({
   isLocationHub,
   allHubs,
   initialIdeaUrlSlug,
-  hubLocation
+  hubLocation,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -382,7 +388,7 @@ async function getMembers({ page, token, urlEnding, hubUrl, locale }) {
 async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale }) {
   let url = `/api/${type}/?page=${page}&hub=${hubUrl}`;
   console.log(`getting ${type} data for category ${hubUrl}`);
-  if (urlEnding) url += urlEnding
+  if (urlEnding) url += urlEnding;
   try {
     console.log(`Getting data for ${type} at ${url}`);
     const resp = await apiRequest({

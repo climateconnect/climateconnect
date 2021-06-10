@@ -52,7 +52,7 @@ export default function IdeaMetadataStep({
   allHubs,
   onSubmitIdea,
   goBack,
-  errorMessage
+  errorMessage,
 }) {
   const classes = useStyles();
   const isTinyScreen = useMediaQuery("(max-width:400px");

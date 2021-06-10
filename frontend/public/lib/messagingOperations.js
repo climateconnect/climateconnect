@@ -21,7 +21,7 @@ export async function startPrivateChat(profile, token, locale) {
   return resp.data;
 }
 
-export async function joinIdeaGroupChat({idea, token, locale}) {
+export async function joinIdeaGroupChat({ idea, token, locale }) {
   const resp = await apiRequest({
     method: "post",
     url: `/api/ideas/${idea.url_slug}/join_chat/`,

@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     background: "#F8F8F8",
     position: "relative",
     cursor: "pointer",
-    boxShadow: "3px 3px 6px #00000029"    
+    boxShadow: "3px 3px 6px #00000029",
   }),
   createCardHeadline: {
     fontWeight: 600,
@@ -99,7 +99,7 @@ export default function IdeaPreview({
   index,
   hubLocation,
 }) {
-  const color = getIdeaBorderColor({idea: idea, index: index, isCreateCard: isCreateCard})
+  const color = getIdeaBorderColor({ idea: idea, index: index, isCreateCard: isCreateCard });
   const classes = useStyles({ borderColor: !isCreateCard && color });
   const [open, setOpen] = useState(false);
   const handleCardClick = (e) => {
@@ -115,17 +115,14 @@ export default function IdeaPreview({
   };
   return (
     <>
-      <Link 
+      <Link
         className={classes.noUnderline}
         onClick={handleCardClick}
         href={`${window.location.origin}${window.location.pathname}?idea=${idea?.url_slug}${window.location.hash}`}
       >
-        <Card
-          className={classes.root}
-          variant="outlined"        
-        >
+        <Card className={classes.root} variant="outlined">
           {isCreateCard ? <CreateCardContent /> : <IdeaCardContent idea={idea} />}
-        </Card>      
+        </Card>
       </Link>
       {isCreateCard && (
         <CreateIdeaDialog

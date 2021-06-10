@@ -32,14 +32,18 @@ const useStyles = makeStyles((theme) => ({
   }),
 }));
 
-const getTypeFromLocation = location => {
-  if (location?.multi_polygon)
-    return "Polygon"
-  else
-    return "Point"
-}
+const getTypeFromLocation = (location) => {
+  if (location?.multi_polygon) return "Polygon";
+  else return "Point";
+};
 
-export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizations, hubLocation }) {
+export default function CreateIdeaDialog({
+  open,
+  onClose,
+  allHubs,
+  userOrganizations,
+  hubLocation,
+}) {
   const [waitingForCreation, setWaitingForCreation] = useState(false);
   const classes = useStyles({ userOrganization: userOrganizations });
   const token = new Cookies().get("token");
@@ -57,8 +61,10 @@ export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizat
       ...hubLocation,
       type: getTypeFromLocation(hubLocation),
       lon: parseFloat(hubLocation.centre_point.replace("SRID=4326;POINT (", "").split(" ")[0]),
-      lat: parseFloat(hubLocation.centre_point.replace("SRID=4326;POINT (", "").split(" ")[1].replace(")", ""))
-    }
+      lat: parseFloat(
+        hubLocation.centre_point.replace("SRID=4326;POINT (", "").split(" ")[1].replace(")", "")
+      ),
+    },
   });
   const STEPS = ["idea_info", "idea_metadata"];
   const [step, setStep] = useState(STEPS[0]);
@@ -108,13 +114,13 @@ export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizat
         token: token,
         locale: locale,
       });
-      const url_slug = response.data
+      const url_slug = response.data;
       //TODO: link idea!
       redirect(
         window.location.pathname,
         {
           message: "Congratulations! Your idea " + idea.name + " has been created!",
-          idea: url_slug
+          idea: url_slug,
         },
         window.location.hash
       );
@@ -126,7 +132,7 @@ export default function CreateIdeaDialog({ open, onClose, allHubs, userOrganizat
         "There has been an error while creating your idea. Please contact contact@climateconnect.earth"
       );
       console.log(e);
-      console.log(e.response)
+      console.log(e.response);
     }
   };
 

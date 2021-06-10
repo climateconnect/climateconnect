@@ -13,10 +13,10 @@ const useStyles = makeStyles({
   }),
   idea: {
     flex: "1 1 0px",
-    position: "relative"
+    position: "relative",
   },
   ideaPreviews: {
-    flex: "1 1 0px"
+    flex: "1 1 0px",
   },
 });
 export default function IdeasBoard({
@@ -29,18 +29,17 @@ export default function IdeasBoard({
   initialIdeaUrlSlug,
   hubLocation,
 }) {
-  const getInitialIdea = (initialIdeaUrlSlug) => {   
-    //Short circuit if there is no idea open 
-    if(!initialIdeaUrlSlug)
-      return null
-    const initialIdeaObject = ideas.filter((i) => i.url_slug === initialIdeaUrlSlug)
-    if(initialIdeaObject.length !== 0) {
-      return initialIdeaObject[0]
+  const getInitialIdea = (initialIdeaUrlSlug) => {
+    //Short circuit if there is no idea open
+    if (!initialIdeaUrlSlug) return null;
+    const initialIdeaObject = ideas.filter((i) => i.url_slug === initialIdeaUrlSlug);
+    if (initialIdeaObject.length !== 0) {
+      return initialIdeaObject[0];
     }
-  }
+  };
   const [idea, setIdea] = useState(getInitialIdea(initialIdeaUrlSlug));
-  const [ideaContainerEl, setIdeaContainerEl] = useState(null)
-  const containerOffsetTop = ElementSpaceToTop({el: ideaContainerEl})
+  const [ideaContainerEl, setIdeaContainerEl] = useState(null);
+  const containerOffsetTop = ElementSpaceToTop({ el: ideaContainerEl });
   const classes = useStyles({ ideaOpen: idea !== null });
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   useEffect(
@@ -53,13 +52,21 @@ export default function IdeasBoard({
   );
 
   const onClickIdea = async (idea) => {
-    setIdea({...idea, index: ideas.indexOf(idea)});
-    window.history.pushState({}, "", `${window.location.origin}${window.location.pathname}?idea=${idea.url_slug}${window.location.hash}`)
+    setIdea({ ...idea, index: ideas.indexOf(idea) });
+    window.history.pushState(
+      {},
+      "",
+      `${window.location.origin}${window.location.pathname}?idea=${idea.url_slug}${window.location.hash}`
+    );
   };
 
   const onClose = () => {
     setIdea(null);
-    window.history.pushState({}, "", `${window.location.origin}${window.location.pathname}${window.location.hash}`)
+    window.history.pushState(
+      {},
+      "",
+      `${window.location.origin}${window.location.pathname}${window.location.hash}`
+    );
   };
 
   const handleUpdateRating = (newRating) => {
@@ -76,9 +83,9 @@ export default function IdeasBoard({
   const handleRemoveComment = (c) => {
     setIdea({
       ...idea,
-      comments: [...idea.comments.filter((pc) => pc.id !== c.id)]
-    })
-  }
+      comments: [...idea.comments.filter((pc) => pc.id !== c.id)],
+    });
+  };
 
   return (
     <div className={classes.root}>
@@ -95,11 +102,14 @@ export default function IdeasBoard({
         hubLocation={hubLocation}
       />
       {idea && !isNarrowScreen && (
-        <div className={classes.idea} ref={(node) => {
-          if (node) {
-            setIdeaContainerEl(node);
-          }
-        }}>
+        <div
+          className={classes.idea}
+          ref={(node) => {
+            if (node) {
+              setIdeaContainerEl(node);
+            }
+          }}
+        >
           <IdeaRoot
             idea={idea}
             onIdeaClose={onClose}

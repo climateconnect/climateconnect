@@ -11,13 +11,15 @@ const ONE_WEEK_IN_MINISECONDS = 1000 * 60 * 60 * 24 * 7;
 const shorten = (strings, languageCode) => {
   const about_in_language = {
     en: "about ",
-    de: "etwa "
-  }
+    de: "etwa ",
+  };
   return Object.keys(strings).reduce((shortenedStrings, curKey) => {
-    shortenedStrings[curKey] = strings[curKey] ? strings[curKey].replace(about_in_language[languageCode], "") : strings[curKey]
-    return shortenedStrings
-  }, {})
-}
+    shortenedStrings[curKey] = strings[curKey]
+      ? strings[curKey].replace(about_in_language[languageCode], "")
+      : strings[curKey];
+    return shortenedStrings;
+  }, {});
+};
 
 export default function DateDisplay({ date, className, short }) {
   const { locale } = useContext(UserContext);

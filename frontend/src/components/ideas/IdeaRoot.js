@@ -19,22 +19,22 @@ import IdeaHubIcon from "./IdeaHubIcon";
 import IdeaJoinButton from "./IdeaJoinButton";
 import IdeaRatingSlider from "./IdeaRatingSlider";
 
-const useStyles = makeStyles(theme => ({
-  root: props => ({
+const useStyles = makeStyles((theme) => ({
+  root: (props) => ({
     borderColor: props.borderColor,
     borderWidth: 3,
     position: "absolute",
     left: 0,
-    background: (props.loading || props.isEditing) ? "white" : "#E9E9E9",
+    background: props.loading || props.isEditing ? "white" : "#E9E9E9",
     right: 0,
-    top: (props.offsetTop < 110 && props.offsetTop !== null)  ? 110 - props.offsetTop : 0,
-    bottom: props.offsetTop < 110 ? (props.offsetBottom + theme.spacing(1)) : "default",
+    top: props.offsetTop < 110 && props.offsetTop !== null ? 110 - props.offsetTop : 0,
+    bottom: props.offsetTop < 110 ? props.offsetBottom + theme.spacing(1) : "default",
     overflowY: "auto",
     [theme.breakpoints.down("sm")]: {
       borderRadius: "30px 30px 0px 0px",
       borderWidth: 0,
-      position: "relative"
-    }
+      position: "relative",
+    },
   }),
   contentWrapper: {
     padding: theme.spacing(1),
@@ -43,8 +43,8 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("sm")]: {
       paddingTop: theme.spacing(0),
       paddingLeft: theme.spacing(3),
-      paddingRight: theme.spacing(3)
-    }
+      paddingRight: theme.spacing(3),
+    },
   },
   closeStyle: {
     cursor: "pointer",
@@ -52,8 +52,8 @@ const useStyles = makeStyles(theme => ({
   ideaInfo: {
     marginLeft: theme.spacing(4),
     [theme.breakpoints.down("sm")]: {
-      marginLeft: 0
-    }
+      marginLeft: 0,
+    },
   },
   name: {
     fontWeight: "bold",
@@ -96,32 +96,32 @@ const useStyles = makeStyles(theme => ({
   },
   buttonsContainer: {
     display: "flex",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   ideaImage: {
     width: "40%",
     float: "right",
-    marginLeft: theme.spacing(1)
+    marginLeft: theme.spacing(1),
   },
   imageAndShortDescriptionWrapper: {
     marginTop: theme.spacing(2),
-    overflow: "auto"
+    overflow: "auto",
   },
   creatorProfilePreview: {
-    display: "inline-block"
+    display: "inline-block",
   },
   creatorAndCreatedAtWrapper: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
   },
   createdAtText: {
     marginLeft: theme.spacing(0.5),
-    marginTop: -6
+    marginTop: -6,
   },
   by: {
     marginRight: theme.spacing(0.75),
-    marginLeft: 0
-  }
+    marginLeft: 0,
+  },
 }));
 
 export default function IdeaRoot({
@@ -132,42 +132,49 @@ export default function IdeaRoot({
   handleRemoveComment,
   containerOffsetTop,
   userOrganizations,
-  allHubs
+  allHubs,
 }) {
   const token = new Cookies().get("token");
-  const borderColor = getIdeaBorderColor({idea: idea, index: idea.index})
-  const { user } = useContext(UserContext)
-  const { showFeedbackMessage } = useContext(FeedbackContext)
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"))
+  const borderColor = getIdeaBorderColor({ idea: idea, index: idea.index });
+  const { user } = useContext(UserContext);
+  const { showFeedbackMessage } = useContext(FeedbackContext);
+  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
   const handleIdeaClose = (e) => {
     onIdeaClose(e);
   };
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"))
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [loading, setLoading] = useState(!!token);
   const [userRating, setUserRating] = useState({
     rating_score: 0,
     has_rated: idea.rating?.has_rated,
     //userRating updates live when users pull the heart. last_locked_rating_score only updates when they let go of the mouse
-    last_locked_rating_score: 0
+    last_locked_rating_score: 0,
   });
   const [hasJoinedIdea, setHasJoinedIdea] = useState({
     has_joined: false,
-    chat_uuid: null
-  })
-  const [isEditing, setIsEditing] = useState(false)
+    chat_uuid: null,
+  });
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleClickEditIdea = (e) => {
-    e.preventDefault()
-    setIsEditing(true)
-    window.history.pushState({}, "", `${window.location.origin}${window.location.pathname}?idea=${idea.url_slug}&edit=true${window.location.hash}`)
-  }
+    e.preventDefault();
+    setIsEditing(true);
+    window.history.pushState(
+      {},
+      "",
+      `${window.location.origin}${window.location.pathname}?idea=${idea.url_slug}&edit=true${window.location.hash}`
+    );
+  };
 
   const classes = useStyles({
-    offsetTop: containerOffsetTop?.screen, 
-    offsetBottom: containerOffsetTop?.screenBottom - containerOffsetTop?.pageBottom + containerOffsetTop?.screenBottom,
+    offsetTop: containerOffsetTop?.screen,
+    offsetBottom:
+      containerOffsetTop?.screenBottom -
+      containerOffsetTop?.pageBottom +
+      containerOffsetTop?.screenBottom,
     loading: loading,
     isEditing: isEditing,
-    borderColor: borderColor
+    borderColor: borderColor,
   });
 
   useEffect(
@@ -177,12 +184,15 @@ export default function IdeaRoot({
         const [userRating, comments, hasJoinedIdea] = await Promise.all([
           getUserRatingFromServer(idea, token, locale),
           getIdeaCommentsFromServer(idea, token, locale),
-          getHasJoinedIdea(idea, token, locale)
+          getHasJoinedIdea(idea, token, locale),
         ]);
-        setUserRating({...userRating, last_locked_rating_score: userRating.rating_score});
-        setHasJoinedIdea({has_joined: hasJoinedIdea?.has_joined, chat_uuid: hasJoinedIdea?.chat_uuid})
+        setUserRating({ ...userRating, last_locked_rating_score: userRating.rating_score });
+        setHasJoinedIdea({
+          has_joined: hasJoinedIdea?.has_joined,
+          chat_uuid: hasJoinedIdea?.chat_uuid,
+        });
         handleAddComments(comments);
-        setLoading(false)
+        setLoading(false);
       }
     },
     [idea.url_slug]
@@ -194,11 +204,15 @@ export default function IdeaRoot({
   };
 
   const handleRateProject = async (event, newRating) => {
-    if(!user) {
-      showFeedbackMessage({message: texts.please_sign_in_to_rate_an_idea, promptSignUp: true, newHash: window.location.hash})
-      return
+    if (!user) {
+      showFeedbackMessage({
+        message: texts.please_sign_in_to_rate_an_idea,
+        promptSignUp: true,
+        newHash: window.location.hash,
+      });
+      return;
     }
-    setUserRating({...userRating, has_rated: true, last_locked_rating_score: newRating})
+    setUserRating({ ...userRating, has_rated: true, last_locked_rating_score: newRating });
     const payload = {
       rating: newRating,
     };
@@ -217,9 +231,13 @@ export default function IdeaRoot({
   };
 
   const cancelEdit = () => {
-    setIsEditing(false)
-    window.history.pushState({}, "", `${window.location.origin}${window.location.pathname}?idea=${idea.url_slug}${window.location.hash}`)
-  }
+    setIsEditing(false);
+    window.history.pushState(
+      {},
+      "",
+      `${window.location.origin}${window.location.pathname}?idea=${idea.url_slug}${window.location.hash}`
+    );
+  };
 
   const handleAddComment = (comment) => handleAddComments([comment]);
 
@@ -239,12 +257,17 @@ export default function IdeaRoot({
           </div>
         </div>
       ) : isEditing ? (
-        <EditIdeaRoot idea={idea} cancelEdit={cancelEdit} userOrganizations={userOrganizations} allHubs={allHubs}/>
-      ) :(
+        <EditIdeaRoot
+          idea={idea}
+          cancelEdit={cancelEdit}
+          userOrganizations={userOrganizations}
+          allHubs={allHubs}
+        />
+      ) : (
         <>
           <div className={classes.contentWrapper}>
             <CloseIcon className={classes.closeStyle} onClick={handleIdeaClose} />
-            <div className={classes.ideaInfo}>              
+            <div className={classes.ideaInfo}>
               <div className={classes.titleAndHubIconWrapper}>
                 <Typography color="secondary" className={classes.name} component="h2">
                   {idea.name}
@@ -252,17 +275,28 @@ export default function IdeaRoot({
                 <IdeaHubIcon idea={idea} className={classes.ideaHubIcon} />
               </div>
               <div className={classes.imageAndShortDescriptionWrapper}>
-                {idea.thumbnail_image &&(
-                  <img src={getImageUrl(idea.thumbnail_image)} className={classes.ideaImage}/>
+                {idea.thumbnail_image && (
+                  <img src={getImageUrl(idea.thumbnail_image)} className={classes.ideaImage} />
                 )}
-                <Typography variant="body1">
-                  {idea.short_description}
-                </Typography>
+                <Typography variant="body1">{idea.short_description}</Typography>
               </div>
               <div className={`${classes.topItem} ${classes.creatorAndCreatedAtWrapper}`}>
-                {isNarrowScreen && <Typography className={`${classes.createdAtText} ${classes.by}`}>{capitalizeFirstLetter(texts.by)}</Typography>}
+                {isNarrowScreen && (
+                  <Typography className={`${classes.createdAtText} ${classes.by}`}>
+                    {capitalizeFirstLetter(texts.by)}
+                  </Typography>
+                )}
                 <MiniProfilePreview profile={idea.user} size="medium" />
-                <Typography className={classes.createdAtText}>{isNarrowScreen ? <> <DateDisplay date={new Date(idea?.created_at)} short/></> : texts.shared_this_idea_x_days_ago}</Typography>
+                <Typography className={classes.createdAtText}>
+                  {isNarrowScreen ? (
+                    <>
+                      {" "}
+                      <DateDisplay date={new Date(idea?.created_at)} short />
+                    </>
+                  ) : (
+                    texts.shared_this_idea_x_days_ago
+                  )}
+                </Typography>
               </div>
               <div className={`${classes.topItem} ${classes.location}`}>
                 <Tooltip title={texts.location}>
@@ -290,8 +324,16 @@ export default function IdeaRoot({
                 />
               </div>
               <div className={`${classes.topItem} ${classes.buttonsContainer}`}>
-                <IdeaJoinButton idea={idea} has_joined={hasJoinedIdea.has_joined} chat_uuid={hasJoinedIdea.chat_uuid}/>
-                {user && idea?.user?.id === user?.id &&  <Button onClick={handleClickEditIdea} variant="contained" color="primary">{isMediumScreen ? texts.edit : texts.edit_idea}</Button>}
+                <IdeaJoinButton
+                  idea={idea}
+                  has_joined={hasJoinedIdea.has_joined}
+                  chat_uuid={hasJoinedIdea.chat_uuid}
+                />
+                {user && idea?.user?.id === user?.id && (
+                  <Button onClick={handleClickEditIdea} variant="contained" color="primary">
+                    {isMediumScreen ? texts.edit : texts.edit_idea}
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -347,9 +389,9 @@ const getHasJoinedIdea = async (idea, token, locale) => {
       token: token,
       locale: locale,
     });
-    console.log(response)
+    console.log(response);
     return response.data;
   } catch (err) {
     console.log(err);
   }
-}
+};

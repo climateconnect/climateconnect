@@ -1,5 +1,5 @@
 import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
-import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
+import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import possibleFilters from "../../../public/data/possibleFilters";
@@ -35,12 +35,12 @@ const useStyles = makeStyles((theme) => {
     },
     ideasTabLabel: {
       display: "flex",
-      alignItems: "center"
+      alignItems: "center",
     },
     ideasIcon: {
       marginRight: theme.spacing(1),
-      color: theme.palette.primary.main
-    }
+      color: theme.palette.primary.main,
+    },
   };
 });
 
@@ -113,7 +113,7 @@ export default function BrowseContent({
   const texts = getTexts({ page: "general", locale: locale });
   const type_names = {
     projects: texts.projects,
-    organizations:  isNarrowScreen ? texts.orgs : texts.organizations,
+    organizations: isNarrowScreen ? texts.orgs : texts.organizations,
     members: texts.members,
     ideas: texts.ideas,
   };
@@ -294,7 +294,7 @@ export default function BrowseContent({
         ],
       },
     });
-  };  
+  };
 
   return (
     <LoadingContext.Provider
@@ -325,8 +325,12 @@ export default function BrowseContent({
               label: type_names[t],
               className: classes.tab,
             };
-            if(index === TYPES_BY_TAB_VALUE.indexOf("ideas")) {
-              tabProps.label = <div className={classes.ideasTabLabel}><EmojiObjectsIcon className={classes.ideasIcon}/> {type_names[t]}</div>
+            if (index === TYPES_BY_TAB_VALUE.indexOf("ideas")) {
+              tabProps.label = (
+                <div className={classes.ideasTabLabel}>
+                  <EmojiObjectsIcon className={classes.ideasIcon} /> {type_names[t]}
+                </div>
+              );
             }
             if (index === 1) tabProps.ref = organizationsTabRef;
             return <Tab {...tabProps} key={index} />;

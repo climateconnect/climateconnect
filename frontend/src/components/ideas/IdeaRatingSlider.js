@@ -6,7 +6,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.main,
     height: theme.spacing(1.75),
     paddingTop: 13,
-    paddingBottom: 13
+    paddingBottom: 13,
   },
   thumb: {
     height: 40,

@@ -86,7 +86,7 @@ export default function FilterSection({
             type={type}
           />
         </div>
-        {!hideFilterButton &&
+        {!hideFilterButton && (
           <Button
             variant="outlined"
             className={classes.filterButton}
@@ -98,7 +98,7 @@ export default function FilterSection({
           >
             Filter
           </Button>
-        }
+        )}
       </div>
     </div>
   );

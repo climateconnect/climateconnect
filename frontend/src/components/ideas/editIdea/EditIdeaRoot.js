@@ -14,20 +14,20 @@ import Switcher from "../../general/Switcher";
 import LocationSearchBar from "../../search/LocationSearchBar";
 import UploadImageField from "../UploadImageField";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(1),
     background: "white",
   },
   backIcon: {
-    float: "left"
+    float: "left",
   },
   mainHeadline: {
     fontWeight: 700,
     fontSize: 20,
     textAlign: "center",
     marginBottom: theme.spacing(2),
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   textField: {
     width: "100%",
@@ -40,27 +40,27 @@ const useStyles = makeStyles(theme => ({
   },
   buttonBar: {
     marginTop: theme.spacing(4),
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
   },
   publishButton: {
     float: "right",
   },
   uploadImageField: {
     marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
   },
-}))
+}));
 
-export default function EditIdeaRoot({idea, cancelEdit, userOrganizations, allHubs}) {
-  const classes = useStyles()
+export default function EditIdeaRoot({ idea, cancelEdit, userOrganizations, allHubs }) {
+  const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const [waitingForRequest, setWaitingForRequest] = useState(false)
+  const [waitingForRequest, setWaitingForRequest] = useState(false);
   const texts = getTexts({ page: "idea", locale: locale });
-  const [editedIdea, setEditedIdea] = useState(idea)
+  const [editedIdea, setEditedIdea] = useState(idea);
   const locationInputRef = useRef(null);
-  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false)
-  const token = new Cookies().get("token")
-  const [confirmCancelOpen, setConfirmCancelOpen] = useState(false)
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
+  const token = new Cookies().get("token");
+  const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
 
   const handleValueChange = (newValue, key) => {
     setEditedIdea({ ...editedIdea, [key]: newValue });
@@ -75,27 +75,27 @@ export default function EditIdeaRoot({idea, cancelEdit, userOrganizations, allHu
   };
 
   const onClickCancel = (e) => {
-    e.preventDefault()
-    const changes = getChanges(idea, editedIdea)
-    if(changes && Object.keys(changes).length !== 0) {
-      setConfirmCancelOpen(true)
-    } else{
-      cancelEdit()
-    }    
-  }
+    e.preventDefault();
+    const changes = getChanges(idea, editedIdea);
+    if (changes && Object.keys(changes).length !== 0) {
+      setConfirmCancelOpen(true);
+    } else {
+      cancelEdit();
+    }
+  };
 
   const checkIfIdeaIsValid = () => {
     //TODO: validate location!!
-    return true
-  }
+    return true;
+  };
 
   const onSubmit = async (e) => {
-    e.preventDefault()  
-    if(checkIfIdeaIsValid()){
-      setWaitingForRequest(true)
-      const changes = getChanges(idea, editedIdea)
-      if(Object.keys(changes).length === 0) {
-        cancelEdit()
+    e.preventDefault();
+    if (checkIfIdeaIsValid()) {
+      setWaitingForRequest(true);
+      const changes = getChanges(idea, editedIdea);
+      if (Object.keys(changes).length === 0) {
+        cancelEdit();
       } else {
         const payload = await parseIdeaForEditRequest(changes, locale);
         try {
@@ -106,22 +106,22 @@ export default function EditIdeaRoot({idea, cancelEdit, userOrganizations, allHu
             token: token,
             locale: locale,
           });
-          window.location.reload()
-        } catch(e) {
-          setWaitingForRequest(false)
-          console.log(e)
-          console.log(e.response)
+          window.location.reload();
+        } catch (e) {
+          setWaitingForRequest(false);
+          console.log(e);
+          console.log(e.response);
         }
-      }      
+      }
     }
-  }
+  };
 
   const onConfirmCancelClose = (confirmed) => {
-    if(confirmed) {
-      cancelEdit()
+    if (confirmed) {
+      cancelEdit();
     }
-    setConfirmCancelOpen(false)
-  }
+    setConfirmCancelOpen(false);
+  };
 
   const handleSetLocationOptionsOpen = (newState) => setLocationOptionsOpen(newState);
   return (
@@ -136,7 +136,9 @@ export default function EditIdeaRoot({idea, cancelEdit, userOrganizations, allHu
                 <KeyboardArrowLeftIcon />
               </IconButton>
             </Tooltip>
-            <Typography component="h2" className={classes.mainHeadline}>{texts.edit_your_idee}</Typography>
+            <Typography component="h2" className={classes.mainHeadline}>
+              {texts.edit_your_idee}
+            </Typography>
             <div className={classes.chooseIsOrganizationsProject}>
               <Switcher
                 trueLabel={texts.organizations_idea}
@@ -177,7 +179,7 @@ export default function EditIdeaRoot({idea, cancelEdit, userOrganizations, allHu
               className={classes.uploadImageField}
               updateImages={updateImages}
               image={editedIdea.image}
-            /> 
+            />
             <Typography className={classes.headline}>{texts.description}*</Typography>
             <TextField
               className={classes.textField}
@@ -219,15 +221,15 @@ export default function EditIdeaRoot({idea, cancelEdit, userOrganizations, allHu
                 )
               }
               controlledValue={editedIdea.hub}
-            />         
+            />
             <div className={classes.buttonBar}>
               <Button variant="contained" onClick={onClickCancel} disabled={waitingForRequest}>
                 {texts.cancel}
               </Button>
-              <Button 
-                type="submit" 
-                variant="contained" 
-                color="primary" 
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
                 className={classes.publishButton}
                 disabled={waitingForRequest}
               >
@@ -235,7 +237,7 @@ export default function EditIdeaRoot({idea, cancelEdit, userOrganizations, allHu
               </Button>
             </div>
           </form>
-          <ConfirmDialog 
+          <ConfirmDialog
             open={confirmCancelOpen}
             onClose={onConfirmCancelClose}
             title={texts.do_you_really_want_to_go_back}
@@ -246,7 +248,7 @@ export default function EditIdeaRoot({idea, cancelEdit, userOrganizations, allHu
         </>
       )}
     </>
-  )
+  );
 }
 
 const getChanges = (idea, editedIdea) => {
@@ -257,16 +259,15 @@ const getChanges = (idea, editedIdea) => {
     }
     return obj;
   }, {});
-}
+};
 
 const parseIdeaForEditRequest = async (idea, locale) => {
   const parsedIdea = {
     ...idea,
-    source_language: locale
+    source_language: locale,
   };
 
-  if(idea.hub)
-    parsedIdea.hub = idea.hub.url_slug
+  if (idea.hub) parsedIdea.hub = idea.hub.url_slug;
 
   if (idea.parent_organization && idea.is_organizations_idea) {
     parsedIdea.parent_organization = idea.parent_organization.id;

@@ -1,7 +1,7 @@
 import { makeStyles, Switch, Typography } from "@material-ui/core";
 import React from "react";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   flexBlock: {
     display: "flex",
     justifyContent: "space-around",

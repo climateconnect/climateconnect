@@ -22,7 +22,7 @@ export default function LocationSearchBar({
   handleSetOpen,
   locationInputRef,
   textFieldClassName,
-  disabled
+  disabled,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });

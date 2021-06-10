@@ -6,10 +6,10 @@ export default function ElementSpaceToTop({ el }) {
     page: null,
     screen: null,
     pageBottom: null,
-    screenBottom: null
+    screenBottom: null,
   });
 
-  const [initialized, setInitialized] = useState(false)
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     let ticking = false;
@@ -22,7 +22,7 @@ export default function ElementSpaceToTop({ el }) {
           screen: rect.top,
           page: scrollY + rect.top,
           screenBottom: rect.bottom,
-          pageBottom: rect.bottom + window.innerHeight
+          pageBottom: rect.bottom + window.innerHeight,
         });
       }
       ticking = false;
@@ -37,9 +37,9 @@ export default function ElementSpaceToTop({ el }) {
 
     window.addEventListener("scroll", onScroll);
 
-    if(!initialized) {
+    if (!initialized) {
       updateTopOfPage();
-      setInitialized(true)
+      setInitialized(true);
       ticking = true;
     }
 

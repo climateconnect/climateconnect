@@ -10,50 +10,53 @@ import ConfirmDialog from "../dialogs/ConfirmDialog";
 
 const useStyles = makeStyles(() => ({
   dialog: {
-    maxWidth: 600
-  }
+    maxWidth: 600,
+  },
 }));
 
-export default function IdeaJoinButton({idea, has_joined, chat_uuid}) {
+export default function IdeaJoinButton({ idea, has_joined, chat_uuid }) {
   const classes = useStyles();
-  const token = new Cookies().get("token")
+  const token = new Cookies().get("token");
   const { locale, user } = useContext(UserContext);
-  const { showFeedbackMessage } = useContext(FeedbackContext)
+  const { showFeedbackMessage } = useContext(FeedbackContext);
   const texts = getTexts({ page: "idea", locale: locale });
-  const [open, setOpen] = useState(false)
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"))
-  
+  const [open, setOpen] = useState(false);
+  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
+
   const onClickJoinButton = (e) => {
     e.preventDefault();
-    if (!user){
-      showFeedbackMessage({message: texts.please_sign_up_or_log_in_to_join_an_idea, promptSignUp: true, newHash: window.location.hash})
+    if (!user) {
+      showFeedbackMessage({
+        message: texts.please_sign_up_or_log_in_to_join_an_idea,
+        promptSignUp: true,
+        newHash: window.location.hash,
+      });
     } else {
-      setOpen(true)
+      setOpen(true);
     }
   };
 
   const handleClickDialogClose = async (hasConfirmed) => {
-    setOpen(false)
-    if(hasConfirmed) {
-      const response = await joinIdeaGroupChat({idea: idea, token: token, locale: locale})
-      window.open(`/chat/${response.chat_uuid}`, '_blank');
+    setOpen(false);
+    if (hasConfirmed) {
+      const response = await joinIdeaGroupChat({ idea: idea, token: token, locale: locale });
+      window.open(`/chat/${response.chat_uuid}`, "_blank");
     }
-  }
+  };
 
   return (
     <>
-      {
-        has_joined ? 
-          <Button color="primary" variant="contained" href={`/chat/${chat_uuid}/`} target="_blank">
-            {isMediumScreen ? texts.open_chat : texts.go_to_group_chat}
-          </Button>
-        :
-          <Button color="primary" variant="contained" onClick={onClickJoinButton}>
-            {texts.join_in}
-          </Button>
-      }
-      <ConfirmDialog 
-        open={open} 
+      {has_joined ? (
+        <Button color="primary" variant="contained" href={`/chat/${chat_uuid}/`} target="_blank">
+          {isMediumScreen ? texts.open_chat : texts.go_to_group_chat}
+        </Button>
+      ) : (
+        <Button color="primary" variant="contained" onClick={onClickJoinButton}>
+          {texts.join_in}
+        </Button>
+      )}
+      <ConfirmDialog
+        open={open}
         onClose={handleClickDialogClose}
         cancelText={texts.no}
         confirmText={texts.yes}

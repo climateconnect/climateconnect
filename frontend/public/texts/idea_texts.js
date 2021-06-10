@@ -5,7 +5,7 @@ const ONE_WEEK_IN_MINISECONDS = 1000 * 60 * 60 * 24 * 7;
 
 export default function getIdeaTexts({ idea }) {
   const olderThanOneWeek = new Date() - new Date(idea?.created_at) > ONE_WEEK_IN_MINISECONDS;
-  
+
   return {
     share_your_idea_and_find_the_right_collaborators: {
       en: "Share your idea and find the right collaborators!",
@@ -135,44 +135,52 @@ export default function getIdeaTexts({ idea }) {
       de: "Dem Gruppenchat beitreten, um über die Umsetzung der Idee zu sprechen?",
     },
     do_you_want_to_join_text: {
-      en: "If you join in you will be added to a group chat will all the other people clicked the \"Join In\" button. Do you want to join in?",
-      de: "Wenn du mitmachst, wirst du zu einem Gruppenchat mit allen anderen, die \"Mitmachen\" geklickt haben, hinzugefügt. Möchtest du mitmachen?"
+      en:
+        'If you join in you will be added to a group chat will all the other people clicked the "Join In" button. Do you want to join in?',
+      de:
+        'Wenn du mitmachst, wirst du zu einem Gruppenchat mit allen anderen, die "Mitmachen" geklickt haben, hinzugefügt. Möchtest du mitmachen?',
     },
     go_to_group_chat: {
       en: "Go to Group chat",
-      de: "Gruppenchat öffnen"
+      de: "Gruppenchat öffnen",
     },
     open_chat: {
       en: "Open Chat",
-      de: "Chat öffnen"
+      de: "Chat öffnen",
     },
     edit_idea: {
       en: "Edit idea",
-      de: "Idee bearbeiten"
+      de: "Idee bearbeiten",
     },
     edit: {
       en: "Edit",
-      de: "Bearbeiten"
+      de: "Bearbeiten",
     },
     edit_your_idee: {
       en: "Edit Your Idea",
-      de: "Bearbeite deine Idee"
+      de: "Bearbeite deine Idee",
     },
     shared_this_idea_x_days_ago: {
-      en: <>
-        created this idea {olderThanOneWeek && "on "}<DateDisplay date={new Date(idea?.created_at)} short/>.
-      </>,
-      de: <>
-        hat diese Idee {olderThanOneWeek && "am "}<DateDisplay date={new Date(idea?.created_at)} short/> erstellt.
-      </>
+      en: (
+        <>
+          created this idea {olderThanOneWeek && "on "}
+          <DateDisplay date={new Date(idea?.created_at)} short />.
+        </>
+      ),
+      de: (
+        <>
+          hat diese Idee {olderThanOneWeek && "am "}
+          <DateDisplay date={new Date(idea?.created_at)} short /> erstellt.
+        </>
+      ),
     },
     please_sign_up_or_log_in_to_join_an_idea: {
       en: "Please sign up or log in to join an idea!",
-      de: "Bitte melde dich an, um bei einer Idee mitumachen!"
+      de: "Bitte melde dich an, um bei einer Idee mitumachen!",
     },
     please_sign_in_to_rate_an_idea: {
       en: "Please sign up or log in to rate an idea!",
-      de: "Bitte melde dich an, um eine Idee zu bewerten!"
-    }
+      de: "Bitte melde dich an, um eine Idee zu bewerten!",
+    },
   };
 }

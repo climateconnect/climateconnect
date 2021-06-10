@@ -43,8 +43,8 @@ export default function LanguageSelect({ transparentHeader }) {
   };
 
   const handleToggleOpen = () => {
-    setOpen(!open)
-  }
+    setOpen(!open);
+  };
 
   const handleClose = () => {
     setOpen(false);
