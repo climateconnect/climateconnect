@@ -27,6 +27,9 @@ const getFilterUrl = ({ activeFilters, infoMetadata, filterChoices, locale }) =>
   return newUrl;
 };
 
+/*
+  @filterChoices all possible choices you can make for a filter, usually caught from the server (e.g. all possible skills)
+*/
 const getFilterName = (filter, key, filterChoices) => {
   const keyToFilterChoicesKeyMap = {
     organization_type: "organization_types",
@@ -34,9 +37,25 @@ const getFilterName = (filter, key, filterChoices) => {
     status: "project_statuses",
     category: "project_categories",
   };
-  return filterChoices[keyToFilterChoicesKeyMap[key]].find((fc) => {
-    return fc.name === filter;
-  }).original_name;
+  //This either is our filter or includes our filter in the subcategories
+  const filterChoiceCandidate = filterChoices[keyToFilterChoicesKeyMap[key]].find((fc) => {
+    if(fc.name === filter){
+      return true
+    } else if(fc?.subcategories?.length > 0){
+      return fc?.subcategories.map(sc => sc.name).includes(filter)
+    }
+  });
+  //The filterChoiceCandidate is our filter! We're returning it.
+  if(filterChoiceCandidate.name === filter) {
+    return filterChoiceCandidate.original_name
+  } else if(filterChoiceCandidate){
+    return filterChoiceCandidate?.subcategories.find(sc => {
+      return sc.name === filter
+    }).original_name
+  } else {
+    //couldn't find our filter
+    return null
+  }
 };
 
 /**
@@ -51,7 +70,13 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
   // TODO: should make this more robust, and if the filters
   // object includes properties that are empty, shouldn't add the &
   let queryParamFragment = "&";
+  console.log(possibleFilters({
+    key: "all",
+    filterChoices: filterChoices,
+    locale: locale,
+  }).map(x=>x.key))
   Object.keys(filters).map((filterKey) => {
+    console.log(filterKey)
     const type = infoMetadata && infoMetadata[filterKey]?.type;
     const locationFilterkeys = getLocationFilterKeys();
     //Submitted location filters should always be in the form of an object
@@ -77,12 +102,20 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
         filterValues = [
           filters[filterKey].map((filter) => getFilterName(filter, filterKey, filterChoices)),
         ].join();
-      } else {
+      } else {        
         const options = possibleFilters({
           key: "all",
           filterChoices: filterChoices,
           locale: locale,
         }).find((f) => f.key === filterKey).options;
+        if(options === undefined) {
+          console.log(possibleFilters({
+            key: "all",
+            filterChoices: filterChoices,
+            locale: locale,
+          }).find((f) => f.key === filterKey))
+          console.log(filterKey)
+        }
         filterValues = options.find((o) => o.name === filters[filterKey]).original_name;
       }
       // We also need to handle reserved characters, which

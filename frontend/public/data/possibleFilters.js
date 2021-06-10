@@ -22,6 +22,13 @@ export default function getFilters({ key, filterChoices, locale }) {
     const projectsFilters = getProjectsFilters(filterChoices, texts, english_texts);
     const organizationsFilters = getOrganizationsFilters(filterChoices, texts);
     const membersFilters = getMembersFilters(filterChoices, texts);
+    console.log([
+      ...projectsFilters,
+      ...organizationsFilters.filter((o) => !projectsFilters.map((p) => p.key).includes(o.key)),
+      ...membersFilters
+        .filter((m) => !projectsFilters.map((p) => p.key).includes(m.key))
+        .filter((m) => !organizationsFilters.map((o) => o.key).includes(m.key)),
+    ])
     return [
       ...projectsFilters,
       ...organizationsFilters.filter((o) => !projectsFilters.map((p) => p.key).includes(o.key)),
@@ -83,6 +90,7 @@ const getMembersFilters = (filterChoices, texts) => [
     key: "skills",
     itemType: "skills",
     itemsToChooseFrom: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
+    options: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
     tooltipText: texts.skills_tooltip,
   },
 ];
@@ -166,6 +174,7 @@ const getProjectsFilters = (filterChoices, texts, english_texts) => [
     key: "skills",
     itemType: "skills",
     itemsToChooseFrom: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
+    options: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
     tooltipText: texts.skills_tooltip,
   },
 ];

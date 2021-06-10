@@ -37,10 +37,11 @@ export function getMessageFromUrl(message) {
 
 export function getInfoMetadataByType(type, locale) {
   if (type === "organizations") return getOrganizationInfoMetadata(locale);
-  if (type === "profiles") return profile_info_metadata(locale);
+  if (type === "profiles" || type === "members") return profile_info_metadata(locale);
   if (type === "projects") return getProjectInfoMetadata();
 }
 
+//Returns an object of possible filters with the "empty" value (empty string or empty array)
 export function getReducedPossibleFilters(possibleFilters, locationFilter) {
   const reducedPossibleFilters = possibleFilters.reduce((map, obj) => {
     const locationKeys = getLocationFilterKeys();
