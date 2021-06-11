@@ -15,9 +15,10 @@ const useStyles = makeStyles({
     flex: "1 1 0px",
     position: "relative",
   },
-  ideaPreviews: {
+  ideaPreviews: props => ({
     flex: "1 1 0px",
-  },
+    minHeight: props.ideaOpen ? 1500 : "default"
+  }),
 });
 export default function IdeasBoard({
   hasMore,
