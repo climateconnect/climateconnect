@@ -35,7 +35,7 @@ class MessageParticipants(models.Model):
         help_text="If this chat is about an idea, this points to the idea",
         verbose_name="Related idea",
         related_name="related_idea_message_participant",
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         null=True, blank=True
     )
 
