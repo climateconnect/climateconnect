@@ -207,8 +207,9 @@ export default function IdeaRoot({
     if (!user) {
       showFeedbackMessage({
         message: texts.please_sign_in_to_rate_an_idea,
-        promptSignUp: true,
+        promptLogIn: true,
         newHash: window.location.hash,
+        error: true
       });
       return;
     }

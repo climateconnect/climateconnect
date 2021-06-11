@@ -5,14 +5,13 @@ import { redirect } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   signUpButton: {
-    color: theme.palette.primary.main,
-    background: "white",
+        background: "white",
   },
 }));
 
-export default function SignUpAction({ onClose }) {
+export default function LogInAction({ onClose, }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
@@ -24,7 +23,6 @@ export default function SignUpAction({ onClose }) {
     if (redirectUrl[0] === "/") {
       redirectUrl = redirectUrl.slice(1, redirectUrl.length);
     }
-    console.log(redirectUrl);
     redirect("/signin", { redirect: redirectUrl });
   };
 

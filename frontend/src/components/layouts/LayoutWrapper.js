@@ -3,7 +3,7 @@ import {
   Snackbar,
   SnackbarContent,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import Head from "next/head";
@@ -14,7 +14,7 @@ import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import FeedbackButton from "../feedback/FeedbackButton";
 import CookieBanner from "../general/CookieBanner";
-import SignUpAction from "../snackbarActions/SignUpAction";
+import LogInAction from "../snackbarActions/LogInAction";
 
 const useStyles = makeStyles((theme) => ({
   leaveSpaceForFooter: {
@@ -36,7 +36,10 @@ const useStyles = makeStyles((theme) => ({
     width: 100,
   },
   snackBar: {
-    background: `${theme.palette.primary.main} !important`,
+    background: `${theme.palette.primary.main}`,
+  },
+  errorSnackBar: {
+    background: theme.palette.error.main
   },
   snackBarMessage: {
     maxWidth: 300,
@@ -53,19 +56,19 @@ export default function LayoutWrapper({
   noSpaceForFooter,
   description,
 }) {
-  const classes = useStyles();
-  const [initialized, setInitialized] = React.useState(false);
-  const isSmallerThanMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
-  const [loading, setLoading] = React.useState(true);
-  const [bannerOpen, setBannerOpen] = React.useState(true);
-  const { acceptedNecessary, locale, isLoading } = useContext(UserContext);
-  const texts = getTexts({ page: "general", locale: locale });
   const [snackbarProps, setSnackbarProps] = useState({
     open: false,
     message: "",
     action: <></>,
     hash: "",
   });
+  const classes = useStyles();
+  const [initialized, setInitialized] = React.useState(false);
+  const isSmallerThanMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
+  const [loading, setLoading] = React.useState(true);
+  const [bannerOpen, setBannerOpen] = React.useState(true);
+  const { acceptedNecessary, locale, isLoading } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });  
 
   const handleUpdateHash = (newHash) => {
     setSnackbarProps({ ...snackbarProps, hash: newHash });
@@ -97,15 +100,15 @@ export default function LayoutWrapper({
   }, []);
   const defaultDescription = texts.defaultDescription;
 
-  //if promptSignUp is true, the user will be shown a button to sign up.
+  //if promptLogIn is true, the user will be shown a button to log in.
   //Otherwise the caller of the function can also set a custom action that should be shown to the user
-  const showFeedbackMessage = ({ message, promptSignUp, action, newHash }) => {
-    console.log(newHash);
+  const showFeedbackMessage = ({ message, promptLogIn, action, newHash, error }) => {
     const newStateValue = {
       ...snackbarProps,
       open: true,
       message: message,
-      action: promptSignUp ? <SignUpAction onClose={handleSnackbarClose} /> : action,
+      error: error,
+      action: promptLogIn ? <LogInAction onClose={handleSnackbarClose} /> : action,
     };
     if (newHash) newStateValue.hash = newHash;
     setSnackbarProps(newStateValue);
@@ -165,7 +168,7 @@ export default function LayoutWrapper({
                   message={snackbarProps.message}
                   action={snackbarProps.action}
                   classes={{
-                    root: classes.snackBar,
+                    root: `${classes.snackBar} ${snackbarProps.error && classes.errorSnackBar}`,
                     message: classes.snackBarMessage,
                   }}
                 />

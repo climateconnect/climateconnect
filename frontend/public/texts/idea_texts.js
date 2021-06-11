@@ -182,5 +182,9 @@ export default function getIdeaTexts({ idea }) {
       en: "Please sign up or log in to rate an idea!",
       de: "Bitte melde dich an, um eine Idee zu bewerten!",
     },
+    sign_up_or_log_in_to_share_an_idea: {
+      en: "Please sign up or log in to share an idea!",
+      de: "Bitte melde dich an, um eine Idee zu teilen!",
+    }
   };
 }

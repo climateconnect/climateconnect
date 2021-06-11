@@ -28,8 +28,9 @@ export default function IdeaJoinButton({ idea, has_joined, chat_uuid }) {
     if (!user) {
       showFeedbackMessage({
         message: texts.please_sign_up_or_log_in_to_join_an_idea,
-        promptSignUp: true,
+        promptLogIn: true,
         newHash: window.location.hash,
+        error: true
       });
     } else {
       setOpen(true);

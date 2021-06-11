@@ -5,6 +5,7 @@ import React, { useContext, useState } from "react";
 import { getIdeaBorderColor } from "../../../public/lib/ideaOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
+import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import CreateIdeaDialog from "./createIdea/CreateIdeaDialog";
 import IdeaHubIcon from "./IdeaHubIcon";
@@ -99,13 +100,24 @@ export default function IdeaPreview({
   index,
   hubLocation,
 }) {
+  const { user, locale }  = useContext(UserContext)
+  const texts = getTexts({page: "idea", locale: locale})
+  const { showFeedbackMessage } = useContext(FeedbackContext)
   const color = getIdeaBorderColor({ idea: idea, index: index, isCreateCard: isCreateCard });
   const classes = useStyles({ borderColor: !isCreateCard && color });
   const [open, setOpen] = useState(false);
   const handleCardClick = (e) => {
     e.preventDefault();
     if (isCreateCard) {
-      setOpen(true);
+      if(!user) {
+        showFeedbackMessage({
+          message: texts.sign_up_or_log_in_to_share_an_idea,
+          promptLogIn: true,
+          error: true
+        })
+      } else {
+        setOpen(true);
+      }
     } else {
       onClickIdea(idea);
     }
