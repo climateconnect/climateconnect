@@ -1,6 +1,4 @@
 import { makeStyles, Typography, withTheme } from "@material-ui/core";
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import React from "react";
 
 const useStyles = makeStyles((theme) => {
@@ -9,10 +7,11 @@ const useStyles = makeStyles((theme) => {
       backgroundColor: theme.palette.primary.main,
       minWidth: 300,
       borderRadius: 5,
+      border: theme.borders.thick,
       color: "white",
       //   position: "absolute",
       position: "relative",
-      padding: theme.spacing(3),
+      // padding: theme.spacing(3),
       //   position: fixed;
       // min-width: 100px;
       // border-radius: 5px;
@@ -31,39 +30,39 @@ const useStyles = makeStyles((theme) => {
       marginBottom: theme.spacing(1.5),
       borderLeft: `5px solid ${theme.palette.primary.main}`,
     },
-    questionWrapper: {
-      width: "100%",
-      backgroundColor: "#2071781A",
-      paddingTop: theme.spacing(3),
-      paddingBottom: theme.spacing(3),
-      paddingLeft: theme.spacing(3),
-      paddingRight: theme.spacing(3),
-      display: "flex",
-      alignItems: "center",
-      cursor: "pointer",
-    },
-    questionText: {
-      fontWeight: "bold",
-      fontSize: 19,
-      width: "100%",
-      [theme.breakpoints.down("xs")]: {
-        fontSize: 16,
-        fontWeight: "normal",
-      },
-    },
-    answerWrapper: {
-      width: "100%",
-      backgroundColor: "#F2F2F2",
-      paddingTop: theme.spacing(3),
-      paddingBottom: theme.spacing(3),
-      paddingLeft: theme.spacing(3),
-      paddingRight: theme.spacing(3),
-      fontSize: 17,
-      lineHeight: 1.5,
-      [theme.breakpoints.down("xs")]: {
-        fontSize: 16,
-      },
-    },
+    // questionWrapper: {
+    //   width: "100%",
+    //   backgroundColor: "#2071781A",
+    //   paddingTop: theme.spacing(3),
+    //   paddingBottom: theme.spacing(3),
+    //   paddingLeft: theme.spacing(3),
+    //   paddingRight: theme.spacing(3),
+    //   display: "flex",
+    //   alignItems: "center",
+    //   cursor: "pointer",
+    // },
+    // questionText: {
+    //   fontWeight: "bold",
+    //   fontSize: 19,
+    //   width: "100%",
+    //   [theme.breakpoints.down("xs")]: {
+    //     fontSize: 16,
+    //     fontWeight: "normal",
+    //   },
+    // },
+    // answerWrapper: {
+    //   width: "100%",
+    //   backgroundColor: "#F2F2F2",
+    //   paddingTop: theme.spacing(3),
+    //   paddingBottom: theme.spacing(3),
+    //   paddingLeft: theme.spacing(3),
+    //   paddingRight: theme.spacing(3),
+    //   fontSize: 17,
+    //   lineHeight: 1.5,
+    //   [theme.breakpoints.down("xs")]: {
+    //     fontSize: 16,
+    //   },
+    // },
     userProfileImage: {
       // Thin gray border
       // TODO(design): what color should this actually be -- I
@@ -75,6 +74,13 @@ const useStyles = makeStyles((theme) => {
       height: "40px",
       width: "40px",
       background: "white",
+    },
+    subsection: {
+      // TODO(design): again want to make sure we reflect this color
+      // scheme in our design system or in code. I just grabbed
+      // this color from the color picker in Chrome DevTools
+      background: "#f0f2f5",
+      borderRadius: 4,
     },
   };
 });
@@ -99,7 +105,9 @@ export default function Dashboard({ questionObject, className, questionTextClass
       <Typography variant="h4" component="h1" className={`${classes.headingText}`}>
         Welcome
       </Typography>
-      <UserProfile />
+      <div className={`${classes.subsection}`}>
+        <UserProfile />
+      </div>
     </div>
   );
   //   return (
