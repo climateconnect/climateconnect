@@ -64,8 +64,30 @@ const useStyles = makeStyles((theme) => {
         fontSize: 16,
       },
     },
+    userProfileImage: {
+      // Thin gray border
+      // TODO(design): what color should this actually be -- I
+      // don't see it represented in the XD mockup? Ideally
+      // it'd be from our emerging design system
+      // border: `1px solid ${theme.palette.secondary.main}`,
+      border: `1px solid gray`,
+      borderRadius: "50%",
+      height: "40px",
+      width: "40px",
+      background: "white",
+    },
   };
 });
+
+const UserProfile = () => {
+  const classes = useStyles();
+  return (
+    <div className={`${classes.userProfileImage}`}>
+      {/* Generic profile image if user is not logged in */}
+      {/* <img /> */}
+    </div>
+  );
+};
 
 // TODO: might have to actually move this inside the image
 // https://stackoverflow.com/questions/18339549/floating-div-over-an-image
@@ -77,7 +99,7 @@ export default function Dashboard({ questionObject, className, questionTextClass
       <Typography variant="h4" component="h1" className={`${classes.headingText}`}>
         Welcome
       </Typography>
-      <div>profile image</div>
+      <UserProfile />
     </div>
   );
   //   return (
