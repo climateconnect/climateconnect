@@ -1,11 +1,12 @@
-import { Box, makeStyles, Typography, withTheme } from "@material-ui/core";
+import { Box, Button, makeStyles, Typography, withTheme } from "@material-ui/core";
 import React from "react";
 import theme from "../../themes/theme";
 
 const useStyles = makeStyles((theme) => {
   return {
     // TODO: fix "floating" state on top of the
-    // background image
+    // background image. Need to tradeoff between responsiveness
+    // and fixed "sticker" nature
     welcomeBanner: {
       backgroundColor: theme.palette.primary.main,
       minWidth: 300,
@@ -14,11 +15,9 @@ const useStyles = makeStyles((theme) => {
       color: "white",
       //   position: "absolute",
       position: "relative",
-      // padding: theme.spacing(3),
       //   position: fixed;
       // min-width: 100px;
       maxWidth: "800px",
-      // border-radius: 5px;
       // z-index: 100;
     },
     profileInner: {
@@ -40,11 +39,10 @@ const useStyles = makeStyles((theme) => {
       // TODO(design): what color should this actually be -- I
       // don't see it represented in the XD mockup? Ideally
       // it'd be from our emerging design system
-      // border: `1px solid ${theme.palette.secondary.main}`,
-      border: `1px solid gray`,
+      border: theme.borders.thin,
       borderRadius: "50%",
-      height: "40px",
-      width: "40px",
+      height: "45px",
+      width: "45px",
       background: "white",
     },
     subsection: {
@@ -53,7 +51,7 @@ const useStyles = makeStyles((theme) => {
       // this color from the color picker in Chrome DevTools
       background: "#f0f2f5",
       borderRadius: 4,
-      display: "flex",
+      padding: theme.spacing(1),
     },
 
     // TODO(Chris): is there a standard
@@ -70,12 +68,22 @@ const useStyles = makeStyles((theme) => {
       alignItems: "center",
       width: "100%",
       // TODO: not sure about correct weight here
-      fontWeight: "400",
-      padding: "10px",
+      fontWeight: "700",
+      // padding: theme.spacing(1),
+      padding: theme.spacing(1.5),
+    },
+
+    welcomeSubsection: {
+      display: "flex",
     },
 
     hubName: {
       color: theme.palette.yellow.main,
+    },
+
+    buttonContainer: {
+      display: "flex",
+      justifyContent: "space-around",
     },
   };
 });
@@ -108,19 +116,44 @@ export default function Dashboard({ className }) {
 
   return (
     <div className={`${classes.welcomeBanner}`}>
-      <Typography variant="h4" bold component="h1" className={`${classes.headingText}`}>
-        Welcome to <span className={classes.hubName}>Test Hub</span>
-      </Typography>
       <HorizontalSpacing size={1}>
-        <div className={`${classes.subsection}`}>
-          <UserProfile />
-          {/* TODO: doing some left spacing here -- trying to keep spacing directly out of the UI components, and isolated within Box components directly  */}
-          <Box css={{ marginLeft: theme.spacing(1) }}>
-            {/* TODO: how do we want to handle longer text here... will it be static? */}
-            <div className={`${classes.welcomeMessage}`}>This is standard user blurb text.</div>
-          </Box>
-        </div>
+        <Typography variant="h4" component="h1" className={`${classes.headingText}`}>
+          Welcome to <span className={classes.hubName}>Test Hub</span>
+        </Typography>
       </HorizontalSpacing>
+
+      <div className={`${classes.subsection}`}>
+        <HorizontalSpacing size={1}>
+          <div className={`${classes.welcomeSubsection}`}>
+            <UserProfile />
+            {/* TODO: doing some left spacing here -- trying to keep spacing directly out of the UI components, and isolated within Box components directly  */}
+            <Box css={{ marginLeft: theme.spacing(1), width: "100%" }}>
+              {/* TODO: how do we want to handle longer text here... will it be static? */}
+              <div className={`${classes.welcomeMessage}`}>
+                <Typography style={{ fontWeight: "600" }}>
+                  This is standard user blurb text.
+                </Typography>
+              </div>
+            </Box>
+          </div>
+        </HorizontalSpacing>
+
+        <hr />
+
+        {/* TODO: fix what buttons show only if logged in  */}
+        <div className={`${classes.buttonContainer}`}>
+          {/* TODO: are there already pre-existing buttons with icons for these? */}
+          {/* TODO: what are the appropriate hover styles? */}
+          <Button type="submit">Idee</Button>
+          <Button type="submit">Project</Button>
+          <Button type="submit">Organization</Button>
+          {/* TODO: fix all links here */}
+          <Button type="submit" href={"/profiles/"}>
+            Profile
+          </Button>
+          <Button type="submit">Climate Match</Button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -76,6 +76,7 @@ const theme = createMuiTheme(coreTheme, {
   // design token.
   borders: {
     thick: `3px solid ${coreTheme.palette.primary.main}`,
+    thin: `1px solid gray`,
   },
   props: {
     MuiButton: {
