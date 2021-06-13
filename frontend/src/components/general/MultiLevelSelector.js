@@ -5,7 +5,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -354,7 +354,11 @@ function SelectedList({
             >
               {selected.map((item, index) => {
                 return (
-                  <Draggable key={item.id} draggableId={"draggable" + item.id} index={index}>
+                  <Draggable 
+                    key={item.id} 
+                    draggableId={"draggable" + item.id} 
+                    index={index}
+                  >
                     {(provided) => {
                       return (
                         <ListItem

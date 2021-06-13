@@ -2,6 +2,7 @@ import getAboutTexts from "./about_texts";
 import account_texts from "./account_texts.json";
 import activate_email from "./activate_email.json";
 import chat_texts from "./chat_texts.json";
+import getClimatematchTexts from "./climatematch_texts";
 import getCommunicationTexts from "./communication_texts";
 import cookie_texts from "./cookie_texts.json";
 import getDonateTexts from "./donate_texts";
@@ -32,12 +33,14 @@ export default function getTexts({
   user,
   goal,
   idea,
+  location
 }) {
   const texts = {
     about: getAboutTexts(classes),
     account: account_texts,
     activate_email: activate_email,
     chat: chat_texts,
+    climatematch: getClimatematchTexts({location: location}),
     cookie: cookie_texts,
     communication: getCommunicationTexts(),
     donate: getDonateTexts({ classes: classes, goal: goal }),

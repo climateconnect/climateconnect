@@ -36,3 +36,7 @@ export function getMessageFromUrl(message) {
   if (typeof message === "object") return message;
   else return decodeURIComponent(message).replaceAll("+", " ");
 }
+
+export function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
