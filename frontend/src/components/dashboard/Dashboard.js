@@ -1,9 +1,12 @@
-import { makeStyles, Typography, withTheme } from "@material-ui/core";
+import { Box, makeStyles, Typography, withTheme } from "@material-ui/core";
 import React from "react";
+import theme from "../../themes/theme";
 
 const useStyles = makeStyles((theme) => {
   return {
-    profileBlurb: {
+    // TODO: fix "floating" state on top of the
+    // background image
+    welcomeBanner: {
       backgroundColor: theme.palette.primary.main,
       minWidth: 300,
       borderRadius: 5,
@@ -14,6 +17,7 @@ const useStyles = makeStyles((theme) => {
       // padding: theme.spacing(3),
       //   position: fixed;
       // min-width: 100px;
+      maxWidth: "800px",
       // border-radius: 5px;
       // z-index: 100;
     },
@@ -30,39 +34,7 @@ const useStyles = makeStyles((theme) => {
       marginBottom: theme.spacing(1.5),
       borderLeft: `5px solid ${theme.palette.primary.main}`,
     },
-    // questionWrapper: {
-    //   width: "100%",
-    //   backgroundColor: "#2071781A",
-    //   paddingTop: theme.spacing(3),
-    //   paddingBottom: theme.spacing(3),
-    //   paddingLeft: theme.spacing(3),
-    //   paddingRight: theme.spacing(3),
-    //   display: "flex",
-    //   alignItems: "center",
-    //   cursor: "pointer",
-    // },
-    // questionText: {
-    //   fontWeight: "bold",
-    //   fontSize: 19,
-    //   width: "100%",
-    //   [theme.breakpoints.down("xs")]: {
-    //     fontSize: 16,
-    //     fontWeight: "normal",
-    //   },
-    // },
-    // answerWrapper: {
-    //   width: "100%",
-    //   backgroundColor: "#F2F2F2",
-    //   paddingTop: theme.spacing(3),
-    //   paddingBottom: theme.spacing(3),
-    //   paddingLeft: theme.spacing(3),
-    //   paddingRight: theme.spacing(3),
-    //   fontSize: 17,
-    //   lineHeight: 1.5,
-    //   [theme.breakpoints.down("xs")]: {
-    //     fontSize: 16,
-    //   },
-    // },
+
     userProfileImage: {
       // Thin gray border
       // TODO(design): what color should this actually be -- I
@@ -81,6 +53,29 @@ const useStyles = makeStyles((theme) => {
       // this color from the color picker in Chrome DevTools
       background: "#f0f2f5",
       borderRadius: 4,
+      display: "flex",
+    },
+
+    // TODO(Chris): is there a standard
+    // set of Typography headings, components?
+    headingText: {
+      fontWeight: "bold",
+    },
+
+    welcomeMessage: {
+      background: "white",
+      borderRadius: "25px",
+      color: theme.palette.secondary.main,
+      display: "flex",
+      alignItems: "center",
+      width: "100%",
+      // TODO: not sure about correct weight here
+      fontWeight: "400",
+      padding: "10px",
+    },
+
+    hubName: {
+      color: theme.palette.yellow.main,
     },
   };
 });
@@ -95,30 +90,37 @@ const UserProfile = () => {
   );
 };
 
+// TODO: generalize this spacing unit to be used in other places,
+// for consistency
+const HorizontalSpacing = ({ children, size }) => {
+  return (
+    <Box css={{ marginTop: theme.spacing(size), marginBottom: theme.spacing(size) }}>
+      {children}
+    </Box>
+  );
+};
+
 // TODO: might have to actually move this inside the image
 // https://stackoverflow.com/questions/18339549/floating-div-over-an-image
-export default function Dashboard({ questionObject, className, questionTextClassName }) {
+export default function Dashboard({ className }) {
   const classes = useStyles();
   //   const [open, setOpen] = React.useState(false);
+
   return (
-    <div className={`${classes.profileBlurb}`}>
-      <Typography variant="h4" component="h1" className={`${classes.headingText}`}>
-        Welcome
+    <div className={`${classes.welcomeBanner}`}>
+      <Typography variant="h4" bold component="h1" className={`${classes.headingText}`}>
+        Welcome to <span className={classes.hubName}>Test Hub</span>
       </Typography>
-      <div className={`${classes.subsection}`}>
-        <UserProfile />
-      </div>
+      <HorizontalSpacing size={1}>
+        <div className={`${classes.subsection}`}>
+          <UserProfile />
+          {/* TODO: doing some left spacing here -- trying to keep spacing directly out of the UI components, and isolated within Box components directly  */}
+          <Box css={{ marginLeft: theme.spacing(1) }}>
+            {/* TODO: how do we want to handle longer text here... will it be static? */}
+            <div className={`${classes.welcomeMessage}`}>This is standard user blurb text.</div>
+          </Box>
+        </div>
+      </HorizontalSpacing>
     </div>
   );
-  //   return (
-  //     <div className={`${classes.root} ${className}`}>
-  //       <div className={classes.questionWrapper} onClick={() => setOpen(!open)}>
-  //         <Typography component="h3" className={`${classes.questionText} ${questionTextClassName}`}>
-  //           {questionObject.question}
-  //         </Typography>
-  //         {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-  //       </div>
-  //       {/* {open && <div className={classes.answerWrapper}>{questionObject.answer}</div>} */}
-  //     </div>
-  //   );
 }
