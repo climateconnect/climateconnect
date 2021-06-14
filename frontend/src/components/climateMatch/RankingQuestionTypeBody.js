@@ -1,4 +1,5 @@
 import { Chip, makeStyles, Typography } from "@material-ui/core"
+import CloseIcon from '@material-ui/icons/Close'
 import React, { useState } from "react"
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd"
 import ClimateMatchHeadline from "./ClimateMatchHeadline"
@@ -38,7 +39,8 @@ const useStyles = makeStyles(theme => ({
   selectedAnswerChip: {
     flexGrow: 1,
     height: 40,
-    borderRadius: 20
+    borderRadius: 20,
+    transform: "none !important"
   },
   possibleAnswerContainer: {
     display: "flex",
@@ -59,6 +61,10 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 20,
     width: "100%",
     cursor: "pointer"
+  },
+  alreadySelectedPossibleAnswer: {
+    background: "#e0e0e0",
+    color: theme.palette.secondary.main
   }
 }))
 
@@ -78,6 +84,12 @@ export default function RankingQuestionTypeBody({question, numberOfChoices, answ
         console.log(selectableAnswers)
         console.log(selectableAnswers.indexOf(result.source.index))
         onChangeAnswer(question.step, [selectableAnswers[result.source.index]])
+      } else {
+        console.log(answer)
+        const i = result.destination.index
+        //insert element at correct place. If there were already 3 elements in the array, cut off after 3
+        const newAnswer = [...answer.slice(0, i), selectableAnswers[result.source.index], ...answer.slice(i, answer.length + 1)].slice(0,3)
+        onChangeAnswer(question.step, newAnswer)
       }
     }
   }
@@ -105,31 +117,29 @@ export default function RankingQuestionTypeBody({question, numberOfChoices, answ
                       <div key={i} className={classes.selectedAnswerContainer}>
                         <span className={classes.choiceRankText}>{i+1}.</span>
                         {
-                          answer?.length >= i+1 ? (                            
-                            <Chip 
-                              label={answer[i].name} 
-                              className={classes.possibleAnswerChip}
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            />                              
-                          ) : (
+                          answer?.length >= i+1 ? (    
                             <Draggable key={i} draggableId={"draggable_choice" + i} index={i}>
-                              {(provided) => (
+                              {(provided) => (                        
                                 <Chip 
-                                  className={classes.selectedAnswerChip}
+                                  label={answer[i].name}
+                                  className={classes.possibleAnswerChip}
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
                                 />
+                                <CloseIcon />
                               )}
                             </Draggable>
+                          ) : (                           
+                            <Chip 
+                              className={classes.selectedAnswerChip}
+                            />                              
                           )
-                        }               
+                        }            
                       </div>
                     ))
                   }
-                  {provided.placeholder}             
+                  {provided.placeholder}         
                 </div>
               )}
             </Droppable>
@@ -145,23 +155,30 @@ export default function RankingQuestionTypeBody({question, numberOfChoices, answ
                   {selectableAnswers.map((a, index) => (                
                     <div key={a.url_slug} className={classes.possibleAnswerContainer}>
                       <Typography className={classes.listEqualsChar}>=</Typography>
-                      <Draggable 
-                        key={a.url_slug} 
-                        draggableId={"draggable" + a.url_slug} 
-                        index={index}
-                      >
-                        {(provided) => {
-                          return (
-                            <Chip 
-                              label={a.name} 
-                              className={classes.possibleAnswerChip}
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            />
-                          )
-                        }}                    
-                      </Draggable>
+                      {answer?.map(ans => ans.url_slug).includes(a.url_slug) ? (
+                        <Chip 
+                          label={a.name} 
+                          className={`${classes.possibleAnswerChip} ${classes.alreadySelectedPossibleAnswer}`}
+                        />
+                      ) : (
+                        <Draggable 
+                          key={a.url_slug} 
+                          draggableId={"draggable" + a.url_slug} 
+                          index={index}
+                        >
+                          {(provided) => {
+                            return (
+                              <Chip 
+                                label={a.name} 
+                                className={classes.possibleAnswerChip}
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              />
+                            )
+                          }}                    
+                        </Draggable>
+                      )}                      
                     </div>                
                   ))}
                   {provided.placeholder}           
