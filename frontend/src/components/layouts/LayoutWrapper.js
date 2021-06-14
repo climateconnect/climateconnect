@@ -3,12 +3,13 @@ import {
   Snackbar,
   SnackbarContent,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import Head from "next/head";
 import { Router } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
+
 import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
@@ -39,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     background: `${theme.palette.primary.main}`,
   },
   errorSnackBar: {
-    background: theme.palette.error.main
+    background: theme.palette.error.main,
   },
   snackBarMessage: {
     maxWidth: 300,
@@ -68,7 +69,7 @@ export default function LayoutWrapper({
   const [loading, setLoading] = React.useState(true);
   const [bannerOpen, setBannerOpen] = React.useState(true);
   const { acceptedNecessary, locale, isLoading } = useContext(UserContext);
-  const texts = getTexts({ page: "general", locale: locale });  
+  const texts = getTexts({ page: "general", locale: locale });
 
   const handleUpdateHash = (newHash) => {
     setSnackbarProps({ ...snackbarProps, hash: newHash });
@@ -118,6 +119,7 @@ export default function LayoutWrapper({
     showFeedbackMessage: showFeedbackMessage,
     handleUpdateHash: handleUpdateHash,
   };
+
   return (
     <>
       <Head>

@@ -1,6 +1,11 @@
 import { Box, Button, makeStyles, Typography, withTheme } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
+
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 import theme from "../../themes/theme";
+// import SelectField from "./../general/SelectField";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -19,6 +24,8 @@ const useStyles = makeStyles((theme) => {
       // min-width: 100px;
       maxWidth: "800px",
       // z-index: 100;
+
+      margin: "auto",
     },
     profileInner: {
       float: "left",
@@ -34,7 +41,7 @@ const useStyles = makeStyles((theme) => {
       borderLeft: `5px solid ${theme.palette.primary.main}`,
     },
 
-    userProfileImage: {
+    userImage: {
       // Thin gray border
       // TODO(design): what color should this actually be -- I
       // don't see it represented in the XD mockup? Ideally
@@ -88,18 +95,19 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const UserProfile = () => {
+const UserImage = () => {
   const classes = useStyles();
   return (
-    <div className={`${classes.userProfileImage}`}>
+    <div className={`${classes.userImage}`}>
+      {/* TODO: fetch correct user profile image here */}
       {/* Generic profile image if user is not logged in */}
       {/* <img /> */}
     </div>
   );
 };
 
-// TODO: generalize this spacing unit to be used in other places,
-// for consistency
+// TODO(Piper): generalize this spacing unit to be used in other places,
+// for consistency.
 const HorizontalSpacing = ({ children, size }) => {
   return (
     <Box css={{ marginTop: theme.spacing(size), marginBottom: theme.spacing(size) }}>
@@ -108,16 +116,16 @@ const HorizontalSpacing = ({ children, size }) => {
   );
 };
 
-// TODO: might have to actually move this inside the image
-// https://stackoverflow.com/questions/18339549/floating-div-over-an-image
 export default function Dashboard({ className }) {
   const classes = useStyles();
-  //   const [open, setOpen] = React.useState(false);
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
 
   return (
     <div className={`${classes.welcomeBanner}`}>
       <HorizontalSpacing size={1}>
         <Typography variant="h4" component="h1" className={`${classes.headingText}`}>
+          {/* TODO: fix welcome messaging here */}
           Welcome to <span className={classes.hubName}>Test Hub</span>
         </Typography>
       </HorizontalSpacing>
@@ -125,10 +133,9 @@ export default function Dashboard({ className }) {
       <div className={`${classes.subsection}`}>
         <HorizontalSpacing size={1}>
           <div className={`${classes.welcomeSubsection}`}>
-            <UserProfile />
+            <UserImage />
             {/* TODO: doing some left spacing here -- trying to keep spacing directly out of the UI components, and isolated within Box components directly  */}
             <Box css={{ marginLeft: theme.spacing(1), width: "100%" }}>
-              {/* TODO: how do we want to handle longer text here... will it be static? */}
               <div className={`${classes.welcomeMessage}`}>
                 <Typography style={{ fontWeight: "600" }}>
                   This is standard user blurb text.
@@ -140,18 +147,35 @@ export default function Dashboard({ className }) {
 
         <hr />
 
-        {/* TODO: fix what buttons show only if logged in  */}
         <div className={`${classes.buttonContainer}`}>
-          {/* TODO: are there already pre-existing buttons with icons for these? */}
-          {/* TODO: what are the appropriate hover styles? */}
-          <Button type="submit">Idee</Button>
-          <Button type="submit">Project</Button>
-          <Button type="submit">Organization</Button>
-          {/* TODO: fix all links here */}
-          <Button type="submit" href={"/profiles/"}>
-            Profile
-          </Button>
-          <Button type="submit">Climate Match</Button>
+          {/* When the user is logged out, we want to prompt them to sign up! And we don't
+          show them the other controls. */}
+          {!user ? (
+            <>
+              {/* TODO: are there already pre-existing buttons with icons for these? */}
+              {/* TODO: replace buttons with Selects to indicate multiple actions */}
+              <Button type="submit">Idee</Button>
+              <Button type="submit">Project</Button>
+              <Button type="submit">Organization</Button>
+              {/* TODO: fix all links here */}
+              <Button type="submit" href={"/profiles/"}>
+                Profile
+              </Button>
+              <Button type="submit">Climate Match</Button>
+            </>
+          ) : (
+            <>
+              {/* TODO: fix sign up link */}
+              <Button
+                color="primary"
+                component="div"
+                href={getLocalePrefix(locale) + "/signup"}
+                variant="contained"
+              >
+                {texts.join_now}
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>

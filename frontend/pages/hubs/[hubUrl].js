@@ -26,7 +26,6 @@ import HubHeaderImage from "../../src/components/hub/HubHeaderImage";
 import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
-import Dashboard from "../../src/components/dashboard/Dashboard";
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -271,7 +270,7 @@ export default function Hub({
           source={image_attribution}
           onClose={closeHubHeaderImage}
         />
-        <Dashboard />
+
         <HubContent
           hubQuickInfoRef={hubQuickInfoRef}
           headline={headline}

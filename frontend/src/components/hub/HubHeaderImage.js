@@ -1,6 +1,8 @@
 import { makeStyles, Tooltip, Typography } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import React, { useContext } from "react";
+
+import Dashboard from "../../../src/components/dashboard/Dashboard";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
@@ -33,6 +35,12 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 30,
     cursor: "pointer",
   },
+  // TODO(piper/chris): likely a more elegant way to position
+  // the blurb on top of the container here
+  dashboardContainer: {
+    marginTop: "-100px",
+    paddingBottom: theme.spacing(4),
+  },
 }));
 
 export default function HubHeaderImage({ image, source, fullWidth, onClose }) {
@@ -48,6 +56,9 @@ export default function HubHeaderImage({ image, source, fullWidth, onClose }) {
           </Tooltip>
         )}
         <img src={image} className={classes.img} />
+        <div className={`${classes.dashboardContainer}`}>
+          <Dashboard />
+        </div>
       </div>
       {source && (
         <Typography className={classes.attribution}>
