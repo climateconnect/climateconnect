@@ -9,22 +9,14 @@ import theme from "../../themes/theme";
 
 const useStyles = makeStyles((theme) => {
   return {
-    // TODO: fix "floating" state on top of the
-    // background image. Need to tradeoff between responsiveness
-    // and fixed "sticker" nature
     welcomeBanner: {
       backgroundColor: theme.palette.primary.main,
       minWidth: 300,
       borderRadius: 5,
       border: theme.borders.thick,
       color: "white",
-      //   position: "absolute",
       position: "relative",
-      //   position: fixed;
-      // min-width: 100px;
       maxWidth: "800px",
-      // z-index: 100;
-
       margin: "auto",
     },
     profileInner: {
@@ -33,7 +25,6 @@ const useStyles = makeStyles((theme) => {
       left: "0px",
       top: "0px",
       "z-index": " 1000",
-      // background-color:" #92AD40",
       padding: "5px",
     },
     root: {
@@ -42,7 +33,6 @@ const useStyles = makeStyles((theme) => {
     },
 
     userImage: {
-      // Thin gray border
       // TODO(design): what color should this actually be -- I
       // don't see it represented in the XD mockup? Ideally
       // it'd be from our emerging design system
@@ -76,7 +66,6 @@ const useStyles = makeStyles((theme) => {
       width: "100%",
       // TODO: not sure about correct weight here
       fontWeight: "700",
-      // padding: theme.spacing(1),
       padding: theme.spacing(1.5),
     },
 
