@@ -74,6 +74,7 @@ export default function IdeaPreviews({
         loadMore={loadMore}
         pageStart={1}
         spacing={2}
+        alignContent="flex-start"
       >
         <GridItem
           isCreateCard

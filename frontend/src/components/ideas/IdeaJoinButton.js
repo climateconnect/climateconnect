@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function IdeaJoinButton({ idea, has_joined, chat_uuid }) {
+export default function IdeaJoinButton({ idea, has_joined, chat_uuid, onJoinIdea }) {
   const classes = useStyles();
   const token = new Cookies().get("token");
   const { locale, user } = useContext(UserContext);
@@ -42,6 +42,11 @@ export default function IdeaJoinButton({ idea, has_joined, chat_uuid }) {
     if (hasConfirmed) {
       const response = await joinIdeaGroupChat({ idea: idea, token: token, locale: locale });
       window.open(`/chat/${response.chat_uuid}`, "_blank");
+      onJoinIdea({has_joined: true, chat_uuid: response.chat_uuid})
+      showFeedbackMessage({
+        message: texts.you_have_successfully_joined_the_idea_click_open_groupchat,
+        newHash: window.location.hash,
+      });
     }
   };
 
@@ -53,7 +58,9 @@ export default function IdeaJoinButton({ idea, has_joined, chat_uuid }) {
         </Button>
       ) : (
         <Button color="primary" variant="contained" onClick={onClickJoinButton}>
-          {texts.join_in}
+          {
+            texts.join_in
+          }
         </Button>
       )}
       <ConfirmDialog

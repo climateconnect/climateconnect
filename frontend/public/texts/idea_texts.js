@@ -185,6 +185,10 @@ export default function getIdeaTexts({ idea }) {
     sign_up_or_log_in_to_share_an_idea: {
       en: "Please sign up or log in to share an idea!",
       de: "Bitte melde dich an, um eine Idee zu teilen!",
+    },
+    you_have_successfully_joined_the_idea_click_open_groupchat: {
+      en: "You have joined! Click on \"Open Group Chat\" to chat with the others.",
+      de: "Du machst jetzt mit! Klicke auf \"Gruppenchat öffnen\", um mit den anderen zu reden."
     }
   };
 }

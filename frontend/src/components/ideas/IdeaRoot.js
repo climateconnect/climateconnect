@@ -246,6 +246,10 @@ export default function IdeaRoot({
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
+  const handleJoinIdea= (newHasJoinedIdeaObject) => {
+    setHasJoinedIdea(newHasJoinedIdeaObject)
+  }
+
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale, idea: idea });
   return (
@@ -329,6 +333,7 @@ export default function IdeaRoot({
                   idea={idea}
                   has_joined={hasJoinedIdea.has_joined}
                   chat_uuid={hasJoinedIdea.chat_uuid}
+                  onJoinIdea={handleJoinIdea}
                 />
                 {user && idea?.user?.id === user?.id && (
                   <Button onClick={handleClickEditIdea} variant="contained" color="primary">
