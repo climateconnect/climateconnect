@@ -143,6 +143,18 @@ export default function IdeaRoot({
   const handleIdeaClose = (e) => {
     onIdeaClose(e);
   };
+
+  useEffect(() => {
+    //This is executed when the component is about to unmount
+    //Without this code, the ide would reopen itself when it finishes loading, 
+    //even if it has already been closed by the user
+    return () => {
+      onRatingChange = null
+      handleAddComments = null
+      handleRemoveComment = null
+    }
+}, [])
+
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [loading, setLoading] = useState(!!token);
   const [userRating, setUserRating] = useState({
@@ -191,12 +203,12 @@ export default function IdeaRoot({
         if(!idea) {
           return
         }
-        setUserRating({ ...userRating, last_locked_rating_score: userRating?.rating_score });
-        setHasJoinedIdea({
+        setUserRating && setUserRating({ ...userRating, last_locked_rating_score: userRating?.rating_score });
+        setHasJoinedIdea && setHasJoinedIdea({
           has_joined: hasJoinedIdea?.has_joined,
           chat_uuid: hasJoinedIdea?.chat_uuid,
         });
-        handleAddComments(comments);
+        handleAddComments && handleAddComments(comments);
         setLoading(false);
       }
     },
@@ -406,7 +418,6 @@ const getHasJoinedIdea = async (idea, token, locale) => {
       token: token,
       locale: locale,
     });
-    console.log(response);
     return response.data;
   } catch (err) {
     console.log(err?.response);
