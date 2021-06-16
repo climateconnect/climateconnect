@@ -12,6 +12,7 @@ import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import DateDisplay from "../general/DateDisplay";
 import LoadingSpinner from "../general/LoadingSpinner";
+import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import EditIdeaRoot from "./editIdea/EditIdeaRoot";
 import IdeaCommentsSection from "./IdeaCommentsSection";
@@ -291,7 +292,13 @@ export default function IdeaRoot({
                     {capitalizeFirstLetter(texts.by)}
                   </Typography>
                 )}
-                <MiniProfilePreview profile={idea.user} size="medium" />
+                {
+                  !idea.organization ?(
+                    <MiniProfilePreview profile={idea.user} size="medium" />
+                  ) : (
+                    <MiniOrganizationPreview organization={idea.organization} size="medium"/>
+                  )
+                }
                 <Typography className={classes.createdAtText}>
                   {isNarrowScreen ? (
                     <>
