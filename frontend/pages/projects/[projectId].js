@@ -1,10 +1,13 @@
 import { Container, Tab, Tabs, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Cookies from "next-cookies";
+import NextCookies from "next-cookies";
 import React, { useContext, useEffect, useRef } from "react";
+import Cookies from "universal-cookie";
 import tokenConfig from "../../public/config/tokenConfig";
+import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, redirect } from "../../public/lib/apiOperations";
+import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
@@ -61,7 +64,7 @@ const parseComments = (comments) => {
 };
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { token } = NextCookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectId);
   const [project, members, posts, comments, following] = await Promise.all([
     getProjectByIdIfExists(projectUrl, token, ctx.locale),
@@ -71,18 +74,18 @@ export async function getServerSideProps(ctx) {
     token ? getIsUserFollowing(projectUrl, token, ctx.locale) : false,
   ]);
   return {
-    props: {
+    props: nullifyUndefinedValues({
       project: project,
       members: members,
       posts: posts,
       comments: comments,
-      token: token,
       following: following,
-    },
+    }),
   };
 }
 
-export default function ProjectPage({ project, members, posts, comments, token, following }) {
+export default function ProjectPage({ project, members, posts, comments, following }) {
+  const token = new Cookies().get("token");
   const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
   const [isUserFollowing, setIsUserFollowing] = React.useState(following);
@@ -280,7 +283,7 @@ function ProjectLayout({
         ? project.team.find((m) => m.id === user.id).permission
         : null;
     const team_size = project?.team?.length;
-    if (user_permission === "Creator" && team_size > 1)
+    if (user_permission === ROLE_TYPES.all_type && team_size > 1)
       setMessage({
         message: `You can't leave a project as the creator. Please give the creator role to another team member by clicking "Manage Members" in the team tab`,
         messageType: "error",
@@ -510,7 +513,7 @@ function parseProjectMembers(projectMembers) {
       ...m.user,
       url_slug: m.user.url_slug,
       role: m.role_in_project,
-      permission: m.role.name,
+      permission: m.role.role_type,
       availability: m.availability,
       name: m.user.first_name + " " + m.user.last_name,
       location: m.user.location,

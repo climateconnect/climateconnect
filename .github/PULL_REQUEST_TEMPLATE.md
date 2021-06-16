@@ -5,5 +5,5 @@
 ## Todo
 
 - [ ] PR has a meaningful title?
-- [ ] Lint passes?
+- [ ] `yarn lint` passes in frontend?
 - [ ] Ran `yarn format` in frontend?

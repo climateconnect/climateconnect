@@ -88,6 +88,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_biography(self, obj):
         return get_user_profile_biography(obj, get_language())
 
+
 class EditUserProfileSerializer(UserProfileSerializer):
     location = serializers.SerializerMethodField()
     translations = serializers.SerializerMethodField()

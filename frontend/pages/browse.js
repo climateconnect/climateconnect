@@ -1,6 +1,7 @@
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import NextCookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
+import Cookies from "universal-cookie";
 import { apiRequest } from "../public/lib/apiOperations";
 import { buildUrlEndingFromFilters } from "../public/lib/filterOperations";
 import {
@@ -10,6 +11,7 @@ import {
   getStatusOptions,
   membersWithAdditionalInfo,
 } from "../public/lib/getOptions";
+import { getAllHubs } from "../public/lib/hubOperations";
 import { parseData } from "../public/lib/parsingOperations";
 import { nullifyUndefinedValues } from "../public/lib/profileOperations";
 import BrowseContent from "../src/components/browse/BrowseContent";
@@ -38,14 +40,13 @@ export async function getServerSideProps(ctx) {
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
-    getHubs(ctx.locale),
+    getAllHubs(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
       projectsObject: projectsObject,
       organizationsObject: organizationsObject,
       membersObject: membersObject,
-      token: token ? token : null,
       filterChoices: {
         project_categories: project_categories,
         organization_types: organization_types,
@@ -62,10 +63,11 @@ export default function Browse({
   projectsObject,
   organizationsObject,
   membersObject,
-  token,
   filterChoices,
   hubs,
 }) {
+  const cookies = new Cookies();
+  const token = cookies.get("token");
   const { locale } = useContext(UserContext);
   const [filters, setFilters] = useState({
     projects: {},
@@ -242,18 +244,5 @@ async function getDataFromServer({ type, page, token, urlEnding, locale }) {
       console.log(err.response.data);
     } else console.log(err);
     throw err;
-  }
-}
-
-async function getHubs(locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/hubs/`,
-      locale: locale,
-    });
-    return resp.data.results;
-  } catch (e) {
-    console.log(e);
   }
 }

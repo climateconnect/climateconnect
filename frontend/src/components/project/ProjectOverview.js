@@ -8,6 +8,7 @@ import Router from "next/router";
 import React, { useContext, useEffect } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
+import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
@@ -85,7 +86,7 @@ export default function ProjectOverview({
   const token = cookies.get("token");
   const handleClickContact = async (event) => {
     event.preventDefault();
-    const creator = project.team.filter((m) => m.permission === "Creator")[0];
+    const creator = project.team.filter((m) => m.permission === ROLE_TYPES.all_type)[0];
     if (!user) {
       return redirect("/signin", {
         redirect: window.location.pathname + window.location.search,
@@ -100,7 +101,7 @@ export default function ProjectOverview({
       ? project.team.find((m) => m.id === user.id).permission
       : null;
   const hasAdminPermissions =
-    user_permission && ["Creator", "Administrator"].includes(user_permission);
+    user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission);
 
   const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
   const [followers, setFollowers] = React.useState([]);
@@ -361,7 +362,7 @@ function FollowButton({
           onClick={toggleShowFollowers}
         >
           <Typography className={classes.followersText}>
-            <span className={classes.followerNumber}>{project.number_of_followers}</span>
+            <span className={classes.followerNumber}>{project.number_of_followers} </span>
             {project.number_of_followers > 1 ? texts.followers : texts.follower}
           </Typography>
         </Link>

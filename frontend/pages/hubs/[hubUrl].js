@@ -11,6 +11,7 @@ import {
   getStatusOptions,
   membersWithAdditionalInfo,
 } from "../../public/lib/getOptions";
+import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { parseData } from "../../public/lib/parsingOperations";
 import getTexts from "../../public/texts/texts";
@@ -47,23 +48,34 @@ const useStyles = makeStyles((theme) => ({
 //potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hubUrl;
+  const ideaToOpen = ctx.query.idea;
   const { token } = NextCookies(ctx);
   const [
     hubData,
     initialProjects,
     initialOrganizations,
+    initialIdeas,
     project_categories,
     organization_types,
     skills,
     project_statuses,
+    allHubs,
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
     getProjects({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
     getOrganizations({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
+    getIdeas({
+      page: 1,
+      token: token,
+      hubUrl: hubUrl,
+      locale: ctx.locale,
+      urlEnding: ideaToOpen ? `&idea=${ideaToOpen}` : "",
+    }),
     getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
+    getAllHubs(ctx.locale),
   ]);
   return {
     props: {
@@ -77,14 +89,18 @@ export async function getServerSideProps(ctx) {
       stats: hubData.stats,
       statBoxTitle: hubData.stat_box_title,
       image_attribution: hubData.image_attribution,
+      hubLocation: hubData.location && hubData.location[0],
       initialProjects: initialProjects,
       initialOrganizations: initialOrganizations,
+      initialIdeas: initialIdeas,
       filterChoices: {
         project_categories: project_categories,
         organization_types: organization_types,
         skills: skills,
         project_statuses: project_statuses,
       },
+      allHubs,
+      initialIdeaUrlSlug: ideaToOpen ? ideaToOpen : null,
     },
   };
 }
@@ -99,10 +115,14 @@ export default function Hub({
   stats,
   initialProjects,
   initialOrganizations,
+  initialIdeas,
   filterChoices,
   subHeadline,
   image_attribution,
   isLocationHub,
+  allHubs,
+  initialIdeaUrlSlug,
+  hubLocation,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -146,6 +166,7 @@ export default function Hub({
       ? texts.search_organization_in_location
       : texts.search_for_organizations_in_sector,
     profiles: texts.search_profiles_in_location,
+    ideas: texts.search_ideas_in_location,
   };
 
   const loadMoreData = async (type, page, urlEnding) => {
@@ -279,6 +300,11 @@ export default function Hub({
             hubProjectsButtonRef={hubProjectsButtonRef}
             nextStepTriggeredBy={nextStepTriggeredBy}
             hubName={name}
+            initialIdeas={initialIdeas}
+            showIdeas={true}
+            allHubs={allHubs}
+            initialIdeaUrlSlug={initialIdeaUrlSlug}
+            hubLocation={hubLocation}
           />
         </div>
       </div>
@@ -314,6 +340,17 @@ const getHubData = async (url_slug, locale) => {
     return null;
   }
 };
+
+async function getIdeas({ page, token, urlEnding, hubUrl, locale }) {
+  return await getDataFromServer({
+    type: "ideas",
+    page: page,
+    token: token,
+    urlEnding: urlEnding,
+    hubUrl: hubUrl,
+    locale: locale,
+  });
+}
 
 async function getProjects({ page, token, urlEnding, hubUrl, locale }) {
   return await getDataFromServer({
@@ -352,7 +389,6 @@ async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale 
   let url = `/api/${type}/?page=${page}&hub=${hubUrl}`;
   console.log(`getting ${type} data for category ${hubUrl}`);
   if (urlEnding) url += urlEnding;
-
   try {
     console.log(`Getting data for ${type} at ${url}`);
     const resp = await apiRequest({

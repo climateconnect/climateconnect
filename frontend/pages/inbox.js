@@ -2,9 +2,10 @@ import { Button, Container, IconButton, TextField, Typography } from "@material-
 import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import Cookies from "next-cookies";
+import NextCookies from "next-cookies";
 import Router from "next/router";
 import React from "react";
+import Cookies from "universal-cookie";
 import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import ChatPreviews from "../src/components/communication/chat/ChatPreviews";
@@ -66,7 +67,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { token } = NextCookies(ctx);
   if (ctx.req && !token) {
     const texts = getTexts({ page: "chat", locale: ctx.locale });
     const message = texts.you_have_to_log_in_to_see_your_inbox;
@@ -77,12 +78,12 @@ export async function getServerSideProps(ctx) {
     props: {
       chatData: chatData.chats,
       next: chatData.next,
-      token: token,
     },
   };
 }
 
-export default function Inbox({ chatData, token, next }) {
+export default function Inbox({ chatData, next }) {
+  const token = new Cookies().get("token");
   const classes = useStyles();
   const { user, locale } = React.useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });

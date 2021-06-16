@@ -15,7 +15,9 @@
     "pretest": "yarn lint",
     "start": "NODE_ENV=production node server.js",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "jest": {
     "setupFiles": [
@@ -41,12 +43,13 @@
     "dotenv": "^8.2.0",
     "globby": "^11.0.1",
     "humanize-duration": "^3.22.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "next": "^10.0.8",
     "next-cookies": "^2.0.3",
     "node-fetch": "^2.6.1",
     "object-path": "^0.11.5",
     "prop-types": "^15.7.2",
+    "randomcolor": "^0.6.2",
     "react": "^17.0.1",
     "react-avatar-editor": "11.0.7",
     "react-beautiful-dnd": "^13.0.0",
@@ -67,6 +70,12 @@
     "youtube-regex": "^1.0.5"
   },
   "devDependencies": {
+    "@babel/core": "^7.14.3",
+    "@storybook/addon-actions": "^6.2.9",
+    "@storybook/addon-essentials": "^6.2.9",
+    "@storybook/addon-links": "^6.2.9",
+    "@storybook/react": "^6.2.9",
+    "babel-loader": "^8.2.2",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.1",
     "eslint": "^6.6.0",

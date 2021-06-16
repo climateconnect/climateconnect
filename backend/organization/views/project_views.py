@@ -1,31 +1,32 @@
-from climateconnect_api.utility.translation import edit_translation, edit_translations, translate_text
 import logging
 import traceback
 
 from climateconnect_api.models import Availability, Role, Skill, UserProfile
 from climateconnect_api.models.language import Language
+from climateconnect_api.utility.translation import (edit_translation,
+                                                    edit_translations,
+                                                    translate_text)
 from climateconnect_main.utility.general import get_image_from_data_url
 from dateutil.parser import parse
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos.geometry import GEOSGeometry
+from django.db import transaction
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from hubs.models.hub import Hub
 from location.models import Location
 from location.utility import get_location, get_location_with_range
-from organization.models import (
-    Organization, OrganizationTagging,
-    OrganizationTags, Post, Project,
-    ProjectCollaborators, ProjectComment,
-    ProjectFollower, ProjectMember,
-    ProjectParents, ProjectStatus, ProjectTagging,
-    ProjectTags
-)
+from organization.models import (Organization, OrganizationTagging,
+                                 OrganizationTags, Post, Project,
+                                 ProjectCollaborators, ProjectComment,
+                                 ProjectFollower, ProjectMember,
+                                 ProjectParents, ProjectStatus, ProjectTagging,
+                                 ProjectTags)
 from organization.models.translations import ProjectTranslation
 from organization.pagination import (MembersPagination,
                                      ProjectCommentPagination,
-                                     ProjectPostPagination, ProjectsPagination)
+                                     ProjectPostPagination, ProjectsPagination, ProjectsSitemapPagination)
 from organization.permissions import (AddProjectMemberPermission,
                                       ChangeProjectCreatorPermission,
                                       ProjectMemberReadWritePermission,
@@ -33,16 +34,14 @@ from organization.permissions import (AddProjectMemberPermission,
                                       ReadSensibleProjectDataPermission)
 from organization.serializers.content import (PostSerializer,
                                               ProjectCommentSerializer)
-from organization.serializers.project import (
-    EditProjectSerializer,
-    InsertProjectMemberSerializer,
-    ProjectFollowerSerializer,
-    ProjectMemberSerializer,
-    ProjectMinimalSerializer,
-    ProjectSerializer,
-    ProjectSitemapEntrySerializer,
-    ProjectStubSerializer
-)
+from organization.serializers.project import (EditProjectSerializer,
+                                              InsertProjectMemberSerializer,
+                                              ProjectFollowerSerializer,
+                                              ProjectMemberSerializer,
+                                              ProjectMinimalSerializer,
+                                              ProjectSerializer,
+                                              ProjectSitemapEntrySerializer,
+                                              ProjectStubSerializer)
 from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
@@ -188,6 +187,7 @@ class ListProjectsView(ListAPIView):
 class CreateProjectView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @transaction.atomic()
     def post(self, request):
         if 'parent_organization' in request.data:
             organization = check_organization(int(request.data['parent_organization']))
@@ -732,6 +732,7 @@ class ListFeaturedProjects(ListAPIView):
 class ListProjectsForSitemap(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectSitemapEntrySerializer
+    pagination_class = ProjectsSitemapPagination
 
     def get_queryset(self):
         return Project.objects.filter(is_draft=False,is_active=True)

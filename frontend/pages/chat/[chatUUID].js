@@ -1,5 +1,6 @@
-import Cookies from "next-cookies";
+import NextCookies from "next-cookies";
 import React, { useContext, useEffect } from "react";
+import Cookies from "universal-cookie";
 import tokenConfig from "../../public/config/tokenConfig";
 import { apiRequest, redirect, sendToLogin } from "../../public/lib/apiOperations";
 import { getMessageFromServer } from "../../public/lib/messagingOperations";
@@ -11,7 +12,7 @@ import PageNotFound from "../../src/components/general/PageNotFound";
 import FixedHeightLayout from "../../src/components/layouts/FixedHeightLayout";
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { token } = NextCookies(ctx);
   const texts = getTexts({ page: "chat", locale: ctx.locale });
   if (ctx.req && !token) {
     const message = texts.login_required;
@@ -24,12 +25,13 @@ export async function getServerSideProps(ctx) {
   ]);
   if (!chat) {
     return {
-      chat_id: null,
+      props: {
+        chat_id: null,
+      },
     };
   }
   return {
     props: {
-      token: token,
       chat_uuid: ctx.query.chatUUID,
       chatParticipants: parseParticipantsWithRole(chat.participants, rolesOptions),
       title: chat.title,
@@ -39,6 +41,7 @@ export async function getServerSideProps(ctx) {
       chatUUID: ctx.query["chatUUID"],
       rolesOptions: rolesOptions,
       chat_id: chat.id,
+      idea: chat.idea,
     },
   };
 }
@@ -46,14 +49,15 @@ export async function getServerSideProps(ctx) {
 export default function Chat({
   chatParticipants,
   title,
-  token,
   chatUUID,
   messages,
   nextLink,
   hasMore,
   rolesOptions,
   chat_id,
+  idea,
 }) {
+  const token = new Cookies().get("token");
   const { chatSocket, user, socketConnectionState, locale } = useContext(UserContext);
   const [participants, setParticipants] = React.useState(chatParticipants);
   const [state, setState] = React.useState({
@@ -231,7 +235,7 @@ export default function Chat({
           : title
       }
     >
-      {chat_id && chatting_partner ? (
+      {chat_id ? (
         <MessagingLayout
           chatting_partner={chatting_partner}
           messages={state.messages}
@@ -249,6 +253,7 @@ export default function Chat({
           setParticipants={setParticipants}
           handleChatWindowClose={handleChatWindowClose}
           leaveChat={requestLeaveChat}
+          relatedIdea={idea}
         />
       ) : (
         <PageNotFound itemName="Chat" returnText={texts.return_to_inbox} returnLink="/inbox" />
@@ -268,7 +273,7 @@ export default function Chat({
 const parseParticipantsWithRole = (participants, rolesOptions) => {
   return participants.map((p) => ({
     ...p,
-    role: rolesOptions.find((o) => o.name === p.role),
+    role: rolesOptions.find((o) => o.role_type === p.role.role_type),
   }));
 };
 
@@ -284,6 +289,7 @@ async function getChat(chat_uuid, token, locale) {
       participants: parseParticipants(resp.data.participants, resp.data.user),
       title: resp.data.name,
       id: resp.data.id,
+      idea: resp.data.related_idea,
     };
   } catch (e) {
     console.log(e?.response);

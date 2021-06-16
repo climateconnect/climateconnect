@@ -1,7 +1,9 @@
 import { Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Cookies from "next-cookies";
+import NextCookies from "next-cookies";
 import React, { useContext } from "react";
+import Cookies from "universal-cookie";
+import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
 import {
   getProjectTagsOptions,
@@ -28,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export async function getServerSideProps(ctx) {
-  const { token } = Cookies(ctx);
+  const { token } = NextCookies(ctx);
   const texts = getTexts({ page: "project", locale: ctx.locale });
   if (ctx.req && !token) {
     const message = texts.please_log_in_to_edit_project;
@@ -58,7 +60,6 @@ export async function getServerSideProps(ctx) {
       userOrganizations: userOrganizations,
       statusOptions: statusOptions,
       tagsOptions: tagsOptions,
-      token: token,
     }),
   };
 }
@@ -70,8 +71,8 @@ export default function EditProjectPage({
   userOrganizations,
   statusOptions,
   tagsOptions,
-  token,
 }) {
+  const token = new Cookies().get("token");
   const classes = useStyles();
   const [curProject, setCurProject] = React.useState({
     ...project,
@@ -121,8 +122,9 @@ export default function EditProjectPage({
       </WideLayout>
     );
   else if (
-    members.find((m) => m.user && m.user.id === user.id).role.name != "Creator" &&
-    members.find((m) => m.user && m.user.id === user.id).role.name != "Administrator"
+    members.find((m) => m.user && m.user.id === user.id).role.role_type != ROLE_TYPES.all_type &&
+    members.find((m) => m.user && m.user.id === user.id).role.role_type !=
+      ROLE_TYPES.read_write_type
   )
     return (
       <WideLayout title={texts.no_permissions_to_edit_project} hideHeadline={true}>

@@ -88,9 +88,13 @@ def translate_text(text, original_lang, target_lang):
     }
 
 
-def get_translations(texts, translations, source_language, keys_to_ignore_for_translation=[], depth=0):
+def get_translations(
+    texts, translations, source_language,
+    keys_to_ignore_for_translation=[], depth=0
+):
     depth = int(depth)
-    # if we started over the a different source language more than one time that means the user used different languages in different texts.
+    # if we started over the a different source language more than 
+    # one time that means the user used different languages in different texts.
     if depth > 1:
         raise ValueError
     finished_translations = {}
@@ -100,7 +104,8 @@ def get_translations(texts, translations, source_language, keys_to_ignore_for_tr
                 'is_manual_translation': False
             }
             for key in texts.keys():
-                # If the user manually translated and the translation isn't an empty string: take the user's translation
+                # If the user manually translated and the translation 
+                # isn't an empty string: take the user's translation
                 if (
                     target_language in translations and \
                     'is_manual_translation' in translations[target_language] and \
@@ -108,26 +113,36 @@ def get_translations(texts, translations, source_language, keys_to_ignore_for_tr
                     key in translations[target_language] and \
                     len(translations[target_language][key]) > 0
                 ):
-                    finished_translations[target_language][key] = translations[target_language][key]
+                    finished_translations[target_language][key] =\
+                        translations[target_language][key]
                     finished_translations['is_manual_translation']= True
                 # Else use DeepL to translate the text
                 else:
-                    # If the key should not be translated, just pass the original string (We do this for organization names for example)
+                    # If the key should not be translated, just pass the original 
+                    # string (We do this for organization names for example)
                     if key in keys_to_ignore_for_translation:
                         translated_text_object = {
                             'original_lang': source_language,
                             'translated_text': texts[key]
                         }
                     else:
-                        translated_text_object = translate_text(texts[key], source_language, target_language)
-                    # If we got the source language wrong start over with the correct source language
+                        translated_text_object = translate_text(
+                            texts[key], source_language, target_language
+                        )
+                    # If we got the source language wrong start over 
+                    # with the correct source language
                     if not translated_text_object['original_lang'] == source_language:
-                        return get_translations(texts, translations, translated_text_object['original_lang'], keys_to_ignore_for_translation, depth + 1)
-                    finished_translations[target_language][key] = translated_text_object['translated_text']
+                        return get_translations(
+                            texts, translations, translated_text_object['original_lang'],
+                            keys_to_ignore_for_translation, depth + 1
+                        )
+                    finished_translations[target_language][key] =\
+                        translated_text_object['translated_text']
     return {
         'translations': finished_translations,
         'source_language': source_language
     }
+
 
 def edit_translations(
     items_to_translate, 
@@ -138,7 +153,7 @@ def edit_translations(
     languages_to_translate_to = Language.objects.filter(~Q(id=item.language.id))
     for language in languages_to_translate_to:
         language_code = language.language_code
-        if language_code in data['translations']:
+        if 'translations' in data and language_code in data['translations']:
             passed_lang_translation = data['translations'][language_code]
         else:
             passed_lang_translation = {}
@@ -192,6 +207,7 @@ def edit_translations(
                     )['translated_text'])
 
             db_translation.save()
+
 
 def edit_translation(
     db_translation, 

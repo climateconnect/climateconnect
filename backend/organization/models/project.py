@@ -85,7 +85,7 @@ class Project(models.Model):
         verbose_name="Short Description",
         null=True,
         blank=True,
-        max_length=240
+        max_length=280
     )
 
     description = models.TextField(

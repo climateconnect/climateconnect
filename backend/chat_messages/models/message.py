@@ -1,3 +1,4 @@
+from ideas.models.ideas import Idea
 from django.db import models
 
 from django.contrib.auth.models import User
@@ -22,6 +23,20 @@ class MessageParticipants(models.Model):
         help_text="Check if the chat between participants are active or not."
                   "If they are not active that means a user has blocked another person.",
         verbose_name="Is active?", default=True
+    )
+
+    is_public = models.BooleanField(
+        help_text="If this value is set to true, anybody can join this chat without being permitted or invited by an admin.",
+        verbose_name="Is public?", default=False
+    )
+
+    related_idea = models.ForeignKey(
+        Idea,
+        help_text="If this chat is about an idea, this points to the idea",
+        verbose_name="Related idea",
+        related_name="related_idea_message_participant",
+        on_delete=models.SET_NULL,
+        null=True, blank=True
     )
 
     created_at = models.DateTimeField(

@@ -11,6 +11,10 @@ export default function getHubTexts({ hubName }) {
       en: "Search climate projects in " + hubName,
       de: "Suche Klimaprojekte in " + hubName,
     },
+    search_ideas_in_location: {
+      en: "Find inspiring climate ideas from " + hubName,
+      de: "Finde inspirierende Klimaschutz-Ideen aus " + hubName,
+    },
     search_for_organizations_in_sector: {
       en: "Search for climate organizations in the " + hubName + " sector",
       de: "Durchsuche Klimaschutzorganisationen im Bereich " + hubName,
@@ -107,6 +111,14 @@ export default function getHubTexts({ hubName }) {
     click_here_to_minimize_info: {
       en: "Click here to minimize the info about the hub",
       de: "Klicke hier, um den Info-Bereich der Hub auszublenden",
+    },
+    add_a_hub_where_you_are_active: {
+      en: "Add a Sector",
+      de: "Füge einen Sektor hinzu",
+    },
+    add_hubs_in_which_your_organization_is_active: {
+      en: "Add Hubs (sectors) in which your organization is active",
+      de: "Füge Hubs (Sektoren) hinzu, in denen deine Organisation aktiv ist",
     },
   };
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };

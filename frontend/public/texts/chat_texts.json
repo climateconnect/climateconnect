@@ -104,12 +104,12 @@
     "de": "Du hast die Teilnehmer*innen dieses Chats erfolgreich aktualisiert!"
   },
   "there_must_be_exactly_one_creator_of_an_organization": {
-    "en": "There must be exactly one creator of an organization.",
-    "de": "Es muss genau einen Ersteller oder eine Erstellerin einer Organisation geben"
+    "en": "There must be exactly one Super Admin of an organization.",
+    "de": "Es muss genau einen Super Admin einer Organisation geben"
   },
   "there_wasnt_a_creator": {
-    "en": "There wasn't a creator",
-    "de": "Es gab noch keine(n) Ersteller*in"
+    "en": "There wasn't a Super Admin",
+    "de": "Es gab noch keine(n) Super Admin"
   },
   "search_for_users_to_add_to_this_group_chat": {
     "en": "Search for users to add to this group chat",
@@ -138,5 +138,13 @@
   "you_have_an_unsent_message_are_you_sure_you_want_to_leave": {
     "en": "You have an unsent message. Are you sure you want to leave?",
     "de": "Du hast eine nicht gesendete Nachricht. Bist du sicher, dass du gehen willst?"
+  },
+  "here_you_can_discuss": {
+    "en": "Here you can chat about how to implement the idea ",
+    "de": "Hier könnt ihr darüber reden, wie ihr diese Idee umsetzen könnt: "
+  },
+  "everybody_who_clicked_join_is_in_this_group": {
+    "en": "Everybody who clicked the \"join\" button on the idea's page is in this chat group",
+    "de": "Alle, die auf den \"Mitmachen\" Knopf auf der Ideenseite geklickt haben, sind in diesem Gruppenchat"
   }
 }

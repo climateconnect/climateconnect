@@ -2,6 +2,7 @@ import { Container, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import React, { useContext } from "react";
+import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import BottomNavigation from "../general/BottomNavigation";
@@ -41,6 +42,8 @@ export default function AddTeam({
   onSubmit,
   saveAsDraft,
   isLastStep,
+  loadingSubmit,
+  loadingSubmitDraft,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -59,7 +62,11 @@ export default function AddTeam({
     handleSetProjectData({
       team_members: [
         ...projectData.team_members,
-        { ...member, role: rolesOptions.find((r) => r.name === "Member"), role_in_project: "" },
+        {
+          ...member,
+          role: rolesOptions.find((r) => r.role_type === ROLE_TYPES.read_only_type),
+          role_in_project: "",
+        },
       ],
     });
   };
@@ -147,6 +154,8 @@ export default function AddTeam({
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="publish"
             saveAsDraft={saveAsDraft}
+            loadingSubmit={loadingSubmit}
+            loadingSubmitDraft={loadingSubmitDraft}
           />
         ) : (
           <BottomNavigation
