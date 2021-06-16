@@ -1,10 +1,10 @@
 import { Button, makeStyles, useMediaQuery } from "@material-ui/core";
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import {
   getCompressedJPG,
   getImageDialogHeight,
   getResizedImage,
-  whitenTransparentPixels,
+  whitenTransparentPixels
 } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -56,6 +56,7 @@ export default function UploadImageField({ image, className, updateImages }) {
   const [tempImages, setTempImage] = useState("");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
+  const inputRef = useRef(null)
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
 
   const handleClickInput = () => {
@@ -95,6 +96,11 @@ export default function UploadImageField({ image, className, updateImages }) {
     }
   };
 
+  const handleClickUploadButton = (e) => {
+    e.preventDefault()
+    inputRef.current.click()
+  }
+
   return (
     <div className={`${classes.root} ${className} ${image && classes.display_image}`}>
       <label htmlFor="avatarPhoto" className={classes.inputLabel}>
@@ -107,10 +113,11 @@ export default function UploadImageField({ image, className, updateImages }) {
           accept=".png,.jpeg,.jpg"
           value={selectedFile}
           onClick={handleClickInput}
+          ref={inputRef}
         />
 
         <div className={classes.chooseImageButtonContainer}>
-          <Button color="primary" variant="contained" className={classes.uploadImageButton}>
+          <Button color="primary" variant="contained" className={classes.uploadImageButton} onClick={handleClickUploadButton}>
             {image ? texts.change_image : texts.upload_image}
           </Button>
         </div>
