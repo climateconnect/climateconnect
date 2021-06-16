@@ -77,7 +77,7 @@ class ProjectsOrderingFilter(OrderingFilter):
 class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter, DjangoFilterBackend, ProjectsOrderingFilter]
-    search_fields = ['url_slug']
+    search_fields = ['name', 'translation_project__name_translation']
     filterset_fields = ['collaborators_welcome']
     pagination_class = ProjectsPagination
     serializer_class = ProjectStubSerializer
