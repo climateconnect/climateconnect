@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme) => {
     // set of Typography headings, components?
     headingText: {
       fontWeight: "bold",
+      paddingLeft: theme.spacing(1),
     },
 
     welcomeMessage: {
@@ -130,6 +131,7 @@ export default function Dashboard({ className }) {
             {/* TODO: doing some left spacing here -- trying to keep spacing directly out of the UI components, and isolated within Box components directly  */}
             <Box css={{ marginLeft: theme.spacing(1), width: "100%" }}>
               <div className={`${classes.welcomeMessage}`}>
+                {/* TODO(Chris): replace this text with the correct German welcome text */}
                 <Typography style={{ fontWeight: "600" }}>
                   This is standard user blurb text.
                 </Typography>
@@ -149,20 +151,21 @@ export default function Dashboard({ className }) {
               {/* TODO: replace buttons with Selects to indicate multiple actions */}
               {/* TODO: fix all links here */}
 
+              {/* TODO: fix button colors here */}
               <Button type="submit">
-                <EmojiObjectsIcon style={{ marginRight: theme.spacing(1) }} /> Idee
+                <EmojiObjectsIcon style={{ marginRight: theme.spacing(1) }} /> {texts.ideas}
               </Button>
 
               <Button type="submit">
-                <AssignmentIcon style={{ marginRight: theme.spacing(1) }} /> Project
+                <AssignmentIcon style={{ marginRight: theme.spacing(1) }} /> {texts.projects}
               </Button>
 
               <Button type="submit">
-                <GroupAddIcon style={{ marginRight: theme.spacing(1) }} /> Organization
+                <GroupAddIcon style={{ marginRight: theme.spacing(1) }} /> {texts.organization}
               </Button>
 
               <Button type="submit" href={"/profiles/"}>
-                <AccountCircleIcon style={{ marginRight: theme.spacing(1) }} /> Profile
+                <AccountCircleIcon style={{ marginRight: theme.spacing(1) }} /> {texts.my_profile}
               </Button>
 
               {/* TODO: restore Climate Match icon and link once CM is live  */}
