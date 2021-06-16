@@ -69,6 +69,8 @@ export default function LanguageSelect({ transparentHeader }) {
     }
   };
 
+  // TODO: this could be generalized into a HoverButton component,
+  // and used in the Welcome Blurb feature on /hubs
   return (
     <>
       <Button
@@ -79,8 +81,8 @@ export default function LanguageSelect({ transparentHeader }) {
         aria-owns="language-select"
         aria-haspopup="true"
         onClick={handleToggleOpen}
+        startIcon={<LanguageIcon className={classes.languageIcon} />}
       >
-        <LanguageIcon className={classes.languageIcon} />
         {locale}
       </Button>
       <StyledMenu

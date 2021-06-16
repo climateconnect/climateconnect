@@ -9,7 +9,6 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import theme from "../../themes/theme";
-// import SelectField from "./../general/SelectField";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -147,25 +146,28 @@ export default function Dashboard({ className }) {
           show them the other controls. */}
           {!user ? (
             <>
-              {/* TODO: are there already pre-existing buttons with icons for these? */}
-              {/* TODO: replace buttons with Selects to indicate multiple actions */}
+              {/* TODO: replace buttons with HoverButtons like in the LanguageSelect component to indicate multiple actions */}
               {/* TODO: fix all links here */}
 
-              {/* TODO: fix button colors here */}
-              <Button type="submit">
-                <EmojiObjectsIcon style={{ marginRight: theme.spacing(1) }} /> {texts.ideas}
+              <Button color="primary" startIcon={<EmojiObjectsIcon />} type="submit">
+                {texts.ideas}
               </Button>
 
-              <Button type="submit">
-                <AssignmentIcon style={{ marginRight: theme.spacing(1) }} /> {texts.projects}
+              <Button color="primary" href={"/share"} startIcon={<AssignmentIcon />} type="submit">
+                {texts.projects}
               </Button>
 
-              <Button type="submit">
-                <GroupAddIcon style={{ marginRight: theme.spacing(1) }} /> {texts.organization}
+              <Button color="primary" startIcon={<GroupAddIcon />} type="submit">
+                {texts.organization}
               </Button>
 
-              <Button type="submit" href={"/profiles/"}>
-                <AccountCircleIcon style={{ marginRight: theme.spacing(1) }} /> {texts.my_profile}
+              <Button
+                color="primary"
+                startIcon={<AccountCircleIcon />}
+                type="submit"
+                href={"/profiles/"}
+              >
+                {texts.my_profile}
               </Button>
 
               {/* TODO: restore Climate Match icon and link once CM is live  */}
