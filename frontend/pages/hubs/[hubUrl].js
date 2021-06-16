@@ -9,7 +9,7 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo,
+  membersWithAdditionalInfo
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -75,7 +75,7 @@ export async function getServerSideProps(ctx) {
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
-    getAllHubs(ctx.locale),
+    getAllHubs(ctx.locale, true),
   ]);
   return {
     props: {
