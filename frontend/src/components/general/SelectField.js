@@ -62,7 +62,7 @@ export default function SelectField({
       required={required}
       fullWidth
       label={label}
-      value={multiple ? values : controlled ? controlledValue.name : value.name}
+      value={multiple ? values : controlled ? controlledValue && controlledValue.name : value.name}
       variant="outlined"
       onChange={handleChange}
       className={className}

@@ -11,6 +11,7 @@ import {
   getStatusOptions,
   membersWithAdditionalInfo,
 } from "../public/lib/getOptions";
+import { getAllHubs } from "../public/lib/hubOperations";
 import { parseData } from "../public/lib/parsingOperations";
 import { nullifyUndefinedValues } from "../public/lib/profileOperations";
 import BrowseContent from "../src/components/browse/BrowseContent";
@@ -39,7 +40,7 @@ export async function getServerSideProps(ctx) {
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
-    getHubs(ctx.locale),
+    getAllHubs(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -243,18 +244,5 @@ async function getDataFromServer({ type, page, token, urlEnding, locale }) {
       console.log(err.response.data);
     } else console.log(err);
     throw err;
-  }
-}
-
-async function getHubs(locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/hubs/`,
-      locale: locale,
-    });
-    return resp.data.results;
-  } catch (e) {
-    console.log(e);
   }
 }

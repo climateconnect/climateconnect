@@ -11,7 +11,7 @@ import {
   getLocationValue,
   indicateWrongLocation,
   isLocationValid,
-  parseLocation,
+  parseLocation
 } from "../public/lib/locationOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -34,7 +34,7 @@ export async function getServerSideProps(ctx) {
   const [tagOptions, rolesOptions, allHubs] = await Promise.all([
     await getTags(token, ctx.locale),
     await getRolesOptions(token, ctx.locale),
-    getAllHubs(ctx.locale),
+    getAllHubs(ctx.locale, true),
   ]);
   return {
     props: {

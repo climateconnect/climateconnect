@@ -11,6 +11,10 @@ export default function getHubTexts({ hubName }) {
       en: "Search climate projects in " + hubName,
       de: "Suche Klimaprojekte in " + hubName,
     },
+    search_ideas_in_location: {
+      en: "Find inspiring climate ideas from " + hubName,
+      de: "Finde inspirierende Klimaschutz-Ideen aus " + hubName,
+    },
     search_for_organizations_in_sector: {
       en: "Search for climate organizations in the " + hubName + " sector",
       de: "Durchsuche Klimaschutzorganisationen im Bereich " + hubName,
