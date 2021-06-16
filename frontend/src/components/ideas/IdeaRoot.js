@@ -187,7 +187,11 @@ export default function IdeaRoot({
           getIdeaCommentsFromServer(idea, token, locale),
           getHasJoinedIdea(idea, token, locale),
         ]);
-        setUserRating({ ...userRating, last_locked_rating_score: userRating.rating_score });
+        //The user has closed the idea in the mean time!
+        if(!idea) {
+          return
+        }
+        setUserRating({ ...userRating, last_locked_rating_score: userRating?.rating_score });
         setHasJoinedIdea({
           has_joined: hasJoinedIdea?.has_joined,
           chat_uuid: hasJoinedIdea?.chat_uuid,
@@ -325,7 +329,7 @@ export default function IdeaRoot({
               </div>
               <div className={classes.topItem}>
                 <IdeaRatingSlider
-                  value={userRating.rating_score}
+                  value={userRating?.rating_score}
                   averageRating={idea.rating?.rating_score}
                   onChange={handleRatingChange}
                   onChangeCommitted={handleRateProject}
@@ -390,7 +394,7 @@ const getIdeaCommentsFromServer = async (idea, token, locale) => {
     });
     return response.data.results;
   } catch (err) {
-    console.log(err);
+    console.log(err?.response);
   }
 };
 
@@ -405,6 +409,6 @@ const getHasJoinedIdea = async (idea, token, locale) => {
     console.log(response);
     return response.data;
   } catch (err) {
-    console.log(err);
+    console.log(err?.response);
   }
 };

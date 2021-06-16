@@ -69,7 +69,7 @@ export async function getServerSideProps(ctx) {
       token: token,
       hubUrl: hubUrl,
       locale: ctx.locale,
-      urlEnding: ideaToOpen ? `&idea=${ideaToOpen}` : "",
+      urlEnding: ideaToOpen ? `&idea=${encodeURIComponent(ideaToOpen)}` : "",
     }),
     getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
@@ -100,7 +100,7 @@ export async function getServerSideProps(ctx) {
         project_statuses: project_statuses,
       },
       allHubs,
-      initialIdeaUrlSlug: ideaToOpen ? ideaToOpen : null,
+      initialIdeaUrlSlug: ideaToOpen ? encodeURIComponent(ideaToOpen) : null,
     },
   };
 }
