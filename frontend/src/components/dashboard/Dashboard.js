@@ -1,4 +1,8 @@
-import { Box, Button, makeStyles, Typography, withTheme } from "@material-ui/core";
+import { Box, Button, IconButton, makeStyles, Typography, withTheme } from "@material-ui/core";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
+import GroupAddIcon from "@material-ui/icons/GroupAdd";
+import AssignmentIcon from "@material-ui/icons/Assignment";
 import React, { useContext } from "react";
 
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -143,14 +147,26 @@ export default function Dashboard({ className }) {
             <>
               {/* TODO: are there already pre-existing buttons with icons for these? */}
               {/* TODO: replace buttons with Selects to indicate multiple actions */}
-              <Button type="submit">Idee</Button>
-              <Button type="submit">Project</Button>
-              <Button type="submit">Organization</Button>
               {/* TODO: fix all links here */}
-              <Button type="submit" href={"/profiles/"}>
-                Profile
+
+              <Button type="submit">
+                <EmojiObjectsIcon style={{ marginRight: theme.spacing(1) }} /> Idee
               </Button>
-              <Button type="submit">Climate Match</Button>
+
+              <Button type="submit">
+                <AssignmentIcon style={{ marginRight: theme.spacing(1) }} /> Project
+              </Button>
+
+              <Button type="submit">
+                <GroupAddIcon style={{ marginRight: theme.spacing(1) }} /> Organization
+              </Button>
+
+              <Button type="submit" href={"/profiles/"}>
+                <AccountCircleIcon style={{ marginRight: theme.spacing(1) }} /> Profile
+              </Button>
+
+              {/* TODO: restore Climate Match icon and link once CM is live  */}
+              {/* <Button type="submit">Climate Match</Button> */}
             </>
           ) : (
             <>
