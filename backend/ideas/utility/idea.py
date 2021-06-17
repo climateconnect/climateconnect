@@ -1,7 +1,8 @@
 import logging
+import urllib.parse
 from typing import Dict, Optional
-from climateconnect_api.models import language
 
+from climateconnect_api.models import language
 from climateconnect_api.models.language import Language
 from climateconnect_main.utility.general import get_image_from_data_url
 from django.contrib.auth.models import User
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 def verify_idea(url_slug: str) -> Optional[Idea]:
     try:
+        url_slug = urllib.parse.quote(url_slug)
         idea = Idea.objects.get(url_slug=url_slug)
     except Idea.DoesNotExist:
         logger.error("Idea not found for {}".format(url_slug))
@@ -30,7 +32,7 @@ def create_idea(data: dict, language: Optional[Language], creator: User) -> Idea
         name=data['name'], short_description=data['short_description'],
         language=language, user= creator
     )
-    url_slug = url_slug = data['name'].lower().replace(" ", "-")
+    url_slug = urllib.parse.quote(data['name'].lower().replace(" ", "-"))
     ideas_with_same_url_slug = Idea.objects.filter(url_slug=url_slug)
     if ideas_with_same_url_slug.exists():
         url_slug = url_slug + str(idea.id)

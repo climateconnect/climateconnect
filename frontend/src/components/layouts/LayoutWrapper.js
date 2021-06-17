@@ -15,6 +15,7 @@ import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import FeedbackButton from "../feedback/FeedbackButton";
 import CookieBanner from "../general/CookieBanner";
+import CloseSnackbarAction from "../snackbarActions/CloseSnackbarAction";
 import LogInAction from "../snackbarActions/LogInAction";
 
 const useStyles = makeStyles((theme) => ({
@@ -41,6 +42,9 @@ const useStyles = makeStyles((theme) => ({
   },
   errorSnackBar: {
     background: theme.palette.error.main,
+  },
+  successSnackBar: {
+    background: theme.palette.success.main
   },
   snackBarMessage: {
     maxWidth: 300,
@@ -103,13 +107,14 @@ export default function LayoutWrapper({
 
   //if promptLogIn is true, the user will be shown a button to log in.
   //Otherwise the caller of the function can also set a custom action that should be shown to the user
-  const showFeedbackMessage = ({ message, promptLogIn, action, newHash, error }) => {
+  const showFeedbackMessage = ({ message, promptLogIn, action, newHash, error, success }) => {
     const newStateValue = {
       ...snackbarProps,
       open: true,
       message: message,
       error: error,
-      action: promptLogIn ? <LogInAction onClose={handleSnackbarClose} /> : action,
+      success: success,
+      action: promptLogIn ? <LogInAction onClose={handleSnackbarClose} /> : action ? action : <CloseSnackbarAction onClose={handleSnackbarClose} />,
     };
     if (newHash) newStateValue.hash = newHash;
     setSnackbarProps(newStateValue);
@@ -170,7 +175,7 @@ export default function LayoutWrapper({
                   message={snackbarProps.message}
                   action={snackbarProps.action}
                   classes={{
-                    root: `${classes.snackBar} ${snackbarProps.error && classes.errorSnackBar}`,
+                    root: `${classes.snackBar} ${snackbarProps.error && classes.errorSnackBar} ${snackbarProps.success && classes.successSnackBar}`,
                     message: classes.snackBarMessage,
                   }}
                 />

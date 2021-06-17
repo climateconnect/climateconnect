@@ -22,7 +22,7 @@ export async function getServerSideProps(ctx) {
   const [organization, tagOptions, allHubs] = await Promise.all([
     getOrganizationByUrlIfExists(url, token, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
-    getAllHubs(ctx.locale),
+    getAllHubs(ctx.locale, true),
   ]);
   return {
     props: nullifyUndefinedValues({

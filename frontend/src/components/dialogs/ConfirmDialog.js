@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "right",
   },
   button: {
-    marginLeft: theme.spacing(2),
+    marginLeft: theme.spacing(1),
   },
 }));
 

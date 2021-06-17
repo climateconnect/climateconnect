@@ -10,7 +10,7 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo,
+  membersWithAdditionalInfo
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -70,13 +70,13 @@ export async function getServerSideProps(ctx) {
       token: token,
       hubUrl: hubUrl,
       locale: ctx.locale,
-      urlEnding: ideaToOpen ? `&idea=${ideaToOpen}` : "",
+      urlEnding: ideaToOpen ? `&idea=${encodeURIComponent(ideaToOpen)}` : "",
     }),
     getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
-    getAllHubs(ctx.locale),
+    getAllHubs(ctx.locale, true),
   ]);
   return {
     props: {
@@ -90,7 +90,7 @@ export async function getServerSideProps(ctx) {
       stats: hubData.stats,
       statBoxTitle: hubData.stat_box_title,
       image_attribution: hubData.image_attribution,
-      hubLocation: hubData.location && hubData.location[0],
+      hubLocation: hubData.location?.length > 0 ? hubData.location[0] : null,
       initialProjects: initialProjects,
       initialOrganizations: initialOrganizations,
       initialIdeas: initialIdeas,
@@ -101,7 +101,7 @@ export async function getServerSideProps(ctx) {
         project_statuses: project_statuses,
       },
       allHubs,
-      initialIdeaUrlSlug: ideaToOpen ? ideaToOpen : null,
+      initialIdeaUrlSlug: ideaToOpen ? encodeURIComponent(ideaToOpen) : null,
     },
   };
 }
@@ -303,7 +303,7 @@ export default function Hub({
             nextStepTriggeredBy={nextStepTriggeredBy}
             hubName={name}
             initialIdeas={initialIdeas}
-            showIdeas={true}
+            showIdeas={isLocationHub}
             allHubs={allHubs}
             initialIdeaUrlSlug={initialIdeaUrlSlug}
             hubLocation={hubLocation}

@@ -179,10 +179,11 @@ class JoinIdeaChatView(APIView):
             return Response({'message': 'Idea not found'}, status=status.HTTP_404_NOT_FOUND)
         try:
             chat = MessageParticipants.objects.get(related_idea=idea.id)
+            member_role = Role.objects.get(role_type=Role.READ_ONLY_TYPE)
             try:
                 Participant.objects.get(user=request.user, chat=chat)
             except Participant.DoesNotExist:
-                Participant.objects.create(user=request.user, chat=chat, role=Role.READ_ONLY_TYPE)
+                Participant.objects.create(user=request.user, chat=chat, role=member_role)
         except MessageParticipants.DoesNotExist:
             return Response({'message': 'Group chat not found'}, status=status.HTTP_404_NOT_FOUND)
         # Participant.objects.get_or_create(user=request.user, chat=idea.related_idea_message_participant)
@@ -207,6 +208,6 @@ class GetHaveIJoinedIdeaView(APIView):
                     'has_joined': True
                 }, status=status.HTTP_200_OK)
             else:
-                return Response({'has_joined': False}, status=status.status.HTTP_200_OK)
+                return Response({'has_joined': False}, status=status.HTTP_200_OK)
         except MessageParticipants.DoesNotExist:
             return Response({'message': 'Group chat not found'}, status=status.HTTP_404_NOT_FOUND)

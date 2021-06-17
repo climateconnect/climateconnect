@@ -4,6 +4,7 @@ from django.utils.translation import get_language
 from hubs.serializers.hub import HubStubSerializer
 from ideas.models import Idea, IdeaSupporter
 from ideas.utility.idea import get_idea_name, get_idea_short_description
+from organization.serializers.organization import OrganizationStubSerializer
 from rest_framework import serializers
 
 
@@ -24,13 +25,14 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
+    organization = serializers.SerializerMethodField()
 
     class Meta:
         model = Idea
         fields = [
             'id', 'name', 'url_slug', 'short_description', 
             'thumbnail_image', 'hub', 'rating', 'image', 'user',
-            'location', 'created_at'
+            'location', 'created_at', 'organization'
         ]
     
     def get_name(self, obj):
@@ -44,11 +46,6 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
             return HubStubSerializer(obj.hub).data
         
         return None
-
-    def get_location(self, obj):
-        if obj.location == None:
-            return None
-        return obj.location.name
     
     def get_rating(self, obj):
         total_average = 0
@@ -72,6 +69,12 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.location:
             return obj.location.name
+        
+        return None
+
+    def get_organization(self, obj):
+        if obj.organization:
+            return OrganizationStubSerializer(obj.organization).data
         
         return None
 
