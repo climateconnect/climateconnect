@@ -1,26 +1,26 @@
-import { Box, Button, IconButton, makeStyles, Typography, withTheme } from "@material-ui/core";
+import { Box, Button, makeStyles, Typography } from "@material-ui/core";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import AssignmentIcon from "@material-ui/icons/Assignment";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
-import AssignmentIcon from "@material-ui/icons/Assignment";
 import React, { useContext } from "react";
-
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
-import UserContext from "../context/UserContext";
 import theme from "../../themes/theme";
+import UserContext from "../context/UserContext";
+
 
 const useStyles = makeStyles((theme) => {
   return {
     welcomeBanner: {
       backgroundColor: theme.palette.primary.main,
       minWidth: 300,
+      width: "100%",
       borderRadius: 5,
       border: theme.borders.thick,
       color: "white",
       position: "relative",
-      maxWidth: "800px",
-      margin: "auto",
+      maxWidth: "800px"
     },
     profileInner: {
       float: "left",
@@ -109,17 +109,16 @@ const HorizontalSpacing = ({ children, size }) => {
   );
 };
 
-export default function Dashboard({ className }) {
+export default function Dashboard({ className, location }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
 
   return (
-    <div className={`${classes.welcomeBanner}`}>
+    <div className={`${classes.welcomeBanner} ${className}`}>
       <HorizontalSpacing size={1}>
         <Typography variant="h4" component="h1" className={`${classes.headingText}`}>
-          {/* TODO: fix welcome messaging here */}
-          Welcome to <span className={classes.hubName}>Test Hub</span>
+           {`${texts.climate_protection_in} ${location}`}
         </Typography>
       </HorizontalSpacing>
 

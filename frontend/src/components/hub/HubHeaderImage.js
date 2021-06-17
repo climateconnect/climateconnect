@@ -1,13 +1,13 @@
-import { makeStyles, Tooltip, Typography } from "@material-ui/core";
+import { makeStyles, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import React, { useContext } from "react";
-
-import Dashboard from "../../../src/components/dashboard/Dashboard";
 import getTexts from "../../../public/texts/texts";
+import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 
+
 const useStyles = makeStyles((theme) => ({
-  root: (props) => ({
+  imageContainer: (props) => ({
     background: `url('${props.image}')`,
     backgroundSize: "cover",
     backgroundPosition: "bottom center",
@@ -17,7 +17,22 @@ const useStyles = makeStyles((theme) => ({
       backgroundSize: "cover",
     },
     position: "relative",
+    [theme.breakpoints.up("sm")]: {
+      position: props.isLocationHub ? "absolute" : "relative",
+      zIndex: -1
+    }
   }),
+  dashboardContainer: {
+    marginTop: theme.spacing(4),
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start"
+  },
+  infoBoxContainer: {
+    marginTop: theme.spacing(6),
+    marginLeft: theme.spacing(2),
+    float: "right"
+  },
   img: (props) => ({
     width: props.fullWidth ? "80%" : "50%",
     visibility: "hidden",
@@ -35,31 +50,23 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 30,
     cursor: "pointer",
   },
-  // TODO(piper/chris): likely a more elegant way to position
-  // the blurb on top of the container here
-  dashboardContainer: {
-    marginTop: "-100px",
-    paddingBottom: theme.spacing(4),
-  },
 }));
 
-export default function HubHeaderImage({ image, source, fullWidth, onClose }) {
-  const classes = useStyles({ image: image, fullWidth: fullWidth });
+export default function HubHeaderImage({ image, source, fullWidth, onClose, isLocationHub, statBoxTitle, stats }) {
+  const classes = useStyles({ image: image, fullWidth: fullWidth, isLocationHub: isLocationHub });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"))
   return (
     <>
-      <div className={classes.root}>
+      <div className={classes.imageContainer}>
         {onClose && (
           <Tooltip title={texts.click_here_to_minimize_info}>
             <CloseIcon color="primary" className={classes.closeButton} onClick={onClose} />
           </Tooltip>
         )}
-        <img src={image} className={classes.img} />
-        <div className={`${classes.dashboardContainer}`}>
-          <Dashboard />
-        </div>
-      </div>
+        <img src={image} className={classes.img} />        
+      </div>      
       {source && (
         <Typography className={classes.attribution}>
           {texts.image}: {source}

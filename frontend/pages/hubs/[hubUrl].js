@@ -2,7 +2,6 @@ import { makeStyles, Typography } from "@material-ui/core";
 import NextCookies from "next-cookies";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-
 import { apiRequest } from "../../public/lib/apiOperations";
 import { buildUrlEndingFromFilters } from "../../public/lib/filterOperations";
 import {
@@ -26,6 +25,7 @@ import HubHeaderImage from "../../src/components/hub/HubHeaderImage";
 import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
+
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -269,8 +269,10 @@ export default function Hub({
           image={getImageUrl(image)}
           source={image_attribution}
           onClose={closeHubHeaderImage}
+          isLocationHub={isLocationHub}
+          statBoxTitle={statBoxTitle}
+          stats={stats}
         />
-
         <HubContent
           hubQuickInfoRef={hubQuickInfoRef}
           headline={headline}
