@@ -136,7 +136,7 @@ const HubsDropDown = ({hubs, label}) => {
   
   return (
     <>
-    <Button 
+      <Button 
         onClick={handleOpen} 
         onMouseEnter={handleOpen}
         onMouseLeave={handleClose}
@@ -160,7 +160,11 @@ const HubsDropDown = ({hubs, label}) => {
 
 const DropDownList = ({buttonRef, handleOpen, handleClose, hubs, open}) => {
   const classes = useStyles()
-  const { locale } = useContext(UserContext)
+  const { locale, startLoading } = useContext(UserContext)
+  const handleClickLink = () => {
+    startLoading()
+  }
+  
   return (
     <Popper
       open={open}
@@ -173,7 +177,7 @@ const DropDownList = ({buttonRef, handleOpen, handleClose, hubs, open}) => {
       >
         <MenuList>
           {hubs?.map(h => (
-            <Link key={h.url_slug} target="_blank" href={`${getLocalePrefix(locale)}/hubs/${h.url_slug}/`}>
+            <Link key={h.url_slug} href={`${getLocalePrefix(locale)}/hubs/${h.url_slug}/`} onClick={handleClickLink}>
               <MenuItem
                 component="button"
                 className={classes.cityHubOption}              
