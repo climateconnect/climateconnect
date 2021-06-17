@@ -89,7 +89,7 @@ export async function getServerSideProps(ctx) {
       stats: hubData.stats,
       statBoxTitle: hubData.stat_box_title,
       image_attribution: hubData.image_attribution,
-      hubLocation: hubData.location && hubData.location[0],
+      hubLocation: hubData.location?.length > 0 ? hubData.location[0] : null,
       initialProjects: initialProjects,
       initialOrganizations: initialOrganizations,
       initialIdeas: initialIdeas,
@@ -301,7 +301,7 @@ export default function Hub({
             nextStepTriggeredBy={nextStepTriggeredBy}
             hubName={name}
             initialIdeas={initialIdeas}
-            showIdeas={true}
+            showIdeas={isLocationHub}
             allHubs={allHubs}
             initialIdeaUrlSlug={initialIdeaUrlSlug}
             hubLocation={hubLocation}
