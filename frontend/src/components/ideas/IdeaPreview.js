@@ -190,7 +190,7 @@ function IdeaCardContent(idea) {
       <div>
         {idea.idea.image === undefined || idea.idea.image === null ? (
           <Typography color="secondary" component="h4" className={classes.shortDescription}>
-            {idea.idea.short_description}
+            {idea.idea.short_description?.length > 200 ? idea.idea.short_description.slice(0, 200) + "..." : idea.idea.short_description}
           </Typography>
         ) : (
           <CardMedia title={idea.idea.url_slug} image={getImageUrl(idea.idea.image)}>
