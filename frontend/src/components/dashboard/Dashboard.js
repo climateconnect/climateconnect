@@ -1,14 +1,25 @@
-import { Box, Button, makeStyles, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  Link,
+  makeStyles,
+  Typography,
+  MenuItem,
+  MenuList,
+  Paper,
+  Popper,
+} from "@material-ui/core";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import AssignmentIcon from "@material-ui/icons/Assignment";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
-import React, { useContext } from "react";
+import React, { useContext, useState, useRef } from "react";
+
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
-
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -20,7 +31,7 @@ const useStyles = makeStyles((theme) => {
       border: theme.borders.thick,
       color: "white",
       position: "relative",
-      maxWidth: "800px"
+      maxWidth: "800px",
     },
     profileInner: {
       float: "left",
@@ -109,6 +120,80 @@ const HorizontalSpacing = ({ children, size }) => {
   );
 };
 
+// TODO(Piper): we should generalize these components post launch
+// of CityHub so that they can be used across the platform.
+const HoverButton = ({ items, label, startIcon }) => {
+  const classes = useStyles();
+  const buttonRef = useRef(null);
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = (e) => {
+    e.preventDefault();
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <Button
+        aria-haspopup="true"
+        className={classes.HoverButtonButton}
+        color="primary"
+        onClick={handleOpen}
+        onMouseEnter={handleOpen}
+        onMouseLeave={handleClose}
+        ref={buttonRef}
+        startIcon={startIcon}
+        type="submit"
+      >
+        {label}
+        <ArrowDropDownIcon />
+      </Button>
+      <DropDownList
+        buttonRef={buttonRef}
+        handleClose={handleClose}
+        handleOpen={handleOpen}
+        items={items}
+        open={open}
+      />
+    </>
+  );
+};
+
+const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
+  const classes = useStyles();
+  const { locale, startLoading } = useContext(UserContext);
+
+  const handleClickLink = () => {
+    startLoading();
+  };
+
+  return (
+    <Popper open={open} anchorEl={buttonRef.current}>
+      <Paper onMouseEnter={handleOpen} onMouseLeave={handleClose} className={classes.menu}>
+        <MenuList>
+          {items?.map((item) => (
+            <Link
+              key={item.url_slug}
+              // TODO: fix links
+              // href={`${getLocalePrefix(locale)}/hubs/${item.url_slug}/`}
+              href={item.url_slug}
+              onClick={handleClickLink}
+            >
+              <MenuItem component="button" className={classes.cityHubOption}>
+                {item.name}
+              </MenuItem>
+            </Link>
+          ))}
+        </MenuList>
+      </Paper>
+    </Popper>
+  );
+};
+
 export default function Dashboard({ className, location }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -118,7 +203,7 @@ export default function Dashboard({ className, location }) {
     <div className={`${classes.welcomeBanner} ${className}`}>
       <HorizontalSpacing size={1}>
         <Typography variant="h4" component="h1" className={`${classes.headingText}`}>
-           {`${texts.climate_protection_in} ${location}`}
+          {`${texts.climate_protection_in} ${location}`}
         </Typography>
       </HorizontalSpacing>
 
@@ -145,29 +230,62 @@ export default function Dashboard({ className, location }) {
           show them the other controls. */}
           {!user ? (
             <>
-              {/* TODO: replace buttons with HoverButtons like in the LanguageSelect component to indicate multiple actions */}
-              {/* TODO: fix all links here */}
-
-              <Button color="primary" startIcon={<EmojiObjectsIcon />} type="submit">
-                {texts.ideas}
-              </Button>
-
-              <Button color="primary" href={"/share"} startIcon={<AssignmentIcon />} type="submit">
-                {texts.projects}
-              </Button>
-
-              <Button color="primary" startIcon={<GroupAddIcon />} type="submit">
-                {texts.organization}
-              </Button>
-
-              <Button
-                color="primary"
+              <HoverButton
+                startIcon={<EmojiObjectsIcon />}
+                label={texts.ideas}
+                items={[
+                  {
+                    name: "Create idea",
+                    // url_slug: `${getLocalePrefix(locale)}/${item.url_slug}/`,
+                    url_slug: `#ideas`,
+                  },
+                  {
+                    name: "Your Ideas",
+                    // TODO: fix slug here
+                    url_slug: "/profiles/your_url_slug#ideas",
+                  },
+                ]}
+              />
+              <HoverButton
+                startIcon={<AssignmentIcon />}
+                label={texts.projects}
+                items={[
+                  {
+                    name: "Create project",
+                    url_slug: "/share",
+                  },
+                  {
+                    name: "Your projects",
+                    // TODO: fix slug here
+                    url_slug: "/profiles/your_url_slug#projects",
+                  },
+                ]}
+              />
+              <HoverButton
+                startIcon={<GroupAddIcon />}
+                label={texts.organization}
+                items={[
+                  {
+                    name: "Create organization",
+                    url_slug: "/createorganization",
+                  },
+                  {
+                    name: "Your organizations",
+                    // TODO: fix slug here
+                    url_slug: "/profiles/your_url_slug#organizations",
+                  },
+                ]}
+              />
+              <HoverButton
                 startIcon={<AccountCircleIcon />}
-                type="submit"
-                href={"/profiles/"}
-              >
-                {texts.my_profile}
-              </Button>
+                label={texts.my_profile}
+                items={[
+                  {
+                    name: "Edit profile",
+                    url_slug: "/editprofile",
+                  },
+                ]}
+              />
 
               {/* TODO: restore Climate Match icon and link once CM is live  */}
               {/* <Button type="submit">Climate Match</Button> */}
