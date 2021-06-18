@@ -190,7 +190,6 @@ export default function ProjectContent({
                 size="small"
                 className={classes.creator}
                 organization={project.creator}
-                nolink
               />
             )}
             {project.collaborating_organizations && project.collaborating_organizations.length > 0 && (
