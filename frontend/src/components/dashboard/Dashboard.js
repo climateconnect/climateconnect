@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   Link,
@@ -17,6 +18,7 @@ import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import React, { useContext, useState, useRef } from "react";
 
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
@@ -52,8 +54,8 @@ const useStyles = makeStyles((theme) => {
       // it'd be from our emerging design system
       border: theme.borders.thin,
       borderRadius: "50%",
-      height: "45px",
-      width: "45px",
+      height: "40px",
+      width: "43px",
       background: "white",
     },
     subsection: {
@@ -86,6 +88,7 @@ const useStyles = makeStyles((theme) => {
 
     welcomeSubsection: {
       display: "flex",
+      alignItems: "center",
     },
 
     hubName: {
@@ -98,17 +101,6 @@ const useStyles = makeStyles((theme) => {
     },
   };
 });
-
-const UserImage = () => {
-  const classes = useStyles();
-  return (
-    <div className={`${classes.userImage}`}>
-      {/* TODO: fetch correct user profile image here */}
-      {/* Generic profile image if user is not logged in */}
-      {/* <img /> */}
-    </div>
-  );
-};
 
 // TODO(Piper): generalize this spacing unit to be used in other places,
 // for consistency.
@@ -167,7 +159,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
   const classes = useStyles();
   const { locale, startLoading } = useContext(UserContext);
 
-  const handleClickLink = () => {
+  const handleClick = () => {
     startLoading();
   };
 
@@ -181,7 +173,12 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
               // TODO: fix links
               // href={`${getLocalePrefix(locale)}/hubs/${item.url_slug}/`}
               href={item.url_slug}
-              onClick={handleClickLink}
+              onClick={handleClick}
+              // onClick={(evt, item) => {
+              //   // window.location.hash = "projects";
+              //   history.pushState(null, null, "#hashexample");
+              //   console.log(item);
+              // }}
             >
               <MenuItem component="button" className={classes.cityHubOption}>
                 {item.name}
@@ -196,6 +193,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
 
 export default function Dashboard({ className, location }) {
   const classes = useStyles();
+
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
 
@@ -203,15 +201,31 @@ export default function Dashboard({ className, location }) {
     <div className={`${classes.welcomeBanner} ${className}`}>
       <HorizontalSpacing size={1}>
         <Typography variant="h4" component="h1" className={`${classes.headingText}`}>
-          {`${texts.climate_protection_in} ${location}`}
+          {/* Have a sensible default */}
+          {texts && texts?.climate_protection_in ? (
+            `${texts.climate_protection_in} ${location}`
+          ) : (
+            <>
+              <span>Welcome </span>
+              <span className={classes.hubName}>{user.first_name}!</span>
+            </>
+          )}
         </Typography>
       </HorizontalSpacing>
 
       <div className={`${classes.subsection}`}>
         <HorizontalSpacing size={1}>
           <div className={`${classes.welcomeSubsection}`}>
-            <UserImage />
-            {/* TODO: doing some left spacing here -- trying to keep spacing directly out of the UI components, and isolated within Box components directly  */}
+            {/* Generic Avatar / profile image if user is not logged in */}
+            {user ? (
+              <div>
+                <img className={`${classes.userImage}`} src={getImageUrl(user.image)} />
+              </div>
+            ) : (
+              <Avatar style={{ border: theme.borders.thin }} />
+            )}
+
+            {/* Trying to keep spacing out of UI components, and isolated within Box components directly */}
             <Box css={{ marginLeft: theme.spacing(1), width: "100%" }}>
               <div className={`${classes.welcomeMessage}`}>
                 {/* TODO(Chris): replace this text with the correct German welcome text */}
@@ -228,7 +242,7 @@ export default function Dashboard({ className, location }) {
         <div className={`${classes.buttonContainer}`}>
           {/* When the user is logged out, we want to prompt them to sign up! And we don't
           show them the other controls. */}
-          {!user ? (
+          {user ? (
             <>
               <HoverButton
                 startIcon={<EmojiObjectsIcon />}

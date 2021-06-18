@@ -76,7 +76,8 @@ const theme = createMuiTheme(coreTheme, {
   // design token.
   borders: {
     thick: `3px solid ${coreTheme.palette.primary.main}`,
-    thin: `1px solid gray`,
+    // TODO: we should add this light gray color to be consistent with our color system / theme
+    thin: `1px solid #e0e0e0`,
   },
   props: {
     MuiButton: {
