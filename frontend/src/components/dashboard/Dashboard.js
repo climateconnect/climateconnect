@@ -206,8 +206,8 @@ export default function Dashboard({ className, location }) {
             `${texts.climate_protection_in} ${location}`
           ) : (
             <>
-              <span>Welcome </span>
-              <span className={classes.hubName}>{user.first_name}!</span>
+              <span>Welcome</span>
+              <span className={classes.hubName}> {user?.first_name}</span>
             </>
           )}
         </Typography>
@@ -247,15 +247,16 @@ export default function Dashboard({ className, location }) {
                 startIcon={<EmojiObjectsIcon />}
                 label={texts.ideas}
                 items={[
+                  // TODO: implement tab change based on link -- this might
+                  // be more involved than we thought
+                  // {
+                  //   name: "Create idea",
+                  //   // url_slug: `${getLocalePrefix(locale)}/${item.url_slug}/`,
+                  //   url_slug: `#ideas`,
+                  // },
                   {
-                    name: "Create idea",
-                    // url_slug: `${getLocalePrefix(locale)}/${item.url_slug}/`,
-                    url_slug: `#ideas`,
-                  },
-                  {
-                    name: "Your Ideas",
-                    // TODO: fix slug here
-                    url_slug: "/profiles/your_url_slug#ideas",
+                    name: "Your ideas",
+                    url_slug: `/profiles/${user.url_slug}#ideas`,
                   },
                 ]}
               />
@@ -269,8 +270,7 @@ export default function Dashboard({ className, location }) {
                   },
                   {
                     name: "Your projects",
-                    // TODO: fix slug here
-                    url_slug: "/profiles/your_url_slug#projects",
+                    url_slug: `/profiles/${user.url_slug}#projects`,
                   },
                 ]}
               />
@@ -284,8 +284,7 @@ export default function Dashboard({ className, location }) {
                   },
                   {
                     name: "Your organizations",
-                    // TODO: fix slug here
-                    url_slug: "/profiles/your_url_slug#organizations",
+                    url_slug: `/profiles/${user.url_slug}#ideas`,
                   },
                 ]}
               />
@@ -305,10 +304,8 @@ export default function Dashboard({ className, location }) {
             </>
           ) : (
             <>
-              {/* TODO: fix sign up link */}
               <Button
                 color="primary"
-                component="div"
                 href={getLocalePrefix(locale) + "/signup"}
                 variant="contained"
               >
