@@ -157,7 +157,7 @@ const HoverButton = ({ items, label, startIcon }) => {
 
 const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
   const classes = useStyles();
-  const { locale, startLoading } = useContext(UserContext);
+  const { startLoading } = useContext(UserContext);
 
   const handleClick = () => {
     startLoading();
@@ -168,18 +168,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
       <Paper onMouseEnter={handleOpen} onMouseLeave={handleClose} className={classes.menu}>
         <MenuList>
           {items?.map((item) => (
-            <Link
-              key={item.url_slug}
-              // TODO: fix links
-              // href={`${getLocalePrefix(locale)}/hubs/${item.url_slug}/`}
-              href={item.url_slug}
-              onClick={handleClick}
-              // onClick={(evt, item) => {
-              //   // window.location.hash = "projects";
-              //   history.pushState(null, null, "#hashexample");
-              //   console.log(item);
-              // }}
-            >
+            <Link key={item.url_slug} href={item.url_slug} onClick={handleClick}>
               <MenuItem component="button" className={classes.cityHubOption}>
                 {item.name}
               </MenuItem>
