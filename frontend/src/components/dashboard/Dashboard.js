@@ -228,9 +228,8 @@ export default function Dashboard({ className, location }) {
             {/* Trying to keep spacing out of UI components, and isolated within Box components directly */}
             <Box css={{ marginLeft: theme.spacing(1), width: "100%" }}>
               <div className={`${classes.welcomeMessage}`}>
-                {/* TODO(Chris): replace this text with the correct German welcome text */}
                 <Typography style={{ fontWeight: "600" }}>
-                  This is standard user blurb text.
+                  {texts.share_your_solutions_text_1}
                 </Typography>
               </div>
             </Box>
