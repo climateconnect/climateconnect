@@ -16,6 +16,8 @@ class Notification(models.Model):
     POST_COMMENT = 6
     REPLY_TO_POST_COMMENT = 7
     GROUP_MESSAGE = 8
+    JOIN_PROJECT_REQUEST = 9
+    PROJECT_JOIN_REQUEST_APPROVED = 10
     NOTIFICATION_TYPES = (
         (BROADCAST, "broadcast"),
         (PRIVATE_MESSAGE, "private_message"),
@@ -25,7 +27,9 @@ class Notification(models.Model):
         (PROJECT_UPDATE_POST, "project_update_post"),
         (POST_COMMENT, "post_comment"),
         (REPLY_TO_POST_COMMENT, "reply_to_post_comment"),
-        (GROUP_MESSAGE, "group_message")
+        (GROUP_MESSAGE, "group_message"),
+        (JOIN_PROJECT_REQUEST,"join_project_request"),
+        (PROJECT_JOIN_REQUEST_APPROVED,"project_join_request_approved")
     )
 
     notification_type = models.IntegerField(

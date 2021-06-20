@@ -9,6 +9,10 @@ from location.utility import get_location
 
 from organization.models import Project
 from organization.models.tags import ProjectTags
+from django.db.models import Q
+from organization.models import Project, ProjectMember
+from climateconnect_api.models import (Skill,)
+from climateconnect_api.models import Role
 
 logger = logging.getLogger(__name__)
 
@@ -127,3 +131,52 @@ def get_project_translations(data: Dict):
         )
     except ValueError:
         raise ValueError
+
+def add_project_member(project,user,user_role,role_in_project,availability):
+    """
+    Adds a user to a project. Assumes valid data at input.
+    """
+
+    ProjectMember.objects.create(
+                        project=project
+                        ,user=user
+                        ,role=user_role
+                        ,role_in_project=role_in_project
+                        ,availability=availability
+                    )
+    return 
+
+
+def get_project_admin_creators(project,limit_to_admins=False):
+    """
+    Returns a given project UserProfiles of Creators or Administrators. if limit_to_admins is set to True, only admins will be returned.
+    :param project: target project 
+    :type project: Project 
+    :param limit_to_admins: limit output to admins only 
+    :ype limit_to_amins: bool
+    """
+    targets_roles = Role.objects.filter(Q(name="Creator") | Q(name="Administrator")).all()
+    if targets_roles.count() < 1: raise Exception(f"Project does not have any Admins! {targets_roles}")  
+    admin_role, creator_role = targets_roles.filter(name="Administrator").first(), targets_roles.filter(name="Creator").first()
+
+    role_sub_query = Q(role=admin_role) if limit_to_admins else (Q(role=admin_role) | Q(role=creator_role))
+    query =  Q(project=project) & role_sub_query
+
+    admins = ProjectMember.objects.filter(query) 
+
+    return [u.user for u in admins.all()]
+
+
+def is_part_of_project(user,project):
+    """
+    Returns True if user belongs to a project 
+    :param user: user to be checked
+    :type user: User 
+    :param project: project to be checked 
+    :type project: ProjectMember
+    """
+    n = ProjectMember.objects.filter(project=project, user=user).count()
+    if n ==0:
+        return False 
+    else:
+        return True

@@ -31,7 +31,8 @@ from organization.permissions import (AddProjectMemberPermission,
                                       ChangeProjectCreatorPermission,
                                       ProjectMemberReadWritePermission,
                                       ProjectReadWritePermission,
-                                      ReadSensibleProjectDataPermission)
+                                      ReadSensibleProjectDataPermission,
+                                      ApproveDenyProjectMemberRequest)
 from organization.serializers.content import (PostSerializer,
                                               ProjectCommentSerializer)
 from organization.serializers.project import (EditProjectSerializer,
@@ -47,10 +48,15 @@ from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
     create_project_comment_notification,
     create_project_comment_reply_notification,
-    create_project_follower_notification)
+    create_project_follower_notification,
+    create_project_join_request_notification,
+    create_project_join_request_approval_notification)
 from organization.utility.organization import check_organization
 from organization.utility.project import (create_new_project,
-                                          get_project_translations)
+                                          get_project_translations,
+                                          get_project_admin_creators)
+from organization.utility.requests import (MembershipRequestsManager)
+from organization.utility import (MembershipTarget)
 from rest_framework import status
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.filters import SearchFilter
@@ -790,3 +796,100 @@ class LeaveProject(RetrieveUpdateAPIView):
             ##Send E to dev
             E = traceback.format_exc()
             return Response(data={'message':f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+class RequestJoinProject(RetrieveUpdateAPIView):
+    """
+    A view that enables a user to request to join a project 
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, user_slug,project_slug):
+        required_params = ['user_availability','message']
+        missing_param = any([param not in request.data for param in required_params])
+        if missing_param: return Response({
+                            'message': 'Missing required parameters'
+                            }, status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+        ## To avoid spoofing
+        if UserProfile.objects.get(user=user).url_slug != user_slug:
+            return Response({
+                        'message': 'Unauthorized'
+                        }, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            project = Project.objects.get(url_slug=project_slug)
+        except Project.DoesNotExist:
+            return Response({
+                            'message': 'Requested project does not exist'
+                            }, status=status.HTTP_404_NOT_FOUND)
+
+        user_availability = Availability.objects.filter(id=request.data['user_availability']).first()
+
+        request_manager = MembershipRequestsManager(user=user
+                                                , membership_target=MembershipTarget.PROJECT
+                                                , user_availability=user_availability
+                                                , project=project
+                                                , organization=None
+                                                , message=request.data['message'])
+
+
+        exists = request_manager.duplicate_request 
+
+
+        if exists:
+            return Response({
+                            'message': 'Request already exists'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+
+            try:
+                request_id = request_manager.create_membership_request()
+                project_admins = get_project_admin_creators(project)
+                create_project_join_request_notification(requester=user,project_admins=project_admins,project=project)
+
+
+                return Response({"requestId":request_id}, status=status.HTTP_200_OK)
+            except:
+                logging.error(traceback.format_exc())
+                return Response({
+                            'message': f'Internal Server Error {traceback.format_exc()}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ManageJoinProject(RetrieveUpdateAPIView):
+    """
+    A view that enables a user to request to join a project 
+    """
+    permission_classes = [ApproveDenyProjectMemberRequest]
+
+
+
+    def post(self, request, project_slug, request_action,request_id):
+        try:
+            project = Project.objects.filter(url_slug=project_slug).first()
+
+        except:
+            return Response({
+                            'message': 'Project Does Not Exist'
+                            }, status=status.HTTP_404_NOT_FOUND) 
+
+
+        try:
+            request_manager = MembershipRequestsManager(membership_request_id = request_id,project=project)
+            if request_manager.corrupt_membership_request_id:
+                return Response({'message': 'Request Does Not Exist'}, status=status.HTTP_404_NOT_FOUND)
+            elif request_manager.validation_failed:
+                #request_manager.errors
+                return Response({f"message': 'Operation Failed. Errors: {' | '.join(request_manager.errors)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+            if request_action == 'approve':
+                request_manager.approve_request()
+                create_project_join_request_approval_notification(requester=request.user,project=project)
+
+            elif request_action == 'reject':
+                request_manager.reject_request()
+            else:
+                raise NotImplementedError(f"membership request action <{request_action}> is not implemented ")
+
+            return Response(data={'message':'Operation Succeeded'}, status=status.HTTP_200_OK)
+        except:
+            print(traceback.format_exc())
+            return Response({
+                            'message': f'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
