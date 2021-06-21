@@ -1,7 +1,7 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Linkify from "react-linkify";
 import { makeStyles } from "@material-ui/core/styles";
+import PropTypes from "prop-types";
+import React from "react";
+import Linkify from "react-linkify";
 import YouTube from "react-youtube";
 import youtubeRegex from "youtube-regex";
 
@@ -80,7 +80,7 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
         if (youtubeVideoLines && youtubeVideoLines.find((l) => l.index === index)) {
           return <div key={index}>{youtubeVideoLines.find((l) => l.index === index).content}</div>;
         }
-        return <div key={index}>{i ? i : " "}</div>;
+        return <div dangerouslySetInnerHTML={{ __html: i ? i : " " }} key={index}></div>;
       })}
     </Linkify>
   );
