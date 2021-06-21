@@ -52,8 +52,10 @@ const useStyles = makeStyles((theme) => ({
   },
   ideaInfo: {
     marginLeft: theme.spacing(4),
+    marginRight: theme.spacing(2.5),
     [theme.breakpoints.down("sm")]: {
       marginLeft: 0,
+      marginRight: 0
     },
   },
   name: {
