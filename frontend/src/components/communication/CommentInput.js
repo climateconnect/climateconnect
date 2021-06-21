@@ -50,7 +50,14 @@ export default function CommentInput({ user, onSendComment, parent_comment, onCa
   const handleSendComment = (event) => {
     if (event) event.preventDefault();
     if (!curComment) alert(texts.your_comment_cannot_be_empty);
-    onSendComment(curComment, parent_comment, clearInput);
+    let newComment = curComment;
+    newComment = newComment.split("@@@__").join('<a href="/profiles/');
+    newComment = newComment.split("^^__").join('">');
+    newComment = newComment.split("@@@^^^").join("</a>");
+    if (newComment != "") {
+      let curComment = newComment.trim();
+      onSendComment(curComment, parent_comment, clearInput);
+    }
   };
 
   const clearInput = () => {

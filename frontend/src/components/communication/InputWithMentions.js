@@ -37,7 +37,12 @@ export default function InputWithMentions({
       placeholder={placeholder}
       a11ySuggestionsListLabel={"Suggested users for mention"}
     >
-      <Mention displayTransform={(login) => `@${login}`} trigger="@" data={lookupUsers} />
+      <Mention
+        displayTransform={(login) => `@${login}`}
+        trigger="@"
+        markup={`@@@____id__^^____display__@@@^^^`}
+        data={lookupUsers}
+      />
     </MentionsInput>
   );
 }
