@@ -1,12 +1,11 @@
-import { Avatar, Button, IconButton, TextField } from "@material-ui/core";
+import { Avatar, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import React, { useContext } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
-import UserMentionableMessageInput from "./UserMentionableMessageInput";
+import InputWithMentions from "./InputWithMentions";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -39,22 +38,11 @@ export default function CommentInput({ user, onSendComment, parent_comment, onCa
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
 
-  var autoCompleteEnabled = false;
-  var autoCompleteLookupStr = "";
   const onCurCommentChange = (e) => {
-    var maybeIsACLookup = e.target.value.split(" ").slice(-1)[0];
-    if (maybeIsACLookup.startsWith("@")) {
-      autoCompleteEnabled = true;
-      autoCompleteLookupStr = maybeIsACLookup.substring(1);
-
-      // auto-complete search bar component
-      // AutoCompleteSearchBar
-      //
-      // should be a drawer pulled out from bottom of text box
-    }
     setCurComment(e.target.value);
   };
 
+  // TODO: Fix this?
   const handleMessageKeydown = (event) => {
     if (event.key === "Enter" && event.ctrlKey) handleSendComment(event, curComment);
   };
@@ -70,42 +58,17 @@ export default function CommentInput({ user, onSendComment, parent_comment, onCa
     if (onCancel) onCancel();
   };
 
-  const getUsersToFilerOut = () => {};
-
-  const handleTagUser = () => {};
-
-  const renderSearchOption = (option) => {
-    return (
-      <React.Fragment>
-        <IconButton>
-          <AddCircleOutlineIcon />
-        </IconButton>
-        {option.first_name + " " + option.last_name}
-      </React.Fragment>
-    );
-  };
-
   if (user)
     return (
       <div>
         <form onSubmit={onSendComment}>
           <div className={classes.flexBox}>
             <Avatar src={getImageUrl(user.image)} />
-            <TextField
-              size="small"
+            <InputWithMentions
               autoFocus
               multiline
-              placeholder={texts.write_a_comment + "..."}
-              className={classes.messageInput}
-              value={curComment}
-              onChange={onCurCommentChange}
-              onKeyDown={handleMessageKeydown}
-              required
-            />
-          </div>
-          <div>
-            <UserMentionableMessageInput
               baseUrl={process.env.API_URL + "/api/members/?search="}
+              className={classes.messageInput}
               value={curComment}
               onChange={onCurCommentChange}
               placeholder={texts.write_a_comment + "..."}

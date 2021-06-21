@@ -3,12 +3,13 @@ import { Mention, MentionsInput } from "react-mentions";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
 
-export default function UserMentionableMessageInput({
+export default function InputWithMentions({
   baseUrl,
   value,
   data,
   onChange,
   placeholder,
+  className,
 }) {
   const { locale } = useContext(UserContext);
 
@@ -31,6 +32,7 @@ export default function UserMentionableMessageInput({
   return (
     <MentionsInput
       value={value}
+      className={className}
       onChange={onChange}
       placeholder={placeholder}
       a11ySuggestionsListLabel={"Suggested users for mention"}
