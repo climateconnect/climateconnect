@@ -196,6 +196,7 @@ export default function IdeaRoot({
     async function () {
       if (token) {
         setLoading(true);
+        setIsEditing(false);
         const [userRating, comments, hasJoinedIdea] = await Promise.all([
           getUserRatingFromServer(idea, token, locale),
           getIdeaCommentsFromServer(idea, token, locale),
