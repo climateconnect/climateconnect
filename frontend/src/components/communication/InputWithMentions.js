@@ -20,12 +20,13 @@ export default function InputWithMentions({
       url: (baseUrl + searchValue).replace(process.env.API_URL, ""),
       locale: locale,
     })
-      .then((response) =>
-        response.data.results.map((user) => ({
+      .then((response) => {
+        console.log(response.data.results);
+        return response.data.results.map((user) => ({
           display: user.first_name + " " + user.last_name,
-          id: user.first_name + " " + user.last_name,
-        }))
-      )
+          id: user.url_slug,
+        }));
+      })
       .then(callback);
   }
 
