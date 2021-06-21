@@ -70,9 +70,8 @@ class GetPersonalIdeaRatingView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, url_slug):
-        try:
-            idea = Idea.objects.get(url_slug=url_slug)
-        except Idea.DoesNotExist:
+        idea = verify_idea(url_slug=url_slug)
+        if not idea:
             raise NotFound(detail="Idea not found:"+url_slug, code=status.HTTP_404_NOT_FOUND)
         user_rating = IdeaRating.objects.filter(user=request.user, idea=idea)
         if user_rating.exists():

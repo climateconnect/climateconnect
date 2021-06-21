@@ -1,3 +1,4 @@
+from ideas.utility.idea import verify_idea
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 from ideas.models import Idea
@@ -8,9 +9,8 @@ class IdeaReadWritePermission(BasePermission):
         if request.method in SAFE_METHODS:
             return True
 
-        try:
-            idea = Idea.objects.get(url_slug=view.kwargs.get('url_slug'))
-        except Idea.DoesNotExist:
+        idea = verify_idea(view.kwargs.get('url_slug'))
+        if not idea:
             return False
 
         if idea.user == request.user:
