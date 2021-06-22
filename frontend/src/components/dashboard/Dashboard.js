@@ -179,7 +179,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
   );
 };
 
-export default function Dashboard({ className, location }) {
+export default function Dashboard({ className, headline }) {
   const classes = useStyles();
 
   const { user, locale } = useContext(UserContext);
@@ -189,7 +189,7 @@ export default function Dashboard({ className, location }) {
     <div className={`${classes.welcomeBanner} ${className}`}>
       <HorizontalSpacing size={1}>
         <Typography variant="h4" component="h1" className={`${classes.headingText}`}>
-          {`${texts.climate_protection_in} ${location?.city}`}
+          {headline}
         </Typography>
       </HorizontalSpacing>
 

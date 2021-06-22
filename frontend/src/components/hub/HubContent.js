@@ -144,7 +144,7 @@ export default function HubContent({
           <Container className={classes.dashboardContainer}>
             <div className={classes.dashboardAndStatboxWrapper}>
               <div>
-                <Dashboard location={location} />
+                <Dashboard location={location} headline={headline}/>
                 <BottomContent 
                   hubQuickInfoRef={hubQuickInfoRef}
                   detailledInfo={detailledInfo}
