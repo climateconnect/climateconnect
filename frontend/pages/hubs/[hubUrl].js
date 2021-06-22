@@ -284,6 +284,7 @@ export default function Hub({
           subHeadline={subHeadline}
           hubProjectsButtonRef={hubProjectsButtonRef}
           isLocationHub={isLocationHub}
+          location={hubLocation}
         />
         <div className={classes.contentRefContainer}>
           <div ref={contentRef} className={classes.contentRef} />

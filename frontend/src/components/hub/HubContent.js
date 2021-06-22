@@ -86,7 +86,10 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(4),
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "flex-start"
+    alignItems: "flex-start",
+    [theme.breakpoints.up("md")]: {
+      marginTop: theme.spacing(8)
+    }
   },
   infoBoxContainer: {
     marginTop: theme.spacing(6),
@@ -106,6 +109,7 @@ export default function HubContent({
   hubQuickInfoRef,
   hubProjectsButtonRef,
   isLocationHub,
+  location,
 }) {
   const classes = useStyles({ isLocationHub: isLocationHub });
   const { locale } = useContext(UserContext);
@@ -127,6 +131,7 @@ export default function HubContent({
   if (fixed && showMoreVisible) {
     setFixed(false);
   }
+  console.log(isNarrowScreen)
   return (
     <Container>
       <div className={classes.root}>        
@@ -139,7 +144,7 @@ export default function HubContent({
           <Container className={classes.dashboardContainer}>
             <div className={classes.dashboardAndStatboxWrapper}>
               <div>
-                <Dashboard />
+                <Dashboard location={location} />
                 <BottomContent 
                   hubQuickInfoRef={hubQuickInfoRef}
                   detailledInfo={detailledInfo}

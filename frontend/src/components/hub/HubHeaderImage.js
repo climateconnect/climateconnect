@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
       backgroundSize: "cover",
     },
     position: "relative",
-    [theme.breakpoints.up("sm")]: {
+    [theme.breakpoints.up("md")]: {
       position: props.isLocationHub ? "absolute" : "relative",
       zIndex: -1
     }

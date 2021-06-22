@@ -1,27 +1,26 @@
 import {
-  Avatar,
   Box,
   Button,
   Link,
   makeStyles,
-  Typography,
+
   MenuItem,
   MenuList,
   Paper,
-  Popper,
+  Popper, Typography
 } from "@material-ui/core";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import AssignmentIcon from "@material-ui/icons/Assignment";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import AssignmentIcon from "@material-ui/icons/Assignment";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
-import React, { useContext, useState, useRef } from "react";
-
+import React, { useContext, useRef, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
+import UserImage from "./UserImage";
+
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -184,41 +183,25 @@ export default function Dashboard({ className, location }) {
   const classes = useStyles();
 
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "general", locale: locale });
+  const texts = getTexts({ page: "dashboard", locale: locale, user: user });
 
   return (
     <div className={`${classes.welcomeBanner} ${className}`}>
       <HorizontalSpacing size={1}>
         <Typography variant="h4" component="h1" className={`${classes.headingText}`}>
-          {/* Have a sensible default */}
-          {texts && texts?.climate_protection_in ? (
-            `${texts.climate_protection_in} ${location}`
-          ) : (
-            <>
-              <span>Welcome</span>
-              <span className={classes.hubName}> {user?.first_name}</span>
-            </>
-          )}
+          {`${texts.climate_protection_in} ${location?.city}`}
         </Typography>
       </HorizontalSpacing>
 
       <div className={`${classes.subsection}`}>
         <HorizontalSpacing size={1}>
           <div className={`${classes.welcomeSubsection}`}>
-            {/* Generic Avatar / profile image if user is not logged in */}
-            {user ? (
-              <div>
-                <img className={`${classes.userImage}`} src={getImageUrl(user.image)} />
-              </div>
-            ) : (
-              <Avatar style={{ border: theme.borders.thin }} />
-            )}
-
-            {/* Trying to keep spacing out of UI components, and isolated within Box components directly */}
+            <UserImage user={user}/>
+            {/* TODO: doing some left spacing here -- trying to keep spacing directly out of the UI components, and isolated within Box components directly  */}
             <Box css={{ marginLeft: theme.spacing(1), width: "100%" }}>
               <div className={`${classes.welcomeMessage}`}>
                 <Typography style={{ fontWeight: "600" }}>
-                  {texts.share_your_solutions_text_1}
+                  {user ? texts.welcome_message_logged_in : texts.welcome_message_logged_out}                  
                 </Typography>
               </div>
             </Box>
@@ -244,7 +227,12 @@ export default function Dashboard({ className, location }) {
                   //   url_slug: `#ideas`,
                   // },
                   {
-                    name: "Your ideas",
+                    name: texts.create_idea,
+                    // url_slug: `${getLocalePrefix(locale)}/${item.url_slug}/`,
+                    url_slug: `#ideas`,
+                  },
+                  {
+                    name: texts.my_ideas,
                     url_slug: `/profiles/${user.url_slug}#ideas`,
                   },
                 ]}
@@ -254,35 +242,39 @@ export default function Dashboard({ className, location }) {
                 label={texts.projects}
                 items={[
                   {
-                    name: "Create project",
+                    name: texts.share_project,
                     url_slug: "/share",
                   },
                   {
-                    name: "Your projects",
+                    name: texts.my_projects,
                     url_slug: `/profiles/${user.url_slug}#projects`,
                   },
                 ]}
               />
               <HoverButton
                 startIcon={<GroupAddIcon />}
-                label={texts.organization}
+                label={texts.organizations}
                 items={[
                   {
-                    name: "Create organization",
+                    name: texts.create_organization,
                     url_slug: "/createorganization",
                   },
                   {
-                    name: "Your organizations",
-                    url_slug: `/profiles/${user.url_slug}#ideas`,
+                    name: texts.my_organizations,
+                    url_slug: `/profiles/${user.url_slug}#organizations`,
                   },
                 ]}
               />
               <HoverButton
                 startIcon={<AccountCircleIcon />}
-                label={texts.my_profile}
+                label={texts.profile}
                 items={[
                   {
-                    name: "Edit profile",
+                    name: texts.my_profile,
+                    url_slug: `/profiles/${user.url_slug}`,
+                  },
+                  {
+                    name: texts.edit_profile,
                     url_slug: "/editprofile",
                   },
                 ]}
