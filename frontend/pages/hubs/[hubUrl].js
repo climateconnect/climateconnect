@@ -26,6 +26,7 @@ import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
 
+
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
     paddingTop: theme.spacing(4),
@@ -268,6 +269,9 @@ export default function Hub({
           image={getImageUrl(image)}
           source={image_attribution}
           onClose={closeHubHeaderImage}
+          isLocationHub={isLocationHub}
+          statBoxTitle={statBoxTitle}
+          stats={stats}
         />
         <HubContent
           hubQuickInfoRef={hubQuickInfoRef}
@@ -280,6 +284,7 @@ export default function Hub({
           subHeadline={subHeadline}
           hubProjectsButtonRef={hubProjectsButtonRef}
           isLocationHub={isLocationHub}
+          location={hubLocation}
         />
         <div className={classes.contentRefContainer}>
           <div ref={contentRef} className={classes.contentRef} />
