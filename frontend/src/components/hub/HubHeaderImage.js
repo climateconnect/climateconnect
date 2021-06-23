@@ -1,8 +1,7 @@
-import { makeStyles, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles, Tooltip, Typography } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
-import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 
 
@@ -18,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     },
     position: "relative",
     [theme.breakpoints.up("md")]: {
-      position: props.isLocationHub ? "absolute" : "relative",
+      position: props.isLocationHub && !props.loggedOut ? "absolute" : "relative",
       zIndex: -1
     }
   }),
@@ -52,11 +51,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubHeaderImage({ image, source, fullWidth, onClose, isLocationHub, statBoxTitle, stats }) {
-  const classes = useStyles({ image: image, fullWidth: fullWidth, isLocationHub: isLocationHub });
-  const { locale } = useContext(UserContext);
+export default function HubHeaderImage({ image, source, fullWidth, onClose, isLocationHub }) {
+  const { locale, user } = useContext(UserContext);
+  const classes = useStyles({ image: image, fullWidth: fullWidth, isLocationHub: isLocationHub, loggedOut: !user });
   const texts = getTexts({ page: "hub", locale: locale });
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"))
   return (
     <>
       <div className={classes.imageContainer}>

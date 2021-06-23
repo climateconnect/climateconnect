@@ -91,11 +91,11 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(8)
     }
   },
-  infoBoxContainer: {
-    marginTop: theme.spacing(6),
+  infoBoxContainer: props => ({
+    marginTop: props.loggedOut ? 0 : theme.spacing(6),
     marginLeft: theme.spacing(2),
     float: "right"
-  },
+  }),
 }));
 
 export default function HubContent({
@@ -111,8 +111,8 @@ export default function HubContent({
   isLocationHub,
   location,
 }) {
-  const classes = useStyles({ isLocationHub: isLocationHub });
-  const { locale } = useContext(UserContext);
+  const { locale, user } = useContext(UserContext);
+  const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user });  
   const texts = getTexts({ page: "hub", locale: locale });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [expanded, setExpanded] = React.useState(false);
@@ -131,20 +131,31 @@ export default function HubContent({
   if (fixed && showMoreVisible) {
     setFixed(false);
   }
-  console.log(isNarrowScreen)
   return (
     <Container>
       <div className={classes.root}>        
-        {!isNarrowScreen && !isLocationHub && (
+        {!isNarrowScreen && (!isLocationHub || !user) && (
           <div className={classes.infoBoxContainer}>
             <StatBox title={statBoxTitle} stats={stats} />
           </div>
         )}
         {isLocationHub && !isNarrowScreen ? (
           <Container className={classes.dashboardContainer}>
-            <div className={classes.dashboardAndStatboxWrapper}>
+            <div className={`${user && classes.dashboardAndStatboxWrapper}`}>
               <div>
-                <Dashboard location={location} headline={headline}/>
+                {user ? (
+                  <Dashboard location={location} headline={headline}/>
+                ) : (
+                  <>
+                    <Typography color="primary" component="h1" className={classes.h1}>
+                      {headline}
+                    </Typography>
+                    <Typography component="h2" className={classes.textHeadline}>
+                      {subHeadline}
+                    </Typography>
+                  </>
+                  )
+                }                
                 <BottomContent 
                   hubQuickInfoRef={hubQuickInfoRef}
                   detailledInfo={detailledInfo}
@@ -153,9 +164,11 @@ export default function HubContent({
                   handleClickExpand={handleClickExpand}
                 />
               </div>
-              <div className={classes.infoBoxContainer}>
-                <StatBox title={statBoxTitle} stats={stats} />
-              </div>
+              {user && (
+                <div className={classes.infoBoxContainer}>
+                  <StatBox title={statBoxTitle} stats={stats} />
+                </div>
+              )}
             </div>          
           </Container>
         ) : (
