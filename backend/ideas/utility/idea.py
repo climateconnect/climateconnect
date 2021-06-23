@@ -12,13 +12,14 @@ from ideas.models import Idea, IdeaTranslation
 from location.utility import get_location
 from organization.models import Organization
 from rest_framework.exceptions import ValidationError
+from django.utils.text import slugify
 
 logger = logging.getLogger(__name__)
 
 
 def verify_idea(url_slug: str) -> Optional[Idea]:
     try:
-        url_slug = urllib.parse.quote(url_slug)
+        url_slug = urllib.parse.quote(url_slug, safe='~()*!.\'')
         idea = Idea.objects.get(url_slug=url_slug)
     except Idea.DoesNotExist:
         logger.error("Idea not found for {}".format(url_slug))
@@ -32,7 +33,10 @@ def create_idea(data: dict, language: Optional[Language], creator: User) -> Idea
         name=data['name'], short_description=data['short_description'],
         language=language, user= creator
     )
-    url_slug = urllib.parse.quote(data['name'].lower().replace(" ", "-"))
+    
+    url_slug = slugify(data['name'])
+    if len(url_slug) == 0:
+        url_slug = idea.id
     ideas_with_same_url_slug = Idea.objects.filter(url_slug=url_slug)
     if ideas_with_same_url_slug.exists():
         url_slug = url_slug + str(idea.id)

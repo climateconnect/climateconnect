@@ -6,6 +6,7 @@ from ideas.models import Idea, IdeaSupporter
 from ideas.utility.idea import get_idea_name, get_idea_short_description
 from organization.serializers.organization import OrganizationStubSerializer
 from rest_framework import serializers
+import urllib.parse
 
 
 class IdeaSupportedMinimalSerializer(serializers.ModelSerializer):
@@ -26,6 +27,7 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
     organization = serializers.SerializerMethodField()
+    url_slug = serializers.SerializerMethodField()
 
     class Meta:
         model = Idea
@@ -78,6 +80,9 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
         
         return None
 
+    def get_url_slug(self, obj):
+        return obj.url_slug
+
 
 class IdeaSerializer(serializers.ModelSerializer):
     supported_by_users = serializers.SerializerMethodField()
@@ -85,6 +90,7 @@ class IdeaSerializer(serializers.ModelSerializer):
     hub_image = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
+    url_slug = serializers.SerializerMethodField()
 
     class Meta:
         model = Idea
@@ -121,3 +127,6 @@ class IdeaSerializer(serializers.ModelSerializer):
                 obj.supported_idea.all(), many=True
             ).data
         }
+
+    def get_url_slug(self, obj):
+        return obj.url_slug
