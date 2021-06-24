@@ -17,6 +17,8 @@ AUTO_VERIFY=<Set to True, locally>
 LOCATION_SERVICE_BASE_URL=<Url of location geocoding API>
 ENABLE_LEGACY_LOCATION_FORMAT=<Set to True to disable usage of geocoding API>
 CELERY_BROKER_URL=<Set celery broker url, eg: "redis://127.0.0.1">
+STATIC_ROOT =<Absolute Path to static folder eg: /home/.../climateconnect/backend/static>
+MEDIA_ROOT =<Absolute Path to media folder eg: /home/.../climateconnect/backend/media>
 ```
 The following should correspond to how you've configured your Postgres database:
 

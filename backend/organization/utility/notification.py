@@ -114,3 +114,39 @@ async def send_out_live_notification(user_id):
             'type': 'notification'
         }
     )
+
+def create_project_join_request_notification(requester,project_admins,project):
+    """
+    Creates a notification about a joining request from a requester to a project admin. 
+    :param requester: UserProfile object of the user who's sent the request 
+    :type requester: UserProfile
+    :param project_admin: Iterable UserProfile object of the project administrators
+    :type project_admin: List(UserProfile)
+    
+    """
+    requester_name = UserProfile.objects.filter(user=requester).first().name
+    notification = Notification.objects.create(
+        notification_type=9,
+        text=f"{requester_name} wants to join your project {project.name}!"
+            )
+    for project_admin in project_admins:
+        create_user_notification(project_admin, notification)
+    return
+
+def create_project_join_request_approval_notification(requester,project):
+    """
+    Creates a notification about an approved request to join a project to the requester.
+    :param requester: UserProfile object of the user who's sent the request 
+    :type requester: UserProfile
+    :param project: Iterable UserProfile object of the project administrators
+    :type project: List(UserProfile)
+    
+    """
+
+    notification = Notification.objects.create(
+        notification_type=10,
+        text=f"Your request to join the project {project.name} has been approved!"
+            )
+    create_user_notification(requester, notification)
+
+    return   

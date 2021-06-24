@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from organization.models import (Project, Organization)
 from climateconnect_api.models import (Role, Availability)
-
+from organization.utility import MembershipTarget, RequestStatus
 
 class ProjectMember(models.Model):
     user = models.ForeignKey(
@@ -114,3 +114,67 @@ class OrganizationMember(models.Model):
 
     def __str__(self):
         return "User %d member for organization %s" % (self.user.id, self.organization.name)
+
+class MembershipRequests(models.Model):
+    
+    id = models.AutoField(help_text='identifier of a join request'
+                                , primary_key=True
+                                ,verbose_name="join request Id")
+
+
+    user = models.ForeignKey(
+        User,
+        verbose_name="feedback_user",
+        help_text="Points to the user who sent the request",
+        on_delete=models.CASCADE,
+        null=False
+    )
+
+    target_membership_type = models.SmallIntegerField(choices=[(x.value,x.name) for x in MembershipTarget]
+                                                     ,null=False
+                                                     ,verbose_name="Membership Request Target Type",
+                                                      help_text="The type of entity a user requested to join (organization, project...)")
+
+    target_project =  models.ForeignKey(Project
+                                            ,null=True
+                                            ,on_delete=models.CASCADE
+                                            ,help_text="Points to the requested project")
+
+    target_organization =  models.ForeignKey(Organization
+                                            ,null=True
+                                            ,on_delete=models.CASCADE
+                                            ,help_text="Points to the requested organization")
+
+    availability = models.ForeignKey(Availability
+                                     ,null=False
+                                     ,on_delete=models.CASCADE
+                                     ,help_text="Points to the Availability offered by the user")
+
+
+    requested_at = models.DateTimeField(help_text="Time of request"
+                                        ,verbose_name="Requested at"
+                                        ,default=None 
+                                        ,null=False
+                                        )
+    approved_at = models.DateTimeField(help_text="Time of request approval"
+                                        ,verbose_name="Approved at"
+                                        ,default=None 
+                                        ,null=True                                       
+                                        )
+    rejected_at = models.DateTimeField(help_text="Time of request rejection"
+                                        ,verbose_name="Rejected at"
+                                        ,default=None 
+                                        ,null=True  
+                                        )
+
+    message = models.CharField(help_text="Message associated with the request",
+        verbose_name="Request Message",
+        max_length=4096,
+        null=True,
+        blank=True)
+
+    request_status = models.SmallIntegerField(
+        choices=[(x.value,x.name) for x in RequestStatus],
+        default=RequestStatus.PENDING.value
+
+    )
