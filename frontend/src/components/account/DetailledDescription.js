@@ -1,5 +1,6 @@
 import { makeStyles, Typography } from "@material-ui/core";
 import React from "react";
+import MessageContent from "../communication/MessageContent";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -16,7 +17,7 @@ export default function DetailledDescription({ title, value, className }) {
       <Typography color="primary" variant="h2" className={classes.headline}>
         {title}
       </Typography>
-      <Typography>{value}</Typography>
+      <MessageContent content={value}/>
     </div>
   );
 }
