@@ -4,7 +4,7 @@ import {
   Container,
   makeStyles,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -13,6 +13,7 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
+import Dashboard from "../dashboard/Dashboard";
 import ElementOnScreen from "../hooks/ElementOnScreen";
 import StatBox from "./StatBox";
 
@@ -49,10 +50,6 @@ const useStyles = makeStyles((theme) => ({
       fontSize: 18,
     },
   },
-  infoBoxContainer: {
-    marginLeft: theme.spacing(4),
-    float: "right",
-  },
   infoBoxContainerMobile: {
     margin: "0 auto",
     display: "flex",
@@ -82,6 +79,23 @@ const useStyles = makeStyles((theme) => ({
   quickInfo: {
     fontSize: 17,
   },
+  marginTop: {
+    marginTop: theme.spacing(4)
+  },
+  dashboardAndStatboxWrapper: {
+    marginTop: theme.spacing(4),
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    [theme.breakpoints.up("md")]: {
+      marginTop: theme.spacing(8)
+    }
+  },
+  infoBoxContainer: props => ({
+    marginTop: props.loggedOut ? 0 : theme.spacing(6),
+    marginLeft: theme.spacing(2),
+    float: "right"
+  }),
 }));
 
 export default function HubContent({
@@ -95,9 +109,10 @@ export default function HubContent({
   hubQuickInfoRef,
   hubProjectsButtonRef,
   isLocationHub,
+  location,
 }) {
-  const classes = useStyles({ isLocationHub: isLocationHub });
-  const { locale } = useContext(UserContext);
+  const { locale, user } = useContext(UserContext);
+  const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user });  
   const texts = getTexts({ page: "hub", locale: locale });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [expanded, setExpanded] = React.useState(false);
@@ -118,41 +133,61 @@ export default function HubContent({
   }
   return (
     <Container>
-      <div className={classes.root}>
-        {!isNarrowScreen && (
+      <div className={classes.root}>        
+        {!isNarrowScreen && (!isLocationHub || !user) && (
           <div className={classes.infoBoxContainer}>
             <StatBox title={statBoxTitle} stats={stats} />
           </div>
         )}
-        <div>
-          <Typography color="primary" component="h1" className={classes.h1}>
-            {headline}
-          </Typography>
-          <Typography component="h2" className={classes.textHeadline}>
-            {subHeadline}
-          </Typography>
-          <div className={classes.quickInfo} ref={hubQuickInfoRef}>
-            <MessageContent content={quickInfo} />
-          </div>
-          <div>
-            <Collapse in={expanded}>{detailledInfo}</Collapse>
-          </div>
-          <div className={classes.buttonContainer}>
-            <Button className={classes.expandMoreButton} onClick={handleClickExpand}>
-              {expanded ? (
-                <>
-                  <ExpandLessIcon />
-                  {texts.less_info}{" "}
-                </>
-              ) : (
-                <>
-                  <ExpandMoreIcon />
-                  {texts.more_info}
-                </>
+        {isLocationHub && !isNarrowScreen ? (
+          <Container className={classes.dashboardContainer}>
+            <div className={`${user && classes.dashboardAndStatboxWrapper}`}>
+              <div>
+                {user ? (
+                  <Dashboard location={location} headline={headline}/>
+                ) : (
+                  <>
+                    <Typography color="primary" component="h1" className={classes.h1}>
+                      {headline}
+                    </Typography>
+                    <Typography component="h2" className={classes.textHeadline}>
+                      {subHeadline}
+                    </Typography>
+                  </>
+                  )
+                }                
+                <BottomContent 
+                  hubQuickInfoRef={hubQuickInfoRef}
+                  detailledInfo={detailledInfo}
+                  quickInfo={quickInfo}
+                  expanded={expanded}
+                  handleClickExpand={handleClickExpand}
+                />
+              </div>
+              {user && (
+                <div className={classes.infoBoxContainer}>
+                  <StatBox title={statBoxTitle} stats={stats} />
+                </div>
               )}
-            </Button>
+            </div>          
+          </Container>
+        ) : (
+          <div>   
+            <Typography color="primary" component="h1" className={classes.h1}>
+              {headline}
+            </Typography>
+            <Typography component="h2" className={classes.textHeadline}>
+              {subHeadline}
+            </Typography>
+            <BottomContent 
+              hubQuickInfoRef={hubQuickInfoRef}
+              detailledInfo={detailledInfo}
+              quickInfo={quickInfo}
+              expanded={expanded}
+              handleClickExpand={handleClickExpand}
+            />                 
           </div>
-        </div>
+        )}
       </div>
       <div
         className={classes.buttonContainer}
@@ -174,4 +209,36 @@ export default function HubContent({
       </div>
     </Container>
   );
+}
+
+const BottomContent = ({hubQuickInfoRef, detailledInfo, quickInfo, expanded, handleClickExpand}) => {
+  const classes = useStyles()
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "hub", locale: locale });
+  console.log("displaying bottom content")
+  return (
+    <>
+      <div className={`${classes.quickInfo} ${classes.marginTop}`} ref={hubQuickInfoRef}>
+        <MessageContent content={quickInfo} />
+      </div>
+      <div>
+        <Collapse in={expanded}>{detailledInfo}</Collapse>
+      </div>
+      <div className={classes.buttonContainer}>
+        <Button className={classes.expandMoreButton} onClick={handleClickExpand}>
+          {expanded ? (
+            <>
+              <ExpandLessIcon />
+              {texts.less_info}{" "}
+            </>
+          ) : (
+            <>
+              <ExpandMoreIcon />
+              {texts.more_info}
+            </>
+          )}
+        </Button>
+      </div>
+    </>
+  )
 }
