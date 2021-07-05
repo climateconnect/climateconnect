@@ -224,7 +224,6 @@ export default function IdeaRoot({
         const notification_to_set_read = notifications.filter((n) =>
           all_comment_ids.includes(n.idea_comment?.id)
         );
-        setNotificationsReadAndRefresh(notification_to_set_read);
         setUserRating &&
           setUserRating({ ...userRating, last_locked_rating_score: userRating?.rating_score });
         setHasJoinedIdea &&
@@ -234,6 +233,7 @@ export default function IdeaRoot({
           });
         handleSetComments && handleSetComments(comments);
         setLoading(false);
+        await setNotificationsReadAndRefresh(notification_to_set_read);
       }
     },
     [idea.url_slug]

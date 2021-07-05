@@ -5,7 +5,7 @@ import {
   Divider,
   FormControlLabel,
   TextField,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
@@ -340,7 +340,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           variant="outlined"
           className={classes.blockElement}
           type="password"
-          label="Old password"
+          label={texts.old_password}
           value={passwordInputs.oldpassword}
           onChange={(event) => handlePasswordInputsChange(event, "oldpassword")}
           required
@@ -349,7 +349,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           variant="outlined"
           className={classes.blockElement}
           type="password"
-          label="New password"
+          label={texts.new_password}
           value={passwordInputs.newpassword}
           onChange={(event) => handlePasswordInputsChange(event, "newpassword")}
           required
@@ -358,7 +358,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           variant="outlined"
           className={classes.blockElement}
           type="password"
-          label="Confirm new password"
+          label={texts.confirm_new_password}
           value={passwordInputs.confirmnewpassword}
           onChange={(event) => handlePasswordInputsChange(event, "confirmnewpassword")}
           required
