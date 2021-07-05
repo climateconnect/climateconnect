@@ -10,4 +10,4 @@ const StyledMenuItem = withStyles(() => ({
   },
 }))(MenuItem);
 
-export default StyledMenuItem
+export default StyledMenuItem;

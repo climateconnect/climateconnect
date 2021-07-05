@@ -123,7 +123,7 @@ export default function getIdeaTexts({ idea }) {
       de: "Diese Idee hat noch niemand bewertet",
     },
     join_in: {
-      en: "Join In",
+      en: "Participate",
       de: "Mitmachen",
     },
     interactions: {
@@ -136,7 +136,7 @@ export default function getIdeaTexts({ idea }) {
     },
     do_you_want_to_join_text: {
       en:
-        'If you join in you will be added to a group chat will all the other people clicked the "Join In" button. Do you want to join in?',
+        'If you participate you will be added to a group chat will all the other people clicked the "Participate" button. Do you want to participate?',
       de:
         'Wenn du mitmachst, wirst du zu einem Gruppenchat mit allen anderen, die "Mitmachen" geklickt haben, hinzugefügt. Möchtest du mitmachen?',
     },
@@ -187,8 +187,8 @@ export default function getIdeaTexts({ idea }) {
       de: "Bitte melde dich an, um eine Idee zu teilen!",
     },
     you_have_successfully_joined_the_idea_click_open_groupchat: {
-      en: "You have joined! Click on \"Open Group Chat\" to chat with the others.",
-      de: "Du machst jetzt mit! Klicke auf \"Gruppenchat öffnen\", um mit den anderen zu reden."
-    }
+      en: 'You have joined! Click on "Open Group Chat" to chat with the others.',
+      de: 'Du machst jetzt mit! Klicke auf "Gruppenchat öffnen", um mit den anderen zu reden.',
+    },
   };
 }

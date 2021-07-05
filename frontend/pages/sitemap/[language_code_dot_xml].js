@@ -66,7 +66,13 @@ const STATIC_PAGE_PROPS = {
   },
 };
 
-async function createSitemap(projectEntries, organizationEntries, memberEntries, hubEntries, language_code) {
+async function createSitemap(
+  projectEntries,
+  organizationEntries,
+  memberEntries,
+  hubEntries,
+  language_code
+) {
   let staticPages = (await globby(["pages/*.js"]))
     .map((pageUrl) => pageUrl.replace("pages", "").replace(".js", ""))
     .filter((pageUrl) => !NOT_LISTED.includes(pageUrl));
@@ -90,9 +96,7 @@ async function createSitemap(projectEntries, organizationEntries, memberEntries,
     ${memberEntries
       .map((m) => renderEntry(BASE_URL, m.url_slug, 0.8, "daily", m.updated_at))
       .join("")}
-    ${hubEntries
-      .map((m) => renderEntry(BASE_URL, m.url_slug, 1, "daily", m.updated_at))
-      .join("")}
+    ${hubEntries.map((m) => renderEntry(BASE_URL, m.url_slug, 1, "daily", m.updated_at)).join("")}
     </urlset>`;
 }
 
@@ -125,12 +129,20 @@ export async function getServerSideProps(ctx) {
     getEntries("projects", ctx.locale, language_code),
     getEntries("organizations", ctx.locale, language_code),
     getEntries("members", ctx.locale, language_code),
-    getEntries("hubs", ctx.locale, language_code)
+    getEntries("hubs", ctx.locale, language_code),
   ]);
   const res = ctx.res;
   res.setHeader("Content-Type", "text/xml");
   //const projects = await getProjects(0, token)
-  res.write(await createSitemap(projectEntries, organizationEntries, memberEntries, hubEntries, language_code));
+  res.write(
+    await createSitemap(
+      projectEntries,
+      organizationEntries,
+      memberEntries,
+      hubEntries,
+      language_code
+    )
+  );
   res.end();
 
   //Don't forget this line, even if it seems useless.
@@ -140,9 +152,9 @@ export async function getServerSideProps(ctx) {
 }
 
 const getEntries = async (entryTypePlural, locale, language_code_for_url) => {
-  if(entryTypePlural === "hubs") {
-    const hubs = await getAllHubs(locale)
-    return parseEntries(entryTypePlural, hubs, language_code_for_url)
+  if (entryTypePlural === "hubs") {
+    const hubs = await getAllHubs(locale);
+    return parseEntries(entryTypePlural, hubs, language_code_for_url);
   } else {
     try {
       const resp = await apiRequest({

@@ -4,7 +4,7 @@ import {
   Container,
   makeStyles,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 17,
   },
   marginTop: {
-    marginTop: theme.spacing(4)
+    marginTop: theme.spacing(4),
   },
   dashboardAndStatboxWrapper: {
     marginTop: theme.spacing(4),
@@ -88,13 +88,13 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     alignItems: "flex-start",
     [theme.breakpoints.up("md")]: {
-      marginTop: theme.spacing(8)
-    }
+      marginTop: theme.spacing(8),
+    },
   },
-  infoBoxContainer: props => ({
+  infoBoxContainer: (props) => ({
     marginTop: props.loggedOut ? 0 : theme.spacing(6),
     marginLeft: theme.spacing(2),
-    float: "right"
+    float: "right",
   }),
 }));
 
@@ -112,7 +112,7 @@ export default function HubContent({
   location,
 }) {
   const { locale, user } = useContext(UserContext);
-  const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user });  
+  const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user });
   const texts = getTexts({ page: "hub", locale: locale });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [expanded, setExpanded] = React.useState(false);
@@ -133,7 +133,7 @@ export default function HubContent({
   }
   return (
     <Container>
-      <div className={classes.root}>        
+      <div className={classes.root}>
         {!isNarrowScreen && (!isLocationHub || !user) && (
           <div className={classes.infoBoxContainer}>
             <StatBox title={statBoxTitle} stats={stats} />
@@ -144,7 +144,7 @@ export default function HubContent({
             <div className={`${user && classes.dashboardAndStatboxWrapper}`}>
               <div>
                 {user ? (
-                  <Dashboard location={location} headline={headline}/>
+                  <Dashboard location={location} headline={headline} />
                 ) : (
                   <>
                     <Typography color="primary" component="h1" className={classes.h1}>
@@ -154,9 +154,8 @@ export default function HubContent({
                       {subHeadline}
                     </Typography>
                   </>
-                  )
-                }                
-                <BottomContent 
+                )}
+                <BottomContent
                   hubQuickInfoRef={hubQuickInfoRef}
                   detailledInfo={detailledInfo}
                   quickInfo={quickInfo}
@@ -169,23 +168,23 @@ export default function HubContent({
                   <StatBox title={statBoxTitle} stats={stats} />
                 </div>
               )}
-            </div>          
+            </div>
           </Container>
         ) : (
-          <div>   
+          <div>
             <Typography color="primary" component="h1" className={classes.h1}>
               {headline}
             </Typography>
             <Typography component="h2" className={classes.textHeadline}>
               {subHeadline}
             </Typography>
-            <BottomContent 
+            <BottomContent
               hubQuickInfoRef={hubQuickInfoRef}
               detailledInfo={detailledInfo}
               quickInfo={quickInfo}
               expanded={expanded}
               handleClickExpand={handleClickExpand}
-            />                 
+            />
           </div>
         )}
       </div>
@@ -211,11 +210,17 @@ export default function HubContent({
   );
 }
 
-const BottomContent = ({hubQuickInfoRef, detailledInfo, quickInfo, expanded, handleClickExpand}) => {
-  const classes = useStyles()
+const BottomContent = ({
+  hubQuickInfoRef,
+  detailledInfo,
+  quickInfo,
+  expanded,
+  handleClickExpand,
+}) => {
+  const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
-  console.log("displaying bottom content")
+  console.log("displaying bottom content");
   return (
     <>
       <div className={`${classes.quickInfo} ${classes.marginTop}`} ref={hubQuickInfoRef}>
@@ -240,5 +245,5 @@ const BottomContent = ({hubQuickInfoRef, detailledInfo, quickInfo, expanded, han
         </Button>
       </div>
     </>
-  )
-}
+  );
+};
