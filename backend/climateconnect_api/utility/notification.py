@@ -1,21 +1,29 @@
-from ideas.models.support import IdeaSupporter
-from organization.models.members import ProjectMember
-from organization.models.content import ProjectComment
-from ideas.serializers.comment import IdeaCommentSerializer
-from organization.serializers.content import ProjectCommentSerializer
-from organization.utility.email import send_idea_comment_email, send_idea_comment_reply_email, send_project_comment_email, send_project_comment_reply_email
-from django.contrib.auth.models import User
-from ideas.models.comment import IdeaComment
-from django.conf import settings
-from django.db.models.query_utils import Q
-
-from climateconnect_api.models.user import UserProfile
-from climateconnect_api.models.notification import Notification, UserNotification, EmailNotification
-from chat_messages.models import Participant
-from chat_messages.utility.email import send_group_chat_message_notification_email, send_private_chat_message_notification_email
 from datetime import datetime, timedelta
-from channels.layers import get_channel_layer
+
 from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from chat_messages.models import Participant
+from chat_messages.utility.email import (
+    send_group_chat_message_notification_email,
+    send_private_chat_message_notification_email)
+from climateconnect_api.models.notification import (EmailNotification,
+                                                    Notification,
+                                                    UserNotification)
+from climateconnect_api.models.user import UserProfile
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db.models.query_utils import Q
+from ideas.models.comment import IdeaComment
+from ideas.models.support import IdeaSupporter
+from ideas.serializers.comment import IdeaCommentSerializer
+from organization.models.content import ProjectComment
+from organization.models.members import ProjectMember
+from organization.serializers.content import ProjectCommentSerializer
+from organization.utility.email import (send_idea_comment_email,
+                                        send_idea_comment_reply_email,
+                                        send_project_comment_email,
+                                        send_project_comment_reply_email)
+
 channel_layer = get_channel_layer()
 
 @async_to_sync
@@ -110,7 +118,11 @@ def send_comment_notification(is_reply, notification_type, comment, sender, comm
     if comment_model == ProjectComment:
         team = ProjectMember.objects.filter(project=object_commented_on).values('user')
     if comment_model == IdeaComment:
-        team = IdeaSupporter.objects.filter(idea=object_commented_on).values('user')
+        queryset = IdeaSupporter.objects.filter(idea=object_commented_on).values('user')
+        team = list(queryset)
+        if len(queryset.filter(user=object_commented_on.user)) < 1:
+            team.append(object_commented_on.user.id)
+
     for member in team:
         if not member['user'] == sender.id and not member['user'] in users_notification_sent:
             user = User.objects.filter(id=member['user'])[0]
