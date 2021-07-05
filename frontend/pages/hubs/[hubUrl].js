@@ -9,7 +9,7 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo
+  membersWithAdditionalInfo,
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -25,7 +25,6 @@ import HubHeaderImage from "../../src/components/hub/HubHeaderImage";
 import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
-
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {

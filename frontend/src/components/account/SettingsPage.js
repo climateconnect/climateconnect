@@ -5,7 +5,7 @@ import {
   Divider,
   FormControlLabel,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
@@ -87,8 +87,8 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     },
     {
       key: "email_on_idea_join",
-      text: texts.email_on_new_idea_join_text
-    }
+      text: texts.email_on_new_idea_join_text,
+    },
   ];
 
   const possibleCookiePreferences = [
@@ -247,7 +247,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           payload: emailPreferences,
           token: token,
           locale: locale,
-        })
+        });
         setEmailPreferencesLoading(false);
         setMessage(response.data.message);
         setSettings({
@@ -259,7 +259,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           emailpreferenceserror: "",
         });
         window.scrollTo(0, 0);
-      } catch(error) {
+      } catch (error) {
         setEmailPreferencesLoading(false);
         console.log(error);
         setErrors({

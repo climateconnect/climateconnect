@@ -15,9 +15,9 @@ const useStyles = makeStyles({
     flex: "1 1 0px",
     position: "relative",
   },
-  ideaPreviews: props => ({
+  ideaPreviews: (props) => ({
     flex: "1 1 0px",
-    minHeight: props.ideaOpen ? 1500 : "default"
+    minHeight: props.ideaOpen ? 1500 : "default",
   }),
 });
 export default function IdeasBoard({
@@ -89,12 +89,12 @@ export default function IdeasBoard({
     });
   };
 
-  const handleSetComments= (newComments) => {
+  const handleSetComments = (newComments) => {
     setIdea({
       ...idea,
-      comments: newComments
-    })
-  }
+      comments: newComments,
+    });
+  };
 
   return (
     <div className={classes.root}>

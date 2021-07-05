@@ -1,4 +1,11 @@
-import { Avatar, Link, ListItemAvatar, ListItemIcon, ListItemText, makeStyles } from "@material-ui/core";
+import {
+  Avatar,
+  Link,
+  ListItemAvatar,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+} from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../../public/lib/imageOperations";
@@ -27,27 +34,27 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function GenericNotification({link, primaryText, secondaryText, notificationIcon, avatar}) {
-  const { locale } = useContext(UserContext)
-  const classes = useStyles()
+export default function GenericNotification({
+  link,
+  primaryText,
+  secondaryText,
+  notificationIcon,
+  avatar,
+}) {
+  const { locale } = useContext(UserContext);
+  const classes = useStyles();
   return (
-    <Link
-      href={getLocalePrefix(locale) + link}
-      underline="none"
-    >
+    <Link href={getLocalePrefix(locale) + link} underline="none">
       <StyledMenuItem>
         {avatar ? (
           <ListItemAvatar>
-            <Avatar
-              alt={avatar.alt}
-              src={getImageUrl(avatar.image)}
-            />
+            <Avatar alt={avatar.alt} src={getImageUrl(avatar.image)} />
           </ListItemAvatar>
         ) : (
           <ListItemIcon>
             <notificationIcon.icon />
           </ListItemIcon>
-        )}        
+        )}
         <ListItemText
           primary={primaryText}
           secondary={secondaryText}
@@ -60,5 +67,5 @@ export default function GenericNotification({link, primaryText, secondaryText, n
         />
       </StyledMenuItem>
     </Link>
-  )
+  );
 }

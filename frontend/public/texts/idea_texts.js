@@ -187,8 +187,8 @@ export default function getIdeaTexts({ idea }) {
       de: "Bitte melde dich an, um eine Idee zu teilen!",
     },
     you_have_successfully_joined_the_idea_click_open_groupchat: {
-      en: "You have joined! Click on \"Open Group Chat\" to chat with the others.",
-      de: "Du machst jetzt mit! Klicke auf \"Gruppenchat öffnen\", um mit den anderen zu reden."
-    }
+      en: 'You have joined! Click on "Open Group Chat" to chat with the others.',
+      de: 'Du machst jetzt mit! Klicke auf "Gruppenchat öffnen", um mit den anderen zu reden.',
+    },
   };
 }

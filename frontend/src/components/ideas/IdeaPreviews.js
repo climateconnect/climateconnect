@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   },
 });
 
-const toIdeaPreviews = ({ideas, onClickIdea, hasIdeaOpen, hubData}) => {
+const toIdeaPreviews = ({ ideas, onClickIdea, hasIdeaOpen, hubData }) => {
   return ideas.map((idea, index) => (
     <GridItem
       index={index}
@@ -37,10 +37,12 @@ export default function IdeaPreviews({
   hasIdeaOpen,
   className,
   hubLocation,
-  hubData
+  hubData,
 }) {
   const classes = useStyles();
-  const [gridItems, setGridItems] = React.useState(toIdeaPreviews({ideas: ideas, onClickIdea: onClickIdea, hasIdeaOpen: hasIdeaOpen}));
+  const [gridItems, setGridItems] = React.useState(
+    toIdeaPreviews({ ideas: ideas, onClickIdea: onClickIdea, hasIdeaOpen: hasIdeaOpen })
+  );
 
   const [isFetchingMore, setIsFetchingMore] = React.useState(false);
 
@@ -56,7 +58,7 @@ export default function IdeaPreviews({
       setIsFetchingMore(true);
       const newIdeas = await loadFunc();
       if (!parentHandlesGridItems) {
-        setGridItems([...gridItems, ...toIdeaPreviews({ideas: newIdeas, hubData: hubData})]);
+        setGridItems([...gridItems, ...toIdeaPreviews({ ideas: newIdeas, hubData: hubData })]);
       }
       setIsFetchingMore(false);
     }
@@ -86,7 +88,14 @@ export default function IdeaPreviews({
           hubLocation={hubLocation}
           hubData={hubData}
         />
-        {parentHandlesGridItems ? toIdeaPreviews({ideas: ideas, onClickIdea: onClickIdea, hasIdeaOpen: hasIdeaOpen, hubData: hubData}) : gridItems}
+        {parentHandlesGridItems
+          ? toIdeaPreviews({
+              ideas: ideas,
+              onClickIdea: onClickIdea,
+              hasIdeaOpen: hasIdeaOpen,
+              hubData: hubData,
+            })
+          : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="idea-previews-spinner" />}
       </InfiniteScroll>
     </>
@@ -102,7 +111,7 @@ function GridItem({
   hasIdeaOpen,
   index,
   hubLocation,
-  hubData
+  hubData,
 }) {
   return (
     <Grid

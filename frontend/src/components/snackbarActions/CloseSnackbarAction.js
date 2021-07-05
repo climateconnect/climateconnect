@@ -7,5 +7,5 @@ export default function CloseSnackbarAction({ onClose }) {
     <IconButton aria-label="close" color="inherit" onClick={onClose}>
       <CloseIcon fontSize="small" />
     </IconButton>
-  )
+  );
 }

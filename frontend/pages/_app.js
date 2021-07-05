@@ -54,7 +54,7 @@ export default function MyApp({
     });
     ReactGA.pageview(pathName ? pathName : "/");
     setGaInitialized(true);
-  }  
+  }
 
   const API_URL = process.env.API_URL;
   const API_HOST = process.env.API_HOST;
@@ -75,7 +75,7 @@ export default function MyApp({
       path: "/",
     };
     if (!develop) cookieProps.domain = "." + API_HOST;
-    try {      
+    try {
       await apiRequest({
         method: "post",
         url: "/logout/",
@@ -127,14 +127,10 @@ export default function MyApp({
           ...state,
           user: user,
           chatSocket: client,
-          notifications: notifications.filter(n=>!notificationsToSetRead.includes(n)),
+          notifications: notifications.filter((n) => !notificationsToSetRead.includes(n)),
         });
         if (notificationsToSetRead.length > 0) {
-          setNotificationsRead(
-            token,
-            notificationsToSetRead,
-            locale
-          );
+          setNotificationsRead(token, notificationsToSetRead, locale);
         }
         connect(client);
       }
