@@ -78,6 +78,16 @@ class Idea(models.Model):
         on_delete=models.SET_NULL
     )
 
+    hub_shared_in = models.ForeignKey(
+        Hub,
+        help_text="Points to the (location)hub the idea was shared in",
+        verbose_name="(Location-)Hub where idea was shared",
+        related_name="idea_hub_shared_in",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
+
     location = models.ForeignKey(
         Location,
         help_text="Points to location of the idea",

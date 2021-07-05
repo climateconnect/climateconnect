@@ -21,4 +21,4 @@ const StyledMenu = withStyles({
   />
 ));
 
-export default StyledMenu
+export default StyledMenu;

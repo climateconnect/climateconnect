@@ -17,7 +17,7 @@ export default function DetailledDescription({ title, value, className }) {
       <Typography color="primary" variant="h2" className={classes.headline}>
         {title}
       </Typography>
-      <MessageContent content={value}/>
+      <MessageContent content={value} />
     </div>
   );
 }

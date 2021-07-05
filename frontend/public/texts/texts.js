@@ -13,7 +13,7 @@ import getHubTexts from "./getHubTexts";
 import getIdeaTexts from "./idea_texts";
 import getLandingPageTexts from "./landing_page_texts";
 import navigation_texts from "./navigation_texts.json";
-import notification_texts from "./notification_texts.json";
+import getNotificationTexts from "./notification_texts";
 import getOrganizationTexts from "./organization_texts";
 import getProfileTexts from "./profile_texts";
 import getProjectTexts from "./project_texts";
@@ -43,7 +43,7 @@ export default function getTexts({
     chat: chat_texts,
     cookie: cookie_texts,
     communication: getCommunicationTexts(),
-    dashboard: getDashboardTexts({user: user}),
+    dashboard: getDashboardTexts({ user: user }),
     donate: getDonateTexts({ classes: classes, goal: goal }),
     faq: getFaqTexts({ classes: classes, locale: locale }),
     filter_and_search: filter_and_search_texts,
@@ -52,7 +52,7 @@ export default function getTexts({
     idea: getIdeaTexts({ idea: idea, user: user, url_slug: url_slug, locale: locale }),
     landing_page: getLandingPageTexts({ classes: classes, isNarrowScreen: isNarrowScreen }),
     navigation: navigation_texts,
-    notification: notification_texts,
+    notification: getNotificationTexts({ idea: idea }),
     organization: getOrganizationTexts({ organization: organization, locale: locale }),
     profile: getProfileTexts({ profile: profile, locale: locale }),
     project: getProjectTexts({ project: project, user: user, url_slug: url_slug, locale: locale }),

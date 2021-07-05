@@ -4,7 +4,6 @@ import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
-
 const useStyles = makeStyles((theme) => ({
   imageContainer: (props) => ({
     background: `url('${props.image}')`,
@@ -18,19 +17,19 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     [theme.breakpoints.up("md")]: {
       position: props.isLocationHub && !props.loggedOut ? "absolute" : "relative",
-      zIndex: -1
-    }
+      zIndex: -1,
+    },
   }),
   dashboardContainer: {
     marginTop: theme.spacing(4),
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "flex-start"
+    alignItems: "flex-start",
   },
   infoBoxContainer: {
     marginTop: theme.spacing(6),
     marginLeft: theme.spacing(2),
-    float: "right"
+    float: "right",
   },
   img: (props) => ({
     width: props.fullWidth ? "80%" : "50%",
@@ -53,7 +52,12 @@ const useStyles = makeStyles((theme) => ({
 
 export default function HubHeaderImage({ image, source, fullWidth, onClose, isLocationHub }) {
   const { locale, user } = useContext(UserContext);
-  const classes = useStyles({ image: image, fullWidth: fullWidth, isLocationHub: isLocationHub, loggedOut: !user });
+  const classes = useStyles({
+    image: image,
+    fullWidth: fullWidth,
+    isLocationHub: isLocationHub,
+    loggedOut: !user,
+  });
   const texts = getTexts({ page: "hub", locale: locale });
   return (
     <>
@@ -63,8 +67,8 @@ export default function HubHeaderImage({ image, source, fullWidth, onClose, isLo
             <CloseIcon color="primary" className={classes.closeButton} onClick={onClose} />
           </Tooltip>
         )}
-        <img src={image} className={classes.img} />        
-      </div>      
+        <img src={image} className={classes.img} />
+      </div>
       {source && (
         <Typography className={classes.attribution}>
           {texts.image}: {source}

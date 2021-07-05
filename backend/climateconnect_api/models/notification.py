@@ -1,3 +1,5 @@
+from ideas.models.support import IdeaSupporter
+from ideas.models.comment import IdeaComment
 from django.db import models
 from chat_messages.models.message import MessageParticipants, MessageReceiver
 from organization.models.content import (ProjectComment, PostComment, Post)
@@ -16,6 +18,9 @@ class Notification(models.Model):
     POST_COMMENT = 6
     REPLY_TO_POST_COMMENT = 7
     GROUP_MESSAGE = 8
+    IDEA_COMMENT = 11
+    REPLY_TO_IDEA_COMMENT = 12
+    PERSON_JOINED_IDEA = 13
     NOTIFICATION_TYPES = (
         (BROADCAST, "broadcast"),
         (PRIVATE_MESSAGE, "private_message"),
@@ -25,7 +30,10 @@ class Notification(models.Model):
         (PROJECT_UPDATE_POST, "project_update_post"),
         (POST_COMMENT, "post_comment"),
         (REPLY_TO_POST_COMMENT, "reply_to_post_comment"),
-        (GROUP_MESSAGE, "group_message")
+        (GROUP_MESSAGE, "group_message"),
+        (IDEA_COMMENT, "idea_comment"),
+        (REPLY_TO_IDEA_COMMENT, "reply_to_idea_comment"),
+        (PERSON_JOINED_IDEA, "person_joined_idea")
     )
 
     notification_type = models.IntegerField(
@@ -54,6 +62,18 @@ class Notification(models.Model):
     post_comment = models.ForeignKey(
         PostComment, related_name="notification_post_comment",
         verbose_name="Post comment", on_delete=models.CASCADE,
+        null=True, blank=True
+    )
+
+    idea_comment = models.ForeignKey(
+        IdeaComment, related_name="notification_idea_comment",
+        verbose_name="Idea Comment", on_delete=models.CASCADE,
+        null=True, blank=True
+    )
+
+    idea_supporter = models.ForeignKey(
+        IdeaSupporter, related_name="notification_idea_supporter",
+        verbose_name= "Idea Supporter", on_delete=models.CASCADE,
         null=True, blank=True
     )
 
@@ -119,3 +139,8 @@ class EmailNotification(models.Model):
 
     class Meta:
         verbose_name_plural = "Email Notifications"
+
+    def __str__(self):
+        return "Notified %s %s about Notification %d at %s" % (
+            self.user.first_name, self.user.last_name, self.notification.id, self.notification.created_at
+        )

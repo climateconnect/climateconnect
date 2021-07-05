@@ -32,7 +32,7 @@ def create_idea(data: dict, language: Optional[Language], creator: User) -> Idea
     idea = Idea.objects.create(
         name=data['name'], short_description=data['short_description'],
         language=language, user= creator
-    )
+    )    
     
     url_slug = slugify(data['name'])
     if len(url_slug) == 0:
@@ -48,10 +48,12 @@ def add_additional_create_idea_params(idea: Idea, data: dict, url_slug:str) -> N
     idea.url_slug = url_slug
     try:
         hub = Hub.objects.get(url_slug=data['hub'])
+        hub_shared_in = Hub.objects.get(url_slug=data['hub_shared_in'])
     except Hub.DoesNotExist:
         idea.delete()
         raise ValidationError('Hub does not exist: ' + data['hub'])
     idea.hub = hub
+    idea.hub_shared_in = hub_shared_in
     if 'location' in data:
         idea.location = get_location(data['location'])
     
