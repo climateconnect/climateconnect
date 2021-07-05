@@ -136,10 +136,11 @@ export default function IdeaRoot({
   containerOffsetTop,
   userOrganizations,
   allHubs,
+  handleSetComments,
 }) {
   const token = new Cookies().get("token");
   const borderColor = getIdeaBorderColor({ idea: idea, index: idea.index });
-  const { user } = useContext(UserContext);
+  const { user, notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
   const handleIdeaClose = (e) => {
@@ -192,6 +193,11 @@ export default function IdeaRoot({
     borderColor: borderColor,
   });
 
+  const setNotificationsReadAndRefresh = async (notification_to_set_read) => {
+    await setNotificationsRead(token, notification_to_set_read, locale);
+    await refreshNotifications();
+  }
+
   useEffect(
     async function () {
       if (token) {
@@ -201,17 +207,28 @@ export default function IdeaRoot({
           getUserRatingFromServer(idea, token, locale),
           getIdeaCommentsFromServer(idea, token, locale),
           getHasJoinedIdea(idea, token, locale),
-        ]);
+        ]);        
         //The user has closed the idea in the mean time!
         if(!idea) {
           return
         }
+        const all_comment_ids = comments.reduce(function(allComments, curComment){
+          allComments.push(curComment.id)
+          if(curComment.replies?.length > 0) {
+            allComments = [...allComments, ...curComment.replies.map(c=>c.id)]
+          }
+          return allComments
+        }, [])
+        const notification_to_set_read = notifications.filter(
+          (n) => all_comment_ids.includes(n.idea_comment?.id)
+        )
+        setNotificationsReadAndRefresh(notification_to_set_read)
         setUserRating && setUserRating({ ...userRating, last_locked_rating_score: userRating?.rating_score });
         setHasJoinedIdea && setHasJoinedIdea({
           has_joined: hasJoinedIdea?.has_joined,
           chat_uuid: hasJoinedIdea?.chat_uuid,
         });
-        handleAddComments && handleAddComments(comments);
+        handleSetComments && handleSetComments(comments);
         setLoading(false);
       }
     },

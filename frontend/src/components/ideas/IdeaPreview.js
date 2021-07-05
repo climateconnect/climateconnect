@@ -99,6 +99,7 @@ export default function IdeaPreview({
   onClickIdea,
   index,
   hubLocation,
+  hubData
 }) {
   const { user, locale }  = useContext(UserContext)
   const texts = getTexts({page: "idea", locale: locale})
@@ -143,6 +144,7 @@ export default function IdeaPreview({
           allHubs={allHubs}
           userOrganizations={userOrganizations}
           hubLocation={hubLocation}
+          hubData={hubData}
         />
       )}
     </>

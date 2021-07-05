@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   },
 });
 
-const toIdeaPreviews = (ideas, onClickIdea, hasIdeaOpen) => {
+const toIdeaPreviews = ({ideas, onClickIdea, hasIdeaOpen, hubData}) => {
   return ideas.map((idea, index) => (
     <GridItem
       index={index}
@@ -21,6 +21,7 @@ const toIdeaPreviews = (ideas, onClickIdea, hasIdeaOpen) => {
       key={idea.url_slug}
       idea={idea}
       hasIdeaOpen={hasIdeaOpen}
+      hubData={hubData}
     />
   ));
 };
@@ -36,9 +37,10 @@ export default function IdeaPreviews({
   hasIdeaOpen,
   className,
   hubLocation,
+  hubData
 }) {
   const classes = useStyles();
-  const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas, onClickIdea, hasIdeaOpen));
+  const [gridItems, setGridItems] = React.useState(toIdeaPreviews({ideas: ideas, onClickIdea: onClickIdea, hasIdeaOpen: hasIdeaOpen}));
 
   const [isFetchingMore, setIsFetchingMore] = React.useState(false);
 
@@ -54,7 +56,7 @@ export default function IdeaPreviews({
       setIsFetchingMore(true);
       const newIdeas = await loadFunc();
       if (!parentHandlesGridItems) {
-        setGridItems([...gridItems, ...toIdeaPreviews(newIdeas)]);
+        setGridItems([...gridItems, ...toIdeaPreviews({ideas: newIdeas, hubData: hubData})]);
       }
       setIsFetchingMore(false);
     }
@@ -82,8 +84,9 @@ export default function IdeaPreviews({
           userOrganizations={userOrganizations}
           hasIdeaOpen={hasIdeaOpen}
           hubLocation={hubLocation}
+          hubData={hubData}
         />
-        {parentHandlesGridItems ? toIdeaPreviews(ideas, onClickIdea, hasIdeaOpen) : gridItems}
+        {parentHandlesGridItems ? toIdeaPreviews({ideas: ideas, onClickIdea: onClickIdea, hasIdeaOpen: hasIdeaOpen, hubData: hubData}) : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="idea-previews-spinner" />}
       </InfiniteScroll>
     </>
@@ -99,6 +102,7 @@ function GridItem({
   hasIdeaOpen,
   index,
   hubLocation,
+  hubData
 }) {
   return (
     <Grid
@@ -118,6 +122,7 @@ function GridItem({
         onClickIdea={onClickIdea}
         index={index}
         hubLocation={hubLocation}
+        hubData={hubData}
       />
     </Grid>
   );

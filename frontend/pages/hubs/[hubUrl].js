@@ -82,6 +82,7 @@ export async function getServerSideProps(ctx) {
     props: {
       hubUrl: hubUrl,
       isLocationHub: hubData.hub_type === "location hub",
+      hubData: hubData,
       name: hubData.name,
       headline: hubData.headline,
       subHeadline: hubData.sub_headline,
@@ -124,6 +125,7 @@ export default function Hub({
   allHubs,
   initialIdeaUrlSlug,
   hubLocation,
+  hubData,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -310,6 +312,7 @@ export default function Hub({
             allHubs={allHubs}
             initialIdeaUrlSlug={initialIdeaUrlSlug}
             hubLocation={hubLocation}
+            hubData={hubData}
           />
         </div>
       </div>
