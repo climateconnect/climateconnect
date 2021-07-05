@@ -26,6 +26,7 @@ export default function MyApp({
   const [stateInitialized, setStateInitialized] = React.useState(false);
   const [gaInitialized, setGaInitialized] = React.useState(false);
   const cookies = new Cookies();
+  const token = cookies.get("token");
   const [acceptedStatistics, setAcceptedStatistics] = React.useState(
     cookies.get("acceptedStatistics")
   );
@@ -53,7 +54,7 @@ export default function MyApp({
     });
     ReactGA.pageview(pathName ? pathName : "/");
     setGaInitialized(true);
-  }
+  }  
 
   const API_URL = process.env.API_URL;
   const API_HOST = process.env.API_HOST;
@@ -74,8 +75,7 @@ export default function MyApp({
       path: "/",
     };
     if (!develop) cookieProps.domain = "." + API_HOST;
-    try {
-      const token = cookies.get("token");
+    try {      
       await apiRequest({
         method: "post",
         url: "/logout/",
@@ -121,13 +121,21 @@ export default function MyApp({
   useEffect(() => {
     if (!stateInitialized) {
       if (user) {
+        const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
         const client = WebSocketService("/ws/chat/");
         setState({
           ...state,
           user: user,
           chatSocket: client,
-          notifications: notifications,
+          notifications: notifications.filter(n=>!notificationsToSetRead.includes(n)),
         });
+        if (notificationsToSetRead.length > 0) {
+          setNotificationsRead(
+            token,
+            notificationsToSetRead,
+            locale
+          );
+        }
         connect(client);
       }
       // Remove the server-side injected CSS.
@@ -211,7 +219,7 @@ export default function MyApp({
 }
 
 MyApp.getInitialProps = async (ctx) => {
-  const { token, acceptedStatistics } = NextCookies(ctx.ctx);
+  const { token } = NextCookies(ctx.ctx);
   if (ctx.router.route === "/" && token) {
     ctx.ctx.res.writeHead(302, {
       Location: getLocalePrefix(ctx.router.locale) + "/browse",
@@ -231,24 +239,6 @@ MyApp.getInitialProps = async (ctx) => {
   ]);
   const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
 
-  if (token) {
-    const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
-    if (notificationsToSetRead.length > 0) {
-      const updatedNotifications = await setNotificationsRead(
-        token,
-        notificationsToSetRead,
-        ctx.router.locale
-      );
-      return {
-        pageProps: pageProps,
-        user: user,
-        notifications: updatedNotifications ? updatedNotifications : [],
-        acceptedStatistics: acceptedStatistics,
-        pathName: pathName,
-        donationGoal: donationGoal,
-      };
-    }
-  }
   return {
     pageProps: pageProps,
     user: user,
