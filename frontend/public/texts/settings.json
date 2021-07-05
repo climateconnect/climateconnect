@@ -170,5 +170,17 @@
   "if_you_wish_to_delete_this_account": {
     "en": "If you wish to delete this account, send an E-Mail to contact@climateconnect.earth",
     "de": "Wenn du das Konto löschen willst, sende eine E-Mail an contact@climateconnect.earth"
+  },
+  "old_password": {
+    "en": "Old Password",
+    "de": "Altes Passwort"
+  }, 
+  "new_password": {
+    "en": "New Password",
+    "de": "Neues Passwort"
+  },
+  "confirm_new_password": {
+    "en": "Confirm new password",
+    "de": "Neues Passwort bestätigen"
   }
 }
