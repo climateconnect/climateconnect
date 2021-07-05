@@ -40,7 +40,7 @@ def create_idea_join_notification(idea, idea_supporter, chat_uuid):
         # send notification to the idea's creator as well        
         users_to_be_notified = [idea.user]
         for supporter in all_supporters:
-            if not supporter.user.id == idea.user.id:
+            if not supporter.user.id == idea.user.id and not supporter.user.id == idea_supporter.user.id:
                 users_to_be_notified.append(supporter.user)
         for user in users_to_be_notified:
             create_user_notification(user, notification)
