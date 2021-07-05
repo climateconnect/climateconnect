@@ -5,7 +5,7 @@ import {
   Divider,
   FormControlLabel,
   TextField,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
@@ -74,6 +74,10 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       text: texts.email_on_comment_on_your_project_text,
     },
     {
+      key: "email_on_comment_on_your_idea",
+      text: texts.email_on_comment_on_your_idea_text,
+    },
+    {
       key: "email_on_reply_to_your_comment",
       text: texts.email_on_reply_to_your_comment_text,
     },
@@ -81,6 +85,10 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       key: "email_on_new_project_follower",
       text: texts.email_on_new_project_follower_text,
     },
+    {
+      key: "email_on_idea_join",
+      text: texts.email_on_new_idea_join_text
+    }
   ];
 
   const possibleCookiePreferences = [
@@ -232,33 +240,34 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       )
     ) {
       setEmailPreferencesLoading(true);
-      apiRequest({
-        url: "/api/account_settings/",
-        payload: emailPreferences,
-        token: token,
-        locale: locale,
-      })
-        .then(function (response) {
-          setEmailPreferencesLoading(false);
-          setMessage(response.data.message);
-          setSettings({
-            ...settings,
-            ...emailPreferences,
-          });
-          setErrors({
-            ...errors,
-            emailpreferenceserror: "",
-          });
-          window.scrollTo(0, 0);
+      try {
+        const response = await apiRequest({
+          method: "post",
+          url: "/api/account_settings/",
+          payload: emailPreferences,
+          token: token,
+          locale: locale,
         })
-        .catch(function (error) {
-          console.log(error);
-          setErrors({
-            ...errors,
-            emailpreferenceserror: texts.error + "!",
-          });
-          if (error) console.log(error.response);
+        setEmailPreferencesLoading(false);
+        setMessage(response.data.message);
+        setSettings({
+          ...settings,
+          ...emailPreferences,
         });
+        setErrors({
+          ...errors,
+          emailpreferenceserror: "",
+        });
+        window.scrollTo(0, 0);
+      } catch(error) {
+        setEmailPreferencesLoading(false);
+        console.log(error);
+        setErrors({
+          ...errors,
+          emailpreferenceserror: texts.error + "!",
+        });
+        if (error) console.log(error.response);
+      }
     } else
       setErrors({
         ...errors,
@@ -370,7 +379,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       </form>
 
       <Typography className={classes.lowerHeaders} color="primary" variant="h5" component="h2">
-        {texts.change_linked_email}Change linked email
+        {texts.change_linked_email}
       </Typography>
       <Divider />
       <form onSubmit={changeEmail}>
