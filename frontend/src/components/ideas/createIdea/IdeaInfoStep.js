@@ -1,5 +1,5 @@
 import { Button, makeStyles, TextField, Typography } from "@material-ui/core";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
 import UploadImageField from "../UploadImageField";
@@ -43,6 +43,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+export const SHORT_DESCRIPTION_MAX_LENGTH = 2048
+
 export default function IdeaInfoStep({ idea, handleValueChange, updateImages, goToNextStep }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -53,6 +55,15 @@ export default function IdeaInfoStep({ idea, handleValueChange, updateImages, go
     goToNextStep();
   };
 
+  const [shortDescriptionError, setShortDescriptionError] = useState("")
+
+  const handleChangeShortDescription = (e) => {
+    if(e.target.value.length > SHORT_DESCRIPTION_MAX_LENGTH)
+      setShortDescriptionError(texts.idea_description_max_length_reached)
+    else if(shortDescriptionError)
+      setShortDescriptionError("")
+    handleValueChange(e.target.value.slice(0, SHORT_DESCRIPTION_MAX_LENGTH), "short_description")
+  }
   return (
     <form onSubmit={handleSubmit}>
       <Typography className={classes.motivationText}>
@@ -79,8 +90,10 @@ export default function IdeaInfoStep({ idea, handleValueChange, updateImages, go
             size="small"
             multiline
             rows={9}
-            onChange={(e) => handleValueChange(e.target.value, "short_description")}
+            onChange={(e) => handleChangeShortDescription(e)}
             value={idea.short_description}
+            helperText={shortDescriptionError}
+            error={shortDescriptionError}
           />
         </div>
         <div>
