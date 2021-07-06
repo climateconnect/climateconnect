@@ -7,7 +7,7 @@ import {
   MenuList,
   Paper,
   Popper,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
@@ -97,6 +97,10 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       justifyContent: "space-around",
     },
+
+    cityHubOption: {
+      width: "100%"
+    }
   };
 });
 
