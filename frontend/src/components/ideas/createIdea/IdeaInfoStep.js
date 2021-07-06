@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SHORT_DESCRIPTION_MAX_LENGTH = 2048
+export const SHORT_DESCRIPTION_MAX_LENGTH = 2048;
 
 export default function IdeaInfoStep({ idea, handleValueChange, updateImages, goToNextStep }) {
   const classes = useStyles();
@@ -55,15 +55,14 @@ export default function IdeaInfoStep({ idea, handleValueChange, updateImages, go
     goToNextStep();
   };
 
-  const [shortDescriptionError, setShortDescriptionError] = useState("")
+  const [shortDescriptionError, setShortDescriptionError] = useState("");
 
   const handleChangeShortDescription = (e) => {
-    if(e.target.value.length > SHORT_DESCRIPTION_MAX_LENGTH)
-      setShortDescriptionError(texts.idea_description_max_length_reached)
-    else if(shortDescriptionError)
-      setShortDescriptionError("")
-    handleValueChange(e.target.value.slice(0, SHORT_DESCRIPTION_MAX_LENGTH), "short_description")
-  }
+    if (e.target.value.length > SHORT_DESCRIPTION_MAX_LENGTH)
+      setShortDescriptionError(texts.idea_description_max_length_reached);
+    else if (shortDescriptionError) setShortDescriptionError("");
+    handleValueChange(e.target.value.slice(0, SHORT_DESCRIPTION_MAX_LENGTH), "short_description");
+  };
   return (
     <form onSubmit={handleSubmit}>
       <Typography className={classes.motivationText}>

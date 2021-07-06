@@ -193,7 +193,7 @@ export default function getIdeaTexts({ idea }) {
     },
     idea_description_max_length_reached: {
       en: `You can only use up to ${SHORT_DESCRIPTION_MAX_LENGTH} characters in you idea's description.`,
-      de: `Die Beschreibung deiner Idee kann nur bis zu ${SHORT_DESCRIPTION_MAX_LENGTH} Zeichen lang sein.`
-    }
+      de: `Die Beschreibung deiner Idee kann nur bis zu ${SHORT_DESCRIPTION_MAX_LENGTH} Zeichen lang sein.`,
+    },
   };
 }
