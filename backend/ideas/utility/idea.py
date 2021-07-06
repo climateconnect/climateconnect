@@ -1,7 +1,8 @@
 import logging
+import urllib.parse
 from typing import Dict, Optional
-from climateconnect_api.models import language
 
+from climateconnect_api.models import language
 from climateconnect_api.models.language import Language
 from climateconnect_main.utility.general import get_image_from_data_url
 from django.contrib.auth.models import User
@@ -11,12 +12,14 @@ from ideas.models import Idea, IdeaTranslation
 from location.utility import get_location
 from organization.models import Organization
 from rest_framework.exceptions import ValidationError
+from django.utils.text import slugify
 
 logger = logging.getLogger(__name__)
 
 
 def verify_idea(url_slug: str) -> Optional[Idea]:
     try:
+        url_slug = urllib.parse.quote(url_slug, safe='~()*!.\'')
         idea = Idea.objects.get(url_slug=url_slug)
     except Idea.DoesNotExist:
         logger.error("Idea not found for {}".format(url_slug))
@@ -29,8 +32,11 @@ def create_idea(data: dict, language: Optional[Language], creator: User) -> Idea
     idea = Idea.objects.create(
         name=data['name'], short_description=data['short_description'],
         language=language, user= creator
-    )
-    url_slug = url_slug = data['name'].lower().replace(" ", "-")
+    )    
+    
+    url_slug = slugify(data['name'])
+    if len(url_slug) == 0:
+        url_slug = idea.id
     ideas_with_same_url_slug = Idea.objects.filter(url_slug=url_slug)
     if ideas_with_same_url_slug.exists():
         url_slug = url_slug + str(idea.id)
@@ -42,10 +48,12 @@ def add_additional_create_idea_params(idea: Idea, data: dict, url_slug:str) -> N
     idea.url_slug = url_slug
     try:
         hub = Hub.objects.get(url_slug=data['hub'])
+        hub_shared_in = Hub.objects.get(url_slug=data['hub_shared_in'])
     except Hub.DoesNotExist:
         idea.delete()
         raise ValidationError('Hub does not exist: ' + data['hub'])
     idea.hub = hub
+    idea.hub_shared_in = hub_shared_in
     if 'location' in data:
         idea.location = get_location(data['location'])
     

@@ -22,4 +22,11 @@ class ListHubsView(ListAPIView):
     serializer_class = HubStubSerializer
 
     def get_queryset(self):
+        return Hub.objects.filter(importance__gte=1)
+
+class ListSectorHubsView(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = HubStubSerializer
+
+    def get_queryset(self):
         return Hub.objects.filter(hub_type=Hub.SECTOR_HUB_TYPE).filter(importance__gte=1)

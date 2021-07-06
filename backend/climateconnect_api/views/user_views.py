@@ -169,8 +169,6 @@ class ListMemberProfilesView(ListAPIView):
                         )
                     ).annotate(
                         distance=Distance("location__centre_point", location.multi_polygon)
-                    ).order_by(
-                        'distance'
                     )
 
         if 'skills' in self.request.query_params:

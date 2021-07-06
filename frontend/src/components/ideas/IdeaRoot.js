@@ -12,6 +12,7 @@ import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import DateDisplay from "../general/DateDisplay";
 import LoadingSpinner from "../general/LoadingSpinner";
+import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import EditIdeaRoot from "./editIdea/EditIdeaRoot";
 import IdeaCommentsSection from "./IdeaCommentsSection";
@@ -51,8 +52,10 @@ const useStyles = makeStyles((theme) => ({
   },
   ideaInfo: {
     marginLeft: theme.spacing(4),
+    marginRight: theme.spacing(2.5),
     [theme.breakpoints.down("sm")]: {
       marginLeft: 0,
+      marginRight: 0,
     },
   },
   name: {
@@ -133,15 +136,30 @@ export default function IdeaRoot({
   containerOffsetTop,
   userOrganizations,
   allHubs,
+  handleSetComments,
 }) {
   const token = new Cookies().get("token");
   const borderColor = getIdeaBorderColor({ idea: idea, index: idea.index });
-  const { user } = useContext(UserContext);
+  const { user, notifications, setNotificationsRead, refreshNotifications } = useContext(
+    UserContext
+  );
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
   const handleIdeaClose = (e) => {
     onIdeaClose(e);
   };
+
+  useEffect(() => {
+    //This is executed when the component is about to unmount
+    //Without this code, the ide would reopen itself when it finishes loading,
+    //even if it has already been closed by the user
+    return () => {
+      onRatingChange = null;
+      handleAddComments = null;
+      handleRemoveComment = null;
+    };
+  }, []);
+
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [loading, setLoading] = useState(!!token);
   const [userRating, setUserRating] = useState({
@@ -177,22 +195,45 @@ export default function IdeaRoot({
     borderColor: borderColor,
   });
 
+  const setNotificationsReadAndRefresh = async (notification_to_set_read) => {
+    await setNotificationsRead(token, notification_to_set_read, locale);
+    await refreshNotifications();
+  };
+
   useEffect(
     async function () {
       if (token) {
         setLoading(true);
+        setIsEditing(false);
         const [userRating, comments, hasJoinedIdea] = await Promise.all([
           getUserRatingFromServer(idea, token, locale),
           getIdeaCommentsFromServer(idea, token, locale),
           getHasJoinedIdea(idea, token, locale),
         ]);
-        setUserRating({ ...userRating, last_locked_rating_score: userRating.rating_score });
-        setHasJoinedIdea({
-          has_joined: hasJoinedIdea?.has_joined,
-          chat_uuid: hasJoinedIdea?.chat_uuid,
-        });
-        handleAddComments(comments);
+        //The user has closed the idea in the mean time!
+        if (!idea) {
+          return;
+        }
+        const all_comment_ids = comments.reduce(function (allComments, curComment) {
+          allComments.push(curComment.id);
+          if (curComment.replies?.length > 0) {
+            allComments = [...allComments, ...curComment.replies.map((c) => c.id)];
+          }
+          return allComments;
+        }, []);
+        const notification_to_set_read = notifications.filter((n) =>
+          all_comment_ids.includes(n.idea_comment?.id)
+        );
+        setUserRating &&
+          setUserRating({ ...userRating, last_locked_rating_score: userRating?.rating_score });
+        setHasJoinedIdea &&
+          setHasJoinedIdea({
+            has_joined: hasJoinedIdea?.has_joined,
+            chat_uuid: hasJoinedIdea?.chat_uuid,
+          });
+        handleSetComments && handleSetComments(comments);
         setLoading(false);
+        await setNotificationsReadAndRefresh(notification_to_set_read);
       }
     },
     [idea.url_slug]
@@ -209,7 +250,7 @@ export default function IdeaRoot({
         message: texts.please_sign_in_to_rate_an_idea,
         promptLogIn: true,
         newHash: window.location.hash,
-        error: true
+        error: true,
       });
       return;
     }
@@ -245,6 +286,10 @@ export default function IdeaRoot({
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
+
+  const handleJoinIdea = (newHasJoinedIdeaObject) => {
+    setHasJoinedIdea(newHasJoinedIdeaObject);
+  };
 
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale, idea: idea });
@@ -287,7 +332,11 @@ export default function IdeaRoot({
                     {capitalizeFirstLetter(texts.by)}
                   </Typography>
                 )}
-                <MiniProfilePreview profile={idea.user} size="medium" />
+                {!idea.organization ? (
+                  <MiniProfilePreview profile={idea.user} size="medium" />
+                ) : (
+                  <MiniOrganizationPreview organization={idea.organization} size="medium" />
+                )}
                 <Typography className={classes.createdAtText}>
                   {isNarrowScreen ? (
                     <>
@@ -314,7 +363,7 @@ export default function IdeaRoot({
               </div>
               <div className={classes.topItem}>
                 <IdeaRatingSlider
-                  value={userRating.rating_score}
+                  value={userRating?.rating_score}
                   averageRating={idea.rating?.rating_score}
                   onChange={handleRatingChange}
                   onChangeCommitted={handleRateProject}
@@ -329,6 +378,7 @@ export default function IdeaRoot({
                   idea={idea}
                   has_joined={hasJoinedIdea.has_joined}
                   chat_uuid={hasJoinedIdea.chat_uuid}
+                  onJoinIdea={handleJoinIdea}
                 />
                 {user && idea?.user?.id === user?.id && (
                   <Button onClick={handleClickEditIdea} variant="contained" color="primary">
@@ -378,7 +428,7 @@ const getIdeaCommentsFromServer = async (idea, token, locale) => {
     });
     return response.data.results;
   } catch (err) {
-    console.log(err);
+    console.log(err?.response);
   }
 };
 
@@ -390,9 +440,8 @@ const getHasJoinedIdea = async (idea, token, locale) => {
       token: token,
       locale: locale,
     });
-    console.log(response);
     return response.data;
   } catch (err) {
-    console.log(err);
+    console.log(err?.response);
   }
 };

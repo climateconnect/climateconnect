@@ -43,6 +43,14 @@ const coreTheme = createMuiTheme({
   },
 });
 
+/**
+ * Extend on top of the core foundational theme (currently spacing
+ * and color) with other design tokens, and component-specific overrides.
+ *
+ * For example, we can start defining consistency for borders, and other
+ * styling primitives here, to minimize the duplication of raw styles
+ * across other files.
+ */
 const theme = createMuiTheme(coreTheme, {
   overrides: {
     MuiButton: {
@@ -67,6 +75,13 @@ const theme = createMuiTheme(coreTheme, {
         fontSize: 14,
       },
     },
+  },
+  // Note the "thick" semantic naming for this borders
+  // design token.
+  borders: {
+    thick: `3px solid ${coreTheme.palette.primary.main}`,
+    // TODO: we should add this light gray color to be consistent with our color system / theme
+    thin: `1px solid #e0e0e0`,
   },
   props: {
     MuiButton: {

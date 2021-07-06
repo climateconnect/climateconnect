@@ -23,9 +23,13 @@ export function getCommentsObjectAfterAddingComment(c, comments) {
 
 export function getCommentsObjectAfterAddingComments(commentsToAdd, comments) {
   let commentsObject = comments;
+  const alreadySentCommentIds = comments.map((c) => c.id);
+  const newCommentsToAdd = commentsToAdd.filter(
+    (c) => !c.id || !alreadySentCommentIds.includes(c.id)
+  );
   //We are sorting the comments that we want to add by id so that parent <-> child relations work out
   //If we don't do that, the child might be initialized before the parent which leads to an error
-  const sortedCommentsToAdd = commentsToAdd.sort((a, b) => a.id - b.id);
+  const sortedCommentsToAdd = newCommentsToAdd.sort((a, b) => a.id - b.id);
   for (const comment of sortedCommentsToAdd) {
     commentsObject = getCommentsObjectAfterAddingComment(comment, commentsObject);
   }

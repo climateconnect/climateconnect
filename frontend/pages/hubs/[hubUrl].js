@@ -69,18 +69,19 @@ export async function getServerSideProps(ctx) {
       token: token,
       hubUrl: hubUrl,
       locale: ctx.locale,
-      urlEnding: ideaToOpen ? `&idea=${ideaToOpen}` : "",
+      urlEnding: ideaToOpen ? `&idea=${encodeURIComponent(ideaToOpen)}` : "",
     }),
     getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
-    getAllHubs(ctx.locale),
+    getAllHubs(ctx.locale, true),
   ]);
   return {
     props: {
       hubUrl: hubUrl,
       isLocationHub: hubData.hub_type === "location hub",
+      hubData: hubData,
       name: hubData.name,
       headline: hubData.headline,
       subHeadline: hubData.sub_headline,
@@ -89,7 +90,7 @@ export async function getServerSideProps(ctx) {
       stats: hubData.stats,
       statBoxTitle: hubData.stat_box_title,
       image_attribution: hubData.image_attribution,
-      hubLocation: hubData.location && hubData.location[0],
+      hubLocation: hubData.location?.length > 0 ? hubData.location[0] : null,
       initialProjects: initialProjects,
       initialOrganizations: initialOrganizations,
       initialIdeas: initialIdeas,
@@ -100,7 +101,7 @@ export async function getServerSideProps(ctx) {
         project_statuses: project_statuses,
       },
       allHubs,
-      initialIdeaUrlSlug: ideaToOpen ? ideaToOpen : null,
+      initialIdeaUrlSlug: ideaToOpen ? encodeURIComponent(ideaToOpen) : null,
     },
   };
 }
@@ -123,6 +124,7 @@ export default function Hub({
   allHubs,
   initialIdeaUrlSlug,
   hubLocation,
+  hubData,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -268,6 +270,9 @@ export default function Hub({
           image={getImageUrl(image)}
           source={image_attribution}
           onClose={closeHubHeaderImage}
+          isLocationHub={isLocationHub}
+          statBoxTitle={statBoxTitle}
+          stats={stats}
         />
         <HubContent
           hubQuickInfoRef={hubQuickInfoRef}
@@ -280,6 +285,7 @@ export default function Hub({
           subHeadline={subHeadline}
           hubProjectsButtonRef={hubProjectsButtonRef}
           isLocationHub={isLocationHub}
+          location={hubLocation}
         />
         <div className={classes.contentRefContainer}>
           <div ref={contentRef} className={classes.contentRef} />
@@ -301,10 +307,11 @@ export default function Hub({
             nextStepTriggeredBy={nextStepTriggeredBy}
             hubName={name}
             initialIdeas={initialIdeas}
-            showIdeas={true}
+            showIdeas={isLocationHub}
             allHubs={allHubs}
             initialIdeaUrlSlug={initialIdeaUrlSlug}
             hubLocation={hubLocation}
+            hubData={hubData}
           />
         </div>
       </div>
