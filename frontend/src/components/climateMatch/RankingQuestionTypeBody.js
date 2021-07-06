@@ -119,15 +119,17 @@ export default function RankingQuestionTypeBody({question, numberOfChoices, answ
                         {
                           answer?.length >= i+1 ? (    
                             <Draggable key={i} draggableId={"draggable_choice" + i} index={i}>
-                              {(provided) => (                        
-                                <Chip 
-                                  label={answer[i].name}
-                                  className={classes.possibleAnswerChip}
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                />
-                                <CloseIcon />
+                              {(provided) => (  
+                                <>                      
+                                  <Chip
+                                    label={answer[i].name}
+                                    className={classes.possibleAnswerChip}
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                  />
+                                  <CloseIcon />
+                                </>
                               )}
                             </Draggable>
                           ) : (                           
