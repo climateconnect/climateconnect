@@ -2,7 +2,6 @@ import { Avatar } from "@material-ui/core";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
-
 export default function UserImage({ user }) {
   console.log(user);
   return (
