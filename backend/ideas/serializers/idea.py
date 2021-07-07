@@ -62,7 +62,7 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
 
     def get_hub_shared_in(self, obj):
         if obj.hub:
-            return HubStubSerializer(obj.hub).data
+            return HubStubSerializer(obj.hub_shared_in).data
         
         return None
     
