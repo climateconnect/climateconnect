@@ -1,4 +1,6 @@
 import datetime
+from ideas.serializers.idea import IdeaFromIdeaSupporterSerializer
+from ideas.models.support import IdeaSupporter
 from hubs.models.hub import Hub
 import logging
 import uuid
@@ -253,6 +255,18 @@ class ListMemberProjectsView(ListAPIView):
                 is_active=True
             ).order_by('-id')
 
+class ListMemberIdeasView(ListAPIView):
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ['parent_organization__url_slug']
+    pagination_class = MembersPagination
+    serializer_class = IdeaFromIdeaSupporterSerializer
+
+    def get_queryset(self):
+        searched_user = UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user
+        return IdeaSupporter.objects.filter(
+            user=searched_user
+        ).order_by('-id')
 
 class ListMemberOrganizationsView(ListAPIView):
     permission_classes = [AllowAny]
