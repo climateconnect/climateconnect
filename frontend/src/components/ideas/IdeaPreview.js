@@ -100,6 +100,7 @@ export default function IdeaPreview({
   index,
   hubLocation,
   hubData,
+  sendToIdeaPageOnClick,
 }) {
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
@@ -107,7 +108,10 @@ export default function IdeaPreview({
   const color = getIdeaBorderColor({ idea: idea, index: index, isCreateCard: isCreateCard });
   const classes = useStyles({ borderColor: !isCreateCard && color });
   const [open, setOpen] = useState(false);
+  
   const handleCardClick = (e) => {
+    if(sendToIdeaPageOnClick)
+      return
     e.preventDefault();
     if (isCreateCard) {
       if (!user) {
@@ -123,15 +127,22 @@ export default function IdeaPreview({
       onClickIdea(idea);
     }
   };
+
   const onClose = () => {
     setOpen(false);
   };
+  
   return (
     <>
       <Link
         className={classes.noUnderline}
         onClick={handleCardClick}
-        href={`${window.location.origin}${window.location.pathname}?idea=${idea?.url_slug}${window.location.hash}`}
+        href={
+          sendToIdeaPageOnClick ? 
+            `${process.env.BASE_URL}/hubs/${idea?.hub_shared_in?.url_slug}?idea=${idea?.url_slug}#ideas`
+          :
+            `${window.location.origin}${window.location.pathname}?idea=${idea?.url_slug}${window.location.hash}`
+        }
       >
         <Card className={classes.root} variant="outlined">
           {isCreateCard ? <CreateCardContent /> : <IdeaCardContent idea={idea} />}
