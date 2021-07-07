@@ -44,7 +44,12 @@ export default function IdeaPreviews({
 }) {
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(
-    toIdeaPreviews({ ideas: ideas, onClickIdea: onClickIdea, hasIdeaOpen: hasIdeaOpen, sendToIdeaPageOnClick: sendToIdeaPageOnClick })
+    toIdeaPreviews({
+      ideas: ideas,
+      onClickIdea: onClickIdea,
+      hasIdeaOpen: hasIdeaOpen,
+      sendToIdeaPageOnClick: sendToIdeaPageOnClick,
+    })
   );
 
   const [isFetchingMore, setIsFetchingMore] = React.useState(false);
@@ -83,7 +88,7 @@ export default function IdeaPreviews({
         spacing={2}
         alignContent="flex-start"
       >
-        {!noCreateCard &&
+        {!noCreateCard && (
           <GridItem
             isCreateCard
             allHubs={allHubs}
@@ -92,14 +97,14 @@ export default function IdeaPreviews({
             hubLocation={hubLocation}
             hubData={hubData}
           />
-        }
+        )}
         {parentHandlesGridItems
           ? toIdeaPreviews({
               ideas: ideas,
               onClickIdea: onClickIdea,
               hasIdeaOpen: hasIdeaOpen,
               hubData: hubData,
-              sendToIdeaPageOnClick: sendToIdeaPageOnClick
+              sendToIdeaPageOnClick: sendToIdeaPageOnClick,
             })
           : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="idea-previews-spinner" />}

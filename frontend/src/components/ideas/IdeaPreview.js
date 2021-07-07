@@ -108,10 +108,9 @@ export default function IdeaPreview({
   const color = getIdeaBorderColor({ idea: idea, index: index, isCreateCard: isCreateCard });
   const classes = useStyles({ borderColor: !isCreateCard && color });
   const [open, setOpen] = useState(false);
-  
+
   const handleCardClick = (e) => {
-    if(sendToIdeaPageOnClick)
-      return
+    if (sendToIdeaPageOnClick) return;
     e.preventDefault();
     if (isCreateCard) {
       if (!user) {
@@ -131,17 +130,16 @@ export default function IdeaPreview({
   const onClose = () => {
     setOpen(false);
   };
-  
+
   return (
     <>
       <Link
         className={classes.noUnderline}
         onClick={handleCardClick}
         href={
-          sendToIdeaPageOnClick ? 
-            `${process.env.BASE_URL}/hubs/${idea?.hub_shared_in?.url_slug}?idea=${idea?.url_slug}#ideas`
-          :
-            `${window.location.origin}${window.location.pathname}?idea=${idea?.url_slug}${window.location.hash}`
+          sendToIdeaPageOnClick
+            ? `${process.env.BASE_URL}/hubs/${idea?.hub_shared_in?.url_slug}?idea=${idea?.url_slug}#ideas`
+            : `${window.location.origin}${window.location.pathname}?idea=${idea?.url_slug}${window.location.hash}`
         }
       >
         <Card className={classes.root} variant="outlined">

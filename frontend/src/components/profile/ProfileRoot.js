@@ -91,10 +91,10 @@ export default function ProfileRoot({
   };
   const projectsRef = useRef(null);
   const organizationsRef = useRef(null);
-  const ideasRef = useRef(null)
+  const ideasRef = useRef(null);
   const scrollDownSmooth = (ref) => {
-    ref.current.scrollIntoView({ behavior: "smooth" })
-  }
+    ref.current.scrollIntoView({ behavior: "smooth" });
+  };
   useEffect(() => {
     const URL = window.location.href;
     if (URL.slice(-9) == "#projects") {
@@ -127,7 +127,7 @@ export default function ProfileRoot({
           {texts.send_message}
         </Button>
       )}
-      <Container className={classes.container} ref={projectsRef}>        
+      <Container className={classes.container} ref={projectsRef}>
         <h2>
           {isOwnAccount ? texts.your_projects + ":" : texts.this_users_projects + ":"}
           <Button
@@ -149,28 +149,20 @@ export default function ProfileRoot({
           </Typography>
         )}
       </Container>
-      {(isOwnAccount || (ideas && ideas.length > 0)) &&
-        (
-          <Container className={classes.container} ref={ideasRef}>
-            <h2>
-              {isOwnAccount ? texts.your_ideas + ":" : texts.this_users_ideas + ":"}
-            </h2>
-            {ideas && ideas.length ? (
-              <IdeaPreviews 
-                ideas={ideas} 
-                noCreateCard
-                sendToIdeaPageOnClick
-              />
-            ) : (
-              <Typography>
-                {(isOwnAccount ? texts.you_are : texts.user_name_is) +
-                  " " +
-                  texts.not_involved_in_any_ideas_yet}
-              </Typography>
-            )}
-          </Container>
-        )
-      }
+      {(isOwnAccount || (ideas && ideas.length > 0)) && (
+        <Container className={classes.container} ref={ideasRef}>
+          <h2>{isOwnAccount ? texts.your_ideas + ":" : texts.this_users_ideas + ":"}</h2>
+          {ideas && ideas.length ? (
+            <IdeaPreviews ideas={ideas} noCreateCard sendToIdeaPageOnClick />
+          ) : (
+            <Typography>
+              {(isOwnAccount ? texts.you_are : texts.user_name_is) +
+                " " +
+                texts.not_involved_in_any_ideas_yet}
+            </Typography>
+          )}
+        </Container>
+      )}
       <Container className={classes.container} ref={organizationsRef}>
         <h2>
           {isOwnAccount ? texts.your_organizations + ":" : texts.this_users_organizations + ":"}

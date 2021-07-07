@@ -17,14 +17,14 @@ export async function getServerSideProps(ctx) {
     getProfileByUrlIfExists(profileUrl, token, ctx.locale),
     getOrganizationsByUser(profileUrl, token, ctx.locale),
     getProjectsByUser(profileUrl, token, ctx.locale),
-    getIdeasByUser(profileUrl, token, ctx.locale)
+    getIdeasByUser(profileUrl, token, ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
       profile: profile,
       organizations: organizations,
       projects: projects,
-      ideas: ideas
+      ideas: ideas,
     }),
   };
 }
@@ -90,7 +90,7 @@ async function getIdeasByUser(profileUrl, token, locale) {
     });
     if (!resp.data) return null;
     else {
-      return resp.data.results.map(r=>r.idea);
+      return resp.data.results.map((r) => r.idea);
     }
   } catch (err) {
     console.log(err);
