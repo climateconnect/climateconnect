@@ -429,6 +429,7 @@ function NormalScreenLinks({
           localePrefix: localePrefix,
         });
         const Icon = link.icon;
+
         if (!(isMediumScreen && link.hideOnMediumScreen))
           return (
             <React.Fragment key={index}>

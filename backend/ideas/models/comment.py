@@ -18,4 +18,4 @@ class IdeaComment(Comment):
         verbose_name_plural = "Idea comments"
     
     def __str__(self):
-        return "Comment made to idea: {}".format(self.idea.name)
+        return "({}) Comment made to idea: {}".format(self.id, self.idea.name)

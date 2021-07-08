@@ -1,4 +1,6 @@
 # Python imports
+from ideas.utility.notification import create_idea_comment_notification, create_idea_join_notification
+from ideas.models.support import IdeaSupporter
 import logging
 
 # Django/Django REST imports
@@ -132,7 +134,7 @@ class CreateIdeaView(APIView):
     def post(self, request):
         required_params = [
             'name', 'short_description', 'hub', 
-            'location', 'source_language'
+            'location', 'source_language', 'hub_shared_in'
         ]
         for param in required_params:
             if param not in request.data:
@@ -166,6 +168,7 @@ class CreateIdeaView(APIView):
 
         # Creating group chat for the idea.
         if idea:
+            IdeaSupporter.objects.create(user=request.user, idea=idea)
             create_private_or_group_chat(creator=request.user, group_chat_name=idea.name, related_idea=idea)
         return Response(idea.url_slug, status=status.HTTP_200_OK)
 
@@ -180,10 +183,14 @@ class JoinIdeaChatView(APIView):
         try:
             chat = MessageParticipants.objects.get(related_idea=idea.id)
             member_role = Role.objects.get(role_type=Role.READ_ONLY_TYPE)
+            idea_supporter = IdeaSupporter.objects.get_or_create(
+                idea=idea, user=request.user
+            )
             try:
                 Participant.objects.get(user=request.user, chat=chat)
-            except Participant.DoesNotExist:
+            except Participant.DoesNotExist:                
                 Participant.objects.create(user=request.user, chat=chat, role=member_role)
+            create_idea_join_notification(idea, idea_supporter[0], chat.chat_uuid)
         except MessageParticipants.DoesNotExist:
             return Response({'message': 'Group chat not found'}, status=status.HTTP_404_NOT_FOUND)
         # Participant.objects.get_or_create(user=request.user, chat=idea.related_idea_message_participant)

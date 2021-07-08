@@ -52,8 +52,10 @@ const useStyles = makeStyles((theme) => ({
   },
   ideaInfo: {
     marginLeft: theme.spacing(4),
+    marginRight: theme.spacing(2.5),
     [theme.breakpoints.down("sm")]: {
       marginLeft: 0,
+      marginRight: 0,
     },
   },
   name: {
@@ -134,10 +136,13 @@ export default function IdeaRoot({
   containerOffsetTop,
   userOrganizations,
   allHubs,
+  handleSetComments,
 }) {
   const token = new Cookies().get("token");
   const borderColor = getIdeaBorderColor({ idea: idea, index: idea.index });
-  const { user } = useContext(UserContext);
+  const { user, notifications, setNotificationsRead, refreshNotifications } = useContext(
+    UserContext
+  );
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
   const handleIdeaClose = (e) => {
@@ -146,14 +151,14 @@ export default function IdeaRoot({
 
   useEffect(() => {
     //This is executed when the component is about to unmount
-    //Without this code, the ide would reopen itself when it finishes loading, 
+    //Without this code, the ide would reopen itself when it finishes loading,
     //even if it has already been closed by the user
     return () => {
-      onRatingChange = null
-      handleAddComments = null
-      handleRemoveComment = null
-    }
-}, [])
+      onRatingChange = null;
+      handleAddComments = null;
+      handleRemoveComment = null;
+    };
+  }, []);
 
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [loading, setLoading] = useState(!!token);
@@ -190,26 +195,45 @@ export default function IdeaRoot({
     borderColor: borderColor,
   });
 
+  const setNotificationsReadAndRefresh = async (notification_to_set_read) => {
+    await setNotificationsRead(token, notification_to_set_read, locale);
+    await refreshNotifications();
+  };
+
   useEffect(
     async function () {
       if (token) {
         setLoading(true);
+        setIsEditing(false);
         const [userRating, comments, hasJoinedIdea] = await Promise.all([
           getUserRatingFromServer(idea, token, locale),
           getIdeaCommentsFromServer(idea, token, locale),
           getHasJoinedIdea(idea, token, locale),
         ]);
         //The user has closed the idea in the mean time!
-        if(!idea) {
-          return
+        if (!idea) {
+          return;
         }
-        setUserRating && setUserRating({ ...userRating, last_locked_rating_score: userRating?.rating_score });
-        setHasJoinedIdea && setHasJoinedIdea({
-          has_joined: hasJoinedIdea?.has_joined,
-          chat_uuid: hasJoinedIdea?.chat_uuid,
-        });
-        handleAddComments && handleAddComments(comments);
+        const all_comment_ids = comments.reduce(function (allComments, curComment) {
+          allComments.push(curComment.id);
+          if (curComment.replies?.length > 0) {
+            allComments = [...allComments, ...curComment.replies.map((c) => c.id)];
+          }
+          return allComments;
+        }, []);
+        const notification_to_set_read = notifications.filter((n) =>
+          all_comment_ids.includes(n.idea_comment?.id)
+        );
+        setUserRating &&
+          setUserRating({ ...userRating, last_locked_rating_score: userRating?.rating_score });
+        setHasJoinedIdea &&
+          setHasJoinedIdea({
+            has_joined: hasJoinedIdea?.has_joined,
+            chat_uuid: hasJoinedIdea?.chat_uuid,
+          });
+        handleSetComments && handleSetComments(comments);
         setLoading(false);
+        await setNotificationsReadAndRefresh(notification_to_set_read);
       }
     },
     [idea.url_slug]
@@ -226,7 +250,7 @@ export default function IdeaRoot({
         message: texts.please_sign_in_to_rate_an_idea,
         promptLogIn: true,
         newHash: window.location.hash,
-        error: true
+        error: true,
       });
       return;
     }
@@ -263,9 +287,9 @@ export default function IdeaRoot({
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-  const handleJoinIdea= (newHasJoinedIdeaObject) => {
-    setHasJoinedIdea(newHasJoinedIdeaObject)
-  }
+  const handleJoinIdea = (newHasJoinedIdeaObject) => {
+    setHasJoinedIdea(newHasJoinedIdeaObject);
+  };
 
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale, idea: idea });
@@ -308,13 +332,11 @@ export default function IdeaRoot({
                     {capitalizeFirstLetter(texts.by)}
                   </Typography>
                 )}
-                {
-                  !idea.organization ?(
-                    <MiniProfilePreview profile={idea.user} size="medium" />
-                  ) : (
-                    <MiniOrganizationPreview organization={idea.organization} size="medium"/>
-                  )
-                }
+                {!idea.organization ? (
+                  <MiniProfilePreview profile={idea.user} size="medium" />
+                ) : (
+                  <MiniOrganizationPreview organization={idea.organization} size="medium" />
+                )}
                 <Typography className={classes.createdAtText}>
                   {isNarrowScreen ? (
                     <>

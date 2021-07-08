@@ -1,7 +1,7 @@
 import { apiRequest } from "./apiOperations";
 
 export async function getAllHubs(locale, just_sector_hubs) {
-  const url = just_sector_hubs ? `/api/sector_hubs/` : `/api/hubs/`
+  const url = just_sector_hubs ? `/api/sector_hubs/` : `/api/hubs/`;
   try {
     const resp = await apiRequest({
       method: "get",

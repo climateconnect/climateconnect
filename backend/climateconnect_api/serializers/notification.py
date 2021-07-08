@@ -1,12 +1,15 @@
+from ideas.models.ideas import Idea
+from ideas.models.comment import IdeaComment
+from ideas.serializers.comment import IdeaCommentSerializer
 from rest_framework import serializers
-from chat_messages.models.message import Message
+from chat_messages.models.message import Message, MessageParticipants
 from climateconnect_api.models import UserProfile
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 
 from climateconnect_api.models import (
     Notification, UserNotification
 )
-from chat_messages.serializers.message import MessageSerializer
+from chat_messages.serializers.message import MessageParticipantSerializer, MessageSerializer
 from organization.serializers.content import ProjectCommentSerializer
 
 class NotificationSerializer(serializers.ModelSerializer):
@@ -17,6 +20,11 @@ class NotificationSerializer(serializers.ModelSerializer):
     project_comment_parent = serializers.SerializerMethodField()
     project = serializers.SerializerMethodField()
     project_follower = serializers.SerializerMethodField()
+    idea = serializers.SerializerMethodField()
+    idea_comment = serializers.SerializerMethodField()
+    idea_comment_parent = serializers.SerializerMethodField()
+    idea_supporter = serializers.SerializerMethodField()
+    idea_supporter_chat = serializers.SerializerMethodField()
 
     class Meta:
         model = Notification
@@ -30,7 +38,12 @@ class NotificationSerializer(serializers.ModelSerializer):
             'project_comment',
             'project_comment_parent',
             'project',
-            'project_follower'
+            'project_follower',
+            'idea',
+            'idea_comment',
+            'idea_comment_parent',
+            'idea_supporter',
+            'idea_supporter_chat'
         )
     
     def get_last_message(self, obj):
@@ -81,3 +94,37 @@ class NotificationSerializer(serializers.ModelSerializer):
             follower_user = UserProfile.objects.filter(user=obj.project_follower.user)
             serializer = UserProfileStubSerializer(follower_user[0])
             return serializer.data
+
+    def get_idea(self, obj):
+        if obj.idea_comment:
+            return {
+                "name": obj.idea_comment.idea.name,
+                "url_slug": obj.idea_comment.idea.url_slug
+            }
+        if obj.idea_supporter:
+            return {
+                "name": obj.idea_supporter.idea.name,
+                "url_slug": obj.idea_supporter.idea.url_slug
+            }
+
+    def get_idea_comment(self, obj):
+        if obj.idea_comment:
+            serializer = IdeaCommentSerializer(obj.idea_comment)
+            return serializer.data
+
+    def get_idea_comment_parent(self, obj):
+        if obj.idea_comment and obj.idea_comment.parent_comment:
+            serializer = IdeaCommentSerializer(obj.idea_comment.parent_comment.ideacomment)
+            return serializer.data
+
+    def get_idea_supporter(self, obj):
+        if obj.idea_supporter:
+            supporter_user = UserProfile.objects.filter(user=obj.idea_supporter.user)
+            serializer = UserProfileStubSerializer(supporter_user[0])
+            return serializer.data
+
+    def get_idea_supporter_chat(self, obj):
+        if obj.idea_supporter:
+            idea = obj.idea_supporter.idea
+            chat = MessageParticipants.objects.get(related_idea=idea)
+            return chat.chat_uuid

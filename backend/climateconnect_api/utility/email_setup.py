@@ -1,6 +1,5 @@
+from climateconnect_api.models.user import UserProfile
 from mailjet_rest import Client
-from datetime import timedelta
-from django.utils import timezone
 from django.conf import settings
 
 import logging
@@ -8,6 +7,53 @@ logger = logging.getLogger(__name__)
 
 mailjet_send_api = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE), version='v3.1')
 mailjet_api = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE))
+
+def get_template_id(template_key, user, lang_code):
+    if not lang_code:
+        try:
+            user_profile = UserProfile.objects.get(user=user)    
+            lang_code = user_profile.language.language_code    
+        except UserProfile.DoesNotExist:
+            print("there is no user profile!")
+
+    if not lang_code == "en":
+        return getattr(settings, template_key + "_" + lang_code.upper())
+    else:
+        return getattr(settings, template_key)
+
+def send_email(user, variables, template_id, subject):
+    data = {
+        'Messages': [
+            {
+                "From": {
+                    "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
+                    "Name": "Climate Connect"
+                },
+                "To": [
+                    {
+                        "Email": user.email,
+                        "Name": user.first_name + " " + user.last_name
+                    }
+                ],
+                "TemplateID": int(template_id),
+                "TemplateLanguage": True,                
+                "Variables": variables,
+                "Subject": subject,
+                "TemplateErrorReporting": {
+                    "Email": "christoph.stoll@climateconnect.earth",
+                    "Name": "Christoph Stoll"
+                }
+            }
+        ]
+    }
+
+    try:
+        mail = mailjet_send_api.send.create(data=data)
+        return mail
+    except Exception as ex:
+        logger.error("%s: Error sending email: %s" % (
+            send_email.__name__, ex
+        ))
 
 def get_user_verification_url(verification_key):
     # TODO: Set expire time for user verification

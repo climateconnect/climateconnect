@@ -23,11 +23,11 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   mediumOrgName: {
-    fontSize:16 
+    fontSize: 16,
   },
   mediumOrgImage: {
-    height: 30
-  }
+    height: 30,
+  },
 }));
 
 export default function MiniOrganizationPreview({
@@ -37,11 +37,11 @@ export default function MiniOrganizationPreview({
   onDelete,
   nolink,
 }) {
-  const { locale } = useContext(UserContext)
+  const { locale } = useContext(UserContext);
   if (!nolink)
     return (
-      <Link 
-        className={className} 
+      <Link
+        className={className}
         color="inherit"
         href={getLocalePrefix(locale) + "/organizations/" + organization.url_slug}
         target="_blank"
@@ -65,15 +65,15 @@ function Content({ organization, size, onDelete }) {
     <span className={classes.wrapper}>
       <img
         src={getImageUrl(organization.thumbnail_image)}
-        className={`${classes.orgImage} ${size === "small" && classes.smallOrgImage} ${size === "medium" && classes.mediumOrgImage}`}
+        className={`${classes.orgImage} ${size === "small" && classes.smallOrgImage} ${
+          size === "medium" && classes.mediumOrgImage
+        }`}
         alt={texts.organizations_logo}
       />
       {size === "small" ? (
         <>{organization.name}</>
       ) : size === "medium" ? (
-        <Typography className={classes.mediumOrgName}>
-          {organization.name}
-        </Typography>
+        <Typography className={classes.mediumOrgName}>{organization.name}</Typography>
       ) : (
         <Typography variant="h5" className={classes.orgName}>
           {organization.name}

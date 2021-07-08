@@ -219,7 +219,7 @@ const getHubs = async (locale) => {
       url: `/api/hubs/`,
       locale: locale,
     });
-    return resp.data.results;
+    return resp.data.results.slice(0, 4);
   } catch (err) {
     if (err.response && err.response.data)
       console.log("Error in getHubData: " + err.response.data.detail);

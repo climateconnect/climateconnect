@@ -7,11 +7,11 @@ import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles(() => ({
   signUpButton: {
-        background: "white",
+    background: "white",
   },
 }));
 
-export default function LogInAction({ onClose, }) {
+export default function LogInAction({ onClose }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });

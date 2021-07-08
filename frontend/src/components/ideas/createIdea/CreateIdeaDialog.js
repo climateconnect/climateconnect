@@ -43,6 +43,7 @@ export default function CreateIdeaDialog({
   allHubs,
   userOrganizations,
   hubLocation,
+  hubData,
 }) {
   const [waitingForCreation, setWaitingForCreation] = useState(false);
   const classes = useStyles({ userOrganization: userOrganizations });
@@ -57,6 +58,7 @@ export default function CreateIdeaDialog({
     hub: "",
     is_organizations_idea: false,
     parent_organization: null,
+    hub_shared_in: hubData?.url_slug,
     location: hubLocation && {
       ...hubLocation,
       type: getTypeFromLocation(hubLocation),
@@ -147,8 +149,9 @@ export default function CreateIdeaDialog({
       titleTextClassName={classes.titleText}
       dialogContentClass={classes.dialogContentClass}
     >
-      <LoadingSpinner className={classes.loadingSpinner} isLoading={userOrganizations === null} />
-      {waitingForCreation ? (
+      {userOrganizations === null ? (
+        <LoadingSpinner className={classes.loadingSpinner} isLoading={userOrganizations === null} />
+      ) : waitingForCreation ? (
         <IdeaCreationLoadingScreen />
       ) : (
         <div className={classes.content}>

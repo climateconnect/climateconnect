@@ -32,7 +32,8 @@ class HubSerializer(serializers.ModelSerializer):
             "stat_box_title",
             "image_attribution",
             'hub_type',
-            'location'
+            'location',
+            'url_slug'
         )
     
     def get_stats(self, obj):

@@ -13,6 +13,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from ideas.models import IdeaComment
 from ideas.serializers.comment import IdeaCommentSerializer
 from ideas.utility.idea import verify_idea
+from ideas.utility.notification import create_idea_comment_reply_notification, create_idea_comment_notification
 
 import logging
 logger = logging.getLogger(__name__)
@@ -28,8 +29,10 @@ class ListIdeaCommentsView(ListAPIView):
 
         return IdeaComment.objects.filter(
             idea__url_slug=self.kwargs['url_slug'],
-            is_abusive=False, deleted_at__isnull=True
+            is_abusive=False, deleted_at__isnull=True,
+            parent_comment=None
         ).order_by('-id', 'updated_at', 'created_at')
+
 class IdeaCommentsView(APIView):
     permission_classes = [IsAuthenticated]
     
@@ -57,6 +60,11 @@ class IdeaCommentsView(APIView):
             idea=idea,
             parent_comment=parent_comment
         )
+
+        if idea_comment.parent_comment:
+            create_idea_comment_reply_notification(idea, idea_comment, request.user)
+        else:
+            create_idea_comment_notification(idea, idea_comment, request.user)
         serializer = IdeaCommentSerializer(idea_comment)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 

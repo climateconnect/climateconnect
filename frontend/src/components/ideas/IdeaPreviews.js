@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   },
 });
 
-const toIdeaPreviews = (ideas, onClickIdea, hasIdeaOpen) => {
+const toIdeaPreviews = ({ ideas, onClickIdea, hasIdeaOpen, hubData, sendToIdeaPageOnClick }) => {
   return ideas.map((idea, index) => (
     <GridItem
       index={index}
@@ -21,6 +21,8 @@ const toIdeaPreviews = (ideas, onClickIdea, hasIdeaOpen) => {
       key={idea.url_slug}
       idea={idea}
       hasIdeaOpen={hasIdeaOpen}
+      hubData={hubData}
+      sendToIdeaPageOnClick={sendToIdeaPageOnClick}
     />
   ));
 };
@@ -36,9 +38,19 @@ export default function IdeaPreviews({
   hasIdeaOpen,
   className,
   hubLocation,
+  hubData,
+  noCreateCard,
+  sendToIdeaPageOnClick,
 }) {
   const classes = useStyles();
-  const [gridItems, setGridItems] = React.useState(toIdeaPreviews(ideas, onClickIdea, hasIdeaOpen));
+  const [gridItems, setGridItems] = React.useState(
+    toIdeaPreviews({
+      ideas: ideas,
+      onClickIdea: onClickIdea,
+      hasIdeaOpen: hasIdeaOpen,
+      sendToIdeaPageOnClick: sendToIdeaPageOnClick,
+    })
+  );
 
   const [isFetchingMore, setIsFetchingMore] = React.useState(false);
 
@@ -54,7 +66,7 @@ export default function IdeaPreviews({
       setIsFetchingMore(true);
       const newIdeas = await loadFunc();
       if (!parentHandlesGridItems) {
-        setGridItems([...gridItems, ...toIdeaPreviews(newIdeas)]);
+        setGridItems([...gridItems, ...toIdeaPreviews({ ideas: newIdeas, hubData: hubData })]);
       }
       setIsFetchingMore(false);
     }
@@ -76,14 +88,25 @@ export default function IdeaPreviews({
         spacing={2}
         alignContent="flex-start"
       >
-        <GridItem
-          isCreateCard
-          allHubs={allHubs}
-          userOrganizations={userOrganizations}
-          hasIdeaOpen={hasIdeaOpen}
-          hubLocation={hubLocation}
-        />
-        {parentHandlesGridItems ? toIdeaPreviews(ideas, onClickIdea, hasIdeaOpen) : gridItems}
+        {!noCreateCard && (
+          <GridItem
+            isCreateCard
+            allHubs={allHubs}
+            userOrganizations={userOrganizations}
+            hasIdeaOpen={hasIdeaOpen}
+            hubLocation={hubLocation}
+            hubData={hubData}
+          />
+        )}
+        {parentHandlesGridItems
+          ? toIdeaPreviews({
+              ideas: ideas,
+              onClickIdea: onClickIdea,
+              hasIdeaOpen: hasIdeaOpen,
+              hubData: hubData,
+              sendToIdeaPageOnClick: sendToIdeaPageOnClick,
+            })
+          : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="idea-previews-spinner" />}
       </InfiniteScroll>
     </>
@@ -99,6 +122,8 @@ function GridItem({
   hasIdeaOpen,
   index,
   hubLocation,
+  hubData,
+  sendToIdeaPageOnClick,
 }) {
   return (
     <Grid
@@ -118,6 +143,8 @@ function GridItem({
         onClickIdea={onClickIdea}
         index={index}
         hubLocation={hubLocation}
+        hubData={hubData}
+        sendToIdeaPageOnClick={sendToIdeaPageOnClick}
       />
     </Grid>
   );

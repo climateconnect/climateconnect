@@ -3,12 +3,13 @@ import {
   Snackbar,
   SnackbarContent,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import Head from "next/head";
 import { Router } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
+
 import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
@@ -40,10 +41,10 @@ const useStyles = makeStyles((theme) => ({
     background: `${theme.palette.primary.main}`,
   },
   errorSnackBar: {
-    background: theme.palette.error.main
+    background: theme.palette.error.main,
   },
   successSnackBar: {
-    background: theme.palette.success.main
+    background: theme.palette.success.main,
   },
   snackBarMessage: {
     maxWidth: 300,
@@ -72,7 +73,7 @@ export default function LayoutWrapper({
   const [loading, setLoading] = React.useState(true);
   const [bannerOpen, setBannerOpen] = React.useState(true);
   const { acceptedNecessary, locale, isLoading } = useContext(UserContext);
-  const texts = getTexts({ page: "general", locale: locale });  
+  const texts = getTexts({ page: "general", locale: locale });
 
   const handleUpdateHash = (newHash) => {
     setSnackbarProps({ ...snackbarProps, hash: newHash });
@@ -113,7 +114,13 @@ export default function LayoutWrapper({
       message: message,
       error: error,
       success: success,
-      action: promptLogIn ? <LogInAction onClose={handleSnackbarClose} /> : action ? action : <CloseSnackbarAction onClose={handleSnackbarClose} />,
+      action: promptLogIn ? (
+        <LogInAction onClose={handleSnackbarClose} />
+      ) : action ? (
+        action
+      ) : (
+        <CloseSnackbarAction onClose={handleSnackbarClose} />
+      ),
     };
     if (newHash) newStateValue.hash = newHash;
     setSnackbarProps(newStateValue);
@@ -123,6 +130,7 @@ export default function LayoutWrapper({
     showFeedbackMessage: showFeedbackMessage,
     handleUpdateHash: handleUpdateHash,
   };
+
   return (
     <>
       <Head>
@@ -173,7 +181,9 @@ export default function LayoutWrapper({
                   message={snackbarProps.message}
                   action={snackbarProps.action}
                   classes={{
-                    root: `${classes.snackBar} ${snackbarProps.error && classes.errorSnackBar} ${snackbarProps.success && classes.successSnackBar}`,
+                    root: `${classes.snackBar} ${snackbarProps.error && classes.errorSnackBar} ${
+                      snackbarProps.success && classes.successSnackBar
+                    }`,
                     message: classes.snackBarMessage,
                   }}
                 />

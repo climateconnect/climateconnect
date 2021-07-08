@@ -1,5 +1,6 @@
 import React from "react";
 import DateDisplay from "../../src/components/general/DateDisplay";
+import { SHORT_DESCRIPTION_MAX_LENGTH } from "../../src/components/ideas/createIdea/IdeaInfoStep";
 
 const ONE_WEEK_IN_MINISECONDS = 1000 * 60 * 60 * 24 * 7;
 
@@ -123,7 +124,7 @@ export default function getIdeaTexts({ idea }) {
       de: "Diese Idee hat noch niemand bewertet",
     },
     join_in: {
-      en: "Join In",
+      en: "Participate",
       de: "Mitmachen",
     },
     interactions: {
@@ -136,7 +137,7 @@ export default function getIdeaTexts({ idea }) {
     },
     do_you_want_to_join_text: {
       en:
-        'If you join in you will be added to a group chat will all the other people clicked the "Join In" button. Do you want to join in?',
+        'If you participate you will be added to a group chat will all the other people clicked the "Participate" button. Do you want to participate?',
       de:
         'Wenn du mitmachst, wirst du zu einem Gruppenchat mit allen anderen, die "Mitmachen" geklickt haben, hinzugefügt. Möchtest du mitmachen?',
     },
@@ -187,8 +188,12 @@ export default function getIdeaTexts({ idea }) {
       de: "Bitte melde dich an, um eine Idee zu teilen!",
     },
     you_have_successfully_joined_the_idea_click_open_groupchat: {
-      en: "You have joined! Click on \"Open Group Chat\" to chat with the others.",
-      de: "Du machst jetzt mit! Klicke auf \"Gruppenchat öffnen\", um mit den anderen zu reden."
-    }
+      en: 'You have joined! Click on "Open Group Chat" to chat with the others.',
+      de: 'Du machst jetzt mit! Klicke auf "Gruppenchat öffnen", um mit den anderen zu reden.',
+    },
+    idea_description_max_length_reached: {
+      en: `You can only use up to ${SHORT_DESCRIPTION_MAX_LENGTH} characters in you idea's description.`,
+      de: `Die Beschreibung deiner Idee kann nur bis zu ${SHORT_DESCRIPTION_MAX_LENGTH} Zeichen lang sein.`,
+    },
   };
 }

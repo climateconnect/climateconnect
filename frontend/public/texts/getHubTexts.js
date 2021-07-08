@@ -87,7 +87,7 @@ export default function getHubTexts({ hubName }) {
         Dort findest du konkrete und wirkungsvolle Lösungen, die von Climate Connect Nutzern erstellt wurden.
         Lass dich inspirieren, finde Aktionen, die zeigen, wie du den Klimawandel bekämpfen kannst und
         engagiere dich in einem Projekt, das dir gefällt. Wer weiß, vielleicht findest du ja auch ein richtig cooles
-        Projekt, das woanders schon erfolgreich ist und du kannst es in deiner Stadt reproduzieren! Kontaktiere 
+        Projekt, das woanders schon erfolgreich ist und du kannst es in deiner Stadt reproduzieren! Kontaktiere
         die Projektersteller direkt über die Projektseite und tausche dich mit Ihnen aus!`,
     },
     hubs_overview_largescreen_explainer_text_last_part: {
@@ -105,7 +105,7 @@ export default function getHubTexts({ hubName }) {
       are working on by visiting the Hubs. Get a rundown of every main field of action in the fight
       against climate change.`,
       de: `Entdecke Fakten und konkrete Klima-Aktionen, -Projekte und -Lösungen, an denen Climate Connect Nutzer
-      arbeiten, indem du die Hubs besuchst. Verschaffe dir damit einen Überblick über alle wichtigen 
+      arbeiten, indem du die Hubs besuchst. Verschaffe dir damit einen Überblick über alle wichtigen
       Handlungsfelder im Kampf gegen den Klimawandel.`,
     },
     click_here_to_minimize_info: {
@@ -121,7 +121,9 @@ export default function getHubTexts({ hubName }) {
       de: "Füge Hubs (Sektoren) hinzu, in denen deine Organisation aktiv ist",
     },
   };
+
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };
   if (hubName === "Food") return { ...generalHubTexts, ...getFoodHubDescription() };
+
   return generalHubTexts;
 }

@@ -99,22 +99,26 @@ export default function IdeaPreview({
   onClickIdea,
   index,
   hubLocation,
+  hubData,
+  sendToIdeaPageOnClick,
 }) {
-  const { user, locale }  = useContext(UserContext)
-  const texts = getTexts({page: "idea", locale: locale})
-  const { showFeedbackMessage } = useContext(FeedbackContext)
+  const { user, locale } = useContext(UserContext);
+  const texts = getTexts({ page: "idea", locale: locale });
+  const { showFeedbackMessage } = useContext(FeedbackContext);
   const color = getIdeaBorderColor({ idea: idea, index: index, isCreateCard: isCreateCard });
   const classes = useStyles({ borderColor: !isCreateCard && color });
   const [open, setOpen] = useState(false);
+
   const handleCardClick = (e) => {
+    if (sendToIdeaPageOnClick) return;
     e.preventDefault();
     if (isCreateCard) {
-      if(!user) {
+      if (!user) {
         showFeedbackMessage({
           message: texts.sign_up_or_log_in_to_share_an_idea,
           promptLogIn: true,
-          error: true
-        })
+          error: true,
+        });
       } else {
         setOpen(true);
       }
@@ -122,15 +126,21 @@ export default function IdeaPreview({
       onClickIdea(idea);
     }
   };
+
   const onClose = () => {
     setOpen(false);
   };
+
   return (
     <>
       <Link
         className={classes.noUnderline}
         onClick={handleCardClick}
-        href={`${window.location.origin}${window.location.pathname}?idea=${idea?.url_slug}${window.location.hash}`}
+        href={
+          sendToIdeaPageOnClick
+            ? `${process.env.BASE_URL}/hubs/${idea?.hub_shared_in?.url_slug}?idea=${idea?.url_slug}#ideas`
+            : `${window.location.origin}${window.location.pathname}?idea=${idea?.url_slug}${window.location.hash}`
+        }
       >
         <Card className={classes.root} variant="outlined">
           {isCreateCard ? <CreateCardContent /> : <IdeaCardContent idea={idea} />}
@@ -143,6 +153,7 @@ export default function IdeaPreview({
           allHubs={allHubs}
           userOrganizations={userOrganizations}
           hubLocation={hubLocation}
+          hubData={hubData}
         />
       )}
     </>
@@ -190,7 +201,9 @@ function IdeaCardContent(idea) {
       <div>
         {idea.idea.image === undefined || idea.idea.image === null ? (
           <Typography color="secondary" component="h4" className={classes.shortDescription}>
-            {idea.idea.short_description?.length > 200 ? idea.idea.short_description.slice(0, 200) + "..." : idea.idea.short_description}
+            {idea.idea.short_description?.length > 200
+              ? idea.idea.short_description.slice(0, 200) + "..."
+              : idea.idea.short_description}
           </Typography>
         ) : (
           <CardMedia title={idea.idea.url_slug} image={getImageUrl(idea.idea.image)}>

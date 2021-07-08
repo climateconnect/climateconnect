@@ -11,7 +11,6 @@ export async function apiRequest({
   locale,
   headers,
 }) {
-  console.log("url: " + url);
   const acceptLanguageHeadersByLocale = {
     de: "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
     en: "en-US,en;q=0.9,de-DE;q=0.8,de;q=0.7",
