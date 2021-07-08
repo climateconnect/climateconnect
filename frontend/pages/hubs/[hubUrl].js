@@ -9,7 +9,7 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo
+  membersWithAdditionalInfo,
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -25,7 +25,6 @@ import HubHeaderImage from "../../src/components/hub/HubHeaderImage";
 import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
-
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -82,6 +81,7 @@ export async function getServerSideProps(ctx) {
     props: {
       hubUrl: hubUrl,
       isLocationHub: hubData.hub_type === "location hub",
+      hubData: hubData,
       name: hubData.name,
       headline: hubData.headline,
       subHeadline: hubData.sub_headline,
@@ -124,6 +124,7 @@ export default function Hub({
   allHubs,
   initialIdeaUrlSlug,
   hubLocation,
+  hubData,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -310,6 +311,7 @@ export default function Hub({
             allHubs={allHubs}
             initialIdeaUrlSlug={initialIdeaUrlSlug}
             hubLocation={hubLocation}
+            hubData={hubData}
           />
         </div>
       </div>

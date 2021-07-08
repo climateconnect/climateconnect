@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     background: theme.palette.error.main,
   },
   successSnackBar: {
-    background: theme.palette.success.main
+    background: theme.palette.success.main,
   },
   snackBarMessage: {
     maxWidth: 300,
@@ -114,7 +114,13 @@ export default function LayoutWrapper({
       message: message,
       error: error,
       success: success,
-      action: promptLogIn ? <LogInAction onClose={handleSnackbarClose} /> : action ? action : <CloseSnackbarAction onClose={handleSnackbarClose} />,
+      action: promptLogIn ? (
+        <LogInAction onClose={handleSnackbarClose} />
+      ) : action ? (
+        action
+      ) : (
+        <CloseSnackbarAction onClose={handleSnackbarClose} />
+      ),
     };
     if (newHash) newStateValue.hash = newHash;
     setSnackbarProps(newStateValue);
@@ -175,7 +181,9 @@ export default function LayoutWrapper({
                   message={snackbarProps.message}
                   action={snackbarProps.action}
                   classes={{
-                    root: `${classes.snackBar} ${snackbarProps.error && classes.errorSnackBar} ${snackbarProps.success && classes.successSnackBar}`,
+                    root: `${classes.snackBar} ${snackbarProps.error && classes.errorSnackBar} ${
+                      snackbarProps.success && classes.successSnackBar
+                    }`,
                     message: classes.snackBarMessage,
                   }}
                 />

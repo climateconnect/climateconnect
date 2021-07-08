@@ -52,8 +52,10 @@ class UserAccountSettingsView(APIView):
             'email_on_private_chat_message',
             'email_on_group_chat_message',
             'email_on_comment_on_your_project',
+            'email_on_comment_on_your_idea',
             'email_on_reply_to_your_comment',
-            'email_on_new_project_follower'
+            'email_on_new_project_follower',
+            'email_on_idea_join'
         ]
         if 'send_newsletter' in request.data:
             for value in email_preference_values:
@@ -69,6 +71,8 @@ class UserAccountSettingsView(APIView):
             user.user_profile.email_on_comment_on_your_project = request.data['email_on_comment_on_your_project']
             user.user_profile.email_on_reply_to_your_comment = request.data['email_on_reply_to_your_comment']
             user.user_profile.email_on_new_project_follower = request.data['email_on_new_project_follower']
+            user.user_profile.email_on_comment_on_your_idea = request.data['email_on_comment_on_your_idea']
+            user.user_profile.email_on_idea_join = request.data['email_on_idea_join']
             user.user_profile.save()
 
         return Response({'message': 'Account successfully updated'}, status=status.HTTP_200_OK)

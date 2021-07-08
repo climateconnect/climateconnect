@@ -3,11 +3,11 @@ import {
   Button,
   Link,
   makeStyles,
-
   MenuItem,
   MenuList,
   Paper,
-  Popper, Typography
+  Popper,
+  Typography,
 } from "@material-ui/core";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
@@ -20,7 +20,6 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import UserImage from "./UserImage";
-
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -97,6 +96,10 @@ const useStyles = makeStyles((theme) => {
     buttonContainer: {
       display: "flex",
       justifyContent: "space-around",
+    },
+
+    cityHubOption: {
+      width: "100%",
     },
   };
 });
@@ -196,12 +199,12 @@ export default function Dashboard({ className, headline }) {
       <div className={`${classes.subsection}`}>
         <HorizontalSpacing size={1}>
           <div className={`${classes.welcomeSubsection}`}>
-            <UserImage user={user}/>
+            <UserImage user={user} />
             {/* TODO: doing some left spacing here -- trying to keep spacing directly out of the UI components, and isolated within Box components directly  */}
             <Box css={{ marginLeft: theme.spacing(1), width: "100%" }}>
               <div className={`${classes.welcomeMessage}`}>
                 <Typography style={{ fontWeight: "600" }}>
-                  {user ? texts.welcome_message_logged_in : texts.welcome_message_logged_out}                  
+                  {user ? texts.welcome_message_logged_in : texts.welcome_message_logged_out}
                 </Typography>
               </div>
             </Box>
