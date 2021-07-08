@@ -70,7 +70,6 @@ LIBRARY_APPS = [
 ]
 
 DEBUG_APPS = [
-    'debug_toolbar',
 ]
 
 if env('DEBUG') == "True":
@@ -83,7 +82,6 @@ SECURITY_MIDDLEWARE = [
 ]
 
 DEBUG_MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 NORMAL_MIDDLEWARE = [
