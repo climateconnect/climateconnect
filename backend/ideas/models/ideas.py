@@ -29,7 +29,7 @@ class Idea(models.Model):
     short_description = models.CharField(
         help_text="Summary of an idea",
         verbose_name="Summary",
-        max_length=1024
+        max_length=2048
     )
 
     image = models.ImageField(
@@ -73,6 +73,16 @@ class Idea(models.Model):
         help_text="Points to hub the idea is under",
         verbose_name="Hub",
         related_name="idea_hub",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
+
+    hub_shared_in = models.ForeignKey(
+        Hub,
+        help_text="Points to the (location)hub the idea was shared in",
+        verbose_name="(Location-)Hub where idea was shared",
+        related_name="idea_hub_shared_in",
         null=True,
         blank=True,
         on_delete=models.SET_NULL

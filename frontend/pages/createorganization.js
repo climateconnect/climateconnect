@@ -11,7 +11,7 @@ import {
   getLocationValue,
   indicateWrongLocation,
   isLocationValid,
-  parseLocation
+  parseLocation,
 } from "../public/lib/locationOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";

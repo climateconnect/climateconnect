@@ -9,7 +9,7 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo
+  membersWithAdditionalInfo,
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -81,6 +81,7 @@ export async function getServerSideProps(ctx) {
     props: {
       hubUrl: hubUrl,
       isLocationHub: hubData.hub_type === "location hub",
+      hubData: hubData,
       name: hubData.name,
       headline: hubData.headline,
       subHeadline: hubData.sub_headline,
@@ -123,6 +124,7 @@ export default function Hub({
   allHubs,
   initialIdeaUrlSlug,
   hubLocation,
+  hubData,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -268,6 +270,9 @@ export default function Hub({
           image={getImageUrl(image)}
           source={image_attribution}
           onClose={closeHubHeaderImage}
+          isLocationHub={isLocationHub}
+          statBoxTitle={statBoxTitle}
+          stats={stats}
         />
         <HubContent
           hubQuickInfoRef={hubQuickInfoRef}
@@ -280,6 +285,7 @@ export default function Hub({
           subHeadline={subHeadline}
           hubProjectsButtonRef={hubProjectsButtonRef}
           isLocationHub={isLocationHub}
+          location={hubLocation}
         />
         <div className={classes.contentRefContainer}>
           <div ref={contentRef} className={classes.contentRef} />
@@ -305,6 +311,7 @@ export default function Hub({
             allHubs={allHubs}
             initialIdeaUrlSlug={initialIdeaUrlSlug}
             hubLocation={hubLocation}
+            hubData={hubData}
           />
         </div>
       </div>

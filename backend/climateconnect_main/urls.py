@@ -36,8 +36,9 @@ urls = [
     path('signup/', user_views.SignUpView.as_view(), name="signup-api"),
     path('api/my_profile/', user_views.PersonalProfileView.as_view(), name='user-profile-api'),
     path('api/member/<str:url_slug>/', user_views.MemberProfileView.as_view(), name='get-member-profile-api'),
-    path('api/member/<str:url_slug>/projects/', user_views.ListMemberProjectsView.as_view(), name='get-member-profile-api'),
-    path('api/member/<str:url_slug>/organizations/', user_views.ListMemberOrganizationsView.as_view(), name='get-member-profile-api'),
+    path('api/member/<str:url_slug>/projects/', user_views.ListMemberProjectsView.as_view(), name='get-projects-of-member-api'),
+    path('api/member/<str:url_slug>/ideas/', user_views.ListMemberIdeasView.as_view(), name='get-ideas-of-member-api'),
+    path('api/member/<str:url_slug>/organizations/', user_views.ListMemberOrganizationsView.as_view(), name='get-organizations-of-member-api'),
     path('api/members/', user_views.ListMemberProfilesView.as_view(), name="member-profiles-api"),
     path(
         'api/account_settings/',

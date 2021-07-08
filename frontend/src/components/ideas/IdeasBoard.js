@@ -15,9 +15,9 @@ const useStyles = makeStyles({
     flex: "1 1 0px",
     position: "relative",
   },
-  ideaPreviews: props => ({
+  ideaPreviews: (props) => ({
     flex: "1 1 0px",
-    minHeight: props.ideaOpen ? 1500 : "default"
+    minHeight: props.ideaOpen ? 1500 : "default",
   }),
 });
 export default function IdeasBoard({
@@ -29,6 +29,7 @@ export default function IdeasBoard({
   onUpdateIdeaRating,
   initialIdeaUrlSlug,
   hubLocation,
+  hubData,
 }) {
   const getInitialIdea = (initialIdeaUrlSlug) => {
     //Short circuit if there is no idea open
@@ -88,6 +89,13 @@ export default function IdeasBoard({
     });
   };
 
+  const handleSetComments = (newComments) => {
+    setIdea({
+      ...idea,
+      comments: newComments,
+    });
+  };
+
   return (
     <div className={classes.root}>
       <IdeaPreviews
@@ -101,6 +109,7 @@ export default function IdeasBoard({
         hasIdeaOpen={!!idea}
         className={classes.ideaPreviews}
         hubLocation={hubLocation}
+        hubData={hubData}
       />
       {idea && !isNarrowScreen && (
         <div
@@ -117,6 +126,7 @@ export default function IdeasBoard({
             onRatingChange={handleUpdateRating}
             handleAddComments={handleAddComments}
             handleRemoveComment={handleRemoveComment}
+            handleSetComments={handleSetComments}
             containerOffsetTop={containerOffsetTop}
             userOrganizations={userOrganizations}
             allHubs={allHubs}

@@ -6,6 +6,7 @@ from ideas.models import Idea, IdeaSupporter
 from ideas.utility.idea import get_idea_name, get_idea_short_description
 from organization.serializers.organization import OrganizationStubSerializer
 from rest_framework import serializers
+import urllib.parse
 
 
 class IdeaSupportedMinimalSerializer(serializers.ModelSerializer):
@@ -17,6 +18,16 @@ class IdeaSupportedMinimalSerializer(serializers.ModelSerializer):
     def get_name(self, obj):
         return f'{obj.user.first_name} {obj.user.last_name}'
 
+class IdeaFromIdeaSupporterSerializer(serializers.ModelSerializer):
+    idea = serializers.SerializerMethodField()
+
+    class Meta:
+        model = IdeaSupporter
+        fields = ('idea',)
+
+    def get_idea(self, obj):
+        serializer = IdeaMinimalSerializer(obj.idea)
+        return serializer.data
 
 class IdeaMinimalSerializer(serializers.ModelSerializer):
     hub = serializers.SerializerMethodField()
@@ -26,13 +37,15 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
     organization = serializers.SerializerMethodField()
+    url_slug = serializers.SerializerMethodField()
+    hub_shared_in = serializers.SerializerMethodField()
 
     class Meta:
         model = Idea
         fields = [
             'id', 'name', 'url_slug', 'short_description', 
             'thumbnail_image', 'hub', 'rating', 'image', 'user',
-            'location', 'created_at', 'organization'
+            'location', 'created_at', 'organization', 'hub_shared_in'
         ]
     
     def get_name(self, obj):
@@ -44,6 +57,12 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
     def get_hub(self, obj):
         if obj.hub:
             return HubStubSerializer(obj.hub).data
+        
+        return None
+
+    def get_hub_shared_in(self, obj):
+        if obj.hub:
+            return HubStubSerializer(obj.hub_shared_in).data
         
         return None
     
@@ -78,6 +97,9 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
         
         return None
 
+    def get_url_slug(self, obj):
+        return obj.url_slug
+
 
 class IdeaSerializer(serializers.ModelSerializer):
     supported_by_users = serializers.SerializerMethodField()
@@ -85,6 +107,7 @@ class IdeaSerializer(serializers.ModelSerializer):
     hub_image = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
+    url_slug = serializers.SerializerMethodField()
 
     class Meta:
         model = Idea
@@ -121,3 +144,6 @@ class IdeaSerializer(serializers.ModelSerializer):
                 obj.supported_idea.all(), many=True
             ).data
         }
+
+    def get_url_slug(self, obj):
+        return obj.url_slug
