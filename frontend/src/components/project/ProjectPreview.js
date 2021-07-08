@@ -117,7 +117,7 @@ export default function ProjectPreview({ project, projectRef }) {
     >
       <Card
         className={classes.root}
-        variant="outlined"
+        // variant="outlined"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         ref={projectRef}

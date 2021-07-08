@@ -3,6 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import ExploreIcon from "@material-ui/icons/Explore";
 import PlaceIcon from "@material-ui/icons/Place";
 import React, { useContext } from "react";
+
+// Relative imports
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
@@ -15,16 +17,18 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: -5,
   },
   cardIcon: {
+    color: theme.palette.primary.main,
     verticalAlign: "bottom",
-    marginBottom: -2,
-    marginTop: 2,
-    marginRight: theme.spacing(0.5),
+    // marginBottom: -2,
+    // marginTop: 2,
+    // marginRight: theme.spacing(0.5),
   },
   status: {
     marginTop: theme.spacing(1),
   },
   categories: (props) => ({
     display: "flex",
+    alignItems: "center",
     marginTop: theme.spacing(0.5),
     background: props.hovering ? "#e1e1e147" : "auto",
     padding: props.hovering ? theme.spacing(2) : 0,
@@ -56,6 +60,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }) 
   const texts = getTexts({ page: "project", locale: locale });
   const project_parent = project.project_parents[0];
   const main_project_tag = project.tags.map((t) => t.project_tag.name)[0];
+
   if (withDescription) {
     return (
       <WithDescription
@@ -89,6 +94,7 @@ const WithDescription = ({
   texts,
 }) => {
   const classes = useStyles();
+
   return (
     <Box className={className}>
       <Container className={classes.wrapper}>
@@ -109,17 +115,27 @@ const WithDescription = ({
           />
         )}
         <Box>
-          <Tooltip title={texts.location}>
-            <PlaceIcon className={classes.cardIcon} />
-          </Tooltip>
-          <Typography className={classes.metadataText}>{project.location}</Typography>
+          {/* Don't show an empty location pin and text */}
+          {project.location && (
+            <Box style={{ display: "flex" }}>
+              <Tooltip title={texts.location}>
+                <PlaceIcon className={classes.cardIcon} />
+              </Tooltip>
+              <Typography className={classes.metadataText}>{project.location}</Typography>
+            </Box>
+          )}
           {/* Defer to MUI's best guess on height calculation for timeout: https://material-ui.com/api/collapse/ */}
           <Collapse in={hovering} timeout="auto">
             <Typography className={classes.shortDescription}>
               {project.short_description}
             </Typography>
           </Collapse>
-          {!hovering && <Categories main_project_tag={main_project_tag} texts={texts} />}
+
+          {!hovering && (
+            <Box>
+              <Categories main_project_tag={main_project_tag} texts={texts} />
+            </Box>
+          )}
         </Box>
       </Container>
       {hovering && (
@@ -154,7 +170,7 @@ const WithOutDescription = ({ className, project_parent, project, main_project_t
           <Tooltip title={texts.location}>
             <PlaceIcon className={classes.cardIcon} />
           </Tooltip>
-          <Typography className={classes.metadataText}>{project.location}</Typography>
+          <Typography className={classes.metadataText}>test {project.location}</Typography>
           <Categories main_project_tag={main_project_tag} texts={texts} />
         </Box>
       </Container>
