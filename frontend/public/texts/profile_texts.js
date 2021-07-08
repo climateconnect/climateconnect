@@ -129,7 +129,7 @@ export default function getProfileTexts({ profile, locale }) {
       de: "noch nicht an Klima-Projekten beteiligt!",
     },
     not_involved_in_any_ideas_yet: {
-      en: "isn't involved in any climate ideas yet!",
+      en: "not involved in any climate ideas yet!",
       de: "ist bisher bei keiner Klimaschutzidee dabei!",
     },
     your_organizations: {
