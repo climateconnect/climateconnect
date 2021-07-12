@@ -4,7 +4,6 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import NextCookies from "next-cookies";
 import React, { useContext, useEffect, useRef } from "react";
 import Cookies from "universal-cookie";
-import tokenConfig from "../../public/config/tokenConfig";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, redirect } from "../../public/lib/apiOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -211,7 +210,6 @@ function ProjectLayout({
 
   const leaveProject = async () => {
     try {
-      console.log(tokenConfig(token));
       const resp = await apiRequest({
         method: "post",
         url: "/api/projects/" + project.url_slug + "/leave/",
