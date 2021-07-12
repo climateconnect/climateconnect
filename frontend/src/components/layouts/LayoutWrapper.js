@@ -3,13 +3,12 @@ import {
   Snackbar,
   SnackbarContent,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import Head from "next/head";
-import { Router } from "next/router";
+import Router from "next/router";
 import React, { useContext, useEffect, useState } from "react";
-
 import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
@@ -17,6 +16,7 @@ import FeedbackButton from "../feedback/FeedbackButton";
 import CookieBanner from "../general/CookieBanner";
 import CloseSnackbarAction from "../snackbarActions/CloseSnackbarAction";
 import LogInAction from "../snackbarActions/LogInAction";
+
 
 const useStyles = makeStyles((theme) => ({
   leaveSpaceForFooter: {

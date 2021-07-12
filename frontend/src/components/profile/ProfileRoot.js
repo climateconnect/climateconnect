@@ -1,5 +1,5 @@
 import { Button, Container, makeStyles, Typography } from "@material-ui/core";
-import { Router } from "next/router";
+import Router from "next/router";
 import React, { useEffect, useRef } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
@@ -87,7 +87,9 @@ export default function ProfileRoot({
   const handleConnectBtn = async (e) => {
     e.preventDefault();
     const chat = await startPrivateChat(profile, token, locale);
-    Router.push("/chat/" + chat.chat_uuid + "/");
+    Router.push({
+      pathname: "/chat/" + chat.chat_uuid + "/"
+    });
   };
   const projectsRef = useRef(null);
   const organizationsRef = useRef(null);
