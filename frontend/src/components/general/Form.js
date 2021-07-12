@@ -6,7 +6,7 @@ import {
   LinearProgress,
   Switch,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
@@ -102,7 +102,7 @@ export default function Form({
   alignButtonsRight,
   className,
   fieldClassName,
-  autocomplete
+  autocomplete,
 }) {
   const classes = useStyles();
   const [curPercentage, setCurPercentage] = React.useState(percentage);

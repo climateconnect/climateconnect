@@ -88,7 +88,7 @@ export default function ProfileRoot({
     e.preventDefault();
     const chat = await startPrivateChat(profile, token, locale);
     Router.push({
-      pathname: "/chat/" + chat.chat_uuid + "/"
+      pathname: "/chat/" + chat.chat_uuid + "/",
     });
   };
   const projectsRef = useRef(null);

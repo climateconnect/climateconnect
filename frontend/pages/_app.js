@@ -266,7 +266,7 @@ const getNotificationsToSetRead = (notifications, pageProps) => {
   if (pageProps.chatUUID && pageProps.messages) {
     const chat_notifications_to_set_unread = notifications.filter((n) => {
       if (n.chat_uuid) return n.chat_uuid === pageProps.chatUUID;
-      if(n.idea_supporter_chat) return n.idea_supporter_chat === pageProps.chatUUID
+      if (n.idea_supporter_chat) return n.idea_supporter_chat === pageProps.chatUUID;
     });
     notifications_to_set_unread = [
       ...notifications_to_set_unread,

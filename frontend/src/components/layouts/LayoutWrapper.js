@@ -3,7 +3,7 @@ import {
   Snackbar,
   SnackbarContent,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import Head from "next/head";
@@ -16,7 +16,6 @@ import FeedbackButton from "../feedback/FeedbackButton";
 import CookieBanner from "../general/CookieBanner";
 import CloseSnackbarAction from "../snackbarActions/CloseSnackbarAction";
 import LogInAction from "../snackbarActions/LogInAction";
-
 
 const useStyles = makeStyles((theme) => ({
   leaveSpaceForFooter: {
