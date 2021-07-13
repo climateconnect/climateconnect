@@ -102,6 +102,7 @@ export default function Form({
   alignButtonsRight,
   className,
   fieldClassName,
+  autocomplete,
 }) {
   const classes = useStyles();
   const [curPercentage, setCurPercentage] = React.useState(percentage);
@@ -184,6 +185,7 @@ export default function Form({
         action={formAction && formAction.action}
         method={formAction && formAction.method}
         onSubmit={() => onSubmit(event, values)}
+        autoComplete={autocomplete}
       >
         {errorMessage && (
           <Typography component="div" color="error" className={classes.centerText}>

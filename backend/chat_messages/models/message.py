@@ -1,8 +1,7 @@
-from ideas.models.ideas import Idea
-from django.db import models
-
-from django.contrib.auth.models import User
 from climateconnect_api.models import Role
+from django.contrib.auth.models import User
+from django.db import models
+from ideas.models.ideas import Idea
 
 
 class MessageParticipants(models.Model):
@@ -64,6 +63,18 @@ class MessageParticipants(models.Model):
             self.chat_uuid
         )
 
+    def __str__(self):
+        if self.name:
+            return "Chat: \"%s\"" % self.name
+        else:
+            participants = Participant.objects.filter(chat=self)
+            first_participant_name = ""
+            second_participant_name = ""
+            if len(participants) > 0:
+                first_participant_name = participants[0].user.first_name + " " + participants[0].user.last_name
+            if len(participants) > 1:
+                second_participant_name = participants[1].user.first_name + " " + participants[1].user.last_name
+            return "Chat with %s and %s" % (first_participant_name, second_participant_name)
 
 class Message(models.Model):
     message_participant = models.ForeignKey(

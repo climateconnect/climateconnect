@@ -1,7 +1,6 @@
 import NextCookies from "next-cookies";
 import React, { useContext, useEffect } from "react";
 import Cookies from "universal-cookie";
-import tokenConfig from "../../public/config/tokenConfig";
 import { apiRequest, redirect, sendToLogin } from "../../public/lib/apiOperations";
 import { getMessageFromServer } from "../../public/lib/messagingOperations";
 import getTexts from "../../public/texts/texts";
@@ -212,7 +211,7 @@ export default function Chat({
         method: "post",
         url: "/api/chat/" + chatUUID + "/leave/",
         payload: {},
-        token: tokenConfig(token),
+        token: token,
         locale: locale,
       });
       console.log(res);

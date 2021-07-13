@@ -380,7 +380,6 @@ class UserEmailVerificationLinkView(APIView):
             return Response({'message': _('Required parameters are missing.')}, status=status.HTTP_400_BAD_REQUEST)
 
         # convert verification string
-        print(request.data)
         verification_key = request.data['uuid'].replace('%2D', '-')
         try:
             user_profile = UserProfile.objects.get(verification_key=verification_key)
