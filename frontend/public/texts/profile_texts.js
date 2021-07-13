@@ -108,16 +108,16 @@ export default function getProfileTexts({ profile, locale }) {
       de: ", um die vollständigen Informationen dieses/dieser Benutzer*in zu sehen",
     },
     your_projects: {
-      en: "Your projects",
-      de: "Deine Projekte",
+      en: "Your climate projects",
+      de: "Deine Klimaschutzprojekte",
     },
     this_users_projects: {
       en: `${profile?.first_name}'s Climate Projects`,
       de: `Klimaschutzprojekte von ${profile?.first_name}`,
     },
     your_ideas: {
-      en: "Your ideas",
-      de: "Deine Organisationen",
+      en: "Your climate ideas",
+      de: "Deine Klimaschutzideen",
     },
     this_users_ideas: {
       en: `Climate Ideas ${profile?.first_name} is involved in`,
