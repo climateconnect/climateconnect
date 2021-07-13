@@ -75,5 +75,5 @@ uvloop==0.14.0
 vine==5.0.0
 watchgod==0.6
 wcwidth==0.2.5
-websockets==8.1
+websockets==9.1
 zope.interface==5.1.0
