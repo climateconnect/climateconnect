@@ -108,7 +108,7 @@ export default function getProfileTexts({ profile, locale }) {
       de: ", um die vollständigen Informationen dieses/dieser Benutzer*in zu sehen",
     },
     your_projects: {
-      en: "Your Climate Projects",
+      en: "Your climate projects",
       de: "Deine Klimaschutzprojekte",
     },
     this_users_projects: {
@@ -116,7 +116,7 @@ export default function getProfileTexts({ profile, locale }) {
       de: `Klimaschutzprojekte von ${profile?.first_name}`,
     },
     your_ideas: {
-      en: "Your Climate Ideas",
+      en: "Your climate ideas",
       de: "Deine Klimaschutzideen",
     },
     this_users_ideas: {
@@ -129,7 +129,7 @@ export default function getProfileTexts({ profile, locale }) {
       de: "noch nicht an Klima-Projekten beteiligt!",
     },
     not_involved_in_any_ideas_yet: {
-      en: "isn't involved in any climate ideas yet!",
+      en: "not involved in any climate ideas yet!",
       de: "ist bisher bei keiner Klimaschutzidee dabei!",
     },
     your_organizations: {

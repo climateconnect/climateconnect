@@ -92,7 +92,7 @@ export default function getHubTexts({ hubName }) {
     },
     hubs_overview_largescreen_explainer_text_last_part: {
       en: `Have fun exploring what is possible to save our planet! Remember: The clock is ticking and
-      every tenth of an degree matters.`,
+      every tenth of a degree matters.`,
       de: `Viel Spaß beim Entdecken der Möglichkeiten wie wir unseren Planeten schützen können! Denk dran: Die Uhr tickt
       und jedes Zehntel-Grad zählt.`,
     },
