@@ -96,8 +96,4 @@ urls = [
     path('api/', include('ideas.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-if settings.DEBUG == "True":
-    import debug_toolbar
-    urlpatterns = urls + [path('__debug__/', include(debug_toolbar.urls))]
-else:
-    urlpatterns = urls
+urlpatterns = urls
