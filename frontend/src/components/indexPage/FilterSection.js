@@ -53,6 +53,7 @@ export default function FilterSection({
   customSearchBarLabels,
   filterButtonRef,
   searchValue,
+  hideFilterButton,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -100,17 +101,19 @@ export default function FilterSection({
             onChange={handleChangeValue}
           />
         </div>
-        <Button
-          variant="outlined"
-          className={classes.filterButton}
-          onClick={onClickExpandFilters}
-          startIcon={
-            filtersExpanded ? <HighlightOffIcon color="primary" /> : <TuneIcon color="primary" />
-          }
-          ref={filterButtonRef}
-        >
-          Filter
-        </Button>
+        {!hideFilterButton && (
+          <Button
+            variant="outlined"
+            className={classes.filterButton}
+            onClick={onClickExpandFilters}
+            startIcon={
+              filtersExpanded ? <HighlightOffIcon color="primary" /> : <TuneIcon color="primary" />
+            }
+            ref={filterButtonRef}
+          >
+            Filter
+          </Button>
+        )}
       </div>
     </div>
   );

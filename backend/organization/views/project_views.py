@@ -26,7 +26,7 @@ from organization.models import (Organization, OrganizationTagging,
 from organization.models.translations import ProjectTranslation
 from organization.pagination import (MembersPagination,
                                      ProjectCommentPagination,
-                                     ProjectPostPagination, ProjectsPagination)
+                                     ProjectPostPagination, ProjectsPagination, ProjectsSitemapPagination)
 from organization.permissions import (AddProjectMemberPermission,
                                       ChangeProjectCreatorPermission,
                                       ProjectMemberReadWritePermission,
@@ -77,7 +77,7 @@ class ProjectsOrderingFilter(OrderingFilter):
 class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter, DjangoFilterBackend, ProjectsOrderingFilter]
-    search_fields = ['url_slug']
+    search_fields = ['name', 'translation_project__name_translation']
     filterset_fields = ['collaborators_welcome']
     pagination_class = ProjectsPagination
     serializer_class = ProjectStubSerializer
@@ -105,6 +105,8 @@ class ListProjectsView(ListAPIView):
                             |
                             Q(loc__centre_point__coveredby=(location.multi_polygon))
                         )
+                    ).annotate(
+                        distance=Distance("loc__centre_point", location.multi_polygon)
                     )
 
         if 'collaboration' in self.request.query_params:
@@ -728,6 +730,7 @@ class ListFeaturedProjects(ListAPIView):
 class ListProjectsForSitemap(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectSitemapEntrySerializer
+    pagination_class = ProjectsSitemapPagination
 
     def get_queryset(self):
         return Project.objects.filter(is_draft=False,is_active=True)

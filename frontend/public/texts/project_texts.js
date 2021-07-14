@@ -474,10 +474,6 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Do you really want to leave without saving your changes?",
       de: "Willst du wirklich gehen, ohne die Veränderungen zu speichern?",
     },
-    publish: {
-      en: "Publish",
-      de: "Veröffentlichen",
-    },
     next_step: {
       en: "Next Step",
       de: "Nächster Schritt",

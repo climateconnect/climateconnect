@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = env('DEBUG') == 'True'
 # DEBUG = True
 
 ALLOWED_HOSTS = get_allowed_hosts(env('ALLOWED_HOSTS'))
@@ -49,7 +49,8 @@ CUSTOM_APPS = [
     'organization',
     'chat_messages',
     'hubs',
-    'location'
+    'location',
+    'ideas'
 ]
 
 LIBRARY_APPS = [
@@ -68,7 +69,6 @@ LIBRARY_APPS = [
 ]
 
 DEBUG_APPS = [
-    'debug_toolbar',
 ]
 
 if env('DEBUG') == "True":
@@ -81,7 +81,6 @@ SECURITY_MIDDLEWARE = [
 ]
 
 DEBUG_MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 NORMAL_MIDDLEWARE = [
@@ -207,18 +206,27 @@ REST_FRAMEWORK = {
 
 MJ_APIKEY_PUBLIC = env('MJ_APIKEY_PUBLIC', '')
 MJ_APIKEY_PRIVATE = env('MJ_APIKEY_PRIVATE', '')
+MAILJET_NEWSLETTER_LIST_ID = env('MAILJET_NEWSLETTER_LIST_ID')
 CLIMATE_CONNECT_SUPPORT_EMAIL = env('CLIMATE_CONNECT_SUPPORT_EMAIL', '')
+
 EMAIL_VERIFICATION_TEMPLATE_ID = env('EMAIL_VERIFICATION_TEMPLATE_ID', '')
 NEW_EMAIL_VERIFICATION_TEMPLATE_ID = env('NEW_EMAIL_VERIFICATION_TEMPLATE_ID', '')
 RESET_PASSWORD_TEMPLATE_ID = env('RESET_PASSWORD_TEMPLATE_ID', '')
 FEEDBACK_TEMPLATE_ID = env('FEEDBACK_TEMPLATE_ID')
 PRIVATE_MESSAGE_TEMPLATE_ID = env('PRIVATE_MESSAGE_TEMPLATE_ID')
 GROUP_MESSAGE_TEMPLATE_ID = env('GROUP_MESSAGE_TEMPLATE_ID')
-FRONTEND_URL = env('FRONTEND_URL', '')
 PROJECT_COMMENT_TEMPLATE_ID = env('PROJECT_COMMENT_TEMPLATE_ID')
 PROJECT_COMMENT_REPLY_TEMPLATE_ID = env('PROJECT_COMMENT_REPLY_TEMPLATE_ID')
 PROJECT_FOLLOWER_TEMPLATE_ID = env('PROJECT_FOLLOWER_TEMPLATE_ID')
-MAILJET_NEWSLETTER_LIST_ID = env('MAILJET_NEWSLETTER_LIST_ID')
+IDEA_COMMENT_TEMPLATE_ID = env('IDEA_COMMENT_TEMPLATE_ID')
+IDEA_COMMENT_TEMPLATE_ID_DE = env('IDEA_COMMENT_TEMPLATE_ID_DE')
+IDEA_COMMENT_REPLY_TEMPLATE_ID = env('IDEA_COMMENT_REPLY_TEMPLATE_ID')
+IDEA_COMMENT_REPLY_TEMPLATE_ID_DE = env('IDEA_COMMENT_REPLY_TEMPLATE_ID_DE')
+JOINED_IDEA_TEMPLATE = env('JOINED_IDEA_TEMPLATE')
+JOINED_IDEA_TEMPLATE_DE = env('JOINED_IDEA_TEMPLATE_DE')
+
+
+FRONTEND_URL = env('FRONTEND_URL', '')
 LOCATION_SERVICE_BASE_URL = env('LOCATION_SERVICE_BASE_URL')
 ENABLE_LEGACY_LOCATION_FORMAT = env('ENABLE_LEGACY_LOCATION_FORMAT')
 DEEPL_API_KEY = env('DEEPL_API_KEY')
@@ -229,7 +237,7 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [{
-                "address": (env('REDIS_HOST'), env('REDIS_PORT')),
+                "address": (env('REDIS_HOST'), env('REDIS_PORT', 6379)),
                 "password": env('REDIS_PASSWORD'),
                 "ssl": True
             }]
@@ -245,3 +253,27 @@ LOCALES = ['en', 'de']
 LOCALE_PATHS = [
     BASE_DIR + '/translations',
 ]
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    
+    'fromatters': {
+        'Simple_Format': '{levelname} {message}',
+        'style': '{'
+    },
+
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO'
+        }
+    }
+}

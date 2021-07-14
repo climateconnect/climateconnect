@@ -94,8 +94,6 @@ class ListOrganizationsAPIView(ListAPIView):
                         )
                     ).annotate(
                         distance=Distance("location__centre_point", location.multi_polygon)
-                    ).order_by(
-                        'distance'
                     )
                 
 

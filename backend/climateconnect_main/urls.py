@@ -36,8 +36,9 @@ urls = [
     path('signup/', user_views.SignUpView.as_view(), name="signup-api"),
     path('api/my_profile/', user_views.PersonalProfileView.as_view(), name='user-profile-api'),
     path('api/member/<str:url_slug>/', user_views.MemberProfileView.as_view(), name='get-member-profile-api'),
-    path('api/member/<str:url_slug>/projects/', user_views.ListMemberProjectsView.as_view(), name='get-member-profile-api'),
-    path('api/member/<str:url_slug>/organizations/', user_views.ListMemberOrganizationsView.as_view(), name='get-member-profile-api'),
+    path('api/member/<str:url_slug>/projects/', user_views.ListMemberProjectsView.as_view(), name='get-projects-of-member-api'),
+    path('api/member/<str:url_slug>/ideas/', user_views.ListMemberIdeasView.as_view(), name='get-ideas-of-member-api'),
+    path('api/member/<str:url_slug>/organizations/', user_views.ListMemberOrganizationsView.as_view(), name='get-organizations-of-member-api'),
     path('api/members/', user_views.ListMemberProfilesView.as_view(), name="member-profiles-api"),
     path(
         'api/account_settings/',
@@ -87,15 +88,13 @@ urls = [
     path('api/translate_many/', translation_views.TranslateManyTextsView.as_view(), name='translate-testing-api'),
     # Organization views
     path('api/', include('organization.urls')),
-    # chat messages views
+    # Chat messages views
     path('api/', include('chat_messages.urls')),
-    #hub views
+    # Hub views
     path('api/', include('hubs.urls')),
-    path('api/', include('location.urls'))
+    path('api/', include('location.urls')),
+    # Idea views
+    path('api/', include('ideas.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-if settings.DEBUG == "True":
-    import debug_toolbar
-    urlpatterns = urls + [path('__debug__/', include(debug_toolbar.urls))]
-else:
-    urlpatterns = urls
+urlpatterns = urls

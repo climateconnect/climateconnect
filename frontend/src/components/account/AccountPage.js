@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
 import React, { useContext } from "react";
 import Linkify from "react-linkify";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
@@ -149,13 +148,7 @@ export default function AccountPage({
               return (
                 <div key={index} className={classes.subtitle}>
                   {account.name} {texts.is_a_suborganization_of}{" "}
-                  <Link
-                    color="inherit"
-                    href={getLocalePrefix(locale) + "/organizations/" + value.url_slug}
-                    target="_blank"
-                  >
-                    <MiniOrganizationPreview organization={value} size="small" />
-                  </Link>
+                  <MiniOrganizationPreview organization={value} size="small" />
                 </div>
               );
           } else if (i.type === "array" && i?.value?.length > 0) {
@@ -282,7 +275,7 @@ export default function AccountPage({
         </Container>
         <Container className={classes.accountInfo}>{displayAccountInfo(account.info)}</Container>
       </Container>
-      {detailledDescription && (
+      {detailledDescription?.value && (
         <Container>
           <DetailledDescription
             title={detailledDescription.name}

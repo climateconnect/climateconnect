@@ -1,4 +1,4 @@
-import { Button, Link, Typography } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -186,14 +186,11 @@ export default function ProjectContent({
                 size="small"
               />
             ) : (
-              <Link href={getLocalePrefix(locale) + "/organizations/" + project.creator.url_slug}>
-                <MiniOrganizationPreview
-                  size="small"
-                  className={classes.creator}
-                  organization={project.creator}
-                  nolink
-                />
-              </Link>
+              <MiniOrganizationPreview
+                size="small"
+                className={classes.creator}
+                organization={project.creator}
+              />
             )}
             {project.collaborating_organizations && project.collaborating_organizations.length > 0 && (
               <div>

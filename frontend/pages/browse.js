@@ -256,16 +256,3 @@ async function getDataFromServer({ type, page, token, urlEnding, locale }) {
     throw err;
   }
 }
-
-async function getHubs(locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/hubs/`,
-      locale: locale,
-    });
-    return resp.data.results;
-  } catch (e) {
-    console.log(e);
-  }
-}

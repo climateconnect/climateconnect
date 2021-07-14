@@ -1,6 +1,7 @@
 import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
 import _ from "lodash";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import Cookies from "universal-cookie";
 import possibleFilters from "../../../public/data/possibleFilters";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
@@ -9,11 +10,13 @@ import {
   getReducedPossibleFilters
 } from "../../../public/lib/parsingOperations";
 import { getFilterUrl, getSearchParams } from "../../../public/lib/urlOperations";
+import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
 import FilterContent from "../filter/FilterContent";
 import LoadingSpinner from "../general/LoadingSpinner";
+import IdeasBoard from "../ideas/IdeasBoard";
 import FilterSection from "../indexPage/FilterSection";
 import OrganizationPreviews from "../organization/OrganizationPreviews";
 import ProfilePreviews from "../profile/ProfilePreviews";
@@ -35,10 +38,22 @@ const useStyles = makeStyles((theme) => {
     mainContentDivider: {
       marginBottom: theme.spacing(3),
     },
+    ideasTabLabel: {
+      display: "flex",
+      alignItems: "center",
+    },
+    ideasIcon: {
+      marginRight: theme.spacing(1),
+      color: theme.palette.primary.main,
+    },
   };
 });
 
 export default function BrowseContent({
+  initialMembers,
+  initialOrganizations,
+  initialProjects,
+  initialIdeas,
   applyNewFilters,
   customSearchBarLabels,
   errorMessage,
@@ -49,19 +64,19 @@ export default function BrowseContent({
   hubProjectsButtonRef,
   hubQuickInfoRef,
   hubsSubHeaderRef,
-  initialMembers,
-  initialOrganizations,
-  initialProjects,
   loadMoreData,
   nextStepTriggeredBy,
-  initialLocationFilter,
-  filters,
-  handleUpdateFilterValues,
+  showIdeas,
+  allHubs,
+  initialIdeaUrlSlug,
+  hubLocation,
+  hubData,
 }) {
   const initialState = {
     items: {
       projects: initialProjects ? [...initialProjects.projects] : [],
       organizations: initialOrganizations ? [...initialOrganizations.organizations] : [],
+      ideas: initialIdeas ? [...initialIdeas.ideas] : [],
       members:
         initialMembers && !hideMembers ? membersWithAdditionalInfo(initialMembers.members) : [],
     },
@@ -69,15 +84,18 @@ export default function BrowseContent({
       projects: !!initialProjects && initialProjects.hasMore,
       organizations: !!initialOrganizations && initialOrganizations.hasMore,
       members: !!initialMembers && initialMembers.hasMore,
+      ideas: !!initialIdeas && initialIdeas.hasMore,
     },
     nextPages: {
       projects: 2,
       members: 2,
       organizations: 2,
+      ideas: 2,
     },
     urlEnding: "",
   };
-
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const token = new Cookies().get("token");
   //saving these refs for the tutorial
   const firstProjectCardRef = useRef(null);
   const filterButtonRef = useRef(null);
@@ -88,18 +106,20 @@ export default function BrowseContent({
   const TYPES_BY_TAB_VALUE = hideMembers
     ? ["projects", "organizations"]
     : ["projects", "organizations", "members"];
-
+  if (showIdeas) {
+    TYPES_BY_TAB_VALUE.push("ideas");
+  }
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   const type_names = {
     projects: texts.projects,
-    organizations: texts.organizations,
+    organizations: isNarrowScreen ? texts.orgs : texts.organizations,
     members: texts.members,
+    ideas: texts.ideas,
   };
   const [hash, setHash] = useState(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const isMobileScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
 
   // Always default to filters being expanded
@@ -115,11 +135,17 @@ export default function BrowseContent({
   };
 
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
-
+  const [userOrganizations, setUserOrganizations] = useState(null);
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
   };
-
+  useEffect(async function () {
+    if (tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas") && userOrganizations === null) {
+      setUserOrganizations("");
+      const userOrgsFromServer = await getUserOrganizations(token, locale);
+      setUserOrganizations(userOrgsFromServer || []);
+    }
+  });
   // We have 2 distinct loading states: filtering, and loading more data. For
   // each state, we want to treat the loading spinner a bit differently, hence
   // why we have two separate pieces of state
@@ -246,6 +272,10 @@ export default function BrowseContent({
 
   const loadMoreMembers = async () => {
     await handleLoadMoreData("members");
+  };
+
+  const loadMoreIdeas = async () => {
+    await handleLoadMoreData("ideas");
   };
 
   const handleLoadMoreData = async (type) => {
@@ -376,6 +406,25 @@ export default function BrowseContent({
     [initialMembers]
   );
 
+  const handleUpdateIdeaRating = (idea, newRating) => {
+    const ideaInState = state.items.ideas.find((si) => si.url_slug === idea.url_slug);
+    const ideaIndex = state.items.ideas.indexOf(ideaInState);
+    setState({
+      ...state,
+      items: {
+        ...state.items,
+        ideas: [
+          ...state.items.ideas.slice(0, ideaIndex),
+          {
+            ...idea,
+            rating: newRating,
+          },
+          ...state.items.ideas.slice(ideaIndex + 1),
+        ],
+      },
+    });
+  };
+
   return (
     <LoadingContext.Provider
       value={{
@@ -391,6 +440,7 @@ export default function BrowseContent({
           customSearchBarLabels={customSearchBarLabels}
           filterButtonRef={filterButtonRef}
           searchValue={filters.search}
+          hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
         />
         <Tabs
           variant={isNarrowScreen ? "fullWidth" : "standard"}
@@ -405,6 +455,13 @@ export default function BrowseContent({
               label: type_names[t],
               className: classes.tab,
             };
+            if (index === TYPES_BY_TAB_VALUE.indexOf("ideas")) {
+              tabProps.label = (
+                <div className={classes.ideasTabLabel}>
+                  <EmojiObjectsIcon className={classes.ideasIcon} /> {type_names[t]}
+                </div>
+              );
+            }
             if (index === 1) tabProps.ref = organizationsTabRef;
             return <Tab {...tabProps} key={index} />;
           })}
@@ -414,8 +471,10 @@ export default function BrowseContent({
 
         <>
           <TabContent value={tabValue} index={0}>
-            {filtersExpanded && tabValue === 0 && (
+            {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("projects") && (
               <FilterContent
+                className={classes.tabContent}
+                type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")]}
                 applyFilters={handleApplyNewFilters}
                 className={classes.tabContent}
                 filters={filters}
@@ -424,6 +483,14 @@ export default function BrowseContent({
                 filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
                 handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[0]]}
+                unexpandFilters={unexpandFilters}
+                possibleFilters={possibleFilters(
+                  TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")],
+                  filterChoices
+                )}
+                locationInputRef={
+                  locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")]]
+                }
                 locationOptionsOpen={locationOptionsOpen}
                 possibleFilters={possibleFilters({
                   key: TYPES_BY_TAB_VALUE[0],
@@ -456,10 +523,15 @@ export default function BrowseContent({
               <NoItemsFound type="projects" />
             )}
           </TabContent>
-
-          <TabContent value={tabValue} index={1} className={classes.tabContent}>
-            {filtersExpanded && tabValue === 1 && (
+          <TabContent
+            value={tabValue}
+            index={TYPES_BY_TAB_VALUE.indexOf("organizations")}
+            className={classes.tabContent}
+          >
+            {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("organizations") && (
               <FilterContent
+                className={classes.tabContent}
+                type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")]}
                 applyFilters={handleApplyNewFilters}
                 className={classes.tabContent}
                 errorMessage={errorMessage}
@@ -468,6 +540,14 @@ export default function BrowseContent({
                 filtersExpanded={filtersExpanded}
                 handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[1]]}
+                unexpandFilters={unexpandFilters}
+                possibleFilters={possibleFilters(
+                  TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")],
+                  filterChoices
+                )}
+                locationInputRef={
+                  locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")]]
+                }
                 locationOptionsOpen={locationOptionsOpen}
                 possibleFilters={possibleFilters({
                   key: TYPES_BY_TAB_VALUE[1],
@@ -502,23 +582,27 @@ export default function BrowseContent({
           </TabContent>
 
           {!hideMembers && (
-            <TabContent value={tabValue} index={2} className={classes.tabContent}>
-              {filtersExpanded && tabValue === 2 && (
+            <TabContent
+              value={tabValue}
+              index={TYPES_BY_TAB_VALUE.indexOf("members")}
+              className={classes.tabContent}
+            >
+              {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("members") && (
                 <FilterContent
                   className={classes.tabContent}
-                  type={TYPES_BY_TAB_VALUE[2]}
                   filters={filters}
                   handleUpdateFilters={handleUpdateFilterValues}
+                  type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")]}
                   applyFilters={handleApplyNewFilters}
                   filtersExpanded={filtersExpanded}
                   errorMessage={errorMessage}
                   unexpandFilters={unexpandFilters}
                   possibleFilters={possibleFilters({
-                    key: TYPES_BY_TAB_VALUE[2],
+                    key: TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")],
                     filterChoices: filterChoices,
                     locale: locale,
                   })}
-                  locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[2]]}
+                  locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")]]}
                   locationOptionsOpen={locationOptionsOpen}
                   handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 />
@@ -545,6 +629,27 @@ export default function BrowseContent({
               )}
             </TabContent>
           )}
+          <TabContent
+            value={tabValue}
+            index={TYPES_BY_TAB_VALUE.indexOf("ideas")}
+            className={classes.tabContent}
+          >
+            {isFiltering ? (
+              <LoadingSpinner />
+            ) : (
+              <IdeasBoard
+                hasMore={state.hasMore.ideas}
+                loadFunc={loadMoreIdeas}
+                ideas={state.items.ideas}
+                allHubs={allHubs}
+                userOrganizations={userOrganizations}
+                onUpdateIdeaRating={handleUpdateIdeaRating}
+                initialIdeaUrlSlug={initialIdeaUrlSlug}
+                hubLocation={hubLocation}
+                hubData={hubData}
+              />
+            )}
+          </TabContent>
         </>
       </Container>
       <Tutorial

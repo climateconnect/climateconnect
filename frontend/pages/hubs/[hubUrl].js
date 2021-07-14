@@ -11,6 +11,7 @@ import {
   getStatusOptions,
   membersWithAdditionalInfo,
 } from "../../public/lib/getOptions";
+import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { getLocationFilteredBy } from "../../public/lib/locationOperations";
 import {
@@ -53,25 +54,42 @@ const useStyles = makeStyles((theme) => ({
 //potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hubUrl;
+  const ideaToOpen = ctx.query.idea;
+  const { token } = NextCookies(ctx);
   const [
     hubData,
+    initialProjects,
+    initialOrganizations,
+    initialIdeas,
     project_categories,
     organization_types,
     skills,
     project_statuses,
     location_filtered_by,
+    allHubs
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
+    getProjects({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
+    getOrganizations({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
+    getIdeas({
+      page: 1,
+      token: token,
+      hubUrl: hubUrl,
+      locale: ctx.locale,
+      urlEnding: ideaToOpen ? `&idea=${encodeURIComponent(ideaToOpen)}` : "",
+    }),
     getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
     getLocationFilteredBy(ctx.query),
+    getAllHubs(ctx.locale, true),
   ]);
   return {
     props: {
       hubUrl: hubUrl,
       isLocationHub: hubData.hub_type === "location hub",
+      hubData: hubData,
       name: hubData.name,
       headline: hubData.headline,
       subHeadline: hubData.sub_headline,
@@ -80,6 +98,10 @@ export async function getServerSideProps(ctx) {
       stats: hubData.stats,
       statBoxTitle: hubData.stat_box_title,
       image_attribution: hubData.image_attribution,
+      hubLocation: hubData.location?.length > 0 ? hubData.location[0] : null,
+      initialProjects: initialProjects,
+      initialOrganizations: initialOrganizations,
+      initialIdeas: initialIdeas,
       filterChoices: {
         project_categories: project_categories,
         organization_types: organization_types,
@@ -87,6 +109,8 @@ export async function getServerSideProps(ctx) {
         project_statuses: project_statuses,
       },
       initialLocationFilter: location_filtered_by,
+      allHubs,
+      initialIdeaUrlSlug: ideaToOpen ? encodeURIComponent(ideaToOpen) : null,
     },
   };
 }
@@ -104,6 +128,13 @@ export default function Hub({
   subHeadline,
   initialLocationFilter,
   filterChoices,
+  initialProjects,
+  initialOrganizations,
+  initialIdeas,
+  allHubs,
+  initialIdeaUrlSlug,
+  hubLocation,
+  hubData,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -143,6 +174,7 @@ export default function Hub({
       ? texts.search_organization_in_location
       : texts.search_for_organizations_in_sector,
     profiles: texts.search_profiles_in_location,
+    ideas: texts.search_ideas_in_location,
   };
 
   const loadMoreData = async (type, page, urlEnding) => {
@@ -265,6 +297,9 @@ export default function Hub({
           image={getImageUrl(image)}
           source={image_attribution}
           onClose={closeHubHeaderImage}
+          isLocationHub={isLocationHub}
+          statBoxTitle={statBoxTitle}
+          stats={stats}
         />
         <HubContent
           hubQuickInfoRef={hubQuickInfoRef}
@@ -277,6 +312,7 @@ export default function Hub({
           subHeadline={subHeadline}
           hubProjectsButtonRef={hubProjectsButtonRef}
           isLocationHub={isLocationHub}
+          location={hubLocation}
         />
         <div className={classes.contentRefContainer}>
           <div ref={contentRef} className={classes.contentRef} />
@@ -299,6 +335,13 @@ export default function Hub({
             // initialProjects={initialProjects}
             loadMoreData={loadMoreData}
             nextStepTriggeredBy={nextStepTriggeredBy}
+            hubName={name}
+            initialIdeas={initialIdeas}
+            showIdeas={isLocationHub}
+            allHubs={allHubs}
+            initialIdeaUrlSlug={initialIdeaUrlSlug}
+            hubLocation={hubLocation}
+            hubData={hubData}
           />
         </div>
       </div>
@@ -335,11 +378,54 @@ const getHubData = async (url_slug, locale) => {
   }
 };
 
+async function getIdeas({ page, token, urlEnding, hubUrl, locale }) {
+  return await getDataFromServer({
+    type: "ideas",
+    page: page,
+    token: token,
+    urlEnding: urlEnding,
+    hubUrl: hubUrl,
+    locale: locale,
+  });
+}
+
+async function getProjects({ page, token, urlEnding, hubUrl, locale }) {
+  return await getDataFromServer({
+    type: "projects",
+    page: page,
+    token: token,
+    urlEnding: urlEnding,
+    hubUrl: hubUrl,
+    locale: locale,
+  });
+}
+
+async function getOrganizations({ page, token, urlEnding, hubUrl, locale }) {
+  return await getDataFromServer({
+    type: "organizations",
+    page: page,
+    token: token,
+    urlEnding: urlEnding,
+    hubUrl: hubUrl,
+    locale: locale,
+  });
+}
+
+async function getMembers({ page, token, urlEnding, hubUrl, locale }) {
+  return await getDataFromServer({
+    type: "members",
+    page: page,
+    token: token,
+    urlEnding: urlEnding,
+    hubUrl: hubUrl,
+    locale: locale,
+  });
+}
+
 async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale }) {
   let url = `/api/${type}/?page=${page}&hub=${hubUrl}`;
   console.log(`getting ${type} data for category ${hubUrl}`);
   if (urlEnding) url += urlEnding;
-
   try {
     console.log(`Getting data for ${type} at ${url}`);
     const resp = await apiRequest({

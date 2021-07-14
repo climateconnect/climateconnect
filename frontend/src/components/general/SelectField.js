@@ -80,7 +80,7 @@ export default function SelectField({
       select
       // Handle values differently depending on if this is being used
       // within a Multiselect or controlled context
-      value={multiple ? values : controlled ? controlledValue.name : value.name}
+      value={multiple ? values : controlled ? controlledValue && controlledValue.name : value.name}
       variant="outlined"
       SelectProps={{
         native: !multiple,

@@ -1,9 +1,8 @@
-import React from "react";
-import PropTypes from "prop-types";
-
-import { Dialog, DialogTitle, Button, IconButton } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+import { Button, Dialog, DialogTitle, IconButton, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import CloseIcon from "@material-ui/icons/Close";
+import PropTypes from "prop-types";
+import React from "react";
 
 const useStyles = makeStyles((theme) => ({
   dialog: (props) => ({
@@ -26,15 +25,23 @@ const useStyles = makeStyles((theme) => ({
     height: "auto",
     overflow: "auto",
   },
-  closeButton: {
+  closeButtonLeft: {
     position: "absolute",
     left: theme.spacing(1),
     top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
+  closeButtonRight: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
   titleText: (props) => ({
-    marginLeft: theme.spacing(5),
+    marginLeft: props.closeButtonRightSide ? theme.spacing(-1) : theme.spacing(5),
+    marginRight: props.closeButtonRightSide ? theme.spacing(5) : theme.spacing(0),
     paddingRight: props.useApplyButton ? 150 : 0,
+    fontSize: 20,
   }),
   applyButton: {
     position: "absolute",
@@ -55,8 +62,17 @@ export default function GenericDialog({
   title,
   topBarFixed,
   useApplyButton,
+  paperClassName,
+  closeButtonRightSide,
+  closeButtonSmall,
+  titleTextClassName,
+  dialogContentClass,
 }) {
-  const classes = useStyles({ useApplyButton: useApplyButton, fullScreen: fullScreen });
+  const classes = useStyles({
+    useApplyButton: useApplyButton,
+    fullScreen: fullScreen,
+    closeButtonRightSide: closeButtonRightSide,
+  });
 
   const handleCancel = () => {
     onClose(false);
@@ -69,14 +85,24 @@ export default function GenericDialog({
       open={open}
       maxWidth={maxWidth ? maxWidth : "md"}
       fullScreen={fullScreen}
+      classes={{
+        paper: paperClassName,
+      }}
     >
       <DialogTitle>
-        {onClose ? (
-          <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+        {onClose && !closeButtonRightSide && (
+          <IconButton
+            aria-label="close"
+            className={classes.closeButtonLeft}
+            onClick={onClose}
+            size={closeButtonSmall && "small"}
+          >
             <CloseIcon />
           </IconButton>
-        ) : null}
-        <span className={classes.titleText}>{title}</span>
+        )}
+        <Typography component="h2" className={`${titleTextClassName} ${classes.titleText}`}>
+          {title}
+        </Typography>
         {useApplyButton && applyText && (
           <Button
             variant="contained"
@@ -87,8 +113,22 @@ export default function GenericDialog({
             {applyText}
           </Button>
         )}
+        {onClose && closeButtonRightSide && (
+          <IconButton
+            aria-label="close"
+            className={classes.closeButtonRight}
+            onClick={onClose}
+            size={closeButtonSmall && "small"}
+          >
+            <CloseIcon />
+          </IconButton>
+        )}
       </DialogTitle>
-      <div className={`${classes.dialogContent} ${topBarFixed && classes.scrollDialogContent}`}>
+      <div
+        className={`${classes.dialogContent} ${
+          topBarFixed && classes.scrollDialogContent
+        } ${dialogContentClass}`}
+      >
         {children}
       </div>
     </Dialog>

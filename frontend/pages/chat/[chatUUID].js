@@ -41,6 +41,7 @@ export async function getServerSideProps(ctx) {
       chatUUID: ctx.query["chatUUID"],
       rolesOptions: rolesOptions,
       chat_id: chat.id,
+      idea: chat.idea,
     },
   };
 }
@@ -54,6 +55,7 @@ export default function Chat({
   hasMore,
   rolesOptions,
   chat_id,
+  idea,
 }) {
   const token = new Cookies().get("token");
   const { chatSocket, user, socketConnectionState, locale } = useContext(UserContext);
@@ -233,7 +235,7 @@ export default function Chat({
           : title
       }
     >
-      {chat_id && chatting_partner ? (
+      {chat_id ? (
         <MessagingLayout
           chatting_partner={chatting_partner}
           messages={state.messages}
@@ -251,6 +253,7 @@ export default function Chat({
           setParticipants={setParticipants}
           handleChatWindowClose={handleChatWindowClose}
           leaveChat={requestLeaveChat}
+          relatedIdea={idea}
         />
       ) : (
         <PageNotFound itemName="Chat" returnText={texts.return_to_inbox} returnLink="/inbox" />
@@ -286,6 +289,7 @@ async function getChat(chat_uuid, token, locale) {
       participants: parseParticipants(resp.data.participants, resp.data.user),
       title: resp.data.name,
       id: resp.data.id,
+      idea: resp.data.related_idea,
     };
   } catch (e) {
     console.log(e?.response);

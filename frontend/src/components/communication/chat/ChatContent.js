@@ -72,6 +72,7 @@ export default function ChatContent({
   handleToggleMemberManagementExpanded,
   showSendHelper,
   setShowSendHelper,
+  relatedIdea,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -120,6 +121,7 @@ export default function ChatContent({
           isPrivateChat={isPrivateChat}
           title={title}
           texts={texts}
+          relatedIdea={relatedIdea}
         />
       )}
       <div className={`${classes.bottomBar} ${classes.maxWidth}`}>
