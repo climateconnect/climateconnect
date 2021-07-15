@@ -63,7 +63,7 @@ export default function MyApp({
   //possible socket connection states: "disconnected", "connecting", "connected"
   const [state, setState] = React.useState({
     user: user,
-    notifications: [],
+    notifications: notifications,
     chatSocket: null,
   });
   const [socketConnectionState, setSocketConnectionState] = React.useState("connecting");
