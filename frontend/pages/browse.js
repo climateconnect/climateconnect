@@ -14,6 +14,7 @@ import {
   getStatusOptions,
   membersWithAdditionalInfo
 } from "../public/lib/getOptions";
+import { getAllHubs } from "../public/lib/hubOperations";
 import { getLocationFilteredBy } from "../public/lib/locationOperations";
 import {
   getInfoMetadataByType,
@@ -43,7 +44,7 @@ export async function getServerSideProps(ctx) {
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
-    getHubs(ctx.locale),
+    getAllHubs(ctx.locale),
     getLocationFilteredBy(ctx.query),
   ]);
   return {

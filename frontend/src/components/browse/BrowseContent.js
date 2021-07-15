@@ -1,16 +1,17 @@
 import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
+import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
 import _ from "lodash";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import possibleFilters from "../../../public/data/possibleFilters";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
+import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 import {
   getInfoMetadataByType,
   getReducedPossibleFilters
 } from "../../../public/lib/parsingOperations";
 import { getFilterUrl, getSearchParams } from "../../../public/lib/urlOperations";
-import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
@@ -71,6 +72,9 @@ export default function BrowseContent({
   initialIdeaUrlSlug,
   hubLocation,
   hubData,
+  filters,
+  handleUpdateFilterValues,
+  initialLocationFilter
 }) {
   const initialState = {
     items: {
@@ -476,18 +480,11 @@ export default function BrowseContent({
                 className={classes.tabContent}
                 type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")]}
                 applyFilters={handleApplyNewFilters}
-                className={classes.tabContent}
                 filters={filters}
                 handleUpdateFilters={handleUpdateFilterValues}
                 errorMessage={errorMessage}
                 filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
                 handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-                locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[0]]}
-                unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters(
-                  TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")],
-                  filterChoices
-                )}
                 locationInputRef={
                   locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")]]
                 }
@@ -497,7 +494,6 @@ export default function BrowseContent({
                   filterChoices: filterChoices,
                   locale: locale,
                 })}
-                type={TYPES_BY_TAB_VALUE[0]}
                 unexpandFilters={isMobileScreen ? unexpandFiltersOnMobile : unexpandFilters}
                 initialLocationFilter={initialLocationFilter}
               />
@@ -533,18 +529,12 @@ export default function BrowseContent({
                 className={classes.tabContent}
                 type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")]}
                 applyFilters={handleApplyNewFilters}
-                className={classes.tabContent}
                 errorMessage={errorMessage}
                 filters={filters}
                 handleUpdateFilters={handleUpdateFilterValues}
                 filtersExpanded={filtersExpanded}
                 handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-                locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[1]]}
-                unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters(
-                  TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")],
-                  filterChoices
-                )}
+                unexpandFilters={isMobileScreen ? unexpandFiltersOnMobile : unexpandFilters}
                 locationInputRef={
                   locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")]]
                 }
@@ -554,8 +544,6 @@ export default function BrowseContent({
                   filterChoices: filterChoices,
                   locale: locale,
                 })}
-                type={TYPES_BY_TAB_VALUE[1]}
-                unexpandFilters={unexpandFilters}
                 initialLocationFilter={initialLocationFilter}
               />
             )}
