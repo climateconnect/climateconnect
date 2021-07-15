@@ -2,6 +2,7 @@ import { makeStyles, Typography } from "@material-ui/core";
 import Router from "next/router";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
+
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { blobFromObjectUrl, getImageUrl } from "../../../public/lib/imageOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";

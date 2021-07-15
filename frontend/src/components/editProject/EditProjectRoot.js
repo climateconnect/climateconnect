@@ -2,6 +2,7 @@ import { Container, Divider, Typography, useMediaQuery } from "@material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 import Router from "next/router";
 import React, { useContext, useRef, useState } from "react";
+
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
@@ -63,6 +64,7 @@ export default function EditProjectRoot({
   const [translations, setTranslations] = useState(
     initialTranslations ? getTranslationsFromObject(initialTranslations, "project") : {}
   );
+
   const sourceLanguage = project.language ? project.language : locale;
   const targetLanguage = locales.find((l) => l !== sourceLanguage);
 

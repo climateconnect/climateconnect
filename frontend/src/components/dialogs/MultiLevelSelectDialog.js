@@ -7,24 +7,27 @@ import GenericDialog from "./GenericDialog";
 
 export default function MultiLevelSelectDialog({
   dragAble,
-  items,
   itemsToChooseFrom,
   maxSelections,
   onClose,
+  onSave,
   open,
   selectedItems,
   setSelectedItems,
   type,
+  title,
 }) {
+  /**
+   * When clicking "Save" we want to apply the filters,
+   * update the persisted URL, refetch the data,
+   * and close the dialog.
+   */
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
-  const handleClose = () => {
-    setSelectedItems(items ? items : []);
-    onClose();
-  };
 
   const applySkills = () => {
-    onClose(selectedItems);
+    onSave(selectedItems);
+    onClose();
   };
 
   const itemNamePlural = texts[type];
@@ -32,7 +35,7 @@ export default function MultiLevelSelectDialog({
   const possibleItems = itemsToChooseFrom;
 
   // Alphabetize options by name
-  possibleItems.sort((a, b) => {
+  possibleItems?.sort((a, b) => {
     if (a?.name?.toUpperCase() < b?.name?.toUpperCase()) {
       return -1;
     }
@@ -48,9 +51,9 @@ export default function MultiLevelSelectDialog({
     <GenericDialog
       applyText={texts.save}
       onApply={applySkills}
-      onClose={handleClose}
+      onClose={onClose}
       open={open}
-      title={texts.add + " " + itemNamePlural}
+      title={title ? title : texts.add + " " + itemNamePlural}
       topBarFixed
       useApplyButton={true}
     >

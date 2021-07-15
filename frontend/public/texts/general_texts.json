@@ -47,6 +47,10 @@
     "en": "Project Categories",
     "de": "Projektkategorien"
   },
+  "add_project_categories": {
+    "en": "Add project categories",
+    "de": "Projektkategorien hinzufügen"
+  },
   "save": {
     "en": "Save",
     "de": "Speichern"

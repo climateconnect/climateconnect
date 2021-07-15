@@ -1,9 +1,9 @@
 import { makeStyles, Typography } from "@material-ui/core";
-import NextCookies from "next-cookies";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
+import possibleFilters from "../../public/data/possibleFilters";
 import { apiRequest } from "../../public/lib/apiOperations";
-import { buildUrlEndingFromFilters } from "../../public/lib/filterOperations";
+import { getUnaffectedTabs, hasDifferingValues } from "../../public/lib/filterOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
@@ -13,7 +13,13 @@ import {
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
-import { parseData } from "../../public/lib/parsingOperations";
+import { getLocationFilteredBy } from "../../public/lib/locationOperations";
+import {
+  getInfoMetadataByType,
+  getReducedPossibleFilters,
+  parseData,
+} from "../../public/lib/parsingOperations";
+import { encodeQueryParamsFromFilters } from "../../public/lib/urlOperations";
 import getTexts from "../../public/texts/texts";
 import BrowseContent from "../../src/components/browse/BrowseContent";
 import UserContext from "../../src/components/context/UserContext";
@@ -59,7 +65,8 @@ export async function getServerSideProps(ctx) {
     organization_types,
     skills,
     project_statuses,
-    allHubs,
+    location_filtered_by,
+    allHubs
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
     getProjects({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
@@ -75,6 +82,7 @@ export async function getServerSideProps(ctx) {
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
+    getLocationFilteredBy(ctx.query),
     getAllHubs(ctx.locale, true),
   ]);
   return {
@@ -100,6 +108,7 @@ export async function getServerSideProps(ctx) {
         skills: skills,
         project_statuses: project_statuses,
       },
+      initialLocationFilter: location_filtered_by,
       allHubs,
       initialIdeaUrlSlug: ideaToOpen ? encodeURIComponent(ideaToOpen) : null,
     },
@@ -107,20 +116,21 @@ export async function getServerSideProps(ctx) {
 }
 
 export default function Hub({
-  hubUrl,
-  name,
-  statBoxTitle,
   headline,
+  hubUrl,
+  image_attribution,
   image,
+  isLocationHub,
+  name,
   quickInfo,
+  statBoxTitle,
   stats,
+  subHeadline,
+  initialLocationFilter,
+  filterChoices,
   initialProjects,
   initialOrganizations,
   initialIdeas,
-  filterChoices,
-  subHeadline,
-  image_attribution,
-  isLocationHub,
   allHubs,
   initialIdeaUrlSlug,
   hubLocation,
@@ -130,25 +140,21 @@ export default function Hub({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("token");
-  const [filters, setFilters] = useState({
-    projects: {},
-    members: {},
-    organizations: {},
-  });
+
+  const getInitialFilters = () => {
+    return getReducedPossibleFilters(
+      possibleFilters({ key: "all", filterChoices: filterChoices, locale: locale }),
+      initialLocationFilter
+    );
+  };
+
+  const [filters, setFilters] = useState(getInitialFilters());
+  const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWhereApplied] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const handleSetErrorMessage = (newMessage) => {
     setErrorMessage(newMessage);
   };
   const contentRef = useRef(null);
-
-  const [initialMembers, setInitialMembers] = useState(null);
-  useEffect(async function () {
-    if (isLocationHub) {
-      setInitialMembers(
-        await getMembers({ page: 1, token: token, hubUrl: hubUrl, locale: locale })
-      );
-    }
-  }, []);
 
   //Refs and state for tutorial
   const hubQuickInfoRef = useRef(null);
@@ -195,15 +201,52 @@ export default function Hub({
     }
   };
 
-  const applyNewFilters = async (type, newFilters, closeFilters, oldUrlEnding) => {
-    if (filters === newFilters) {
+  const applyNewFilters = async (type, newFilters, closeFilters) => {
+    if (
+      !hasDifferingValues({
+        obj: filters,
+        newObj: newFilters,
+        type: type,
+        filterChoices: filterChoices,
+        locale: locale,
+      }) &&
+      tabsWhereFiltersWereApplied.includes(type)
+    ) {
       return;
     }
-    setFilters({ ...filters, [type]: newFilters });
-    const newUrlEnding = buildUrlEndingFromFilters(newFilters);
-    if (oldUrlEnding === newUrlEnding) {
-      return null;
+
+    if (
+      !hasDifferingValues({
+        obj: filters,
+        newObj: newFilters,
+        type: type,
+        filterChoices: filterChoices,
+        locale: locale,
+      })
+    ) {
+      setTabsWhereFiltersWhereApplied([...tabsWhereFiltersWereApplied, type]);
+    } else {
+      //If there was a change to the filters, we'll only remove the affected tabs from the tabs that were affected by the change
+      //e.g. your cannot browse organizations by project category at the moment, so if you change this filter and then switch to the organizations tab
+      //this should not trigger a reload of the organzations
+      const unaffectedTabs = getUnaffectedTabs({
+        tabs: tabsWhereFiltersWereApplied,
+        filterChoices: filterChoices,
+        locale: locale,
+        filters: filters,
+        newFilters: newFilters,
+        type: type,
+      });
+      setTabsWhereFiltersWhereApplied([...unaffectedTabs, type]);
     }
+    setFilters({ ...filters, ...newFilters });
+
+    const newUrlEnding = encodeQueryParamsFromFilters({
+      filters: newFilters,
+      infoMetadata: getInfoMetadataByType(type, locale),
+      filterChoices: filterChoices,
+      locale: locale,
+    });
     handleSetErrorMessage("");
     try {
       const filteredItemsObject = await getDataFromServer({
@@ -211,13 +254,16 @@ export default function Hub({
         page: 1,
         token: token,
         urlEnding: newUrlEnding,
+        // TODO: This is the primary difference between the applyNewFilters logic
+        // here locally in [hubUrl] and within browse.js -- we should deduplicate
         hubUrl: hubUrl,
         locale: locale,
       });
+
       if (type === "members") {
         filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
       }
-      console.log(filteredItemsObject);
+
       return {
         closeFilters: closeFilters,
         filteredItemsObject: filteredItemsObject,
@@ -228,38 +274,19 @@ export default function Hub({
     }
   };
 
-  const applySearch = async (type, searchValue, oldUrlEnding) => {
-    const newSearchQueryParam = `&search=${searchValue}`;
-    console.log(newSearchQueryParam);
-    if (oldUrlEnding === newSearchQueryParam) {
-      console.log("it's the same!");
-      return;
-    }
-    try {
-      const filteredItemsObject = await getDataFromServer({
-        type: type,
-        page: 1,
-        token: token,
-        urlEnding: newSearchQueryParam,
-        hubUrl: hubUrl,
-        locale: locale,
-      });
-      if (type === "members") {
-        filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
-      }
-      return {
-        filteredItemsObject: filteredItemsObject,
-        newUrlEnding: newSearchQueryParam,
-      };
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const closeHubHeaderImage = (e) => {
     e.preventDefault();
     console.log("closing hub header image");
   };
+
+  const handleUpdateFilterValues = (valuesToUpdate) => {
+    setFilters({
+      ...filters,
+      ...valuesToUpdate,
+    });
+  };
+
+  console.log(filters);
 
   return (
     <WideLayout title={headline} fixedHeader headerBackground="#FFF">
@@ -291,19 +318,22 @@ export default function Hub({
           <div ref={contentRef} className={classes.contentRef} />
           {!isLocationHub && <BrowseExplainer />}
           <BrowseContent
-            initialProjects={initialProjects}
-            initialOrganizations={initialOrganizations}
-            initialMembers={initialMembers}
-            filterChoices={filterChoices}
-            loadMoreData={loadMoreData}
             applyNewFilters={applyNewFilters}
-            applySearch={applySearch}
-            hideMembers={!isLocationHub}
             customSearchBarLabels={customSearchBarLabels}
-            handleSetErrorMessage={handleSetErrorMessage}
             errorMessage={errorMessage}
-            hubQuickInfoRef={hubQuickInfoRef}
+            filters={filters}
+            handleUpdateFilterValues={handleUpdateFilterValues}
+            filterChoices={filterChoices}
+            handleSetErrorMessage={handleSetErrorMessage}
+            hideMembers={!isLocationHub}
+            hubName={name}
             hubProjectsButtonRef={hubProjectsButtonRef}
+            hubQuickInfoRef={hubQuickInfoRef}
+            initialLocationFilter={initialLocationFilter}
+            // TODO: is this still needed?
+            // initialOrganizations={initialOrganizations}
+            // initialProjects={initialProjects}
+            loadMoreData={loadMoreData}
             nextStepTriggeredBy={nextStepTriggeredBy}
             hubName={name}
             initialIdeas={initialIdeas}

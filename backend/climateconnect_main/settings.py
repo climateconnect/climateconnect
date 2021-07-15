@@ -46,7 +46,7 @@ AUTO_VERIFY = True if env('AUTO_VERIFY') in ['True', 'true', 'TRUE'] else False
 
 CUSTOM_APPS = [
     'climateconnect_api',
-    'organization', 
+    'organization',
     'chat_messages',
     'hubs',
     'location',
@@ -77,7 +77,7 @@ else:
     INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
 
 SECURITY_MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',    
+    'django.middleware.security.SecurityMiddleware',
 ]
 
 DEBUG_MIDDLEWARE = [

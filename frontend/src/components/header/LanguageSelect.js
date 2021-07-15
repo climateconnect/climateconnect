@@ -1,8 +1,9 @@
 import { Button, makeStyles, useMediaQuery } from "@material-ui/core";
 import LanguageIcon from "@material-ui/icons/Language";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
+import React, { useContext, useEffect, useRef, useState } from "react";
+
 import { getCookieProps } from "../../../public/lib/cookieOperations";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
@@ -104,7 +105,7 @@ export default function LanguageSelect({ transparentHeader }) {
         container={anchorEl?.parentNode}
         PaperProps={{ onMouseEnter: handleOpen, onMouseLeave: handleClose }}
       >
-        {locales.map((l, index) => (
+        {locales?.map((l, index) => (
           <StyledMenuItem
             key={index}
             className={classes.centerText}

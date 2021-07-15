@@ -1,11 +1,17 @@
 import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
-import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
+import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
+import _ from "lodash";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import possibleFilters from "../../../public/data/possibleFilters";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
+import {
+  getInfoMetadataByType,
+  getReducedPossibleFilters
+} from "../../../public/lib/parsingOperations";
+import { getFilterUrl, getSearchParams } from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
@@ -50,23 +56,25 @@ export default function BrowseContent({
   initialProjects,
   initialIdeas,
   applyNewFilters,
-  filterChoices,
-  loadMoreData,
-  applySearch,
-  hideMembers,
   customSearchBarLabels,
-  handleSetErrorMessage,
   errorMessage,
-  hubsSubHeaderRef,
-  hubQuickInfoRef,
-  hubProjectsButtonRef,
-  nextStepTriggeredBy,
+  filterChoices,
+  handleSetErrorMessage,
+  hideMembers,
   hubName,
+  hubProjectsButtonRef,
+  hubQuickInfoRef,
+  hubsSubHeaderRef,
+  loadMoreData,
+  nextStepTriggeredBy,
   showIdeas,
   allHubs,
   initialIdeaUrlSlug,
   hubLocation,
   hubData,
+  filters,
+  handleUpdateFilterValues,
+  initialLocationFilter
 }) {
   const initialState = {
     items: {
@@ -88,12 +96,7 @@ export default function BrowseContent({
       organizations: 2,
       ideas: 2,
     },
-    urlEnding: {
-      projects: "",
-      organizations: "",
-      members: "",
-      ideas: "",
-    },
+    urlEnding: "",
   };
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const token = new Cookies().get("token");
@@ -120,13 +123,21 @@ export default function BrowseContent({
   };
   const [hash, setHash] = useState(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
-  const [filtersExpanded, setFiltersExpanded] = useState(false);
+
+  const isMobileScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
+
+  // Always default to filters being expanded
+  const [filtersExpanded, setFiltersExpanded] = useState(true);
+  // On mobile filters take up the whole screen so they aren't expanded by default
+  const [filtersExandedOnMobile, setFiltersExpandedOnMobile] = useState(false);
   const [state, setState] = useState(initialState);
+
   const locationInputRefs = {
     projects: useRef(null),
     organizations: useRef(null),
     members: useRef(null),
   };
+
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const [userOrganizations, setUserOrganizations] = useState(null);
   const handleSetLocationOptionsOpen = (bool) => {
@@ -145,11 +156,6 @@ export default function BrowseContent({
   const [isFiltering, setIsFiltering] = useState(false);
   const [isFetchingMoreData, setIsFetchingMoreData] = useState(false);
 
-  const handleTabChange = (event, newValue) => {
-    window.location.hash = TYPES_BY_TAB_VALUE[newValue];
-    setTabValue(newValue);
-  };
-
   useEffect(() => {
     if (window.location.hash) {
       setHash(window.location.hash.replace("#", ""));
@@ -157,8 +163,107 @@ export default function BrowseContent({
     }
   }, []);
 
+  const hasQueryParams = (Object.keys(getSearchParams(window.location.search)).length === 0) !== 0;
+
+  /**
+   * Support the functionality of a user entering
+   * a provided URL, that already has URL encoded
+   * query params from a filter in it. In this use
+   * case, we should automatically set the filters dynamically. Ensure
+   * that this isn't invoked on extraneous renders.
+   */
+  const [hasFilteredByInitialQueryParams, setHasFilteredByInitialQueryParams] = useState(false);
+
+  useEffect(() => {
+    if (!hasFilteredByInitialQueryParams) {
+      // Update the state of the visual filters, like Select, Dialog, etc
+      // Then actually fetch the data. We need a way to map what's
+      // in the query param, to what UI element is present on the screen. For
+      // example, if we have a MultiLevelSelect dialog representing categories
+      // and we have a ?&category=Food waste, then we need to update the
+      // the MultiLevelSelect dialog's selection to that value somehow.
+
+      // For each query param option, ensure that it's
+      // split into array before spreading onto the new filters object.
+      const queryObject = getQueryObject(getSearchParams(window.location.search));
+      const newFilters = {
+        ...queryObject,
+      };
+
+      const tabName = TYPES_BY_TAB_VALUE[tabValue];
+
+      // Apply new filters with the query object immediately:
+      handleApplyNewFilters(tabName, newFilters, false, state.urlEnding);
+
+      // And then update state
+      setHasFilteredByInitialQueryParams(true);
+    }
+  }, []);
+
+  const handleTabChange = (event, newValue) => {
+    if (hasQueryParams) {
+      // Update the state of the visual filters, like Select, Dialog, etc
+      // Then actually fetch the data. We need a way to map what's
+      // in the query param, to what UI element is present on the screen. For
+      // example, if we have a MultiLevelSelect dialog representing categories
+      // and we have a ?&category=Food waste, then we need to update the
+      // the MultiLevelSelect dialog's selection to that value somehow.
+
+      // For each query param option, ensure that it's
+      // split into array before spreading onto the new filters object.
+      const emptyFilters = getReducedPossibleFilters(
+        possibleFilters({
+          key: TYPES_BY_TAB_VALUE[0],
+          filterChoices: filterChoices,
+          locale: locale,
+        })
+      );
+      delete emptyFilters.location;
+      const queryObject = getQueryObject(getSearchParams(window.location.search));
+      //location is always set to "" here
+      const newFilters = { ...emptyFilters, ...queryObject };
+      const tabValue = TYPES_BY_TAB_VALUE[newValue];
+
+      // Apply new filters with the query object immediately:
+      handleApplyNewFilters(tabValue, newFilters, false, state.urlEnding);
+    }
+
+    window.location.hash = TYPES_BY_TAB_VALUE[newValue];
+    setTabValue(newValue);
+  };
+
+  /* We always save filter values in the url in english. 
+  Therefore we need to get the name in the current language
+  when retrieving them from the query object */
+  const getValueInCurrentLanguage = (metadata, value) => {
+    return metadata.options.find((o) => o.original_name === value).name;
+  };
+
+  const getQueryObject = (query) => {
+    const queryObject = _.cloneDeep(query);
+    const possibleFiltersMetadata = possibleFilters({
+      key: "all",
+      filterChoices: filterChoices,
+      locale: locale,
+    });
+    for (const [key, value] of Object.entries(queryObject)) {
+      const metadata = possibleFiltersMetadata.find((f) => f.key === key);
+
+      if (value.indexOf(",") > 0) {
+        queryObject[key] = value.split(",").map((v) => getValueInCurrentLanguage(metadata, v));
+      } else if (metadata?.type === "multiselect") {
+        queryObject[key] = [getValueInCurrentLanguage(metadata, value)];
+      }
+    }
+    return queryObject;
+  };
+
   const unexpandFilters = () => {
     setFiltersExpanded(false);
+  };
+
+  const unexpandFiltersOnMobile = () => {
+    setFiltersExpandedOnMobile(false);
   };
 
   const loadMoreProjects = async () => {
@@ -180,7 +285,8 @@ export default function BrowseContent({
   const handleLoadMoreData = async (type) => {
     try {
       setIsFetchingMoreData(true);
-      const res = await loadMoreData(type, state.nextPages[type], state.urlEnding[type]);
+      const res = await loadMoreData(type, state.nextPages[type], state.urlEnding);
+
       // TODO: these setState and hooks calls should likely be memoized and combined
       setIsFetchingMoreData(false);
       setState({
@@ -210,9 +316,21 @@ export default function BrowseContent({
   /**
    * Sets loading state to true to until the results are
    * returned from applying the new filters. Then updates the
-   * state.
+   * state, and persists the new filters as query params in the URL.
    */
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
+    const newUrl = getFilterUrl({
+      activeFilters: newFilters,
+      infoMetadata: getInfoMetadataByType(type),
+      filterChoices: filterChoices,
+      locale: locale,
+    });
+    if (newUrl !== window?.location?.href) {
+      window.history.pushState({}, "", newUrl);
+    }
+    // Only push state if there's a URL change. Be sure to account for the
+    // hash link / fragment on the end of the URL (e.g. #skills).
+
     if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
       indicateWrongLocation(
         locationInputRefs[type],
@@ -222,18 +340,22 @@ export default function BrowseContent({
       );
       return;
     }
+
     handleSetErrorMessage("");
     setIsFiltering(true);
-    const res = await applyNewFilters(type, newFilters, closeFilters, state.urlEnding[type]);
+
+    const res = await applyNewFilters(type, newFilters, closeFilters);
     if (res?.closeFilters) {
-      setFiltersExpanded(false);
+      if (isMobileScreen) setFiltersExpandedOnMobile(false);
+      else setFiltersExpanded(false);
     }
+
     if (res?.filteredItemsObject) {
       setState({
         ...state,
         items: { ...state.items, [type]: res.filteredItemsObject[type] },
         hasMore: { ...state.hasMore, [type]: res.filteredItemsObject.hasMore },
-        urlEnding: { ...state.urlEnding, [type]: res.newUrlEnding },
+        urlEnding: res.newUrlEnding,
         nextPages: { ...state.nextPages, [type]: 2 },
       });
     }
@@ -246,21 +368,31 @@ export default function BrowseContent({
    */
   const handleSearchSubmit = async (type, searchValue) => {
     setIsFiltering(true);
-    const res = await applySearch(type, searchValue, state.urlEnding[type]);
+    const newFilters = { ...filters, search: searchValue };
+    const newUrl = getFilterUrl({
+      activeFilters: newFilters,
+      infoMetadata: getInfoMetadataByType(type),
+      filterChoices: filterChoices,
+      locale: locale,
+    });
+    const res = await applyNewFilters(type, newFilters, false);
     setIsFiltering(false);
+    if (newUrl !== window?.location?.href) {
+      window.history.pushState({}, "", newUrl);
+    }
 
     if (res?.filteredItemsObject) {
       setState({
         ...state,
         items: { ...state.items, [type]: res.filteredItemsObject[type] },
         hasMore: { ...state.hasMore, [type]: res.filteredItemsObject.hasMore },
-        urlEnding: { ...state.urlEnding, [type]: res.newUrlEnding },
+        urlEnding: res.newUrlEnding,
         nextPages: { ...state.nextPages, [type]: 2 },
       });
     }
   };
 
-  /*This is specifically for location hubs: 
+  /*This is specifically for location hubs:
     Sector hubs don't show members
     We only know whether a hub is a location hub after loading initial props
     Therefore we only catch members on location hubs after they are initialized.
@@ -305,12 +437,13 @@ export default function BrowseContent({
     >
       <Container maxWidth="lg">
         <FilterSection
-          filtersExpanded={filtersExpanded}
+          filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
           onSubmit={handleSearchSubmit}
-          setFiltersExpanded={setFiltersExpanded}
+          setFiltersExpanded={isMobileScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
           type={TYPES_BY_TAB_VALUE[tabValue]}
           customSearchBarLabels={customSearchBarLabels}
           filterButtonRef={filterButtonRef}
+          searchValue={filters.search}
           hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
         />
         <Tabs
@@ -347,18 +480,22 @@ export default function BrowseContent({
                 className={classes.tabContent}
                 type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")]}
                 applyFilters={handleApplyNewFilters}
-                filtersExpanded={filtersExpanded}
+                filters={filters}
+                handleUpdateFilters={handleUpdateFilterValues}
                 errorMessage={errorMessage}
-                unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters(
-                  TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")],
-                  filterChoices
-                )}
+                filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
+                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 locationInputRef={
                   locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")]]
                 }
                 locationOptionsOpen={locationOptionsOpen}
-                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                possibleFilters={possibleFilters({
+                  key: TYPES_BY_TAB_VALUE[0],
+                  filterChoices: filterChoices,
+                  locale: locale,
+                })}
+                unexpandFilters={isMobileScreen ? unexpandFiltersOnMobile : unexpandFilters}
+                initialLocationFilter={initialLocationFilter}
               />
             )}
             {/*
@@ -393,17 +530,21 @@ export default function BrowseContent({
                 type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")]}
                 applyFilters={handleApplyNewFilters}
                 errorMessage={errorMessage}
+                filters={filters}
+                handleUpdateFilters={handleUpdateFilterValues}
                 filtersExpanded={filtersExpanded}
-                unexpandFilters={unexpandFilters}
-                possibleFilters={possibleFilters(
-                  TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")],
-                  filterChoices
-                )}
+                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                unexpandFilters={isMobileScreen ? unexpandFiltersOnMobile : unexpandFilters}
                 locationInputRef={
                   locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")]]
                 }
                 locationOptionsOpen={locationOptionsOpen}
-                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                possibleFilters={possibleFilters({
+                  key: TYPES_BY_TAB_VALUE[1],
+                  filterChoices: filterChoices,
+                  locale: locale,
+                })}
+                initialLocationFilter={initialLocationFilter}
               />
             )}
 
@@ -437,18 +578,19 @@ export default function BrowseContent({
               {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("members") && (
                 <FilterContent
                   className={classes.tabContent}
+                  filters={filters}
+                  handleUpdateFilters={handleUpdateFilterValues}
                   type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")]}
                   applyFilters={handleApplyNewFilters}
                   filtersExpanded={filtersExpanded}
                   errorMessage={errorMessage}
                   unexpandFilters={unexpandFilters}
-                  possibleFilters={possibleFilters(
-                    TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")],
-                    filterChoices
-                  )}
-                  locationInputRef={
-                    locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")]]
-                  }
+                  possibleFilters={possibleFilters({
+                    key: TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")],
+                    filterChoices: filterChoices,
+                    locale: locale,
+                  })}
+                  locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")]]}
                   locationOptionsOpen={locationOptionsOpen}
                   handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 />

@@ -15,9 +15,13 @@ class AvailabilitySerializer(serializers.ModelSerializer):
 
 class SkillSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
+    original_name = serializers.SerializerMethodField()
     class Meta:
         model = Skill
-        fields = ('id', 'name', 'parent_skill')
+        fields = ('id', 'name', 'original_name', 'parent_skill')
 
     def get_name(self, obj):
         return get_skill_name(obj, get_language())
+    
+    def get_original_name(self, obj):
+        return obj.name

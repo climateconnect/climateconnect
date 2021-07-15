@@ -1,6 +1,6 @@
-import React from "react";
-import { TextField, InputAdornment } from "@material-ui/core";
+import { InputAdornment, TextField } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
+import React from "react";
 
 export default function FilterSearchBar({
   className,
@@ -9,6 +9,7 @@ export default function FilterSearchBar({
   onChange,
   onSubmit = () => {},
   type,
+  value,
 }) {
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -39,6 +40,7 @@ export default function FilterSearchBar({
       placeholder={label}
       size="small"
       variant="outlined"
+      value={value && value}
     />
   );
 }

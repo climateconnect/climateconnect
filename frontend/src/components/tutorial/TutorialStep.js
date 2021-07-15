@@ -121,7 +121,6 @@ export default function TutorialStep({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "tutorial", locale: locale });
-  console.log(texts);
   const curStep = get_steps(
     pointerRefs ? { ...pointerRefs, hubName: hubName, onClickForward: onClickForward } : {}
   )[step];
