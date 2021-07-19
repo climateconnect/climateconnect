@@ -34,9 +34,19 @@ const getFilterName = (filter, key, filterChoices) => {
     status: "project_statuses",
     category: "project_categories",
   };
-  return filterChoices[keyToFilterChoicesKeyMap[key]].find((fc) => {
-    return fc.name === filter;
-  }).original_name;
+  //get the filter choice we were looking for (either on top level or one level down)
+  const filterName = filterChoices[keyToFilterChoicesKeyMap[key]].reduce((result, filterChoice) => {
+    if(filterChoice.name === filter){
+      result = filterChoice.original_name
+    }
+    const subcategoriesFiltered = filterChoice?.subcategories.filter(fc => fc.name === filter)
+    if(subcategoriesFiltered.length > 0){
+      console.log("we found it!")
+      result = subcategoriesFiltered[0].original_name
+    }
+    return result
+  }, null)
+  return filterName
 };
 
 /**
