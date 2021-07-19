@@ -16,10 +16,15 @@ const coreTheme = createMuiTheme({
     background: {
       default: "#FFF",
     },
+    cards: {
+      // https://xd.adobe.com/view/b12f4514-bd4b-47b7-b21c-0e4922baee92-e47c/screen/78c2bee9-9a6f-480e-9664-627a23a7c253/specs/
+      background: "#F8F8F8",
+    },
     action: {
       selected: "#387077",
     },
   },
+
   typography: {
     fontFamily: "Open Sans",
     h1: {

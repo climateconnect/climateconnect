@@ -2,6 +2,8 @@ import { Card, CardContent, CardMedia, Link, Typography } from "@material-ui/cor
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import Truncate from "react-truncate";
+
+// Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -18,12 +20,16 @@ const useStyles = makeStyles((theme) => {
       "-moz-user-select": "none",
       "-ms-user-select": "none",
       userSelect: "none",
-      backgroundColor: theme.palette.background.default,
+      // backgroundColor: theme.palette.background.default,
+      backgroundColor: theme.palette.background.extraLight,
       borderRadius: 0,
       position: "relative",
       height: "100%",
       display: "flex",
       flexDirection: "column",
+    },
+    media: {
+      backgroundColor: theme.palette.background.extraLight,
     },
     placeholderImg: {
       visibility: "hidden",
@@ -72,7 +78,7 @@ const useStyles = makeStyles((theme) => {
       color: "white",
     },
     cardContent: {
-      background: "white",
+      background: theme.palette.cards.background,
       padding: 0,
       height: "auto",
       width: "100%",
@@ -84,7 +90,7 @@ const useStyles = makeStyles((theme) => {
     cardContentWithDescription: {
       position: "absolute",
       visibility: "visible",
-      background: "white",
+      background: theme.palette.cards.background,
       bottom: 0,
       minHeight: "100%",
     },
@@ -97,15 +103,18 @@ const useStyles = makeStyles((theme) => {
 
 export default function ProjectPreview({ project, projectRef }) {
   const [hovering, setHovering] = React.useState(false);
+
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles({ hovering: hovering });
-  const handleMouseEnter = () => {
-    setHovering(true);
-  };
-  const handleMouseLeave = () => {
-    setHovering(false);
-  };
+
+  // const handleMouseEnter = () => {
+  //   setHovering(true);
+  // };
+  // const handleMouseLeave = () => {
+  //   setHovering(false);
+  // };
+
   return (
     <Link
       href={
@@ -118,8 +127,8 @@ export default function ProjectPreview({ project, projectRef }) {
       <Card
         className={classes.root}
         // variant="outlined"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        // onMouseEnter={handleMouseEnter}
+        // onMouseLeave={handleMouseLeave}
         ref={projectRef}
       >
         <CardMedia
@@ -159,6 +168,7 @@ const CardContentWithoutDescription = ({ project, hovering }) => {
           </Truncate>
         </Typography>
       </div>
+      {/* Metadata */}
       <ProjectMetaData project={project} hovering={hovering} />
     </CardContent>
   );
@@ -176,6 +186,7 @@ const CardContentWithDescription = ({ project, hovering }) => {
           </Truncate>
         </Typography>
       </div>
+      {/* Metadata */}
       <ProjectMetaData project={project} hovering={hovering} withDescription />
     </CardContent>
   );
