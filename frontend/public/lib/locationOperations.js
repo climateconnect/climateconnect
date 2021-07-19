@@ -221,10 +221,13 @@ export function getLocationValue(values, locationKey) {
 //When filtering by location, the url only holds the place_id, osm_id and loc_type, but not the name
 //This function is used to retrieve the whole location object
 export async function getLocationFilteredBy(query) {
-  const required_params = getLocationFilterKeys();
+  const required_params = getLocationFilterKeys(true);
   //Return no if we didn't filter by any location
   for (const param of required_params) {
-    if (!Object.keys(query).includes(param)) return null;
+    if (!Object.keys(query).includes(param)) {
+      console.log(`${param} is missing!`)
+      return null;
+    }
   }
   const url = `/api/get_location/`;
   const payload = {

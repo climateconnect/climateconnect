@@ -44,7 +44,7 @@ export function getMessageFromUrl(message) {
 
 export function getInfoMetadataByType(type, locale) {
   if (type === "organizations") return getOrganizationInfoMetadata(locale);
-  if (type === "profiles") return profile_info_metadata(locale);
+  if (type === "profiles" || type === "members") return profile_info_metadata(locale);
   if (type === "projects") return getProjectInfoMetadata();
 }
 

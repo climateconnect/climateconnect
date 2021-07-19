@@ -33,10 +33,8 @@ export function getKeysOfDifferingValues({ obj, newObj, type, filterChoices, loc
     locale: locale,
   }).map((f) => f.key);
   const locationKeys = getLocationFilterKeys();
-  console.log(locationKeys);
   const differingKeys = [];
   for (const key of possibleFilterKeys) {
-    if (key === "location") console.log(newObj[key]);
     if (key === "location" && (!newObj[key] || typeof newObj[key] === "object")) {
       let isLocationEqual = true;
       //if there are no location keys in either object we still check whether the user selected a location
@@ -58,7 +56,6 @@ export function getKeysOfDifferingValues({ obj, newObj, type, filterChoices, loc
             ["radius"]
           )
         ) {
-          console.log("actually it is equal!");
           isLocationEqual = true;
         }
       }

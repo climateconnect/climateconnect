@@ -3,7 +3,7 @@ import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
 import _ from "lodash";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import possibleFilters from "../../../public/data/possibleFilters";
+import getFilters from "../../../public/data/possibleFilters";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
@@ -143,6 +143,8 @@ export default function BrowseContent({
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
   };
+  //When switching to the ideas tab: catch the orgs the user is a part of. 
+  //This info is required to share an idea
   useEffect(async function () {
     if (tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas") && userOrganizations === null) {
       setUserOrganizations("");
@@ -156,13 +158,6 @@ export default function BrowseContent({
   const [isFiltering, setIsFiltering] = useState(false);
   const [isFetchingMoreData, setIsFetchingMoreData] = useState(false);
 
-  useEffect(() => {
-    if (window.location.hash) {
-      setHash(window.location.hash.replace("#", ""));
-      setTabValue(TYPES_BY_TAB_VALUE.indexOf(window.location.hash.replace("#", "")));
-    }
-  }, []);
-
   const hasQueryParams = (Object.keys(getSearchParams(window.location.search)).length === 0) !== 0;
 
   /**
@@ -172,10 +167,15 @@ export default function BrowseContent({
    * case, we should automatically set the filters dynamically. Ensure
    * that this isn't invoked on extraneous renders.
    */
-  const [hasFilteredByInitialQueryParams, setHasFilteredByInitialQueryParams] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (!hasFilteredByInitialQueryParams) {
+    const newHash = window?.location?.hash.replace("#", "")
+    if (window.location.hash) {
+      setHash(newHash);
+      setTabValue(TYPES_BY_TAB_VALUE.indexOf(newHash));
+    }
+    if (!initialized) {
       // Update the state of the visual filters, like Select, Dialog, etc
       // Then actually fetch the data. We need a way to map what's
       // in the query param, to what UI element is present on the screen. For
@@ -185,20 +185,44 @@ export default function BrowseContent({
 
       // For each query param option, ensure that it's
       // split into array before spreading onto the new filters object.
-      const queryObject = getQueryObject(getSearchParams(window.location.search));
+      const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
       const newFilters = {
         ...queryObject,
       };
 
-      const tabName = TYPES_BY_TAB_VALUE[tabValue];
+      if(initialLocationFilter) {
+        const tabKey = newHash ? newHash : TYPES_BY_TAB_VALUE[0]
+        const possibleFilters = getFilters({key: tabKey, filterChoices: filterChoices, locale: locale})
+        const locationFilter = possibleFilters.find(f=>f.type === "location")
+        newFilters[locationFilter.key] = initialLocationFilter
+      }
 
+      const tabName = TYPES_BY_TAB_VALUE[tabValue];
       // Apply new filters with the query object immediately:
       handleApplyNewFilters(tabName, newFilters, false, state.urlEnding);
 
       // And then update state
-      setHasFilteredByInitialQueryParams(true);
+      setInitialized(true);
     }
   }, []);
+
+  /*This is specifically for location hubs:
+    Sector hubs don't show members
+    We only know whether a hub is a location hub after loading initial props
+    Therefore we only catch members on location hubs after they are initialized.
+  */
+  useEffect(
+    function () {
+      if (initialMembers) {
+        setState({
+          ...state,
+          items: { ...state.items, members: membersWithAdditionalInfo(initialMembers.members) },
+          hasMore: { ...state.hasMore, members: initialMembers.hasMore },
+        });
+      }
+    },
+    [initialMembers]
+  );
 
   const handleTabChange = (event, newValue) => {
     if (hasQueryParams) {
@@ -212,18 +236,25 @@ export default function BrowseContent({
       // For each query param option, ensure that it's
       // split into array before spreading onto the new filters object.
       const emptyFilters = getReducedPossibleFilters(
-        possibleFilters({
+        getFilters({
           key: TYPES_BY_TAB_VALUE[0],
           filterChoices: filterChoices,
           locale: locale,
         })
       );
       delete emptyFilters.location;
-      const queryObject = getQueryObject(getSearchParams(window.location.search));
+      const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
       //location is always set to "" here
+      
+      //persist the old location filter when switching tabs
+      const tabKey = TYPES_BY_TAB_VALUE[newValue]
+      const possibleFilters = getFilters({key: tabKey, filterChoices: filterChoices, locale: locale})
+      const locationFilter = possibleFilters.find(f=>f.type === "location")
+      queryObject[locationFilter.key] = filters[locationFilter.key]
+      queryObject
+
       const newFilters = { ...emptyFilters, ...queryObject };
       const tabValue = TYPES_BY_TAB_VALUE[newValue];
-
       // Apply new filters with the query object immediately:
       handleApplyNewFilters(tabValue, newFilters, false, state.urlEnding);
     }
@@ -239,9 +270,9 @@ export default function BrowseContent({
     return metadata.options.find((o) => o.original_name === value).name;
   };
 
-  const getQueryObject = (query) => {
+  const getQueryObjectFromUrl = (query) => {
     const queryObject = _.cloneDeep(query);
-    const possibleFiltersMetadata = possibleFilters({
+    const possibleFiltersMetadata = getFilters({
       key: "all",
       filterChoices: filterChoices,
       locale: locale,
@@ -253,6 +284,8 @@ export default function BrowseContent({
         queryObject[key] = value.split(",").map((v) => getValueInCurrentLanguage(metadata, v));
       } else if (metadata?.type === "multiselect") {
         queryObject[key] = [getValueInCurrentLanguage(metadata, value)];
+      } else if (key === "radius") {
+        queryObject[key] = value + "km"
       }
     }
     return queryObject;
@@ -391,24 +424,7 @@ export default function BrowseContent({
       });
     }
   };
-
-  /*This is specifically for location hubs:
-    Sector hubs don't show members
-    We only know whether a hub is a location hub after loading initial props
-    Therefore we only catch members on location hubs after they are initialized.
-  */
-  useEffect(
-    function () {
-      if (initialMembers) {
-        setState({
-          ...state,
-          items: { ...state.items, members: membersWithAdditionalInfo(initialMembers.members) },
-          hasMore: { ...state.hasMore, members: initialMembers.hasMore },
-        });
-      }
-    },
-    [initialMembers]
-  );
+  
 
   const handleUpdateIdeaRating = (idea, newRating) => {
     const ideaInState = state.items.ideas.find((si) => si.url_slug === idea.url_slug);
@@ -489,7 +505,7 @@ export default function BrowseContent({
                   locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")]]
                 }
                 locationOptionsOpen={locationOptionsOpen}
-                possibleFilters={possibleFilters({
+                possibleFilters={getFilters({
                   key: TYPES_BY_TAB_VALUE[0],
                   filterChoices: filterChoices,
                   locale: locale,
@@ -539,7 +555,7 @@ export default function BrowseContent({
                   locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")]]
                 }
                 locationOptionsOpen={locationOptionsOpen}
-                possibleFilters={possibleFilters({
+                possibleFilters={getFilters({
                   key: TYPES_BY_TAB_VALUE[1],
                   filterChoices: filterChoices,
                   locale: locale,
@@ -585,7 +601,7 @@ export default function BrowseContent({
                   filtersExpanded={filtersExpanded}
                   errorMessage={errorMessage}
                   unexpandFilters={unexpandFilters}
-                  possibleFilters={possibleFilters({
+                  possibleFilters={getFilters({
                     key: TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")],
                     filterChoices: filterChoices,
                     locale: locale,
