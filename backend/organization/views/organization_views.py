@@ -1,4 +1,3 @@
-from organization.utility.organization import is_valid_organization_size
 import logging
 
 # Backend app imports
@@ -36,7 +35,8 @@ from organization.serializers.organization import (
 from organization.serializers.project import \
     ProjectFromProjectParentsSerializer
 from organization.serializers.tags import OrganizationTagsSerializer
-from organization.utility.organization import create_organization_translation
+from organization.utility.organization import (create_organization_translation,
+                                               is_valid_organization_size)
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 from rest_framework.filters import SearchFilter
@@ -109,9 +109,9 @@ class ListOrganizationsAPIView(ListAPIView):
                 Q(location__country=location_data['country']) 
                 &
                 (
-                    Q(location__multi_polygon__coveredby=(location_data['location']))
+                    Q(location__multi_polygon__distance_lte=(location_data['location'], location_data['radius']))
                     |
-                    Q(location__centre_point__coveredby=(location_data['location']))
+                    Q(location__centre_point__distance_lte=(location_data['location'], location_data['radius']))
                 )
             ).annotate(
                 distance=Distance("location__centre_point", location_data['location'])
