@@ -1,6 +1,6 @@
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { getLocationFilterKeys } from "../../../public/data/locationFilters";
 import { getReducedPossibleFilters } from "../../../public/lib/parsingOperations";
 import theme from "../../themes/theme";
@@ -10,7 +10,7 @@ import SelectedFilters from "./SelectedFilters";
 
 /**
  * Util to return an array of all potential items associated with
- * a given selected filter. Traverses itemsToChooseFrom, and subcategories
+ * a given selected filter. Traverses options, and subcategories
  * associated with that filter.
  */
 export const findAllItems = (currentPossibleFilter, selectedFiltersToCheck) => {
@@ -18,8 +18,8 @@ export const findAllItems = (currentPossibleFilter, selectedFiltersToCheck) => {
   // if we don't need to traverse subcategories or other items to choose from.
   // I.e. there aren't nested items to look through
   if (
-    !currentPossibleFilter.itemsToChooseFrom ||
-    currentPossibleFilter?.itemsToChooseFrom?.length === 0
+    !currentPossibleFilter.options ||
+    currentPossibleFilter?.options?.length === 0
   ) {
     // Handle the case where it could be a single item
     return Array.from(selectedFiltersToCheck);
@@ -27,7 +27,7 @@ export const findAllItems = (currentPossibleFilter, selectedFiltersToCheck) => {
 
   // Ensure we've accurate set membership, and iterate over all items to choose from...
   const items = [];
-  currentPossibleFilter.itemsToChooseFrom.forEach((item) => {
+  currentPossibleFilter.options.forEach((item) => {
     if (selectedFiltersToCheck.has(item.name)) {
       items.push(item);
     }
@@ -71,7 +71,7 @@ export const reduceFilters = (currentFilters, possibleFilters) => {
 
         // If we currently have a filter set (e.g. category), then
         // make sure we search through the possible sub items associated
-        // with that filter (e.g. itemsToChooseFrom, and subcategories)
+        // with that filter (e.g. options, and subcategories)
         const potentialItems = findAllItems(currentPossibleFilter, filtersToCheck);
         accumulator[currentPossibleFilter.key] = potentialItems;
       } else {
@@ -133,9 +133,21 @@ export default function FilterContent({
     }
   });
 
-  const [open, setOpen] = React.useState({});
+  const [open, setOpen] = useState({});
+  const [initialized, setInitialized] = useState(false)
   const reduced = reduceFilters(filters, possibleFilters);
-  const [selectedItems, setSelectedItems] = React.useState(reduced);
+  
+  const [selectedItems, setSelectedItems] = useState(reduced);
+
+  //once the filters are initialized, initialize selectedItems
+  useEffect(function() {
+    if(!initialized) {
+      setSelectedItems(reduced)
+      if(Object.keys(reduced).filter(key => reduced[key]?.length > 0)?.length > 0){
+        setInitialized(true)
+      }
+    }
+  }, [reduced])
 
   const handleClickDialogOpen = (prop) => {
     if (!open.prop) {
