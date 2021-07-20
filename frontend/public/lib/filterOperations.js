@@ -59,7 +59,9 @@ export function getKeysOfDifferingValues({ obj, newObj, type, filterChoices, loc
           isLocationEqual = true;
         }
       }
-      if (!isLocationEqual) differingKeys.push(location);
+      if (!isLocationEqual) {
+        differingKeys.push("location");
+      }
     } else if (!_.isEqual(newObj[key], obj[key])) {
       differingKeys.push(key);
     }
