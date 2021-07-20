@@ -212,7 +212,7 @@ export default function Filters({
                   </Button>
                   {/* For example, this could be the Skills dialog */}
                   <MultiLevelSelectDialog
-                    itemsToChooseFrom={filter.itemsToChooseFrom}
+                    options={filter.options}
                     onClose={() => handleClickDialogClose(filter.key)}
                     onSave={(selectedSkills) => handleClickDialogSave(filter.key, selectedSkills)}
                     open={open[filter.key] ? true : false}

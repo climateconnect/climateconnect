@@ -82,7 +82,7 @@ const getMembersFilters = (filterChoices, texts) => [
     type: "openMultiSelectDialogButton",
     key: "skills",
     itemType: "skills",
-    itemsToChooseFrom: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
+    options: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
     tooltipText: texts.skills_tooltip,
   },
 ];
@@ -130,7 +130,7 @@ const getProjectsFilters = (filterChoices, texts, english_texts) => [
     type: "openMultiSelectDialogButton",
     key: "category",
     itemType: "project categories",
-    itemsToChooseFrom: filterChoices?.project_categories?.map((c) => ({ ...c, key: c.id })),
+    options: filterChoices?.project_categories?.map((c) => ({ ...c, key: c.id })),
     tooltipText: texts.categories_tooltip,
   },
   {
@@ -165,7 +165,7 @@ const getProjectsFilters = (filterChoices, texts, english_texts) => [
     type: "openMultiSelectDialogButton",
     key: "skills",
     itemType: "skills",
-    itemsToChooseFrom: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
+    options: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
     tooltipText: texts.skills_tooltip,
   },
 ];

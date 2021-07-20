@@ -7,7 +7,7 @@ describe("FilterContent", () => {
         icon: "react-element",
         iconName: "ExploreIcon",
         // No items to choose from
-        itemsToChooseFrom: [],
+        options: [],
         itemType: "project categories",
         key: "category",
         title: "Categories",
@@ -24,7 +24,7 @@ describe("FilterContent", () => {
       const stubFilter = {
         icon: "react-element",
         iconName: "ExploreIcon",
-        itemsToChooseFrom: [{ name: "Test" }],
+        options: [{ name: "Test" }],
         itemType: "project categories",
         key: "category",
         title: "Categories",
@@ -44,7 +44,7 @@ describe("FilterContent", () => {
         icon: "react-element",
         iconName: "ExploreIcon",
         // No items to choose from
-        itemsToChooseFrom: [],
+        options: [],
         itemType: "project categories",
         key: "category",
         title: "Categories",

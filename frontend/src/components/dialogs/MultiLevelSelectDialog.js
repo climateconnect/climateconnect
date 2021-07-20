@@ -7,7 +7,7 @@ import GenericDialog from "./GenericDialog";
 
 export default function MultiLevelSelectDialog({
   dragAble,
-  itemsToChooseFrom,
+  options,
   maxSelections,
   onClose,
   onSave,
@@ -32,7 +32,7 @@ export default function MultiLevelSelectDialog({
 
   const itemNamePlural = texts[type];
 
-  const possibleItems = itemsToChooseFrom;
+  const possibleItems = options;
 
   // Alphabetize options by name
   possibleItems?.sort((a, b) => {

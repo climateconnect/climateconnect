@@ -7,7 +7,7 @@ import {
   getImageDialogHeight,
   getImageUrl,
   getResizedImage,
-  whitenTransparentPixels,
+  whitenTransparentPixels
 } from "../../../public/lib/imageOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
@@ -374,7 +374,7 @@ const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
         open={open}
         onClose={handleCategoriesDialogClose}
         type="categories"
-        itemsToChooseFrom={tagsOptions}
+        options={tagsOptions}
         items={project.tags}
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}
