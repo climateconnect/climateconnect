@@ -27,6 +27,19 @@ const getFilterUrl = ({ activeFilters, infoMetadata, filterChoices, locale }) =>
   return newUrl;
 };
 
+const findOptionByNameDeep = ({filterChoices, propertyToFilterBy, valueToFilterBy}) => {
+  return filterChoices.reduce((result, filterChoice) => {
+    if(filterChoice[propertyToFilterBy] === valueToFilterBy){
+      result = filterChoice
+    }
+    const subcategoriesFiltered = filterChoice?.subcategories?.filter(fc => fc[propertyToFilterBy] === valueToFilterBy)
+    if(subcategoriesFiltered?.length > 0){
+      result = subcategoriesFiltered[0]
+    }
+    return result
+  }, null)
+}
+
 const getFilterName = (filter, key, filterChoices) => {
   const keyToFilterChoicesKeyMap = {
     organization_type: "organization_types",
@@ -35,17 +48,11 @@ const getFilterName = (filter, key, filterChoices) => {
     category: "project_categories",
   };
   //get the filter choice we were looking for (either on top level or one level down)
-  const filterName = filterChoices[keyToFilterChoicesKeyMap[key]].reduce((result, filterChoice) => {
-    if(filterChoice.name === filter){
-      result = filterChoice.original_name
-    }
-    const subcategoriesFiltered = filterChoice?.subcategories.filter(fc => fc.name === filter)
-    if(subcategoriesFiltered.length > 0){
-      console.log("we found it!")
-      result = subcategoriesFiltered[0].original_name
-    }
-    return result
-  }, null)
+  const filterName = findOptionByNameDeep({
+    filterChoices: filterChoices[keyToFilterChoicesKeyMap[key]],
+    propertyToFilterBy: "name",
+    valueToFilterBy: filter
+  })?.original_name
   return filterName
 };
 
@@ -93,7 +100,11 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
           filterChoices: filterChoices,
           locale: locale,
         }).find((f) => f.key === filterKey).options;
-        filterValues = options.find((o) => o.name === filters[filterKey]).original_name;
+        filterValues = findOptionByNameDeep({
+          filterChoices: options,
+          propertyToFilterBy: "name",
+          valueToFilterBy: filters[filterKey]
+        })?.original_name//options.find((o) => o.name === filters[filterKey]).original_name;
       }
       // We also need to handle reserved characters, which
       // are not escaped by encodeURI as they're necessary
@@ -130,4 +141,4 @@ const getSearchParams = (searchString) => {
   return params;
 };
 
-export { getFilterUrl, encodeQueryParamsFromFilters, getSearchParams };
+export { getFilterUrl, encodeQueryParamsFromFilters, getSearchParams, findOptionByNameDeep };

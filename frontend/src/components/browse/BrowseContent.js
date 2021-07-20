@@ -11,7 +11,7 @@ import {
   getInfoMetadataByType,
   getReducedPossibleFilters
 } from "../../../public/lib/parsingOperations";
-import { getFilterUrl, getSearchParams } from "../../../public/lib/urlOperations";
+import { findOptionByNameDeep, getFilterUrl, getSearchParams } from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
@@ -267,7 +267,11 @@ export default function BrowseContent({
   Therefore we need to get the name in the current language
   when retrieving them from the query object */
   const getValueInCurrentLanguage = (metadata, value) => {
-    return metadata.options.find((o) => o.original_name === value).name;
+    return findOptionByNameDeep({
+      filterChoices: metadata.options,
+      propertyToFilterBy: "original_name",
+      valueToFilterBy: value
+    }).name
   };
 
   const getQueryObjectFromUrl = (query) => {
@@ -282,7 +286,7 @@ export default function BrowseContent({
 
       if (value.indexOf(",") > 0) {
         queryObject[key] = value.split(",").map((v) => getValueInCurrentLanguage(metadata, v));
-      } else if (metadata?.type === "multiselect") {
+      } else if (metadata?.type === "multiselect" || metadata?.type === "openMultiSelectDialogButton") {
         queryObject[key] = [getValueInCurrentLanguage(metadata, value)];
       } else if (key === "radius") {
         queryObject[key] = value + "km"
