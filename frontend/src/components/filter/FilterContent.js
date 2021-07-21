@@ -140,8 +140,8 @@ export default function FilterContent({
   useEffect(
     function () {
       if (!initialized) {
-        setSelectedItems(reduced);
         if (Object.keys(reduced).filter((key) => reduced[key]?.length > 0)?.length > 0) {
+          setSelectedItems(reduced);
           setInitialized(true);
         }
       }
