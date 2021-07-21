@@ -1,25 +1,20 @@
 import { makeStyles, Typography } from "@material-ui/core";
+import NextCookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import possibleFilters from "../../public/data/possibleFilters";
 import { apiRequest } from "../../public/lib/apiOperations";
-import { getUnaffectedTabs, hasDifferingValues } from "../../public/lib/filterOperations";
+import { applyNewFilters, getInitialFilters } from "../../public/lib/filterOperations";
+import { getDataFromServer } from "../../public/lib/getDataOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo,
+  membersWithAdditionalInfo
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { getLocationFilteredBy } from "../../public/lib/locationOperations";
-import {
-  getInfoMetadataByType,
-  getReducedPossibleFilters,
-  parseData,
-} from "../../public/lib/parsingOperations";
-import { encodeQueryParamsFromFilters } from "../../public/lib/urlOperations";
 import getTexts from "../../public/texts/texts";
 import BrowseContent from "../../src/components/browse/BrowseContent";
 import UserContext from "../../src/components/context/UserContext";
@@ -128,8 +123,6 @@ export default function Hub({
   subHeadline,
   initialLocationFilter,
   filterChoices,
-  initialProjects,
-  initialOrganizations,
   initialIdeas,
   allHubs,
   initialIdeaUrlSlug,
@@ -141,15 +134,13 @@ export default function Hub({
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
   const token = new Cookies().get("token");
 
-  const getInitialFilters = () => {
-    return getReducedPossibleFilters(
-      possibleFilters({ key: "all", filterChoices: filterChoices, locale: locale }),
-      initialLocationFilter
-    );
-  };
-
-  const [filters, setFilters] = useState(getInitialFilters());
-  const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWhereApplied] = useState([]);
+  // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
+  const [filters, setFilters] = useState(getInitialFilters({
+    filterChoices: filterChoices, 
+    locale: locale, 
+    initialLocationFilter: initialLocationFilter
+  }));
+  const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const handleSetErrorMessage = (newMessage) => {
     setErrorMessage(newMessage);
@@ -177,6 +168,31 @@ export default function Hub({
     ideas: texts.search_ideas_in_location,
   };
 
+  const handleAddFilters = (newFilters) => {
+    setFilters({ ...filters, ...newFilters})
+  }
+
+  const handleSetTabsWhereFiltersWereApplied = (tabs) => {
+    setTabsWhereFiltersWereApplied(tabs)
+  }
+
+  const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
+    return await applyNewFilters({
+      type: type,
+      filters: filters,
+      newFilters: newFilters,
+      closeFilters: closeFilters,
+      filterChoices: filterChoices,
+      locale: locale,      
+      token: token,
+      handleAddFilters: handleAddFilters,
+      handleSetErrorMessage: handleSetErrorMessage,
+      tabsWhereFiltersWereApplied,
+      handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
+      hubUrl: hubUrl
+    })
+  };
+
   const loadMoreData = async (type, page, urlEnding) => {
     try {
       const newDataObject = await getDataFromServer({
@@ -198,79 +214,6 @@ export default function Hub({
       console.log("error");
       console.log(e);
       throw e;
-    }
-  };
-
-  const applyNewFilters = async (type, newFilters, closeFilters) => {
-    if (
-      !hasDifferingValues({
-        obj: filters,
-        newObj: newFilters,
-        type: type,
-        filterChoices: filterChoices,
-        locale: locale,
-      }) &&
-      tabsWhereFiltersWereApplied.includes(type)
-    ) {
-      return;
-    }
-
-    if (
-      !hasDifferingValues({
-        obj: filters,
-        newObj: newFilters,
-        type: type,
-        filterChoices: filterChoices,
-        locale: locale,
-      })
-    ) {
-      setTabsWhereFiltersWhereApplied([...tabsWhereFiltersWereApplied, type]);
-    } else {
-      //If there was a change to the filters, we'll only remove the affected tabs from the tabs that were affected by the change
-      //e.g. your cannot browse organizations by project category at the moment, so if you change this filter and then switch to the organizations tab
-      //this should not trigger a reload of the organzations
-      const unaffectedTabs = getUnaffectedTabs({
-        tabs: tabsWhereFiltersWereApplied,
-        filterChoices: filterChoices,
-        locale: locale,
-        filters: filters,
-        newFilters: newFilters,
-        type: type,
-      });
-      setTabsWhereFiltersWhereApplied([...unaffectedTabs, type]);
-    }
-    setFilters({ ...filters, ...newFilters });
-
-    const newUrlEnding = encodeQueryParamsFromFilters({
-      filters: newFilters,
-      infoMetadata: getInfoMetadataByType(type, locale),
-      filterChoices: filterChoices,
-      locale: locale,
-    });
-    handleSetErrorMessage("");
-    try {
-      const filteredItemsObject = await getDataFromServer({
-        type: type,
-        page: 1,
-        token: token,
-        urlEnding: newUrlEnding,
-        // TODO: This is the primary difference between the applyNewFilters logic
-        // here locally in [hubUrl] and within browse.js -- we should deduplicate
-        hubUrl: hubUrl,
-        locale: locale,
-      });
-
-      if (type === "members") {
-        filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
-      }
-
-      return {
-        closeFilters: closeFilters,
-        filteredItemsObject: filteredItemsObject,
-        newUrlEnding: newUrlEnding,
-      };
-    } catch (e) {
-      console.log(e);
     }
   };
 
@@ -318,7 +261,7 @@ export default function Hub({
           <div ref={contentRef} className={classes.contentRef} />
           {!isLocationHub && <BrowseExplainer />}
           <BrowseContent
-            applyNewFilters={applyNewFilters}
+            applyNewFilters={handleApplyNewFilters}
             customSearchBarLabels={customSearchBarLabels}
             errorMessage={errorMessage}
             filters={filters}
@@ -335,7 +278,6 @@ export default function Hub({
             // initialProjects={initialProjects}
             loadMoreData={loadMoreData}
             nextStepTriggeredBy={nextStepTriggeredBy}
-            hubName={name}
             initialIdeas={initialIdeas}
             showIdeas={isLocationHub}
             allHubs={allHubs}
@@ -420,35 +362,4 @@ async function getMembers({ page, token, urlEnding, hubUrl, locale }) {
     hubUrl: hubUrl,
     locale: locale,
   });
-}
-
-async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale }) {
-  let url = `/api/${type}/?page=${page}&hub=${hubUrl}`;
-  console.log(`getting ${type} data for category ${hubUrl}`);
-  if (urlEnding) url += urlEnding;
-  try {
-    console.log(`Getting data for ${type} at ${url}`);
-    const resp = await apiRequest({
-      method: "get",
-      url: url,
-      token: token,
-      locale: locale,
-    });
-
-    if (resp.data.length === 0) {
-      console.log(`No data of type ${type} found...`);
-      return null;
-    } else {
-      return {
-        [type]: parseData({ type: type, data: resp.data.results }),
-        hasMore: !!resp.data.next,
-      };
-    }
-  } catch (err) {
-    if (err.response && err.response.data) {
-      console.log("Error: ");
-      console.log(err.response.data);
-    } else console.log(err);
-    throw err;
-  }
 }
