@@ -78,6 +78,9 @@ export default function getFilterAndSearchTexts({ filterType, hubName, locale })
       en: `Could not find any ${filterType ? general_texts[filterType][locale] : ""} ${
         hubName ? `in the ${hubName} hub ` : ""
       }that match your filters`,
+      de: `Wir konnten keine ${filterType ? general_texts[filterType][locale] : ""} ${
+        hubName ? `im ${hubName} Hub ` : ""
+      }finden, die deinen Filtern entsprechen`,
     },
   };
 }
