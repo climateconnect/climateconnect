@@ -338,12 +338,12 @@ export default function BrowseContent({
     try {
       setIsFetchingMoreData(true);
       const res = await loadMoreData({
-        type: type, 
-        page: state.nextPages[type], 
+        type: type,
+        page: state.nextPages[type],
         urlEnding: state.urlEnding,
         token: token,
         locale: locale,
-        hubUrl: hubData.url_slug
+        hubUrl: hubData.url_slug,
       });
 
       // TODO: these setState and hooks calls should likely be memoized and combined
@@ -470,6 +470,32 @@ export default function BrowseContent({
     });
   };
 
+  const FilterContentComponent = ({type}) => {
+    return (
+      <FilterContent
+        className={classes.tabContent}
+        type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)]}
+        applyFilters={handleApplyNewFilters}
+        filters={filters}
+        handleUpdateFilters={handleUpdateFilterValues}
+        errorMessage={errorMessage}
+        filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
+        handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+        locationInputRef={
+          locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)]]
+        }
+        locationOptionsOpen={locationOptionsOpen}
+        possibleFilters={getFilters({
+          key: TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)],
+          filterChoices: filterChoices,
+          locale: locale,
+        })}
+        unexpandFilters={isMobileScreen ? unexpandFiltersOnMobile : unexpandFilters}
+        initialLocationFilter={initialLocationFilter}
+      />
+    )
+    }
+
   return (
     <LoadingContext.Provider
       value={{
@@ -517,27 +543,7 @@ export default function BrowseContent({
         <>
           <TabContent value={tabValue} index={0}>
             {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("projects") && (
-              <FilterContent
-                className={classes.tabContent}
-                type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")]}
-                applyFilters={handleApplyNewFilters}
-                filters={filters}
-                handleUpdateFilters={handleUpdateFilterValues}
-                errorMessage={errorMessage}
-                filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
-                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-                locationInputRef={
-                  locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("projects")]]
-                }
-                locationOptionsOpen={locationOptionsOpen}
-                possibleFilters={getFilters({
-                  key: TYPES_BY_TAB_VALUE[0],
-                  filterChoices: filterChoices,
-                  locale: locale,
-                })}
-                unexpandFilters={isMobileScreen ? unexpandFiltersOnMobile : unexpandFilters}
-                initialLocationFilter={initialLocationFilter}
-              />
+              <FilterContentComponent type="projects"/>
             )}
             {/*
               We have two loading spinner states: filtering, and fetching more data.
@@ -557,7 +563,7 @@ export default function BrowseContent({
                 firstProjectCardRef={firstProjectCardRef}
               />
             ) : (
-              <NoItemsFound type="projects" hubName={hubName}/>
+              <NoItemsFound type="projects" hubName={hubName} />
             )}
           </TabContent>
           <TabContent
@@ -566,27 +572,7 @@ export default function BrowseContent({
             className={classes.tabContent}
           >
             {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("organizations") && (
-              <FilterContent
-                className={classes.tabContent}
-                type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")]}
-                applyFilters={handleApplyNewFilters}
-                errorMessage={errorMessage}
-                filters={filters}
-                handleUpdateFilters={handleUpdateFilterValues}
-                filtersExpanded={filtersExpanded}
-                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-                unexpandFilters={isMobileScreen ? unexpandFiltersOnMobile : unexpandFilters}
-                locationInputRef={
-                  locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("organizations")]]
-                }
-                locationOptionsOpen={locationOptionsOpen}
-                possibleFilters={getFilters({
-                  key: TYPES_BY_TAB_VALUE[1],
-                  filterChoices: filterChoices,
-                  locale: locale,
-                })}
-                initialLocationFilter={initialLocationFilter}
-              />
+              <FilterContentComponent type ="organizations" />
             )}
 
             {/*
@@ -606,7 +592,7 @@ export default function BrowseContent({
                 showOrganizationType
               />
             ) : (
-              <NoItemsFound type="organizations" hubName={hubName}/>
+              <NoItemsFound type="organizations" hubName={hubName} />
             )}
           </TabContent>
 
@@ -617,26 +603,7 @@ export default function BrowseContent({
               className={classes.tabContent}
             >
               {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("members") && (
-                <FilterContent
-                  className={classes.tabContent}
-                  filters={filters}
-                  handleUpdateFilters={handleUpdateFilterValues}
-                  type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")]}
-                  applyFilters={handleApplyNewFilters}
-                  filtersExpanded={filtersExpanded}
-                  errorMessage={errorMessage}
-                  unexpandFilters={unexpandFilters}
-                  possibleFilters={getFilters({
-                    key: TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")],
-                    filterChoices: filterChoices,
-                    locale: locale,
-                  })}
-                  locationInputRef={
-                    locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")]]
-                  }
-                  locationOptionsOpen={locationOptionsOpen}
-                  handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-                />
+                <FilterContentComponent type="members" />
               )}
 
               {/*
@@ -656,7 +623,7 @@ export default function BrowseContent({
                   showAdditionalInfo
                 />
               ) : (
-                <NoItemsFound type="members" hubName={hubName}/>
+                <NoItemsFound type="members" hubName={hubName} />
               )}
             </TabContent>
           )}
@@ -665,6 +632,7 @@ export default function BrowseContent({
             index={TYPES_BY_TAB_VALUE.indexOf("ideas")}
             className={classes.tabContent}
           >
+
             {isFiltering ? (
               <LoadingSpinner />
             ) : (
