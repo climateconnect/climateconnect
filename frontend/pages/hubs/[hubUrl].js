@@ -3,12 +3,11 @@ import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../public/lib/apiOperations";
 import { applyNewFilters, getInitialFilters } from "../../public/lib/filterOperations";
-import { getDataFromServer } from "../../public/lib/getDataOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions,
+  getStatusOptions
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -147,6 +146,9 @@ export default function Hub({
     organizations: isLocationHub
       ? texts.search_organization_in_location
       : texts.search_for_organizations_in_sector,
+    members: isLocationHub
+      ? texts.search_profiles_in_location
+      : texts.search_for_climate_actors_in_sector,
     profiles: texts.search_profiles_in_location,
     ideas: texts.search_ideas_in_location,
   };
@@ -276,47 +278,3 @@ const getHubData = async (url_slug, locale) => {
     return null;
   }
 };
-
-async function getIdeas({ page, token, urlEnding, hubUrl, locale }) {
-  return await getDataFromServer({
-    type: "ideas",
-    page: page,
-    token: token,
-    urlEnding: urlEnding,
-    hubUrl: hubUrl,
-    locale: locale,
-  });
-}
-
-async function getProjects({ page, token, urlEnding, hubUrl, locale }) {
-  return await getDataFromServer({
-    type: "projects",
-    page: page,
-    token: token,
-    urlEnding: urlEnding,
-    hubUrl: hubUrl,
-    locale: locale,
-  });
-}
-
-async function getOrganizations({ page, token, urlEnding, hubUrl, locale }) {
-  return await getDataFromServer({
-    type: "organizations",
-    page: page,
-    token: token,
-    urlEnding: urlEnding,
-    hubUrl: hubUrl,
-    locale: locale,
-  });
-}
-
-async function getMembers({ page, token, urlEnding, hubUrl, locale }) {
-  return await getDataFromServer({
-    type: "members",
-    page: page,
-    token: token,
-    urlEnding: urlEnding,
-    hubUrl: hubUrl,
-    locale: locale,
-  });
-}
