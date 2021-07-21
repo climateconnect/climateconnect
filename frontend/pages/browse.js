@@ -4,13 +4,11 @@ import NextCookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { applyNewFilters, getInitialFilters } from "../public/lib/filterOperations";
-import { getDataFromServer } from "../public/lib/getDataOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions,
-  membersWithAdditionalInfo
+  getStatusOptions
 } from "../public/lib/getOptions";
 import { getAllHubs } from "../public/lib/hubOperations";
 import { getLocationFilteredBy } from "../public/lib/locationOperations";
@@ -59,14 +57,14 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter }) {
   const token = cookies.get("token");
   const { locale } = useContext(UserContext);
 
-  
-
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
-  const [filters, setFilters] = useState(getInitialFilters({
-    filterChoices: filterChoices, 
-    locale: locale, 
-    initialLocationFilter: initialLocationFilter
-  }));
+  const [filters, setFilters] = useState(
+    getInitialFilters({
+      filterChoices: filterChoices,
+      locale: locale,
+      initialLocationFilter: initialLocationFilter,
+    })
+  );
   const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const handleSetErrorMessage = (newMessage) => {
@@ -74,13 +72,13 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter }) {
   };
 
   const handleAddFilters = (newFilters) => {
-    setFilters({ ...filters, ...newFilters})
-  }
+    setFilters({ ...filters, ...newFilters });
+  };
 
   const handleSetTabsWhereFiltersWereApplied = (tabs) => {
-    setTabsWhereFiltersWereApplied(tabs)
-  }
-  
+    setTabsWhereFiltersWereApplied(tabs);
+  };
+
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
     return await applyNewFilters({
       type: type,
@@ -88,37 +86,13 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter }) {
       newFilters: newFilters,
       closeFilters: closeFilters,
       filterChoices: filterChoices,
-      locale: locale,      
+      locale: locale,
       token: token,
       handleAddFilters: handleAddFilters,
       handleSetErrorMessage: handleSetErrorMessage,
       tabsWhereFiltersWereApplied,
-      handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied
-    })
-  }
-  
-
-  const loadMoreData = async (type, page, urlEnding) => {
-    try {
-      const newDataObject = await getDataFromServer({
-        type: type,
-        page: page,
-        token: token,
-        urlEnding: urlEnding,
-        locale: locale,
-      });
-      const newData =
-        type === "members" ? membersWithAdditionalInfo(newDataObject.members) : newDataObject[type];
-
-      return {
-        hasMore: newDataObject.hasMore,
-        newData: newData,
-      };
-    } catch (e) {
-      console.log("error");
-      console.log(e);
-      throw e;
-    }
+      handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
+    });
   };
 
   const isScrollingUp = !useScrollTrigger({
@@ -152,7 +126,6 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter }) {
           filterChoices={filterChoices}
           handleSetErrorMessage={handleSetErrorMessage}
           hubsSubHeaderRef={hubsSubHeaderRef}
-          loadMoreData={loadMoreData}
           initialLocationFilter={initialLocationFilter}
         />
       </WideLayout>

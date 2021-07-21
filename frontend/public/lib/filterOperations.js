@@ -108,7 +108,7 @@ export function getUnaffectedTabs({ tabs, filterChoices, locale, filters, newFil
   });
 }
 
-export function getInitialFilters ({filterChoices, locale, initialLocationFilter}) {
+export function getInitialFilters({ filterChoices, locale, initialLocationFilter }) {
   return {
     ...getReducedPossibleFilters(
       possibleFilters({ key: "all", filterChoices: filterChoices, locale: locale }),
@@ -119,36 +119,36 @@ export function getInitialFilters ({filterChoices, locale, initialLocationFilter
 }
 
 /**
-   * Fetches data from the server based on the newly provided
-   * filters. Returns an object with the new filter data, as well
-   * as other options.
-   *
-   * @param {string} type one of ["projects", "organizations", "members", "ideas"]
-   * @param {Object} filters the old filters: something like {"location": "", status: [], etc... }
-   * @param {Object} newFilters the new filters after a change happened
-   * @param {boolean} closeFilters   
-   * @param {Object} filterChoices the choices for select and multiselect filters
-   * @param {string} locale the user's language, e.g. "en" or "de"
-   * @param {string} token the user's login token to authenticate with the backend
-   * @param {function} handleAddFilters a function that allows adding additional filters to the current ones 
-   * @param {function} handleSetErrorMessage function to display an error message
-   * @param {Array} tabsWhereFiltersWereApplied is an array of the tabs where filters were already applied and therefore data doesn't need to be retrieved from the server again
-   * @param {function} handleSetTabsWhereFiltersWereApplied function to change tabsWhereFiltersWereApplied
-   * @param {string} hubUrl is set if only results from a certain hub should be displayed
-   */
+ * Fetches data from the server based on the newly provided
+ * filters. Returns an object with the new filter data, as well
+ * as other options.
+ *
+ * @param {string} type one of ["projects", "organizations", "members", "ideas"]
+ * @param {Object} filters the old filters: something like {"location": "", status: [], etc... }
+ * @param {Object} newFilters the new filters after a change happened
+ * @param {boolean} closeFilters
+ * @param {Object} filterChoices the choices for select and multiselect filters
+ * @param {string} locale the user's language, e.g. "en" or "de"
+ * @param {string} token the user's login token to authenticate with the backend
+ * @param {function} handleAddFilters a function that allows adding additional filters to the current ones
+ * @param {function} handleSetErrorMessage function to display an error message
+ * @param {Array} tabsWhereFiltersWereApplied is an array of the tabs where filters were already applied and therefore data doesn't need to be retrieved from the server again
+ * @param {function} handleSetTabsWhereFiltersWereApplied function to change tabsWhereFiltersWereApplied
+ * @param {string} hubUrl is set if only results from a certain hub should be displayed
+ */
 export async function applyNewFilters({
   type,
   filters,
-  newFilters, 
+  newFilters,
   closeFilters,
   filterChoices,
-  locale,  
+  locale,
   token,
   handleAddFilters,
   handleSetErrorMessage,
   tabsWhereFiltersWereApplied,
   handleSetTabsWhereFiltersWereApplied,
-  hubUrl
+  hubUrl,
 }) {
   // Don't fetch data again if the exact same filters were already applied in this tab
   if (
@@ -204,9 +204,9 @@ export async function applyNewFilters({
       token: token,
       urlEnding: newUrlEnding,
       locale: locale,
-    }
-    if(hubUrl) {
-      payload.hubUrl = hubUrl
+    };
+    if (hubUrl) {
+      payload.hubUrl = hubUrl;
     }
     const filteredItemsObject = await getDataFromServer(payload);
 

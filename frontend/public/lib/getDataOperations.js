@@ -1,10 +1,11 @@
 import { apiRequest } from "./apiOperations";
+import { membersWithAdditionalInfo } from "./getOptions";
 import { parseData } from "./parsingOperations";
 
 export async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale }) {
   let url = `/api/${type}/?page=${page}`;
-  if(hubUrl) {
-    url += `&hub=${hubUrl}`
+  if (hubUrl) {
+    url += `&hub=${hubUrl}`;
   }
 
   // Handle query params as well
@@ -31,5 +32,32 @@ export async function getDataFromServer({ type, page, token, urlEnding, hubUrl, 
       console.log(err.response.data);
     } else console.log(err);
     throw err;
+  }
+}
+
+export async function loadMoreData({ type, page, urlEnding, token, locale, hubUrl }) {
+  try {
+    const payload = {
+      type: type,
+      page: page,
+      token: token,
+      urlEnding: urlEnding,
+      locale: locale,
+    };
+    if (hubUrl) {
+      payload.hubUrl = hubUrl;
+    }
+    const newDataObject = await getDataFromServer(payload);
+    const newData =
+      type === "members" ? membersWithAdditionalInfo(newDataObject.members) : newDataObject[type];
+
+    return {
+      hasMore: newDataObject.hasMore,
+      newData: newData,
+    };
+  } catch (e) {
+    console.log("error");
+    console.log(e);
+    throw e;
   }
 }

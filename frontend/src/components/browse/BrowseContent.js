@@ -4,17 +4,18 @@ import _ from "lodash";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import getFilters from "../../../public/data/possibleFilters";
+import { loadMoreData } from "../../../public/lib/getDataOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 import {
   getInfoMetadataByType,
-  getReducedPossibleFilters,
+  getReducedPossibleFilters
 } from "../../../public/lib/parsingOperations";
 import {
   findOptionByNameDeep,
   getFilterUrl,
-  getSearchParams,
+  getSearchParams
 } from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
@@ -69,7 +70,6 @@ export default function BrowseContent({
   hubProjectsButtonRef,
   hubQuickInfoRef,
   hubsSubHeaderRef,
-  loadMoreData,
   nextStepTriggeredBy,
   showIdeas,
   allHubs,
@@ -337,7 +337,14 @@ export default function BrowseContent({
   const handleLoadMoreData = async (type) => {
     try {
       setIsFetchingMoreData(true);
-      const res = await loadMoreData(type, state.nextPages[type], state.urlEnding);
+      const res = await loadMoreData({
+        type: type, 
+        page: state.nextPages[type], 
+        urlEnding: state.urlEnding,
+        token: token,
+        locale: locale,
+        hubUrl: hubData.url_slug
+      });
 
       // TODO: these setState and hooks calls should likely be memoized and combined
       setIsFetchingMoreData(false);

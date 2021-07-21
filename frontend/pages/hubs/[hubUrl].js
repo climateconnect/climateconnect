@@ -1,5 +1,4 @@
 import { makeStyles, Typography } from "@material-ui/core";
-import NextCookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../public/lib/apiOperations";
@@ -9,8 +8,7 @@ import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions,
-  membersWithAdditionalInfo
+  getStatusOptions
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -50,12 +48,8 @@ const useStyles = makeStyles((theme) => ({
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hubUrl;
   const ideaToOpen = ctx.query.idea;
-  const { token } = NextCookies(ctx);
   const [
     hubData,
-    initialProjects,
-    initialOrganizations,
-    initialIdeas,
     project_categories,
     organization_types,
     skills,
@@ -64,15 +58,6 @@ export async function getServerSideProps(ctx) {
     allHubs,
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
-    getProjects({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
-    getOrganizations({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),
-    getIdeas({
-      page: 1,
-      token: token,
-      hubUrl: hubUrl,
-      locale: ctx.locale,
-      urlEnding: ideaToOpen ? `&idea=${encodeURIComponent(ideaToOpen)}` : "",
-    }),
     getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
@@ -94,9 +79,6 @@ export async function getServerSideProps(ctx) {
       statBoxTitle: hubData.stat_box_title,
       image_attribution: hubData.image_attribution,
       hubLocation: hubData.location?.length > 0 ? hubData.location[0] : null,
-      initialProjects: initialProjects,
-      initialOrganizations: initialOrganizations,
-      initialIdeas: initialIdeas,
       filterChoices: {
         project_categories: project_categories,
         organization_types: organization_types,
@@ -123,7 +105,6 @@ export default function Hub({
   subHeadline,
   initialLocationFilter,
   filterChoices,
-  initialIdeas,
   allHubs,
   initialIdeaUrlSlug,
   hubLocation,
@@ -135,11 +116,13 @@ export default function Hub({
   const token = new Cookies().get("token");
 
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
-  const [filters, setFilters] = useState(getInitialFilters({
-    filterChoices: filterChoices, 
-    locale: locale, 
-    initialLocationFilter: initialLocationFilter
-  }));
+  const [filters, setFilters] = useState(
+    getInitialFilters({
+      filterChoices: filterChoices,
+      locale: locale,
+      initialLocationFilter: initialLocationFilter,
+    })
+  );
   const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const handleSetErrorMessage = (newMessage) => {
@@ -169,12 +152,12 @@ export default function Hub({
   };
 
   const handleAddFilters = (newFilters) => {
-    setFilters({ ...filters, ...newFilters})
-  }
+    setFilters({ ...filters, ...newFilters });
+  };
 
   const handleSetTabsWhereFiltersWereApplied = (tabs) => {
-    setTabsWhereFiltersWereApplied(tabs)
-  }
+    setTabsWhereFiltersWereApplied(tabs);
+  };
 
   const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
     return await applyNewFilters({
@@ -183,38 +166,14 @@ export default function Hub({
       newFilters: newFilters,
       closeFilters: closeFilters,
       filterChoices: filterChoices,
-      locale: locale,      
+      locale: locale,
       token: token,
       handleAddFilters: handleAddFilters,
       handleSetErrorMessage: handleSetErrorMessage,
       tabsWhereFiltersWereApplied,
       handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
-      hubUrl: hubUrl
-    })
-  };
-
-  const loadMoreData = async (type, page, urlEnding) => {
-    try {
-      const newDataObject = await getDataFromServer({
-        type: type,
-        page: page,
-        token: token,
-        urlEnding: urlEnding,
-        hubUrl: hubUrl,
-        locale: locale,
-      });
-      const newData =
-        type === "members" ? membersWithAdditionalInfo(newDataObject.members) : newDataObject[type];
-
-      return {
-        hasMore: newDataObject.hasMore,
-        newData: newData,
-      };
-    } catch (e) {
-      console.log("error");
-      console.log(e);
-      throw e;
-    }
+      hubUrl: hubUrl,
+    });
   };
 
   const closeHubHeaderImage = (e) => {
@@ -276,9 +235,7 @@ export default function Hub({
             // TODO: is this still needed?
             // initialOrganizations={initialOrganizations}
             // initialProjects={initialProjects}
-            loadMoreData={loadMoreData}
             nextStepTriggeredBy={nextStepTriggeredBy}
-            initialIdeas={initialIdeas}
             showIdeas={isLocationHub}
             allHubs={allHubs}
             initialIdeaUrlSlug={initialIdeaUrlSlug}
