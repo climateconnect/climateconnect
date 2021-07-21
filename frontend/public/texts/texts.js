@@ -47,7 +47,11 @@ export default function getTexts({
     dashboard: getDashboardTexts({ user: user }),
     donate: getDonateTexts({ classes: classes, goal: goal }),
     faq: getFaqTexts({ classes: classes, locale: locale }),
-    filter_and_search: getFilterAndSearchTexts({ filterType: filterType, hubName: hubName, locale: locale }),
+    filter_and_search: getFilterAndSearchTexts({
+      filterType: filterType,
+      hubName: hubName,
+      locale: locale,
+    }),
     general: general_texts,
     hub: getHubTexts({ hubName: hubName }),
     idea: getIdeaTexts({ idea: idea, user: user, url_slug: url_slug, locale: locale }),

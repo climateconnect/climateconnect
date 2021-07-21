@@ -9,7 +9,6 @@ import NavigationSubHeader from "../src/components/hub/NavigationSubHeader";
 import WideLayout from "../src/components/layouts/WideLayout";
 import theme from "../src/themes/theme";
 
-
 const useStyles = makeStyles((theme) => ({
   h1: {
     fontSize: 30,

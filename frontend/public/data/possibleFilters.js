@@ -19,7 +19,7 @@ export default function getFilters({ key, filterChoices, locale }) {
   } else if (key === "members") {
     return getMembersFilters(filterChoices, texts);
   } else if (key === "ideas") {
-    return getIdeasFilters(filterChoices, texts)
+    return getIdeasFilters(filterChoices, texts);
   } else if (key === "all") {
     const projectsFilters = getProjectsFilters(filterChoices, texts, english_texts);
     const organizationsFilters = getOrganizationsFilters(filterChoices, texts);
@@ -74,9 +74,7 @@ const getSearchFilter = () => {
   };
 };
 
-const getIdeasFilters= (filterChoices, texts) => [
-  ...getLocationFilters(texts)
-];
+const getIdeasFilters = (filterChoices, texts) => [...getLocationFilters(texts)];
 
 const getMembersFilters = (filterChoices, texts) => [
   ...getLocationFilters(texts),

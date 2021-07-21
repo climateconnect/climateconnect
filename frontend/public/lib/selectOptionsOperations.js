@@ -1,7 +1,11 @@
 export function parseOptions(options, parentPropertyName) {
   //Return an array of parent properties with their subcategories. If the parent property of an item is missing: assume it's a top level property
   return options
-    .filter((o) => o[parentPropertyName] === null || options.filter(io => io.id === o[parentPropertyName]).length === 0)
+    .filter(
+      (o) =>
+        o[parentPropertyName] === null ||
+        options.filter((io) => io.id === o[parentPropertyName]).length === 0
+    )
     .map((o) => {
       return {
         ...o,
