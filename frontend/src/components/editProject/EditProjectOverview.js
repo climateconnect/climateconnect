@@ -7,7 +7,7 @@ import {
   getImageDialogHeight,
   getImageUrl,
   getResizedImage,
-  whitenTransparentPixels
+  whitenTransparentPixels,
 } from "../../../public/lib/imageOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";

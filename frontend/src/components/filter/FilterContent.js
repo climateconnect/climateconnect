@@ -17,10 +17,7 @@ export const findAllItems = (currentPossibleFilter, selectedFiltersToCheck) => {
   // Immediately just return the initial filter name,
   // if we don't need to traverse subcategories or other items to choose from.
   // I.e. there aren't nested items to look through
-  if (
-    !currentPossibleFilter.options ||
-    currentPossibleFilter?.options?.length === 0
-  ) {
+  if (!currentPossibleFilter.options || currentPossibleFilter?.options?.length === 0) {
     // Handle the case where it could be a single item
     return Array.from(selectedFiltersToCheck);
   }
@@ -134,20 +131,23 @@ export default function FilterContent({
   });
 
   const [open, setOpen] = useState({});
-  const [initialized, setInitialized] = useState(false)
+  const [initialized, setInitialized] = useState(false);
   const reduced = reduceFilters(filters, possibleFilters);
-  
+
   const [selectedItems, setSelectedItems] = useState(reduced);
 
   //once the filters are initialized, initialize selectedItems
-  useEffect(function() {
-    if(!initialized) {
-      setSelectedItems(reduced)
-      if(Object.keys(reduced).filter(key => reduced[key]?.length > 0)?.length > 0){
-        setInitialized(true)
+  useEffect(
+    function () {
+      if (!initialized) {
+        setSelectedItems(reduced);
+        if (Object.keys(reduced).filter((key) => reduced[key]?.length > 0)?.length > 0) {
+          setInitialized(true);
+        }
       }
-    }
-  }, [reduced])
+    },
+    [reduced]
+  );
 
   const handleClickDialogOpen = (prop) => {
     if (!open.prop) {

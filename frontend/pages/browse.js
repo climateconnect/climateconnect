@@ -12,14 +12,14 @@ import {
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo
+  membersWithAdditionalInfo,
 } from "../public/lib/getOptions";
 import { getAllHubs } from "../public/lib/hubOperations";
 import { getLocationFilteredBy } from "../public/lib/locationOperations";
 import {
   getInfoMetadataByType,
   getReducedPossibleFilters,
-  parseData
+  parseData,
 } from "../public/lib/parsingOperations";
 import { nullifyUndefinedValues } from "../public/lib/profileOperations";
 import { encodeQueryParamsFromFilters } from "../public/lib/urlOperations";

@@ -66,7 +66,7 @@ export async function getServerSideProps(ctx) {
     skills,
     project_statuses,
     location_filtered_by,
-    allHubs
+    allHubs,
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
     getProjects({ page: 1, token: token, hubUrl: hubUrl, locale: ctx.locale }),

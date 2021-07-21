@@ -1,5 +1,5 @@
 import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
-import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
+import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import _ from "lodash";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
@@ -9,9 +9,13 @@ import { indicateWrongLocation, isLocationValid } from "../../../public/lib/loca
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 import {
   getInfoMetadataByType,
-  getReducedPossibleFilters
+  getReducedPossibleFilters,
 } from "../../../public/lib/parsingOperations";
-import { findOptionByNameDeep, getFilterUrl, getSearchParams } from "../../../public/lib/urlOperations";
+import {
+  findOptionByNameDeep,
+  getFilterUrl,
+  getSearchParams,
+} from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
@@ -74,7 +78,7 @@ export default function BrowseContent({
   hubData,
   filters,
   handleUpdateFilterValues,
-  initialLocationFilter
+  initialLocationFilter,
 }) {
   const initialState = {
     items: {
@@ -143,7 +147,7 @@ export default function BrowseContent({
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
   };
-  //When switching to the ideas tab: catch the orgs the user is a part of. 
+  //When switching to the ideas tab: catch the orgs the user is a part of.
   //This info is required to share an idea
   useEffect(async function () {
     if (tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas") && userOrganizations === null) {
@@ -170,7 +174,7 @@ export default function BrowseContent({
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    const newHash = window?.location?.hash.replace("#", "")
+    const newHash = window?.location?.hash.replace("#", "");
     if (window.location.hash) {
       setHash(newHash);
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(newHash));
@@ -190,11 +194,15 @@ export default function BrowseContent({
         ...queryObject,
       };
 
-      if(initialLocationFilter) {
-        const tabKey = newHash ? newHash : TYPES_BY_TAB_VALUE[0]
-        const possibleFilters = getFilters({key: tabKey, filterChoices: filterChoices, locale: locale})
-        const locationFilter = possibleFilters.find(f=>f.type === "location")
-        newFilters[locationFilter.key] = initialLocationFilter
+      if (initialLocationFilter) {
+        const tabKey = newHash ? newHash : TYPES_BY_TAB_VALUE[0];
+        const possibleFilters = getFilters({
+          key: tabKey,
+          filterChoices: filterChoices,
+          locale: locale,
+        });
+        const locationFilter = possibleFilters.find((f) => f.type === "location");
+        newFilters[locationFilter.key] = initialLocationFilter;
       }
 
       const tabName = TYPES_BY_TAB_VALUE[tabValue];
@@ -245,13 +253,17 @@ export default function BrowseContent({
       delete emptyFilters.location;
       const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
       //location is always set to "" here
-      
+
       //persist the old location filter when switching tabs
-      const tabKey = TYPES_BY_TAB_VALUE[newValue]
-      const possibleFilters = getFilters({key: tabKey, filterChoices: filterChoices, locale: locale})
-      const locationFilter = possibleFilters.find(f=>f.type === "location")
-      queryObject[locationFilter.key] = filters[locationFilter.key]
-      queryObject
+      const tabKey = TYPES_BY_TAB_VALUE[newValue];
+      const possibleFilters = getFilters({
+        key: tabKey,
+        filterChoices: filterChoices,
+        locale: locale,
+      });
+      const locationFilter = possibleFilters.find((f) => f.type === "location");
+      queryObject[locationFilter.key] = filters[locationFilter.key];
+      queryObject;
 
       const newFilters = { ...emptyFilters, ...queryObject };
       const tabValue = TYPES_BY_TAB_VALUE[newValue];
@@ -270,8 +282,8 @@ export default function BrowseContent({
     return findOptionByNameDeep({
       filterChoices: metadata.options,
       propertyToFilterBy: "original_name",
-      valueToFilterBy: value
-    }).name
+      valueToFilterBy: value,
+    }).name;
   };
 
   const getQueryObjectFromUrl = (query) => {
@@ -286,10 +298,13 @@ export default function BrowseContent({
 
       if (value.indexOf(",") > 0) {
         queryObject[key] = value.split(",").map((v) => getValueInCurrentLanguage(metadata, v));
-      } else if (metadata?.type === "multiselect" || metadata?.type === "openMultiSelectDialogButton") {
+      } else if (
+        metadata?.type === "multiselect" ||
+        metadata?.type === "openMultiSelectDialogButton"
+      ) {
         queryObject[key] = [getValueInCurrentLanguage(metadata, value)];
       } else if (key === "radius") {
-        queryObject[key] = value + "km"
+        queryObject[key] = value + "km";
       }
     }
     return queryObject;
@@ -428,7 +443,6 @@ export default function BrowseContent({
       });
     }
   };
-  
 
   const handleUpdateIdeaRating = (idea, newRating) => {
     const ideaInState = state.items.ideas.find((si) => si.url_slug === idea.url_slug);
@@ -610,7 +624,9 @@ export default function BrowseContent({
                     filterChoices: filterChoices,
                     locale: locale,
                   })}
-                  locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")]]}
+                  locationInputRef={
+                    locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf("members")]]
+                  }
                   locationOptionsOpen={locationOptionsOpen}
                   handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
                 />

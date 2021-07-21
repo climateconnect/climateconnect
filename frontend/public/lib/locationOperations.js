@@ -225,7 +225,7 @@ export async function getLocationFilteredBy(query) {
   //Return no if we didn't filter by any location
   for (const param of required_params) {
     if (!Object.keys(query).includes(param)) {
-      console.log(`${param} is missing!`)
+      console.log(`${param} is missing!`);
       return null;
     }
   }

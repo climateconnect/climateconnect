@@ -27,18 +27,20 @@ const getFilterUrl = ({ activeFilters, infoMetadata, filterChoices, locale }) =>
   return newUrl;
 };
 
-const findOptionByNameDeep = ({filterChoices, propertyToFilterBy, valueToFilterBy}) => {
+const findOptionByNameDeep = ({ filterChoices, propertyToFilterBy, valueToFilterBy }) => {
   return filterChoices.reduce((result, filterChoice) => {
-    if(filterChoice[propertyToFilterBy] === valueToFilterBy){
-      result = filterChoice
+    if (filterChoice[propertyToFilterBy] === valueToFilterBy) {
+      result = filterChoice;
     }
-    const subcategoriesFiltered = filterChoice?.subcategories?.filter(fc => fc[propertyToFilterBy] === valueToFilterBy)
-    if(subcategoriesFiltered?.length > 0){
-      result = subcategoriesFiltered[0]
+    const subcategoriesFiltered = filterChoice?.subcategories?.filter(
+      (fc) => fc[propertyToFilterBy] === valueToFilterBy
+    );
+    if (subcategoriesFiltered?.length > 0) {
+      result = subcategoriesFiltered[0];
     }
-    return result
-  }, null)
-}
+    return result;
+  }, null);
+};
 
 const getFilterName = (filter, key, filterChoices) => {
   const keyToFilterChoicesKeyMap = {
@@ -51,9 +53,9 @@ const getFilterName = (filter, key, filterChoices) => {
   const filterName = findOptionByNameDeep({
     filterChoices: filterChoices[keyToFilterChoicesKeyMap[key]],
     propertyToFilterBy: "name",
-    valueToFilterBy: filter
-  })?.original_name
-  return filterName
+    valueToFilterBy: filter,
+  })?.original_name;
+  return filterName;
 };
 
 /**
@@ -103,8 +105,8 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
         filterValues = findOptionByNameDeep({
           filterChoices: options,
           propertyToFilterBy: "name",
-          valueToFilterBy: filters[filterKey]
-        })?.original_name//options.find((o) => o.name === filters[filterKey]).original_name;
+          valueToFilterBy: filters[filterKey],
+        })?.original_name; //options.find((o) => o.name === filters[filterKey]).original_name;
       }
       // We also need to handle reserved characters, which
       // are not escaped by encodeURI as they're necessary

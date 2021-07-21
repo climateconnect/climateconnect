@@ -316,19 +316,19 @@ function CollaborateContent({ project, texts }) {
         {texts.this_project_is_open_to_collaborators}
       </Typography>
       <div className={classes.collabSectionContainer}>
-        {project.helpful_skills && project.helpful_skills.length > 0 &&
+        {project.helpful_skills && project.helpful_skills.length > 0 && (
           <div className={classes.collabSection}>
             <Typography component="h3" color="primary" className={classes.subSubHeader}>
               {texts.helpful_skills_for_collaborating}:
             </Typography>
             <ul className={classes.collabList}>
-              { project.helpful_skills.length > 0 &&
+              {project.helpful_skills.length > 0 &&
                 project.helpful_skills.map((skill) => {
                   return <li key={skill.id}>{skill.name}</li>;
                 })}
             </ul>
           </div>
-        }
+        )}
         {project.helpful_connections && project.helpful_connections.length > 0 && (
           <div className={classes.collabSection}>
             <Typography component="h3" color="primary" className={classes.subSubHeader}>
