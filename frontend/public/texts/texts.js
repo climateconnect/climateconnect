@@ -7,7 +7,7 @@ import cookie_texts from "./cookie_texts.json";
 import getDashboardTexts from "./dashboard_texts";
 import getDonateTexts from "./donate_texts";
 import getFaqTexts from "./faq_texts";
-import filter_and_search_texts from "./filter_and_search_texts.json";
+import getFilterAndSearchTexts from "./filter_and_search_texts";
 import general_texts from "./general_texts.json";
 import getHubTexts from "./getHubTexts";
 import getIdeaTexts from "./idea_texts";
@@ -33,6 +33,7 @@ export default function getTexts({
   user,
   goal,
   idea,
+  filterType,
 }) {
   // These are the multiple text files for various translations. They're
   // split up to reduce the amount of work required to download
@@ -46,7 +47,7 @@ export default function getTexts({
     dashboard: getDashboardTexts({ user: user }),
     donate: getDonateTexts({ classes: classes, goal: goal }),
     faq: getFaqTexts({ classes: classes, locale: locale }),
-    filter_and_search: filter_and_search_texts,
+    filter_and_search: getFilterAndSearchTexts({ filterType: filterType, hubName: hubName, locale: locale }),
     general: general_texts,
     hub: getHubTexts({ hubName: hubName }),
     idea: getIdeaTexts({ idea: idea, user: user, url_slug: url_slug, locale: locale }),

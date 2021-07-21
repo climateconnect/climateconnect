@@ -557,7 +557,7 @@ export default function BrowseContent({
                 firstProjectCardRef={firstProjectCardRef}
               />
             ) : (
-              <NoItemsFound type="projects" />
+              <NoItemsFound type="projects" hubName={hubName}/>
             )}
           </TabContent>
           <TabContent
@@ -606,7 +606,7 @@ export default function BrowseContent({
                 showOrganizationType
               />
             ) : (
-              <NoItemsFound type="organizations" />
+              <NoItemsFound type="organizations" hubName={hubName}/>
             )}
           </TabContent>
 
@@ -656,7 +656,7 @@ export default function BrowseContent({
                   showAdditionalInfo
                 />
               ) : (
-                <NoItemsFound type="members" />
+                <NoItemsFound type="members" hubName={hubName}/>
               )}
             </TabContent>
           )}
