@@ -2,6 +2,8 @@ import { Box, Collapse, Container, Tooltip, Typography } from "@material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
 import ExploreIcon from "@material-ui/icons/Explore";
 import PlaceIcon from "@material-ui/icons/Place";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import ModeCommentIcon from "@material-ui/icons/ModeComment";
 import React, { useContext } from "react";
 
 // Relative imports
@@ -52,6 +54,9 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: 0,
     paddingBottom: props.hovering ? theme.spacing(0.5) : "auto",
   }),
+  favoritesIcon: {
+    maringRight: theme.spacing(1.5),
+  },
 }));
 
 export default function ProjectMetaData({ project, hovering, withDescription }) {
@@ -116,8 +121,10 @@ const WithDescription = ({
         )}
         <Box>
           {/* Don't show an empty location pin and text */}
+          {/* TODO: this is where */}
           {project.location && (
             <Box style={{ display: "flex" }}>
+              TEST
               <Tooltip title={texts.location}>
                 <PlaceIcon className={classes.cardIcon} />
               </Tooltip>
@@ -136,6 +143,14 @@ const WithDescription = ({
               <Categories main_project_tag={main_project_tag} texts={texts} />
             </Box>
           )}
+        </Box>
+        <Box style={{ display: "inline-flex" }}>
+          <Box className={classes.favoritesIcon}>
+            <FavoriteIcon color="primary" />
+          </Box>
+          <Box>
+            <ModeCommentIcon color="primary" />
+          </Box>
         </Box>
       </Container>
       {hovering && (
@@ -169,8 +184,9 @@ const WithOutDescription = ({ className, project_parent, project, main_project_t
         <Box>
           <Tooltip title={texts.location}>
             <PlaceIcon className={classes.cardIcon} />
+            {/* <PlaceIcon className={classes.cardIcon} /> */}
           </Tooltip>
-          <Typography className={classes.metadataText}>test {project.location}</Typography>
+          <Typography className={classes.metadataText}>test one {project.location}</Typography>
           <Categories main_project_tag={main_project_tag} texts={texts} />
         </Box>
       </Container>
