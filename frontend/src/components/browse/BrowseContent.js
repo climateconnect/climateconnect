@@ -20,15 +20,13 @@ import {
 import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
-import FilterContent from "../filter/FilterContent";
-import LoadingSpinner from "../general/LoadingSpinner";
 import IdeasBoard from "../ideas/IdeasBoard";
 import FilterSection from "../indexPage/FilterSection";
 import OrganizationPreviews from "../organization/OrganizationPreviews";
 import ProfilePreviews from "../profile/ProfilePreviews";
 import ProjectPreviews from "../project/ProjectPreviews";
 import Tutorial from "../tutorial/Tutorial";
-import NoItemsFound from "./NoItemsFound";
+import TabContentWrapper from "./TabContentWrapper";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -36,10 +34,6 @@ const useStyles = makeStyles((theme) => {
       width: 200,
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),
-    },
-    tabContent: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
     },
     mainContentDivider: {
       marginBottom: theme.spacing(3),
@@ -140,6 +134,7 @@ export default function BrowseContent({
     projects: useRef(null),
     organizations: useRef(null),
     members: useRef(null),
+    ideas: useRef(null)
   };
 
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
@@ -206,6 +201,7 @@ export default function BrowseContent({
       }
 
       const tabName = TYPES_BY_TAB_VALUE[tabValue];
+      console.log(tabName)
       // Apply new filters with the query object immediately:
       handleApplyNewFilters(tabName, newFilters, false, state.urlEnding);
 
@@ -316,22 +312,6 @@ export default function BrowseContent({
 
   const unexpandFiltersOnMobile = () => {
     setFiltersExpandedOnMobile(false);
-  };
-
-  const loadMoreProjects = async () => {
-    await handleLoadMoreData("projects");
-  };
-
-  const loadMoreOrganizations = async () => {
-    await handleLoadMoreData("organizations");
-  };
-
-  const loadMoreMembers = async () => {
-    await handleLoadMoreData("members");
-  };
-
-  const loadMoreIdeas = async () => {
-    await handleLoadMoreData("ideas");
   };
 
   const handleLoadMoreData = async (type) => {
@@ -470,31 +450,34 @@ export default function BrowseContent({
     });
   };
 
-  const FilterContentComponent = ({type}) => {
+  const TabContentComponent = ({type, children}) => {
     return (
-      <FilterContent
-        className={classes.tabContent}
-        type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)]}
-        applyFilters={handleApplyNewFilters}
+      <TabContentWrapper
+        tabValue={tabValue}
+        TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+        type={type}
+        filtersExpanded={filtersExpanded}
+        handleApplyNewFilters={handleApplyNewFilters}
         filters={filters}
-        handleUpdateFilters={handleUpdateFilterValues}
+        handleUpdateFilterValues={handleUpdateFilterValues}
         errorMessage={errorMessage}
-        filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
+        isMobileScreen={isMobileScreen}
+        filtersExandedOnMobile={filtersExandedOnMobile}
         handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-        locationInputRef={
-          locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)]]
-        }
+        locationInputRefs={locationInputRefs}
         locationOptionsOpen={locationOptionsOpen}
-        possibleFilters={getFilters({
-          key: TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)],
-          filterChoices: filterChoices,
-          locale: locale,
-        })}
-        unexpandFilters={isMobileScreen ? unexpandFiltersOnMobile : unexpandFilters}
+        filterChoices={filterChoices}
+        unexpandFiltersOnMobile={unexpandFiltersOnMobile}
+        unexpandFilters={unexpandFilters}
         initialLocationFilter={initialLocationFilter}
-      />
+        isFiltering={isFiltering}
+        state={state}
+        hubName={hubName}
+      >
+        {children}
+      </TabContentWrapper>
     )
-    }
+  }
 
   return (
     <LoadingContext.Provider
@@ -541,114 +524,49 @@ export default function BrowseContent({
         <Divider className={classes.mainContentDivider} />
 
         <>
-          <TabContent value={tabValue} index={0}>
-            {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("projects") && (
-              <FilterContentComponent type="projects"/>
-            )}
-            {/*
-              We have two loading spinner states: filtering, and fetching more data.
-              When filtering, the spinner replaces the Previews components.
-              When fetching more data, the spinner appears under the last row of the Previews components.
-              Render the not found page if the object came back empty.
-            */}
-            {isFiltering ? (
-              <LoadingSpinner />
-            ) : state?.items?.projects?.length ? (
-              <ProjectPreviews
-                className={classes.itemsContainer}
-                hasMore={state.hasMore.projects}
-                loadFunc={loadMoreProjects}
-                parentHandlesGridItems
-                projects={state.items.projects}
-                firstProjectCardRef={firstProjectCardRef}
-              />
-            ) : (
-              <NoItemsFound type="projects" hubName={hubName} />
-            )}
-          </TabContent>
-          <TabContent
-            value={tabValue}
-            index={TYPES_BY_TAB_VALUE.indexOf("organizations")}
-            className={classes.tabContent}
-          >
-            {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("organizations") && (
-              <FilterContentComponent type ="organizations" />
-            )}
-
-            {/*
-              We have two loading spinner states: filtering, and fetching more data.
-              When filtering, the spinner replaces the Previews components.
-              When fetching more data, the spinner appears under the last row of the Previews components.
-              Render the not found page if the object came back empty.
-            */}
-            {isFiltering ? (
-              <LoadingSpinner />
-            ) : state?.items?.organizations?.length ? (
-              <OrganizationPreviews
-                hasMore={state.hasMore.organizations}
-                loadFunc={loadMoreOrganizations}
-                organizations={state.items.organizations}
-                parentHandlesGridItems
-                showOrganizationType
-              />
-            ) : (
-              <NoItemsFound type="organizations" hubName={hubName} />
-            )}
-          </TabContent>
-
+          <TabContentComponent type="projects">
+            <ProjectPreviews
+              className={classes.itemsContainer}
+              hasMore={state.hasMore.projects}
+              loadFunc={() => handleLoadMoreData("projects")}
+              parentHandlesGridItems
+              projects={state.items.projects}
+              firstProjectCardRef={firstProjectCardRef}
+            />
+          </TabContentComponent>
+          <TabContentComponent type="organizations">
+            <OrganizationPreviews
+              hasMore={state.hasMore.organizations}
+              loadFunc={() => handleLoadMoreData("organizations")}
+              organizations={state.items.organizations}
+              parentHandlesGridItems
+              showOrganizationType
+            />
+          </TabContentComponent>
           {!hideMembers && (
-            <TabContent
-              value={tabValue}
-              index={TYPES_BY_TAB_VALUE.indexOf("members")}
-              className={classes.tabContent}
-            >
-              {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf("members") && (
-                <FilterContentComponent type="members" />
-              )}
-
-              {/*
-                We have two loading spinner states: filtering, and fetching more data.
-                When filtering, the spinner replaces the Previews components.
-                When fetching more data, the spinner appears under the last row of the Previews components.
-                Render the not found page if the object came back empty.
-              */}
-              {isFiltering ? (
-                <LoadingSpinner />
-              ) : state?.items?.members?.length ? (
-                <ProfilePreviews
-                  hasMore={state.hasMore.members}
-                  loadFunc={loadMoreMembers}
-                  parentHandlesGridItems
-                  profiles={state.items.members}
-                  showAdditionalInfo
-                />
-              ) : (
-                <NoItemsFound type="members" hubName={hubName} />
-              )}
-            </TabContent>
-          )}
-          <TabContent
-            value={tabValue}
-            index={TYPES_BY_TAB_VALUE.indexOf("ideas")}
-            className={classes.tabContent}
-          >
-
-            {isFiltering ? (
-              <LoadingSpinner />
-            ) : (
-              <IdeasBoard
-                hasMore={state.hasMore.ideas}
-                loadFunc={loadMoreIdeas}
-                ideas={state.items.ideas}
-                allHubs={allHubs}
-                userOrganizations={userOrganizations}
-                onUpdateIdeaRating={handleUpdateIdeaRating}
-                initialIdeaUrlSlug={initialIdeaUrlSlug}
-                hubLocation={hubLocation}
-                hubData={hubData}
+            <TabContentComponent type="members">
+              <ProfilePreviews
+                hasMore={state.hasMore.members}
+                loadFunc={() => handleLoadMoreData("members")}
+                parentHandlesGridItems
+                profiles={state.items.members}
+                showAdditionalInfo
               />
-            )}
-          </TabContent>
+            </TabContentComponent>
+          )}
+          <TabContentComponent type="ideas">
+            <IdeasBoard
+              hasMore={state.hasMore.ideas}
+              loadFunc={() => handleLoadMoreData("ideas")}
+              ideas={state.items.ideas}
+              allHubs={allHubs}
+              userOrganizations={userOrganizations}
+              onUpdateIdeaRating={handleUpdateIdeaRating}
+              initialIdeaUrlSlug={initialIdeaUrlSlug}
+              hubLocation={hubLocation}
+              hubData={hubData}
+            />
+          </TabContentComponent>
         </>
       </Container>
       <Tutorial
@@ -666,8 +584,4 @@ export default function BrowseContent({
       />
     </LoadingContext.Provider>
   );
-}
-
-function TabContent({ value, index, children }) {
-  return <div hidden={value !== index}>{children}</div>;
 }
