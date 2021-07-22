@@ -45,6 +45,12 @@ def create_idea_join_notification(idea, idea_supporter, chat_uuid):
         for user in users_to_be_notified:
             create_user_notification(user, notification)
             send_out_live_notification(user.id)
-            send_idea_join_email(user=user, joining_user=idea_supporter.user, idea=idea, chat_uuid=chat_uuid)
+            send_idea_join_email(
+                user=user, 
+                joining_user=idea_supporter.user, 
+                idea=idea, 
+                chat_uuid=chat_uuid,
+                notification=notification
+            )
     except IdeaSupporter.DoesNotExist:
         print("This is the only supporter!")

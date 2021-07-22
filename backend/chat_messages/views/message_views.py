@@ -75,7 +75,7 @@ class StartPrivateChat(APIView):
         private_chat_with_both_users = MessageParticipants.objects.annotate(
             num_participants=Count('participant_participants')
         ).filter(
-            id__in=chats_with_both_users, num_participants=2
+            id__in=chats_with_both_users, num_participants=2, related_idea=None, name=None
         )
         if private_chat_with_both_users.exists():
             private_chat = private_chat_with_both_users[0]
