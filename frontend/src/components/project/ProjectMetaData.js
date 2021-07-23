@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     verticalAlign: "bottom",
     // marginBottom: -2,
     // marginTop: 2,
-    // marginRight: theme.spacing(0.5),
+    marginRight: theme.spacing(0.5),
   },
   status: {
     marginTop: theme.spacing(1),
@@ -55,7 +55,13 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: props.hovering ? theme.spacing(0.5) : "auto",
   }),
   favoritesIcon: {
-    maringRight: theme.spacing(1.5),
+    marginRight: theme.spacing(1),
+    display: "flex",
+    alignItems: "center",
+  },
+  favoritesContainer: {
+    display: "flex",
+    marginTop: theme.spacing(1),
   },
 }));
 
@@ -121,35 +127,52 @@ const WithDescription = ({
         )}
         <Box>
           {/* Don't show an empty location pin and text */}
-          {/* TODO: this is where */}
           {project.location && (
             <Box style={{ display: "flex" }}>
-              TEST
               <Tooltip title={texts.location}>
                 <PlaceIcon className={classes.cardIcon} />
               </Tooltip>
               <Typography className={classes.metadataText}>{project.location}</Typography>
             </Box>
           )}
-          {/* Defer to MUI's best guess on height calculation for timeout: https://material-ui.com/api/collapse/ */}
-          <Collapse in={hovering} timeout="auto">
-            <Typography className={classes.shortDescription}>
-              {project.short_description}
-            </Typography>
-          </Collapse>
 
-          {!hovering && (
-            <Box>
-              <Categories main_project_tag={main_project_tag} texts={texts} />
-            </Box>
-          )}
-        </Box>
-        <Box style={{ display: "inline-flex" }}>
-          <Box className={classes.favoritesIcon}>
-            <FavoriteIcon color="primary" />
+          {/*
+          <Tooltip title={texts.categories}>
+        <ExploreIcon className={classes.cardIcon} />
+      </Tooltip>{" "}
+      <Typography className={`${classes.categoryText} ${classes.metadataText}`}>
+        {main_project_tag}
+      </Typography> */}
+
+          <Box style={{ display: "flex" }}>
+            <Tooltip title={texts.categories}>
+              <ExploreIcon className={classes.cardIcon} />
+            </Tooltip>{" "}
+            <Typography className={`${classes.categoryText} ${classes.metadataText}`}>
+              {main_project_tag}
+            </Typography>
+            {/* <Categories main_project_tag={main_project_tag} texts={texts} /> */}
+            {/* <Typography className={classes.metadataText}>{project.location}</Typography> */}
           </Box>
-          <Box>
+
+          {/* <Typography className={classes.shortDescription}>{project.short_description}</Typography> */}
+        </Box>
+        {/* TODO: rename, refactor */}
+        <Box className={classes.favoritesContainer}>
+          <Box className={classes.favoritesIcon}>
             <ModeCommentIcon color="primary" />
+            {/* TODO: add real number */}
+            <span className={classes.favoritesCount}> 5</span>
+          </Box>
+          <Box style={{ display: "flex", alignItems: "center" }} className={classes.favoritesIcon}>
+            <FavoriteIcon color="primary" />
+            {/* TODO: add real number */}
+            <span className={classes.favoritesCount}> 17</span>
+          </Box>
+          <Box style={{ display: "flex", alignItems: "center" }} className={classes.favoritesIcon}>
+            {/* TODO: bullet */}
+            {/* TODO: add property type */}
+            Idea
           </Box>
         </Box>
       </Container>
