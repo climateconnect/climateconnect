@@ -106,7 +106,7 @@ class ListProjectsView(ListAPIView):
                 elif hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
                     location = hub[0].location.all()[0]
                     projects = projects.filter(
-                        Q(loc__country=location.country) 
+                        Q(loc__country=location.country)
                         &
                         (
                             Q(loc__multi_polygon__coveredby=(location.multi_polygon))
@@ -123,7 +123,7 @@ class ListProjectsView(ListAPIView):
                 projects = projects.filter(collaborators_welcome=True)
             if collaborators_welcome == 'no':
                 projects = projects.filter(collaborators_welcome=False)
-        
+
         if 'category' in self.request.query_params:
             project_category = self.request.query_params.get('category').split(',')
             project_tags = ProjectTags.objects.filter(name__in=project_category)
@@ -152,11 +152,11 @@ class ListProjectsView(ListAPIView):
             organization_taggings = OrganizationTagging.objects.filter(organization_tag__in=organization_types)
             project_parents = ProjectParents.objects.filter(parent_organization__tag_organization__in=organization_taggings)
             projects = projects.filter(project_parent__in=project_parents)
-        
+
         if 'place' in self.request.query_params and 'osm' in self.request.query_params:
             location_data = get_location_with_range(self.request.query_params)
             projects = projects.filter(
-                Q(loc__country=location_data['country']) 
+                Q(loc__country=location_data['country'])
                 &
                 (
                     Q(loc__multi_polygon__distance_lte=(location_data['location'], location_data['radius']))
@@ -168,7 +168,7 @@ class ListProjectsView(ListAPIView):
             ).order_by(
                 'distance'
             )
-        
+
         if 'country' and 'city' in self.request.query_params:
             location_ids = Location.objects.filter(
                 country=self.request.query_params.get('country'),
@@ -181,7 +181,7 @@ class ListProjectsView(ListAPIView):
                 city=self.request.query_params.get('city')
             )
             projects = projects.filter(loc__in=location_ids)
-        
+
         if 'country' in self.request.query_params and not 'city' in self.request.query_params:
             location_ids = Location.objects.filter(
                 country=self.request.query_params.get('country')
@@ -216,27 +216,39 @@ class CreateProjectView(APIView):
         except ProjectStatus.DoesNotExist:
             return Response({
                 'message': "Passed status {} does not exist".format(request.data["status"])
-            })  
+            })
         translations_failed = False
+
+        translations_object = None
         try:
-            translations_object = get_project_translations(request.data)     
+            translations_object = get_project_translations(request.data)
         except ValueError:
             translations_failed = True
 
-        source_language = Language.objects.get(language_code=translations_object['source_language'])
-        translations = translations_object['translations']
+
+        # If we still don't have a translations object, then skip this
+        if not translations_object:
+            translations_failed = True
+
+        source_language = None
+        translations = None
+        if translations_object:
+            source_language = Language.objects.get(language_code=translations_object['source_language'])
+            translations = translations_object['translations']
+
         project = create_new_project(request.data, source_language)
+
         if not translations_failed:
             for language in translations:
                 if not language == source_language.language_code:
                     texts = translations[language]
                     try:
-                        language_object = Language.objects.get(language_code=language)                    
+                        language_object = Language.objects.get(language_code=language)
                         translation = ProjectTranslation.objects.create(
-                            project=project, 
+                            project=project,
                             language=language_object,
-                            name_translation=texts['name'], 
-                            short_description_translation=texts['short_description']                
+                            name_translation=texts['name'],
+                            short_description_translation=texts['short_description']
                         )
                         if 'description' in texts:
                             translation.description_translation = texts['description']
@@ -303,7 +315,7 @@ class CreateProjectView(APIView):
                     availability=user_availability, role_in_project=member['role_in_project']
                 )
                 logger.info("Project member created for user {}".format(user.id))
-        
+
         return Response({
             'message': 'Project {} successfully created'.format(project.name),
             'url_slug': project.url_slug
@@ -408,10 +420,10 @@ class ProjectAPIView(APIView):
             except Organization.DoesNotExist:
                 organization = None
                 logger.error("Passed parent organization id {} does not exist")
-            
+
             project_parents.parent_organization = organization
-            project_parents.save()      
-        
+            project_parents.save()
+
         project.save()
 
         items_to_translate = [
@@ -439,7 +451,7 @@ class ProjectAPIView(APIView):
                 request.data,
                 project,
                 "project"
-            )            
+            )
 
         return Response({
             'message': 'Project {} successfully updated'.format(project.name),
@@ -517,7 +529,7 @@ class AddProjectMembersView(APIView):
                 logger.info("Project member created for user {}".format(user.id))
             elif user and user_inactive:
                 record = ProjectMember.objects.get(project=project, user=user)
-                record.is_active = True 
+                record.is_active = True
                 record.save()
                 logger.info("Project member reactivated for user {}".format(user.id))
 
@@ -620,7 +632,7 @@ class ListProjectTags(ListAPIView):
                     parent_tag = hub.filter_parent_tags.all()[0]
                     return ProjectTags.objects.filter(parent_tag=parent_tag)
                 if hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    return ProjectTags.objects.all()                    
+                    return ProjectTags.objects.all()
             except Hub.DoesNotExist:
                 return ProjectTags.objects.all()
         else:
@@ -774,13 +786,13 @@ class LeaveProject(RetrieveUpdateAPIView):
 
             if project_member_record.role.name == 'Creator':
                 if active_members_in_project > 1 :
-                    return Response(data={'message':f'A new creator needs to be assigned first'}, status=status.HTTP_400_BAD_REQUEST) 
+                    return Response(data={'message':f'A new creator needs to be assigned first'}, status=status.HTTP_400_BAD_REQUEST)
                 elif active_members_in_project == 1:
                     ## deactivate project
                     project.is_active = False
                     updatable_records.append(project)
 
-            
+
             project_member_record.is_active = False
             updatable_records.append(project_member_record)
             for updatable_record in updatable_records:
@@ -788,12 +800,12 @@ class LeaveProject(RetrieveUpdateAPIView):
             return Response(data={'message':f'Left project {url_slug} successfully'}, status=status.HTTP_200_OK)
 
         except ProjectMember.DoesNotExist:
-            return Response(data={'message':f'User and/or Project not found '}, status=status.HTTP_404_NOT_FOUND) 
+            return Response(data={'message':f'User and/or Project not found '}, status=status.HTTP_404_NOT_FOUND)
 
-        except ProjectMember.MultipleObjectsReturned: 
-            #Multiple records for the same user/ project id. Duplicate records. 
-            #TODO: Implement a signal to send dev a message 
-            return Response(data={'message':f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+        except ProjectMember.MultipleObjectsReturned:
+            #Multiple records for the same user/ project id. Duplicate records.
+            #TODO: Implement a signal to send dev a message
+            return Response(data={'message':f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except:
             ##Send E to dev
             E = traceback.format_exc()
@@ -802,7 +814,7 @@ class LeaveProject(RetrieveUpdateAPIView):
 
 class RequestJoinProject(RetrieveUpdateAPIView):
     """
-    A view that enables a user to request to join a project 
+    A view that enables a user to request to join a project
     """
     permission_classes = (IsAuthenticated,)
 
@@ -837,7 +849,7 @@ class RequestJoinProject(RetrieveUpdateAPIView):
                                                 , message=request.data['message'])
 
 
-        exists = request_manager.duplicate_request 
+        exists = request_manager.duplicate_request
 
 
         if exists:
@@ -859,7 +871,7 @@ class RequestJoinProject(RetrieveUpdateAPIView):
 
 class ManageJoinProject(RetrieveUpdateAPIView):
     """
-    A view that enables a user to request to join a project 
+    A view that enables a user to request to join a project
     """
     permission_classes = [ApproveDenyProjectMemberRequest]
 
@@ -872,7 +884,7 @@ class ManageJoinProject(RetrieveUpdateAPIView):
         except:
             return Response({
                             'message': 'Project Does Not Exist'
-                            }, status=status.HTTP_404_NOT_FOUND) 
+                            }, status=status.HTTP_404_NOT_FOUND)
 
 
         try:
