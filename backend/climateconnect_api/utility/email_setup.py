@@ -265,4 +265,4 @@ def remove_contact_from_list(contact_id, list_id):
             }
         ]
     }
-    result = mailjet_api.contact_managecontactslists.create(id=contact_id, data=data)
+    mailjet_api.contact_managecontactslists.create(id=contact_id, data=data)
