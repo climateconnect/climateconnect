@@ -773,7 +773,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       ),
     },
     title_with_explanation_and_example: {
-      en: "Title (Use a short, english title, e.g. 'Generating energy from ocean waves')",
+      en: "Title (Use a short, English title, e.g. 'Generating energy from ocean waves')",
       de: "Titel (Verwende einen kurzen Titel, z. B. 'Energiegewinnung aus Meereswellen')",
     },
     use_a_title_that_makes_people_curious_to_learn_more_about_your_project: {
