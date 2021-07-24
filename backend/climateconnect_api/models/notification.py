@@ -18,6 +18,8 @@ class Notification(models.Model):
     POST_COMMENT = 6
     REPLY_TO_POST_COMMENT = 7
     GROUP_MESSAGE = 8
+    JOIN_PROJECT_REQUEST = 9
+    PROJECT_JOIN_REQUEST_APPROVED = 10
     IDEA_COMMENT = 11
     REPLY_TO_IDEA_COMMENT = 12
     PERSON_JOINED_IDEA = 13
@@ -33,7 +35,10 @@ class Notification(models.Model):
         (GROUP_MESSAGE, "group_message"),
         (IDEA_COMMENT, "idea_comment"),
         (REPLY_TO_IDEA_COMMENT, "reply_to_idea_comment"),
-        (PERSON_JOINED_IDEA, "person_joined_idea")
+        (PERSON_JOINED_IDEA, "person_joined_idea"),
+        (GROUP_MESSAGE, "group_message"),
+        (JOIN_PROJECT_REQUEST,"join_project_request"),
+        (PROJECT_JOIN_REQUEST_APPROVED,"project_join_request_approved")
     )
 
     notification_type = models.IntegerField(

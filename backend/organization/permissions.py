@@ -225,3 +225,11 @@ class ChangeProjectCreatorPermission(BasePermission):
             return True
 
         return False
+
+class ApproveDenyProjectMemberRequest(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+        else:
+            project = Project.objects.filter(url_slug=str(view.kwargs.get('project_slug'))).first()
+            return ProjectMember.objects.filter(project=project,user=request.user, role__role_type__in=[Role.ALL_TYPE]).exists()
