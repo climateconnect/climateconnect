@@ -9,7 +9,10 @@ const coreTheme = createMuiTheme({
       lightHover: "#7dd1ca",
       extraLight: "#D7F7F5",
     },
-    secondary: { main: "#484848" },
+    secondary: {
+      main: "#484848",
+      light: "#484848c2",
+    },
     yellow: {
       main: "#FFDE0A",
     },
