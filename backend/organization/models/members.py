@@ -127,7 +127,8 @@ class MembershipRequests(models.Model):
         verbose_name="feedback_user",
         help_text="Points to the user who sent the request",
         on_delete=models.CASCADE,
-        null=False
+        null=False,
+        related_name='users'
     )
 
     target_membership_type = models.SmallIntegerField(choices=[(x.value,x.name) for x in MembershipTarget]
@@ -138,17 +139,24 @@ class MembershipRequests(models.Model):
     target_project =  models.ForeignKey(Project
                                             ,null=True
                                             ,on_delete=models.CASCADE
-                                            ,help_text="Points to the requested project")
+                                            ,help_text="Points to the requested project"
+                                            ,verbose_name="Target Project of Membership Request"
+                                            ,related_name='projects')
 
     target_organization =  models.ForeignKey(Organization
                                             ,null=True
                                             ,on_delete=models.CASCADE
-                                            ,help_text="Points to the requested organization")
+                                            ,help_text="Points to the requested organization"
+                                            ,related_name='organizations'
+                                            ,verbose_name='Target Ogranization of Membership request')
 
     availability = models.ForeignKey(Availability
                                      ,null=False
                                      ,on_delete=models.CASCADE
-                                     ,help_text="Points to the Availability offered by the user")
+                                     ,help_text="Points to the Availability offered by the user"
+                                     ,verbose_name='requested membership availability'
+                                     ,related_name='availabilities'
+                                     )
 
 
     requested_at = models.DateTimeField(help_text="Time of request"
