@@ -12,6 +12,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 import Link from "next/link";
 import React from "react";
+
+// Relative imports
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import LocationSearchBar from "../search/LocationSearchBar";
 import SelectField from "./SelectField";
