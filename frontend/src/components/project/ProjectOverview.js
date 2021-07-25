@@ -312,6 +312,21 @@ function LargeScreenOverview({
               followingChangePending={followingChangePending}
               texts={texts}
             />
+
+            <Button color="primary">Join +</Button>
+            {/* <Button>Join +</Button> */}
+
+            {/* TODO: add "view followers here" */}
+            {/* TODO: add "6 people request to join here. View requestors?" */}
+            <FollowButton
+              isUserFollowing={isUserFollowing}
+              handleToggleFollowProject={handleToggleFollowProject}
+              project={project}
+              hasAdminPermissions={hasAdminPermissions}
+              toggleShowFollowers={toggleShowFollowers}
+              followingChangePending={followingChangePending}
+              texts={texts}
+            />
             {!hasAdminPermissions && (
               <Tooltip title={texts.contact_the_projects_creator_with_just_one_click}>
                 <Button
