@@ -2,7 +2,7 @@ import logging
 import urllib.parse
 from typing import Dict, Optional
 
-#from climateconnect_api.models import language
+
 from climateconnect_api.models.language import Language
 from climateconnect_main.utility.general import get_image_from_data_url
 from django.contrib.auth.models import User
