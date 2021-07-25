@@ -38,7 +38,8 @@ class UserQuestionAnswer(models.Model):
         AnswerMetaData,
         help_text="Points choices that user made.",
         verbose_name="Answers",
-        related_name="user_ans_metadata"
+        related_name="user_ans_metadata",
+        blank=True
     )
 
     created_at = models.DateTimeField(
