@@ -450,35 +450,27 @@ export default function BrowseContent({
     });
   };
 
-  const TabContentComponent = ({type, children}) => {
-    return (
-      <TabContentWrapper
-        tabValue={tabValue}
-        TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-        type={type}
-        filtersExpanded={filtersExpanded}
-        handleApplyNewFilters={handleApplyNewFilters}
-        filters={filters}
-        handleUpdateFilterValues={handleUpdateFilterValues}
-        errorMessage={errorMessage}
-        isMobileScreen={isMobileScreen}
-        filtersExandedOnMobile={filtersExandedOnMobile}
-        handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-        locationInputRefs={locationInputRefs}
-        locationOptionsOpen={locationOptionsOpen}
-        filterChoices={filterChoices}
-        unexpandFiltersOnMobile={unexpandFiltersOnMobile}
-        unexpandFilters={unexpandFilters}
-        initialLocationFilter={initialLocationFilter}
-        isFiltering={isFiltering}
-        state={state}
-        hubName={hubName}
-      >
-        {children}
-      </TabContentWrapper>
-    )
+  const tabContentWrapperProps = {
+    tabValue:tabValue,
+    TYPES_BY_TAB_VALUE:TYPES_BY_TAB_VALUE,            
+    filtersExpanded:filtersExpanded,
+    handleApplyNewFilters:handleApplyNewFilters,
+    filters:filters,
+    handleUpdateFilterValues:handleUpdateFilterValues,
+    errorMessage:errorMessage,
+    isMobileScreen:isMobileScreen,
+    filtersExandedOnMobile:filtersExandedOnMobile,
+    handleSetLocationOptionsOpen:handleSetLocationOptionsOpen,
+    locationInputRefs:locationInputRefs,
+    locationOptionsOpen:locationOptionsOpen,
+    filterChoices:filterChoices,
+    unexpandFiltersOnMobile:unexpandFiltersOnMobile,
+    unexpandFilters:unexpandFilters,
+    initialLocationFilter:initialLocationFilter,
+    isFiltering:isFiltering,
+    state:state,
+    hubName:hubName,
   }
-
   return (
     <LoadingContext.Provider
       value={{
@@ -524,7 +516,10 @@ export default function BrowseContent({
         <Divider className={classes.mainContentDivider} />
 
         <>
-          <TabContentComponent type="projects">
+          <TabContentWrapper
+            type={"projects"}
+            {...tabContentWrapperProps}
+          >
             <ProjectPreviews
               className={classes.itemsContainer}
               hasMore={state.hasMore.projects}
@@ -533,8 +528,11 @@ export default function BrowseContent({
               projects={state.items.projects}
               firstProjectCardRef={firstProjectCardRef}
             />
-          </TabContentComponent>
-          <TabContentComponent type="organizations">
+          </TabContentWrapper>
+          <TabContentWrapper
+            type={"organizations"}
+            {...tabContentWrapperProps}
+          >
             <OrganizationPreviews
               hasMore={state.hasMore.organizations}
               loadFunc={() => handleLoadMoreData("organizations")}
@@ -542,9 +540,12 @@ export default function BrowseContent({
               parentHandlesGridItems
               showOrganizationType
             />
-          </TabContentComponent>
+          </TabContentWrapper>
           {!hideMembers && (
-            <TabContentComponent type="members">
+            <TabContentWrapper
+              type={"members"}
+              {...tabContentWrapperProps}
+            >
               <ProfilePreviews
                 hasMore={state.hasMore.members}
                 loadFunc={() => handleLoadMoreData("members")}
@@ -552,9 +553,12 @@ export default function BrowseContent({
                 profiles={state.items.members}
                 showAdditionalInfo
               />
-            </TabContentComponent>
+            </TabContentWrapper>
           )}
-          <TabContentComponent type="ideas">
+          <TabContentWrapper
+            type={"ideas"}
+            {...tabContentWrapperProps}
+          >
             <IdeasBoard
               hasMore={state.hasMore.ideas}
               loadFunc={() => handleLoadMoreData("ideas")}
@@ -566,7 +570,7 @@ export default function BrowseContent({
               hubLocation={hubLocation}
               hubData={hubData}
             />
-          </TabContentComponent>
+          </TabContentWrapper>
         </>
       </Container>
       <Tutorial
