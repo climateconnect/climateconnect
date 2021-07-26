@@ -84,7 +84,7 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
     } else if (
       //search and radius are supposed to be saved as just strings
       !["search", "radius"].includes(filterKey) &&
-      filterKey !== "radius" &&
+      filterKey !== "idea" &&
       filters[filterKey] &&
       filters[filterKey].length > 0 &&
       !locationFilterkeys.includes(filterKey)
