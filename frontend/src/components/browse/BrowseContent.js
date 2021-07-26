@@ -188,9 +188,8 @@ export default function BrowseContent({
       const newFilters = {
         ...queryObject,
       };
-
-      if (initialLocationFilter) {
-        const tabKey = newHash ? newHash : TYPES_BY_TAB_VALUE[0];
+      const tabKey = newHash ? newHash : TYPES_BY_TAB_VALUE[0];
+      if (initialLocationFilter) {        
         const possibleFilters = getFilters({
           key: tabKey,
           filterChoices: filterChoices,
@@ -199,11 +198,8 @@ export default function BrowseContent({
         const locationFilter = possibleFilters.find((f) => f.type === "location");
         newFilters[locationFilter.key] = initialLocationFilter;
       }
-
-      const tabName = TYPES_BY_TAB_VALUE[tabValue];
-      console.log(tabName)
       // Apply new filters with the query object immediately:
-      handleApplyNewFilters(tabName, newFilters, false, state.urlEnding);
+      handleApplyNewFilters(tabKey, newFilters, false, state.urlEnding);
 
       // And then update state
       setInitialized(true);
@@ -569,6 +565,8 @@ export default function BrowseContent({
               initialIdeaUrlSlug={initialIdeaUrlSlug}
               hubLocation={hubLocation}
               hubData={hubData}
+              filters={filters}
+              filterChoices={filterChoices}
             />
           </TabContentWrapper>
         </>
