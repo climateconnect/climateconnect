@@ -9,7 +9,7 @@ import possibleFilters from "../data/possibleFilters";
  * Builds a URL with the new filters, e.g. something like:
  * http://localhost:3000/browse?&country=Austria&city=vienna&
  */
-const getFilterUrl = ({ activeFilters, infoMetadata, filterChoices, locale }) => {
+const getFilterUrl = ({ activeFilters, infoMetadata, filterChoices, locale, idea }) => {
   const filteredParams = encodeQueryParamsFromFilters({
     filters: activeFilters,
     infoMetadata: infoMetadata,
@@ -17,7 +17,7 @@ const getFilterUrl = ({ activeFilters, infoMetadata, filterChoices, locale }) =>
     locale: locale,
   });
   // Only include "?" if query params aren't nullish
-  const filteredQueryParams = filteredParams ? `?${filteredParams}` : "";
+  const filteredQueryParams = filteredParams ? `?${filteredParams}${idea?`idea=${idea.url_slug}`:""}` : "";
 
   // Build a URL with properties. E.g., /browse?...
   const origin = window?.location?.origin;
