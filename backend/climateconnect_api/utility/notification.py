@@ -1,4 +1,3 @@
-from django.conf import settings
 from datetime import datetime, timedelta
 
 from asgiref.sync import async_to_sync
