@@ -20,7 +20,10 @@ class MessageSerializer(serializers.ModelSerializer):
         return UserProfileStubSerializer(user_profile).data
 
     def get_read_at(self, obj):
-        user = self.context.get('request', None).user
+        request = self.context.get('request', None)
+        user = None
+        if request:
+            user = request.user
         if user == obj.sender:
             return timezone.now()
         else:
