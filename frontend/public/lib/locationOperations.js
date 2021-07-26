@@ -218,8 +218,9 @@ export function getLocationValue(values, locationKey) {
   return values[locationKey];
 }
 
-//When filtering by location, the url only holds the place_id, osm_id and loc_type, but not the name
-//This function is used to retrieve the whole location object
+/** 
+ * When filtering by location, the url only holds the place_id, osm_id and loc_type, but not the name. This is used to retrieve the whole location object
+*/
 export async function getLocationFilteredBy(query) {
   const required_params = getLocationFilterKeys(true);
   //Return no if we didn't filter by any location
