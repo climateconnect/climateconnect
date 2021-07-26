@@ -190,7 +190,6 @@ export default function Hub({
     });
   };
 
-  console.log(filters);
 
   return (
     <WideLayout title={headline} fixedHeader headerBackground="#FFF">
