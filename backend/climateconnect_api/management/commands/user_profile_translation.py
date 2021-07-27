@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 from django.core.management.base import BaseCommand
 
@@ -31,7 +32,7 @@ def translate_user_profile(user_profile: UserProfile) -> None:
 
             user_profile_translation.save()
             
-            print("User {} translation successful in language {}".format(
+            logging.error("User {} translation successful in language {}".format(
                 user_profile.user.first_name, language.name
             ))
 

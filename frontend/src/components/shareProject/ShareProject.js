@@ -1,7 +1,8 @@
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import React, { useContext, useRef } from "react";
+
+// Relative imports
 import {
   getLocationFields,
   getLocationValue,
@@ -18,15 +19,20 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     marginTop: theme.spacing(0.5),
   },
-  BottomLinkFlex: {
+
+  bottomLinkFlex: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     marginTop: theme.spacing(0.5),
   },
+
+  bold: {
+    fontWeight: "bold",
+  },
+
   appealText: {
     textAlign: "center",
-    fontWeight: "bold",
   },
   appealBox: {
     marginTop: theme.spacing(2),
@@ -107,14 +113,6 @@ export default function Share({
       type: "text",
       key: "name",
       value: project.name,
-      bottomLink: (
-        <Typography className={classes.BottomLinkFlex}>
-          <InfoOutlinedIcon className={classes.infoIcon} />
-          <Typography component="span">
-            {texts.use_a_title_that_makes_people_curious_to_learn_more_about_your_project}
-          </Typography>
-        </Typography>
-      ),
     },
     ...getLocationFields({
       locationInputRef: locationInputRef,
@@ -170,11 +168,15 @@ export default function Share({
       {locale === "en" && (
         <div className={classes.appealBox}>
           <Typography color="secondary" className={classes.appealText}>
-            Please make sure to only use English when sharing a project.
+            Please make sure to{" "}
+            <Typography component="span" className={classes.bold}>
+              only use English when sharing a project
+            </Typography>
+            .
           </Typography>
-          <Typography color="secondary" className={classes.appealText}>
-            This way most people can benefit from your ideas and experiences to fight climate change
-            together!
+          <Typography className={classes.appealText}>
+            This enables more people to contribute to your ideas and experiences to fight climate
+            change together!
           </Typography>
         </div>
       )}

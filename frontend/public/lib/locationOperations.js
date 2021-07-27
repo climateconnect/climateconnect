@@ -1,3 +1,6 @@
+import { getLocationFilterKeys } from "../data/locationFilters";
+import { apiRequest } from "./apiOperations";
+
 export function getNameFromLocation(location) {
   if (location.added_manually)
     return {
@@ -213,4 +216,36 @@ export function getLocationValue(values, locationKey) {
     };
   }
   return values[locationKey];
+}
+
+/** 
+ * When filtering by location, the url only holds the place_id, osm_id and loc_type, but not the name. This is used to retrieve the whole location object
+*/
+export async function getLocationFilteredBy(query) {
+  const required_params = getLocationFilterKeys(true);
+  //Return no if we didn't filter by any location
+  for (const param of required_params) {
+    if (!Object.keys(query).includes(param)) {
+      console.log(`${param} is missing!`);
+      return null;
+    }
+  }
+  const url = `/api/get_location/`;
+  const payload = {
+    place: query.place,
+    osm: query.osm,
+    loc_type: query.loc_type,
+  };
+  try {
+    const res = await apiRequest({ method: "post", url: url, payload: payload });
+    const full_location = {
+      ...res.data,
+      place_id: query.place,
+      osm_id: query.osm,
+      osm_type: query.loc_type,
+    };
+    return full_location;
+  } catch (e) {
+    console.log(e);
+  }
 }
