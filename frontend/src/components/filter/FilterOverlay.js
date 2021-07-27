@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
@@ -6,22 +7,23 @@ import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
 
 export default function FilterOverlay({
-  filtersExpanded,
-  unexpandFilters,
-  possibleFilters,
-  handleApplyFilters,
-  handleValueChange,
   currentFilters,
-  handleClickDialogOpen,
-  open,
+  errorMessage,
+  filtersExpanded,
+  handleApplyFilters,
   handleClickDialogClose,
+  handleClickDialogOpen,
+  handleClickDialogSave,
+  handleSetLocationOptionsOpen,
   handleUnselectFilter,
-  selectedItems,
-  setSelectedItems,
+  handleValueChange,
   locationInputRef,
   locationOptionsOpen,
-  handleSetLocationOptionsOpen,
-  errorMessage,
+  open,
+  possibleFilters,
+  selectedItems,
+  setSelectedItems,
+  unexpandFilters,
 }) {
   const onClose = () => {
     unexpandFilters();
@@ -30,35 +32,37 @@ export default function FilterOverlay({
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   return (
     <GenericDialog
-      fullScreen
-      open={filtersExpanded ? filtersExpanded : false}
-      useApplyButton
       applyText={texts.apply_filters}
-      onClose={onClose}
-      title={texts.filters}
+      fullScreen
       onApply={handleApplyFilters}
+      onClose={onClose}
+      open={filtersExpanded ? filtersExpanded : false}
+      title={texts.filters}
       topBarFixed
+      useApplyButton
     >
       <Filters
-        possibleFilters={possibleFilters}
-        handleApplyFilters={handleApplyFilters}
-        handleValueChange={handleValueChange}
         currentFilters={currentFilters}
-        handleClickDialogOpen={handleClickDialogOpen}
-        open={open}
+        errorMessage={errorMessage}
+        handleApplyFilters={handleApplyFilters}
         handleClickDialogClose={handleClickDialogClose}
+        handleClickDialogOpen={handleClickDialogOpen}
+        handleClickDialogSave={handleClickDialogSave}
+        handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+        handleValueChange={handleValueChange}
         isInOverlay
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
         locationInputRef={locationInputRef}
         locationOptionsOpen={locationOptionsOpen}
-        handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-        errorMessage={errorMessage}
+        open={open}
+        possibleFilters={possibleFilters}
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
       />
+
       <SelectedFilters
         currentFilters={currentFilters}
-        possibleFilters={possibleFilters}
         handleUnselectFilter={handleUnselectFilter}
+        possibleFilters={possibleFilters}
       />
     </GenericDialog>
   );

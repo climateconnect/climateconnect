@@ -347,7 +347,7 @@ export default function EditProjectContent({
         open={open.skills}
         onClose={handleSkillsDialogClose}
         type="skills"
-        itemsToChooseFrom={skillsOptions}
+        options={skillsOptions}
         items={project.skills}
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}

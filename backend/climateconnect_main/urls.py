@@ -92,8 +92,9 @@ urls = [
     path('api/', include('chat_messages.urls')),
     # Hub views
     path('api/', include('hubs.urls')),
+    path('api/', include('location.urls')),
     # Idea views
-    path('api/', include('ideas.urls')),
+    path('api/', include('ideas.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns = urls

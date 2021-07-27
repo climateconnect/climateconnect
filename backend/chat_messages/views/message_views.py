@@ -216,7 +216,6 @@ class UpdateChatMemberView(RetrieveUpdateDestroyAPIView):
         return "Chat member successfully deleted."
 
     def perform_update(self, serializer):
-        print(serializer)
         serializer.save()
         return serializer.data
 
