@@ -10,12 +10,12 @@ import { indicateWrongLocation, isLocationValid } from "../../../public/lib/loca
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 import {
   getInfoMetadataByType,
-  getReducedPossibleFilters,
+  getReducedPossibleFilters
 } from "../../../public/lib/parsingOperations";
 import {
   findOptionByNameDeep,
   getFilterUrl,
-  getSearchParams,
+  getSearchParams
 } from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
@@ -83,10 +83,10 @@ export default function BrowseContent({
         initialMembers && !hideMembers ? membersWithAdditionalInfo(initialMembers.members) : [],
     },
     hasMore: {
-      projects: !!initialProjects && initialProjects.hasMore,
-      organizations: !!initialOrganizations && initialOrganizations.hasMore,
-      members: !!initialMembers && initialMembers.hasMore,
-      ideas: !!initialIdeas && initialIdeas.hasMore,
+      projects: initialProjects ? initialProjects.hasMore : true,
+      organizations: initialOrganizations ? initialOrganizations.hasMore: true,
+      members: initialMembers ? initialMembers.hasMore : true,
+      ideas: initialIdeas ? initialIdeas.hasMore : true,
     },
     nextPages: {
       projects: 2,
@@ -129,7 +129,6 @@ export default function BrowseContent({
   // On mobile filters take up the whole screen so they aren't expanded by default
   const [filtersExandedOnMobile, setFiltersExpandedOnMobile] = useState(false);
   const [state, setState] = useState(initialState);
-
   const locationInputRefs = {
     projects: useRef(null),
     organizations: useRef(null),
@@ -205,24 +204,6 @@ export default function BrowseContent({
       setInitialized(true);
     }
   }, []);
-
-  /*This is specifically for location hubs:
-    Sector hubs don't show members
-    We only know whether a hub is a location hub after loading initial props
-    Therefore we only catch members on location hubs after they are initialized.
-  */
-  useEffect(
-    function () {
-      if (initialMembers) {
-        setState({
-          ...state,
-          items: { ...state.items, members: membersWithAdditionalInfo(initialMembers.members) },
-          hasMore: { ...state.hasMore, members: initialMembers.hasMore },
-        });
-      }
-    },
-    [initialMembers]
-  );
 
   const handleTabChange = (event, newValue) => {
     if (hasQueryParams) {
@@ -319,7 +300,7 @@ export default function BrowseContent({
         urlEnding: state.urlEnding,
         token: token,
         locale: locale,
-        hubUrl: hubData.url_slug,
+        hubUrl: hubData?.url_slug,
       });
 
       // TODO: these setState and hooks calls should likely be memoized and combined
