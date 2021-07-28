@@ -10,12 +10,12 @@ import { indicateWrongLocation, isLocationValid } from "../../../public/lib/loca
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 import {
   getInfoMetadataByType,
-  getReducedPossibleFilters
+  getReducedPossibleFilters,
 } from "../../../public/lib/parsingOperations";
 import {
   findOptionByNameDeep,
   getFilterUrl,
-  getSearchParams
+  getSearchParams,
 } from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
@@ -134,7 +134,7 @@ export default function BrowseContent({
     projects: useRef(null),
     organizations: useRef(null),
     members: useRef(null),
-    ideas: useRef(null)
+    ideas: useRef(null),
   };
 
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
@@ -189,7 +189,7 @@ export default function BrowseContent({
         ...queryObject,
       };
       const tabKey = newHash ? newHash : TYPES_BY_TAB_VALUE[0];
-      if (initialLocationFilter) {        
+      if (initialLocationFilter) {
         const possibleFilters = getFilters({
           key: tabKey,
           filterChoices: filterChoices,
@@ -447,26 +447,26 @@ export default function BrowseContent({
   };
 
   const tabContentWrapperProps = {
-    tabValue:tabValue,
-    TYPES_BY_TAB_VALUE:TYPES_BY_TAB_VALUE,            
-    filtersExpanded:filtersExpanded,
-    handleApplyNewFilters:handleApplyNewFilters,
-    filters:filters,
-    handleUpdateFilterValues:handleUpdateFilterValues,
-    errorMessage:errorMessage,
-    isMobileScreen:isMobileScreen,
-    filtersExandedOnMobile:filtersExandedOnMobile,
-    handleSetLocationOptionsOpen:handleSetLocationOptionsOpen,
-    locationInputRefs:locationInputRefs,
-    locationOptionsOpen:locationOptionsOpen,
-    filterChoices:filterChoices,
-    unexpandFiltersOnMobile:unexpandFiltersOnMobile,
-    unexpandFilters:unexpandFilters,
-    initialLocationFilter:initialLocationFilter,
-    isFiltering:isFiltering,
-    state:state,
-    hubName:hubName,
-  }
+    tabValue: tabValue,
+    TYPES_BY_TAB_VALUE: TYPES_BY_TAB_VALUE,
+    filtersExpanded: filtersExpanded,
+    handleApplyNewFilters: handleApplyNewFilters,
+    filters: filters,
+    handleUpdateFilterValues: handleUpdateFilterValues,
+    errorMessage: errorMessage,
+    isMobileScreen: isMobileScreen,
+    filtersExandedOnMobile: filtersExandedOnMobile,
+    handleSetLocationOptionsOpen: handleSetLocationOptionsOpen,
+    locationInputRefs: locationInputRefs,
+    locationOptionsOpen: locationOptionsOpen,
+    filterChoices: filterChoices,
+    unexpandFiltersOnMobile: unexpandFiltersOnMobile,
+    unexpandFilters: unexpandFilters,
+    initialLocationFilter: initialLocationFilter,
+    isFiltering: isFiltering,
+    state: state,
+    hubName: hubName,
+  };
   return (
     <LoadingContext.Provider
       value={{
@@ -512,10 +512,7 @@ export default function BrowseContent({
         <Divider className={classes.mainContentDivider} />
 
         <>
-          <TabContentWrapper
-            type={"projects"}
-            {...tabContentWrapperProps}
-          >
+          <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
             <ProjectPreviews
               className={classes.itemsContainer}
               hasMore={state.hasMore.projects}
@@ -525,10 +522,7 @@ export default function BrowseContent({
               firstProjectCardRef={firstProjectCardRef}
             />
           </TabContentWrapper>
-          <TabContentWrapper
-            type={"organizations"}
-            {...tabContentWrapperProps}
-          >
+          <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>
             <OrganizationPreviews
               hasMore={state.hasMore.organizations}
               loadFunc={() => handleLoadMoreData("organizations")}
@@ -538,10 +532,7 @@ export default function BrowseContent({
             />
           </TabContentWrapper>
           {!hideMembers && (
-            <TabContentWrapper
-              type={"members"}
-              {...tabContentWrapperProps}
-            >
+            <TabContentWrapper type={"members"} {...tabContentWrapperProps}>
               <ProfilePreviews
                 hasMore={state.hasMore.members}
                 loadFunc={() => handleLoadMoreData("members")}
@@ -551,10 +542,7 @@ export default function BrowseContent({
               />
             </TabContentWrapper>
           )}
-          <TabContentWrapper
-            type={"ideas"}
-            {...tabContentWrapperProps}
-          >
+          <TabContentWrapper type={"ideas"} {...tabContentWrapperProps}>
             <IdeasBoard
               hasMore={state.hasMore.ideas}
               loadFunc={() => handleLoadMoreData("ideas")}

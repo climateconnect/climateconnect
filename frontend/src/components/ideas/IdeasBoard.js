@@ -34,9 +34,9 @@ export default function IdeasBoard({
   hubLocation,
   hubData,
   filters,
-  filterChoices
+  filterChoices,
 }) {
-  const { locale } = useContext(UserContext)
+  const { locale } = useContext(UserContext);
   const getInitialIdea = (initialIdeaUrlSlug) => {
     //Short circuit if there is no idea open
     if (!initialIdeaUrlSlug) return null;
@@ -66,13 +66,9 @@ export default function IdeasBoard({
       infoMetadata: getInfoMetadataByType("ideas"),
       filterChoices: filterChoices,
       locale: locale,
-      idea: idea
+      idea: idea,
     });
-    window.history.pushState(
-      {},
-      "",
-      newUrl
-    );
+    window.history.pushState({}, "", newUrl);
   };
 
   const onClose = () => {

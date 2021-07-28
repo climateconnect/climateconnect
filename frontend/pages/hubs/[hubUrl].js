@@ -7,7 +7,7 @@ import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions
+  getStatusOptions,
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -189,7 +189,6 @@ export default function Hub({
       ...valuesToUpdate,
     });
   };
-
 
   return (
     <WideLayout title={headline} fixedHeader headerBackground="#FFF">

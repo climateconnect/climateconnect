@@ -6,14 +6,12 @@ import FilterContent from "../filter/FilterContent";
 import LoadingSpinner from "../general/LoadingSpinner";
 import NoItemsFound from "./NoItemsFound";
 
-const useStyles = makeStyles(theme => (
-  {
-    tabContent: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-    },
-  }
-))
+const useStyles = makeStyles((theme) => ({
+  tabContent: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
+}));
 
 export default function TabContentWrapper({
   tabValue,
@@ -36,10 +34,10 @@ export default function TabContentWrapper({
   isFiltering,
   state,
   children,
-  hubName
+  hubName,
 }) {
-  const classes = useStyles()
-  const { locale } = useContext(UserContext)
+  const classes = useStyles();
+  const { locale } = useContext(UserContext);
   return (
     <TabContent
       value={tabValue}
@@ -56,9 +54,7 @@ export default function TabContentWrapper({
           errorMessage={errorMessage}
           filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          locationInputRef={
-            locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)]]
-          }
+          locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)]]}
           locationOptionsOpen={locationOptionsOpen}
           possibleFilters={getFilters({
             key: TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)],
@@ -79,14 +75,12 @@ export default function TabContentWrapper({
       {isFiltering ? (
         <LoadingSpinner />
       ) : state?.items && state?.items[type]?.length ? (
-        <>
-          {children}
-        </>
+        <>{children}</>
       ) : (
         <NoItemsFound type={type} hubName={hubName} />
       )}
     </TabContent>
-  )
+  );
 }
 
 function TabContent({ value, index, children }) {

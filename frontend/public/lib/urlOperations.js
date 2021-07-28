@@ -17,7 +17,9 @@ const getFilterUrl = ({ activeFilters, infoMetadata, filterChoices, locale, idea
     locale: locale,
   });
   // Only include "?" if query params aren't nullish
-  const filteredQueryParams = filteredParams ? `?${filteredParams}${idea?`idea=${idea.url_slug}`:""}` : "";
+  const filteredQueryParams = filteredParams
+    ? `?${filteredParams}${idea ? `idea=${idea.url_slug}` : ""}`
+    : "";
 
   // Build a URL with properties. E.g., /browse?...
   const origin = window?.location?.origin;
