@@ -44,7 +44,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     },
     great_that_you_are_already_a_climate_hero: {
       en: "Great that you're already a climate hero!",
-      de: "Toll, dass du schon ein Klimaheld bist!",
+      de: "Toll, dass du dich schon für unser Klima engagierst!",
     },
     here_you_can_browse: {
       en: `Here you can browse through all climate projects created by Climate Connect users. You
