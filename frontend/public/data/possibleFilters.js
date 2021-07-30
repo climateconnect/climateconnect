@@ -1,5 +1,6 @@
+import CreateIcon from '@material-ui/icons/Create';
 import DoneAllOutlinedIcon from "@material-ui/icons/DoneAllOutlined";
-import ExploreOutlinedIcon from "@material-ui/icons/ExploreOutlined";
+import ExploreIcon from '@material-ui/icons/Explore';
 import GroupIcon from "@material-ui/icons/Group";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import LocationOnOutlinedIcon from "@material-ui/icons/LocationOnOutlined";
@@ -80,8 +81,8 @@ const getMembersFilters = (filterChoices, texts) => [
   ...getLocationFilters(texts),
   getSearchFilter(),
   {
-    icon: GroupAddIcon,
-    iconName: "ExploreIcon",
+    icon: CreateIcon,
+    iconName: "CreateIcon",
     title: texts.skills,
     type: "openMultiSelectDialogButton",
     key: "skills",
@@ -128,7 +129,7 @@ const getProjectsFilters = (filterChoices, texts, english_texts) => [
     tooltipText: texts.organization_type_tooltip,
   },
   {
-    icon: ExploreOutlinedIcon,
+    icon: ExploreIcon,
     iconName: "ExploreIcon",
     title: texts.categories,
     type: "openMultiSelectDialogButton",
@@ -163,8 +164,8 @@ const getProjectsFilters = (filterChoices, texts, english_texts) => [
     tooltipText: texts.collaboration_tooltip,
   },
   {
-    icon: GroupAddIcon,
-    iconName: "ExploreIcon",
+    icon: CreateIcon,
+    iconName: "CreateIcon",
     title: texts.skills,
     type: "openMultiSelectDialogButton",
     key: "skills",
