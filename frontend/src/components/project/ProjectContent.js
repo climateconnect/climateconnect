@@ -5,6 +5,8 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import humanizeDuration from "humanize-duration";
 import React, { useContext } from "react";
 import TimeAgo from "react-timeago";
+
+// Relative imports
 import ROLE_TYPES from "../../../public/data/role_types";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -113,10 +115,17 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
   },
+
   editProjectButton: {
     marginTop: theme.spacing(1),
   },
+
   leaveProjectButton: {
+    // TODO: we should really encapsulate
+    // spacing style into specific spacing components, akin
+    // to what Braid's <Box /> component does. This makes
+    // the frontend code more maintainable, and spacing more deterministic
+    marginTop: theme.spacing(1),
     background: theme.palette.error.main,
     color: "white",
     ["&:hover"]: {
@@ -140,12 +149,35 @@ export default function ProjectContent({
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
       : null;
+
   return (
-    <div>
+    <>
       <div className={classes.contentBlock}>
         <div className={classes.createdBy}>
           {user && project.team && project.team.find((m) => m.id === user.id) && (
             <div className={classes.memberButtons}>
+              {user_permission &&
+                [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission) && (
+                  <>
+                    <Button
+                      className={classes.editProjectButton}
+                      variant="contained"
+                      color="primary"
+                      href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
+                    >
+                      {project.is_draft ? texts.edit_draft : texts.edit_project}
+                    </Button>
+                    <Button
+                      className={classes.editProjectButton}
+                      color="primary"
+                      href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
+                      variant="contained"
+                    >
+                      {/* TODO: make dynamic follower */}
+                      Review {"n?"} followers
+                    </Button>
+                  </>
+                )}
               <Button
                 className={classes.leaveProjectButton}
                 variant="contained"
@@ -153,17 +185,6 @@ export default function ProjectContent({
               >
                 {texts.leave_project}
               </Button>
-              {user_permission &&
-                [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission) && (
-                  <Button
-                    className={classes.editProjectButton}
-                    variant="contained"
-                    color="primary"
-                    href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
-                  >
-                    {project.is_draft ? texts.edit_draft : texts.edit_project}
-                  </Button>
-                )}
             </div>
           )}
           {/* Note: created date is not the same as the start date, for projects */}
@@ -293,7 +314,7 @@ export default function ProjectContent({
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
 
