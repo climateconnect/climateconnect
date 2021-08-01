@@ -51,8 +51,7 @@ export async function getProjectTagsOptions(hub, locale) {
     });
     if (resp.data.results.length === 0) return null;
     else {
-      if (hub) return resp.data.results;
-      else return parseOptions(resp.data.results, "parent_tag");
+      return parseOptions(resp.data.results, "parent_tag");
     }
   } catch (err) {
     console.log(err);

@@ -8,13 +8,13 @@ class Command(BaseCommand):
     help = "Create new languages that we will support"
 
     def add_arguments(self, parser: CommandParser) -> None:
-        language_code = parser.add_argument(
+        parser.add_argument(
             "--language_code", dest="language_code", type=str
         )
-        name = parser.add_argument(
+        parser.add_argument(
             "--name", dest="name", type=str
         )
-        native_name = parser.add_argument(
+        parser.add_argument(
             "--native_name", dest="native_name", type=str
         )
 

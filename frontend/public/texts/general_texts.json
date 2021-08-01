@@ -47,6 +47,10 @@
     "en": "Project Categories",
     "de": "Projektkategorien"
   },
+  "add_project_categories": {
+    "en": "Add project categories",
+    "de": "Projektkategorien hinzufügen"
+  },
   "save": {
     "en": "Save",
     "de": "Speichern"
@@ -431,10 +435,6 @@
     "en": "You are being redirected to the Climate Connect zoom",
     "de": "Du wirst zum Climate Connect Zoom weitergeleitet"
   },
-  "no_results": {
-    "en": "No Results",
-    "de": "Kein Ergebnis"
-  },
   "apply": {
     "en": "Apply",
     "de": "Anwenden"
@@ -557,7 +557,7 @@
   },
   "connect_with_the_right_people": {
     "en": "Connect with the right people",
-    "de": "Verbinde dich mit den richtigen Menschen"
+    "de": "Vernetze dich mit den richtigen Menschen"
   },
   "connect_with_the_right_people_text": {
     "en": "Filter for projects and people based on your skills, needs and interests. Maximize your positive impact on our planet.",

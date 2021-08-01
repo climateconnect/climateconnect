@@ -1,0 +1,5 @@
+# Over time, we can scope specific pieces of the project
+# to owners with more context (e.g. backend vs. frontend), but
+# for now we use this to rely on tagging teammates during
+# pull request review
+* @positiveimpact @ddhanesha @FnayouSeif @samschaevitz @piperchester

@@ -586,7 +586,7 @@ class ChangeProjectCreator(APIView):
                 new_creator.role_in_project = request.data['role_in_project']
             if('availability' in request.data):
                 try:
-                    user_availability = Availability.objects.filter(id=int(request.data['availability'])).first()
+                    Availability.objects.filter(id=int(request.data['availability'])).first()
                 except Availability.DoesNotExist:
                     raise NotFound(detail="Availability not found.", code=status.HTTP_404_NOT_FOUND)
                 new_creator.user_availability = request.data['availability']
@@ -808,7 +808,7 @@ class LeaveProject(RetrieveUpdateAPIView):
             return Response(data={'message':f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except:
             ##Send E to dev
-            E = traceback.format_exc()
+            ##send to dev logs E= traceback.format_exc()
             return Response(data={'message':f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

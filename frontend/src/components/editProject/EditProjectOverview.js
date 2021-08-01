@@ -376,7 +376,7 @@ const InputTags = ({ project, handleChangeProject, tagsOptions, texts }) => {
         open={open}
         onClose={handleCategoriesDialogClose}
         type="categories"
-        itemsToChooseFrom={tagsOptions}
+        options={tagsOptions}
         items={project.tags}
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}
