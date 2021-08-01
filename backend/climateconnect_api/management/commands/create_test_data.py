@@ -358,7 +358,7 @@ class Command(BaseCommand):
     help = "Creates test data of user's availability to volunteer to an organization."
 
     def add_arguments(self, parser) -> None:
-        number_of_rows = parser.add_argument("--number_of_rows", dest="number_of_rows", type=int)
+        parser.add_argument("--number_of_rows", dest="number_of_rows", type=int)
 
     def handle(self, *args, **options) -> str:
         number_of_rows = options['number_of_rows']
