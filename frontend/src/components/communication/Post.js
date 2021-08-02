@@ -134,7 +134,7 @@ export default function Post({
               </Typography>
             </div>
             <MessageContent content={post.content} maxLines={maxLines} />
-            <div>
+            <>
               {type != "reply" &&
                 (replyInterfaceExpanded ? (
                   <CommentInput
@@ -151,7 +151,7 @@ export default function Post({
               {user && user.id === post.author_user.id && (
                 <Button onClick={toggleDeleteDialogOpen}>Delete</Button>
               )}
-            </div>
+            </>
             <div>
               {type != "reply" && !!post.replies && post.replies.length > 0 && (
                 <Link className={classes.toggleReplies} onClick={handleViewRepliesClick}>
@@ -172,7 +172,7 @@ export default function Post({
           </span>
         </div>
       )}
-      <div>
+      <>
         {post.replies &&
           post.replies.length > 0 &&
           displayReplies &&
@@ -185,7 +185,7 @@ export default function Post({
               onDeletePost={onDeletePost}
             />
           )}
-      </div>
+      </>
       <ConfirmDialog
         open={open}
         onClose={onConfirmDialogClose}

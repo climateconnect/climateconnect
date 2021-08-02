@@ -1,6 +1,8 @@
 import { Divider, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
+
+// Relative imports
 import { apiRequest } from "../../../public/lib/apiOperations.js";
 import { getCommentsObjectAfterAddingComment } from "../../../public/lib/communicationOperations.js";
 import getTexts from "../../../public/texts/texts.js";
@@ -82,7 +84,8 @@ export default function CommentsContent({ user, project, token, setCurComments }
   return (
     <div>
       <CommentInput user={user} onSendComment={onSendComment} hasComments={comments.length > 0} />
-      <Typography>{comments.length + " " + texts.comments}</Typography>
+      {/* TODO(piper): should lowercase 'comments' */}
+      <Typography>{comments.length + " " + texts.comments.toLowerCase()}</Typography>
       <Divider className={classes.divider} />
       {comments && comments.length > 0 && (
         <Posts

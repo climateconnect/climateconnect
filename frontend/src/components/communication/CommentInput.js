@@ -85,7 +85,9 @@ export default function CommentInput({
               className={classes.commentButton}
               onClick={(event) => handleSendComment(event)}
             >
-              {texts.send}
+              {/* TODO(piper): should update to "post" comment instead of send, which implies chat */}
+              {/* {texts.send}  */}
+              Post
             </Button>
             {onCancel && (
               <Button variant="contained" className={classes.cancelButton} onClick={onCancel}>

@@ -1,6 +1,7 @@
 import React from "react";
-import Post from "./Post";
 import { makeStyles } from "@material-ui/core/styles";
+
+import Post from "./Post";
 
 const useStyles = makeStyles((theme) => ({
   post: {

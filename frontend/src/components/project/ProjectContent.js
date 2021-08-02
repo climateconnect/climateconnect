@@ -1,4 +1,4 @@
-import { Button, Typography } from "@material-ui/core";
+import { Button, Typography, Badge } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -167,22 +167,23 @@ export default function ProjectContent({
               {user_permission &&
                 [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission) && (
                   <>
+                    {/* TODO: make dynamic follower */}
+                    <Badge badgeContent={3} color="primary">
+                      <Button
+                        className={classes.editProjectButton}
+                        // color="primary"
+                        href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
+                        variant="contained"
+                      >
+                        Review followers
+                      </Button>
+                    </Badge>
                     <Button
                       className={classes.editProjectButton}
                       variant="contained"
-                      color="primary"
                       href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
                     >
                       {project.is_draft ? texts.edit_draft : texts.edit_project}
-                    </Button>
-                    <Button
-                      className={classes.editProjectButton}
-                      color="primary"
-                      href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
-                      variant="contained"
-                    >
-                      {/* TODO: make dynamic follower */}
-                      Review {"n?"} followers
                     </Button>
                   </>
                 )}
