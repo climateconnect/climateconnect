@@ -60,7 +60,7 @@ python-http-client==3.2.7
 pytz==2019.3
 PyYAML==5.4
 redis==3.5.3
-requests==2.23.0
+requests==2.26.0
 rsa==4.7
 service-identity==18.1.0
 six==1.14.0
