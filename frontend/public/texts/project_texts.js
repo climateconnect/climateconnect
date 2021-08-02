@@ -146,7 +146,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       ),
     },
     you_cant_leave_a_project_as_the_creator: {
-      en: `You can't leave a project as the Super Admin. Please give the Super Admin role to another team member by clicking "Manage Members" in the team tab`,
+      en: `You can't leave a project as the Super Admin. Please give the Super Admin role to another team member by clicking "Manage Members" in the team tab.`,
       de: `Du kannst das Projekt als Super Admin nicht verlassen. Bitte übertrage diese Rolle auf ein anderes Teammitglied, indem du "Mitglieder verwalten" im Team-Tab klickst`,
     },
     do_you_really_want_to_unfollow: {
