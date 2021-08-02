@@ -41,13 +41,16 @@ export default function LocationSearchBar({
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState("");
   const [inputValue, setInputValue] = React.useState(getValue(initialValue, ""));
-  useEffect(function() {
-    if(inputValue?.length > 0 && value.length === 0){
-      setInputValue("")
-      setSearchValue("")
-      setOptions([])
-    }
-  }, [value])
+  useEffect(
+    function () {
+      if (inputValue?.length > 0 && value.length === 0) {
+        setInputValue("");
+        setSearchValue("");
+        setOptions([]);
+      }
+    },
+    [value]
+  );
   const [loading, setLoading] = React.useState(false);
   React.useEffect(() => {
     let active = true;

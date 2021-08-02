@@ -1,5 +1,5 @@
 import { IconButton, InputAdornment, TextField } from "@material-ui/core";
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from "@material-ui/icons/Close";
 import SearchIcon from "@material-ui/icons/Search";
 import React from "react";
 
@@ -23,11 +23,11 @@ export default function FilterSearchBar({
   };
 
   const removeSearchFilter = () => {
-    if(value !== ""){
-      onChange({preventDefault: () => {}, target: { value: ""}})
+    if (value !== "") {
+      onChange({ preventDefault: () => {}, target: { value: "" } });
       onSubmit(type, "");
     }
-  }
+  };
 
   return (
     <TextField
@@ -38,8 +38,7 @@ export default function FilterSearchBar({
             <SearchIcon />
           </InputAdornment>
         ),
-        endAdornment: (
-          value &&
+        endAdornment: value && (
           <InputAdornment position="end">
             <IconButton size="small" onClick={removeSearchFilter}>
               <CloseIcon />

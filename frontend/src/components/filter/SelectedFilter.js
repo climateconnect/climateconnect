@@ -27,14 +27,14 @@ export default function SelectedFilter({
 }) {
   const classes = useStyles();
   let currentFilterValues = currentFilters[filterKey];
-  const locationFilterKeys = getLocationFilterKeys()
+  const locationFilterKeys = getLocationFilterKeys();
   const possibleFilterKeys = possibleFilters.map((entry) => entry.key);
   // Get the metadata associated with the filter (e.g. what type it is, like "Category")
   const filterMetadata = possibleFilters.find((f) => f.key === filterKey);
   //When the location is a string the filter is not submitted yet (the user is just typing)
   //Therefore only show location as a selected filter if it's an object
   if (filterMetadata?.type === "location") {
-    if(typeof currentFilterValues !== "object" || locationFilterKeys.includes(filterKey)){
+    if (typeof currentFilterValues !== "object" || locationFilterKeys.includes(filterKey)) {
       return <></>;
     }
   }
@@ -44,7 +44,10 @@ export default function SelectedFilter({
   if (filterKey === "search") {
     return <></>;
   }
-  if (!currentFilterValues || (typeof currentFilterValues !== "object" && !currentFilterValues.length)) {
+  if (
+    !currentFilterValues ||
+    (typeof currentFilterValues !== "object" && !currentFilterValues.length)
+  ) {
     return <></>;
   }
 
@@ -58,17 +61,18 @@ export default function SelectedFilter({
         currentFilterValues.map((filter) => {
           /*the location filter either has the 'name' or 'simple_name' prop set
           depending on whether it was caught as the initial location or not*/
-          const filterName = typeof filter === "object" ? (filter.name ? filter.name : filter.simple_name) : filter
+          const filterName =
+            typeof filter === "object" ? (filter.name ? filter.name : filter.simple_name) : filter;
           return (
             <Tooltip title={filterMetadata.title} key={filterName}>
               <Chip
-                icon={<filterMetadata.icon name={filterMetadata.iconName}/>}
-                className={classes.selectedChip}                
+                icon={<filterMetadata.icon name={filterMetadata.iconName} />}
+                className={classes.selectedChip}
                 label={filterName}
                 onDelete={() => handleUnselectFilter(filter, filterMetadata.key)}
               />
             </Tooltip>
-          )
+          );
         })}
     </div>
   );

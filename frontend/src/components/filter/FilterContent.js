@@ -192,28 +192,28 @@ export default function FilterContent({
 
   const getUpdatedFiltersAfterUnselect = (filterName, filterKey) => {
     //location is the only filter that can be unselected and is not supposed to be an array
-    if(filterKey === "location") {
+    if (filterKey === "location") {
       const newFilters = {
-        ...filters, 
-        [filterKey]: ""
+        ...filters,
+        [filterKey]: "",
+      };
+      const locationFilterKeys = getLocationFilterKeys();
+      for (const key of locationFilterKeys) {
+        newFilters[key] = "";
       }
-      const locationFilterKeys = getLocationFilterKeys()
-      for(const key of locationFilterKeys) {
-        newFilters[key] = ""
-      }
-      return newFilters      
+      return newFilters;
     }
     // Ensure that the filtered value is an array, e.g.
     // we can't filter on a raw string like "Energy".
     if (!Array.isArray(filters[filterKey])) {
       filters[filterKey] = [filters[filterKey]];
-    }    
+    }
     const prunedFilters = filters[filterKey].filter((f) => f !== filterName);
     return {
       ...filters,
       [filterKey]: prunedFilters,
     };
-  }
+  };
 
   /**
    * Reapplies filters based on two given strings: the
@@ -221,7 +221,7 @@ export default function FilterContent({
    * key (e.g. "category").
    */
   const handleUnselectFilter = (filterName, filterKey) => {
-    const updatedFilters = getUpdatedFiltersAfterUnselect(filterName, filterKey)
+    const updatedFilters = getUpdatedFiltersAfterUnselect(filterName, filterKey);
     // When dismissing a selected filter chip, we also want to update the
     // window state to reflect the currently active filters, and fetch
     // the updated data from the server
@@ -314,11 +314,11 @@ export default function FilterContent({
       {/* We pass currentFilters like this because if location is not an array, 
       a change in it doesn't cause a rerender and therefore the location chip is not shown */}
       <SelectedFilters
-        currentFilters={Object.keys(filters).reduce(function(obj, curKey) {
-          obj[curKey] = filters[curKey]
-          if(curKey === "location" && typeof filters[curKey] === "object")
-            obj[curKey] = [filters[curKey]]
-          return obj
+        currentFilters={Object.keys(filters).reduce(function (obj, curKey) {
+          obj[curKey] = filters[curKey];
+          if (curKey === "location" && typeof filters[curKey] === "object")
+            obj[curKey] = [filters[curKey]];
+          return obj;
         }, {})}
         handleUnselectFilter={handleUnselectFilter}
         possibleFilters={possibleFilters}
