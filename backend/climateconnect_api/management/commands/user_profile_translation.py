@@ -14,8 +14,8 @@ def translate_user_profile(user_profile: UserProfile) -> None:
 
     try:
         translations = get_translations(texts, {}, 'en')
-    except ValueError as ve:
-        logging.error("Error getting translation for user {}".format(
+    except ValueError:
+        print("Error getting translation for user {}".format(
             user_profile.user.first_name
         ))
         translations = None
