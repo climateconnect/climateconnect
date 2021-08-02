@@ -11,13 +11,13 @@
     "fix-lint": "eslint . --fix",
     "format": "prettier --write '**/*.{js,jsx,json,md}'",
     "gcp-build": "IS_BUILDING_ON_GOOGLE_CLOUD=1 yarn build",
-    "lint": "eslint .",
     "lint:watch": "esw --cache --watch --color --fix",
+    "lint": "eslint .",
     "pretest": "yarn lint",
     "start": "NODE_ENV=production node server.js",
-    "test": "jest",
-    "test:watch": "jest --watch",
     "storybook": "start-storybook -p 6006",
+    "test:watch": "jest --watch",
+    "test": "jest",
     "build-storybook": "build-storybook"
   },
   "jest": {
