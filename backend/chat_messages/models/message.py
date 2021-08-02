@@ -58,11 +58,6 @@ class MessageParticipants(models.Model):
         verbose_name_plural = "Chats"
         ordering = ["-last_message_at", "-created_at"]
 
-    def __DEPRECEATED_str__(self):
-        return "Chat: %d" % (
-            self.chat_uuid
-        )
-
     def __str__(self):
         if self.name:
             return "Chat: \"%s\"" % self.name
