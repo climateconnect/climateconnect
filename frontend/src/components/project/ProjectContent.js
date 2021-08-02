@@ -173,9 +173,9 @@ export default function ProjectContent({
                         className={classes.editProjectButton}
                         // color="primary"
                         href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
-                        variant="contained"
+                        // variant="contained"
                       >
-                        Review followers
+                        Review join requests
                       </Button>
                     </Badge>
                     <Button
