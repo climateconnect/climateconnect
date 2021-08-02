@@ -2,7 +2,7 @@ import { TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "axios";
 import { debounce } from "lodash";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { getNameFromLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -41,6 +41,16 @@ export default function LocationSearchBar({
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState("");
   const [inputValue, setInputValue] = React.useState(getValue(initialValue, ""));
+  useEffect(
+    function () {
+      if (inputValue?.length > 0 && value.length === 0) {
+        setInputValue("");
+        setSearchValue("");
+        setOptions([]);
+      }
+    },
+    [value]
+  );
   const [loading, setLoading] = React.useState(false);
   React.useEffect(() => {
     let active = true;

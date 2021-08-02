@@ -1,9 +1,7 @@
-## Description
+<!-- Aim to reference the GitHub issue number here (e.g. "#XXX") improve discoverability. -->
 
-<!-- Short description of the change. Aim to reference the issue number of the GitHub issue. -->
+## Before landing
 
-## Todo
-
-- [ ] PR has a meaningful title?
-- [ ] `yarn lint` passes in frontend?
-- [ ] Ran `yarn format` in frontend?
+1. PR has meaningful title
+1. `yarn lint` passes
+1. `yarn format` passes

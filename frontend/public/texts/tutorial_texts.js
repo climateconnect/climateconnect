@@ -44,7 +44,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     },
     great_that_you_are_already_a_climate_hero: {
       en: "Great that you're already a climate hero!",
-      de: "Toll, dass du schon ein Klimaheld bist!",
+      de: "Toll, dass du dich schon für unser Klima engagierst!",
     },
     here_you_can_browse: {
       en: `Here you can browse through all climate projects created by Climate Connect users. You
@@ -229,7 +229,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     },
     tabs_tutorial_text: {
       en: `Click on another tab to see all active organizations or members of Climate Connect. 
-      These are the faces behind the projects and the climate actors we strive to we strive to empower.`,
+      These are the faces behind the projects and the climate actors we strive to empower.`,
       de: `Klicke auf ein anderes Tab, um alle aktiven Organisationen oder Nutzer von Climate Connect zu sehen. 
       Dies sind die Gesichter hinter den Projekten und die Klimaschützer, die wir stärken möchten.`,
     },

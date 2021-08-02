@@ -1,6 +1,6 @@
 import { yearAndDayFormatter } from "../../src/utils/formatting";
 
-describe.only("utils", () => {
+describe("utils", () => {
   describe("formatting", () => {
     // Note that we're testing our thin wrapper on
     // top of the underlying date calculation logic

@@ -18,13 +18,16 @@ class ProjectTaggingSerializer(serializers.ModelSerializer):
 
 class ProjectTagsSerializer(serializers.ModelSerializer):
   name = serializers.SerializerMethodField()
-
+  original_name = serializers.SerializerMethodField()
   class Meta:
     model = ProjectTags
-    fields = ('id', 'name', 'parent_tag')
+    fields = ('id', 'name', 'original_name', 'parent_tag')
 
   def get_name(self, obj):
     return get_projecttag_name(obj, get_language())
+
+  def get_original_name(self, obj):
+    return obj.name
 
 class OrganizationTaggingSerializer(serializers.ModelSerializer):
   organization_tag = serializers.SerializerMethodField()
@@ -39,10 +42,14 @@ class OrganizationTaggingSerializer(serializers.ModelSerializer):
 
 class OrganizationTagsSerializer(serializers.ModelSerializer):
   name = serializers.SerializerMethodField()
+  original_name = serializers.SerializerMethodField()
 
   class Meta:
     model = OrganizationTags
-    fields = ('id', 'name', 'parent_tag', 'additional_info')
+    fields = ('id', 'name', 'original_name', 'parent_tag', 'additional_info')
 
   def get_name(self, obj):
     return get_organizationtag_name(obj, get_language())
+
+  def get_original_name(self, obj):
+    return obj.name
