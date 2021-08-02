@@ -72,7 +72,7 @@ def get_project_helpful_connections(project: Project, language_code: str) -> str
 
 
 def get_project_name(project: Project, language_code: str) -> str:
-    if language_code != project.language.language_code and \
+    if project.language and language_code != project.language.language_code and \
             project.translation_project.filter(language__language_code=language_code).exists():
         return project.translation_project.get(
             language__language_code=language_code
@@ -82,7 +82,7 @@ def get_project_name(project: Project, language_code: str) -> str:
 
 
 def get_project_short_description(project: Project, language_code: str) -> str:
-    if language_code != project.language.language_code and \
+    if project.language and language_code != project.language.language_code and \
             project.translation_project.filter(language__language_code=language_code).exists():
         return project.translation_project.get(
             language__language_code=language_code
