@@ -48,23 +48,23 @@ class Answer(models.Model):
 class AnswerMetaData(models.Model):
 	weight = models.IntegerField(
 		help_text="What should be the weight of a resource. Resources may contain projects, ideas, organization etc."
-			"This will help us sort projects, ideas, organization etc easily.",
+		"This will help us sort projects, ideas, organization etc easily.",
 		verbose_name="Weight"
 	)
 
-	reference_type = models.ForeignKey(
+	resource_type = models.ForeignKey(
 		ContentType,
 		help_text="Points to table that we will be ranking. i.e.: Points to Hubs, Idea, Organization, Project and Skills",
-		verbose_name="Reference type",
+		verbose_name="Resource type",
 		on_delete=models.CASCADE
 	)
 
-	# We will store reference id if the answer is specific type of resource. 
+	# We will store reference id if the answer is specific type of resource.
 	# For example: For question which skills do you need help with? We will store the skill id that user
-	# have selected. If the question is Do you want to do one-off project? yes or no. We would just store 
-	# resource type "organization" and "project". But not any specific resource id. 
+	# have selected. If the question is Do you want to do one-off project? yes or no. We would just store
+	# resource type "organization" and "project". But not any specific resource id.
 	reference_id = models.IntegerField(
-		help_text="Points to ID of a reference. Example: Hub ID that user choses.",
+		help_text="Points to ID of a reference. Example: Hub ID that user chooses.",
 		verbose_name="Reference ID",
 		null=True,
 		blank=True
@@ -73,10 +73,11 @@ class AnswerMetaData(models.Model):
 	class Meta:
 		verbose_name = "Answer metadata"
 		verbose_name_plural = "Answer metadata"
-	
+
 	def __str__(self):
 		if not self.reference_id:
-			return f"Reference type: {self.reference_type.model} has {self.weight} weight"
+			return f"Model {self.resource_type.model} has {self.weight} weight"
 		else:
-			return f"Resource type: {self.reference_type.model} "\
-				f"{self.reference_type.get_object_for_this_type(id=self.reference_id)} has {self.weight} weight"
+			return f"{self.resource_type.model} "\
+				f"model object {self.resource_type.get_object_for_this_type(id=self.reference_id)} " \
+				f"has {self.weight} weight"

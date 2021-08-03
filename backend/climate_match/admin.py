@@ -1,8 +1,9 @@
 from django.contrib import admin
 
-from climate_match.models import Answer, AnswerMetaData \
-	, Question, UserQuestionAnswer, QuestionTranslation \
-	, AnswerTranslation
+from climate_match.models import (
+	Answer, AnswerMetaData, Question,
+	UserQuestionAnswer, QuestionTranslation, AnswerTranslation
+)
 
 
 admin.site.register(Question, admin.ModelAdmin)
