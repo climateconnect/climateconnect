@@ -12,13 +12,18 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function NoItemsFound() {
+export default function NoItemsFound({ type, hubName }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "general", locale: locale });
+  const texts = getTexts({
+    page: "filter_and_search",
+    locale: locale,
+    filterType: type,
+    hubName: hubName,
+  });
   return (
     <Typography component="h4" variant="h5" className={classes.infoMessage}>
-      {texts.no_results}
+      {texts.could_not_find_any_items_of_type}
     </Typography>
   );
 }

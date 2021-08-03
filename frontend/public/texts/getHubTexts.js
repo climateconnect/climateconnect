@@ -24,8 +24,8 @@ export default function getHubTexts({ hubName }) {
       de: "Suche Organisationen in " + hubName,
     },
     search_profiles_in_location: {
-      en: "Search climate protectors in " + hubName,
-      de: "Suche Klimaschützer in " + hubName,
+      en: "Search climate actors in " + hubName,
+      de: "Suche Klimaschützer*innen in " + hubName,
     },
     more_info_about_hub_coming_soon: {
       en:

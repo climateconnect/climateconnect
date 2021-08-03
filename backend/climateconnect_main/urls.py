@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from climateconnect_api.views import (
     status_views, user_views, common_views,
-    settings_views, common_views, role_views, 
+    settings_views, role_views, 
     faq_views, notifications_views, donation_views,
     translation_views
 )
@@ -92,8 +92,9 @@ urls = [
     path('api/', include('chat_messages.urls')),
     # Hub views
     path('api/', include('hubs.urls')),
+    path('api/', include('location.urls')),
     # Idea views
-    path('api/', include('ideas.urls')),
+    path('api/', include('ideas.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns = urls
