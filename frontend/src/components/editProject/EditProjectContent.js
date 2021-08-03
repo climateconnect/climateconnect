@@ -245,7 +245,7 @@ export default function EditProjectContent({
             <DatePicker
               className={classes.datePicker}
               label={texts.end_date}
-              date={project.start_date}
+              date={project.end_date}
               handleChange={(newDate) => handleChangeProject(newDate, "end_date")}
               required
               minDate={project.start_date && new Date(project.start_date)}

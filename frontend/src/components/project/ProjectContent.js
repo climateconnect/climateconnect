@@ -131,6 +131,9 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.error.main,
     },
   },
+  finishedDate: {
+    marginTop: theme.spacing(0.5),
+  },
 }));
 
 export default function ProjectContent({
@@ -199,6 +202,15 @@ export default function ProjectContent({
                 className={classes.creator}
                 organization={project.creator}
               />
+            )}
+            {project.end_date && (
+              <Typography className={classes.finishedDate}>
+                {texts.finished + " "}
+                <TimeAgo
+                  date={new Date(project.end_date)}
+                  formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
+                />{" "}
+              </Typography>
             )}
             {project.collaborating_organizations && project.collaborating_organizations.length > 0 && (
               <div>
