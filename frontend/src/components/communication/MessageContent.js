@@ -1,3 +1,4 @@
+import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import React from "react";
@@ -80,7 +81,26 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
         if (youtubeVideoLines && youtubeVideoLines.find((l) => l.index === index)) {
           return <div key={index}>{youtubeVideoLines.find((l) => l.index === index).content}</div>;
         }
-        return <div dangerouslySetInnerHTML={{ __html: i ? i : " " }} key={index}></div>;
+        r = /@@@__([^\^]*)\^\^__([^\@]*)@@@\^\^\^/g
+        matches = i.matchAll(r)
+        let array = [...matches]
+        // [['full match', 'matchgroup0', matchgroup1, index, inputstr, length], ...]
+
+        return (
+          <div>
+            {
+              array.map((match, index) => {
+                console.log(match)
+                if (index % 2 === 0) {
+                  <Typography>{match}</Typography>
+                } else {
+                  <Link href={`profiles/${match[1]}`}>{match[2]}</Link>
+                }
+              })
+            }
+          </div>
+        )
+        //return <div dangerouslySetInnerHTML={{ __html: i ? i : " " }} key={index}></div>;
       })}
     </Linkify>
   );
