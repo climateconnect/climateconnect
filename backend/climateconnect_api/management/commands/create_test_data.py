@@ -362,7 +362,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options) -> str:
         number_of_rows = options['number_of_rows']
-
+        
+        create_language_test_data()
         create_test_user_data(number_of_rows=number_of_rows)
         create_availability_test_data(number_of_rows=number_of_rows)
         create_roles_test_data()
