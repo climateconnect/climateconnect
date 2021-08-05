@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 
 def sort_user_resource_preferences(user: User) -> List:
-    user_resource_preference = []
+    user_resource_preferences = []
     with connection.cursor() as cursor:
         cursor.execute(f"""
 with get_user_resource_preference as (
@@ -43,7 +43,7 @@ with get_user_resource_preference as (
     join django_content_type dct on dct.id = cma.resource_type_id
     where dct.model = 'hub' and cmu.user_id = {user.id}
 ), get_user_reference_table_relevancy_score_by_skills as (
-    select reference_table.table_name, reference_table.id as table_id, sum(gusp.weight) as skill_weight
+    select reference_table.table_name, reference_table.id as resource_id, sum(gusp.weight) as skill_weight
     from get_user_skill_preference as gusp
     join (
         select op.id, cs.id as skill_id, 'project' as table_name
@@ -53,7 +53,7 @@ with get_user_resource_preference as (
     ) as reference_table on reference_table.skill_id = gusp.reference_id
     group by 1, 2
 ), get_user_reference_table_relevancy_score_by_hubs as (
-    select reference_table.table_name, reference_table.id as table_id, sum(guhp.weight) as hub_weight
+    select reference_table.table_name, reference_table.id as resource_id, sum(guhp.weight) as hub_weight
     from get_user_hub_preference as guhp
     join (
         (
@@ -79,10 +79,10 @@ with get_user_resource_preference as (
     group by 1, 2
 ), get_user_reference_relevancy_score as (
     select (
-        case when gurtrs.table_id is not null then gurtrs.table_id else gurtrh.table_id end
-        ) as table_id
+        case when gurtrs.resource_id is not null then gurtrs.resource_id else gurtrh.resource_id end
+        ) as resource_id
         , (
-        case when gurtrs.table_id is not null then gurtrs.table_name else gurtrh.table_name end
+        case when gurtrs.resource_id is not null then gurtrs.table_name else gurtrh.table_name end
         ) as table_name
         , sum(
             (
@@ -103,7 +103,7 @@ with get_user_resource_preference as (
         ) as total_score
     from get_user_reference_table_relevancy_score_by_skills as gurtrs
     full join get_user_reference_table_relevancy_score_by_hubs as gurtrh 
-        on gurtrh.table_id = gurtrs.table_id 
+        on gurtrh.resource_id = gurtrs.resource_id
             and gurtrh.table_name = gurtrs.table_name
     group by 1, 2
     order by total_score desc
@@ -111,9 +111,9 @@ with get_user_resource_preference as (
 
 select * from get_user_reference_relevancy_score;
         """)
-        rows = cursor.fetchall()
-        for row in rows:
-            user_resource_preference.append(row[0])
 
-    return user_resource_preference
+        columns = [col[0] for col in cursor.description]
+        user_resource_preferences = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+    return user_resource_preferences
 
