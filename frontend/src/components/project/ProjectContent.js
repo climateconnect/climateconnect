@@ -132,8 +132,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   finishedDate: {
-    marginTop: theme.spacing(0.5),
-  },
+    marginTop: theme.spacing(0.5)
+  }
 }));
 
 export default function ProjectContent({
