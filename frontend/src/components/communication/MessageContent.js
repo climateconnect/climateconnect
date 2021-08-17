@@ -1,10 +1,12 @@
 import { Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useContext } from "react";
 import Linkify from "react-linkify";
 import YouTube from "react-youtube";
 import youtubeRegex from "youtube-regex";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles({
   link: {
@@ -17,6 +19,7 @@ const useStyles = makeStyles({
 
 export default function MessageContent({ content, renderYoutubeVideos }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
   //workaround to get target="_blank" because setting 'properties' on the Linkify component doesn't work
   const componentDecorator = (href, text, key) => (
     <a href={href} className={classes.link} key={key} target="_blank" rel="noopener noreferrer">
@@ -98,20 +101,24 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
           let fullMatch = [...m.matchAll(r)];
 
           if (greedyMatch.length !== 0) {
+            // the next substring matches the markdown, so turn it into a link
             console.log(i + ": " + greedyMatch[0][0])
-            fragments.push(<Link href={`profiles/${greedyMatch[0][1]}`}>{greedyMatch[0][2]}</Link>)
-            //return <Link href={`profiles/${match[1]}`}>{match[2]}</Link>
+            let display = greedyMatch[0][2]
+            let id = greedyMatch[0][1]
+            fragments.push(<Link href={getLocalePrefix(locale) + "/profiles/" + id}>{display}</Link>)
             i += (greedyMatch[0][0].length - 1)
           } else {
             if (fullMatch.length !== 0) {
+              // there exists another mention later in the string, find it and render what's in between as text
               console.log(fullMatch);
               console.log(m.substring(0, fullMatch[0].index));
               console.log("m[0].index: " + fullMatch[0].index);
-              fragments.push(<Typography>{m.substring(0, fullMatch[0].index)}</Typography>)
+              fragments.push(m.substring(0, fullMatch[0].index))
               i += (fullMatch[0].index - 1);
             } else {
+              // there aren't any more mentions, so render the rest of the string as text 
               console.log(m);
-              fragments.push(<Typography>{m}</Typography>)
+              fragments.push(m)
               i += m.length - 1;
             }
 
@@ -119,19 +126,7 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
         }
         return (
           <div>
-            {
-              fragments
-              //array.map((match, index) => {
-              //console.log(match)
-              //if (index % 2 === 0) {
-              //return <Typography>{match}</Typography>
-              //} else {
-              //console.log(match[1])
-              //console.log(match[2])
-              //return <Link href={`profiles/${match[1]}`}>{match[2]}</Link>
-              //}
-              //})
-            }
+            <Typography display='inline' style={{alignSelf: 'flex-start'}}>{fragments}</Typography>
           </div>
         )
         //return <div dangerouslySetInnerHTML={{ __html: i ? i : " " }} key={index}></div>;
