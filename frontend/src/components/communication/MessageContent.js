@@ -1,4 +1,4 @@
-import { Typography } from "@material-ui/core";
+import { Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import React from "react";
@@ -76,27 +76,61 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
 
   return (
     <Linkify componentDecorator={componentDecorator}>
-      {content.split("\n").map((i, index) => {
-        if (!i.length) return <br key={index} />;
+      {content.split("\n").map((content, index) => {
+        if (!content.length) return <br key={index} />;
         if (youtubeVideoLines && youtubeVideoLines.find((l) => l.index === index)) {
           return <div key={index}>{youtubeVideoLines.find((l) => l.index === index).content}</div>;
         }
-        r = /@@@__([^\^]*)\^\^__([^\@]*)@@@\^\^\^/g
-        matches = i.matchAll(r)
-        let array = [...matches]
+        // this matches all future markdown substrings in the string
+        let r = /@@@__([^\^]*)\^\^__([^\@]*)@@@\^\^\^/g
+        //let matches = content.matchAll(r)
+        //let array = [...matches]
         // [['full match', 'matchgroup0', matchgroup1, index, inputstr, length], ...]
 
+        // this one only matches at the beginning of the string
+        let g = /^@@@__([^\^]*)\^\^__([^\@]*)@@@\^\^\^/g
+
+        let fragments = [];
+        for (let i = 0; i < content.length; i++) {
+          console.log(i + ": " + content[i])
+          let m = content.substring(i);
+          let greedyMatch = [...m.matchAll(g)];
+          let fullMatch = [...m.matchAll(r)];
+
+          if (greedyMatch.length !== 0) {
+            console.log(i + ": " + greedyMatch[0][0])
+            fragments.push(<Link href={`profiles/${greedyMatch[0][1]}`}>{greedyMatch[0][2]}</Link>)
+            //return <Link href={`profiles/${match[1]}`}>{match[2]}</Link>
+            i += (greedyMatch[0][0].length - 1)
+          } else {
+            if (fullMatch.length !== 0) {
+              console.log(fullMatch);
+              console.log(m.substring(0, fullMatch[0].index));
+              console.log("m[0].index: " + fullMatch[0].index);
+              fragments.push(<Typography>{m.substring(0, fullMatch[0].index)}</Typography>)
+              i += (fullMatch[0].index - 1);
+            } else {
+              console.log(m);
+              fragments.push(<Typography>{m}</Typography>)
+              i += m.length - 1;
+            }
+
+          }
+        }
         return (
           <div>
             {
-              array.map((match, index) => {
-                console.log(match)
-                if (index % 2 === 0) {
-                  <Typography>{match}</Typography>
-                } else {
-                  <Link href={`profiles/${match[1]}`}>{match[2]}</Link>
-                }
-              })
+              fragments
+              //array.map((match, index) => {
+              //console.log(match)
+              //if (index % 2 === 0) {
+              //return <Typography>{match}</Typography>
+              //} else {
+              //console.log(match[1])
+              //console.log(match[2])
+              //return <Link href={`profiles/${match[1]}`}>{match[2]}</Link>
+              //}
+              //})
             }
           </div>
         )
