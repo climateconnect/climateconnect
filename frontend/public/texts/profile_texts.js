@@ -167,7 +167,7 @@ export default function getProfileTexts({ profile, locale }) {
       de: "Nur noch ein Schritt, um deine Anmeldung abzuschließen!",
     },
     congratulations_just_one_more_step_to_complete_your_signup: {
-      en: "Congratulations! Just one more step to complete signing up...",
+      en: "Congratulations! Just one more step to complete your signup!",
       de: "Glückwunsch! Nur noch ein Schritt, um deine Anmeldung abzuschließen!",
     },
     we_have_sent_you_an_email_with_a_link: {
@@ -179,7 +179,7 @@ export default function getProfileTexts({ profile, locale }) {
       de: "Bitte klicke auf den Link, um dein Konto zu aktivieren.",
     },
     please_click_on_the_link_to_activate_your_account: {
-      en: "Please click on the link we just emailed you to activate your account.",
+      en: "Please click on the link to activate your account.",
       de: "Bitte klicke auf den Link, um dein Konto zu aktivieren.",
     },
     make_sure_to_also_check_your_spam: {
