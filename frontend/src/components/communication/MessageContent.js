@@ -126,7 +126,7 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
         }
         return (
           <div>
-            <Typography display='inline' style={{alignSelf: 'flex-start'}}>{fragments}</Typography>
+            <Typography display='inline' style={{ alignSelf: 'flex-start' }}>{fragments}</Typography>
           </div>
         )
         //return <div dangerouslySetInnerHTML={{ __html: i ? i : " " }} key={index}></div>;
