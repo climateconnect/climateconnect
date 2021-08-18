@@ -105,7 +105,7 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
             console.log(i + ": " + greedyMatch[0][0])
             let display = greedyMatch[0][2]
             let id = greedyMatch[0][1]
-            fragments.push(<Link href={getLocalePrefix(locale) + "/profiles/" + id}>{display}</Link>)
+            fragments.push(<Link href={getLocalePrefix(locale) + "/profiles/" + id}>@{display}</Link>)
             i += (greedyMatch[0][0].length - 1)
           } else {
             if (fullMatch.length !== 0) {
