@@ -75,6 +75,41 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
     return ID;
   }
 
+  function getFragmentsWithMentions(content) {
+    // this matches all future markdown substrings in the string
+    let r = /@@@__([^\^]*)\^\^__([^\@]*)@@@\^\^\^/g
+
+    // this one only matches at the beginning of the string
+    let g = /^@@@__([^\^]*)\^\^__([^\@]*)@@@\^\^\^/g
+
+    let fragments = [];
+    for (let i = 0; i < content.length; i++) {
+      let m = content.substring(i);
+      let greedyMatch = [...m.matchAll(g)];
+      let fullMatch = [...m.matchAll(r)];
+
+      if (greedyMatch.length !== 0) {
+        // the next substring matches the markdown, so turn it into a link
+        let display = greedyMatch[0][2]
+        let id = greedyMatch[0][1]
+        fragments.push(<Link href={getLocalePrefix(locale) + "/profiles/" + id}>@{display}</Link>)
+        i += (greedyMatch[0][0].length - 1)
+      } else {
+        if (fullMatch.length !== 0) {
+          // there exists another mention later in the string, find it and render what's in between as text
+          fragments.push(m.substring(0, fullMatch[0].index))
+          i += (fullMatch[0].index - 1);
+        } else {
+          // there aren't any more mentions, so render the rest of the string as text 
+          fragments.push(m)
+          i += m.length - 1;
+        }
+
+      }
+    }
+    return fragments;
+  }
+
   const youtubeVideoLines = renderYoutubeVideos ? getFirstYouTubeVideosLines(content) : null;
 
   return (
@@ -84,52 +119,12 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
         if (youtubeVideoLines && youtubeVideoLines.find((l) => l.index === index)) {
           return <div key={index}>{youtubeVideoLines.find((l) => l.index === index).content}</div>;
         }
-        // this matches all future markdown substrings in the string
-        let r = /@@@__([^\^]*)\^\^__([^\@]*)@@@\^\^\^/g
-        //let matches = content.matchAll(r)
-        //let array = [...matches]
-        // [['full match', 'matchgroup0', matchgroup1, index, inputstr, length], ...]
-
-        // this one only matches at the beginning of the string
-        let g = /^@@@__([^\^]*)\^\^__([^\@]*)@@@\^\^\^/g
-
-        let fragments = [];
-        for (let i = 0; i < content.length; i++) {
-          console.log(i + ": " + content[i])
-          let m = content.substring(i);
-          let greedyMatch = [...m.matchAll(g)];
-          let fullMatch = [...m.matchAll(r)];
-
-          if (greedyMatch.length !== 0) {
-            // the next substring matches the markdown, so turn it into a link
-            console.log(i + ": " + greedyMatch[0][0])
-            let display = greedyMatch[0][2]
-            let id = greedyMatch[0][1]
-            fragments.push(<Link href={getLocalePrefix(locale) + "/profiles/" + id}>@{display}</Link>)
-            i += (greedyMatch[0][0].length - 1)
-          } else {
-            if (fullMatch.length !== 0) {
-              // there exists another mention later in the string, find it and render what's in between as text
-              console.log(fullMatch);
-              console.log(m.substring(0, fullMatch[0].index));
-              console.log("m[0].index: " + fullMatch[0].index);
-              fragments.push(m.substring(0, fullMatch[0].index))
-              i += (fullMatch[0].index - 1);
-            } else {
-              // there aren't any more mentions, so render the rest of the string as text 
-              console.log(m);
-              fragments.push(m)
-              i += m.length - 1;
-            }
-
-          }
-        }
+        let fragments = getFragmentsWithMentions(content)
         return (
           <div>
             <Typography display='inline' style={{ alignSelf: 'flex-start' }}>{fragments}</Typography>
           </div>
         )
-        //return <div dangerouslySetInnerHTML={{ __html: i ? i : " " }} key={index}></div>;
       })}
     </Linkify>
   );
