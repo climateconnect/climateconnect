@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 
 from climate_match.models import Question
+from climateconnect_api.models import Language
 
 
 class Answer(models.Model):
@@ -11,6 +12,15 @@ class Answer(models.Model):
 		help_text="Points to question with predefined answers",
 		verbose_name="Question",
 		on_delete=models.CASCADE
+	)
+
+	language = models.ForeignKey(
+		Language,
+		related_name="answer_language",
+		help_text="Points to a language answer is store in",
+		verbose_name="Language",
+		null=True, blank=True,
+		on_delete=models.SET_NULL
 	)
 
 	text = models.CharField(

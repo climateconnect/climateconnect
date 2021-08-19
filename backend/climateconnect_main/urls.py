@@ -94,7 +94,9 @@ urls = [
     path('api/', include('hubs.urls')),
     path('api/', include('location.urls')),
     # Idea views
-    path('api/', include('ideas.urls'))
+    path('api/', include('ideas.urls')),
+    # Climate match APIs
+    path('api/', include('climate_match.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns = urls
