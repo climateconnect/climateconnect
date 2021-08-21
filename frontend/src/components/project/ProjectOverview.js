@@ -270,7 +270,6 @@ function LargeScreenOverview({
    * Calls backend, sending a request to join this project
    */
   async function handleSendProjectJoinRequest() {
-    console.log("sending request...");
     // TODO: fix user name
     // TODO: fix project name
     const projectName = "Anotherproject6";
