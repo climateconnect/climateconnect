@@ -30,6 +30,7 @@ class MembershipRequestsManager(object):
 
         self.errors = list()
         if 'membership_request_id' not in kwargs.keys(): #new request
+            print('OH MAN I THINK THIS IS WORKING')
             print('test mbmership request_id')
             user = kwargs['user']
             membership_target = kwargs['membership_target']

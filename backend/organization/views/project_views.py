@@ -833,9 +833,11 @@ class RequestJoinProject(RetrieveUpdateAPIView):
 
         # To avoid spoofing
         user = request.user
-        if UserProfile.objects.get(user=user).url_slug != user_slug:
+        print('Avoiding user spoofing!')
+        user_profile_slug = UserProfile.objects.get(user=user).url_slug
+        if user_profile_slug != user_slug:
             return Response({
-                        'message': 'Unauthorized'
+                        'message': f"Unauthorized. The provided user slug {user_slug} does not match the user {user_profile_slug}"
                         }, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
@@ -855,6 +857,8 @@ class RequestJoinProject(RetrieveUpdateAPIView):
                                                 , message=request.data['message'])
 
 
+        # TODO(piper): how do I read this in the frontend? How do I call the endpoint
+        # to see if the request does indeed already exist?
         exists = request_manager.duplicate_request
         if exists:
             return Response({

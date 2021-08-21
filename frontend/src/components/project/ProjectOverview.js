@@ -272,7 +272,10 @@ function LargeScreenOverview({
     // TODO: fix user name
     // TODO: fix project name
     const projectName = "Anotherproject6";
-    const userName = "testchester";
+    // const userName = "testchester";
+    // const userName = "pip.erchester@gmail.com";
+    // This worked!!
+    const userName = "testchester9";
 
     try {
       const response = await apiRequest({
@@ -283,6 +286,11 @@ function LargeScreenOverview({
           // TODO: fix payload
           message: "Hi!",
           user_availability: "3",
+        },
+
+        headers: {
+          // TODO: is this right?
+          Authorization: "Token 5b25c244d9afe56b939eb07049f0eee641ea70bd81273518a1e83f77504149f4",
         },
         // locale: locale,
       });
@@ -356,7 +364,8 @@ function LargeScreenOverview({
 
             {/* TODO(piper): handle permissions, where we don't show the join / follow button
             for a project if we're already admin on it  */}
-            {/* TODO(piper): fix this API call link */}
+            {/* TODO(piper): handle permissions, where we don't show the join / follow button
+            for a project if we've already requested to follow project */}
             <Button color="primary" onClick={handleSendProjectJoinRequest}>
               Request to Join +
             </Button>
