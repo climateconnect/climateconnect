@@ -502,6 +502,7 @@ class AddProjectMembersView(APIView):
         project = Project.objects.get(url_slug=url_slug)
 
         roles = Role.objects.all()
+        print('HI')
         if 'team_members' not in request.data:
             return Response({
                 'message': 'Missing required parameters'
@@ -818,15 +819,20 @@ class RequestJoinProject(RetrieveUpdateAPIView):
     """
     permission_classes = (IsAuthenticated,)
 
-    def post(self, request, user_slug,project_slug):
+    # TODO(Piper): this is the post handler
+    def post(self, request, user_slug, project_slug):
+        # print('test in projec')
         required_params = ['user_availability','message']
+        # print(request.data)
+
         missing_param = any([param not in request.data for param in required_params])
-        if missing_param: return Response({
-                            'message': 'Missing required parameters'
+        if missing_param:
+            return Response({
+                'message': f"Missing required parameters. Need {required_params}"
                             }, status=status.HTTP_400_BAD_REQUEST)
 
+        # To avoid spoofing
         user = request.user
-        ## To avoid spoofing
         if UserProfile.objects.get(user=user).url_slug != user_slug:
             return Response({
                         'message': 'Unauthorized'
@@ -850,24 +856,22 @@ class RequestJoinProject(RetrieveUpdateAPIView):
 
 
         exists = request_manager.duplicate_request
-
-
         if exists:
             return Response({
-                            'message': 'Request already exists'}, status=status.HTTP_400_BAD_REQUEST)
-        else:
+                            'message': 'Request already exists to join project'
+                            }, status=status.HTTP_400_BAD_REQUEST)
 
-            try:
-                request_id = request_manager.create_membership_request()
-                project_admins = get_project_admin_creators(project)
-                create_project_join_request_notification(requester=user,project_admins=project_admins,project=project)
+        try:
+            request_id = request_manager.create_membership_request()
+            project_admins = get_project_admin_creators(project)
+            create_project_join_request_notification(requester=user,project_admins=project_admins,project=project)
 
 
-                return Response({"requestId":request_id}, status=status.HTTP_200_OK)
-            except:
-                logging.error(traceback.format_exc())
-                return Response({
-                            'message': f'Internal Server Error {traceback.format_exc()}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"requestId":request_id}, status=status.HTTP_200_OK)
+        except:
+            logging.error(traceback.format_exc())
+            return Response({
+                        'message': f'Internal Server Error {traceback.format_exc()}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ManageJoinProject(RetrieveUpdateAPIView):
     """

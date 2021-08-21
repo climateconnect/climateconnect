@@ -8,6 +8,8 @@ import Router from "next/router";
 import React, { useContext, useEffect } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
+
+// Relative imports
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
@@ -250,17 +252,53 @@ function SmallScreenOverview({
 }
 
 function LargeScreenOverview({
-  project,
-  handleToggleFollowProject,
-  isUserFollowing,
-  handleClickContact,
-  hasAdminPermissions,
-  toggleShowFollowers,
-  followingChangePending,
   contactProjectCreatorButtonRef,
+  followingChangePending,
+  handleClickContact,
+  handleToggleFollowProject,
+  hasAdminPermissions,
+  isUserFollowing,
+  project,
   texts,
+  toggleShowFollowers,
 }) {
   const classes = useStyles();
+
+  /**
+   * Calls backend, sending a request to join this project
+   */
+  async function handleSendProjectJoinRequest() {
+    console.log("sending request...");
+    // TODO: fix user name
+    // TODO: fix project name
+    const projectName = "Anotherproject6";
+    const userName = "testchester";
+
+    try {
+      const response = await apiRequest({
+        method: "post",
+
+        url: `/api/projects/${projectName}/request_membership/${userName}/`,
+        payload: {
+          // TODO: fix payload
+          message: "Hi!",
+          user_availability: "3",
+        },
+        // locale: locale,
+      });
+      console.log(response);
+      // TODO: needed?
+      // redirect("/browse", {
+      //   message: response.data.message,
+      // });
+    } catch (error) {
+      console.log(error);
+      // if (error.response && error.response && error.response.data) {
+      //   setErrorMessage(error.response.data.message);
+      // }
+    }
+  }
+
   return (
     <>
       <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
@@ -318,7 +356,10 @@ function LargeScreenOverview({
 
             {/* TODO(piper): handle permissions, where we don't show the join / follow button
             for a project if we're already admin on it  */}
-            <Button color="primary">Request to Join +</Button>
+            {/* TODO(piper): fix this API call link */}
+            <Button color="primary" onClick={handleSendProjectJoinRequest}>
+              Request to Join +
+            </Button>
 
             {!hasAdminPermissions && (
               <Tooltip title={texts.contact_the_projects_creator_with_just_one_click}>

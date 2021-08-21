@@ -14,27 +14,23 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
-
-
-
-
-
 class MembershipRequestsManager(object):
     """
-    Manages the project/org membership requests. 
-    2 instantiations possible: 
-    A. Either to create a new request. In that case, supply the paramn: user, membership_target, user_availability, project, organization, message
-    B. To manage an existing request, provide the request id only as a kwargs. If project or organization are added, then the class check for the consistency of the supplied id 
+    Manages the project/org membership requests.
+
+    2 instantiations possible:
+    A. Either to create a new request. In that case, supply the params: user, membership_target, user_availability, project, organization, message
+    B. To manage an existing request, provide the request id only as a kwargs. If project or organization are added, then the class check for the consistency of the supplied id
     and the corresponding project/ organization. If validation fails, property validation_failed will be True and errors property will contain a list of errors.
     """
     def __init__(self,**kwargs):
 
         self.validation_failed = False
-        self.duplicate_request = False 
+        self.duplicate_request = False
 
         self.errors = list()
         if 'membership_request_id' not in kwargs.keys(): #new request
+            print('test mbmership request_id')
             user = kwargs['user']
             membership_target = kwargs['membership_target']
             user_availability = kwargs['user_availability']
@@ -42,16 +38,16 @@ class MembershipRequestsManager(object):
             if self.membership_target == MembershipTarget.PROJECT:
                 self.project = kwargs['project']
                 self.organization = None
-            elif self.membership_target == MembershipTarget.ORGANIZATION:  
-                self.organization = kwargs['organization']  
+            elif self.membership_target == MembershipTarget.ORGANIZATION:
+                self.organization = kwargs['organization']
                 self.project = None
             else:
                 self.validation_failed=True
                 self.errors.append(NotImplementedError(f"{membership_target} is not implemented!"))
             self.user = user
             self.user_availability = user_availability
-            self.message = kwargs['message'] 
-            self.membership_request = None         
+            self.message = kwargs['message']
+            self.membership_request = None
 
 
             # check if the request exists already
@@ -63,7 +59,7 @@ class MembershipRequestsManager(object):
 
 
             if n > 0:
-                self.validation_failed = True 
+                self.validation_failed = True
                 self.errors.append("Request Already Exists")
                 self.duplicate_request = True
 
@@ -73,12 +69,12 @@ class MembershipRequestsManager(object):
 
         else: #id of request is supplied
             self.membership_request = MembershipRequests.objects.filter(id=int(kwargs['membership_request_id']))
-            ## check if user is already part of a project 
+            ## check if user is already part of a project
 
 
             if self.membership_request.count()!=1 :
                 self.corrupt_membership_request_id = True
-                self.validation_failed = True 
+                self.validation_failed = True
                 self.errors.append(f"More than a record or not a single record was found in membership requests for request id {int(kwargs['membership_request_id'])}")
             else:
                 self.membership_request = self.membership_request.first()
@@ -92,7 +88,7 @@ class MembershipRequestsManager(object):
                 self.user_availability = self.membership_request.availability
                 self.project = self.membership_request.target_project
                 if 'project' in kwargs:
-                    if kwargs['project'].id != self.membership_request.target_project.id: 
+                    if kwargs['project'].id != self.membership_request.target_project.id:
                         self.validation_failed = True
                         self.errors.append("Inconsistent Project and Request")
 
@@ -101,15 +97,15 @@ class MembershipRequestsManager(object):
 
 
     def create_membership_request(self,**kwargs):
-        if self.duplicate_request: return False 
+        if self.duplicate_request: return False
         request_obj = MembershipRequests.objects.create(user=self.user
                                                         ,target_membership_type=self.membership_target.value
-                                                        ,target_project=self.project 
+                                                        ,target_project=self.project
                                                         ,target_organization=self.organization
                                                         ,availability=self.user_availability
                                                         ,requested_at=timezone.now()
                                                         ,message=self.message
-                                                        ,request_status=RequestStatus.PENDING.value                                                    
+                                                        ,request_status=RequestStatus.PENDING.value
                 )
         request_id = request_obj.id
 
@@ -123,11 +119,11 @@ class MembershipRequestsManager(object):
     def approve_request(self,**kwargs):
 
 
-        self.membership_request.request_status = RequestStatus.APPROVED.value 
+        self.membership_request.request_status = RequestStatus.APPROVED.value
         self.membership_request.approved_at = timezone.now()
 
         #create a record in ProjectMember
-        user_role = Role.objects.filter(name="Member").first() 
+        user_role = Role.objects.filter(name="Member").first()
         if self.membership_target == MembershipTarget.PROJECT:
             add_project_member(
                         project=self.project
@@ -154,7 +150,7 @@ class MembershipRequestsManager(object):
         return 0
 
     def reject_request(self,**kwargs):
-        self.membership_request.request_status = RequestStatus.REJECTED.value 
+        self.membership_request.request_status = RequestStatus.REJECTED.value
         self.membership_request.rejected_at = timezone.now()
         self.membership_request.save()
         return 0

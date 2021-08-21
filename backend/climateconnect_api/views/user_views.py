@@ -55,16 +55,16 @@ class LoginView(KnoxLoginView):
         if 'username' and 'password' not in request.data:
             message = "Must include 'username' and 'password'"
             return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         user = authenticate(username=request.data['username'], password=request.data['password'])
-        if user:            
+        if user:
             user_profile = UserProfile.objects.filter(user = user)[0]
             if not user_profile.is_profile_verified:
                 message = "You first have to activate your account by clicking the link we sent to your E-Mail."
                 return Response({'message': message, 'type': 'not_verified'}, status=status.HTTP_400_BAD_REQUEST)
             login(request, user)
             if user_profile.has_logged_in<2:
-                user_profile.has_logged_in = user_profile.has_logged_in +1 
+                user_profile.has_logged_in = user_profile.has_logged_in +1
                 user_profile.save()
             return super(LoginView, self).post(request, format=None)
         else:
@@ -83,7 +83,7 @@ class SignUpView(APIView):
     def post(self, request):
         required_params = [
             'email', 'password', 'first_name', 'last_name',
-            'location', 'send_newsletter', 'source_language' 
+            'location', 'send_newsletter', 'source_language'
         ]
         for param in required_params:
             if param not in request.data:
@@ -163,7 +163,7 @@ class ListMemberProfilesView(ListAPIView):
                 if hub[0].hub_type == Hub.LOCATION_HUB_TYPE:
                     location = hub[0].location.all()[0]
                     user_profiles = user_profiles.filter(
-                        Q(location__country=location.country) 
+                        Q(location__country=location.country)
                         &
                         (
                             Q(location__multi_polygon__coveredby=(location.multi_polygon))
@@ -183,7 +183,7 @@ class ListMemberProfilesView(ListAPIView):
         if 'place' in self.request.query_params and 'osm' in self.request.query_params:
             location_data = get_location_with_range(self.request.query_params)
             user_profiles = user_profiles.filter(
-                Q(location__country=location_data['country']) 
+                Q(location__country=location_data['country'])
                 &
                 (
                     Q(location__multi_polygon__distance_lte=(location_data['location'], location_data['radius']))
@@ -195,7 +195,7 @@ class ListMemberProfilesView(ListAPIView):
             ).order_by(
                 'distance'
             )
-        
+
         if 'country' and 'city' in self.request.query_params:
             location_ids = Location.objects.filter(
                 country=self.request.query_params.get('country'),
@@ -208,13 +208,13 @@ class ListMemberProfilesView(ListAPIView):
                 city=self.request.query_params.get('city')
             )
             user_profiles = user_profiles.filter(location__in=location_ids)
-        
+
         if 'country' in self.request.query_params and not 'city' in self.request.query_params:
             location_ids = Location.objects.filter(
                 country=self.request.query_params.get('country')
             )
             user_profiles = user_profiles.filter(location__in=location_ids)
-            
+
         return user_profiles
 
 
@@ -226,7 +226,7 @@ class MemberProfileView(APIView):
             profile = UserProfile.objects.get(url_slug=str(url_slug))
         except UserProfile.DoesNotExist:
             return Response({'message': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
-        
+
         if self.request.user.is_authenticated:
             serializer = UserProfileSerializer(profile)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -244,7 +244,7 @@ class ListMemberProjectsView(ListAPIView):
 
     def get_queryset(self):
         searched_user = UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user
-        if self.request.user == searched_user:     
+        if self.request.user == searched_user:
             return ProjectMember.objects.filter(
                 user=searched_user,
                 is_active=True
@@ -351,7 +351,7 @@ class EditUserProfile(APIView):
                     user_profile.skills.add(skill)
                 except Skill.DoesNotExist:
                     logger.error("Passed skill id {} does not exists")
-        
+
         user_profile.save()
 
         items_to_translate = [
@@ -368,7 +368,7 @@ class EditUserProfile(APIView):
             user_profile,
             "user_profile"
         )
-                
+
         serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -386,11 +386,11 @@ class UserEmailVerificationLinkView(APIView):
             user_profile = UserProfile.objects.get(verification_key=verification_key)
         except UserProfile.DoesNotExist:
             return Response(
-                {'message': 
+                {'message':
                     _('User profile not found.')
                     + " " +
                     _('Contact contact@climateconnect.earth if you repeatedly experience problems.')
-                }, 
+                },
             status=status.HTTP_400_BAD_REQUEST)
         if user_profile:
             if user_profile.is_profile_verified:
@@ -434,10 +434,10 @@ class ResendVerificationEmail(APIView):
             user_profile = UserProfile.objects.get(user__username=request.data['email'])
         except UserProfile.DoesNotExist:
             return Response({'message': 'There is no profile with this email address. Try entering the correct email address or signing up again.'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         if user_profile.is_profile_verified:
             return Response({'message': 'Your profile is already verified. You now log in with your account.'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         send_user_verification_email(user_profile.user, user_profile.verification_key)
 
         return Response({"message": "We have send you your verification email again. It may take up to 5 minutes to arrive. Make sure to also check your junk or spam folder."}, status=status.HTTP_200_OK)
@@ -466,7 +466,7 @@ class SetNewPassword(APIView):
             logger.error("reset password for user "+user_profile.url_slug)
         else:
             return Response({
-                "message": "This link has expired. Please reset your password again.", 
+                "message": "This link has expired. Please reset your password again.",
                 "type": "link_timed_out"
             }, status=status.HTTP_400_BAD_REQUEST)
 

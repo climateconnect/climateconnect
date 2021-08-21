@@ -122,7 +122,7 @@ urlpatterns = [
         project_views.ListProjectFollowersView.as_view(), name='list-followers-view'
     ),
     path(
-        'projecttags/', project_views.ListProjectTags.as_view(), 
+        'projecttags/', project_views.ListProjectTags.as_view(),
         name='list-project-tags'
     ),
     path(

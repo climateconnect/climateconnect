@@ -141,8 +141,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   finishedDate: {
-    marginTop: theme.spacing(0.5)
-  }
+    marginTop: theme.spacing(0.5),
+  },
 }));
 
 export default function ProjectContent({
@@ -175,6 +175,7 @@ export default function ProjectContent({
                       <Button
                         className={classes.editProjectButton}
                         // color="primary"
+                        // TODO(piper): maybe modal?
                         href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
                         // variant="contained"
                       >
