@@ -18,6 +18,8 @@ import MiniProfilePreview from "../profile/MiniProfilePreview";
 import Posts from "./../communication/Posts.js";
 import DateDisplay from "./../general/DateDisplay";
 import ProjectStatus from "./ProjectStatus";
+// TODO(PIPER): this is what we want
+import ProjectRequestersDialog from "../dialogs/ProjectRequestersDialog";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -161,6 +163,27 @@ export default function ProjectContent({
       ? project.team.find((m) => m.id === user.id).permission
       : null;
 
+  // TODO(piper): fix logic here to show the dialog when clicking the button
+  const [showRequesters, setShowRequesters] = React.useState(false);
+  const toggleShowRequesters = async () => {
+    setShowRequesters(!showRequesters);
+    // if (!initiallyCaughtRequesters) {
+    // const retrievedRequesters = await getRequesters(project, token, locale);
+    // const notification_to_set_read = notifications.filter(
+    //   (n) => n.notification_type === 4 && n.project.url_slug === project.url_slug
+    // );
+    // await setNotificationsRead(token, notification_to_set_read, locale);
+    // await refreshNotifications();
+    // setRequesters(retrievedRequesters);
+    // setInitiallyCaughtRequesters(true);
+    // }
+  };
+
+  function viewOpenProjectRequests() {
+    console.log("opening");
+    setShowRequesters(!showRequesters);
+  }
+
   return (
     <>
       <div className={classes.contentBlock}>
@@ -176,7 +199,9 @@ export default function ProjectContent({
                         className={classes.editProjectButton}
                         // color="primary"
                         // TODO(piper): maybe modal?
-                        href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
+                        // href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
+                        onClick={viewOpenProjectRequests}
+                        // href={viewOpenProjectRequests}
                         // variant="contained"
                       >
                         Review join requests
@@ -200,6 +225,17 @@ export default function ProjectContent({
               </Button>
             </div>
           )}
+          {/* TODO(piper): only show this if clicked button */}
+          <ProjectRequestersDialog
+            open={showRequesters}
+            // loading={!initiallyCaughtRequesters}
+            project={project}
+            // requesters={requesters}
+            // url={"projects/" + project.url_slug + "?show_followers=true"}
+            onClose={toggleShowRequesters}
+            user={user}
+          />
+
           {/* Note: created date is not the same as the start date, for projects */}
           <Typography>
             {texts.created}: <DateDisplay date={new Date(project.creation_date)} />

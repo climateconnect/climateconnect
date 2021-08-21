@@ -110,6 +110,7 @@ export default function ProjectOverview({
 
   const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
   const [followers, setFollowers] = React.useState([]);
+
   const [showFollowers, setShowFollowers] = React.useState(false);
   const toggleShowFollowers = async () => {
     setShowFollowers(!showFollowers);
@@ -124,6 +125,7 @@ export default function ProjectOverview({
       setInitiallyCaughtFollowers(true);
     }
   };
+
   const [gotParams, setGotParams] = React.useState(false);
   useEffect(() => {
     if (!gotParams) {
