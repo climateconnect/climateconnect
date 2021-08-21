@@ -5,7 +5,7 @@ import ExploreIcon from "@material-ui/icons/Explore";
 import LanguageIcon from "@material-ui/icons/Language";
 import PlaceIcon from "@material-ui/icons/Place";
 import Router from "next/router";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
 
@@ -264,6 +264,8 @@ function LargeScreenOverview({
 }) {
   const classes = useStyles();
 
+  const [requestedToJoinProject, setRequestedToJoinProject] = useState(false);
+
   /**
    * Calls backend, sending a request to join this project
    */
@@ -285,7 +287,8 @@ function LargeScreenOverview({
         payload: {
           // TODO: fix payload
           message: "Hi!",
-          user_availability: "3",
+          // user_availability: "3",
+          user_availability: "4",
         },
 
         headers: {
@@ -294,16 +297,21 @@ function LargeScreenOverview({
         },
         // locale: locale,
       });
-      console.log(response);
+      // console.log(response);
+      // console.log(response.data.message);
       // TODO: needed?
       // redirect("/browse", {
       //   message: response.data.message,
       // });
     } catch (error) {
-      console.log(error);
-      // if (error.response && error.response && error.response.data) {
-      //   setErrorMessage(error.response.data.message);
-      // }
+      // console.log(error);
+      // TODO: fix this, once we have an endpoint to see
+      // if a user has already requested to join a specific project
+      // console.log(error.response.data.message);
+      if (error.response.data.message === "Request already exists to join project") {
+        console.log("Already requested!");
+        setRequestedToJoinProject(true);
+      }
     }
   }
 
@@ -366,9 +374,15 @@ function LargeScreenOverview({
             for a project if we're already admin on it  */}
             {/* TODO(piper): handle permissions, where we don't show the join / follow button
             for a project if we've already requested to follow project */}
-            <Button color="primary" onClick={handleSendProjectJoinRequest}>
-              Request to Join +
-            </Button>
+            {requestedToJoinProject ? (
+              <Button disabled color="primary" onClick={handleSendProjectJoinRequest}>
+                Already requested
+              </Button>
+            ) : (
+              <Button color="primary" onClick={handleSendProjectJoinRequest}>
+                Request to Join +
+              </Button>
+            )}
 
             {!hasAdminPermissions && (
               <Tooltip title={texts.contact_the_projects_creator_with_just_one_click}>
