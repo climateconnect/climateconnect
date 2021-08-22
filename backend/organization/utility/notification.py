@@ -51,6 +51,21 @@ def create_project_comment_notification(project, comment, sender):
             send_email_notification(user, "project_comment", project, comment, sender, notification)
     return notification
 
+def create_project_comment_mention_notification(project, comment, sender):
+    notification = Notification.objects.create(
+        notification_type = 9, project_comment=comment
+    )
+    r = re.compile('@@@__(?P<id>[^\^]*)\^\^__(?P<display>[^\@]*)@@@\^\^\^')
+    matches = re.findall(r, comment.content)
+    for user in matches:
+        id, display = user[0], user[1]
+        if not id == sender.id:
+            user = User.objects.filter(id=id)[0]
+            create_user_notification(user, notification)
+            send_out_live_notification(user.id)
+            send_email_notification(user, "project_comment", project, comment, sender, notification)
+    return notification
+
 def check_send_email_notification(user):
     three_hours_ago = datetime.now() - timedelta(hours=3)
     recent_email_notification = EmailNotification.objects.filter(

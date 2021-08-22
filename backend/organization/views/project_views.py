@@ -1,4 +1,5 @@
 import logging
+import re
 import traceback
 
 from climateconnect_api.models import Availability, Role, Skill, UserProfile
@@ -45,9 +46,9 @@ from organization.serializers.project import (EditProjectSerializer,
 from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
+    create_project_comment_mention_notification,
     create_project_comment_notification,
-    create_project_comment_reply_notification,
-    create_project_follower_notification)
+    create_project_comment__notification)
 from organization.utility.organization import check_organization
 from organization.utility.project import (create_new_project,
                                           get_project_translations)
@@ -699,6 +700,8 @@ class ProjectCommentView(APIView):
                 raise NotFound(detail="Parent comment not found:"+request.data['parent_comment'], code=status.HTTP_404_NOT_FOUND)
             comment.parent_comment = parent_comment
         comment.save()
+
+        create_project_comment_mention_notification(project, comment, request.user)
         if comment.parent_comment:
             create_project_comment_reply_notification(project, comment, request.user)
         else:
