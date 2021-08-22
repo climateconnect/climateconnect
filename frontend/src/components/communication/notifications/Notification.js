@@ -58,6 +58,7 @@ const NOTIFICATION_TYPES = [
   "post_comment",
   "reply_to_post_comment",
   "group_message",
+  "mention",
 ];
 
 export default function Notification({ notification, isPlaceholder }) {
@@ -67,15 +68,13 @@ export default function Notification({ notification, isPlaceholder }) {
   else {
     const type = NOTIFICATION_TYPES[notification.notification_type];
     if (type === "private_message")
-      return (
-        <PrivateMessageNotification notification={notification} texts={texts} locale={locale} />
-      );
+      return <PrivateMessageNotification notification={notification} texts={texts} locale={locale} />;
     else if (type === "group_message")
       return <GroupMessageNotification notification={notification} texts={texts} locale={locale} />;
     else if (type === "project_comment")
-      return (
-        <ProjectCommentNotification notification={notification} texts={texts} locale={locale} />
-      );
+      return <ProjectCommentNotification notification={notification} texts={texts} locale={locale} />;
+    else if (type === "mention")
+      return <MentionNotification notification={notification} texts={texts} locale={locale} />;
     else if (type === "reply_to_project_comment")
       return (
         <ProjectCommentReplyNotification
@@ -85,9 +84,7 @@ export default function Notification({ notification, isPlaceholder }) {
         />
       );
     else if (type === "project_follower")
-      return (
-        <ProjectFollowerNotification notification={notification} texts={texts} locale={locale} />
-      );
+      return <ProjectFollowerNotification notification={notification} texts={texts} locale={locale} />;
     else return <></>;
   }
 }
@@ -160,6 +157,32 @@ const PlaceholderNotification = ({ texts, locale }) => {
             <Link className={classes.goToInboxText}>{texts.go_to_inbox}</Link>
           </div>
         </ListItemText>
+      </StyledMenuItem>
+    </Link>
+  );
+};
+
+const MentionNotification = ({ notification, texts, locale }) => {
+  const classes = useStyles();
+  return (
+    <Link
+      href={getLocalePrefix(locale) + "/projects/" + notification.project.url_slug + "/#comments"}
+      underline="none"
+    >
+      <StyledMenuItem>
+        <ListItemIcon>
+          <CommentIcon />
+        </ListItemIcon>
+        <ListItemText
+          primary={texts.mentioned_you + ' "' + notification.project.name + '"'}
+          secondary={notification.project_comment.content}
+          primaryTypographyProps={{
+            className: classes.messageSender,
+          }}
+          secondaryTypographyProps={{
+            className: classes.notificationText,
+          }}
+        />
       </StyledMenuItem>
     </Link>
   );

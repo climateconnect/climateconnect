@@ -16,6 +16,7 @@ class Notification(models.Model):
     POST_COMMENT = 6
     REPLY_TO_POST_COMMENT = 7
     GROUP_MESSAGE = 8
+    MENTION = 9
     NOTIFICATION_TYPES = (
         (BROADCAST, "broadcast"),
         (PRIVATE_MESSAGE, "private_message"),
@@ -25,7 +26,8 @@ class Notification(models.Model):
         (PROJECT_UPDATE_POST, "project_update_post"),
         (POST_COMMENT, "post_comment"),
         (REPLY_TO_POST_COMMENT, "reply_to_post_comment"),
-        (GROUP_MESSAGE, "group_message")
+        (GROUP_MESSAGE, "group_message"),
+        (MENTION, "mention")
     )
 
     notification_type = models.IntegerField(

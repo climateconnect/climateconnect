@@ -15,6 +15,10 @@
     "en": "Comment on",
     "de": "Kommentar zu"
   },
+  "mentioned_you": {
+    "en": "mentioned you in a comment on",
+    "de": "erwähnt dir in einem Kommentar zu"
+  },
   "reply_to_your_comment_on": {
     "en": "Reply to your comment on",
     "de": "Antwort auf deinen Kommentar zu"
