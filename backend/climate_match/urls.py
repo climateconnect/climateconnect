@@ -1,6 +1,7 @@
 from django.urls import path
 from climate_match.views.question_answer_views import QuestionAnswerView, \
-    UserQuestionAnswerView
+    UserQuestionAnswersView
+from climate_match.views.user_match_views import UserResourcesMatchView
 
 app_name = 'climate_match'
 urlpatterns = [
@@ -9,7 +10,11 @@ urlpatterns = [
         name='question-answer-list'
     ),
     path(
-        'members/<str:url_slug>/question_answers/', UserQuestionAnswerView.as_view(),
+        'members/<str:url_slug>/question_answers/', UserQuestionAnswersView.as_view(),
         name='user-question-answer-list'
+    ),
+    path(
+        'members/<str:url_slug>/matched_resources/', UserResourcesMatchView.as_view(),
+        name='user-matched-resources'
     )
 ]

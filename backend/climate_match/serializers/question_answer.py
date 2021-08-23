@@ -48,12 +48,6 @@ class AnswerSerializer(serializers.ModelSerializer):
         return obj.text
 
 
-class AnswerMetaDataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AnswerMetaData
-        fields = '__all__'
-
-
 class UserQuestionAnswerSerializer(serializers.ModelSerializer):
     question = QuestionSerializer()
     predefined_answer = AnswerSerializer()
@@ -64,6 +58,10 @@ class UserQuestionAnswerSerializer(serializers.ModelSerializer):
         fields = ('id', 'question', 'predefined_answer', 'answers')
 
     def get_answers(self, obj: UserQuestionAnswer):
-        serializer = AnswerMetaDataSerializer(obj.answers.all(), many=True)
-        return serializer.data
-
+        answers = []
+        for answer in obj.answers.all():
+            resource = answer.resource_type.get_object_for_this_type(id=answer.reference_id)
+            answers.append({
+                'id': resource.id, 'name': resource.name
+            })
+        return {f'{obj.question.answer_type}': answers}

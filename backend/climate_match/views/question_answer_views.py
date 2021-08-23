@@ -16,7 +16,7 @@ class QuestionAnswerView(ListAPIView):
     serializer_class = QuestionAnswerSerializer
 
 
-class UserQuestionAnswerView(APIView):
+class UserQuestionAnswersView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, url_slug):
