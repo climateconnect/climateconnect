@@ -166,10 +166,6 @@ export default function getProfileTexts({ profile, locale }) {
       en: "One final step to join Climate Connect!",
       de: "Nur noch ein Schritt, um deine Anmeldung abzuschließen!",
     },
-    congratulations_just_one_more_step_to_complete_your_signup: {
-      en: "Congratulations! Just one more step to complete your signup!",
-      de: "Glückwunsch! Nur noch ein Schritt, um deine Anmeldung abzuschließen!",
-    },
     we_have_sent_you_an_email_with_a_link: {
       en: "We have sent you an E-Mail with a link!",
       de: "Wir haben dir eine E-Mail mit einem Bestätigungslink geschickt!",
