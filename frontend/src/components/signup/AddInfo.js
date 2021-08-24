@@ -91,6 +91,7 @@ export default function AddInfo({
         errorMessage={errorMessage}
         onGoBack={handleGoBack}
         fieldClassName={classes.fieldClassName}
+        autocomplete="off"
       />
     </>
   );

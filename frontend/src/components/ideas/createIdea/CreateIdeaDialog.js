@@ -149,40 +149,38 @@ export default function CreateIdeaDialog({
       titleTextClassName={classes.titleText}
       dialogContentClass={classes.dialogContentClass}
     >
-      {userOrganizations === null ?
+      {userOrganizations === null ? (
         <LoadingSpinner className={classes.loadingSpinner} isLoading={userOrganizations === null} />
-      :
-        waitingForCreation ? (
-          <IdeaCreationLoadingScreen />
-        ) : (
-          <div className={classes.content}>
-            {step === "idea_info" && (
-              <IdeaInfoStep
-                idea={idea}
-                handleValueChange={handleValueChange}
-                updateImages={updateImages}
-                goToNextStep={handleStepForward}
-              />
-            )}
-            {step === "idea_metadata" && (
-              <IdeaMetadataStep
-                idea={idea}
-                handleValueChange={handleValueChange}
-                handleIsOrganizationsIdeaChange={handleIsOrganizationsIdeaChange}
-                locationOptionsOpen={locationOptionsOpen}
-                locationInputRef={locationInputRef}
-                handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-                userOrganizations={userOrganizations}
-                allHubs={allHubs}
-                onSubmitIdea={onSubmitIdea}
-                goBack={handleStepBackwards}
-                errorMessage={errorMessage}
-                hubLocation={hubLocation}
-              />
-            )}
-          </div>
-        )
-      }
+      ) : waitingForCreation ? (
+        <IdeaCreationLoadingScreen />
+      ) : (
+        <div className={classes.content}>
+          {step === "idea_info" && (
+            <IdeaInfoStep
+              idea={idea}
+              handleValueChange={handleValueChange}
+              updateImages={updateImages}
+              goToNextStep={handleStepForward}
+            />
+          )}
+          {step === "idea_metadata" && (
+            <IdeaMetadataStep
+              idea={idea}
+              handleValueChange={handleValueChange}
+              handleIsOrganizationsIdeaChange={handleIsOrganizationsIdeaChange}
+              locationOptionsOpen={locationOptionsOpen}
+              locationInputRef={locationInputRef}
+              handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+              userOrganizations={userOrganizations}
+              allHubs={allHubs}
+              onSubmitIdea={onSubmitIdea}
+              goBack={handleStepBackwards}
+              errorMessage={errorMessage}
+              hubLocation={hubLocation}
+            />
+          )}
+        </div>
+      )}
     </GenericDialog>
   );
 }

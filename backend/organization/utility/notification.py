@@ -1,6 +1,6 @@
+from climateconnect_api.utility.notification import create_user_notification, send_comment_notification
 from organization.models.content import ProjectComment
 from climateconnect_api.models.notification import Notification, EmailNotification, UserNotification
-from climateconnect_api.utility.notification import create_user_notification, create_email_notification, send_comment_notification, send_comment_email_notification
 from climateconnect_api.models import UserProfile
 from organization.models import Comment, ProjectMember
 from django.db.models import Q
@@ -34,14 +34,6 @@ def create_project_comment_notification(project, comment, sender):
     )
     return notification
 
-def check_send_email_notification(user):
-    three_hours_ago = datetime.now() - timedelta(hours=3)
-    recent_email_notification = EmailNotification.objects.filter(
-        user=user, 
-        created_at__gte=three_hours_ago
-    )
-    return not recent_email_notification.exists()
-
 def create_project_follower_notification(project_follower):
     notification = Notification.objects.create(
         notification_type = 4, project_follower=project_follower
@@ -50,16 +42,5 @@ def create_project_follower_notification(project_follower):
     for member in project_team:
         if not member['user'] == project_follower.user.id:
             user = User.objects.filter(id=member['user'])[0]
-            should_send_email_notification = check_send_email_notification(user)
             create_user_notification(user, notification)
-            email_settings = UserProfile.objects.filter(user=user).values(
-                'email_on_new_project_follower'
-            )[0]
-            if should_send_email_notification:
-                if email_settings['email_on_new_project_follower'] == True:
-                    send_project_follower_email(user, project_follower)
-                    EmailNotification.objects.create(
-                        user=user,
-                        created_at=datetime.now(),
-                        notification=notification
-                    )
+            send_project_follower_email(user, project_follower, notification)

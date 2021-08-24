@@ -1,6 +1,7 @@
 import { Button, TextField, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
+import getRadiusFilterOptions from "../../../public/data/radiusFilterOptions";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
@@ -76,23 +77,21 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default function Filters({
-  possibleFilters,
-  handleApplyFilters,
-  handleValueChange,
-  withApplyButton,
-  applyButtonFixedWidth,
   currentFilters,
-  handleClickDialogOpen,
-  open,
+  errorMessage,
   handleClickDialogClose,
+  handleClickDialogOpen,
+  handleClickDialogSave,
+  handleSetLocationOptionsOpen,
+  handleValueChange,
   isInOverlay,
   justifyContent,
-  setSelectedItems,
-  selectedItems,
   locationInputRef,
   locationOptionsOpen,
-  handleSetLocationOptionsOpen,
-  errorMessage,
+  open,
+  possibleFilters,
+  selectedItems,
+  setSelectedItems,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "filter_and_search", locale: locale });
@@ -100,6 +99,7 @@ export default function Filters({
     justifyContent: justifyContent ? justifyContent : "space-around",
     filterElementMargin: justifyContent && justifyContent != "space-around" ? 1 : 0,
   });
+  const radiusFilterOptions = getRadiusFilterOptions();
   return (
     <>
       {errorMessage && (
@@ -107,8 +107,15 @@ export default function Filters({
           <Typography color="error">{errorMessage}</Typography>
         </div>
       )}
+
       <div className={`${classes.flexContainer} ${isInOverlay && classes.verticalFlexContainer}`}>
+        {/* Map over the potential filters for each specific tab. For example, on the Members tab,
+         the possible filters might be the location filter object, and the skills filter object. */}
         {possibleFilters.map((filter) => {
+          // Get the current values for each potential filter
+          // from what could already be previously selected
+          const currentFilterValue = currentFilters[filter.key];
+
           let component;
           if (filter.type === "text") {
             component = (
@@ -121,7 +128,7 @@ export default function Filters({
                   </div>
                 }
                 type={filter.type}
-                value={currentFilters[filter.key]}
+                value={currentFilterValue}
                 className={`${classes.field} ${classes.filterElement} ${
                   isInOverlay && classes.overlayField
                 }`}
@@ -136,6 +143,8 @@ export default function Filters({
               />
             );
           }
+
+          // Select and multiselect
           if (filter.type === "select" || filter.type === "multiselect") {
             component = (
               <div>
@@ -146,6 +155,8 @@ export default function Filters({
                   }`}
                   multiple={filter.type === "multiselect"}
                   values={filter.type === "multiselect" && currentFilters[filter.key]}
+                  controlled={filter.type === "select"}
+                  controlledValue={filter.type === "select" && currentFilters[filter.key]}
                   label={
                     <div className={classes.iconLabel}>
                       <filter.icon fontSize="inherit" />
@@ -173,10 +184,22 @@ export default function Filters({
           }
 
           if (filter.type === "openMultiSelectDialogButton") {
+            // Only perform one React state change if there's an initial
+            // set of selected categories
             const curSelectedItems = selectedItems[filter.key];
+
+            /**
+             * Update the selected items object with new entries. New selected items is
+             * an array of objects.
+             */
             const handleSetSelectedItems = (newSelectedItems) => {
-              setSelectedItems({ ...selectedItems, [filter.key]: newSelectedItems });
+              setSelectedItems({
+                ...selectedItems,
+                [filter.key]: newSelectedItems,
+              });
             };
+
+            // TODO: what is the showIf property used for?
             if (!filter.showIf || currentFilters[filter.showIf.key] === filter.showIf.value) {
               component = (
                 <div key={filter.key}>
@@ -187,14 +210,16 @@ export default function Filters({
                   >
                     {filter.title}
                   </Button>
+                  {/* For example, this could be the Skills dialog */}
                   <MultiLevelSelectDialog
+                    options={filter.options}
+                    onClose={() => handleClickDialogClose(filter.key)}
+                    onSave={(selectedSkills) => handleClickDialogSave(filter.key, selectedSkills)}
                     open={open[filter.key] ? true : false}
-                    onClose={(selectedSkills) => handleClickDialogClose(filter.key, selectedSkills)}
-                    type={filter.itemType}
-                    itemsToChooseFrom={filter.itemsToChooseFrom}
-                    items={currentFilters[filter.key]}
                     selectedItems={curSelectedItems}
                     setSelectedItems={handleSetSelectedItems}
+                    type={filter.itemType}
+                    title={texts["add_" + filter.itemType.replace(" ", "_")]}
                   />
                 </div>
               );
@@ -227,12 +252,14 @@ export default function Filters({
                     </div>
                   }
                 />
-                <TextField
+                <SelectField
                   key={filter.key}
                   className={classes.radiusField}
                   label={texts.radius_km}
+                  options={radiusFilterOptions}
                   type={filter.type}
-                  value={currentFilters.radius}
+                  controlled
+                  controlledValue={{ name: currentFilters.radius }}
                   variant="outlined"
                   size="small"
                   onChange={(event) => handleValueChange("radius", event.target.value)}
@@ -256,18 +283,6 @@ export default function Filters({
             return component;
           }
         })}
-        {withApplyButton && (
-          <div className={applyButtonFixedWidth && classes.applyButtonContainer}>
-            <Button
-              color="primary"
-              onClick={handleApplyFilters}
-              variant="contained"
-              className={classes.applyButton}
-            >
-              {texts.apply}
-            </Button>
-          </div>
-        )}
       </div>
     </>
   );

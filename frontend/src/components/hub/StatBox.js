@@ -1,5 +1,6 @@
 import { Link, makeStyles, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
+
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Stat from "./Stat";

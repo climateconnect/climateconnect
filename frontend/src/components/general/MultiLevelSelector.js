@@ -102,6 +102,7 @@ const useStyles = makeStyles((theme) => {
     },
     selectedItemsHeader: {
       fontWeight: "bold",
+      fontSize: "16px",
     },
     selectedItem: {
       background: theme.palette.primary.main,
@@ -165,13 +166,13 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default function MultiLevelSelector({
-  selected,
-  setSelected,
+  dragAble,
+  isInPopup,
+  itemNamePlural,
   itemsToSelectFrom,
   maxSelections,
-  itemNamePlural,
-  isInPopup,
-  dragAble,
+  selected,
+  setSelected,
 }) {
   const [expanded, setExpanded] = React.useState(null);
   const { locale } = useContext(UserContext);
@@ -189,12 +190,17 @@ export default function MultiLevelSelector({
   };
 
   const onClickSelect = (item) => {
-    if (selected.length >= maxSelections)
+    if (selected.length >= maxSelections) {
       alert(texts.point_out_max_selections + " " + maxSelections + " " + itemNamePlural);
-    else setSelected([...selected, item]);
+    } else {
+      setSelected([...selected, item]);
+    }
   };
 
   const onClickUnselect = (item) => {
+    // When dismissing a selected filter chip, we also want to update the
+    // window state to reflect the currently active filters, and fetch
+    // the updated data from the server.
     setSelected(
       selected
         .slice(0, selected.indexOf(item))
@@ -210,7 +216,6 @@ export default function MultiLevelSelector({
   };
 
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-
   return (
     <>
       <div className={classes.wrapper}>
@@ -231,6 +236,7 @@ export default function MultiLevelSelector({
             {selected.length > 0 && <Divider className={classes.divider} />}
           </>
         )}
+
         <ListToChooseWrapper
           itemsToSelectFrom={itemsToSelectFrom}
           onClickExpand={onClickExpand}
@@ -242,6 +248,7 @@ export default function MultiLevelSelector({
           className={classes.listWrapper}
           texts={texts}
         />
+
         {!(isNarrowScreen || isInPopup) && (
           <SelectedList
             selected={selected}
@@ -324,13 +331,13 @@ function ListToChooseWrapper({
 }
 
 function SelectedList({
-  selected,
+  className,
+  dragAble,
   itemNamePlural,
   maxSelections,
-  className,
-  onClickUnselect,
-  dragAble,
   moveItem,
+  onClickUnselect,
+  selected,
   texts,
 }) {
   const classes = useStyles({});
@@ -342,7 +349,7 @@ function SelectedList({
     moveItem(result.source.index, result.destination.index);
   };
 
-  if (dragAble)
+  if (dragAble) {
     return (
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
@@ -352,7 +359,7 @@ function SelectedList({
               ref={provided.innerRef}
               className={classes.selectedList}
             >
-              {selected.map((item, index) => {
+              {selected?.map((item, index) => {
                 return (
                   <Draggable 
                     key={item.id} 
@@ -392,16 +399,23 @@ function SelectedList({
         </Droppable>
       </DragDropContext>
     );
-  else
-    return (
-      <div className={className}>
+  }
+
+  return (
+    <div className={className}>
+      {selected && Array.isArray(selected) && (
         <Typography component="h2" variant="h5" className={classes.selectedItemsHeader}>
           {selected.length > 0
             ? texts.selected + " " + itemNamePlural
             : texts.choose_between_on_and + maxSelections + " " + itemNamePlural + "!"}
         </Typography>
-        <List className={classes.selectedList}>
-          {selected.map((item, index) => (
+      )}
+      {/* Shows the list of selected items. For example on /browse when you select "Categories" */}
+      <List className={classes.selectedList}>
+        {selected &&
+          Array.isArray(selected) &&
+          selected?.map((item, index) => (
+            // Only show the item if it's valid
             <ListItem
               key={index}
               button
@@ -411,15 +425,16 @@ function SelectedList({
               onClick={() => onClickUnselect(item)}
               disableRipple
             >
-              <ListItemText>{item.name}</ListItemText>
+              {/* If the .name property is undefined, render the item text directly */}
+              <ListItemText>{item.name || item}</ListItemText>
               <ListItemIcon className={classes.selectedItemIcon}>
                 <CloseIcon />
               </ListItemIcon>
             </ListItem>
           ))}
-        </List>
-      </div>
-    );
+      </List>
+    </div>
+  );
 }
 
 function ListToChooseFrom({
@@ -456,6 +471,8 @@ function ListToChooseFrom({
                     }
                     ${className}`}
       >
+        {/* Map over all potential items; for example this could be the list
+        of skills in the skills dialog */}
         {itemsToSelectFrom.map((item, index) => {
           // If current last item, is the last subcategory item
           // in the last item in the outer list, then ignore our
@@ -474,11 +491,26 @@ function ListToChooseFrom({
             }
           }
 
+          // We need to keep the key property in tact with the list
+          // item properties. OR we just check to see if the "name"s
+          // match, in which case they should already be selected.
+
+          // convert selected to an Array if not
+          selected = Array.isArray(selected) ? selected : [selected];
+
+          const isDisabled =
+            selected.filter(
+              // If the item is a raw string, we also accept that if it matches
+              // the name of the selected item. For example, the array could be
+              // ["Crafts"].
+              (selectedItem) => selectedItem.name === item.name || selectedItem === item.name
+            ).length === 1;
+
           return (
             <React.Fragment key={item.key}>
               <ListItem
                 button
-                disabled={selected.filter((s) => s.key === item.key).length === 1}
+                disabled={isDisabled}
                 classes={{
                   root: `${classes.listItem}
                         ${index == 0 && classes.firstItem}
@@ -511,9 +543,11 @@ function ListToChooseFrom({
                 }}
                 selected={expanded === item.key}
                 onClick={() => {
-                  if (item.subcategories && item.subcategories.length)
+                  if (item.subcategories && item.subcategories.length) {
                     return onClickExpand(item.key);
-                  else return onClickSelect(item);
+                  }
+
+                  return onClickSelect(item);
                 }}
                 disableRipple
               >

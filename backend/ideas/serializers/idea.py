@@ -18,6 +18,16 @@ class IdeaSupportedMinimalSerializer(serializers.ModelSerializer):
     def get_name(self, obj):
         return f'{obj.user.first_name} {obj.user.last_name}'
 
+class IdeaFromIdeaSupporterSerializer(serializers.ModelSerializer):
+    idea = serializers.SerializerMethodField()
+
+    class Meta:
+        model = IdeaSupporter
+        fields = ('idea',)
+
+    def get_idea(self, obj):
+        serializer = IdeaMinimalSerializer(obj.idea)
+        return serializer.data
 
 class IdeaMinimalSerializer(serializers.ModelSerializer):
     hub = serializers.SerializerMethodField()
@@ -52,7 +62,7 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
 
     def get_hub_shared_in(self, obj):
         if obj.hub:
-            return HubStubSerializer(obj.hub).data
+            return HubStubSerializer(obj.hub_shared_in).data
         
         return None
     

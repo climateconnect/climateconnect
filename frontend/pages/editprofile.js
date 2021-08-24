@@ -1,5 +1,6 @@
 import Cookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
+
 import { apiRequest } from "../public/lib/apiOperations";
 import { parseOptions } from "../public/lib/selectOptionsOperations";
 import getTexts from "../public/texts/texts";
@@ -7,7 +8,7 @@ import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
 import WideLayout from "../src/components/layouts/WideLayout";
 import getProfileInfoMetadata from "./../public/data/profile_info_metadata";
-import { parseProfile } from "./../public/lib/profileOperations";
+import { nullifyUndefinedValues, parseProfile } from "./../public/lib/profileOperations";
 import EditProfileRoot from "./../src/components/profile/EditProfileRoot";
 
 export async function getServerSideProps(ctx) {
@@ -17,12 +18,13 @@ export async function getServerSideProps(ctx) {
     getAvailabilityOptions(token, ctx.locale),
     getUserProfile(token, ctx.locale),
   ]);
+
   return {
-    props: {
+    props: nullifyUndefinedValues({
       skillsOptions: skillsOptions,
       availabilityOptions: availabilityOptions,
       user: userProfile,
-    },
+    }),
   };
 }
 

@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   },
 });
 
-const toIdeaPreviews = ({ ideas, onClickIdea, hasIdeaOpen, hubData }) => {
+const toIdeaPreviews = ({ ideas, onClickIdea, hasIdeaOpen, hubData, sendToIdeaPageOnClick }) => {
   return ideas.map((idea, index) => (
     <GridItem
       index={index}
@@ -22,6 +22,7 @@ const toIdeaPreviews = ({ ideas, onClickIdea, hasIdeaOpen, hubData }) => {
       idea={idea}
       hasIdeaOpen={hasIdeaOpen}
       hubData={hubData}
+      sendToIdeaPageOnClick={sendToIdeaPageOnClick}
     />
   ));
 };
@@ -38,10 +39,17 @@ export default function IdeaPreviews({
   className,
   hubLocation,
   hubData,
+  noCreateCard,
+  sendToIdeaPageOnClick,
 }) {
   const classes = useStyles();
   const [gridItems, setGridItems] = React.useState(
-    toIdeaPreviews({ ideas: ideas, onClickIdea: onClickIdea, hasIdeaOpen: hasIdeaOpen })
+    toIdeaPreviews({
+      ideas: ideas,
+      onClickIdea: onClickIdea,
+      hasIdeaOpen: hasIdeaOpen,
+      sendToIdeaPageOnClick: sendToIdeaPageOnClick,
+    })
   );
 
   const [isFetchingMore, setIsFetchingMore] = React.useState(false);
@@ -80,20 +88,23 @@ export default function IdeaPreviews({
         spacing={2}
         alignContent="flex-start"
       >
-        <GridItem
-          isCreateCard
-          allHubs={allHubs}
-          userOrganizations={userOrganizations}
-          hasIdeaOpen={hasIdeaOpen}
-          hubLocation={hubLocation}
-          hubData={hubData}
-        />
+        {!noCreateCard && (
+          <GridItem
+            isCreateCard
+            allHubs={allHubs}
+            userOrganizations={userOrganizations}
+            hasIdeaOpen={hasIdeaOpen}
+            hubLocation={hubLocation}
+            hubData={hubData}
+          />
+        )}
         {parentHandlesGridItems
           ? toIdeaPreviews({
               ideas: ideas,
               onClickIdea: onClickIdea,
               hasIdeaOpen: hasIdeaOpen,
               hubData: hubData,
+              sendToIdeaPageOnClick: sendToIdeaPageOnClick,
             })
           : gridItems}
         {isFetchingMore && <LoadingSpinner isLoading key="idea-previews-spinner" />}
@@ -112,6 +123,7 @@ function GridItem({
   index,
   hubLocation,
   hubData,
+  sendToIdeaPageOnClick,
 }) {
   return (
     <Grid
@@ -132,6 +144,7 @@ function GridItem({
         index={index}
         hubLocation={hubLocation}
         hubData={hubData}
+        sendToIdeaPageOnClick={sendToIdeaPageOnClick}
       />
     </Grid>
   );

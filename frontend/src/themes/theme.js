@@ -9,7 +9,10 @@ const coreTheme = createMuiTheme({
       lightHover: "#7dd1ca",
       extraLight: "#D7F7F5",
     },
-    secondary: { main: "#484848" },
+    secondary: {
+      main: "#484848",
+      light: "#484848c2",
+    },
     yellow: {
       main: "#FFDE0A",
     },
@@ -73,6 +76,13 @@ const theme = createMuiTheme(coreTheme, {
     MuiTooltip: {
       tooltip: {
         fontSize: 14,
+      },
+    },
+    MuiChip: {
+      root: {
+        // Have the same border-radius as the other UI controls, like
+        // the select dropdowns, buttons, etc.
+        borderRadius: 4,
       },
     },
   },

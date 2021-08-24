@@ -7,7 +7,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import Head from "next/head";
-import { Router } from "next/router";
+import Router from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";

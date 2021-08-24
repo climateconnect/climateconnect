@@ -97,6 +97,10 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       justifyContent: "space-around",
     },
+
+    cityHubOption: {
+      width: "100%",
+    },
   };
 });
 

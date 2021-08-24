@@ -5,7 +5,7 @@ import {
   Switch,
   TextField,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
@@ -245,7 +245,7 @@ export default function EditProjectContent({
             <DatePicker
               className={classes.datePicker}
               label={texts.end_date}
-              date={project.start_date}
+              date={project.end_date}
               handleChange={(newDate) => handleChangeProject(newDate, "end_date")}
               required
               minDate={project.start_date && new Date(project.start_date)}
@@ -347,7 +347,7 @@ export default function EditProjectContent({
         open={open.skills}
         onClose={handleSkillsDialogClose}
         type="skills"
-        itemsToChooseFrom={skillsOptions}
+        options={skillsOptions}
         items={project.skills}
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}

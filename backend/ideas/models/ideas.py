@@ -29,7 +29,7 @@ class Idea(models.Model):
     short_description = models.CharField(
         help_text="Summary of an idea",
         verbose_name="Summary",
-        max_length=1024
+        max_length=2048
     )
 
     image = models.ImageField(

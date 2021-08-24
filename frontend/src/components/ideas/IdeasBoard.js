@@ -1,6 +1,9 @@
 import { makeStyles, useMediaQuery } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getCommentsObjectAfterAddingComments } from "../../../public/lib/communicationOperations";
+import { getInfoMetadataByType } from "../../../public/lib/parsingOperations";
+import { getFilterUrl } from "../../../public/lib/urlOperations";
+import UserContext from "../context/UserContext";
 import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 import IdeaPreviews from "./IdeaPreviews";
 import IdeaRoot from "./IdeaRoot";
@@ -30,7 +33,10 @@ export default function IdeasBoard({
   initialIdeaUrlSlug,
   hubLocation,
   hubData,
+  filters,
+  filterChoices,
 }) {
+  const { locale } = useContext(UserContext);
   const getInitialIdea = (initialIdeaUrlSlug) => {
     //Short circuit if there is no idea open
     if (!initialIdeaUrlSlug) return null;
@@ -55,11 +61,14 @@ export default function IdeasBoard({
 
   const onClickIdea = async (idea) => {
     setIdea({ ...idea, index: ideas.indexOf(idea) });
-    window.history.pushState(
-      {},
-      "",
-      `${window.location.origin}${window.location.pathname}?idea=${idea.url_slug}${window.location.hash}`
-    );
+    const newUrl = getFilterUrl({
+      activeFilters: filters,
+      infoMetadata: getInfoMetadataByType("ideas"),
+      filterChoices: filterChoices,
+      locale: locale,
+      idea: idea,
+    });
+    window.history.pushState({}, "", newUrl);
   };
 
   const onClose = () => {

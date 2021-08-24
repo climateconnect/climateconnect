@@ -73,7 +73,7 @@ export default function Post({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
   const [open, setOpen] = React.useState(false);
-  const [displayReplies, setDisplayReplies] = React.useState(false);
+  const [displayReplies, setDisplayReplies] = React.useState(true);
   const [replyInterfaceExpanded, setInterfaceExpanded] = React.useState(false);
   const expandReplyInterface = () => setInterfaceExpanded(true);
   const unexpandReplyInterface = () => setInterfaceExpanded(false);

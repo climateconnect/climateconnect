@@ -108,24 +108,36 @@ export default function getProfileTexts({ profile, locale }) {
       de: ", um die vollständigen Informationen dieses/dieser Benutzer*in zu sehen",
     },
     your_projects: {
-      en: "Your projects",
-      de: "Deine Projekte",
+      en: "Your climate projects",
+      de: "Deine Klimaschutzprojekte",
     },
     this_users_projects: {
-      en: `${profile?.first_name}'s projects`,
-      de: `Projekte von ${profile?.first_name}`,
+      en: `${profile?.first_name}'s Climate Projects`,
+      de: `Klimaschutzprojekte von ${profile?.first_name}`,
+    },
+    your_ideas: {
+      en: "Your climate ideas",
+      de: "Deine Klimaschutzideen",
+    },
+    this_users_ideas: {
+      en: `Climate Ideas ${profile?.first_name} is involved in`,
+      de: `Klimaschutz Ideen, bei denen ${profile?.first_name} mitmacht`,
     },
     /*context: You are...*/
     not_involved_in_any_projects_yet: {
-      en: "not involved in any projects yet!",
-      de: "noch nicht in Projekten involviert!",
+      en: "not involved in any climate projects yet!",
+      de: "noch nicht an Klima-Projekten beteiligt!",
+    },
+    not_involved_in_any_ideas_yet: {
+      en: "not involved in any climate ideas yet!",
+      de: "ist bisher bei keiner Klimaschutzidee dabei!",
     },
     your_organizations: {
       en: "Your organizations",
       de: "Deine Organisationen",
     },
     this_users_organizations: {
-      en: `${profile?.first_name}'s organizations`,
+      en: `${profile?.first_name}'s Organizations`,
       de: `Organisationen von ${profile?.first_name}`,
     },
     /*context: You are...*/

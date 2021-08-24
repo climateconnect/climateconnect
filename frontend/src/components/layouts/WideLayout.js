@@ -4,6 +4,7 @@ import Alert from "@material-ui/lab/Alert";
 import React, { useEffect } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
+import theme from "../../themes/theme";
 import Footer from "../footer/Footer";
 import LoadingContainer from "../general/LoadingContainer";
 import Header from "../header/Header";
@@ -77,6 +78,7 @@ export default function WideLayout({
       noSpaceForFooter={noSpaceBottom}
       description={description}
       useFloodStdFont={useFloodStdFont}
+      theme={theme}
     >
       <Header
         isStaticPage={isStaticPage}
