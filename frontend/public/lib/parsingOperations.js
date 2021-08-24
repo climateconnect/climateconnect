@@ -42,6 +42,9 @@ export function getMessageFromUrl(message) {
   else return decodeURIComponent(message).replaceAll("+", " ");
 }
 
+export function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 export function getInfoMetadataByType(type, locale) {
   if (type === "organizations") return getOrganizationInfoMetadata(locale);
   if (type === "profiles" || type === "members") return profile_info_metadata(locale);

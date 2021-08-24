@@ -68,6 +68,7 @@ urls = [
     ),
     path('availability/', common_views.ListAvailabilitiesView.as_view(), name='list-availabilities-api'),
     path('skills/', common_views.ListSkillsView.as_view(), name='list-skills-api'),
+    path('parentskills/', common_views.ListParentSkillsView.as_view(), name='list-parent-skills-api'),
     path('roles/', role_views.ListRolesView.as_view(), name='list-roles-api'),
     path(
         'api/feedback/',
