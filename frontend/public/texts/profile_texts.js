@@ -166,16 +166,8 @@ export default function getProfileTexts({ profile, locale }) {
       en: "One final step to join Climate Connect!",
       de: "Nur noch ein Schritt, um deine Anmeldung abzuschließen!",
     },
-    we_have_sent_you_an_email_with_a_link: {
-      en: "We have sent you an E-Mail with a link!",
-      de: "Wir haben dir eine E-Mail mit einem Bestätigungslink geschickt!",
-    },
     please_click_on_the_link_we_emailed_you_to_activate_your_account: {
       en: "Please click on the link we just emailed you to activate your account.",
-      de: "Bitte klicke auf den Link, um dein Konto zu aktivieren.",
-    },
-    please_click_on_the_link_to_activate_your_account: {
-      en: "Please click on the link to activate your account.",
       de: "Bitte klicke auf den Link, um dein Konto zu aktivieren.",
     },
     make_sure_to_also_check_your_spam: {
