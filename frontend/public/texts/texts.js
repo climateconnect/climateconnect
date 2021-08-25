@@ -2,6 +2,7 @@ import getAboutTexts from "./about_texts";
 import account_texts from "./account_texts.json";
 import activate_email from "./activate_email.json";
 import chat_texts from "./chat_texts.json";
+import getClimatematchTexts from "./climatematch_texts";
 import getCommunicationTexts from "./communication_texts";
 import cookie_texts from "./cookie_texts.json";
 import getDashboardTexts from "./dashboard_texts";
@@ -33,6 +34,7 @@ export default function getTexts({
   user,
   goal,
   idea,
+  location,
   filterType,
 }) {
   // These are the multiple text files for various translations. They're
@@ -42,6 +44,7 @@ export default function getTexts({
     account: account_texts,
     activate_email: activate_email,
     chat: chat_texts,
+    climatematch: getClimatematchTexts({location: location}),
     cookie: cookie_texts,
     communication: getCommunicationTexts(),
     dashboard: getDashboardTexts({ user: user }),
