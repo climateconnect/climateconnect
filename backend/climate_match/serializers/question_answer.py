@@ -16,7 +16,7 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ('id', 'text', 'predefined_answers')
+        fields = ('id', 'text', 'predefined_answers', 'answer_type')
 
     def get_text(self, obj: Question) -> str:
         user_language_code = get_language()
