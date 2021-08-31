@@ -46,13 +46,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ProjectRequestersDialog({
-  open,
+  loading,
   onClose,
+  open,
   project,
   requesters,
-  loading,
-  user,
   url,
+  user,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -60,6 +60,9 @@ export default function ProjectRequestersDialog({
   const handleClose = () => {
     onClose();
   };
+
+  console.log("TEST");
+
   return (
     <GenericDialog
       onClose={handleClose}
@@ -86,7 +89,8 @@ export default function ProjectRequestersDialog({
               </Button>
             </Container>
           </>
-        ) : requesters && requesters.length > 0 ? (
+        ) : // If we have some requests, then render them
+        requesters && requesters.length > 0 ? (
           <ProjectRequesters requesters={requesters} texts={texts} locale={locale} />
         ) : (
           <Typography>{texts.this_project_does_not_have_any_requesters_yet}</Typography>

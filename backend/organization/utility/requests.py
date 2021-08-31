@@ -97,8 +97,12 @@ class MembershipRequestsManager(object):
 
 
 
+    # TODO(piper): I believe this is where the actual membership request
+    # occur
     def create_membership_request(self,**kwargs):
-        if self.duplicate_request: return False
+        if self.duplicate_request:
+            return False
+
         request_obj = MembershipRequests.objects.create(user=self.user
                                                         ,target_membership_type=self.membership_target.value
                                                         ,target_project=self.project
@@ -108,10 +112,8 @@ class MembershipRequestsManager(object):
                                                         ,message=self.message
                                                         ,request_status=RequestStatus.PENDING.value
                 )
+
         request_id = request_obj.id
-
-
-
         return request_id
 
 

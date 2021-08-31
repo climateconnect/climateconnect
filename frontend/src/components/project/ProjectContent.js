@@ -156,6 +156,7 @@ export default function ProjectContent({
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
+
   const [showFullDescription, setShowFullDescription] = React.useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
   const user_permission =
@@ -165,7 +166,7 @@ export default function ProjectContent({
 
   // TODO(piper): fix logic here to show the dialog when clicking the button
   const [showRequesters, setShowRequesters] = React.useState(false);
-  const toggleShowRequesters = async () => {
+  const toggleShowRequest = async () => {
     setShowRequesters(!showRequesters);
     // if (!initiallyCaughtRequesters) {
     // const retrievedRequesters = await getRequesters(project, token, locale);
@@ -178,6 +179,8 @@ export default function ProjectContent({
     // setInitiallyCaughtRequesters(true);
     // }
   };
+
+  console.log("Making a call!");
 
   function viewOpenProjectRequests() {
     console.log("opening");
@@ -226,13 +229,26 @@ export default function ProjectContent({
             </div>
           )}
           {/* TODO(piper): only show this if clicked button */}
+          {/* TODO(piper): ensure request API API call is working */}
           <ProjectRequestersDialog
             open={showRequesters}
             // loading={!initiallyCaughtRequesters}
             project={project}
             // requesters={requesters}
+            requesters={[
+              {
+                user_profile: {
+                  image: "test",
+                },
+              },
+              {
+                user_profile: {
+                  image: "test2",
+                },
+              },
+            ]}
             // url={"projects/" + project.url_slug + "?show_followers=true"}
-            onClose={toggleShowRequesters}
+            onClose={toggleShowRequest}
             user={user}
           />
 

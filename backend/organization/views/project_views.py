@@ -17,13 +17,18 @@ from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from hubs.models.hub import Hub
 from location.models import Location
 from location.utility import get_location, get_location_with_range
+
+# Organization models
 from organization.models import (Organization, OrganizationTagging,
                                  OrganizationTags, Post, Project,
                                  ProjectCollaborators, ProjectComment,
                                  ProjectFollower, ProjectMember,
                                  ProjectParents, ProjectStatus, ProjectTagging,
                                  ProjectTags)
+
+from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
+
 from organization.pagination import (MembersPagination,
                                      ProjectCommentPagination,
                                      ProjectPostPagination, ProjectsPagination, ProjectsSitemapPagination)
@@ -692,6 +697,7 @@ class IsUserFollowing(APIView):
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
             raise NotFound(detail="Project not found:"+url_slug, code=status.HTTP_404_NOT_FOUND)
+
         is_following = ProjectFollower.objects.filter(user=request.user, project=project).exists()
         return Response({'is_following': is_following}, status=status.HTTP_200_OK)
 
@@ -768,6 +774,37 @@ class ListProjectFollowersView(ListAPIView):
         followers = ProjectFollower.objects.filter(project=project[0])
         return followers
 
+# TODO(piper): adding this
+class ListProjectRequestersView(ListAPIView):
+    # permission_classes = [IsAuthenticated]
+    serializer_class = ProjectFollowerSerializer
+
+    def get_queryset(self):
+        print("Requesting list of memberships...")
+        # membership_request = MembershipRequests.objects.filter(url_slug=self.kwargs['url_slug'])
+
+        # print(MembershipRequests.objects.all())
+        # membership_request = MembershipRequests.objects.filter(id=self.kwargs['id'])
+        # membership_request = MembershipRequests.objects.filter(id=self.kwargs['id'])
+        membership_requests = list(MembershipRequests.objects.all())
+        print(membership_requests)
+        # if not membership_request.exists():
+            # return None
+
+        # request_manager = MembershipRequestsManager(user=user
+        #                                         , membership_target=MembershipTarget.PROJECT
+        #                                         , user_availability=user_availability
+        #                                         , project=project
+        #                                         , organization=None
+        #                                         , message=request.data['message'])
+
+        # print(request_manager)
+
+        # TODO(piper): confirm this is correct
+        # requesters = MembershipRequests.objects.filter(project=project[0])
+
+        # return requesters
+        return membership_requests
 
 
 class LeaveProject(RetrieveUpdateAPIView):

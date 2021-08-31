@@ -121,6 +121,11 @@ urlpatterns = [
         'projects/<str:url_slug>/followers/',
         project_views.ListProjectFollowersView.as_view(), name='list-followers-view'
     ),
+    # TODO(piper): just added this
+    path(
+        'projects/<str:url_slug>/requesters/',
+        project_views.ListProjectRequestersView.as_view(), name='list-followers-view'
+    ),
     path(
         'projecttags/', project_views.ListProjectTags.as_view(),
         name='list-project-tags'
