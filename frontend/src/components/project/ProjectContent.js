@@ -8,7 +8,7 @@ import TimeAgo from "react-timeago";
 
 // Relative imports
 import ROLE_TYPES from "../../../public/data/role_types";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
 import MessageContent from "../communication/MessageContent";
@@ -147,6 +147,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+async function getMembershipRequests() {
+  const resp = await apiRequest({
+    method: "get",
+    // url: "/api/list_faq/"
+    // TODO(piper): fix
+    url: "/api/projects/Anotherproject6/requesters/",
+  });
+  console.log("response");
+  console.log(resp.data.results);
+  return resp.data.results;
+}
+
 export default function ProjectContent({
   project,
   leaveProject,
@@ -166,6 +178,7 @@ export default function ProjectContent({
 
   // TODO(piper): fix logic here to show the dialog when clicking the button
   const [showRequesters, setShowRequesters] = React.useState(false);
+  const [requesters, setRequesters] = React.useState([]);
   const toggleShowRequest = async () => {
     setShowRequesters(!showRequesters);
     // if (!initiallyCaughtRequesters) {
@@ -180,10 +193,15 @@ export default function ProjectContent({
     // }
   };
 
-  console.log("Making a call!");
+  // console.log("Making a call!");
+  // const resp = getMembershipRequests();
 
-  function viewOpenProjectRequests() {
-    console.log("opening");
+  async function viewOpenProjectRequests() {
+    // console.log("opening");
+    const membershipRequests = await getMembershipRequests();
+    // console.log("Here!");
+    console.log(membershipRequests);
+    setRequesters(membershipRequests);
     setShowRequesters(!showRequesters);
   }
 
@@ -234,19 +252,19 @@ export default function ProjectContent({
             open={showRequesters}
             // loading={!initiallyCaughtRequesters}
             project={project}
-            // requesters={requesters}
-            requesters={[
-              {
-                user_profile: {
-                  image: "test",
-                },
-              },
-              {
-                user_profile: {
-                  image: "test2",
-                },
-              },
-            ]}
+            requesters={requesters}
+            // requesters={[
+            //   {
+            //     user_profile: {
+            //       image: "test",
+            //     },
+            //   },
+            //   {
+            //     user_profile: {
+            //       image: "test2",
+            //     },
+            //   },
+            // ]}
             // url={"projects/" + project.url_slug + "?show_followers=true"}
             onClose={toggleShowRequest}
             user={user}

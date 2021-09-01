@@ -774,36 +774,21 @@ class ListProjectFollowersView(ListAPIView):
         followers = ProjectFollower.objects.filter(project=project[0])
         return followers
 
-# TODO(piper): adding this
 class ListProjectRequestersView(ListAPIView):
-    # permission_classes = [IsAuthenticated]
+    """This is the endpoint view to return a list of users
+    who have requested membership for a specific project."""
+
+    # TODO(Piper): what does this actually do?
     serializer_class = ProjectFollowerSerializer
 
     def get_queryset(self):
         print("Requesting list of memberships...")
-        # membership_request = MembershipRequests.objects.filter(url_slug=self.kwargs['url_slug'])
-
-        # print(MembershipRequests.objects.all())
         # membership_request = MembershipRequests.objects.filter(id=self.kwargs['id'])
-        # membership_request = MembershipRequests.objects.filter(id=self.kwargs['id'])
+        # TODO(Piper): fix this query and filtering
         membership_requests = list(MembershipRequests.objects.all())
-        print(membership_requests)
-        # if not membership_request.exists():
-            # return None
+        if not membership_requests:
+            return None
 
-        # request_manager = MembershipRequestsManager(user=user
-        #                                         , membership_target=MembershipTarget.PROJECT
-        #                                         , user_availability=user_availability
-        #                                         , project=project
-        #                                         , organization=None
-        #                                         , message=request.data['message'])
-
-        # print(request_manager)
-
-        # TODO(piper): confirm this is correct
-        # requesters = MembershipRequests.objects.filter(project=project[0])
-
-        # return requesters
         return membership_requests
 
 
