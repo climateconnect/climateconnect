@@ -7,19 +7,18 @@ import React, { useContext } from "react";
 import TimeAgo from "react-timeago";
 
 // Relative imports
-import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
-import getTexts from "../../../public/texts/texts";
 import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
+import DateDisplay from "./../general/DateDisplay";
+import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
-import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import Posts from "./../communication/Posts.js";
-import DateDisplay from "./../general/DateDisplay";
-import ProjectStatus from "./ProjectStatus";
-// TODO(PIPER): this is what we want
 import ProjectRequestersDialog from "../dialogs/ProjectRequestersDialog";
+import ProjectStatus from "./ProjectStatus";
+import ROLE_TYPES from "../../../public/data/role_types";
+import UserContext from "../context/UserContext";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -147,23 +146,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-async function getMembershipRequests() {
+/**
+ * Calls API endpoint to return a current list
+ * of Climate Connect users, that have requested to
+ * join a specific project (i.e. requested membership.).
+ */
+async function getMembershipRequests(url_slug) {
   const resp = await apiRequest({
     method: "get",
-    // url: "/api/list_faq/"
-    // TODO(piper): fix
-    url: "/api/projects/Anotherproject6/requesters/",
+    // TODO(piper): fix with adding any more required headers
+    url: `/api/projects/${url_slug}/requesters/`,
   });
-  console.log("response");
-  console.log(resp.data.results);
+
+  if (!resp?.data?.results) {
+    // TODO: error appropriately here
+  }
+
+  // This should be a list of membership requesters
   return resp.data.results;
 }
 
 export default function ProjectContent({
-  project,
-  leaveProject,
-  projectDescriptionRef,
   collaborationSectionRef,
+  leaveProject,
+  project,
+  projectDescriptionRef,
 }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -193,14 +200,10 @@ export default function ProjectContent({
     // }
   };
 
-  // console.log("Making a call!");
-  // const resp = getMembershipRequests();
-
+  // TODO: we should call this on initial render (useEffect?) so
+  // that the badge count will be updated immediately.
   async function viewOpenProjectRequests() {
-    // console.log("opening");
-    const membershipRequests = await getMembershipRequests();
-    // console.log("Here!");
-    console.log(membershipRequests);
+    const membershipRequests = await getMembershipRequests(project.url_slug);
     setRequesters(membershipRequests);
     setShowRequesters(!showRequesters);
   }
@@ -214,16 +217,11 @@ export default function ProjectContent({
               {user_permission &&
                 [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission) && (
                   <>
-                    {/* TODO: make dynamic follower */}
-                    <Badge badgeContent={3} color="primary">
+                    {/* Badge is dynamic based on the number of membership requesters */}
+                    <Badge badgeContent={requesters.length} color="primary">
                       <Button
                         className={classes.editProjectButton}
-                        // color="primary"
-                        // TODO(piper): maybe modal?
-                        // href={getLocalePrefix(locale) + "/editProject/" + project.url_slug}
                         onClick={viewOpenProjectRequests}
-                        // href={viewOpenProjectRequests}
-                        // variant="contained"
                       >
                         Review join requests
                       </Button>
@@ -246,26 +244,12 @@ export default function ProjectContent({
               </Button>
             </div>
           )}
-          {/* TODO(piper): only show this if clicked button */}
-          {/* TODO(piper): ensure request API API call is working */}
+
+          {/* Only present dialog if button has been clicked! */}
           <ProjectRequestersDialog
             open={showRequesters}
-            // loading={!initiallyCaughtRequesters}
             project={project}
             requesters={requesters}
-            // requesters={[
-            //   {
-            //     user_profile: {
-            //       image: "test",
-            //     },
-            //   },
-            //   {
-            //     user_profile: {
-            //       image: "test2",
-            //     },
-            //   },
-            // ]}
-            // url={"projects/" + project.url_slug + "?show_followers=true"}
             onClose={toggleShowRequest}
             user={user}
           />

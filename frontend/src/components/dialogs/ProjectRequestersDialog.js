@@ -14,6 +14,8 @@ import {
 } from "@material-ui/core";
 import React, { useContext } from "react";
 import ReactTimeago from "react-timeago";
+
+// Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -61,12 +63,11 @@ export default function ProjectRequestersDialog({
     onClose();
   };
 
-  console.log("TEST");
-
   return (
     <GenericDialog
       onClose={handleClose}
       open={open}
+      // TODO(Piper): iterate on naming here
       title={texts.requesters_of + " " + project.name}
       //   title={"Users who have requested to follow"}
     >
@@ -89,7 +90,7 @@ export default function ProjectRequestersDialog({
               </Button>
             </Container>
           </>
-        ) : // If we have some requests, then render them
+        ) : // If we have some users requesting to join, then render them
         requesters && requesters.length > 0 ? (
           <ProjectRequesters requesters={requesters} texts={texts} locale={locale} />
         ) : (
@@ -102,26 +103,11 @@ export default function ProjectRequestersDialog({
 
 const ProjectRequesters = ({ requesters, texts, locale }) => {
   const classes = useStyles();
-  console.log(requesters);
-
-  const fakeRequesters = [
-    {
-      user_profile: {
-        image: "test",
-      },
-    },
-    {
-      user_profile: {
-        image: "test2",
-      },
-    },
-  ];
 
   return (
     <>
       <Divider />
       <Table>
-        {/* TODO: fix requestesrs */}
         <TableBody>
           {requesters.map((requester, index) => {
             return (
