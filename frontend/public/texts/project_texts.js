@@ -336,10 +336,9 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de: "Teile dein Klimaprojekt",
     },
     // This is for project join requests
-    // TODO(Chris): German translation verify
     requesters_of: {
       en: "Requesters of",
-      de: "Requester von",
+      de: "Anforderer von",
     },
     //Kontext: Followers of Projektname
     followers_of: {
