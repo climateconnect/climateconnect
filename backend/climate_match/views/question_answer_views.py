@@ -13,8 +13,8 @@ from climateconnect_api.models import UserProfile
 import logging
 logger = logging.getLogger(__name__)
 
-DYNAMIC_ANSWERS = ['Hub', 'Skill']
-STATIC_ANSWERS = ['Answer']
+DYNAMIC_ANSWER_TYPE = ['hub', 'skill']
+STATIC_ANSWER_TYPE = ['answer']
 
 
 class QuestionAnswerView(ListAPIView):
@@ -72,7 +72,6 @@ class UserQuestionAnswersView(APIView):
         # requried_params will be used inside a for loop to verify all keys are present. 
         required_params = ['question_id', 'predefined_answer_id', 'answers', 'answer_type']
         for question_answer in request.data['user_question_answers']:
-            print(question_answer)
             for param in required_params:
                 if param not in question_answer:
                     logger.error(f"ClimateMatchError: Missing parameter -> {param}")
@@ -84,13 +83,14 @@ class UserQuestionAnswersView(APIView):
             # Check if user's question-answer object already exisits. We do not want to create duplicated
             # objects for user.
             if UserQuestionAnswer.objects.filter(user=profile.user, question_id=question_answer['question_id']).exists():
-                user_question_answer = UserQuestionAnswer.objects.get(question_id=question_answer['question_id'])
+                user_question_answer = UserQuestionAnswer.objects.get(user=profile.user, question_id=question_answer['question_id'])
             else:
                 user_question_answer = UserQuestionAnswer.objects.create(user=profile.user, question_id=question_answer['question_id'])
 
-            if question_answer['answer_type'] in STATIC_ANSWERS:
+            if question_answer['answer_type'] in STATIC_ANSWER_TYPE:
                 user_question_answer.predefined_answer_id = question_answer['predefined_answer_id']
-            elif question_answer['answer_type'] in DYNAMIC_ANSWERS:
+                user_question_answer.save()
+            elif question_answer['answer_type'] in DYNAMIC_ANSWER_TYPE:
                 for answer in question_answer['answers']:
                     if AnswerMetaData.objects.filter(
                         weight=answer['weight'],
@@ -100,14 +100,14 @@ class UserQuestionAnswersView(APIView):
                         answer_metadata = AnswerMetaData.objects.filter(
                             weight=answer['weight'],resource_type=resource_type,
                             reference_id=answer['id']
-                        )
+                        ).first()
                     else:
                         answer_metadata = AnswerMetaData.objects.create(
                             weight=answer['weight'], resource_type=resource_type,
-                            resource_id=answer['id']
+                            reference_id=answer['id']
                         )
-                    question_answer.answers.add(answer_metadata)
-            user_question_answer.save()
+                    user_question_answer.answers.add(answer_metadata)
+                user_question_answer.save()
             user_question_answers.append(user_question_answer)
         
         serializer = UserQuestionAnswerSerializer(user_question_answers, many=True)
