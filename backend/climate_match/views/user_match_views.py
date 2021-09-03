@@ -1,5 +1,4 @@
 from django.db import DefaultConnectionProxy
-from climateconnect_api.models.user import UserProfile
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
