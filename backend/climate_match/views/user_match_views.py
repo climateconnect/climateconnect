@@ -20,6 +20,9 @@ class UserResourcesMatchView(APIView):
 	permission_classes = [UserResourceMatchPermission]
 
 	def get(self, request, url_slug):
+		"""
+		params required in URL: `range_start` and `range_end`. example: range_start=0&range_end=10
+		"""
 		try:
 			user_profile = UserProfile.objects.get(url_slug=str(url_slug))
 		except UserProfile.DoesNotExist:

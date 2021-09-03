@@ -13,6 +13,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 class QuestionAnswerSerializer(serializers.ModelSerializer):
     text = serializers.SerializerMethodField()
     predefined_answers = serializers.SerializerMethodField()
+    answer_type = serializers.SerializerMethodField()
 
     class Meta:
         model = Question
@@ -29,6 +30,9 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
     def get_predefined_answers(self, obj: Question) -> Dict:
         answers = obj.answer_question.all()
         return AnswerSerializer(answers, many=True).data
+    
+    def get_answer_type(self, obj: Question) -> str:
+        return obj.answer_type.name
 
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -52,16 +56,20 @@ class UserQuestionAnswerSerializer(serializers.ModelSerializer):
     question = QuestionSerializer()
     predefined_answer = AnswerSerializer()
     answers = serializers.SerializerMethodField()
+    answer_type = serializers.SerializerMethodField()
 
     class Meta:
         model = UserQuestionAnswer
-        fields = ('id', 'question', 'predefined_answer', 'answers')
+        fields = ('id', 'question', 'predefined_answer', 'answers', 'answer_type')
 
     def get_answers(self, obj: UserQuestionAnswer):
         answers = []
         for answer in obj.answers.all():
             resource = answer.resource_type.get_object_for_this_type(id=answer.reference_id)
             answers.append({
-                'id': resource.id, 'name': resource.name
+                'id': resource.id, 'name': resource.name, 'weight': answer.weight
             })
-        return {f'{obj.question.answer_type}': answers}
+        return answers
+    
+    def get_answer_type(self, obj: UserQuestionAnswer) -> str:
+        return obj.question.answer_type.model
