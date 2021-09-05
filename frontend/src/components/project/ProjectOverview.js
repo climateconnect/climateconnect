@@ -272,12 +272,11 @@ function LargeScreenOverview({
    * Calls backend, sending a request to join this project
    */
   async function handleSendProjectJoinRequest() {
-    // TODO: fix user name
-    // TODO: fix project name
+    // TODO(piper): fix user name
+    // TODO(piper): fix project name
     const projectName = "Anotherproject6";
     // const userName = "testchester";
     // const userName = "pip.erchester@gmail.com";
-    // This worked!!
     const userName = "testchester9";
 
     try {
@@ -288,7 +287,6 @@ function LargeScreenOverview({
         payload: {
           // TODO: fix payload
           message: "Hi!",
-          // user_availability: "3",
           user_availability: "4",
         },
 
@@ -296,21 +294,13 @@ function LargeScreenOverview({
           // TODO: is this right?
           Authorization: "Token 5b25c244d9afe56b939eb07049f0eee641ea70bd81273518a1e83f77504149f4",
         },
-        // locale: locale,
       });
-      // console.log(response);
-      // console.log(response.data.message);
-      // TODO: needed?
-      // redirect("/browse", {
-      //   message: response.data.message,
-      // });
     } catch (error) {
-      // console.log(error);
       // TODO: fix this, once we have an endpoint to see
       // if a user has already requested to join a specific project
       // console.log(error.response.data.message);
       if (error.response.data.message === "Request already exists to join project") {
-        console.log("Already requested!");
+        console.log("Already requested to join this project!");
         setRequestedToJoinProject(true);
       }
     }

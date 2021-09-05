@@ -188,20 +188,16 @@ export default function ProjectContent({
   const [requesters, setRequesters] = React.useState([]);
   const toggleShowRequest = async () => {
     setShowRequesters(!showRequesters);
-    // if (!initiallyCaughtRequesters) {
-    // const retrievedRequesters = await getRequesters(project, token, locale);
-    // const notification_to_set_read = notifications.filter(
-    //   (n) => n.notification_type === 4 && n.project.url_slug === project.url_slug
-    // );
-    // await setNotificationsRead(token, notification_to_set_read, locale);
-    // await refreshNotifications();
-    // setRequesters(retrievedRequesters);
-    // setInitiallyCaughtRequesters(true);
-    // }
   };
 
-  // TODO: we should call this on initial render (useEffect?) so
-  // that the badge count will be updated immediately.
+  // Fetch and populate requesters on initial load
+  React.useEffect(() => {
+    getMembershipRequests(project.url_slug).then((response) => {
+      console.log(response);
+      setRequesters(response);
+    });
+  }, []);
+
   async function viewOpenProjectRequests() {
     const membershipRequests = await getMembershipRequests(project.url_slug);
     setRequesters(membershipRequests);
