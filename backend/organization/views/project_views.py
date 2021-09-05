@@ -780,9 +780,6 @@ class ListProjectRequestersView(ListAPIView):
     serializer_class = ProjectFollowerSerializer
 
     def get_queryset(self):
-        print("Requesting list of memberships...")
-        # membership_request = MembershipRequests.objects.filter(id=self.kwargs['id'])
-        # TODO(Piper): fix this query and filtering
         membership_requests = list(MembershipRequests.objects.all())
         if not membership_requests:
             return None
