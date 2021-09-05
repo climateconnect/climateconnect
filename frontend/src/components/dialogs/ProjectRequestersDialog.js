@@ -71,7 +71,8 @@ export default function ProjectRequestersDialog({
       onClose={handleClose}
       open={open}
       // TODO(Piper): iterate on naming here
-      title={texts.requesters_of + " " + project.name}
+      // title={texts.requesters_of + " " + project.name}
+      title={"Requested to join project"}
       //   title={"Users who have requested to follow"}
     >
       <>
@@ -152,14 +153,18 @@ const ProjectRequesters = ({ requesters, texts, onClose, locale }) => {
                 {/* TODO(Piper): need to finish implementing approve / reject UI */}
                 <TableCell>
                   <IconButton
+                    aria-label="approve project request"
                     color="primary"
                     disableRipple
                     onClick={handleApproveRequester}
-                    aria-label="approve"
                   >
                     <CheckIcon />
                   </IconButton>
-                  <IconButton disableRipple onClick={handleDenyRequester} aria-label="approve">
+                  <IconButton
+                    aria-label="reject project request"
+                    disableRipple
+                    onClick={handleDenyRequester}
+                  >
                     <BlockIcon />
                   </IconButton>
                 </TableCell>

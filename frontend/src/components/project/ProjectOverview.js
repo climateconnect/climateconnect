@@ -372,7 +372,7 @@ function LargeScreenOverview({
             />
 
             {/* TODO(piper): handle permissions, where we don't show the join / follow button
-            for a project if we've already requested to follow project */}
+            for a project if we've already requested to follow project, OR are an admin on the project */}
             {requestedToJoinProject ? (
               <Button disabled color="primary" onClick={handleSendProjectJoinRequest}>
                 Already requested
