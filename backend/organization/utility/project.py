@@ -7,12 +7,10 @@ from climateconnect_api.utility.translation import get_translations
 from climateconnect_main.utility.general import get_image_from_data_url
 from location.utility import get_location
 
-from organization.models import Project
+from organization.models import Project, ProjectMember
 from organization.models.tags import ProjectTags
 
 from django.db.models import Q
-from organization.models import Project, ProjectMember
-from climateconnect_api.models import (Skill,)
 from climateconnect_api.models import Role
 
 logger = logging.getLogger(__name__)

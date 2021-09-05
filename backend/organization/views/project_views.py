@@ -54,7 +54,6 @@ from organization.utility.notification import (
     create_project_comment_notification,
     create_project_comment_reply_notification,
     create_project_follower_notification,
-    create_project_follower_notification,
     create_project_join_request_notification,
     create_project_join_request_approval_notification)
 from organization.utility.organization import check_organization
