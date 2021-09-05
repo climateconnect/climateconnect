@@ -3,6 +3,7 @@ import {
   Button,
   Container,
   Divider,
+  IconButton,
   LinearProgress,
   Link,
   makeStyles,
@@ -12,8 +13,9 @@ import {
   TableRow,
   Typography,
 } from "@material-ui/core";
+import BlockIcon from "@material-ui/icons/Block";
+import CheckIcon from "@material-ui/icons/Check";
 import React, { useContext } from "react";
-import ReactTimeago from "react-timeago";
 
 // Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -59,6 +61,7 @@ export default function ProjectRequestersDialog({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
+
   const handleClose = () => {
     onClose();
   };
@@ -92,7 +95,12 @@ export default function ProjectRequestersDialog({
           </>
         ) : // If we have some users requesting to join, then render them
         requesters && requesters.length > 0 ? (
-          <ProjectRequesters requesters={requesters} texts={texts} locale={locale} />
+          <ProjectRequesters
+            locale={locale}
+            onClose={onClose}
+            requesters={requesters}
+            texts={texts}
+          />
         ) : (
           <Typography>{texts.this_project_does_not_have_any_requesters_yet}</Typography>
         )}
@@ -101,8 +109,19 @@ export default function ProjectRequestersDialog({
   );
 }
 
-const ProjectRequesters = ({ requesters, texts, locale }) => {
+const ProjectRequesters = ({ requesters, texts, onClose, locale }) => {
   const classes = useStyles();
+
+  // TODO(piper): make appropriate API calls here to approve/reject
+  const handleApproveRequester = () => {
+    console.log("Approved!");
+    onClose();
+  };
+
+  const handleDenyRequester = () => {
+    console.log("Denied!");
+    onClose();
+  };
 
   return (
     <>
@@ -130,10 +149,19 @@ const ProjectRequesters = ({ requesters, texts, locale }) => {
                   </Link>
                 </TableCell>
 
+                {/* TODO(Piper): need to finish implementing approve / reject UI */}
                 <TableCell>
-                  <Typography className={classes.followedText}>
-                    {texts.following_since} <ReactTimeago date={requester.created_at} />
-                  </Typography>
+                  <IconButton
+                    color="primary"
+                    disableRipple
+                    onClick={handleApproveRequester}
+                    aria-label="approve"
+                  >
+                    <CheckIcon />
+                  </IconButton>
+                  <IconButton disableRipple onClick={handleDenyRequester} aria-label="approve">
+                    <BlockIcon />
+                  </IconButton>
                 </TableCell>
               </TableRow>
             );
