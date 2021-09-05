@@ -30,8 +30,6 @@ class MembershipRequestsManager(object):
 
         self.errors = list()
         if 'membership_request_id' not in kwargs.keys(): #new request
-            print('OH MAN I THINK THIS IS WORKING')
-            print('test mbmership request_id')
             user = kwargs['user']
             membership_target = kwargs['membership_target']
             user_availability = kwargs['user_availability']
@@ -50,7 +48,6 @@ class MembershipRequestsManager(object):
             self.message = kwargs['message']
             self.membership_request = None
 
-
             # check if the request exists already
             n = MembershipRequests.objects.filter(user=self.user
                                           ,target_membership_type=self.membership_target.value
@@ -63,9 +60,6 @@ class MembershipRequestsManager(object):
                 self.validation_failed = True
                 self.errors.append("Request Already Exists")
                 self.duplicate_request = True
-
-
-
 
 
         else: #id of request is supplied
@@ -95,10 +89,6 @@ class MembershipRequestsManager(object):
 
         return
 
-
-
-    # TODO(piper): I believe this is where the actual membership request
-    # occur
     def create_membership_request(self,**kwargs):
         if self.duplicate_request:
             return False

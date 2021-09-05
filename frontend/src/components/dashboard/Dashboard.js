@@ -114,7 +114,7 @@ const HorizontalSpacing = ({ children, size }) => {
   );
 };
 
-// TODO(Piper): we should generalize these components post launch
+// TODO: we should generalize these components post launch
 // of CityHub so that they can be used across the platform.
 const HoverButton = ({ items, label, startIcon }) => {
   const classes = useStyles();

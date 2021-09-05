@@ -777,7 +777,6 @@ class ListProjectRequestersView(ListAPIView):
     """This is the endpoint view to return a list of users
     who have requested membership for a specific project."""
 
-    # TODO(Piper): what does this actually do?
     serializer_class = ProjectFollowerSerializer
 
     def get_queryset(self):
@@ -840,12 +839,8 @@ class RequestJoinProject(RetrieveUpdateAPIView):
     """
     permission_classes = (IsAuthenticated,)
 
-    # TODO(Piper): this is the post handler
     def post(self, request, user_slug, project_slug):
-        # print('test in projec')
         required_params = ['user_availability','message']
-        # print(request.data)
-
         missing_param = any([param not in request.data for param in required_params])
         if missing_param:
             return Response({
@@ -854,7 +849,6 @@ class RequestJoinProject(RetrieveUpdateAPIView):
 
         # To avoid spoofing
         user = request.user
-        print('Avoiding user spoofing!')
         user_profile_slug = UserProfile.objects.get(user=user).url_slug
         if user_profile_slug != user_slug:
             return Response({
@@ -878,8 +872,6 @@ class RequestJoinProject(RetrieveUpdateAPIView):
                                                 , message=request.data['message'])
 
 
-        # TODO(piper): how do I read this in the frontend? How do I call the endpoint
-        # to see if the request does indeed already exist?
         exists = request_manager.duplicate_request
         if exists:
             return Response({

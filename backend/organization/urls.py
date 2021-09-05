@@ -121,10 +121,11 @@ urlpatterns = [
         'projects/<str:url_slug>/followers/',
         project_views.ListProjectFollowersView.as_view(), name='list-followers-view'
     ),
-    # TODO(piper): just added this
+    # This is the endpoint to list the users
+    # that have requested to join a project
     path(
         'projects/<str:url_slug>/requesters/',
-        project_views.ListProjectRequestersView.as_view(), name='list-followers-view'
+        project_views.ListProjectRequestersView.as_view(), name='list-requesters-view'
     ),
     path(
         'projecttags/', project_views.ListProjectTags.as_view(),

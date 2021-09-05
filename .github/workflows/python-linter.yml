@@ -2,7 +2,7 @@ name: Python Linting
 on:
   push:
     branches:
-      - '**'
+      - "**"
   pull_request:
   workflow_dispatch:
 jobs:
