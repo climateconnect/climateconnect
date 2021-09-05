@@ -1,28 +1,28 @@
 name: Lint
-
 on:
   push:
     branches:
       - "**"
+    pull_request:
 workflow_dispatch:
-jobs:
-  run-linters:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Check out Git repository
+  jobs:
+    run-linters:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - name: Check out Git repository
 
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12
-      - name: Set up Node.js
+          uses: actions/setup-node@v1
+          with:
+            node-version: 12
+        - name: Set up Node.js
 
-      # ESLint and Prettier must be in `package.json`
-      - name: Install Node.js dependencies
-        run: yarn
+        # ESLint and Prettier must be in `package.json`
+        - name: Install Node.js dependencies
+          run: yarn
 
-      - name: Lint frontend
-        uses: yarn lint
-        with:
-          eslint: true
-          prettier: true
+        - name: Lint frontend
+          uses: yarn lint
+          with:
+            eslint: true
+            prettier: true
