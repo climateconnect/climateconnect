@@ -4,6 +4,10 @@ from django.contrib.contenttypes.models import ContentType
 from climateconnect_api.models import Language
 
 
+def upload_question_image(instance: models.QuerySet, filename: str) -> str:
+	return f"climate_match/questions/{instance.id}/{filename}"
+
+
 class Question(models.Model):	
 	text = models.CharField(
 		help_text="Question text",
@@ -40,6 +44,13 @@ class Question(models.Model):
 		help_text="Time when question was updated",
 		verbose_name="Updated at",
 		auto_now=True
+	)
+
+	image = models.ImageField(
+		help_text="Points to question image",
+		verbose_name="Image",
+		upload_to=upload_question_image,
+		null=True, blank=True
 	)
 
 	class Meta:
