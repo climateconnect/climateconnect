@@ -8,6 +8,8 @@ import UserContext from "../context/UserContext"
 import LoadingSpinner from "../general/LoadingSpinner"
 import ClimateMatchQuestion from "./ClimateMatchQuestion"
 import WelcomeToClimateMatch from "./WelcomeToClimateMatch"
+import { apiRequest } from "../../../public/lib/apiOperations"
+import Cookies from 'universal-cookie';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,6 +46,8 @@ export default function ClimateMatchRoot() {
   const [isLoading, setIsLoading] = useState(true)
   const [location, setLocation] = useState(null)
   const [userAnswers, setUserAnswers] = useState([])
+  const cookies = new Cookies();
+  const token = cookies.get('token');
 
   //get initial props after the page loaded
   useEffect(async function () {
@@ -52,7 +56,7 @@ export default function ClimateMatchRoot() {
     const params = Object.fromEntries(urlSearchParams.entries());
     if(params.location)
       setLocation(params.location)
-    const retrievedQuestions = await getQuestions(locale, params.location)
+    const retrievedQuestions = await getQuestions(token, locale, params.location)
     console.log(retrievedQuestions)
     setQuestions(retrievedQuestions)
     setUserAnswers(retrievedQuestions.map(()=>null))
@@ -93,8 +97,27 @@ export default function ClimateMatchRoot() {
 }
 
 //TODO: convert to API call
-const getQuestions = async (locale, location) => {
+const getQuestions = async (token, locale, location) => {
   console.log(location)
+  if(token) {
+    try {
+      const resp = await apiRequest({
+        method: "get",
+        url: "/api/questions/",
+        locale: locale,
+        token: token
+      })
+      console.log(resp.data.results);
+      return resp.data.results;
+      /* return getMockClimateMatchQuestions({
+        locale: locale, allHubs: await getAllHubs(locale),
+        topLevelSkills: await getSkillsOptions(locale, true)
+      }); */
+    } catch(e) {
+      console.log(e)
+    }
+  } else {
+    return null;
+  }
   //"location" determines what images to show and could lead to different questions
-  return getMockClimateMatchQuestions({locale: locale, allHubs: await getAllHubs(locale), topLevelSkills: await getSkillsOptions(locale, true)})
 }
