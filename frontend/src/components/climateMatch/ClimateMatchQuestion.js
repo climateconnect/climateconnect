@@ -1,6 +1,8 @@
 import { makeStyles } from "@material-ui/core"
 import React from "react"
 import RankingQuestionTypeBody from "./RankingQuestionTypeBody"
+import { getAllHubs } from "../../../public/lib/hubOperations"
+import { getSkillsOptions } from '../../../public/lib/getOptions'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,29 +21,37 @@ const useStyles = makeStyles(theme => ({
   })
 }))
 
-export default function ClimateMatchQuestion({questions, step, onChangeAnswer, answer}) {  
-  console.log(questions)
-  console.log(step)
+export default function ClimateMatchQuestion({questions, step, onChangeAnswer, locale}) {
   const question = questions.find(q => q.step === step)
   const isLastQuestion = questions.indexOfQuestion === questions.length -1
   const classes = useStyles({image: question.image})
+  const answers = getAnswers(question, locale)
   console.log(question)
   return (
     <div className={classes.root}>
       <div className={classes.imageContainer}/>
-      {question.type === "select_from_table_values" ? (
+      {question.answer_type === "answer" ? (<div>test</div>) : (
         <RankingQuestionTypeBody 
           question={question} 
           numberOfChoices={question.numberOfChoices}
           onChangeAnswer={onChangeAnswer}
-          answer={answer}
+          answers={answers}
         />
-      ) : question.type === "select_from_custom_answers" && (
-        <div>
-          tet
-        </div>
       )
       }    
     </div>
   )
+}
+
+const getAnswers = async (question, locale) => {
+  let data = null;
+  if(question.answer_type == 'hub') {
+    data = await getAllHubs(locale, true)
+  } else if (question.answer_type == 'skill') {
+    data = await getSkillsOptions(locale)
+  } else {
+    data = question.predefined_answers
+  }
+
+  return data;
 }

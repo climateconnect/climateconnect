@@ -68,11 +68,11 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function RankingQuestionTypeBody({question, numberOfChoices, answer, onChangeAnswer}) {
+export default function RankingQuestionTypeBody({question, numberOfChoices, answers, onChangeAnswer}) {
   const classes = useStyles()
-  console.log(question)
-  question.answers.map(a=> console.log(a.name))
-  const [selectableAnswers, setSelectableAnswers] = useState(question.answers)
+  console.log('++++', answers)
+  question.predefined_answers.map(a=> console.log(a.name))
+  const [selectableAnswers, setSelectableAnswers] = useState(answers)
   const onDragEnd = (result) => {
     console.log(result.destination)
     console.log(result)
@@ -80,29 +80,29 @@ export default function RankingQuestionTypeBody({question, numberOfChoices, answ
       return
     //The user selected an answer!
     if(result.destination.droppableId === "selectedAnswers") {
-      if(!answer) {
+      if(!answers) {
         console.log(selectableAnswers)
         console.log(selectableAnswers.indexOf(result.source.index))
         onChangeAnswer(question.step, [selectableAnswers[result.source.index]])
       } else {
-        console.log(answer)
+        console.log(answers)
         const i = result.destination.index
         //insert element at correct place. If there were already 3 elements in the array, cut off after 3
-        const newAnswer = [...answer.slice(0, i), selectableAnswers[result.source.index], ...answer.slice(i, answer.length + 1)].slice(0,3)
+        const newAnswer = [...answers.slice(0, i), selectableAnswers[result.source.index], ...answers.slice(i, answers.length + 1)].slice(0,3)
         onChangeAnswer(question.step, newAnswer)
       }
     }
   }
 
-  console.log(answer)
-  console.log(answer?.length > 0)
+  console.log(answers)
+  console.log(answers?.length > 0)
   
   return (
     <DragDropContext onDragEnd={onDragEnd}>      
         <div className={classes.root}>
           <div className={`${classes.container} ${classes.questionAndSelectedAnswersContainer}`}>
             <ClimateMatchHeadline size="medium" className={classes.headline}>
-              {question.question}
+              {question.text}
             </ClimateMatchHeadline>
             <Droppable 
               droppableId="selectedAnswers"
@@ -117,12 +117,12 @@ export default function RankingQuestionTypeBody({question, numberOfChoices, answ
                       <div key={i} className={classes.selectedAnswerContainer}>
                         <span className={classes.choiceRankText}>{i+1}.</span>
                         {
-                          answer?.length >= i+1 ? (    
+                          answers?.length >= i+1 ? (    
                             <Draggable key={i} draggableId={"draggable_choice" + i} index={i}>
                               {(provided) => (  
                                 <>                      
                                   <Chip
-                                    label={answer[i].name}
+                                    label={answers[i].name}
                                     className={classes.possibleAnswerChip}
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
@@ -157,7 +157,7 @@ export default function RankingQuestionTypeBody({question, numberOfChoices, answ
                   {selectableAnswers.map((a, index) => (                
                     <div key={a.url_slug} className={classes.possibleAnswerContainer}>
                       <Typography className={classes.listEqualsChar}>=</Typography>
-                      {answer?.map(ans => ans.url_slug).includes(a.url_slug) ? (
+                      {answers?.map(ans => ans.url_slug).includes(a.url_slug) ? (
                         <Chip 
                           label={a.name} 
                           className={`${classes.possibleAnswerChip} ${classes.alreadySelectedPossibleAnswer}`}

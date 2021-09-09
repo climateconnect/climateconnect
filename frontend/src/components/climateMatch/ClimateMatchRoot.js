@@ -57,7 +57,6 @@ export default function ClimateMatchRoot() {
     if(params.location)
       setLocation(params.location)
     const retrievedQuestions = await getQuestions(token, locale, params.location)
-    console.log(retrievedQuestions)
     setQuestions(retrievedQuestions)
     setUserAnswers(retrievedQuestions.map(()=>null))
     setIsLoading(false)
@@ -86,9 +85,9 @@ export default function ClimateMatchRoot() {
         ) : (
           <ClimateMatchQuestion 
             questions={questions} 
-            step={step} 
-            answer={userAnswers[step]}
+            step={step}
             onChangeAnswer={handleChangeAnswers}
+            locale={locale}
           />
         )      
       }
@@ -96,7 +95,6 @@ export default function ClimateMatchRoot() {
   )
 }
 
-//TODO: convert to API call
 const getQuestions = async (token, locale, location) => {
   console.log(location)
   if(token) {
