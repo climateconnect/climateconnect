@@ -17,7 +17,7 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ('id', 'text', 'predefined_answers', 'answer_type', 'image')
+        fields = ('id', 'text', 'predefined_answers', 'answer_type', 'image', 'step')
 
     def get_text(self, obj: Question) -> str:
         user_language_code = get_language()
@@ -32,7 +32,7 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
         return AnswerSerializer(answers, many=True).data
     
     def get_answer_type(self, obj: Question) -> str:
-        return obj.answer_type.name
+        return obj.answer_type.model
 
 
 class AnswerSerializer(serializers.ModelSerializer):

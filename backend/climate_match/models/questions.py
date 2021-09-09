@@ -53,6 +53,13 @@ class Question(models.Model):
 		null=True, blank=True
 	)
 
+	step = models.IntegerField(
+		help_text="At which step should we ask this particular question?",
+		verbose_name="Step",
+		null=True,
+		blank=True
+	)
+
 	class Meta:
 		verbose_name = "Question"
 		verbose_name_plural = "Questions"
