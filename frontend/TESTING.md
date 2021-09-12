@@ -19,7 +19,7 @@ context and knowledge of various test cases across the team and project contribu
 ### Tips
 
 1. Don't forget the trailing slash!
-1. We resuse Postman collections and snippets -- see ...
+1. We reuse Postman collections and snippets. Ping the web team's Slack channel to get them.
 
 ## Functional test cases
 
