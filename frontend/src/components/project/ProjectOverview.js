@@ -269,7 +269,8 @@ function LargeScreenOverview({
   const [requestedToJoinProject, setRequestedToJoinProject] = useState(false);
 
   /**
-   * Calls backend, sending a request to join this project
+   * Calls backend, sending a request to join this project based
+   * on user token stored in cookies.
    */
   async function handleSendProjectJoinRequest() {
     // TODO(piper): fix user name
@@ -277,22 +278,23 @@ function LargeScreenOverview({
     const projectName = "Anotherproject6";
     // const userName = "testchester";
     // const userName = "pip.erchester@gmail.com";
+
     const userName = "testchester9";
+    const cookies = new Cookies();
+    const token = cookies.get("token");
 
     try {
       const response = await apiRequest({
         method: "post",
-
         url: `/api/projects/${projectName}/request_membership/${userName}/`,
         payload: {
-          // TODO: fix payload
-          message: "Hi!",
+          message: "Would like to join the project!",
+          // TODO: fix user_availability
           user_availability: "4",
         },
 
         headers: {
-          // TODO: is this right?
-          Authorization: "Token 5b25c244d9afe56b939eb07049f0eee641ea70bd81273518a1e83f77504149f4",
+          Authorization: `Token ${token}`,
         },
       });
     } catch (error) {

@@ -7,6 +7,8 @@ import ReactGA from "react-ga";
 //add global styles
 import "react-multi-carousel/lib/styles.css";
 import Cookies from "universal-cookie";
+
+// Relative imports
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getCookieProps } from "../public/lib/cookieOperations";
 import WebSocketService from "../public/lib/webSockets";
