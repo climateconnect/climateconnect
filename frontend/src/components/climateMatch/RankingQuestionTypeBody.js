@@ -71,7 +71,6 @@ const useStyles = makeStyles(theme => ({
 export default function RankingQuestionTypeBody({question, numberOfChoices, answers, onChangeAnswer}) {
   const classes = useStyles()
   console.log('++++', answers)
-  question.predefined_answers.map(a=> console.log(a.name))
   const [selectableAnswers, setSelectableAnswers] = useState(answers)
   const onDragEnd = (result) => {
     console.log(result.destination)
@@ -93,9 +92,6 @@ export default function RankingQuestionTypeBody({question, numberOfChoices, answ
       }
     }
   }
-
-  console.log(answers)
-  console.log(answers?.length > 0)
   
   return (
     <DragDropContext onDragEnd={onDragEnd}>      
@@ -122,7 +118,7 @@ export default function RankingQuestionTypeBody({question, numberOfChoices, answ
                               {(provided) => (  
                                 <>                      
                                   <Chip
-                                    label={answers[i].name}
+                                    label={answers[i].text}
                                     className={classes.possibleAnswerChip}
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
@@ -159,7 +155,7 @@ export default function RankingQuestionTypeBody({question, numberOfChoices, answ
                       <Typography className={classes.listEqualsChar}>=</Typography>
                       {answers?.map(ans => ans.url_slug).includes(a.url_slug) ? (
                         <Chip 
-                          label={a.name} 
+                          label={a.text} 
                           className={`${classes.possibleAnswerChip} ${classes.alreadySelectedPossibleAnswer}`}
                         />
                       ) : (
@@ -171,7 +167,7 @@ export default function RankingQuestionTypeBody({question, numberOfChoices, answ
                           {(provided) => {
                             return (
                               <Chip 
-                                label={a.name} 
+                                label={a.text} 
                                 className={classes.possibleAnswerChip}
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}

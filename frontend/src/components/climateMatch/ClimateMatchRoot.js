@@ -58,7 +58,6 @@ export default function ClimateMatchRoot() {
       setLocation(params.location)
     const retrievedQuestions = await getQuestions(token, locale, params.location)
     setQuestions(retrievedQuestions)
-    setUserAnswers(retrievedQuestions.map(()=>null))
     setIsLoading(false)
   }, [])
 
@@ -87,7 +86,6 @@ export default function ClimateMatchRoot() {
             questions={questions} 
             step={step}
             onChangeAnswer={handleChangeAnswers}
-            locale={locale}
           />
         )      
       }
