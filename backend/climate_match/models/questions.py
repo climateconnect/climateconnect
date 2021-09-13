@@ -60,6 +60,15 @@ class Question(models.Model):
 		blank=True
 	)
 
+	# For questions around skills and hubs we need to limit how many answers user can give.
+	# This column determines that. 	
+	number_of_choices = models.IntegerField(
+		help_text="Number of answer choice user can pick for the question",
+		verbose_name="Number of choices",
+		null=True,
+		blank=True
+	)
+
 	class Meta:
 		verbose_name = "Question"
 		verbose_name_plural = "Questions"
