@@ -68,9 +68,10 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function RankingQuestionTypeBody({question, numberOfChoices, answers, onChangeAnswer}) {
+export default function RankingQuestionTypeBody({
+  question, numberOfChoices, answers, onChangeAnswer, onForwardClick
+}) {
   const classes = useStyles()
-  console.log('++++', answers)
   const [selectableAnswers, setSelectableAnswers] = useState(answers)
   const onDragEnd = (result) => {
     console.log(result.destination)
@@ -141,7 +142,7 @@ export default function RankingQuestionTypeBody({question, numberOfChoices, answ
                 </div>
               )}
             </Droppable>
-            <QuestionButtonBar />
+            <QuestionButtonBar onForwardClick={onForwardClick} />
           </div>
           <Droppable droppableId="possibleAnswers" isDropDisabled> 
             {(provided) => (

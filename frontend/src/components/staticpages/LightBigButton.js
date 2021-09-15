@@ -15,10 +15,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LightBigButton({ className, children, href }) {
+export default function LightBigButton({ className, children, href, onClick }) {
   const classes = useStyles();
   return (
-    <Button variant="contained" href={href} className={`${classes.button} ${className}`}>
+    <Button variant="contained" href={href} className={`${classes.button} ${className}`} onClick={onClick}>
       {children}
     </Button>
   );

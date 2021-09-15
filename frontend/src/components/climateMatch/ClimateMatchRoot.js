@@ -42,6 +42,7 @@ export default function ClimateMatchRoot() {
   const { locale } = useContext(UserContext)
   const texts = getTexts({page: "climatematch", locale: locale})
   const [step, setStep] = useState(0)
+  const [totalQuestions, setTotalQuestions] = useState(0)
   const [questions, setQuestions] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [location, setLocation] = useState(null)
@@ -56,13 +57,22 @@ export default function ClimateMatchRoot() {
     const params = Object.fromEntries(urlSearchParams.entries());
     if(params.location)
       setLocation(params.location)
-    const retrievedQuestions = await getQuestions(token, locale, params.location)
-    setQuestions(retrievedQuestions)
+    const retrievedQuestionsData = await getQuestions(token, locale, params.location)
+    setQuestions(retrievedQuestionsData.results)
+    setTotalQuestions(retrievedQuestionsData.total_questions)
     setIsLoading(false)
   }, [])
 
   const goToNextStep = () => {
     setStep(step+1)
+  }
+
+  const handleForwardClick = () => {
+    if(step < totalQuestions) {
+      setStep(step + 1);
+    } else {
+      console.log("All questions over")
+    }
   }
 
   const handleChangeAnswers = (step, newAnswer) => (
@@ -86,6 +96,7 @@ export default function ClimateMatchRoot() {
             questions={questions} 
             step={step}
             onChangeAnswer={handleChangeAnswers}
+            onForwardClick={handleForwardClick}
           />
         )      
       }
@@ -94,7 +105,6 @@ export default function ClimateMatchRoot() {
 }
 
 const getQuestions = async (token, locale, location) => {
-  console.log(location)
   if(token) {
     try {
       const resp = await apiRequest({
@@ -103,12 +113,7 @@ const getQuestions = async (token, locale, location) => {
         locale: locale,
         token: token
       })
-      console.log(resp.data.results);
-      return resp.data.results;
-      /* return getMockClimateMatchQuestions({
-        locale: locale, allHubs: await getAllHubs(locale),
-        topLevelSkills: await getSkillsOptions(locale, true)
-      }); */
+      return resp.data;
     } catch(e) {
       console.log(e)
     }

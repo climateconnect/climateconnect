@@ -17,12 +17,14 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function QuestionButtonBar() {
+export default function QuestionButtonBar({onForwardClick}) {
   const classes = useStyles()
   return (
     <div>
       <Button variant="outlined" className={classes.backButton}>back</Button>
-      <LightBigButton className={classes.forwardButton}>forward</LightBigButton>
+      <LightBigButton className={classes.forwardButton} onClick={onForwardClick}>
+        forward
+      </LightBigButton>
     </div>
   )
 }
