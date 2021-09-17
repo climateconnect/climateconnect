@@ -1,8 +1,5 @@
 import { Container, makeStyles } from "@material-ui/core"
 import React, { useContext, useEffect, useState } from "react"
-import getMockClimateMatchQuestions from "../../../public/data/mockClimateMatchQuestions"
-import { getSkillsOptions } from "../../../public/lib/getOptions"
-import { getAllHubs } from "../../../public/lib/hubOperations"
 import getTexts from "../../../public/texts/texts"
 import UserContext from "../context/UserContext"
 import LoadingSpinner from "../general/LoadingSpinner"
@@ -75,10 +72,20 @@ export default function ClimateMatchRoot() {
     }
   }
 
-  const handleChangeAnswers = (step, newAnswer) => (
-    setUserAnswers([...userAnswers.splice(0, step), newAnswer, ...userAnswers.slice(newAnswer+1, newAnswer.length)])
-  )
+  const handleBackClick = () => {
+    console.log("dip+++++++")
+    if(step > 0) {
+      setStep(step - 1);
+    }
+  }
 
+  const handleChangeAnswers = (step, newAnswer) => (
+    setUserAnswers([
+      ...userAnswers.splice(0, step), 
+      newAnswer, 
+      ...userAnswers.slice(newAnswer+1, newAnswer.length)
+    ])
+  )
   return (
     <Container className={classes.root}>
       {isLoading && (
@@ -97,6 +104,7 @@ export default function ClimateMatchRoot() {
             step={step}
             onChangeAnswer={handleChangeAnswers}
             onForwardClick={handleForwardClick}
+            onBackClick={handleBackClick}
           />
         )      
       }

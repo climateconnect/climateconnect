@@ -69,13 +69,12 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function RankingQuestionTypeBody({
-  question, numberOfChoices, answers, onChangeAnswer, onForwardClick
+  question, numberOfChoices, answers, onChangeAnswer, onForwardClick, onBackClick
 }) {
   const classes = useStyles()
   const [selectableAnswers, setSelectableAnswers] = useState(answers)
   const onDragEnd = (result) => {
-    console.log(result.destination)
-    console.log(result)
+    console.log(result.source.index);
     if(!result.destination)
       return
     //The user selected an answer!
@@ -93,6 +92,10 @@ export default function RankingQuestionTypeBody({
       }
     }
   }
+
+  const onCloseIcon = () => {
+    console.log("Remove")
+  }
   
   return (
     <DragDropContext onDragEnd={onDragEnd}>      
@@ -108,7 +111,7 @@ export default function RankingQuestionTypeBody({
                 <div 
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                >       
+                >
                   {
                     [...Array(numberOfChoices)].map((e, i) => (
                       <div key={i} className={classes.selectedAnswerContainer}>
@@ -125,7 +128,7 @@ export default function RankingQuestionTypeBody({
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
                                   />
-                                  <CloseIcon />
+                                  <CloseIcon onClick={onCloseIcon}/>
                                 </>
                               )}
                             </Draggable>
@@ -142,7 +145,7 @@ export default function RankingQuestionTypeBody({
                 </div>
               )}
             </Droppable>
-            <QuestionButtonBar onForwardClick={onForwardClick} />
+            <QuestionButtonBar onForwardClick={onForwardClick} onBackClick={onBackClick}/>
           </div>
           <Droppable droppableId="possibleAnswers" isDropDisabled> 
             {(provided) => (

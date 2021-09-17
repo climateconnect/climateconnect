@@ -1,10 +1,12 @@
 import React from 'react';
 import { Chip, makeStyles } from '@material-ui/core';
 import ClimateMatchHeadline from './ClimateMatchHeadline';
+import QuestionButtonBar from './QuestionButtonBar';
 
 const useStyles = makeStyles(theme => ({
   headline: {
     marginBottom: theme.spacing(4),
+    marginTop: theme.spacing(4),
     textAlign: "center"
   },
   answerContainer: {
@@ -19,12 +21,12 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 36,
     marginTop: 10,
     color: "#F8F8F8",
-    fontSize: "normal",
+    fontSize: 25,
     fontWeight: 600 
   }
 }))
 
-export default function OptionalQuestionTypeBody({question, onForwardClick}) {
+export default function OptionalQuestionTypeBody({question, onForwardClick, onBackClick}) {
   const classes = useStyles();
   const answers = question.answers;
   return (
@@ -43,6 +45,7 @@ export default function OptionalQuestionTypeBody({question, onForwardClick}) {
           </div>
         ))}
       </div>
+      <QuestionButtonBar onForwardClick={onForwardClick} onBackClick={onBackClick}/>
     </div>
   )
 }

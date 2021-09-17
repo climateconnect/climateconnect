@@ -2,6 +2,8 @@ import { makeStyles } from "@material-ui/core"
 import React from "react"
 import RankingQuestionTypeBody from "./RankingQuestionTypeBody"
 import OptionalQuestionTypeBody from "./OptionalQuestionTypeBody"
+import { getImageUrl } from "../../../public/lib/imageOperations"
+import QuestionButtonBar from "./QuestionButtonBar"
 
 
 const useStyles = makeStyles(theme => ({
@@ -21,16 +23,22 @@ const useStyles = makeStyles(theme => ({
   })
 }))
 
-export default function ClimateMatchQuestion({questions, step, onChangeAnswer, onForwardClick}) {
+export default function ClimateMatchQuestion({
+  questions, step, onChangeAnswer, onForwardClick, onBackClick
+}) {
   const question = questions.find(q => q.step === step)
-  const classes = useStyles({image: question.image})
+  const classes = useStyles({image: getImageUrl(question.image)})
   const answers = question.answers;
 
   return (
     <div className={classes.root}>
       <div className={classes.imageContainer}/>
       {question.answer_type === "answer" ? (
-        <OptionalQuestionTypeBody question={question} onForwardClick={onForwardClick}/>
+        <OptionalQuestionTypeBody 
+          question={question} 
+          onForwardClick={onForwardClick}
+          onBackClick={onBackClick}
+        />
       ) : (
         <RankingQuestionTypeBody 
           question={question} 
@@ -38,9 +46,10 @@ export default function ClimateMatchQuestion({questions, step, onChangeAnswer, o
           onChangeAnswer={onChangeAnswer}
           answers={answers}
           onForwardClick={onForwardClick}
+          onBackClick={onBackClick}
         />
       )
-      }    
+      } 
     </div>
   )
 }
