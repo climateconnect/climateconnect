@@ -20,38 +20,9 @@ def linkify_mentions(content):
     matches = re.findall(r, content)
 
     for m in matches:
-        whole, url_slug, display = m[0], m[1], m[2]
+        whole, _, display = m[0], m[1], m[2]
         content = content.replace(whole, '@' + display)
     return content
-
-
-def send_project_comment_reply_email(user, project, comment, sender):
-    data = {
-        'Messages': [
-            {
-                "From": {
-                    "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
-                    "Name": "Climate Connect"
-                },
-                "To": [
-                    {
-                        "Email": user.email,
-                        "Name": user.first_name + " " + user.last_name
-                    }
-                ],
-                "TemplateID": int(settings.PROJECT_COMMENT_REPLY_TEMPLATE_ID),
-                "TemplateLanguage": True,
-                "Subject": "Someone replied to your comment on Climate Connect",
-                "Variables": {
-                    "FirstName": user.first_name,
-                    "CommenterName": sender.first_name + " " + sender.last_name,
-                    "CommentText": linkify_mentions(comment),
-                    "url": settings.FRONTEND_URL+"/projects/"+project.url_slug+"#comments",
-                    "ProjectName": project.name
-                }
-            }
-        ]
-    }
 
 
 def send_project_comment_reply_email(user, project, comment, sender, notification):

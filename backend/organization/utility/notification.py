@@ -56,7 +56,7 @@ def create_project_comment_mention_notification(project, comment, sender):
     matches = re.findall(r, comment.content)
     sender_url_slug = UserProfile.objects.get(user=sender).url_slug
     for m in matches:
-        whole, url_slug, display = m[0], m[1], m[2]
+        _, url_slug, _ = m[0], m[1], m[2]
         if not url_slug == sender_url_slug:
             user = UserProfile.objects.filter(url_slug=url_slug)[0].user
             create_user_notification(user, notification)
