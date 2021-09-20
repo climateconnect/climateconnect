@@ -1,26 +1,22 @@
-from climateconnect.backend.organization.utility.email import send_mention_email, send_project_follower_email
 import re
-
-from climateconnect_api.utility.notification import create_user_notification, send_comment_notification, send_out_live_notification
-from organization.models.content import ProjectComment
-from climateconnect_api.models.notification import Notification, EmailNotification, UserNotification
-from climateconnect_api.models import UserProfile
-from organization.models import Comment, ProjectMember
-from django.db.models import Q
 from datetime import datetime, timedelta
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from climateconnect.backend.organization.utility.email import (
+    send_mention_email, send_project_follower_email)
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.notification import (EmailNotification,
                                                     Notification,
                                                     UserNotification)
-from climateconnect_api.utility.notification import (create_email_notification,
-                                                     create_user_notification)
+from climateconnect_api.utility.notification import (
+    create_email_notification, create_user_notification,
+    send_comment_notification, send_out_live_notification)
 from django.contrib.auth.models import User
 from django.db.models import Q
 
 from organization.models import Comment, ProjectMember
+from organization.models.content import ProjectComment
 from organization.serializers.content import ProjectCommentSerializer
 
 
@@ -66,7 +62,7 @@ def create_project_comment_mention_notification(project, comment, sender):
             create_user_notification(user, notification)
             send_out_live_notification(user.id)
             send_mention_email(
-                user, project, comment, sender)
+                user, project, comment.content, sender)
     return notification
 
 

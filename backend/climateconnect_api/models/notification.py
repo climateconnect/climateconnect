@@ -32,70 +32,69 @@ class Notification(models.Model):
         (POST_COMMENT, "post_comment"),
         (REPLY_TO_POST_COMMENT, "reply_to_post_comment"),
         (GROUP_MESSAGE, "group_message"),
-        (MENTION, "mention")
+        (MENTION, "mention"),
         (IDEA_COMMENT, "idea_comment"),
         (REPLY_TO_IDEA_COMMENT, "reply_to_idea_comment"),
         (PERSON_JOINED_IDEA, "person_joined_idea")
     )
 
+    notification_type = models.IntegerField(
+        help_text="type of notification", verbose_name="Notification type",
+        choices=NOTIFICATION_TYPES, default=BROADCAST
+    )
 
-notification_type = models.IntegerField(
-    help_text="type of notification", verbose_name="Notification type",
-    choices=NOTIFICATION_TYPES, default=BROADCAST
-)
+    text = models.CharField(
+        help_text="Text to be displayed in Notification",
+        verbose_name="Text", max_length=280, null=True, blank=True
+    )
 
-text = models.CharField(
-    help_text="Text to be displayed in Notification",
-    verbose_name="Text", max_length=280, null=True, blank=True
-)
+    chat = models.ForeignKey(
+        MessageParticipants, related_name="notification_chat",
+        help_text="Points to chat for notifications of type 'private_message'",
+        verbose_name="Chat", on_delete=models.CASCADE,
+        null=True, blank=True
+    )
 
-chat = models.ForeignKey(
-    MessageParticipants, related_name="notification_chat",
-    help_text="Points to chat for notifications of type 'private_message'",
-    verbose_name="Chat", on_delete=models.CASCADE,
-    null=True, blank=True
-)
+    project_comment = models.ForeignKey(
+        ProjectComment, related_name="notification_project_comment",
+        verbose_name="Project comment", on_delete=models.CASCADE,
+        null=True, blank=True
+    )
 
-project_comment = models.ForeignKey(
-    ProjectComment, related_name="notification_project_comment",
-    verbose_name="Project comment", on_delete=models.CASCADE,
-    null=True, blank=True
-)
+    post_comment = models.ForeignKey(
+        PostComment, related_name="notification_post_comment",
+        verbose_name="Post comment", on_delete=models.CASCADE,
+        null=True, blank=True
+    )
 
-post_comment = models.ForeignKey(
-    PostComment, related_name="notification_post_comment",
-    verbose_name="Post comment", on_delete=models.CASCADE,
-    null=True, blank=True
-)
+    idea_comment = models.ForeignKey(
+        IdeaComment, related_name="notification_idea_comment",
+        verbose_name="Idea Comment", on_delete=models.CASCADE,
+        null=True, blank=True
+    )
 
-idea_comment = models.ForeignKey(
-    IdeaComment, related_name="notification_idea_comment",
-    verbose_name="Idea Comment", on_delete=models.CASCADE,
-    null=True, blank=True
-)
+    idea_supporter = models.ForeignKey(
+        IdeaSupporter, related_name="notification_idea_supporter",
+        verbose_name="Idea Supporter", on_delete=models.CASCADE,
+        null=True, blank=True
+    )
 
-idea_supporter = models.ForeignKey(
-    IdeaSupporter, related_name="notification_idea_supporter",
-    verbose_name="Idea Supporter", on_delete=models.CASCADE,
-    null=True, blank=True
-)
+    project_follower = models.ForeignKey(
+        ProjectFollower, related_name="notification_project_follower",
+        verbose_name="Project Follower", on_delete=models.CASCADE,
+        null=True, blank=True
+    )
 
-project_follower = models.ForeignKey(
-    ProjectFollower, related_name="notification_project_follower",
-    verbose_name="Project Follower", on_delete=models.CASCADE,
-    null=True, blank=True
-)
+    project_update_post = models.ForeignKey(
+        Post, related_name="notification_project_update_post",
+        verbose_name="Project Post", on_delete=models.CASCADE,
+        null=True, blank=True
+    )
 
-project_update_post = models.ForeignKey(
-    Post, related_name="notification_project_update_post",
-    verbose_name="Project Post", on_delete=models.CASCADE,
-    null=True, blank=True
-)
-
-created_at = models.DateTimeField(
-    help_text="Time when participants started a messaging",
-    verbose_name="Created at", auto_now_add=True
-)
+    created_at = models.DateTimeField(
+        help_text="Time when participants started a messaging",
+        verbose_name="Created at", auto_now_add=True
+    )
 
 
 class Meta:
