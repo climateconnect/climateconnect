@@ -1,3 +1,4 @@
+import logging
 import re
 from datetime import datetime, timedelta
 
@@ -14,7 +15,8 @@ from django.db.models import Q
 
 from organization.models import Comment, ProjectMember
 from organization.serializers.content import ProjectCommentSerializer
-from organization.utility.email import (send_project_comment_email,
+from organization.utility.email import (send_mention_email,
+                                        send_project_comment_email,
                                         send_project_comment_reply_email,
                                         send_project_follower_email)
 

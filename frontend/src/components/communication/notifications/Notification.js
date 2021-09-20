@@ -14,6 +14,7 @@ import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../../public/lib/imageOperations";
 import getTexts from "../../../../public/texts/texts";
+import { getFragmentsWithMentions } from "../../../utils/mentions_markdown";
 import UserContext from "../../context/UserContext";
 
 const useStyles = makeStyles((theme) => {
@@ -192,7 +193,7 @@ const MentionNotification = ({ notification, texts, locale }) => {
             notification.project.name +
             '"'
           }
-          secondary={notification.project_comment.content}
+          secondary={getFragmentsWithMentions(notification.project_comment.content, false, locale)}
           primaryTypographyProps={{
             className: classes.messageSender,
           }}
