@@ -84,7 +84,7 @@ def create_project_comment_mention_notification(project, comment, sender):
             create_user_notification(user, notification)
             send_out_live_notification(user.id)
             send_email_notification(
-                user, "mention", project, comment.replace(whole, '@' + display), sender, notification)
+                user, "mention", project, comment, sender, notification)
     return notification
 
 

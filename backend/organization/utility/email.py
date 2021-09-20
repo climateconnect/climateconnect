@@ -1,4 +1,5 @@
 import logging
+import re
 
 from django.conf import settings
 from mailjet_rest import Client
@@ -7,6 +8,17 @@ logger = logging.getLogger(__name__)
 
 mailjet = Client(auth=(settings.MJ_APIKEY_PUBLIC,
                  settings.MJ_APIKEY_PRIVATE), version='v3.1')
+
+
+def linkify_mentions(content):
+    r = re.compile(
+        '(@@@__(?P<url_slug>[^\^]*)\^\^__(?P<display>[^\@]*)@@@\^\^\^)')
+    matches = re.findall(r, content)
+
+    for m in matches:
+        whole, url_slug, display = m[0], m[1], m[2]
+        content = content.replace(whole, '@' + display)
+    return content
 
 
 def send_project_comment_reply_email(user, project, comment, sender):
@@ -29,7 +41,7 @@ def send_project_comment_reply_email(user, project, comment, sender):
                 "Variables": {
                     "FirstName": user.first_name,
                     "CommenterName": sender.first_name + " " + sender.last_name,
-                    "CommentText": comment,
+                    "CommentText": linkify_mentions(comment),
                     "url": settings.FRONTEND_URL+"/projects/"+project.url_slug+"#comments",
                     "ProjectName": project.name
                 }
@@ -65,7 +77,7 @@ def send_mention_email(user, project, comment, sender):
                 "Subject": "Somebody mentioned you in a comment on the project '"+project.name+"' on Climate Connect",
                 "Variables": {
                     "ProjectName": project.name,
-                    "CommentText": comment,
+                    "CommentText": linkify_mentions(comment),
                     "FirstName": user.first_name,
                     "CommenterName": sender.first_name + " " + sender.last_name,
                     "url": settings.FRONTEND_URL+"/projects/"+project.url_slug+"#comments"
@@ -102,7 +114,7 @@ def send_project_comment_email(user, project, comment, sender):
                 "Subject": "Somebody left a comment on your project '"+project.name+"' on Climate Connect",
                 "Variables": {
                     "ProjectName": project.name,
-                    "CommentText": comment,
+                    "CommentText": linkify_mentions(comment),
                     "FirstName": user.first_name,
                     "CommenterName": sender.first_name + " " + sender.last_name,
                     "url": settings.FRONTEND_URL+"/projects/"+project.url_slug+"#comments"
