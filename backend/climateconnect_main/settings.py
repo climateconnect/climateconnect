@@ -10,10 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-from climateconnect_main.utility.general import get_allowed_hosts
 import os
-from dotenv import find_dotenv, load_dotenv
 from datetime import timedelta
+
+from dotenv import find_dotenv, load_dotenv
+
+from climateconnect_main.utility.general import get_allowed_hosts
 
 load_dotenv(find_dotenv('.backend_env'))
 
@@ -46,7 +48,7 @@ AUTO_VERIFY = True if env('AUTO_VERIFY') in ['True', 'true', 'TRUE'] else False
 
 CUSTOM_APPS = [
     'climateconnect_api',
-    'organization', 
+    'organization',
     'chat_messages',
     'hubs',
     'location'
@@ -77,7 +79,7 @@ else:
     INSTALLED_APPS = CUSTOM_APPS + LIBRARY_APPS
 
 SECURITY_MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',    
+    'django.middleware.security.SecurityMiddleware',
 ]
 
 DEBUG_MIDDLEWARE = [
@@ -186,8 +188,10 @@ if env('ENVIRONMENT') not in('development', 'test'):
     AZURE_ACCOUNT_KEY = env('AZURE_ACCOUNT_KEY')
     AZURE_CONTAINER = env('AZURE_CONTAINER')
 
-STATIC_URL = '/static/' if env('ENVIRONMENT') in ('development', 'test') else 'https://'+env('AZURE_ACCOUNT_NAME')+'.'+env('AZURE_HOST')+'/{}/'.format(env('AZURE_CONTAINER'))
-STATIC_ROOT = env('STATIC_ROOT') if env('ENVIRONMENT') in ('development', 'test') else "static/"
+STATIC_URL = '/static/' if env('ENVIRONMENT') in ('development', 'test') else 'https://'+env(
+    'AZURE_ACCOUNT_NAME')+'.'+env('AZURE_HOST')+'/{}/'.format(env('AZURE_CONTAINER'))
+STATIC_ROOT = env('STATIC_ROOT') if env('ENVIRONMENT') in (
+    'development', 'test') else "static/"
 MEDIA_ROOT = env('MEDIA_ROOT')
 MEDIA_URL = '/media/'
 
@@ -209,13 +213,15 @@ MJ_APIKEY_PUBLIC = env('MJ_APIKEY_PUBLIC', '')
 MJ_APIKEY_PRIVATE = env('MJ_APIKEY_PRIVATE', '')
 CLIMATE_CONNECT_SUPPORT_EMAIL = env('CLIMATE_CONNECT_SUPPORT_EMAIL', '')
 EMAIL_VERIFICATION_TEMPLATE_ID = env('EMAIL_VERIFICATION_TEMPLATE_ID', '')
-NEW_EMAIL_VERIFICATION_TEMPLATE_ID = env('NEW_EMAIL_VERIFICATION_TEMPLATE_ID', '')
+NEW_EMAIL_VERIFICATION_TEMPLATE_ID = env(
+    'NEW_EMAIL_VERIFICATION_TEMPLATE_ID', '')
 RESET_PASSWORD_TEMPLATE_ID = env('RESET_PASSWORD_TEMPLATE_ID', '')
 FEEDBACK_TEMPLATE_ID = env('FEEDBACK_TEMPLATE_ID')
 PRIVATE_MESSAGE_TEMPLATE_ID = env('PRIVATE_MESSAGE_TEMPLATE_ID')
 GROUP_MESSAGE_TEMPLATE_ID = env('GROUP_MESSAGE_TEMPLATE_ID')
 FRONTEND_URL = env('FRONTEND_URL', '')
 PROJECT_COMMENT_TEMPLATE_ID = env('PROJECT_COMMENT_TEMPLATE_ID')
+MENTION_TEMPLATE_ID = env('MENTION_TEMPLATE_ID')
 PROJECT_COMMENT_REPLY_TEMPLATE_ID = env('PROJECT_COMMENT_REPLY_TEMPLATE_ID')
 PROJECT_FOLLOWER_TEMPLATE_ID = env('PROJECT_FOLLOWER_TEMPLATE_ID')
 MAILJET_NEWSLETTER_LIST_ID = env('MAILJET_NEWSLETTER_LIST_ID')

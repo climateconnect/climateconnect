@@ -81,6 +81,10 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       key: "email_on_new_project_follower",
       text: texts.email_on_new_project_follower_text,
     },
+    {
+      key: "email_on_mention",
+      text: texts.email_on_mention_text,
+    },
   ];
 
   const possibleCookiePreferences = [

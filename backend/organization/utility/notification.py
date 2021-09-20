@@ -71,17 +71,18 @@ def create_project_comment_mention_notification(project, comment, sender):
     notification = Notification.objects.create(
         notification_type=9, project_comment=comment
     )
-    r = re.compile('@@@__(?P<id>[^\^]*)\^\^__(?P<display>[^\@]*)@@@\^\^\^')
+    r = re.compile(
+        '@@@__(?P<url_slug>[^\^]*)\^\^__(?P<display>[^\@]*)@@@\^\^\^')
     matches = re.findall(r, comment.content)
-    for user in matches:
-        id, display = user[0], user[1]
-        if not id == sender.id:
-            # TODO: need to fix the filter somehow
-            user = User.objects.filter(id=id)[0]
+    sender_url_slug = UserProfile.objects.get(user=sender).url_slug
+    for m in matches:
+        url_slug, display = m[0], m[1]
+        if not url_slug == sender_url_slug:
+            user = UserProfile.objects.filter(url_slug=url_slug)[0].user
             create_user_notification(user, notification)
             send_out_live_notification(user.id)
             send_email_notification(
-                user, "project_comment", project, comment, sender, notification)
+                user, "mention", project, comment, sender, notification)
     return notification
 
 
@@ -100,6 +101,7 @@ def send_email_notification(user, notification_type, project, comment, sender, n
     email_settings = UserProfile.objects.filter(user=user).values(
         'email_on_comment_on_your_project',
         'email_on_reply_to_your_comment',
+        'email_on_mention'
     )[0]
     if should_send_email_notification:
         if notification_type == "project_comment":
@@ -114,6 +116,15 @@ def send_email_notification(user, notification_type, project, comment, sender, n
         if notification_type == "project_comment_reply":
             if email_settings['email_on_reply_to_your_comment'] == True:
                 send_project_comment_reply_email(
+                    user, project, comment_serializer.data["content"], sender)
+                EmailNotification.objects.create(
+                    user=user,
+                    created_at=datetime.now(),
+                    notification=notification
+                )
+        if notification_type == "mention":
+            if email_settings['email_on_mention'] == True:
+                send_mention_email(
                     user, project, comment_serializer.data["content"], sender)
                 EmailNotification.objects.create(
                     user=user,

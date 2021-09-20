@@ -68,11 +68,15 @@ export default function Notification({ notification, isPlaceholder }) {
   else {
     const type = NOTIFICATION_TYPES[notification.notification_type];
     if (type === "private_message")
-      return <PrivateMessageNotification notification={notification} texts={texts} locale={locale} />;
+      return (
+        <PrivateMessageNotification notification={notification} texts={texts} locale={locale} />
+      );
     else if (type === "group_message")
       return <GroupMessageNotification notification={notification} texts={texts} locale={locale} />;
     else if (type === "project_comment")
-      return <ProjectCommentNotification notification={notification} texts={texts} locale={locale} />;
+      return (
+        <ProjectCommentNotification notification={notification} texts={texts} locale={locale} />
+      );
     else if (type === "mention")
       return <MentionNotification notification={notification} texts={texts} locale={locale} />;
     else if (type === "reply_to_project_comment")
@@ -84,7 +88,9 @@ export default function Notification({ notification, isPlaceholder }) {
         />
       );
     else if (type === "project_follower")
-      return <ProjectFollowerNotification notification={notification} texts={texts} locale={locale} />;
+      return (
+        <ProjectFollowerNotification notification={notification} texts={texts} locale={locale} />
+      );
     else return <></>;
   }
 }
@@ -164,6 +170,8 @@ const PlaceholderNotification = ({ texts, locale }) => {
 
 const MentionNotification = ({ notification, texts, locale }) => {
   const classes = useStyles();
+  const sender = notification.project_comment.author_user;
+  console.log(notification);
   return (
     <Link
       href={getLocalePrefix(locale) + "/projects/" + notification.project.url_slug + "/#comments"}
@@ -174,7 +182,16 @@ const MentionNotification = ({ notification, texts, locale }) => {
           <CommentIcon />
         </ListItemIcon>
         <ListItemText
-          primary={texts.mentioned_you + ' "' + notification.project.name + '"'}
+          primary={
+            sender.first_name +
+            " " +
+            sender.last_name +
+            " " +
+            texts.mentioned_you +
+            ' "' +
+            notification.project.name +
+            '"'
+          }
           secondary={notification.project_comment.content}
           primaryTypographyProps={{
             className: classes.messageSender,
