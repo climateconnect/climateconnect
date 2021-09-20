@@ -1,11 +1,11 @@
-import { Link, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import React, { useContext } from "react";
 import Linkify from "react-linkify";
 import YouTube from "react-youtube";
 import youtubeRegex from "youtube-regex";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { getFragmentsWithMentions } from "../../utils/mentions_markdown";
 import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles({
@@ -75,41 +75,6 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
     return ID;
   }
 
-  function getFragmentsWithMentions(content) {
-    // this matches all future markdown substrings in the string
-    let r = /@@@__([^\^]*)\^\^__([^\@]*)@@@\^\^\^/g
-
-    // this one only matches at the beginning of the string
-    let g = /^@@@__([^\^]*)\^\^__([^\@]*)@@@\^\^\^/g
-
-    let fragments = [];
-    for (let i = 0; i < content.length; i++) {
-      let m = content.substring(i);
-      let greedyMatch = [...m.matchAll(g)];
-      let fullMatch = [...m.matchAll(r)];
-
-      if (greedyMatch.length !== 0) {
-        // the next substring matches the markdown, so turn it into a link
-        let display = greedyMatch[0][2]
-        let id = greedyMatch[0][1]
-        fragments.push(<Link href={getLocalePrefix(locale) + "/profiles/" + id}>@{display}</Link>)
-        i += (greedyMatch[0][0].length - 1)
-      } else {
-        if (fullMatch.length !== 0) {
-          // there exists another mention later in the string, find it and render what's in between as text
-          fragments.push(m.substring(0, fullMatch[0].index))
-          i += (fullMatch[0].index - 1);
-        } else {
-          // there aren't any more mentions, so render the rest of the string as text 
-          fragments.push(m)
-          i += m.length - 1;
-        }
-
-      }
-    }
-    return fragments;
-  }
-
   const youtubeVideoLines = renderYoutubeVideos ? getFirstYouTubeVideosLines(content) : null;
 
   return (
@@ -119,12 +84,14 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
         if (youtubeVideoLines && youtubeVideoLines.find((l) => l.index === index)) {
           return <div key={index}>{youtubeVideoLines.find((l) => l.index === index).content}</div>;
         }
-        let fragments = getFragmentsWithMentions(content)
+        let fragments = getFragmentsWithMentions(content, true, locale);
         return (
           <div>
-            <Typography display='inline' style={{ alignSelf: 'flex-start' }}>{fragments}</Typography>
+            <Typography display="inline" style={{ alignSelf: "flex-start" }}>
+              {fragments}
+            </Typography>
           </div>
-        )
+        );
       })}
     </Linkify>
   );
