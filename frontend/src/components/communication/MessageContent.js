@@ -84,9 +84,9 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
         if (youtubeVideoLines && youtubeVideoLines.find((l) => l.index === index)) {
           return <div key={index}>{youtubeVideoLines.find((l) => l.index === index).content}</div>;
         }
-        let fragments = getFragmentsWithMentions(content, true, locale);
+        const fragments = getFragmentsWithMentions(content, true, locale);
         return (
-          <div>
+          <div key={index}>
             <Typography display="inline" style={{ alignSelf: "flex-start" }}>
               {fragments}
             </Typography>

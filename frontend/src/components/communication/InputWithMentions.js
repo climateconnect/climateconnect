@@ -3,14 +3,7 @@ import { Mention, MentionsInput } from "react-mentions";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
 
-export default function InputWithMentions({
-  baseUrl,
-  value,
-  data,
-  onChange,
-  placeholder,
-  className,
-}) {
+export default function InputWithMentions({ baseUrl, value, onChange, placeholder, className }) {
   const { locale } = useContext(UserContext);
 
   function lookupUsers(searchValue, callback) {

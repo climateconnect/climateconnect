@@ -3,21 +3,21 @@ import { getLocalePrefix } from "../../public/lib/apiOperations";
 
 const getFragmentsWithMentions = (content, linkify, locale) => {
   // this matches all future markdown substrings in the string
-  let r = /@@@__([^\^]*)\^\^__([^\@]*)@@@\^\^\^/g;
+  const r = /@@@__([^^]*)\^\^__([^@]*)@@@\^\^\^/g;
 
   // this one only matches at the beginning of the string
-  let g = /^@@@__([^\^]*)\^\^__([^\@]*)@@@\^\^\^/g;
+  const g = /^@@@__([^^]*)\^\^__([^@]*)@@@\^\^\^/g;
 
-  let fragments = [];
+  const fragments = [];
   for (let i = 0; i < content.length; i++) {
-    let m = content.substring(i);
-    let greedyMatch = [...m.matchAll(g)];
-    let fullMatch = [...m.matchAll(r)];
+    const m = content.substring(i);
+    const greedyMatch = [...m.matchAll(g)];
+    const fullMatch = [...m.matchAll(r)];
 
     if (greedyMatch.length !== 0) {
       // the next substring matches the markdown, so turn it into a link
-      let display = greedyMatch[0][2];
-      let id = greedyMatch[0][1];
+      const display = greedyMatch[0][2];
+      const id = greedyMatch[0][1];
       if (linkify) {
         fragments.push(<Link href={getLocalePrefix(locale) + "/profiles/" + id}>@{display}</Link>);
       } else {

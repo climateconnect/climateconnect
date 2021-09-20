@@ -42,11 +42,6 @@ export default function CommentInput({ user, onSendComment, parent_comment, onCa
     setCurComment(e.target.value);
   };
 
-  // TODO: Fix this?
-  const handleMessageKeydown = (event) => {
-    if (event.key === "Enter" && event.ctrlKey) handleSendComment(event, curComment);
-  };
-
   const handleSendComment = (event) => {
     if (event) event.preventDefault();
     if (!curComment) alert(texts.your_comment_cannot_be_empty);
