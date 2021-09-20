@@ -6,7 +6,7 @@ export default function Zoom() {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
   useEffect(() => {
-    window.location = "https://fau.zoom.us/j/91414261815";
+    window.location = "https://zoom.us/j/96281669535";
   });
   return <div>{texts.you_are_being_redirected_to_the_climate_connect_zoom}...</div>;
 }

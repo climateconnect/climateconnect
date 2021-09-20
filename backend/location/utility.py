@@ -1,13 +1,15 @@
-from rest_framework.exceptions import ValidationError
-from location.models import Location
-from django.contrib.gis.geos import (
-    MultiPolygon, Polygon, GEOSGeometry, LinearRing, Point
-)
 import json
+
 import requests
-from django.db.models import Q
-from django.contrib.gis.measure import D
 from django.conf import settings
+from django.contrib.gis.geos import (GEOSGeometry, LinearRing, MultiPolygon,
+                                     Point, Polygon)
+from django.contrib.gis.measure import D
+from django.db.models import Q
+from rest_framework.exceptions import ValidationError
+
+from location.models import Location
+
 
 def get_legacy_location(location_object):
     required_params = ['country']
@@ -249,7 +251,7 @@ def get_location_with_range(query_params):
         response = requests.get(url)
         location_object = json.loads(response.text)[0]
         location = get_location(format_location(location_object, False))
-        location_in_db = location.multi_polygon.buffer(buffer_width)
+        location_in_db = location.multi_polygon.buffer(buffer_width) if location_type == 'relation' else location.centre_point 
     else:        
         location = locations[0]
         location_in_db = location.multi_polygon.buffer(buffer_width) if location_type == 'relation' else location.centre_point 

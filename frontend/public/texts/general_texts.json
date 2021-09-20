@@ -47,6 +47,10 @@
     "en": "Project Categories",
     "de": "Projektkategorien"
   },
+  "add_project_categories": {
+    "en": "Add project categories",
+    "de": "Projektkategorien hinzufügen"
+  },
   "save": {
     "en": "Save",
     "de": "Speichern"
@@ -129,7 +133,7 @@
   },
   "please_choose_one_of_the_location_options": {
     "en": "Please choose one of the location options",
-    "de": "Bitte wähle eine der Optionen für den Org"
+    "de": "Bitte wähle eine der Optionen für den Ort"
   },
   "organization_type": {
     "en": "Organization type",
@@ -431,10 +435,6 @@
     "en": "You are being redirected to the Climate Connect zoom",
     "de": "Du wirst zum Climate Connect Zoom weitergeleitet"
   },
-  "no_results": {
-    "en": "No Results",
-    "de": "Kein Ergebnis"
-  },
   "apply": {
     "en": "Apply",
     "de": "Anwenden"
@@ -557,7 +557,7 @@
   },
   "connect_with_the_right_people": {
     "en": "Connect with the right people",
-    "de": "Verbinde dich mit den richtigen Menschen"
+    "de": "Vernetze dich mit den richtigen Menschen"
   },
   "connect_with_the_right_people_text": {
     "en": "Filter for projects and people based on your skills, needs and interests. Maximize your positive impact on our planet.",
@@ -639,6 +639,10 @@
     "en": "Publish",
     "de": "Veröffentlichen"
   },
+  "publish": {
+    "en": "Publish",
+    "de": "Veröffentlichen"
+  },
   "short_description": {
     "en": "Short description",
     "de": "Kurzbeschreibung"
@@ -663,6 +667,10 @@
     "en": "Check Translations",
     "de": "Übersetzungen überprüfen"
   },
+  "ideas": {
+    "en": "Ideas",
+    "de": "Ideen"
+  },
   "summary": {
     "en": "Summary",
     "de": "Zusammenfassung"
@@ -674,5 +682,17 @@
   "make_this_user_the_creator": {
     "en": "Make this user the Super Admin",
     "de": "Zum Super Admin machen"
+  },
+  "do_you_really_want_to_go_back": {
+    "en": "Do you really want to go back?",
+    "de": "Möchtest du wirklich zurück gehen?"
+  },
+  "if_you_go_back_you_will_lose_your_unsaved_changes": {
+    "en": "If you go back you will lose your unsaved changes",
+    "de": "Wenn du zurück gehst, gehen deine nicht gespeicherten Änderungen verloren."
+  },
+  "orgs": {
+    "en": "Orgs",
+    "de": "Orgs"
   }
 }

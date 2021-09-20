@@ -18,6 +18,7 @@ LOCATION_SERVICE_BASE_URL=<Url of location geocoding API>
 ENABLE_LEGACY_LOCATION_FORMAT=<Set to True to disable usage of geocoding API>
 CELERY_BROKER_URL=<Set celery broker url, eg: "redis://127.0.0.1">
 ```
+
 The following should correspond to how you've configured your Postgres database:
 
 ```
@@ -27,7 +28,6 @@ DATABASE_PASSWORD=<database role password>
 DATABASE_HOST=<database host e.g. localhost>
 DATABASE_PORT=<database port e.g. 5432>
 ```
-
 
 Env variables needed for email sending with [mailjet](https://www.mailjet.com/):
 

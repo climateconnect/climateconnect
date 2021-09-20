@@ -7,6 +7,7 @@ module.exports = {
   env: pick(process.env, [
     "API_HOST",
     "API_URL",
+    "BASE_URL",
     "BASE_URL_HOST",
     "DONATION_CAMPAIGN_RUNNING",
     "ENVIRONMENT",

@@ -27,7 +27,7 @@ from organization.models import (Organization, OrganizationTagging,
 from organization.models.translations import ProjectTranslation
 from organization.pagination import (MembersPagination,
                                      ProjectCommentPagination,
-                                     ProjectPostPagination, ProjectsPagination)
+                                     ProjectPostPagination, ProjectsPagination, ProjectsSitemapPagination)
 from organization.permissions import (AddProjectMemberPermission,
                                       ChangeProjectCreatorPermission,
                                       ProjectMemberReadWritePermission,
@@ -47,7 +47,9 @@ from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
     create_project_comment_mention_notification,
-    create_project_comment_notification)
+    create_project_comment_notification,
+    create_project_comment_reply_notification,
+    create_project_follower_notification)
 from organization.utility.organization import check_organization
 from organization.utility.project import (create_new_project,
                                           get_project_translations)
@@ -78,7 +80,7 @@ class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter,
                        DjangoFilterBackend, ProjectsOrderingFilter]
-    search_fields = ['url_slug']
+    search_fields = ['name', 'translation_project__name_translation']
     filterset_fields = ['collaborators_welcome']
     pagination_class = ProjectsPagination
     serializer_class = ProjectStubSerializer
@@ -115,8 +117,6 @@ class ListProjectsView(ListAPIView):
                     ).annotate(
                         distance=Distance("loc__centre_point",
                                           location.multi_polygon)
-                    ).order_by(
-                        'distance'
                     )
 
         if 'collaboration' in self.request.query_params:
@@ -617,7 +617,7 @@ class ChangeProjectCreator(APIView):
                 new_creator.role_in_project = request.data['role_in_project']
             if('availability' in request.data):
                 try:
-                    user_availability = Availability.objects.filter(
+                    Availability.objects.filter(
                         id=int(request.data['availability'])).first()
                 except Availability.DoesNotExist:
                     raise NotFound(detail="Availability not found.",
@@ -800,6 +800,7 @@ class ListFeaturedProjects(ListAPIView):
 class ListProjectsForSitemap(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = ProjectSitemapEntrySerializer
+    pagination_class = ProjectsSitemapPagination
 
     def get_queryset(self):
         return Project.objects.filter(is_draft=False, is_active=True)
@@ -856,5 +857,5 @@ class LeaveProject(RetrieveUpdateAPIView):
             return Response(data={'message': f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except:
             # Send E to dev
-            E = traceback.format_exc()
+            # send to dev logs E= traceback.format_exc()
             return Response(data={'message': f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

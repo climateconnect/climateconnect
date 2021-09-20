@@ -370,7 +370,7 @@ export default function EditAccountPage({
             open={skillsDialogOpen}
             onClose={handleSkillsDialogClose}
             type="skills"
-            itemsToChooseFrom={skillsOptions}
+            options={skillsOptions}
             items={editedAccount.info.skills}
             selectedItems={selectedItems}
             setSelectedItems={setSelectedItems}

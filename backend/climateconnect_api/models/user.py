@@ -174,6 +174,11 @@ class UserProfile(models.Model):
         verbose_name="Email on mention", null=True, blank=True, default=True
     )
 
+    email_on_comment_on_your_idea = models.BooleanField(
+        help_text="Check if user wants to receive emails when they receive a comment on an idea they're a member of",
+        verbose_name="Email on idea comment", null=True, blank=True, default=True
+    )
+
     email_on_reply_to_your_comment = models.BooleanField(
         help_text="Check if user wants to receive emails when somebody answers to their comment on a project",
         verbose_name="Email on comment reply", null=True, blank=True, default=True
@@ -182,6 +187,11 @@ class UserProfile(models.Model):
     email_on_new_project_follower = models.BooleanField(
         help_text="Check if user wants to receive emails when somebody follows their project",
         verbose_name="Email on new project follower", null=True, blank=True, default=True
+    )
+
+    email_on_idea_join = models.BooleanField(
+        help_text="Check if user wants to receive emails when somebody joins an idea they are part of",
+        verbose_name="Email on new idea join", null=True, blank=True, default=True
     )
 
     has_logged_in = models.PositiveSmallIntegerField(

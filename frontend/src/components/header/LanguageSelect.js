@@ -1,11 +1,14 @@
-import { Button, makeStyles, Menu, MenuItem, useMediaQuery, withStyles } from "@material-ui/core";
+import { Button, makeStyles, useMediaQuery } from "@material-ui/core";
 import LanguageIcon from "@material-ui/icons/Language";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
+import React, { useContext, useEffect, useRef, useState } from "react";
+
 import { getCookieProps } from "../../../public/lib/cookieOperations";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
+import StyledMenu from "../general/StyledMenu";
+import StyledMenuItem from "../general/StyledMenuItem";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -42,6 +45,10 @@ export default function LanguageSelect({ transparentHeader }) {
     setOpen(true);
   };
 
+  const handleToggleOpen = () => {
+    setOpen(!open);
+  };
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -65,6 +72,8 @@ export default function LanguageSelect({ transparentHeader }) {
     }
   };
 
+  // TODO: this could be generalized into a HoverButton component,
+  // and used in the Welcome Blurb feature on /hubs
   return (
     <>
       <Button
@@ -74,8 +83,9 @@ export default function LanguageSelect({ transparentHeader }) {
         ref={buttonRef}
         aria-owns="language-select"
         aria-haspopup="true"
+        onClick={handleToggleOpen}
+        startIcon={<LanguageIcon className={classes.languageIcon} />}
       >
-        <LanguageIcon className={classes.languageIcon} />
         {locale}
       </Button>
       <StyledMenu
@@ -95,7 +105,7 @@ export default function LanguageSelect({ transparentHeader }) {
         container={anchorEl?.parentNode}
         PaperProps={{ onMouseEnter: handleOpen, onMouseLeave: handleClose }}
       >
-        {locales.map((l, index) => (
+        {locales?.map((l, index) => (
           <StyledMenuItem
             key={index}
             className={classes.centerText}
@@ -110,34 +120,3 @@ export default function LanguageSelect({ transparentHeader }) {
     </>
   );
 }
-
-const StyledMenu = withStyles({
-  paper: {
-    width: 64,
-  },
-})((props) => (
-  <Menu
-    elevation={0}
-    getContentAnchorEl={null}
-    anchorOrigin={{
-      vertical: "bottom",
-      horizontal: "center",
-    }}
-    transformOrigin={{
-      vertical: "top",
-      horizontal: "center",
-    }}
-    {...props}
-  />
-));
-
-const StyledMenuItem = withStyles(() => ({
-  root: {
-    color: "primary",
-    textAlign: "center",
-    fontWeight: 600,
-  },
-  selected: {
-    color: "white",
-  },
-}))(MenuItem);

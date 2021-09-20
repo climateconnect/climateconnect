@@ -75,9 +75,13 @@
     "en": "Get notified when somebody leaves a comment on a project you're part of",
     "de": "Ich möchte benachrichtigt werden, wenn jemand ein Projekt kommentiert, an dem ich beteiligt bin"
   },
+  "email_on_comment_on_your_idea_text": {
+    "en": "Get notified when somebody leaves a comment on an idea you're part of",
+    "de": "Ich möchte benachrichtigt werden, wenn jemand eine Idee kommentiert, an der ich beteiligt bin"
+  },
   "email_on_reply_to_your_comment_text": {
-    "en": "Get notified when somebody replies to your comment on a project",
-    "de": "Ich möchte benachrichtigt werden, wenn jemand auf meinen Kommentar zu einem Projekt antwortet"
+    "en": "Get notified when somebody replies to your comment",
+    "de": "Ich möchte benachrichtigt werden, wenn jemand auf meinen Kommentar antwortet"
   },
   "email_on_new_project_follower_text": {
     "en": "Get notified when somebody follows a project you're part of.",
@@ -86,6 +90,10 @@
   "email_on_mention_text": {
     "en": "Get notified when somebody mentions you in comment.",
     "de": "Ich möchte benachrichtigt werden, wenn mich jemand in einem Kommentar erwähnt"
+  },
+  "email_on_new_idea_join_text": {
+    "en": "Get notified when somebody joins an ideas team that you're also part of",
+    "de": "Ich möchte benachrichtigt werden, wenn jemand neues bei einer Idee mitmacht, an der ich beteiligt bin"
   },
   "accepted_statistics_text": {
     "en": "Enable Statistics cookies to help us improve Climate Connect",
@@ -166,5 +174,17 @@
   "if_you_wish_to_delete_this_account": {
     "en": "If you wish to delete this account, send an E-Mail to contact@climateconnect.earth",
     "de": "Wenn du das Konto löschen willst, sende eine E-Mail an contact@climateconnect.earth"
+  },
+  "old_password": {
+    "en": "Old Password",
+    "de": "Altes Passwort"
+  },
+  "new_password": {
+    "en": "New Password",
+    "de": "Neues Passwort"
+  },
+  "confirm_new_password": {
+    "en": "Confirm new password",
+    "de": "Neues Passwort bestätigen"
   }
 }

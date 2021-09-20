@@ -2,6 +2,7 @@ import { Card, CardContent, CardMedia, Link, Typography } from "@material-ui/cor
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import Truncate from "react-truncate";
+
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -13,13 +14,15 @@ const useStyles = makeStyles((theme) => {
     root: {
       "&:hover": {
         cursor: "pointer",
+        "box-shadow": "2px 2px 1px #EEE",
       },
       "-webkit-user-select": "none",
       "-moz-user-select": "none",
       "-ms-user-select": "none",
       userSelect: "none",
       backgroundColor: theme.palette.background.default,
-      borderRadius: 0,
+      borderRadius: 3,
+      border: `1px solid #EEE`,
       position: "relative",
       height: "100%",
       display: "flex",

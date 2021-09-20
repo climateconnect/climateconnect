@@ -54,6 +54,9 @@ const useStyles = makeStyles((theme) => ({
   smallScreenHeader: {
     fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))",
   },
+  followingButton: {
+    height: 40,
+  },
 }));
 
 const componentDecorator = (href, text, key) => (
@@ -350,6 +353,7 @@ function FollowButton({
         variant="contained"
         color={isUserFollowing ? "secondary" : "primary"}
         disabled={followingChangePending}
+        className={classes.followingButton}
       >
         {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
         {isUserFollowing ? texts.following : texts.follow}
@@ -362,7 +366,7 @@ function FollowButton({
           onClick={toggleShowFollowers}
         >
           <Typography className={classes.followersText}>
-            <span className={classes.followerNumber}>{project.number_of_followers}</span>
+            <span className={classes.followerNumber}>{project.number_of_followers} </span>
             {project.number_of_followers > 1 ? texts.followers : texts.follower}
           </Typography>
         </Link>

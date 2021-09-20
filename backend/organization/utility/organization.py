@@ -17,9 +17,9 @@ def check_organization(organization_id: str) -> Organization:
 def get_organization_name(organization: Organization, language_code: str) -> str:
     if organization.language and language_code != organization.language.language_code and \
             organization.translation_org.filter(language__language_code=language_code).exists():
-        name_translation = organization.translation_org.get(
+        name_translation = organization.translation_org.filter(
             language__language_code=language_code
-        ).name_translation
+        ).first().name_translation
 
         if name_translation and len(name_translation) > 0:
             return name_translation
@@ -30,9 +30,9 @@ def get_organization_name(organization: Organization, language_code: str) -> str
 def get_organization_short_description(organization: Organization, language_code: str) -> str:
     if organization.language and language_code != organization.language.language_code and \
             organization.translation_org.filter(language__language_code=language_code).exists():
-        return organization.translation_org.get(
+        return organization.translation_org.filter(
             language__language_code=language_code
-        ).short_description_translation
+        ).first().short_description_translation
 
     return organization.short_description
 
@@ -48,10 +48,12 @@ def get_organization_about_section(organization: Organization, language_code: st
 
 
 def get_organizationtag_name(tag: OrganizationTags, language_code: str) -> str:
-    a = getattr(tag, "name_{}_translation".format(language_code))
-    if language_code == "en" or a == None:
-        return tag.name
-    return a
+    lang_translation_attr = "name_{}_translation".format(language_code)
+    if hasattr(tag, lang_translation_attr):
+        translation = getattr(tag, lang_translation_attr)
+        if language_code != "en" and translation != None:
+            return translation
+    return tag.name
 
 
 def create_organization_translation(

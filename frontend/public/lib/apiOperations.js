@@ -11,7 +11,6 @@ export async function apiRequest({
   locale,
   headers,
 }) {
-  console.log("url: " + url);
   const acceptLanguageHeadersByLocale = {
     de: "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
     en: "en-US,en;q=0.9,de-DE;q=0.8,de;q=0.7",
@@ -60,11 +59,14 @@ export async function resendEmail(email, onSuccess, onError) {
     });
 }
 
-export async function redirect(url, messages) {
-  Router.push({
+export async function redirect(url, messages, hash) {
+  const payload = {
     pathname: url,
     query: messages,
-  });
+    forceRedirect: true,
+  };
+  if (hash) payload.hash = hash;
+  Router.push(payload);
 }
 
 export async function sendToLogin(ctx, message, locale, relativePath) {

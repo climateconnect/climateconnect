@@ -4,14 +4,16 @@ import activate_email from "./activate_email.json";
 import chat_texts from "./chat_texts.json";
 import getCommunicationTexts from "./communication_texts";
 import cookie_texts from "./cookie_texts.json";
+import getDashboardTexts from "./dashboard_texts";
 import getDonateTexts from "./donate_texts";
 import getFaqTexts from "./faq_texts";
-import filter_and_search_texts from "./filter_and_search_texts.json";
+import getFilterAndSearchTexts from "./filter_and_search_texts";
 import general_texts from "./general_texts.json";
 import getHubTexts from "./getHubTexts";
+import getIdeaTexts from "./idea_texts";
 import getLandingPageTexts from "./landing_page_texts";
 import navigation_texts from "./navigation_texts.json";
-import notification_texts from "./notification_texts.json";
+import getNotificationTexts from "./notification_texts";
 import getOrganizationTexts from "./organization_texts";
 import getProfileTexts from "./profile_texts";
 import getProjectTexts from "./project_texts";
@@ -30,7 +32,11 @@ export default function getTexts({
   url_slug,
   user,
   goal,
+  idea,
+  filterType,
 }) {
+  // These are the multiple text files for various translations. They're
+  // split up to reduce the amount of work required to download
   const texts = {
     about: getAboutTexts(classes),
     account: account_texts,
@@ -38,14 +44,20 @@ export default function getTexts({
     chat: chat_texts,
     cookie: cookie_texts,
     communication: getCommunicationTexts(),
+    dashboard: getDashboardTexts({ user: user }),
     donate: getDonateTexts({ classes: classes, goal: goal }),
     faq: getFaqTexts({ classes: classes, locale: locale }),
-    filter_and_search: filter_and_search_texts,
+    filter_and_search: getFilterAndSearchTexts({
+      filterType: filterType,
+      hubName: hubName,
+      locale: locale,
+    }),
     general: general_texts,
     hub: getHubTexts({ hubName: hubName }),
+    idea: getIdeaTexts({ idea: idea, user: user, url_slug: url_slug, locale: locale }),
     landing_page: getLandingPageTexts({ classes: classes, isNarrowScreen: isNarrowScreen }),
     navigation: navigation_texts,
-    notification: notification_texts,
+    notification: getNotificationTexts({ idea: idea }),
     organization: getOrganizationTexts({ organization: organization, locale: locale }),
     profile: getProfileTexts({ profile: profile, locale: locale }),
     project: getProjectTexts({ project: project, user: user, url_slug: url_slug, locale: locale }),

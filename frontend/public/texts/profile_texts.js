@@ -108,24 +108,36 @@ export default function getProfileTexts({ profile, locale }) {
       de: ", um die vollständigen Informationen dieses/dieser Benutzer*in zu sehen",
     },
     your_projects: {
-      en: "Your projects",
-      de: "Deine Projekte",
+      en: "Your climate projects",
+      de: "Deine Klimaschutzprojekte",
     },
     this_users_projects: {
-      en: `${profile?.first_name}'s projects`,
-      de: `Projekte von ${profile?.first_name}`,
+      en: `${profile?.first_name}'s Climate Projects`,
+      de: `Klimaschutzprojekte von ${profile?.first_name}`,
+    },
+    your_ideas: {
+      en: "Your climate ideas",
+      de: "Deine Klimaschutzideen",
+    },
+    this_users_ideas: {
+      en: `Climate Ideas ${profile?.first_name} is involved in`,
+      de: `Klimaschutz Ideen, bei denen ${profile?.first_name} mitmacht`,
     },
     /*context: You are...*/
     not_involved_in_any_projects_yet: {
-      en: "not involved in any projects yet!",
-      de: "noch nicht in Projekten involviert!",
+      en: "not involved in any climate projects yet!",
+      de: "noch nicht an Klima-Projekten beteiligt!",
+    },
+    not_involved_in_any_ideas_yet: {
+      en: "not involved in any climate ideas yet!",
+      de: "ist bisher bei keiner Klimaschutzidee dabei!",
     },
     your_organizations: {
       en: "Your organizations",
       de: "Deine Organisationen",
     },
     this_users_organizations: {
-      en: `${profile?.first_name}'s organizations`,
+      en: `${profile?.first_name}'s Organizations`,
       de: `Organisationen von ${profile?.first_name}`,
     },
     /*context: You are...*/
@@ -142,35 +154,35 @@ export default function getProfileTexts({ profile, locale }) {
       en: "Account created",
       de: "Konto erstellt",
     },
+    congratulations: {
+      en: "Congratulations!",
+      de: "Glückwunsch!",
+    },
     congratulations_you_have_created_your_account: {
       en: "Congratulations, you have created your account!",
       de: "Glückwunsch, du hast dein Konto erfolgreich erstellt!",
     },
-    congratulations_just_one_more_step_to_complete_your_signup: {
-      en: "Congratulations! Just one more step to complete your signup!",
-      de: "Glückwunsch! Nur noch ein Schritt, um deine Anmeldung abzuschließen!",
+    just_one_more_step_to_complete_your_signup: {
+      en: "One final step to join Climate Connect!",
+      de: "Nur noch ein Schritt, um deine Anmeldung abzuschließen!",
     },
-    we_have_sent_you_an_email_with_a_link: {
-      en: "We have sent you an E-Mail with a link!",
-      de: "Wir haben dir eine E-Mail mit einem Bestätigungslink geschickt!",
-    },
-    please_click_on_the_link_to_activate_your_account: {
-      en: "Please click on the link to activate your account.",
+    please_click_on_the_link_we_emailed_you_to_activate_your_account: {
+      en: "Please click on the link we just emailed you to activate your account.",
       de: "Bitte klicke auf den Link, um dein Konto zu aktivieren.",
     },
     make_sure_to_also_check_your_spam: {
-      en: "Make sure to also check your spam/junk folder incase you cannot find the E-Mail.",
+      en: "Make sure to also check your spam/junk folder in case you can't find the link.",
       de: "Bitte überprüfe auch deinen Spam-/Junk-Ordner, falls du die E-Mail nicht finden kannst.",
     },
     if_you_are_experiencing_any_problems_contact_us: {
-      en: "If you are experiencing any problems, contact us at contact@climateconnect.earth",
+      en: "If you are experiencing any problems, email us at contact@climateconnect.earth",
       de:
         "Wenn du Probleme haben solltest, kontaktiere uns einfach unter contact@climateconnect.earth",
     },
     if_the_email_does_not_arrive_after_5_minutes: {
       en: (
         <>
-          If the E-Mail does not arrive after 5 minutes,{" "}
+          If the email does not arrive after 5 minutes,{" "}
           <Link href={getLocalePrefix(locale) + "/resend_verification_email"}>click here</Link> to
           resend it.
         </>

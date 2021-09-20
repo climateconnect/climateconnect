@@ -1,21 +1,18 @@
-import {
-  Avatar,
-  Link,
-  ListItemAvatar,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-  withStyles,
-} from "@material-ui/core";
+import { Link, ListItemText, MenuItem, withStyles } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import CommentIcon from "@material-ui/icons/Comment";
 import GroupIcon from "@material-ui/icons/Group";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
-import { getImageUrl } from "../../../../public/lib/imageOperations";
 import getTexts from "../../../../public/texts/texts";
 import { getFragmentsWithMentions } from "../../../utils/mentions_markdown";
 import UserContext from "../../context/UserContext";
+import {
+  IdeaCommentNotification,
+  IdeaCommentReplyNotification,
+  ProjectCommentNotification,
+  ProjectCommentReplyNotification,
+} from "./CommentNotifications";
+import GenericNotification from "./GenericNotification";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -38,7 +35,7 @@ const useStyles = makeStyles((theme) => {
     },
   };
 });
-const StyledMenuItem = withStyles((theme) => ({
+export const StyledMenuItem = withStyles((theme) => ({
   root: {
     "&:focus": {
       "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
@@ -60,101 +57,97 @@ const NOTIFICATION_TYPES = [
   "reply_to_post_comment",
   "group_message",
   "mention",
+  null,
+  null,
+  "idea_comment",
+  "reply_to_idea_comment",
+  "person_joined_idea",
 ];
 
 export default function Notification({ notification, isPlaceholder }) {
-  const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "notification", locale: locale });
-  if (isPlaceholder) return <PlaceholderNotification texts={texts} locale={locale} />;
+  if (isPlaceholder) return <PlaceholderNotification />;
   else {
     const type = NOTIFICATION_TYPES[notification.notification_type];
     if (type === "private_message")
-      return (
-        <PrivateMessageNotification notification={notification} texts={texts} locale={locale} />
-      );
+      return <PrivateMessageNotification notification={notification} />;
     else if (type === "group_message")
-      return <GroupMessageNotification notification={notification} texts={texts} locale={locale} />;
+      return <GroupMessageNotification notification={notification} />;
     else if (type === "project_comment")
-      return (
-        <ProjectCommentNotification notification={notification} texts={texts} locale={locale} />
-      );
+      return <ProjectCommentNotification notification={notification} />;
     else if (type === "mention")
       return <MentionNotification notification={notification} texts={texts} locale={locale} />;
     else if (type === "reply_to_project_comment")
-      return (
-        <ProjectCommentReplyNotification
-          notification={notification}
-          texts={texts}
-          locale={locale}
-        />
-      );
+      return <ProjectCommentReplyNotification notification={notification} />;
     else if (type === "project_follower")
-      return (
-        <ProjectFollowerNotification notification={notification} texts={texts} locale={locale} />
-      );
+      return <ProjectFollowerNotification notification={notification} />;
+    else if (type === "idea_comment")
+      return <IdeaCommentNotification notification={notification} />;
+    else if (type === "reply_to_idea_comment")
+      return <IdeaCommentReplyNotification notification={notification} />;
+    else if (type === "person_joined_idea")
+      return <PersonJoinedIdeaNotification notification={notification} />;
     else return <></>;
   }
 }
 
-const PrivateMessageNotification = ({ notification, texts, locale }) => {
-  const sender = notification.last_message.sender;
-  const classes = useStyles();
-  //TODO update to chat/<chat_uuid>/
+const PersonJoinedIdeaNotification = ({ notification }) => {
+  const supporter = notification.idea_supporter;
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale, idea: notification.idea });
+  //TODO: Link to group chat
   return (
-    <Link href={getLocalePrefix(locale) + "/chat/" + notification.chat_uuid + "/"} underline="none">
-      <StyledMenuItem>
-        <ListItemAvatar>
-          <Avatar
-            alt={sender.first_name + " " + sender.last_name}
-            src={getImageUrl(sender.image)}
-          />
-        </ListItemAvatar>
-        <ListItemText
-          primary={texts.message_from + " " + sender.first_name + " " + sender.last_name}
-          secondary={notification.last_message.content}
-          primaryTypographyProps={{
-            className: classes.messageSender,
-          }}
-          secondaryTypographyProps={{
-            className: classes.notificationText,
-          }}
-        />
-      </StyledMenuItem>
-    </Link>
+    <GenericNotification
+      link={`/chat/${notification.idea_supporter_chat}`}
+      avatar={{
+        alt: supporter.first_name + " " + supporter.last_name,
+        image: supporter.thumbnail_image,
+      }}
+      primaryText={supporter.first_name + " " + supporter.last_name + " " + texts.joined_your_idea}
+      secondaryText={texts.send_a_Message_to_welcome_them_in_the_group_chat}
+    />
   );
 };
 
-const GroupMessageNotification = ({ notification, texts, locale }) => {
+const PrivateMessageNotification = ({ notification }) => {
+  const sender = notification.last_message.sender;
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale });
+  return (
+    <GenericNotification
+      link={`/chat/${notification.chat_uuid}/`}
+      avatar={{
+        alt: sender.first_name + " " + sender.last_name,
+        image: sender.thumbnail_image,
+      }}
+      primaryText={texts.message_from + " " + sender.first_name + " " + sender.last_name}
+      secondaryText={notification.last_message.content}
+    />
+  );
+};
+
+const GroupMessageNotification = ({ notification }) => {
   const group_title = notification.chat_title;
   const sender = notification.last_message.sender;
-  const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale });
   return (
-    <Link href={getLocalePrefix(locale) + "/chat/" + notification.chat_uuid + "/"} underline="none">
-      <StyledMenuItem>
-        <ListItemAvatar>
-          <Avatar alt={group_title}>
-            <GroupIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={texts.message_in + group_title}
-          secondary={
-            sender.first_name + " " + sender.last_name + ": " + notification.last_message.content
-          }
-          primaryTypographyProps={{
-            className: classes.messageSender,
-          }}
-          secondaryTypographyProps={{
-            className: classes.notificationText,
-          }}
-        />
-      </StyledMenuItem>
-    </Link>
+    <GenericNotification
+      link={`/chat/${notification.chat_uuid}/`}
+      notificationIcon={{
+        icon: GroupIcon,
+      }}
+      primaryText={texts.message_in + group_title}
+      secondaryText={
+        sender.first_name + " " + sender.last_name + ": " + notification.last_message.content
+      }
+    />
   );
 };
 
-const PlaceholderNotification = ({ texts, locale }) => {
+const PlaceholderNotification = () => {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale });
   return (
     <Link href={getLocalePrefix(locale) + "/inbox"} underline="none" color="inherit">
       <StyledMenuItem>
@@ -206,101 +199,20 @@ const MentionNotification = ({ notification, texts, locale }) => {
   );
 };
 
-const ProjectCommentNotification = ({ notification, texts, locale }) => {
-  const classes = useStyles();
+const ProjectFollowerNotification = ({ notification }) => {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale });
+  const followerName =
+    notification.project_follower.first_name + " " + notification.project_follower.last_name;
   return (
-    <Link
-      href={getLocalePrefix(locale) + "/projects/" + notification.project.url_slug + "/#comments"}
-      underline="none"
-    >
-      <StyledMenuItem>
-        <ListItemIcon>
-          <CommentIcon />
-        </ListItemIcon>
-        <ListItemText
-          primary={texts.comment_on + ' "' + notification.project.name + '"'}
-          secondary={notification.project_comment.content}
-          primaryTypographyProps={{
-            className: classes.messageSender,
-          }}
-          secondaryTypographyProps={{
-            className: classes.notificationText,
-          }}
-        />
-      </StyledMenuItem>
-    </Link>
-  );
-};
-
-const ProjectCommentReplyNotification = ({ notification, texts, locale }) => {
-  const classes = useStyles();
-  return (
-    <Link
-      href={getLocalePrefix(locale) + "/projects/" + notification.project.url_slug + "/#comments"}
-      underline="none"
-    >
-      <StyledMenuItem>
-        <ListItemIcon>
-          <CommentIcon />
-        </ListItemIcon>
-        <ListItemText
-          primary={texts.reply_to_your_comment_on + ' "' + notification.project.name + '"'}
-          secondary={notification.project_comment.content}
-          primaryTypographyProps={{
-            className: classes.messageSender,
-          }}
-          secondaryTypographyProps={{
-            className: classes.notificationText,
-          }}
-        />
-      </StyledMenuItem>
-    </Link>
-  );
-};
-
-const ProjectFollowerNotification = ({ notification, texts, locale }) => {
-  const classes = useStyles();
-  return (
-    <Link
-      href={
-        getLocalePrefix(locale) +
-        "/projects/" +
-        notification.project.url_slug +
-        "?show_followers=true"
-      }
-      underline="none"
-    >
-      <StyledMenuItem>
-        <ListItemAvatar>
-          <Avatar
-            alt={
-              notification.project_follower.first_name +
-              " " +
-              notification.project_follower.last_name
-            }
-            src={getImageUrl(notification.project_follower.image)}
-          />
-        </ListItemAvatar>
-        <ListItemText
-          primary={
-            notification.project_follower.first_name +
-            " " +
-            notification.project_follower.last_name +
-            " " +
-            texts.now_follows_your_project +
-            ' "' +
-            notification.project.name +
-            '"'
-          }
-          secondary={texts.congratulations}
-          primaryTypographyProps={{
-            className: classes.messageSender,
-          }}
-          secondaryTypographyProps={{
-            className: classes.notificationText,
-          }}
-        />
-      </StyledMenuItem>
-    </Link>
+    <GenericNotification
+      link={`/projects/${notification.project.url_slug}?show_followers=true`}
+      avatar={{
+        alt: followerName,
+        image: notification.project_follower.thumbnail_image,
+      }}
+      primaryText={`${followerName} ${texts.now_follows_your_project} "${notification.project.name}"`}
+      secondaryText={texts.congratulations}
+    />
   );
 };

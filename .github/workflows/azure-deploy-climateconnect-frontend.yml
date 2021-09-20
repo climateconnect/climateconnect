@@ -27,6 +27,7 @@ jobs:
         yarn build
       env:
         API_URL: ${{ secrets.API_URL }}
+        BASE_URL: ${{ secrets.BASE_URL }}
         ENVIRONMENT: 'production'
         SOCKET_URL: ${{ secrets.SOCKET_URL }}
         API_HOST: ${{ secrets.API_HOST }} 

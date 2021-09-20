@@ -6,7 +6,7 @@ The code for https://climateconnect.earth.
 
 ### Postgres
 
-1. Create a local Postgres database with your own username and password. 
+1. Create a local Postgres database with your own username and password.
 1. Install [PostGIS](https://postgis.net/install/) on your local machine
 1. Create the postgis extension within that database: run [`CREATE EXTENSION postgis;`](https://docs.djangoproject.com/en/3.1/ref/contrib/gis/install/postgis/)
 
@@ -57,7 +57,7 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
     - For the [Django `SECRET_KEY`](https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-SECRET_KEY), run `openssl rand -base64 32` to create a 32 char random secret.
 1.  Run `python manage.py migrate` to run Django migrations.
     - Note: This command is used for when you first start, or whenever you are adding or updating database models.
-1.  Create supersuer using `python manage.py createsuperuser`
+1.  Create a superuser using `python manage.py createsuperuser`
     - You can then access your admin panel via <API_URL>/admin/
 
 #### Continual Development
@@ -69,19 +69,47 @@ Note: we use Python 3, so for all instructions we insume `python` means `python3
 
 #### Creating and Removing Test Data
 
-- If test data is needed, run this command: `python manage.py create_test_data --number_of_rows 4`
-- If you need to wipe your local database and start over:
-  `$ sudo -u postgres psql`
+If test data is needed, run
 
-  ```sql
-  postgres-# \connect $DATABASE_NAME
-  $DATABASE_NAME-# \dt
-  $DATABASE_NAME-# DROP SCHEMA public CASCADE;
-  $DATABASE_NAME-# CREATE SCHEMA public;
-  $DATABASE_NAME-# \q;
-  ```
+```sh
+python manage.py create_test_data --number_of_rows 4
+```
 
-  You will then need to run `python manage.py migrate` and `python manage.py createsuperuser` again after doing so.
+If you need to wipe your local database and start over, run
+
+```sh
+sudo -u postgres psql  # note this might differ slightly in name based on your postgres setup
+```
+
+And then at the `psql` prompt,
+
+```sql
+postgres-# \list
+```
+
+to show available databases. Once you've identified the Climate Connect database name (e.g. we'll call it `$DATABASE_NAME`), you can,
+
+```sql
+postgres-# \connect $DATABASE_NAME
+$DATABASE_NAME-# \dt
+$DATABASE_NAME-# DROP SCHEMA public CASCADE;
+$DATABASE_NAME-# CREATE SCHEMA public;
+$DATABASE_NAME-# \q
+```
+
+Then run
+
+```sh
+python manage.py migrate
+```
+
+to update your migrations, and
+
+```sh
+python manage.py createsuperuser
+```
+
+to re-create a super user to be used in the Django admin panel.
 
 #### Testing
 
@@ -103,20 +131,20 @@ python manage.py test <file_path> or <file_path + class_name>
 1. `yarn install` to download all npm packages
 1. Add a `.env` file for frontend environment variables. You can find variables you need to set in [`/frontend/next.config.js/`](https://github.com/climateconnect/climateconnect/blob/master/frontend/next.config.js)
 
-For local development, use the following contents for `.env`:
+For local development, use the following for `.env`:
 
 ```sh
   API_HOST="localhost"
   API_URL="http://127.0.0.1:8000"
-  BASE_URL_HOST=""
-  SOCKET_URL="ws://api.climateconnect.earth"
+  BASE_URL_HOST="localhost"
+  SOCKET_URL="ws://localhost"
 ```
 
-1. `yarn dev` to start developing
+And finally `yarn dev` to spin up the Next.js app! Check out our [frontend (FE) code style guidelines wiki](https://github.com/climateconnect/climateconnect/wiki/Frontend-Code-Style-Guide) to follow codebase best practices and contribute to a healthy and maintainable codebase.
 
 #### Testing
 
-We use Jest as our testing framework write to tests for the FE code. Write
+We use Jest as our testing framework write to tests for FE code. Write
 test files with `.test.js` and execute them directly with
 
 ```sh
@@ -125,7 +153,13 @@ yarn jest path/to/testfile.test.js
 
 See npm scripts in `package.json`.
 
-## To Deploy
+We use `eslint` for linting. Watch files to fix lint issues with
+
+```sh
+yarn lint:watch
+```
+
+## Deploy
 
 ### Frontend
 

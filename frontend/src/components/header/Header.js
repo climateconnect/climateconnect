@@ -429,6 +429,7 @@ function NormalScreenLinks({
           localePrefix: localePrefix,
         });
         const Icon = link.icon;
+
         if (!(isMediumScreen && link.hideOnMediumScreen))
           return (
             <React.Fragment key={index}>
@@ -517,6 +518,7 @@ function NarrowScreenLinks({
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
   );
+  console.log(linksOutsideDrawer);
   return (
     <>
       <Box>
@@ -576,9 +578,13 @@ function NarrowScreenLinks({
                 </>
               ) : (
                 <span className={classes.menuLink}>
-                  <Button color="primary" {...buttonProps} key={index}>
-                    {link.text}
-                  </Button>
+                  {link.type === "languageSelect" ? (
+                    <LanguageSelect transparentHeader={transparentHeader} />
+                  ) : (
+                    <Button color="primary" {...buttonProps} key={index}>
+                      {link.text}
+                    </Button>
+                  )}
                 </span>
               )}
             </React.Fragment>

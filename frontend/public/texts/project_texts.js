@@ -263,7 +263,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     to_fight_climate_change_we_all_need_to_work_together: {
       en: `To fight climate change, we all need to work together! If you like the project, offer to
       work with the team to make it a success!`,
-      de: `Um den Klimawandel zu bekämpfen, müssen wir alle zusammenarbeiten! Wenn dir das Projekt gefällt, 
+      de: `Um den Klimawandel zu bekämpfen, müssen wir alle zusammenarbeiten! Wenn dir das Projekt gefällt,
       biete einfach deine Mitarbeit im Team an, um es zu einem Erfolg zu machen!`,
     },
     this_project_is_open_to_collaborators: {
@@ -365,8 +365,8 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de: "Persönlich",
     },
     personal_project: {
-      en: "Personal Project",
-      de: "Persönliches Projekt",
+      en: "Personal project",
+      de: "Persönliches projekt",
     },
     organizations_project: {
       en: "Organization's project",
@@ -473,10 +473,6 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     do_you_really_want_to_leave_without_saving_your_changes: {
       en: "Do you really want to leave without saving your changes?",
       de: "Willst du wirklich gehen, ohne die Veränderungen zu speichern?",
-    },
-    publish: {
-      en: "Publish",
-      de: "Veröffentlichen",
     },
     next_step: {
       en: "Next Step",
@@ -747,9 +743,9 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de: "Du kannst nur bis zu 3 Kategorien auswählen",
     },
     you_can_combine_categories_text: {
-      en: `You can combine categories. For example if you fund treeplanting, select both 
+      en: `You can combine categories. For example if you fund treeplanting, select both
       Afforestation/Reforestration and Funding`,
-      de: `Du kannst Kategorien kombinieren. Wenn du zum Beispiel Baumpflanzungen finanzierst, kannst du sowohl 
+      de: `Du kannst Kategorien kombinieren. Wenn du zum Beispiel Baumpflanzungen finanzierst, kannst du sowohl
       Aufforstung/Wiederaufforstung, als auch Finanzierung wählen`,
     },
     this_way_you_can_specify_what_you_are_doing_and_in_which_field: {
@@ -777,7 +773,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       ),
     },
     title_with_explanation_and_example: {
-      en: "Title (Use a short, english title, e.g. 'Generating energy from ocean waves')",
+      en: "Title (Use a short, compelling title, e.g. 'Generating energy from ocean waves')",
       de: "Titel (Verwende einen kurzen Titel, z. B. 'Energiegewinnung aus Meereswellen')",
     },
     use_a_title_that_makes_people_curious_to_learn_more_about_your_project: {

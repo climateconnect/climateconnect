@@ -1,5 +1,7 @@
+from ideas.serializers.idea import IdeaMinimalSerializer
 from climateconnect_api.serializers.role import RoleSerializer
 from rest_framework import serializers
+from ideas.models import Idea
 from chat_messages.models import Message, MessageParticipants, MessageReceiver, Participant
 from climateconnect_api.models import UserProfile, Role
 from climateconnect_api.serializers.user import UserProfileStubSerializer
@@ -18,7 +20,10 @@ class MessageSerializer(serializers.ModelSerializer):
         return UserProfileStubSerializer(user_profile).data
 
     def get_read_at(self, obj):
-        user = self.context.get('request', None).user
+        request = self.context.get('request', None)
+        user = None
+        if request:
+            user = request.user
         if user == obj.sender:
             return timezone.now()
         else:
@@ -32,13 +37,14 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
     unread_count = serializers.SerializerMethodField()
     participants = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
+    related_idea = serializers.SerializerMethodField()
 
     class Meta:
         model = MessageParticipants
         # Could use user profile serializer for participant_one and participant_two
         fields = (
             'id', 'chat_uuid', 'participants', 'is_active', 'last_message', 
-            'unread_count', 'user', 'created_at', 'name'
+            'unread_count', 'user', 'created_at', 'name', 'related_idea'
         )
 
     def get_last_message(self, obj):
@@ -65,6 +71,16 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
         user = self.context.get('request', None).user
         user_profile = UserProfile.objects.filter(user=user)[0]
         return UserProfileStubSerializer(user_profile).data
+        
+    def get_related_idea(self, obj):
+        if obj.related_idea:
+            try:
+                idea = Idea.objects.get(id=obj.related_idea.id)
+                return IdeaMinimalSerializer(idea, many=False).data
+            except Idea.DoesNotExist:
+                return None
+        else:
+            return None
 
 class ParticipantSerializer(serializers.ModelSerializer):
     user_profile = serializers.SerializerMethodField()

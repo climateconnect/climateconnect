@@ -31,17 +31,24 @@ class GetChatView(APIView):
 
     def get(self, request, chat_uuid, format=None):
         try:
-            chat_object = MessageParticipants.objects.filter(chat_uuid=chat_uuid)
-            participant = Participant.objects.get(chat=chat_object[0], user=request.user, is_active=True)
+            chat_object = MessageParticipants.objects.get(chat_uuid=chat_uuid)
         except MessageParticipants.DoesNotExist:
             return Response({
                 'message': "Chat not found."
             }, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            Participant.objects.get(
+                chat=chat_object, user=request.user, is_active=True
+            )
         except Participant.DoesNotExist:
                 return Response({
                     'message': "Chat not found!"
                 }, status=status.HTTP_404_NOT_FOUND)
-        serializer = MessageParticipantSerializer(chat_object[0], context={'request': request})
+        
+        serializer = MessageParticipantSerializer(
+            chat_object, context={'request': request}
+        )
 
         return Response(serializer.data, status=status.HTTP_200_OK)
         
@@ -68,7 +75,7 @@ class StartPrivateChat(APIView):
         private_chat_with_both_users = MessageParticipants.objects.annotate(
             num_participants=Count('participant_participants')
         ).filter(
-            id__in=chats_with_both_users, num_participants=2
+            id__in=chats_with_both_users, num_participants=2, related_idea=None, name=''
         )
         if private_chat_with_both_users.exists():
             private_chat = private_chat_with_both_users[0]
@@ -154,17 +161,25 @@ class GetChatMessages(ListAPIView):
             chat = MessageParticipants.objects.get(           
                 chat_uuid=chat_uuid
             )
+        except MessageParticipants.DoesNotExist:
+            raise NotFound('Chat not found.')
+        
+        try:
             Participant.objects.get(user=user, chat=chat, is_active=True)
         except Participant.DoesNotExist:
             raise NotFound('You are not a participant of this chat.')
-        if chat:
-            messages = Message.objects.filter(
-                message_participant=chat
-            )
-            if messages: 
-                number_of_participants = Participant.objects.filter(chat=chat, is_active=True).count()
-                set_read(messages.exclude(sender=user), user, number_of_participants==2)
-            return messages
+        
+        messages = Message.objects.filter(
+            message_participant=chat
+        )
+
+        if messages: 
+            number_of_participants = Participant.objects.filter(
+                chat=chat, is_active=True
+            ).count()
+            set_read(messages.exclude(sender=user), user, number_of_participants==2)
+            
+        return messages
 
 
 class GetChatMessage(APIView):
@@ -201,7 +216,6 @@ class UpdateChatMemberView(RetrieveUpdateDestroyAPIView):
         return "Chat member successfully deleted."
 
     def perform_update(self, serializer):
-        print(serializer)
         serializer.save()
         return serializer.data
 

@@ -138,5 +138,13 @@
   "you_have_an_unsent_message_are_you_sure_you_want_to_leave": {
     "en": "You have an unsent message. Are you sure you want to leave?",
     "de": "Du hast eine nicht gesendete Nachricht. Bist du sicher, dass du gehen willst?"
+  },
+  "here_you_can_discuss": {
+    "en": "Here you can chat about how to implement the idea ",
+    "de": "Hier könnt ihr darüber reden, wie ihr diese Idee umsetzen könnt: "
+  },
+  "everybody_who_clicked_join_is_in_this_group": {
+    "en": "Everybody who clicked the \"join\" button on the idea's page is in this chat group",
+    "de": "Alle, die auf den \"Mitmachen\" Knopf auf der Ideenseite geklickt haben, sind in diesem Gruppenchat"
   }
 }

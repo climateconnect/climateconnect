@@ -1,7 +1,7 @@
-from django.db import models
-
-from django.contrib.auth.models import User
 from climateconnect_api.models import Role
+from django.contrib.auth.models import User
+from django.db import models
+from ideas.models.ideas import Idea
 
 
 class MessageParticipants(models.Model):
@@ -22,6 +22,20 @@ class MessageParticipants(models.Model):
         help_text="Check if the chat between participants are active or not."
                   "If they are not active that means a user has blocked another person.",
         verbose_name="Is active?", default=True
+    )
+
+    is_public = models.BooleanField(
+        help_text="If this value is set to true, anybody can join this chat without being permitted or invited by an admin.",
+        verbose_name="Is public?", default=False
+    )
+
+    related_idea = models.ForeignKey(
+        Idea,
+        help_text="If this chat is about an idea, this points to the idea",
+        verbose_name="Related idea",
+        related_name="related_idea_message_participant",
+        on_delete=models.SET_NULL,
+        null=True, blank=True
     )
 
     created_at = models.DateTimeField(
@@ -45,10 +59,17 @@ class MessageParticipants(models.Model):
         ordering = ["-last_message_at", "-created_at"]
 
     def __str__(self):
-        return "Chat: %d" % (
-            self.chat_uuid
-        )
-
+        if self.name:
+            return "Chat: \"%s\"" % self.name
+        else:
+            participants = Participant.objects.filter(chat=self)
+            first_participant_name = ""
+            second_participant_name = ""
+            if len(participants) > 0:
+                first_participant_name = participants[0].user.first_name + " " + participants[0].user.last_name
+            if len(participants) > 1:
+                second_participant_name = participants[1].user.first_name + " " + participants[1].user.last_name
+            return "Chat with %s and %s" % (first_participant_name, second_participant_name)
 
 class Message(models.Model):
     message_participant = models.ForeignKey(

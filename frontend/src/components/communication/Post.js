@@ -73,10 +73,9 @@ export default function Post({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
   const [open, setOpen] = React.useState(false);
-  const [displayReplies, setDisplayReplies] = React.useState(false);
+  const [displayReplies, setDisplayReplies] = React.useState(true);
   const [replyInterfaceExpanded, setInterfaceExpanded] = React.useState(false);
   const expandReplyInterface = () => setInterfaceExpanded(true);
-
   const unexpandReplyInterface = () => setInterfaceExpanded(false);
 
   const handleViewRepliesClick = () => {
@@ -105,7 +104,14 @@ export default function Post({
             href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
             target="_blank"
           >
-            <Avatar src={getImageUrl(post.author_user.image)} className={classes.avatar} />
+            <Avatar
+              src={
+                post.author_user.image
+                  ? getImageUrl(post.author_user.image)
+                  : getImageUrl(post.author_user.thumbnail_image)
+              }
+              className={classes.avatar}
+            />
           </Link>
           <span className={classes.messageWithMetaData}>
             <div className={classes.metadata}>

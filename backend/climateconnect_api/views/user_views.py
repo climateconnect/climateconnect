@@ -1,4 +1,7 @@
-import datetime
+
+from ideas.serializers.idea import IdeaFromIdeaSupporterSerializer
+from ideas.models.support import IdeaSupporter
+
 from hubs.models.hub import Hub
 import logging
 import uuid
@@ -7,7 +10,7 @@ from datetime import datetime, timedelta
 from climateconnect_api.models import Availability, Skill, UserProfile
 from climateconnect_api.models.language import Language
 from climateconnect_api.models.user import UserProfileTranslation
-from climateconnect_api.pagination import MembersPagination
+from climateconnect_api.pagination import MembersPagination, MembersSitemapPagination
 from climateconnect_api.permissions import UserPermission
 from climateconnect_api.serializers.user import (
     EditUserProfileSerializer, PersonalProfileSerializer,
@@ -169,8 +172,6 @@ class ListMemberProfilesView(ListAPIView):
                         )
                     ).annotate(
                         distance=Distance("location__centre_point", location.multi_polygon)
-                    ).order_by(
-                        'distance'
                     )
 
         if 'skills' in self.request.query_params:
@@ -255,6 +256,18 @@ class ListMemberProjectsView(ListAPIView):
                 is_active=True
             ).order_by('-id')
 
+class ListMemberIdeasView(ListAPIView):
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ['parent_organization__url_slug']
+    pagination_class = MembersPagination
+    serializer_class = IdeaFromIdeaSupporterSerializer
+
+    def get_queryset(self):
+        searched_user = UserProfile.objects.get(url_slug=self.kwargs['url_slug']).user
+        return IdeaSupporter.objects.filter(
+            user=searched_user
+        ).order_by('-id')
 
 class ListMemberOrganizationsView(ListAPIView):
     permission_classes = [AllowAny]
@@ -368,7 +381,6 @@ class UserEmailVerificationLinkView(APIView):
             return Response({'message': _('Required parameters are missing.')}, status=status.HTTP_400_BAD_REQUEST)
 
         # convert verification string
-        print(request.data)
         verification_key = request.data['uuid'].replace('%2D', '-')
         try:
             user_profile = UserProfile.objects.get(verification_key=verification_key)
@@ -466,6 +478,7 @@ class SetNewPassword(APIView):
 class ListMembersForSitemap(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = UserProfileSitemapEntrySerializer
+    pagination_class = MembersSitemapPagination
 
     def get_queryset(self):
         return UserProfile.objects.filter(is_profile_verified=True)

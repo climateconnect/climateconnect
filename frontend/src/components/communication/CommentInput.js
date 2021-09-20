@@ -32,7 +32,13 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function CommentInput({ user, onSendComment, parent_comment, onCancel }) {
+export default function CommentInput({
+  user,
+  onSendComment,
+  parent_comment,
+  onCancel,
+  hasComments,
+}) {
   const classes = useStyles();
   const [curComment, setCurComment] = React.useState("");
   const { locale } = useContext(UserContext);
@@ -63,6 +69,7 @@ export default function CommentInput({ user, onSendComment, parent_comment, onCa
               autoFocus
               multiline
               baseUrl={process.env.API_URL + "/api/members/?search="}
+              placeholder={(hasComments ? texts.write_a_comment : texts.start_a_discussion) + "..."}
               className={classes.messageInput}
               value={curComment}
               onChange={onCurCommentChange}

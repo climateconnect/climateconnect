@@ -1,17 +1,17 @@
+// 3rd party or built-in imports
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import NextCookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest } from "../public/lib/apiOperations";
-import { buildUrlEndingFromFilters } from "../public/lib/filterOperations";
+import { applyNewFilters, getInitialFilters } from "../public/lib/filterOperations";
 import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
   getStatusOptions,
-  membersWithAdditionalInfo,
 } from "../public/lib/getOptions";
-import { parseData } from "../public/lib/parsingOperations";
+import { getAllHubs } from "../public/lib/hubOperations";
+import { getLocationFilteredBy } from "../public/lib/locationOperations";
 import { nullifyUndefinedValues } from "../public/lib/profileOperations";
 import BrowseContent from "../src/components/browse/BrowseContent";
 import UserContext from "../src/components/context/UserContext";
@@ -21,31 +21,24 @@ import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingC
 import WideLayout from "../src/components/layouts/WideLayout";
 
 export async function getServerSideProps(ctx) {
-  const { token, hideInfo } = NextCookies(ctx);
+  const { hideInfo } = NextCookies(ctx);
   const [
-    projectsObject,
-    organizationsObject,
-    membersObject,
     project_categories,
     organization_types,
     skills,
     project_statuses,
     hubs,
+    location_filtered_by,
   ] = await Promise.all([
-    getProjects(1, token, "", ctx.locale),
-    getOrganizations(1, token, "", ctx.locale),
-    getMembers(1, token, "", ctx.locale),
     getProjectTagsOptions(null, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
-    getHubs(ctx.locale),
+    getAllHubs(ctx.locale),
+    getLocationFilteredBy(ctx.query),
   ]);
   return {
     props: nullifyUndefinedValues({
-      projectsObject: projectsObject,
-      organizationsObject: organizationsObject,
-      membersObject: membersObject,
       filterChoices: {
         project_categories: project_categories,
         organization_types: organization_types,
@@ -54,106 +47,52 @@ export async function getServerSideProps(ctx) {
       },
       hideInfo: hideInfo === "true",
       hubs: hubs,
+      initialLocationFilter: location_filtered_by,
     }),
   };
 }
 
-export default function Browse({
-  projectsObject,
-  organizationsObject,
-  membersObject,
-  filterChoices,
-  hubs,
-}) {
+export default function Browse({ filterChoices, hubs, initialLocationFilter }) {
   const cookies = new Cookies();
   const token = cookies.get("token");
   const { locale } = useContext(UserContext);
-  const [filters, setFilters] = useState({
-    projects: {},
-    members: {},
-    organizations: {},
-  });
+
+  // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)
+  const [filters, setFilters] = useState(
+    getInitialFilters({
+      filterChoices: filterChoices,
+      locale: locale,
+      initialLocationFilter: initialLocationFilter,
+    })
+  );
+  const [tabsWhereFiltersWereApplied, setTabsWhereFiltersWereApplied] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-
-  const applyNewFilters = async (type, newFilters, closeFilters, oldUrlEnding) => {
-    if (filters === newFilters) {
-      return;
-    }
-    //todo: throw error if user didn't choose a location from the list
-    setFilters({ ...filters, [type]: newFilters });
-    const newUrlEnding = buildUrlEndingFromFilters(newFilters);
-    if (oldUrlEnding === newUrlEnding) {
-      return null;
-    }
-    setErrorMessage(null);
-    try {
-      const filteredItemsObject = await getDataFromServer({
-        type: type,
-        page: 1,
-        token: token,
-        urlEnding: newUrlEnding,
-        locale: locale,
-      });
-      if (type === "members") {
-        filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
-      }
-      return {
-        closeFilters: closeFilters,
-        filteredItemsObject: filteredItemsObject,
-        newUrlEnding: newUrlEnding,
-      };
-    } catch (e) {
-      console.log(e);
-    }
+  const handleSetErrorMessage = (newMessage) => {
+    setErrorMessage(newMessage);
   };
 
-  const applySearch = async (type, searchValue, oldUrlEnding) => {
-    const newSearchQueryParam = `&search=${searchValue}`;
-    if (oldUrlEnding === newSearchQueryParam) {
-      return;
-    }
-    try {
-      const filteredItemsObject = await getDataFromServer({
-        type: type,
-        page: 1,
-        token: token,
-        urlEnding: newSearchQueryParam,
-        locale: locale,
-      });
-
-      if (type === "members") {
-        filteredItemsObject.members = membersWithAdditionalInfo(filteredItemsObject.members);
-      }
-      return {
-        filteredItemsObject: filteredItemsObject,
-        newUrlEnding: newSearchQueryParam,
-      };
-    } catch (e) {
-      console.log(e);
-    }
+  const handleAddFilters = (newFilters) => {
+    setFilters({ ...filters, ...newFilters });
   };
 
-  const loadMoreData = async (type, page, urlEnding) => {
-    try {
-      const newDataObject = await getDataFromServer({
-        type: type,
-        page: page,
-        token: token,
-        urlEnding: urlEnding,
-        locale: locale,
-      });
-      const newData =
-        type === "members" ? membersWithAdditionalInfo(newDataObject.members) : newDataObject[type];
+  const handleSetTabsWhereFiltersWereApplied = (tabs) => {
+    setTabsWhereFiltersWereApplied(tabs);
+  };
 
-      return {
-        hasMore: newDataObject.hasMore,
-        newData: newData,
-      };
-    } catch (e) {
-      console.log("error");
-      console.log(e);
-      throw e;
-    }
+  const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
+    return await applyNewFilters({
+      type: type,
+      filters: filters,
+      newFilters: newFilters,
+      closeFilters: closeFilters,
+      filterChoices: filterChoices,
+      locale: locale,
+      token: token,
+      handleAddFilters: handleAddFilters,
+      handleSetErrorMessage: handleSetErrorMessage,
+      tabsWhereFiltersWereApplied,
+      handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
+    });
   };
 
   const isScrollingUp = !useScrollTrigger({
@@ -162,9 +101,14 @@ export default function Browse({
   });
   const atTopOfPage = TopOfPage({ initTopOfPage: true });
   const showOnScrollUp = isScrollingUp && !atTopOfPage;
-  const handleSetErrorMessage = (newMessage) => {
-    setErrorMessage(newMessage);
+
+  const handleUpdateFilterValues = (valuesToUpdate) => {
+    setFilters({
+      ...filters,
+      ...valuesToUpdate,
+    });
   };
+
   const hubsSubHeaderRef = useRef(null);
   return (
     <>
@@ -175,86 +119,16 @@ export default function Browse({
       >
         <MainHeadingContainerMobile />
         <BrowseContent
-          initialProjects={projectsObject}
-          initialOrganizations={organizationsObject}
-          initialMembers={membersObject}
-          applyNewFilters={applyNewFilters}
-          filterChoices={filterChoices}
-          loadMoreData={loadMoreData}
-          applySearch={applySearch}
-          handleSetErrorMessage={handleSetErrorMessage}
+          applyNewFilters={handleApplyNewFilters}
+          filters={filters}
+          handleUpdateFilterValues={handleUpdateFilterValues}
           errorMessage={errorMessage}
+          filterChoices={filterChoices}
+          handleSetErrorMessage={handleSetErrorMessage}
           hubsSubHeaderRef={hubsSubHeaderRef}
+          initialLocationFilter={initialLocationFilter}
         />
       </WideLayout>
     </>
   );
-}
-
-async function getProjects(page, token, urlEnding, locale) {
-  return await getDataFromServer({
-    type: "projects",
-    page: page,
-    token: token,
-    urlEnding: urlEnding,
-    locale: locale,
-  });
-}
-
-async function getOrganizations(page, token, urlEnding, locale) {
-  return await getDataFromServer({
-    type: "organizations",
-    page: page,
-    token: token,
-    urlEnding: urlEnding,
-    locale: locale,
-  });
-}
-
-async function getMembers(page, token, urlEnding, locale) {
-  return await getDataFromServer({
-    type: "members",
-    page: page,
-    token: token,
-    urlEnding: urlEnding,
-    locale: locale,
-  });
-}
-
-async function getDataFromServer({ type, page, token, urlEnding, locale }) {
-  let url = `/api/${type}/?page=${page}`;
-  if (urlEnding) url += urlEnding;
-
-  try {
-    console.log(`Getting data for ${type} at ${url}`);
-    const resp = await apiRequest({ method: "get", url: url, token: token, locale: locale });
-    if (resp.data.length === 0) {
-      console.log(`No data of type ${type} found...`);
-      return null;
-    } else {
-      return {
-        [type]: parseData({ type: type, data: resp.data.results }),
-        hasMore: !!resp.data.next,
-      };
-    }
-  } catch (err) {
-    if (err.response && err.response.data) {
-      console.log("Error: ");
-      console.log(err.response.data);
-    } else console.log(err);
-    throw err;
-  }
-}
-
-async function getHubs(locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/hubs/`,
-      locale: locale,
-    });
-    return resp.data.results;
-  } catch (e) {
-    console.log(e);
-  }
 }
