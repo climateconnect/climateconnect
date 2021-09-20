@@ -74,17 +74,17 @@ def create_project_comment_mention_notification(project, comment, sender):
         notification_type=9, project_comment=comment
     )
     r = re.compile(
-        '@@@__(?P<url_slug>[^\^]*)\^\^__(?P<display>[^\@]*)@@@\^\^\^')
+        '(@@@__(?P<url_slug>[^\^]*)\^\^__(?P<display>[^\@]*)@@@\^\^\^)')
     matches = re.findall(r, comment.content)
     sender_url_slug = UserProfile.objects.get(user=sender).url_slug
     for m in matches:
-        url_slug, display = m[0], m[1]
+        whole, url_slug, display = m[0], m[1], m[2]
         if not url_slug == sender_url_slug:
             user = UserProfile.objects.filter(url_slug=url_slug)[0].user
             create_user_notification(user, notification)
             send_out_live_notification(user.id)
             send_email_notification(
-                user, "mention", project, comment, sender, notification)
+                user, "mention", project, comment.replace(whole, '@' + display), sender, notification)
     return notification
 
 
