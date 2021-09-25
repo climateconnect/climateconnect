@@ -42,7 +42,7 @@ class QuestionTranslation(models.Model):
         verbose_name_plural = "Question translations"
 
     def __str__(self):
-        return f"{self.question.id} translated in {self.language.name}"
+        return f"'{self.question.text}' (translated in {self.language.name})"
 
 
 class AnswerTranslation(models.Model):
@@ -84,4 +84,4 @@ class AnswerTranslation(models.Model):
         verbose_name_plural = "Answer translations"
 
     def __str__(self):
-        return f"{self.answer.id} translated in {self.language.name}"
+        return f"'{self.answer.text}' (translated in {self.language.name})"
