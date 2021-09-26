@@ -1,4 +1,12 @@
-import { Button, CircularProgress, Container, Link, Tooltip, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Link,
+  Tooltip,
+  Typography,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import EmailIcon from "@material-ui/icons/Email";
 import ExploreIcon from "@material-ui/icons/Explore";
@@ -51,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
   infoBottomBar: {
     display: "flex",
     marginTop: theme.spacing(3),
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
   },
   smallScreenHeader: {
     fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))",
@@ -84,11 +92,20 @@ export default function ProjectOverview({
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
-  const { user, notifications, setNotificationsRead, refreshNotifications, locale } = useContext(
-    UserContext
-  );
+  const {
+    locale,
+    notifications,
+    pathName,
+    refreshNotifications,
+    setNotificationsRead,
+    user,
+  } = useContext(UserContext);
+
+  const [requestedToJoinProject, setRequestedToJoinProject] = React.useState(false);
+
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const token = cookies.get("token");
+
   const handleClickContact = async (event) => {
     event.preventDefault();
     const creator = project.team.filter((m) => m.permission === ROLE_TYPES.all_type)[0];
@@ -101,6 +118,45 @@ export default function ProjectOverview({
     const chat = await startPrivateChat(creator, token, locale);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
+
+  /**
+   * Calls backend, sending a request to join this project based
+   * on user token stored in cookies.
+   */
+  const handleSendProjectJoinRequest = async (event) => {
+    // Get the actual project name from the URL, removing any query params
+    // and projects/ prefix. For example,
+    // "projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
+    const projectName = pathName?.split("/")[1].split("?")[0];
+
+    const cookies = new Cookies();
+    const token = cookies.get("token");
+
+    try {
+      const response = await apiRequest({
+        method: "post",
+        url: `/api/projects/${projectName}/request_membership/${user.url_slug}/`,
+        payload: {
+          message: "Would like to join the project!",
+          // TODO: fix user_availability
+          user_availability: "4",
+        },
+
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+    } catch (error) {
+      // TODO: fix this, once we have an endpoint to see
+      // if a user has already requested to join a specific project. We
+      // should use an effect, and check this immediately on page load.
+      if (error.response.data.message === "Request already exists to join project") {
+        console.log("Already requested to join this project!");
+        setRequestedToJoinProject(true);
+      }
+    }
+  };
+
   const user_permission =
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
@@ -139,27 +195,31 @@ export default function ProjectOverview({
     <Container className={classes.projectOverview}>
       {smallScreen ? (
         <SmallScreenOverview
-          project={project}
-          handleToggleFollowProject={handleToggleFollowProject}
-          isUserFollowing={isUserFollowing}
-          handleClickContact={handleClickContact}
-          hasAdminPermissions={hasAdminPermissions}
-          toggleShowFollowers={toggleShowFollowers}
-          followingChangePending={followingChangePending}
           contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+          followingChangePending={followingChangePending}
+          handleClickContact={handleClickContact}
+          handleToggleFollowProject={handleToggleFollowProject}
+          handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+          hasAdminPermissions={hasAdminPermissions}
+          isUserFollowing={isUserFollowing}
+          project={project}
+          requestedToJoinProject={requestedToJoinProject}
           texts={texts}
+          toggleShowFollowers={toggleShowFollowers}
         />
       ) : (
         <LargeScreenOverview
-          project={project}
-          handleToggleFollowProject={handleToggleFollowProject}
-          isUserFollowing={isUserFollowing}
-          handleClickContact={handleClickContact}
-          hasAdminPermissions={hasAdminPermissions}
-          toggleShowFollowers={toggleShowFollowers}
-          followingChangePending={followingChangePending}
           contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+          followingChangePending={followingChangePending}
+          handleClickContact={handleClickContact}
+          handleToggleFollowProject={handleToggleFollowProject}
+          handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+          hasAdminPermissions={hasAdminPermissions}
+          isUserFollowing={isUserFollowing}
+          project={project}
+          requestedToJoinProject={requestedToJoinProject}
           texts={texts}
+          toggleShowFollowers={toggleShowFollowers}
         />
       )}
       <ProjectFollowersDialog
@@ -176,17 +236,20 @@ export default function ProjectOverview({
 }
 
 function SmallScreenOverview({
-  project,
-  handleToggleFollowProject,
-  isUserFollowing,
-  handleClickContact,
-  hasAdminPermissions,
-  toggleShowFollowers,
-  followingChangePending,
   contactProjectCreatorButtonRef,
+  followingChangePending,
+  handleClickContact,
+  handleSendProjectJoinRequest,
+  handleToggleFollowProject,
+  hasAdminPermissions,
+  isUserFollowing,
+  project,
+  requestedToJoinProject,
   texts,
+  toggleShowFollowers,
 }) {
   const classes = useStyles();
+
   return (
     <>
       <img
@@ -227,26 +290,49 @@ function SmallScreenOverview({
           </Typography>
         </div>
         <div className={classes.infoBottomBar}>
-          <FollowButton
-            isUserFollowing={isUserFollowing}
-            handleToggleFollowProject={handleToggleFollowProject}
-            project={project}
-            hasAdminPermissions={hasAdminPermissions}
-            toggleShowFollowers={toggleShowFollowers}
-            followingChangePending={followingChangePending}
-            texts={texts}
-          />
-          {!hasAdminPermissions && (
-            <Button
-              className={classes.contactProjectButton}
-              variant="contained"
-              color="primary"
-              onClick={handleClickContact}
-              ref={contactProjectCreatorButtonRef}
-            >
-              {texts.contact}
-            </Button>
-          )}
+          {/* Add more vertical separation on mobile views between the tabs and the upper section. */}
+          <Box marginBottom={3} display="flex">
+            <Box marginRight={2}>
+              {/* TODO(piper): handle permissions, where we don't show the join / follow button
+            for a project if we've already requested to follow project, OR are an admin on the project */}
+              {requestedToJoinProject ? (
+                <Button
+                  disabled
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSendProjectJoinRequest}
+                >
+                  Already requested
+                </Button>
+              ) : (
+                <Button variant="contained" color="primary" onClick={handleSendProjectJoinRequest}>
+                  Request to Join +
+                </Button>
+              )}
+            </Box>
+
+            <FollowButton
+              isUserFollowing={isUserFollowing}
+              handleToggleFollowProject={handleToggleFollowProject}
+              project={project}
+              hasAdminPermissions={hasAdminPermissions}
+              toggleShowFollowers={toggleShowFollowers}
+              followingChangePending={followingChangePending}
+              texts={texts}
+            />
+
+            {!hasAdminPermissions && (
+              <Button
+                className={classes.contactProjectButton}
+                variant="contained"
+                color="primary"
+                onClick={handleClickContact}
+                ref={contactProjectCreatorButtonRef}
+              >
+                {texts.contact}
+              </Button>
+            )}
+          </Box>
         </div>
       </div>
     </>
@@ -257,56 +343,16 @@ function LargeScreenOverview({
   contactProjectCreatorButtonRef,
   followingChangePending,
   handleClickContact,
+  handleSendProjectJoinRequest,
   handleToggleFollowProject,
   hasAdminPermissions,
   isUserFollowing,
   project,
+  requestedToJoinProject,
   texts,
   toggleShowFollowers,
 }) {
   const classes = useStyles();
-
-  const [requestedToJoinProject, setRequestedToJoinProject] = useState(false);
-
-  /**
-   * Calls backend, sending a request to join this project based
-   * on user token stored in cookies.
-   */
-  async function handleSendProjectJoinRequest() {
-    // TODO(piper): fix user name
-    // TODO(piper): fix project name
-    const projectName = "Anotherproject6";
-    // const userName = "testchester";
-    // const userName = "pip.erchester@gmail.com";
-
-    const userName = "testchester9";
-    const cookies = new Cookies();
-    const token = cookies.get("token");
-
-    try {
-      const response = await apiRequest({
-        method: "post",
-        url: `/api/projects/${projectName}/request_membership/${userName}/`,
-        payload: {
-          message: "Would like to join the project!",
-          // TODO: fix user_availability
-          user_availability: "4",
-        },
-
-        headers: {
-          Authorization: `Token ${token}`,
-        },
-      });
-    } catch (error) {
-      // TODO: fix this, once we have an endpoint to see
-      // if a user has already requested to join a specific project
-      // console.log(error.response.data.message);
-      if (error.response.data.message === "Request already exists to join project") {
-        console.log("Already requested to join this project!");
-        setRequestedToJoinProject(true);
-      }
-    }
-  }
 
   return (
     <>
@@ -353,27 +399,34 @@ function LargeScreenOverview({
             </Typography>
           </div>
           <div className={classes.infoBottomBar}>
-            <FollowButton
-              isUserFollowing={isUserFollowing}
-              handleToggleFollowProject={handleToggleFollowProject}
-              project={project}
-              hasAdminPermissions={hasAdminPermissions}
-              toggleShowFollowers={toggleShowFollowers}
-              followingChangePending={followingChangePending}
-              texts={texts}
-            />
-
-            {/* TODO(piper): handle permissions, where we don't show the join / follow button
+            <Box marginRight={3}>
+              {/* TODO(piper): handle permissions, where we don't show the join / follow button
             for a project if we've already requested to follow project, OR are an admin on the project */}
-            {requestedToJoinProject ? (
-              <Button disabled color="primary" onClick={handleSendProjectJoinRequest}>
-                Already requested
-              </Button>
-            ) : (
-              <Button color="primary" onClick={handleSendProjectJoinRequest}>
-                Request to Join +
-              </Button>
-            )}
+              {requestedToJoinProject ? (
+                <Button
+                  disabled
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSendProjectJoinRequest}
+                >
+                  Already requested
+                </Button>
+              ) : (
+                <Button variant="contained" color="primary" onClick={handleSendProjectJoinRequest}>
+                  Request to Join +
+                </Button>
+              )}
+            </Box>
+
+            <FollowButton
+              followingChangePending={followingChangePending}
+              handleToggleFollowProject={handleToggleFollowProject}
+              hasAdminPermissions={hasAdminPermissions}
+              isUserFollowing={isUserFollowing}
+              project={project}
+              texts={texts}
+              toggleShowFollowers={toggleShowFollowers}
+            />
 
             {!hasAdminPermissions && (
               <Tooltip title={texts.contact_the_projects_creator_with_just_one_click}>
@@ -410,7 +463,6 @@ function FollowButton({
     <span className={classes.followButtonContainer}>
       <Button
         onClick={handleToggleFollowProject}
-        variant="contained"
         color={isUserFollowing ? "secondary" : "primary"}
         disabled={followingChangePending}
         className={classes.followingButton}
