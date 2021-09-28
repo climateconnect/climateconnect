@@ -56,7 +56,8 @@ class UserQuestionAnswersView(APIView):
                             'name': Name of the entity. Note: This is not a required field
                         }
                     ],
-                    'answer_type': <What entity are we storing for this question? i.e. Hub, Skill or Predefined Answer(climate_match_answer).>
+                    'answer_type': <What entity are we storing for this question?
+                    i.e. Hub, Skill or Predefined Answer(climate_match_answer).>
                 }
             ]
         }
@@ -85,12 +86,19 @@ class UserQuestionAnswersView(APIView):
             # Get django contenttype based on answer_type.
             resource_type = ContentType.objects.get(model=question_answer['answer_type'])
 
-            # Check if user's question-answer object already exisits. We do not want to create duplicated
-            # objects for user.
-            if UserQuestionAnswer.objects.filter(user=profile.user, question_id=question_answer['question_id']).exists():
-                user_question_answer = UserQuestionAnswer.objects.get(user=profile.user, question_id=question_answer['question_id'])
+            # Check if user's question-answer object already exisits.
+            # We do not want to create duplicated objects for user.
+            if UserQuestionAnswer.objects.filter(
+                user=profile.user,
+                question_id=question_answer['question_id']
+            ).exists():
+                user_question_answer = UserQuestionAnswer.objects.get(
+                    user=profile.user, question_id=question_answer['question_id']
+                )
             else:
-                user_question_answer = UserQuestionAnswer.objects.create(user=profile.user, question_id=question_answer['question_id'])
+                user_question_answer = UserQuestionAnswer.objects.create(
+                    user=profile.user, question_id=question_answer['question_id']
+                )
 
             if question_answer['answer_type'] in STATIC_ANSWER_TYPE:
                 user_question_answer.predefined_answer_id = question_answer['predefined_answer_id']

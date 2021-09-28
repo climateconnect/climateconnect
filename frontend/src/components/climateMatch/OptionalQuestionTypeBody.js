@@ -4,8 +4,10 @@ import ClimateMatchHeadline from './ClimateMatchHeadline';
 import QuestionButtonBar from './QuestionButtonBar';
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex'
+  },
   headline: {
-    marginBottom: theme.spacing(4),
     marginTop: theme.spacing(4),
     textAlign: "center"
   },
@@ -30,7 +32,7 @@ export default function OptionalQuestionTypeBody({question, onForwardClick, onBa
   const classes = useStyles();
   const answers = question.answers;
   return (
-    <div>
+    <div className={classes.root}>
       <ClimateMatchHeadline size="medium" className={classes.headline}>
         {question.text}
       </ClimateMatchHeadline>
