@@ -7,6 +7,8 @@ import traceback
 
 logger = logging.getLogger(__name__)
 
+
+##Use for any future modifications of the key/value pairs in the URL. 
 SITE_VISIT_ORIGIN_QUERY_PARAM_TO_NAME_MAPPER = {'from_stickers':'Stickers_Campaign_20210930'}
 
 
@@ -37,7 +39,6 @@ def process_url_visit_origin(analytics_params: Sequence
             if analytics_param == 'from_stickers':
                 origin = SITE_VISIT_ORIGIN_QUERY_PARAM_TO_NAME_MAPPER.get(analytics_param,'Origin Not Implemented')
                 
-        print(f"User is Authenticated: {user_is_authenticated}")
         SiteAnalytics.objects.create(
             visitor_guid=visitor_guid
             ,visitor_ip=visitor_ip
