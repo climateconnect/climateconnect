@@ -23,6 +23,7 @@ import HubHeaderImage from "../../src/components/hub/HubHeaderImage";
 import NavigationSubHeader from "../../src/components/hub/NavigationSubHeader";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import DonationCampaignInformation from "../../src/components/staticpages/donate/DonationCampaignInformation";
+import NextCookies from "next-cookies";
 
 const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
@@ -56,7 +57,7 @@ export async function getServerSideProps(ctx) {
     location_filtered_by,
     allHubs,
   ] = await Promise.all([
-    getHubData(hubUrl, ctx.locale),
+    getHubData(ctx, hubUrl, ctx.locale, ctx.query),
     getProjectTagsOptions(hubUrl, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSkillsOptions(ctx.locale),
@@ -259,13 +260,18 @@ const HubDescription = ({ hub, texts }) => {
   );
 };
 
-const getHubData = async (url_slug, locale) => {
-  console.log("getting data for hub " + url_slug);
+const getHubData = async (ctx, url_slug, locale, query) => {
+  const { token } = NextCookies(ctx);
+  console.log(">>>getting data for hub " + url_slug);
   try {
+
+    const url = Object.keys(query).includes('from_stickers') ? `/api/hubs/${url_slug}/?from_stickers=${query['from_stickers']}` : `/api/hubs/${url_slug}/`;
+    console.log(url);
     const resp = await apiRequest({
       method: "get",
-      url: `/api/hubs/${url_slug}/`,
+      url: url,
       locale: locale,
+      token : token,
       shouldThrowError: true,
     });
     return resp.data;
