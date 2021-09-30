@@ -182,11 +182,11 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
   );
 };
 
-export default function Dashboard({ className, headline }) {
+export default function Dashboard({ className, headline, location }) {
   const classes = useStyles();
 
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "dashboard", locale: locale, user: user });
+  const texts = getTexts({ page: "dashboard", locale: locale, user: user, location: location });
 
   return (
     <div className={`${classes.welcomeBanner} ${className}`}>

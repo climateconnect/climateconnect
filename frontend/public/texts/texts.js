@@ -34,6 +34,7 @@ export default function getTexts({
   goal,
   idea,
   filterType,
+  location
 }) {
   // These are the multiple text files for various translations. They're
   // split up to reduce the amount of work required to download
@@ -44,7 +45,7 @@ export default function getTexts({
     chat: chat_texts,
     cookie: cookie_texts,
     communication: getCommunicationTexts(),
-    dashboard: getDashboardTexts({ user: user }),
+    dashboard: getDashboardTexts({ user: user, location: location }),
     donate: getDonateTexts({ classes: classes, goal: goal }),
     faq: getFaqTexts({ classes: classes, locale: locale }),
     filter_and_search: getFilterAndSearchTexts({
