@@ -506,7 +506,6 @@ class AddProjectMembersView(APIView):
         project = Project.objects.get(url_slug=url_slug)
 
         roles = Role.objects.all()
-        print('HI')
         if 'team_members' not in request.data:
             return Response({
                 'message': 'Missing required parameters'
