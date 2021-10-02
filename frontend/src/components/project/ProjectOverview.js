@@ -147,7 +147,7 @@ export default function ProjectOverview({
         },
       });
     } catch (error) {
-      if (error.response.data.message === "Request already exists to join project") {
+      if (error?.response?.data?.message === "Request already exists to join project") {
         console.log("Already requested to join this project!");
         setRequestedToJoinProject(true);
       }
@@ -188,6 +188,7 @@ export default function ProjectOverview({
     }
   });
 
+  // TODO: fix, can't request to join a project you're already a member of!
   React.useEffect(() => {
     try {
       handleSendProjectJoinRequest();
@@ -297,24 +298,31 @@ function SmallScreenOverview({
         <div className={classes.infoBottomBar}>
           {/* Add more vertical separation on mobile views between the tabs and the upper section. */}
           <Box marginBottom={3} display="flex">
-            <Box marginRight={2}>
-              {/* TODO(piper): handle permissions, where we don't show the join / follow button
-            for a project if we've already requested to follow project, OR are an admin on the project */}
-              {requestedToJoinProject ? (
-                <Button
-                  disabled
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSendProjectJoinRequest}
-                >
-                  Already requested
-                </Button>
-              ) : (
-                <Button variant="contained" color="primary" onClick={handleSendProjectJoinRequest}>
-                  Request to Join +
-                </Button>
-              )}
-            </Box>
+            {/* If the user is an admin on the project, or is already part
+            of the project, then we don't want to show the membership request button. */}
+            {!hasAdminPermissions && (
+              <Box marginRight={2}>
+                {/* Update join text for a project if we've already requested to follow project. */}
+                {requestedToJoinProject ? (
+                  <Button
+                    disabled
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSendProjectJoinRequest}
+                  >
+                    Already requested
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSendProjectJoinRequest}
+                  >
+                    Request to Join +
+                  </Button>
+                )}
+              </Box>
+            )}
 
             <FollowButton
               isUserFollowing={isUserFollowing}
@@ -404,24 +412,31 @@ function LargeScreenOverview({
             </Typography>
           </div>
           <div className={classes.infoBottomBar}>
-            <Box marginRight={3}>
-              {/* TODO(piper): handle permissions, where we don't show the join / follow button
-            for a project if we've already requested to follow project, OR are an admin on the project */}
-              {requestedToJoinProject ? (
-                <Button
-                  disabled
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSendProjectJoinRequest}
-                >
-                  Already requested
-                </Button>
-              ) : (
-                <Button variant="contained" color="primary" onClick={handleSendProjectJoinRequest}>
-                  Request to Join +
-                </Button>
-              )}
-            </Box>
+            {/* If the user is an admin on the project, or is already part
+            of the project, then we don't want to show the membership request button. */}
+            {!hasAdminPermissions && (
+              <Box marginRight={3}>
+                {/* Update join text for a project if we've already requested to follow project. */}
+                {requestedToJoinProject ? (
+                  <Button
+                    disabled
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSendProjectJoinRequest}
+                  >
+                    Already requested
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSendProjectJoinRequest}
+                  >
+                    Request to Join +
+                  </Button>
+                )}
+              </Box>
+            )}
 
             <FollowButton
               followingChangePending={followingChangePending}
