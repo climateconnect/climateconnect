@@ -147,9 +147,6 @@ export default function ProjectOverview({
         },
       });
     } catch (error) {
-      // TODO: fix this, once we have an endpoint to see
-      // if a user has already requested to join a specific project. We
-      // should use an effect, and check this immediately on page load.
       if (error.response.data.message === "Request already exists to join project") {
         console.log("Already requested to join this project!");
         setRequestedToJoinProject(true);
@@ -183,13 +180,21 @@ export default function ProjectOverview({
   };
 
   const [gotParams, setGotParams] = React.useState(false);
-  useEffect(() => {
+  React.useEffect(() => {
     if (!gotParams) {
       const params = getParams(window.location.href);
       if (params.show_followers && !showFollowers) toggleShowFollowers();
       setGotParams(true);
     }
   });
+
+  React.useEffect(() => {
+    try {
+      handleSendProjectJoinRequest();
+    } catch (error) {
+      console.error();
+    }
+  }, [requestedToJoinProject]);
 
   return (
     <Container className={classes.projectOverview}>
