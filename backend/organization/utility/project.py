@@ -137,11 +137,11 @@ def add_project_member(project,user,user_role,role_in_project,availability):
     """
 
     ProjectMember.objects.create(
-                        project=project
-                        ,user=user
-                        ,role=user_role
-                        ,role_in_project=role_in_project
-                        ,availability=availability
+                        project=project,
+                        user=user,
+                        role=user_role,
+                        role_in_project=role_in_project,
+                        availability=availability
                     )
     return
 
@@ -174,8 +174,4 @@ def is_part_of_project(user,project):
     :param project: project to be checked
     :type project: ProjectMember
     """
-    n = ProjectMember.objects.filter(project=project, user=user).count()
-    if n ==0:
-        return False
-    else:
-        return True
+    return ProjectMember.objects.filter(project=project, user=user).count() == 0

@@ -14,6 +14,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class MembershipRequestsManager(object):
     """
     Manages the project/org membership requests.
@@ -54,13 +55,10 @@ class MembershipRequestsManager(object):
                                           ,target_project_id=self.project
                                           ,target_organization_id=self.organization).count()
 
-
-
             if n > 0:
                 self.validation_failed = True
                 self.errors.append("Request Already Exists")
                 self.duplicate_request = True
-
 
         else: #id of request is supplied
             self.membership_request = MembershipRequests.objects.filter(id=int(kwargs['membership_request_id']))

@@ -136,43 +136,43 @@ class MembershipRequests(models.Model):
                                                      ,verbose_name="Membership Request Target Type",
                                                       help_text="The type of entity a user requested to join (organization, project...)")
 
-    target_project =  models.ForeignKey(Project
-                                            ,null=True
-                                            ,on_delete=models.CASCADE
-                                            ,help_text="Points to the requested project"
-                                            ,verbose_name="Target Project of Membership Request"
-                                            ,related_name='projects')
+    target_project =  models.ForeignKey(Project,
+                                            null=True,
+                                            on_delete=models.CASCADE,
+                                            help_text="Points to the requested project",
+                                            verbose_name="Target Project of Membership Request",
+                                            related_name='projects')
 
-    target_organization =  models.ForeignKey(Organization
-                                            ,null=True
-                                            ,on_delete=models.CASCADE
-                                            ,help_text="Points to the requested organization"
-                                            ,related_name='organizations'
-                                            ,verbose_name='Target Ogranization of Membership request')
+    target_organization =  models.ForeignKey(Organization,
+                                            null=True,
+                                            on_delete=models.CASCADE,
+                                            help_text="Points to the requested organization",
+                                            related_name='organizations',
+                                            verbose_name='Target Ogranization of Membership request')
 
-    availability = models.ForeignKey(Availability
-                                     ,null=False
-                                     ,on_delete=models.CASCADE
-                                     ,help_text="Points to the Availability offered by the user"
-                                     ,verbose_name='requested membership availability'
-                                     ,related_name='availabilities'
+    availability = models.ForeignKey(Availability,
+                                     null=False,
+                                     on_delete=models.CASCADE,
+                                     help_text="Points to the Availability offered by the user",
+                                     verbose_name='requested membership availability',
+                                     related_name='availabilities'
                                      )
 
 
-    requested_at = models.DateTimeField(help_text="Time of request"
-                                        ,verbose_name="Requested at"
-                                        ,default=None
-                                        ,null=False
+    requested_at = models.DateTimeField(help_text="Time of request",
+                                        verbose_name="Requested at",
+                                        default=None,
+                                        null=False
                                         )
-    approved_at = models.DateTimeField(help_text="Time of request approval"
-                                        ,verbose_name="Approved at"
-                                        ,default=None
-                                        ,null=True
+    approved_at = models.DateTimeField(help_text="Time of request approval",
+                                        verbose_name="Approved at",
+                                        default=None,
+                                        null=True
                                         )
-    rejected_at = models.DateTimeField(help_text="Time of request rejection"
-                                        ,verbose_name="Rejected at"
-                                        ,default=None
-                                        ,null=True
+    rejected_at = models.DateTimeField(help_text="Time of request rejection",
+                                        verbose_name="Rejected at",
+                                        default=None,
+                                        null=True
                                         )
 
     message = models.TextField(help_text="Message associated with the request",
