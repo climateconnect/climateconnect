@@ -47,7 +47,7 @@ class ProjectMember(models.Model):
         help_text="Time when project members were updated", verbose_name="Updated At",
         auto_now=True
     )
-    
+
     is_active = models.BooleanField(
         help_text="Indicates whether the user is still assigned to the project ", verbose_name="Active",
         null=False, blank=False,default=True
@@ -116,7 +116,7 @@ class OrganizationMember(models.Model):
         return "User %d member for organization %s" % (self.user.id, self.organization.name)
 
 class MembershipRequests(models.Model):
-    
+
     id = models.AutoField(help_text='identifier of a join request'
                                 , primary_key=True
                                 ,verbose_name="join request Id")
@@ -161,21 +161,21 @@ class MembershipRequests(models.Model):
 
     requested_at = models.DateTimeField(help_text="Time of request"
                                         ,verbose_name="Requested at"
-                                        ,default=None 
+                                        ,default=None
                                         ,null=False
                                         )
     approved_at = models.DateTimeField(help_text="Time of request approval"
                                         ,verbose_name="Approved at"
-                                        ,default=None 
-                                        ,null=True                                       
+                                        ,default=None
+                                        ,null=True
                                         )
     rejected_at = models.DateTimeField(help_text="Time of request rejection"
                                         ,verbose_name="Rejected at"
-                                        ,default=None 
-                                        ,null=True  
+                                        ,default=None
+                                        ,null=True
                                         )
 
-    message = models.CharField(help_text="Message associated with the request",
+    message = models.TextField(help_text="Message associated with the request",
         verbose_name="Request Message",
         max_length=4096,
         null=True,
