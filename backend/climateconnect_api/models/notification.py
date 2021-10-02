@@ -33,12 +33,11 @@ class Notification(models.Model):
         (POST_COMMENT, "post_comment"),
         (REPLY_TO_POST_COMMENT, "reply_to_post_comment"),
         (GROUP_MESSAGE, "group_message"),
+        (JOIN_PROJECT_REQUEST,"join_project_request"),
+        (PROJECT_JOIN_REQUEST_APPROVED,"project_join_request_approved")
         (IDEA_COMMENT, "idea_comment"),
         (REPLY_TO_IDEA_COMMENT, "reply_to_idea_comment"),
         (PERSON_JOINED_IDEA, "person_joined_idea"),
-        (GROUP_MESSAGE, "group_message"),
-        (JOIN_PROJECT_REQUEST,"join_project_request"),
-        (PROJECT_JOIN_REQUEST_APPROVED,"project_join_request_approved")
     )
 
     notification_type = models.IntegerField(
@@ -63,7 +62,7 @@ class Notification(models.Model):
         verbose_name="Project comment", on_delete=models.CASCADE,
         null=True, blank=True
     )
-    
+
     post_comment = models.ForeignKey(
         PostComment, related_name="notification_post_comment",
         verbose_name="Post comment", on_delete=models.CASCADE,
