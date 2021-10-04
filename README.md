@@ -176,6 +176,6 @@ yarn lint:watch
 
 ### Backend
 
-1. Make sure your `ENVIRONMENT` env variable is set to `production`
+1. Make sure your `ENVIRONMENT` env variable is set to `production` when deploying to the production server
 2. Follow steps 1-5 of the "Getting started
    locally - backend" (above in this file)
