@@ -124,9 +124,9 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Team",
       de: "Team",
     },
-    comments: {
-      en: "Comments",
-      de: "Kommentare",
+    discussion: {
+      en: "Discussion",
+      de: "Diskussion",
     },
     you_have_successfully_left_the_project: {
       en: "You have successfully left the project.",
