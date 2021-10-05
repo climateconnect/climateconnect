@@ -138,6 +138,7 @@ For local development, use the following for `.env`:
   API_URL="http://127.0.0.1:8000"
   BASE_URL_HOST="localhost"
   SOCKET_URL="ws://localhost"
+  ENVIRONMENT="development"
 ```
 
 And finally `yarn dev` to spin up the Next.js app! Check out our [frontend (FE) code style guidelines wiki](https://github.com/climateconnect/climateconnect/wiki/Frontend-Code-Style-Guide) to follow codebase best practices and contribute to a healthy and maintainable codebase.
