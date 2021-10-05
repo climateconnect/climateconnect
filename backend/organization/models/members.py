@@ -117,11 +117,6 @@ class OrganizationMember(models.Model):
 
 class MembershipRequests(models.Model):
 
-    id = models.AutoField(help_text='identifier of a join request'
-                                , primary_key=True
-                                ,verbose_name="join request Id")
-
-
     user = models.ForeignKey(
         User,
         verbose_name="feedback_user",
@@ -184,6 +179,5 @@ class MembershipRequests(models.Model):
     request_status = models.SmallIntegerField(
         choices=[(x.value,x.name) for x in RequestStatus],
         default=RequestStatus.PENDING.value
-
     )
 
