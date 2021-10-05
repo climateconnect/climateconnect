@@ -10,7 +10,7 @@ FRONTEND_URL=<your frontend URL eg: http://localhost:3001>
 SECRET_KEY=<Django secret-key e.g. output of $ openssl rand -base64 32>
 
 ALLOWED_HOSTS=<hosts allowed. eg: http://localhost:8000>
-ENVIRONMENT=<Environment you are in, eg: development>
+ENVIRONMENT=<Environment you are in, eg: development or production>
 
 DEBUG=<Set to True, locally>
 AUTO_VERIFY=<Set to True, locally>

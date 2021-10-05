@@ -66,7 +66,6 @@ const yearAndDayFormatter = (
       plural: "Sekunden",
     },
   };
-
   // Only apply custom logic for the year case
   if (unit === "year") {
     // The days calculation comes directly from react-timeago:
@@ -118,7 +117,6 @@ const yearAndDayFormatter = (
   if (locale === "de" && suffix === "from now") {
     return `in ${value} ${unit}`;
   }
-
   return `${value} ${unit} ${suffix}`;
 };
 
