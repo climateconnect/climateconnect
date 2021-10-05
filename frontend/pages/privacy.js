@@ -75,10 +75,10 @@ export default function Privacy() {
       when you contact us by e-mail, telephone, if you maintain a business relationship with us or
       use our services.
       <h2 id="responsible">2.Who is responsible and to whom can I reach out?</h2>
-      Climate Connect gUG (haftungsbeschränkt), Berliner Straße 9b, 91301 Forchheim, Germany, entered
-      in the Commercial Register of the District Court of Fürth under the registration number HRB
-      18097, represented by Christoph Stoll, Tobias Wilhelm Rehm and Thomas Bove, is responsible for
-      the processing of personal data described in this privacy policy.
+      Climate Connect gUG (haftungsbeschränkt), Berliner Straße 9b, 91301 Forchheim, Germany,
+      entered in the Commercial Register of the District Court of Fürth under the registration
+      number HRB 18097, represented by Christoph Stoll, Tobias Wilhelm Rehm and Thomas Bove, is
+      responsible for the processing of personal data described in this privacy policy.
       <div>You can contact the following office for all inquiries related to data protection:</div>
       <br />
       <div>Climate Connect gUG (haftungsbeschränkt)</div>
