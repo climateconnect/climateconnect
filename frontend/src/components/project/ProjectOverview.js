@@ -101,7 +101,7 @@ export default function ProjectOverview({
     user,
   } = useContext(UserContext);
 
-  const [requestedToJoinProject, setRequestedToJoinProject] = React.useState(false);
+  const [requestedToJoinProject, setRequestedToJoinProject] = useState(false);
 
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const token = cookies.get("token");
@@ -161,10 +161,10 @@ export default function ProjectOverview({
   const hasAdminPermissions =
     user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission);
 
-  const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
-  const [followers, setFollowers] = React.useState([]);
+  const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = useState(false);
+  const [followers, setFollowers] = useState([]);
 
-  const [showFollowers, setShowFollowers] = React.useState(false);
+  const [showFollowers, setShowFollowers] = useState(false);
   const toggleShowFollowers = async () => {
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
@@ -179,8 +179,8 @@ export default function ProjectOverview({
     }
   };
 
-  const [gotParams, setGotParams] = React.useState(false);
-  React.useEffect(() => {
+  const [gotParams, setGotParams] = useState(false);
+  useEffect(() => {
     if (!gotParams) {
       const params = getParams(window.location.href);
       if (params.show_followers && !showFollowers) toggleShowFollowers();
@@ -189,7 +189,7 @@ export default function ProjectOverview({
   });
 
   // TODO: fix, can't request to join a project you're already a member of!
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       handleSendProjectJoinRequest();
     } catch (error) {
