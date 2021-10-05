@@ -67,14 +67,7 @@ export default function ProjectRequestersDialog({
   };
 
   return (
-    <GenericDialog
-      onClose={handleClose}
-      open={open}
-      // TODO(Piper): iterate on naming here
-      // title={texts.requesters_of + " " + project.name}
-      title={"Requested to join project"}
-      //   title={"Users who have requested to follow"}
-    >
+    <GenericDialog onClose={handleClose} open={open} title={"Members requested to join project"}>
       <>
         {loading ? (
           <LinearProgress />
@@ -114,6 +107,7 @@ const ProjectRequesters = ({ requesters, texts, onClose, locale }) => {
   const classes = useStyles();
 
   // TODO(piper): make appropriate API calls here to approve/reject
+  // See https://github.com/climateconnect/climateconnect/issues/672
   const handleApproveRequester = () => {
     console.log("Approved!");
     onClose();
