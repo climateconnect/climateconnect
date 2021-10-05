@@ -75,15 +75,15 @@ export default function Privacy() {
       when you contact us by e-mail, telephone, if you maintain a business relationship with us or
       use our services.
       <h2 id="responsible">2.Who is responsible and to whom can I reach out?</h2>
-      Climate Connect gUG (haftungsbeschränkt), Böttigersteig 20, 91054 Erlangen, Germany, entered
+      Climate Connect gUG (haftungsbeschränkt), Berliner Straße 9b, 91301 Forchheim, Germany, entered
       in the Commercial Register of the District Court of Fürth under the registration number HRB
       18097, represented by Christoph Stoll, Tobias Wilhelm Rehm and Thomas Bove, is responsible for
       the processing of personal data described in this privacy policy.
       <div>You can contact the following office for all inquiries related to data protection:</div>
       <br />
       <div>Climate Connect gUG (haftungsbeschränkt)</div>
-      <div>Böttigersteig 20</div>
-      <div>91054 Erlangen</div>
+      <div>Berliner Straße 9b</div>
+      <div>91301 Forchheim</div>
       <div>Germany</div>
       <div>Tel. +49 157/30101056</div>
       <div>E-mail: contact@climateconnect.earth</div>
@@ -93,8 +93,8 @@ export default function Privacy() {
       <br />
       <div>Climate Connect gUG (haftungsbeschränkt)</div>
       <div>Tobias Rehm</div>
-      <div>Böttigersteig 20</div>
-      <div>91054 Erlangen</div>
+      <div>Berliner Straße 9b</div>
+      <div>91301 Forchheim</div>
       <div>Germany</div>
       <div>Tel. +49 157/30101056</div>
       <div>E-mail: tobias.rehm@climateconnect.earth</div>
@@ -387,8 +387,8 @@ export default function Privacy() {
       YOU CAN SEND YOUR OBJECTION INFORMALLY BY POST, FAX OR E-MAIL ADDRESSED TO:
       <div>Climate Connect gUG (haftungsbeschränkt)</div>
       <div>Management</div>
-      <div>Böttigersteig 20</div>
-      <div>91054 Erlangen</div>
+      <div>Berliner Straße 9b</div>
+      <div>91301 Forchheim</div>
       <div>Deutschland</div>
       <div>TEL. + 49 (0) 157/30101056</div>
       <div>E-MAIL contact@climateconnect.earth</div>
