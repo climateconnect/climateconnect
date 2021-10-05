@@ -97,16 +97,16 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
         key: "all",
         filterChoices: filterChoices,
         locale: locale,
-      }).find((f) => f.key === filterKey)
+      }).find((f) => f.key === filterKey);
       //If the filterKey is just a query param and not a filter option, do nothing
-      if(possibleFiltersForFilterKey) {
+      if (possibleFiltersForFilterKey) {
         if (Array.isArray(filters[filterKey])) {
           filterValues = [
             filters[filterKey].map((filter) => getFilterName(filter, filterKey, filterChoices)),
           ].join();
-        } else {        
-          console.log(filterKey)
-          console.log(possibleFiltersForFilterKey)
+        } else {
+          console.log(filterKey);
+          console.log(possibleFiltersForFilterKey);
           const options = possibleFiltersForFilterKey.options;
           filterValues = findOptionByNameDeep({
             filterChoices: options,

@@ -10,8 +10,7 @@ export default function getDashboardTexts({ user, location }) {
     },
     welcome_message_logged_out: {
       en: `Great that you're here! Here you can see what is being done for the climate in ${location?.city} and how you can get involved!`,
-      de:
-        `Schön, dass du da bist! Hier siehst du, was in ${location?.city} für das Klima getan wird und kannst mitmachen!`,
+      de: `Schön, dass du da bist! Hier siehst du, was in ${location?.city} für das Klima getan wird und kannst mitmachen!`,
     },
     create_idea: {
       en: "Create Idea",
