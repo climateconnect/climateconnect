@@ -27,6 +27,7 @@ export function getNameFromLocation(location) {
     "county",
     "state_district",
     "province",
+    "administrative",
     "state",
     "region",
   ];
