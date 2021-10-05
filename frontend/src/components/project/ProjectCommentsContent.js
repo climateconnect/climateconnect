@@ -84,7 +84,6 @@ export default function CommentsContent({ user, project, token, setCurComments }
   return (
     <div>
       <CommentInput user={user} onSendComment={onSendComment} hasComments={comments.length > 0} />
-      {/* TODO(piper): should lowercase 'comments' */}
       <Typography>{comments.length + " " + texts.comments.toLowerCase()}</Typography>
       <Divider className={classes.divider} />
       {comments && comments.length > 0 && (
