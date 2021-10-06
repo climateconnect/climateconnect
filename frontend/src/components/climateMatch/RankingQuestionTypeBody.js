@@ -69,7 +69,8 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function RankingQuestionTypeBody({
-  question, numberOfChoices, answers, onChangeAnswer, onForwardClick, onBackClick
+  question, numberOfChoices, answers, onChangeAnswer, onForwardClick, onBackClick,
+  userAnswers
 }) {
   const classes = useStyles()
   const [selectableAnswers, setSelectableAnswers] = useState(answers)
@@ -117,12 +118,12 @@ export default function RankingQuestionTypeBody({
                       <div key={i} className={classes.selectedAnswerContainer}>
                         <span className={classes.choiceRankText}>{i+1}.</span>
                         {
-                          answers?.length >= i+1 ? (    
+                          userAnswers?.length >= i+1 ? (    
                             <Draggable key={i} draggableId={"draggable_choice" + i} index={i}>
                               {(provided) => (  
                                 <>                      
                                   <Chip
-                                    label={answers[i].text}
+                                    label={userAnswers[i].text}
                                     className={classes.possibleAnswerChip}
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
@@ -155,17 +156,11 @@ export default function RankingQuestionTypeBody({
                 ref={provided.innerRef}
               >                     
                   {selectableAnswers.map((a, index) => (                
-                    <div key={a.url_slug} className={classes.possibleAnswerContainer}>
+                    <div key={a.id} className={classes.possibleAnswerContainer}>
                       <Typography className={classes.listEqualsChar}>=</Typography>
-                      {answers?.map(ans => ans.url_slug).includes(a.url_slug) ? (
-                        <Chip 
-                          label={a.text} 
-                          className={`${classes.possibleAnswerChip} ${classes.alreadySelectedPossibleAnswer}`}
-                        />
-                      ) : (
                         <Draggable 
-                          key={a.url_slug} 
-                          draggableId={"draggable" + a.url_slug} 
+                          key={a.id} 
+                          draggableId={"draggable" + a.id} 
                           index={index}
                         >
                           {(provided) => {
@@ -179,8 +174,7 @@ export default function RankingQuestionTypeBody({
                               />
                             )
                           }}                    
-                        </Draggable>
-                      )}                      
+                        </Draggable>                      
                     </div>                
                   ))}
                   {provided.placeholder}           

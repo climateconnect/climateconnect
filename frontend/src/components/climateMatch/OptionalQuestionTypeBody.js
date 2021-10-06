@@ -4,9 +4,6 @@ import ClimateMatchHeadline from './ClimateMatchHeadline';
 import QuestionButtonBar from './QuestionButtonBar';
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'flex'
-  },
   headline: {
     marginTop: theme.spacing(4),
     textAlign: "center"
@@ -28,11 +25,12 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function OptionalQuestionTypeBody({question, onForwardClick, onBackClick}) {
+export default function OptionalQuestionTypeBody({question, onForwardClick, onBackClick, userAnswers}) {
   const classes = useStyles();
   const answers = question.answers;
+  console.log(question);
   return (
-    <div className={classes.root}>
+    <div>
       <ClimateMatchHeadline size="medium" className={classes.headline}>
         {question.text}
       </ClimateMatchHeadline>
@@ -41,13 +39,17 @@ export default function OptionalQuestionTypeBody({question, onForwardClick, onBa
           <div key={index} className={classes.answerContainer}>
             <Chip label={a.text} 
               clickable={true} 
-              onClick={onForwardClick}
+              onClick={() => onForwardClick({
+                'question_id': question.id,
+                'predefined_answer_id': a.id,
+                'answers': [],
+                'answer_type': question.answer_type
+              })}
               className={classes.answerChip}
             />  
           </div>
         ))}
       </div>
-      <QuestionButtonBar onForwardClick={onForwardClick} onBackClick={onBackClick}/>
     </div>
   )
 }

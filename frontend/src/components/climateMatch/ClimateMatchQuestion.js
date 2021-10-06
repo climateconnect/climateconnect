@@ -24,11 +24,12 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function ClimateMatchQuestion({
-  questions, step, onChangeAnswer, onForwardClick, onBackClick
+  questions, step, userAnswers, onChangeAnswer, onForwardClick, onBackClick
 }) {
   const question = questions.find(q => q.step === step)
   const classes = useStyles({image: getImageUrl(question.image)})
   const answers = question.answers;
+  console.log(userAnswers);
 
   return (
     <div className={classes.root}>
@@ -38,11 +39,13 @@ export default function ClimateMatchQuestion({
           question={question} 
           onForwardClick={onForwardClick}
           onBackClick={onBackClick}
+          userAnswers={userAnswers}
         />
       ) : (
         <RankingQuestionTypeBody 
           question={question} 
           numberOfChoices={question.number_of_choices}
+          userAnswers={userAnswers}
           onChangeAnswer={onChangeAnswer}
           answers={answers}
           onForwardClick={onForwardClick}
