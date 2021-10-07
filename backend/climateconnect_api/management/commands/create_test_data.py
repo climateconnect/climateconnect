@@ -184,7 +184,7 @@ def create_project_test_data(number_of_rows: int):
             example_availability = random.choice(all_availabilities)
             ProjectMember.objects.create(
                 project=project, user=parent_user, role=admin_role,
-                availability=example_availability, role_in_project='creator'
+                availability=example_availability, role_in_project='Project manager'
             )
 
             number_of_test_project_tags = 5
