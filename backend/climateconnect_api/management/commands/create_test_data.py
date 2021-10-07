@@ -1,7 +1,9 @@
+from organization.models.members import ProjectMember
 from climateconnect_api.models.language import Language
 from organization.models.tags import ProjectTagging, ProjectTags
 from organization.models.project import ProjectParents
 from django.core.management.base import BaseCommand
+import random
 
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -176,6 +178,13 @@ def create_project_test_data(number_of_rows: int):
             ProjectParents.objects.create(
                 project=project,
                 parent_user=parent_user
+            )
+            admin_role = Role.objects.get(role_type=Role.ALL_TYPE)
+            all_availabilities = list(Availability.objects.all())
+            example_availability = random.choice(all_availabilities)
+            ProjectMember.objects.create(
+                project=project, user=parent_user, role=admin_role,
+                availability=example_availability, role_in_project='creator'
             )
 
             number_of_test_project_tags = 5
