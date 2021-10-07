@@ -69,33 +69,41 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function RankingQuestionTypeBody({
-  question, numberOfChoices, answers, onChangeAnswer, onForwardClick, onBackClick,
-  userAnswers
+  question, numberOfChoices, answers, onChangeAnswer, onForwardClick, onBackClick
 }) {
   const classes = useStyles()
+  // This will be used to set weight for each answer
+  const weights = {0: 100, 1: 80, 2: 50}
   const [selectableAnswers, setSelectableAnswers] = useState(answers)
+  const [possibleAnswers, setPossibleAnswers] = useState([])
   const onDragEnd = (result) => {
-    console.log(result.source.index);
+    console.log(result);
     if(!result.destination)
       return
     //The user selected an answer!
-    if(result.destination.droppableId === "selectedAnswers") {
-      if(!answers) {
-        console.log(selectableAnswers)
-        console.log(selectableAnswers.indexOf(result.source.index))
-        onChangeAnswer(question.step, [selectableAnswers[result.source.index]])
-      } else {
-        console.log(answers)
-        const i = result.destination.index
-        //insert element at correct place. If there were already 3 elements in the array, cut off after 3
-        const newAnswer = [...answers.slice(0, i), selectableAnswers[result.source.index], ...answers.slice(i, answers.length + 1)].slice(0,3)
-        onChangeAnswer(question.step, newAnswer)
-      }
+    if(
+      result.destination.droppableId === "selectedAnswers" && 
+      possibleAnswers.length < numberOfChoices &&
+      result.source.droppableId !== result.destination.droppableId
+    ) {
+      console.log("dip")
+      console.log(selectableAnswers, possibleAnswers);
+      const selectedAnswer = selectableAnswers[result.source.index]
+      const newPossibleAnswers = possibleAnswers
+      newPossibleAnswers.push({
+        'id': selectedAnswer.id,
+        'text': selectedAnswer.text,
+        'weight': weights[result.destination.index]
+      })
     }
   }
 
-  const onCloseIcon = () => {
-    console.log("Remove")
+  const onCloseIcon = (event, index) => {
+    event.preventDefault();
+    console.log("dips")
+    const newPossibleAnswers = possibleAnswers;
+    newPossibleAnswers.splice(index);
+    setPossibleAnswers(newPossibleAnswers);
   }
   
   return (
@@ -118,18 +126,18 @@ export default function RankingQuestionTypeBody({
                       <div key={i} className={classes.selectedAnswerContainer}>
                         <span className={classes.choiceRankText}>{i+1}.</span>
                         {
-                          userAnswers?.length >= i+1 ? (    
+                          possibleAnswers?.length >= i+1 ? (    
                             <Draggable key={i} draggableId={"draggable_choice" + i} index={i}>
                               {(provided) => (  
                                 <>                      
                                   <Chip
-                                    label={userAnswers[i].text}
+                                    label={possibleAnswers[i].text}
                                     className={classes.possibleAnswerChip}
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
                                   />
-                                  <CloseIcon onClick={onCloseIcon}/>
+                                  <CloseIcon onClick={(event) => onCloseIcon(event, i)}/>
                                 </>
                               )}
                             </Draggable>

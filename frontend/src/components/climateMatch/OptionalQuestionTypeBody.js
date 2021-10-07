@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function OptionalQuestionTypeBody({question, onForwardClick, onBackClick, userAnswers}) {
+export default function OptionalQuestionTypeBody({question, onForwardClick, onBackClick}) {
   const classes = useStyles();
   const answers = question.answers;
   console.log(question);
