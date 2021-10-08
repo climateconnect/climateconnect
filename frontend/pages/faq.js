@@ -161,13 +161,16 @@ const getQuestionsWithAnswers = async (token, locale) => {
       token: token,
       locale: locale,
     });
-    if (resp.data.length === 0) return null;
-    else {
-      return {
-        by_section: sortBySection(resp.data.results),
-        all: resp.data.results,
-      };
+    console.log("trying");
+    if (resp.data.length === 0) {
+      return null;
     }
+
+    debugger;
+    return {
+      by_section: sortBySection(resp.data.results),
+      all: resp.data.results,
+    };
   } catch (err) {
     if (err.response && err.response.data) {
       console.log(err.response.data);
