@@ -161,12 +161,11 @@ const getQuestionsWithAnswers = async (token, locale) => {
       token: token,
       locale: locale,
     });
-    console.log("trying");
+
     if (resp.data.length === 0) {
       return null;
     }
 
-    debugger;
     return {
       by_section: sortBySection(resp.data.results),
       all: resp.data.results,
