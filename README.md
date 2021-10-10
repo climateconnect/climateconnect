@@ -1,6 +1,6 @@
 # Climate Connect
 
-The code for https://climateconnect.earth.
+The client and server code for the web platform on https://climateconnect.earth.
 
 ## Pre-steps
 
@@ -124,6 +124,16 @@ Run a specific test file or test class:
 ```sh
 python manage.py test <file_path> or <file_path + class_name>
 ```
+
+#### Database
+
+<details><summary>How do I edit entries in the production database?</summary>
+
+#### Django admin on production
+
+If you need to edit entries in the production database (e.g. FAQ questions), you can do so on https://api.climateconnect.earth/admin/ (don't forget the trailing slash) with a username and password.
+
+</details>
 
 ### Frontend
 
