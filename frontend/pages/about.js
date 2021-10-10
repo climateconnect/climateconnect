@@ -121,17 +121,20 @@ export default function About({ faqQuestions }) {
 const getQuestionsWithAnswers = async () => {
   try {
     const resp = await apiRequest({ method: "get", url: "/api/list_faq/" });
-    if (resp.data.length === 0) return null;
-    else {
-      return {
-        by_section: sortBySection(resp.data.results),
-        all: resp.data.results,
-      };
+    if (resp.data.length === 0) {
+      return null;
     }
+
+    return {
+      by_section: sortBySection(resp.data.results),
+      all: resp.data.results,
+    };
   } catch (err) {
     if (err.response && err.response.data) {
       console.log(err.response.data);
-    } else console.log(err);
+    } else {
+      console.log(err);
+    }
     return null;
   }
 };

@@ -370,9 +370,11 @@ export default function Header({
 function StaticPageLinks() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+
   const texts = getTexts({ page: "navigation", locale: locale });
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
   const localePrefix = getLocalePrefix(locale);
+
   return (
     <div className={classes.staticPageLinksWrapper}>
       <Container className={classes.staticPageLinksContainer}>
