@@ -147,6 +147,7 @@ export default function MyApp({
       }
 
       // Remove the server-side injected CSS.
+      // TODO(Piper): what is this removal intended to do?
       const jssStyles = document.querySelector("#jss-server-side");
       if (jssStyles) {
         jssStyles.parentElement.removeChild(jssStyles);
