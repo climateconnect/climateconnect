@@ -24,7 +24,6 @@ export default function MyApp({
   pathName,
   donationGoal,
 }) {
-  const [stateInitialized, setStateInitialized] = useState(false);
   const [gaInitialized, setGaInitialized] = useState(false);
   const [isLoading, setLoading] = useState(false);
 
@@ -125,40 +124,32 @@ export default function MyApp({
   };
 
   useEffect(() => {
-    if (!stateInitialized) {
-      if (user) {
-        const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
-        const client = WebSocketService("/ws/chat/");
+    if (user) {
+      const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
+      const client = WebSocketService("/ws/chat/");
 
-        setState({
-          ...state,
-          user: user,
-          notifications: notifications.filter((n) => !notificationsToSetRead.includes(n)),
-        });
+      setState({
+        ...state,
+        user: user,
+        notifications: notifications.filter((n) => !notificationsToSetRead.includes(n)),
+      });
 
-        setWebSocketClient(client);
+      setWebSocketClient(client);
 
-        if (notificationsToSetRead.length > 0) {
-          setNotificationsRead(token, notificationsToSetRead, locale);
-        }
-
-        // Try to connect to the WebSocket
-        connect(client);
+      if (notificationsToSetRead.length > 0) {
+        setNotificationsRead(token, notificationsToSetRead, locale);
       }
 
-      // Remove the server-side injected CSS.
-      // TODO(Piper): what is this removal intended to do?
-      const jssStyles = document.querySelector("#jss-server-side");
-      if (jssStyles) {
-        jssStyles.parentElement.removeChild(jssStyles);
-      }
+      // Try to connect to the WebSocket
+      connect(client);
+    }
 
-      setStateInitialized(true);
+    // Remove the server-side injected CSS.
+    const jssStyles = document.querySelector("#jss-server-side");
+    if (jssStyles) {
+      jssStyles.parentElement.removeChild(jssStyles);
     }
   }, []);
-
-  // TODO: what's the point of this extraneous useEffect call?
-  useEffect(() => {}, [socketConnectionState]);
 
   const connect = (initialClient) => {
     const client = initialClient ? initialClient : WebSocketService("/ws/chat/");
