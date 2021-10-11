@@ -3,7 +3,6 @@ import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import React, { useContext } from "react";
 
-// Relative imports
 import ROLE_TYPES from "../../../public/data/role_types";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -83,7 +82,6 @@ export default function TeamContent({ project, leaveProject }) {
               <Button
                 className={classes.editButton}
                 variant="contained"
-                // color="primary"
                 href={getLocalePrefix(locale) + "/manageProjectMembers/" + project.url_slug}
               >
                 {texts.manage_members}

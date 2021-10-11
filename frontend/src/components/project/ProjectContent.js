@@ -149,12 +149,11 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Calls API endpoint to return a current list
  * of Climate Connect users, that have requested to
- * join a specific project (i.e. requested membership.).
+ * join a specific project (i.e. requested membership).
  */
 async function getMembershipRequests(url_slug) {
   const resp = await apiRequest({
     method: "get",
-    // TODO(piper): fix with adding any more required headers
     url: `/api/projects/${url_slug}/requesters/`,
   });
 
@@ -162,7 +161,6 @@ async function getMembershipRequests(url_slug) {
     // TODO: error appropriately here
   }
 
-  // This should be a list of membership requesters
   return resp.data.results;
 }
 
@@ -183,7 +181,6 @@ export default function ProjectContent({
       ? project.team.find((m) => m.id === user.id).permission
       : null;
 
-  // TODO(piper): fix logic here to show the dialog when clicking the button
   const [showRequesters, setShowRequesters] = useState(false);
   const [requesters, setRequesters] = useState([]);
   const toggleShowRequest = async () => {
