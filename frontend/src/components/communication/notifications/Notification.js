@@ -1,5 +1,6 @@
-import { Link, ListItemText, MenuItem, withStyles } from "@material-ui/core";
+import { Link, ListItemIcon, ListItemText, MenuItem, withStyles } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
 import GroupIcon from "@material-ui/icons/Group";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
@@ -65,6 +66,8 @@ const NOTIFICATION_TYPES = [
 ];
 
 export default function Notification({ notification, isPlaceholder }) {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale, idea: notification?.idea });
   if (isPlaceholder) return <PlaceholderNotification />;
   else {
     const type = NOTIFICATION_TYPES[notification.notification_type];
@@ -173,7 +176,7 @@ const MentionNotification = ({ notification, texts, locale }) => {
     >
       <StyledMenuItem>
         <ListItemIcon>
-          <CommentIcon />
+          <AlternateEmailIcon />
         </ListItemIcon>
         <ListItemText
           primary={
@@ -181,10 +184,7 @@ const MentionNotification = ({ notification, texts, locale }) => {
             " " +
             sender.last_name +
             " " +
-            texts.mentioned_you +
-            ' "' +
-            notification.project.name +
-            '"'
+            texts.mentioned_you_in_comment_about_project
           }
           secondary={getFragmentsWithMentions(notification.project_comment.content, false, locale)}
           primaryTypographyProps={{
