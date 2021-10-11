@@ -15,36 +15,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Python version
-      uses: actions/setup-python@v1
-      with:
-        python-version: '3.7'
+      - name: Set up Python version
+        uses: actions/setup-python@v1
+        with:
+          python-version: "3.7"
 
-    - name: Create and start virtual environment
-      run: |
-        python -m venv venv
-        source venv/bin/activate
+      - name: Create and start virtual environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
 
-    - name: Install dependencies
-      run: pip install -r backend/requirements.txt
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
 
-    # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
-    - name: Upload artifact for deployment jobs
-      uses: actions/upload-artifact@v2
-      with:
-        name: python-app
-        path: |
-          .
-          !venv/
+      - name: Upload artifact for deployment jobs
+        uses: actions/upload-artifact@v2
+        with:
+          name: python-app
+          path: |
+            .
+            !venv/
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'climateconnect-master'
+      name: "climateconnect-master"
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
@@ -54,9 +54,9 @@ jobs:
           name: python-app
           path: .
 
-      - name: 'Deploy to Azure Web App'
+      - name: "Deploy to Azure Web App"
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'climateconnect-backend'
-          slot-name: 'climateconnect-master'
+          app-name: "climateconnect-backend"
+          slot-name: "climateconnect-master"
           publish-profile: ${{ secrets.AzureAppService_PublishProfile_fe2c5e9a731b4332a87c6ade2ed3f32f }}
