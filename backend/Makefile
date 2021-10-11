@@ -21,7 +21,7 @@ docker:
 # Note: this should be updated to match our CI GitHub action that lints too. See
 # those files under .github/workflows
 lint:
-	flake8 backend --count --select=F6,F7,F8,F9 --show-source --statistics
+	flake8 backend --count --select=E9,F6,F7,F8 --show-source --statistics
 
 all: docker start
 
