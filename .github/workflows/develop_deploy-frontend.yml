@@ -41,6 +41,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: "test-climateconnect-frontend"
-          slot-name: "staging-azure-environment"
+          slot-name: "staging"
           publish-profile: ${{ secrets.TEST_AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: .

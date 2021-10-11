@@ -58,5 +58,5 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: "climateconnect-backend"
-          slot-name: "climateconnect-master"
+          slot-name: "production"
           publish-profile: ${{ secrets.AzureAppService_PublishProfile_fe2c5e9a731b4332a87c6ade2ed3f32f }}
