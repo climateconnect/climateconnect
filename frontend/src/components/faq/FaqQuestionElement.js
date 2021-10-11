@@ -1,7 +1,7 @@
 import { makeStyles, Typography } from "@material-ui/core";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import React from "react";
+import React, { useState } from "react";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -47,11 +47,19 @@ const useStyles = makeStyles((theme) => {
 
 export default function FaqQuestionElement({ questionObject, className, questionTextClassName }) {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+
   return (
-    <div className={`${classes.root} ${className}`}>
+    <div className={className ? `${classes.root} ${className}` : `${classes.root}`}>
       <div className={classes.questionWrapper} onClick={() => setOpen(!open)}>
-        <Typography component="h3" className={`${classes.questionText} ${questionTextClassName}`}>
+        <Typography
+          component="h3"
+          className={
+            questionTextClassName
+              ? `${classes?.questionText} ${questionTextClassName}`
+              : classes.questionText
+          }
+        >
           {questionObject.question}
         </Typography>
         {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}

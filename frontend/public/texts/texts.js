@@ -21,20 +21,20 @@ import settings_texts from "./settings.json";
 import getTutorialTexts from "./tutorial_texts";
 
 export default function getTexts({
-  page,
-  locale,
+  classes,
+  filterType,
+  goal,
   hubName,
+  idea,
+  isNarrowScreen,
+  locale,
+  location,
   organization,
+  page,
   profile,
   project,
-  classes,
-  isNarrowScreen,
   url_slug,
   user,
-  goal,
-  idea,
-  filterType,
-  location,
 }) {
   // These are the multiple text files for various translations. They're
   // split up to reduce the amount of work required to download

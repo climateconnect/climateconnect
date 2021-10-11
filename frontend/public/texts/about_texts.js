@@ -16,9 +16,9 @@ export default function getAboutTexts(classes) {
       Greta Thunberg and Greenpeace to the local sustainable startup, local
       and national governments, and your friend who just recently realized that
       biking to work instead of driving can already make a difference.`,
-      de: `Wir möchten alle zusammenbringen, die gegen den Klimwandel kämpfen - von Greta Thunberg 
-      und Greenpeace bis hin zum lokalen nachhaltigen Startup, 
-      über lokale und nationale Regierungen und deiner Bekannten, die kürzlich erst für sich entdeckt hat, 
+      de: `Wir möchten alle zusammenbringen, die gegen den Klimwandel kämpfen - von Greta Thunberg
+      und Greenpeace bis hin zum lokalen nachhaltigen Startup,
+      über lokale und nationale Regierungen und deiner Bekannten, die kürzlich erst für sich entdeckt hat,
       dass es schon einen Unterschied machen kann, mit dem Rad anstatt mit dem Auto zur Arbeit zu fahren.`,
     },
     our_solution: {
@@ -30,14 +30,14 @@ export default function getAboutTexts(classes) {
       de: "Die Gründung von Climate Connect",
     },
     climate_connect_was_born_text: {
-      en: `The idea of Climate Connect was born after a local networking event in Chris and Tobis
+      en: `The idea of Climate Connect was born after a local networking event in Chris and Tobi's
       home town Erlangen, Germany. After the event it was very obvious that not a lot of
       people knew each other or worked together before. The idea was born to bring this
       approach to a global level, and to include as many people as possible to fight climate
       change together.`,
-      de: `Die Idee ist Climate Connect wurde nach einem lokalen Networking-Event mit Chris 
-      und Tobias in ihrer Heimatstadt Erlangen entstanden. Nach der Veranstaltung war es offensichtlich, 
-      dass sich viele Klimaschützer*innen untereinander gar nicht kannten und es kaum Zusammenarbeit zwischen den Akteuren gab. 
+      de: `Die Idee ist Climate Connect wurde nach einem lokalen Networking-Event mit Chris
+      und Tobias in ihrer Heimatstadt Erlangen entstanden. Nach der Veranstaltung war es offensichtlich,
+      dass sich viele Klimaschützer*innen untereinander gar nicht kannten und es kaum Zusammenarbeit zwischen den Akteuren gab.
       So war die Idee geboren, das Ganze auf ein globales Level anzuheben und so viele Leute wie möglich zusammenzubringen, die gegen den Klimawandel kämpfen.`,
     },
     climate_connect_was_born_image_text: {

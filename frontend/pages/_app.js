@@ -2,11 +2,12 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { ThemeProvider } from "@material-ui/core/styles";
 import NextCookies from "next-cookies";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ReactGA from "react-ga";
-//add global styles
-import "react-multi-carousel/lib/styles.css";
 import Cookies from "universal-cookie";
+// Add global styles
+import "react-multi-carousel/lib/styles.css";
+
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getCookieProps } from "../public/lib/cookieOperations";
 import WebSocketService from "../public/lib/webSockets";
@@ -23,21 +24,19 @@ export default function MyApp({
   pathName,
   donationGoal,
 }) {
-  const [stateInitialized, setStateInitialized] = React.useState(false);
-  const [gaInitialized, setGaInitialized] = React.useState(false);
+  const [gaInitialized, setGaInitialized] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+
+  // Cookies
   const cookies = new Cookies();
   const token = cookies.get("token");
-  const [acceptedStatistics, setAcceptedStatistics] = React.useState(
-    cookies.get("acceptedStatistics")
-  );
-  const [acceptedNecessary, setAcceptedNecessary] = React.useState(
-    cookies.get("acceptedNecessary")
-  );
-  const [isLoading, setLoading] = React.useState(false);
+  const [acceptedStatistics, setAcceptedStatistics] = useState(cookies.get("acceptedStatistics"));
+  const [acceptedNecessary, setAcceptedNecessary] = useState(cookies.get("acceptedNecessary"));
   const updateCookies = () => {
     setAcceptedStatistics(cookies.get("acceptedStatistics"));
     setAcceptedNecessary(cookies.get("acceptedNecessary"));
   };
+
   const router = useRouter();
   const { locale, locales } = router;
   if (
@@ -60,13 +59,19 @@ export default function MyApp({
   const API_HOST = process.env.API_HOST;
   const ENVIRONMENT = process.env.ENVIRONMENT;
   const SOCKET_URL = process.env.SOCKET_URL;
-  //possible socket connection states: "disconnected", "connecting", "connected"
-  const [state, setState] = React.useState({
+
+  // TODO: this should probably be decomposed
+  // into individual state updates for
+  // user, and notifications
+  const [state, setState] = useState({
     user: user,
     notifications: notifications,
-    chatSocket: null,
   });
-  const [socketConnectionState, setSocketConnectionState] = React.useState("connecting");
+
+  const [webSocketClient, setWebSocketClient] = useState(null);
+
+  // Possible socket connection states: "disconnected", "connecting", "connected"
+  const [socketConnectionState, setSocketConnectionState] = useState("connecting");
 
   //TODO: reload current path or main page while being logged out
   const signOut = async () => {
@@ -119,41 +124,53 @@ export default function MyApp({
   };
 
   useEffect(() => {
-    if (!stateInitialized) {
-      if (user) {
-        const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
-        const client = WebSocketService("/ws/chat/");
-        setState({
-          ...state,
-          user: user,
-          chatSocket: client,
-          notifications: notifications.filter((n) => !notificationsToSetRead.includes(n)),
-        });
-        if (notificationsToSetRead.length > 0) {
-          setNotificationsRead(token, notificationsToSetRead, locale);
-        }
-        connect(client);
-      }
-      // Remove the server-side injected CSS.
-      const jssStyles = document.querySelector("#jss-server-side");
-      if (jssStyles) {
-        jssStyles.parentElement.removeChild(jssStyles);
-      }
-      setStateInitialized(true);
-    }
-  });
+    if (user) {
+      const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
+      const client = WebSocketService("/ws/chat/");
 
-  useEffect(() => {}, [state.socketConnectionState]);
+      setState({
+        ...state,
+        user: user,
+        notifications: notifications.filter((n) => !notificationsToSetRead.includes(n)),
+      });
+
+      setWebSocketClient(client);
+
+      if (notificationsToSetRead.length > 0) {
+        setNotificationsRead(token, notificationsToSetRead, locale);
+      }
+
+      // Try to connect to the WebSocket
+      connect(client);
+    }
+
+    // Remove the server-side injected CSS.
+    const jssStyles = document.querySelector("#jss-server-side");
+    if (jssStyles) {
+      jssStyles.parentElement.removeChild(jssStyles);
+    }
+  }, []);
 
   const connect = (initialClient) => {
     const client = initialClient ? initialClient : WebSocketService("/ws/chat/");
+
     client.onopen = () => {
       setSocketConnectionState("connected");
     };
+
     client.onmessage = async () => {
       await refreshNotifications();
     };
+
     client.onclose = () => {
+      // TODO: when this state is updated, it looks
+      // like a mutation is triggered in React, that ultimately
+      // unmounts / remounts the FAQ elements, which causes the
+      // closing behavior identified in
+      // https://github.com/climateconnect/climateconnect/issues/710
+      //
+      // Revisit this code after the most recent state testing from
+      // https://github.com/climateconnect/climateconnect/pull/709
       setSocketConnectionState("closed");
       if (process.env.SOCKET_URL) {
         setTimeout(function () {
@@ -161,11 +178,17 @@ export default function MyApp({
         }, 1000);
       }
     };
+
     if (!initialClient) {
-      setState({
-        ...state,
-        chatSocket: client,
-      });
+      // TODO: when this state is updated, it looks
+      // like a mutation is triggered in React, that ultimately
+      // unmounts / remounts the FAQ elements, which causes the
+      // closing behavior identified in
+      // https://github.com/climateconnect/climateconnect/issues/710
+      //
+      // Revisit this code after the most recent state testing from
+      // https://github.com/climateconnect/climateconnect/pull/709
+      setWebSocketClient(client);
     }
   };
 
@@ -181,7 +204,7 @@ export default function MyApp({
     user: state.user,
     signOut: signOut,
     signIn: signIn,
-    chatSocket: state.chatSocket,
+    chatSocket: webSocketClient,
     notifications: state.notifications,
     refreshNotifications: refreshNotifications,
     API_URL: API_URL,
@@ -201,8 +224,9 @@ export default function MyApp({
     startLoading,
     stopLoading,
   };
+
   return (
-    <React.Fragment>
+    <>
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
@@ -210,7 +234,7 @@ export default function MyApp({
           <Component {...pageProps} />
         </UserContext.Provider>
       </ThemeProvider>
-    </React.Fragment>
+    </>
   );
 }
 
@@ -224,6 +248,7 @@ MyApp.getInitialProps = async (ctx) => {
     ctx.ctx.res.end();
     return;
   }
+
   const [user, notifications, donationGoal, pageProps] = await Promise.all([
     getLoggedInUser(token),
     getNotifications(token),
