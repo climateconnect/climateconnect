@@ -44,7 +44,7 @@ export default function AccountCreated() {
             {texts.just_one_more_step_to_complete_your_signup}
           </Typography>
           <Typography variant="h5">
-            <div></div>
+            <div />
             <div>{texts.please_click_on_the_link_we_emailed_you_to_activate_your_account}</div>
             <br />
             <Typography component="p" variant="h6">
