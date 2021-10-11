@@ -37,10 +37,16 @@ class Role(models.Model):
     )
 
     READ_ONLY_TYPE = 0
-    READ_WRITE_TYPE = 1  # User can read and write to project or organization.
-    ALL_TYPE = 2  # User can perform all actions. i.e.: Administrator type.
+
+    # User can read and write to project or organization.
+    READ_WRITE_TYPE = 1
+
+    # User can perform all actions. i.e.: Administrator type.
+    ALL_TYPE = 2
+
     ROLE_TYPES = (
-        (READ_ONLY_TYPE, 'read only'), (READ_WRITE_TYPE, 'read write'),
+        (READ_ONLY_TYPE, 'read only'),
+        (READ_WRITE_TYPE, 'read write'),
         (ALL_TYPE, 'all')
     )
 

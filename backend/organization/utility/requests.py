@@ -24,7 +24,7 @@ class MembershipRequestsManager(object):
     B. To manage an existing request, provide the request id only as a kwargs. If project or organization are added, then the class check for the consistency of the supplied id
     and the corresponding project/ organization. If validation fails, property validation_failed will be True and errors property will contain a list of errors.
     """
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
 
         self.validation_failed = False
         self.duplicate_request = False

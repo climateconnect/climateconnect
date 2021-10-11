@@ -905,7 +905,7 @@ class ManageJoinProject(RetrieveUpdateAPIView):
 
 
         try:
-            request_manager = MembershipRequestsManager(membership_request_id = request_id,project=project)
+            request_manager = MembershipRequestsManager(membership_request_id = request_id, project=project)
             if request_manager.corrupt_membership_request_id:
                 return Response({'message': 'Request Does Not Exist'}, status=status.HTTP_404_NOT_FOUND)
             elif request_manager.validation_failed:
