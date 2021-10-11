@@ -3,6 +3,7 @@ import ContactSupportOutlinedIcon from "@material-ui/icons/ContactSupportOutline
 import ExpandLessOutlinedIcon from "@material-ui/icons/ExpandLessOutlined";
 import ExpandMoreOutlinedIcon from "@material-ui/icons/ExpandMoreOutlined";
 import React, { useContext } from "react";
+
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FaqQuestionElement from "../faq/FaqQuestionElement";
@@ -73,8 +74,9 @@ const useStyles = makeStyles((theme) => ({
 export default function FaqSection({ headlineClass, questions }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+
   const texts = getTexts({ page: "faq", locale: locale, classes: classes });
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = useState(false);
   const handleToggleShowMore = (e) => {
     e.preventDefault();
     setExpanded(!expanded);
@@ -101,10 +103,10 @@ export default function FaqSection({ headlineClass, questions }) {
               (q, index) =>
                 (index <= 1 || expanded) && (
                   <FaqQuestionElement
-                    questionObject={q}
-                    key={index}
-                    className={classes.faqQuestion}
                     answerClassName={classes.faqAnswer}
+                    className={classes.faqQuestion}
+                    key={index}
+                    questionObject={q}
                     questionTextClassName={classes.questionText}
                   />
                 )

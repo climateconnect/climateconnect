@@ -372,9 +372,11 @@ export default function Header({
 function StaticPageLinks() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+
   const texts = getTexts({ page: "navigation", locale: locale });
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
   const localePrefix = getLocalePrefix(locale);
+
   return (
     <div className={classes.staticPageLinksWrapper}>
       <Container className={classes.staticPageLinksContainer}>
@@ -756,9 +758,11 @@ const getLinkButtonProps = ({
   if (contained) {
     buttonProps.variant = "contained";
   }
+
   if (!isNarrowScreen && (loggedInUser || !link.vanillaIfLoggedOut) && link.icon) {
-    buttonProps.startIcon = <link.icon />;
+    buttonProps.starticon = <link.icon />;
   }
+
   if (!transparentHeader) buttonProps.color = "primary";
   else if (!contained && link.type !== "notificationsButton") buttonProps.color = "inherit";
   if (link.type === "notificationsButton") buttonProps.onClick = toggleShowNotifications;

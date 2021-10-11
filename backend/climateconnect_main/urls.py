@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from climateconnect_api.views import (
     status_views, user_views, common_views,
-    settings_views, role_views, 
+    settings_views, role_views,
     faq_views, notifications_views, donation_views,
     translation_views
 )

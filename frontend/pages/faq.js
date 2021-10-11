@@ -2,6 +2,7 @@ import { Container, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Cookies from "next-cookies";
 import React, { useContext } from "react";
+
 import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -87,7 +88,10 @@ const useStyles = makeStyles((theme) => {
 
 export async function getServerSideProps(ctx) {
   const { token } = Cookies(ctx);
+
+  // Fetch list of FAQ questions from the database
   const questions = await getQuestionsWithAnswers(token, ctx.locale);
+
   return {
     props: {
       questionsBySection: questions.by_section,
@@ -160,13 +164,15 @@ const getQuestionsWithAnswers = async (token, locale) => {
       token: token,
       locale: locale,
     });
-    if (resp.data.length === 0) return null;
-    else {
-      return {
-        by_section: sortBySection(resp.data.results),
-        all: resp.data.results,
-      };
+
+    if (resp.data.length === 0) {
+      return null;
     }
+
+    return {
+      by_section: sortBySection(resp.data.results),
+      all: resp.data.results,
+    };
   } catch (err) {
     if (err.response && err.response.data) {
       console.log(err.response.data);
