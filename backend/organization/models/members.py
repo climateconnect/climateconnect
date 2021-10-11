@@ -182,5 +182,5 @@ class MembershipRequests(models.Model):
     )
 
     class Meta:
-        unique_together =('user', 'project')
+        unique_together = ('user', 'target_project')
 
