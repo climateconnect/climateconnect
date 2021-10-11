@@ -181,3 +181,6 @@ class MembershipRequests(models.Model):
         default=RequestStatus.PENDING.value
     )
 
+    class Meta:
+        unique_together =('user', 'project')
+
