@@ -4,9 +4,9 @@ import NextCookies from "next-cookies";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
 import ReactGA from "react-ga";
-//add global styles
-import "react-multi-carousel/lib/styles.css";
 import Cookies from "universal-cookie";
+// Add global styles
+import "react-multi-carousel/lib/styles.css";
 
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getCookieProps } from "../public/lib/cookieOperations";
@@ -168,6 +168,9 @@ export default function MyApp({
       // unmounts / remounts the FAQ elements, which causes the
       // closing behavior identified in
       // https://github.com/climateconnect/climateconnect/issues/710
+      //
+      // Revisit this code after the most recent state testing from
+      // https://github.com/climateconnect/climateconnect/pull/709
       setSocketConnectionState("closed");
       if (process.env.SOCKET_URL) {
         setTimeout(function () {
@@ -182,6 +185,9 @@ export default function MyApp({
       // unmounts / remounts the FAQ elements, which causes the
       // closing behavior identified in
       // https://github.com/climateconnect/climateconnect/issues/710
+      //
+      // Revisit this code after the most recent state testing from
+      // https://github.com/climateconnect/climateconnect/pull/709
       setWebSocketClient(client);
     }
   };
