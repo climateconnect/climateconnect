@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from climateconnect.backend.organization.utility.email import (
+from organization.utility.email import (
     send_mention_email, send_project_follower_email)
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.notification import (EmailNotification,
