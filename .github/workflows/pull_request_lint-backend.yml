@@ -1,10 +1,5 @@
-name: Python Linting
-on:
-  push:
-    branches:
-      - "**"
-  pull_request:
-  workflow_dispatch:
+name: Python linting with flake8
+on: [pull_request]
 
 jobs:
   build:
@@ -22,5 +17,4 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint with flake8
         run: |
-          flake8 backend --count --select=F8,E9,F6,F7,F8 --show-source --statistics
-          #flake8 backend --count --max-complexity=10 --max-line-length=300 --statistics
+          flake8 backend --count --select=E9,F6,F7,F8 --show-source --statistics

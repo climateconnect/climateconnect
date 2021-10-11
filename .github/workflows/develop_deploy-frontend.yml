@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: "12.x"
 
-      - name: "install and build"
+      - name: "build"
         run: |
           cd frontend
           yarn --production
