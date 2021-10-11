@@ -1,8 +1,9 @@
-import { Avatar, Button } from "@material-ui/core";
+import { Avatar, Button, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
+import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
 import InputWithMentions from "./InputWithMentions";
@@ -13,10 +14,7 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       alignItems: "center",
     },
-    messageInput: {
-      marginLeft: theme.spacing(3),
-      flexGrow: 1,
-    },
+
     cancelButton: {
       float: "right",
       marginTop: theme.spacing(1),
@@ -28,6 +26,11 @@ const useStyles = makeStyles((theme) => {
     },
     commentButtonContainer: {
       height: 60,
+    },
+    explanation: {
+      float: "left",
+      marginLeft: theme.spacing(8.5),
+      fontSize: 13,
     },
   };
 });
@@ -43,6 +46,7 @@ export default function CommentInput({
   const [curComment, setCurComment] = React.useState("");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const onCurCommentChange = (e) => {
     setCurComment(e.target.value);
@@ -73,10 +77,14 @@ export default function CommentInput({
               className={classes.messageInput}
               value={curComment}
               onChange={onCurCommentChange}
-              placeholder={texts.write_a_comment + "..."}
             />
           </div>
           <div className={classes.commentButtonContainer}>
+            <Typography className={classes.explanation}>
+              {isSmallScreen
+                ? texts.how_to_mention_explainer_text_short
+                : texts.how_to_mention_explainer_text}
+            </Typography>
             <Button
               color="primary"
               variant="contained"

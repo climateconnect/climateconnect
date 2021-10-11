@@ -57,7 +57,7 @@ export default function getTexts({
     idea: getIdeaTexts({ idea: idea, user: user, url_slug: url_slug, locale: locale }),
     landing_page: getLandingPageTexts({ classes: classes, isNarrowScreen: isNarrowScreen }),
     navigation: navigation_texts,
-    notification: getNotificationTexts({ idea: idea }),
+    notification: getNotificationTexts({ idea: idea, project: project }),
     organization: getOrganizationTexts({ organization: organization, locale: locale }),
     profile: getProfileTexts({ profile: profile, locale: locale }),
     project: getProjectTexts({ project: project, user: user, url_slug: url_slug, locale: locale }),

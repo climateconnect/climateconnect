@@ -98,5 +98,13 @@ export default function getCommunicationTexts() {
       en: "Please send me a response to my feedback",
       de: "Bitte antwortet auf mein Feedback",
     },
+    how_to_mention_explainer_text: {
+      en: 'If you want to mention somebody write "@" and then the user\'s name',
+      de: 'Wenn du jemanden erwähnen möchtest, schreibe "@" und dann den Namen.',
+    },
+    how_to_mention_explainer_text_short: {
+      en: 'With "@" you can mention somebody.',
+      de: 'Mit "@" kannst du jemanden erwähnen.',
+    },
   };
 }

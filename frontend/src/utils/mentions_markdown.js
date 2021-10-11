@@ -1,5 +1,12 @@
 import { Link } from "@material-ui/core";
+import React from "react";
 import { getLocalePrefix } from "../../public/lib/apiOperations";
+
+const displayedMention = (locale, id, display) => (
+  <Link href={getLocalePrefix(locale) + "/profiles/" + id} target="_blank">
+    @{display}
+  </Link>
+);
 
 const getFragmentsWithMentions = (content, linkify, locale) => {
   // this matches all future markdown substrings in the string
@@ -19,7 +26,7 @@ const getFragmentsWithMentions = (content, linkify, locale) => {
       const display = greedyMatch[0][2];
       const id = greedyMatch[0][1];
       if (linkify) {
-        fragments.push(<Link href={getLocalePrefix(locale) + "/profiles/" + id}>@{display}</Link>);
+        fragments.push(displayedMention(locale, id, display));
       } else {
         fragments.push(`@${display}`);
       }
@@ -39,4 +46,4 @@ const getFragmentsWithMentions = (content, linkify, locale) => {
   return fragments;
 };
 
-export { getFragmentsWithMentions };
+export { getFragmentsWithMentions, displayedMention };

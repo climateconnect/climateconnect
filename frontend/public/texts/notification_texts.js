@@ -38,5 +38,9 @@ export default function getNotificationTexts({ idea }) {
       en: "Send a message in the chat to welcome them!",
       de: "Schreibe eine Willkommensnachricht in den Chat!",
     },
+    mentioned_you_in_comment_about_project: {
+      en: `has mentioned you in a comment`,
+      de: `hat dich in einem Kommentar erwähnt`,
+    },
   };
 }
