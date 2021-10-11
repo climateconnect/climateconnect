@@ -11,14 +11,16 @@ import {
   TableBody,
   TableCell,
   TableRow,
+  Tooltip,
   Typography,
 } from "@material-ui/core";
 import BlockIcon from "@material-ui/icons/Block";
 import CheckIcon from "@material-ui/icons/Check";
 import React, { useContext } from "react";
+import Cookies from "universal-cookie";
 
 // Relative imports
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -62,6 +64,48 @@ export default function ProjectRequestersDialog({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
 
+  // See https://github.com/climateconnect/climateconnect/issues/672
+  async function handleApproveRequest() {
+    const cookies = new Cookies();
+    const token = cookies.get("token");
+
+    const response = await apiRequest({
+      method: "post",
+      // TODO(piper): fix with correct request ID
+      url: `/api/projects/${project.url_slug}/request_membership/approve/TODO-REQUEST-ID`,
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    });
+
+    if (!resp?.data?.results) {
+      // TODO: error appropriately here
+    } else {
+      console.log("Approved!");
+    }
+  }
+
+  // See https://github.com/climateconnect/climateconnect/issues/672
+  async function handleDenyRequest() {
+    const cookies = new Cookies();
+    const token = cookies.get("token");
+
+    const response = await apiRequest({
+      method: "post",
+      // TODO(piper): fix with correct request ID
+      url: `/api/projects/${project.url_slug}/request_membership/deny/TODO-REQUEST-ID`,
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    });
+
+    if (!resp?.data?.results) {
+      // TODO: error appropriately here
+    } else {
+      console.log("Denied request.");
+    }
+  }
+
   const handleClose = () => {
     onClose();
   };
@@ -91,7 +135,9 @@ export default function ProjectRequestersDialog({
         requesters && requesters.length > 0 ? (
           <ProjectRequesters
             locale={locale}
+            onApproveRequest={handleApproveRequest}
             onClose={onClose}
+            onDenyRequest={handleDenyRequest}
             requesters={requesters}
             texts={texts}
           />
@@ -103,20 +149,15 @@ export default function ProjectRequestersDialog({
   );
 }
 
-const ProjectRequesters = ({ requesters, texts, onClose, locale }) => {
+const ProjectRequesters = ({
+  locale,
+  onApproveRequest,
+  onClose,
+  onDenyRequest,
+  requesters,
+  texts,
+}) => {
   const classes = useStyles();
-
-  // TODO(piper): make appropriate API calls here to approve/reject
-  // See https://github.com/climateconnect/climateconnect/issues/672
-  const handleApproveRequester = () => {
-    console.log("Approved!");
-    onClose();
-  };
-
-  const handleDenyRequester = () => {
-    console.log("Denied!");
-    onClose();
-  };
 
   return (
     <>
@@ -144,23 +185,28 @@ const ProjectRequesters = ({ requesters, texts, onClose, locale }) => {
                   </Link>
                 </TableCell>
 
-                {/* TODO(Piper): need to finish implementing approve / reject UI */}
                 <TableCell>
-                  <IconButton
-                    aria-label="approve project request"
-                    color="primary"
-                    disableRipple
-                    onClick={handleApproveRequester}
-                  >
-                    <CheckIcon />
-                  </IconButton>
-                  <IconButton
-                    aria-label="reject project request"
-                    disableRipple
-                    onClick={handleDenyRequester}
-                  >
-                    <BlockIcon />
-                  </IconButton>
+                  <Tooltip title="Approve">
+                    <IconButton
+                      aria-label="approve project request"
+                      color="primary"
+                      disableRipple
+                      onClick={onApproveRequest}
+                    >
+                      <CheckIcon />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Deny">
+                    <IconButton
+                      aria-label="deny project request"
+                      disableRipple
+                      onClick={onDenyRequest}
+                      tooltipText="whoa"
+                    >
+                      <BlockIcon />
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             );

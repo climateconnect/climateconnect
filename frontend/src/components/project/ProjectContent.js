@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import humanizeDuration from "humanize-duration";
-import React, { useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import TimeAgo from "react-timeago";
 
 // Relative imports
@@ -176,7 +176,7 @@ export default function ProjectContent({
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
-  const [showFullDescription, setShowFullDescription] = React.useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
   const user_permission =
     user && project.team && project.team.find((m) => m.id === user.id)
@@ -184,16 +184,15 @@ export default function ProjectContent({
       : null;
 
   // TODO(piper): fix logic here to show the dialog when clicking the button
-  const [showRequesters, setShowRequesters] = React.useState(false);
-  const [requesters, setRequesters] = React.useState([]);
+  const [showRequesters, setShowRequesters] = useState(false);
+  const [requesters, setRequesters] = useState([]);
   const toggleShowRequest = async () => {
     setShowRequesters(!showRequesters);
   };
 
   // Fetch and populate requesters on initial load
-  React.useEffect(() => {
+  useEffect(() => {
     getMembershipRequests(project.url_slug).then((response) => {
-      console.log(response);
       setRequesters(response);
     });
   }, []);
