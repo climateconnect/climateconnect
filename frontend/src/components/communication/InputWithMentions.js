@@ -47,6 +47,7 @@ export default function InputWithMentions({ baseUrl, value, onChange, placeholde
   const { locale } = useContext(UserContext);
   const mentionsInputRef = useRef(null);
 
+  //TODO: This function might have to be throttled in the future
   function lookupUsers(searchValue, callback) {
     if (!searchValue) return;
     apiRequest({
@@ -74,12 +75,14 @@ export default function InputWithMentions({ baseUrl, value, onChange, placeholde
           onChange={onChange}
           placeholder={placeholder}
           a11ySuggestionsListLabel={"Suggested users for mention"}
+          allowSpaceInQuery
         >
           <Mention
             displayTransform={(login) => `@${login}`}
             trigger="@"
             markup={`@@@____id__^^____display__@@@^^^`}
             data={lookupUsers}
+            allowSpaceInQuery
           />
         </MentionsInput>
       </div>
