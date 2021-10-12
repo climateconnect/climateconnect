@@ -102,41 +102,31 @@ def send_idea_comment_email(user, idea, comment, sender, notification):
     )
 
 
-def send_mention_email(user, project, comment, sender):
-    data = {
-        'Messages': [
-            {
-                "From": {
-                    "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
-                    "Name": "Climate Connect"
-                },
-                "To": [
-                    {
-                        "Email": user.email,
-                        "Name": user.first_name + " " + user.last_name
-                    }
-                ],
-                "TemplateID": int(settings.PROJECT_COMMENT_TEMPLATE_ID),
-                "TemplateLanguage": True,
-                "Subject": "Somebody mentioned you in a comment on the project '"+project.name+"' on Climate Connect",
-                "Variables": {
-                    "ProjectName": project.name,
-                    "CommentText": linkify_mentions(comment),
-                    "FirstName": user.first_name,
-                    "CommenterName": sender.first_name + " " + sender.last_name,
-                    "url": settings.FRONTEND_URL+"/projects/"+project.url_slug+"#comments"
-                }
-            }
-        ]
+def send_mention_email(user, project, comment, sender, notification):
+    lang_code = get_user_lang_code(user)
+    subjects_by_language = {
+        "en": "Somebody mentioned you in a comment on the project \"{}\" on Climate Connect".format(project.name),
+        "de": "Jemand hat dich in einem Kommentar zum Projekt \"{}\" erwähnt".format(project.name)
     }
 
-    try:
-        mail = mailjet.send.create(data=data)
-        return mail
-    except Exception as ex:
-        logger.error("%s: Error sending email: %s" % (
-            send_project_comment_email.__name__, ex
-        ))
+    base_url = settings.FRONTEND_URL
+    url_ending = "/projects/"+project.url_slug+"#comments"
+
+    variables = {
+        "ProjectName": project.name,
+        "CommentText": linkify_mentions(comment),
+        "FirstName": user.first_name,
+        "CommenterName": sender.first_name + " " + sender.last_name,
+        "url": base_url + get_user_lang_url(lang_code) + url_ending
+    }
+    send_email(
+        user=user,
+        variables=variables,
+        template_key="MENTION_TEMPLATE_ID",
+        subjects_by_language=subjects_by_language,
+        should_send_email_setting="email_on_reply_to_your_comment",
+        notification=notification
+    )
 
 
 def send_idea_comment_reply_email(user, idea, comment, sender, notification):

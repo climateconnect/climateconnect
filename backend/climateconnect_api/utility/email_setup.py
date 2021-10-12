@@ -27,27 +27,32 @@ def check_send_email_notification(user):
     )
     return not recent_email_notification.exists()
 
+
 def send_email(
-    user, 
-    variables, 
-    template_key, 
-    subjects_by_language, 
-    should_send_email_setting, 
+    user,
+    variables,
+    template_key,
+    subjects_by_language,
+    should_send_email_setting,
     notification
 ):
-    if check_send_email_notification(user) == False:
+    if not check_send_email_notification(user):
         return
     if should_send_email_setting:
         try:
             user_profile = UserProfile.objects.get(user=user)
-            # short circuit if the user has changed his settings to not receive emails on idea join
-            if getattr(user_profile, should_send_email_setting) == False:
+            # short circuit if the user has changed his settings to not
+            # receive emails on idea join
+            if not getattr(user_profile, should_send_email_setting):
                 return
         except UserProfile.DoesNotExist:
             print("there is no user profile (send_idea_join_email")
     lang_code = get_user_lang_code(user)
     subject = subjects_by_language[lang_code]
-    template_id = get_template_id(template_key=template_key, lang_code=lang_code)
+    template_id = get_template_id(
+        template_key=template_key, 
+        lang_code=lang_code
+    )
 
     data = {
         'Messages': [
