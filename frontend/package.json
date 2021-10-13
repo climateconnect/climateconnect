@@ -1,9 +1,10 @@
 {
-  "name": "frontend",
+  "name": "climate-connect-frontend",
   "description": "This is the user-facing client code for the Climate Connect platform.",
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "build-storybook": "build-storybook",
     "build": "next build",
     "deploy": "yarn build && yarn export",
     "dev": "next dev",
@@ -17,8 +18,7 @@
     "start": "NODE_ENV=production node server.js",
     "storybook": "start-storybook -p 6006",
     "test:watch": "jest --watch",
-    "test": "jest",
-    "build-storybook": "build-storybook"
+    "test": "jest"
   },
   "jest": {
     "setupFiles": [
@@ -83,7 +83,6 @@
     "eslint-plugin-react": "^7.16.0",
     "eslint-watch": "^7.0.0",
     "jest": "^26.6.3",
-    "js-yaml": "^3.13.1",
     "next-compose-plugins": "^2.2.0",
     "prettier": "2.2.0",
     "pretty-quick": "^2.0.0"
