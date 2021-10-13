@@ -849,5 +849,9 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
         </>
       ),
     },
+    project_manager: {
+      en: "Project Manager",
+      de: "Projekt Manager",
+    },
   };
 }

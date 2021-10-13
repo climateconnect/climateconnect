@@ -17,11 +17,17 @@ import ProjectContent from "../../src/components/project/ProjectContent";
 import ProjectOverview from "../../src/components/project/ProjectOverview";
 import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
 import Tutorial from "../../src/components/tutorial/Tutorial";
+import FloatingMessageButton from "../../src/components/project/FloatingMessageButton";
+import ElementOnScreen from "../../src/components/hooks/ElementOnScreen";
+import Router from "next/router";
+import { startPrivateChat } from "../../public/lib/messagingOperations";
+import ElementSpaceToRight from "../../src/components/hooks/ElementSpaceToRight";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     textAlign: "center",
     color: theme.palette.grey[800],
+    position: "relative",
   },
   tabsWrapper: {
     borderBottom: `1px solid ${theme.palette.grey[500]}`,
@@ -42,6 +48,15 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     width: 145,
+  },
+  floatingMessageButtonClass: (props) => ({
+    position: "fixed",
+    bottom: 5,
+    right: props.containerSpaceToRight,
+  }),
+  messageButtonContainer: {
+    backgroundColor: "yellow",
+    position: "relative",
   },
 }));
 
@@ -126,6 +141,7 @@ export default function ProjectPage({ project, members, posts, comments, followi
           followingChangePending={followingChangePending}
           setFollowingChangePending={setFollowingChangePending}
           texts={texts}
+          members={members}
         />
       ) : (
         <PageNotFound itemName={texts.project} />
@@ -145,8 +161,12 @@ function ProjectLayout({
   followingChangePending,
   setFollowingChangePending,
   texts,
+  members,
 }) {
-  const classes = useStyles();
+  const containerRef = useRef(null);
+  const containerSpaceToRight = ElementSpaceToRight({ el: containerRef.current });
+
+  const classes = useStyles({ containerSpaceToRight: containerSpaceToRight });
   const { locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const [hash, setHash] = React.useState(null);
@@ -158,6 +178,28 @@ function ProjectLayout({
   const collaborationSectionRef = useRef(null);
   const contactProjectCreatorButtonRef = useRef(null);
   const projectTabsRef = useRef(null);
+
+  const messageButtonIsVisible = ElementOnScreen({ el: contactProjectCreatorButtonRef.current });
+
+  const handleClickContact = async (event) => {
+    event.preventDefault();
+
+    const creator = project.team.filter((m) => m.permission === ROLE_TYPES.all_type)[0];
+    if (!user) {
+      return redirect("/signin", {
+        redirect: window.location.pathname + window.location.search,
+        errorMessage: texts.please_create_an_account_or_log_in_to_contact_a_projects_organizer,
+      });
+    }
+    const chat = await startPrivateChat(creator, token, locale);
+    Router.push("/chat/" + chat.chat_uuid + "/");
+  };
+  const user_permission =
+    user && project.team && project.team.find((m) => m.id === user.id)
+      ? project.team.find((m) => m.id === user.id).permission
+      : null;
+  const hasAdminPermissions =
+    user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -298,6 +340,8 @@ function ProjectLayout({
         isUserFollowing={isUserFollowing}
         followingChangePending={followingChangePending}
         contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+        projectAdmin={members.find((m) => m.permission === ROLE_TYPES.all_type)}
+        handleClickContact={handleClickContact}
       />
 
       <Container className={classes.noPadding}>
@@ -335,6 +379,15 @@ function ProjectLayout({
             setCurComments={setCurComments}
           />
         </TabContent>
+      </Container>
+      <Container className={classes.messageButtonContainer} ref={containerRef}>
+        {!hasAdminPermissions && !messageButtonIsVisible && (
+          <FloatingMessageButton
+            className={classes.floatingMessageButtonClass}
+            projectAdmin={members.find((m) => m.permission === ROLE_TYPES.all_type)}
+            handleClickContact={handleClickContact}
+          />
+        )}
       </Container>
       <ConfirmDialog
         open={confirmDialogOpen.follow}

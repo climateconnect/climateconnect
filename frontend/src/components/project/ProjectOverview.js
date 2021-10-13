@@ -1,23 +1,21 @@
 import { Button, CircularProgress, Container, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import EmailIcon from "@material-ui/icons/Email";
 import ExploreIcon from "@material-ui/icons/Explore";
 import LanguageIcon from "@material-ui/icons/Language";
 import PlaceIcon from "@material-ui/icons/Place";
-import Router from "next/router";
 import React, { useContext, useEffect } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../../public/data/role_types";
-import { apiRequest, redirect } from "../../../public/lib/apiOperations";
+import { apiRequest } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
-import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
+import FloatingMessageButton from "./FloatingMessageButton";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -79,6 +77,8 @@ export default function ProjectOverview({
   isUserFollowing,
   followingChangePending,
   contactProjectCreatorButtonRef,
+  projectAdmin,
+  handleClickContact,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -87,18 +87,6 @@ export default function ProjectOverview({
   );
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const token = cookies.get("token");
-  const handleClickContact = async (event) => {
-    event.preventDefault();
-    const creator = project.team.filter((m) => m.permission === ROLE_TYPES.all_type)[0];
-    if (!user) {
-      return redirect("/signin", {
-        redirect: window.location.pathname + window.location.search,
-        errorMessage: texts.please_create_an_account_or_log_in_to_contact_a_projects_organizer,
-      });
-    }
-    const chat = await startPrivateChat(creator, token, locale);
-    Router.push("/chat/" + chat.chat_uuid + "/");
-  };
   const user_permission =
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
@@ -156,6 +144,7 @@ export default function ProjectOverview({
           followingChangePending={followingChangePending}
           contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
           texts={texts}
+          projectAdmin={projectAdmin}
         />
       )}
       <ProjectFollowersDialog
@@ -175,11 +164,9 @@ function SmallScreenOverview({
   project,
   handleToggleFollowProject,
   isUserFollowing,
-  handleClickContact,
   hasAdminPermissions,
   toggleShowFollowers,
   followingChangePending,
-  contactProjectCreatorButtonRef,
   texts,
 }) {
   const classes = useStyles();
@@ -232,17 +219,6 @@ function SmallScreenOverview({
             followingChangePending={followingChangePending}
             texts={texts}
           />
-          {!hasAdminPermissions && (
-            <Button
-              className={classes.contactProjectButton}
-              variant="contained"
-              color="primary"
-              onClick={handleClickContact}
-              ref={contactProjectCreatorButtonRef}
-            >
-              {texts.contact}
-            </Button>
-          )}
         </div>
       </div>
     </>
@@ -259,6 +235,7 @@ function LargeScreenOverview({
   followingChangePending,
   contactProjectCreatorButtonRef,
   texts,
+  projectAdmin,
 }) {
   const classes = useStyles();
   return (
@@ -316,18 +293,12 @@ function LargeScreenOverview({
               texts={texts}
             />
             {!hasAdminPermissions && (
-              <Tooltip title={texts.contact_the_projects_creator_with_just_one_click}>
-                <Button
-                  className={classes.contactProjectButton}
-                  variant="contained"
-                  color="primary"
-                  onClick={handleClickContact}
-                  startIcon={<EmailIcon />}
-                  ref={contactProjectCreatorButtonRef}
-                >
-                  {texts.contact_creator}
-                </Button>
-              </Tooltip>
+              <FloatingMessageButton
+                className={classes.fixedMessageButton}
+                projectAdmin={projectAdmin}
+                contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+                handleClickContact={handleClickContact}
+              />
             )}
           </div>
         </div>
