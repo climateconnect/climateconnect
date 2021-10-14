@@ -9,9 +9,9 @@ export default function ImprintGerman() {
         <p>
           Climate Connect gUG (haftungsbeschr&auml;nkt)
           <br />
-          Böttigersteig 20
+          Berliner Straße 9b
           <br />
-          91054 Erlangen
+          91301 Forchheim
         </p>
         <p>
           Handelsregister: HRB 18097

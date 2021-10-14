@@ -182,19 +182,19 @@ function ProjectLayout({
   };
 
   // pagination will only return 10 comments
-  const commentsTabLabel = () => {
-    let commentsLabel = texts.comments;
+  const discussionTabLabel = () => {
+    let discussionLabel = texts.discussion;
     const number_of_parent_comments = project.comments.length;
     const number_of_replies = project.comments.reduce((total, p) => total + p?.replies?.length, 0);
     const number_of_coments = number_of_parent_comments + number_of_replies;
     if (project && project.comments) {
       if (project.comments.length === 10) {
-        commentsLabel += ` (${number_of_coments}+)`;
+        discussionLabel += ` (${number_of_coments}+)`;
       } else if (project?.team?.length < 10 && number_of_coments > 0) {
-        commentsLabel += ` (${number_of_coments})`;
+        discussionLabel += ` (${number_of_coments})`;
       }
     }
-    return commentsLabel;
+    return discussionLabel;
   };
 
   const handleTabChange = (event, newValue) => {
@@ -310,7 +310,7 @@ function ProjectLayout({
           >
             <Tab label={texts.project} className={classes.tab} />
             <Tab label={teamTabLabel()} className={classes.tab} />
-            <Tab label={commentsTabLabel()} className={classes.tab} />
+            <Tab label={discussionTabLabel()} className={classes.tab} />
           </Tabs>
         </div>
       </Container>

@@ -1,6 +1,7 @@
 import NextCookies from "next-cookies";
 import React, { useContext, useEffect } from "react";
 import Cookies from "universal-cookie";
+
 import { apiRequest, redirect, sendToLogin } from "../../public/lib/apiOperations";
 import { getMessageFromServer } from "../../public/lib/messagingOperations";
 import getTexts from "../../public/texts/texts";
@@ -137,8 +138,11 @@ export default function Chat({
 
   const sendMessage = async (message) => {
     if (message.length > 0) {
-      if (socketConnectionState === "connected") await sendChatMessageThroughSocket(message);
-      else await sendChatMessageThroughPostRequest(message, chatUUID, token);
+      if (socketConnectionState === "connected") {
+        await sendChatMessageThroughSocket(message);
+      } else {
+        await sendChatMessageThroughPostRequest(message, chatUUID, token);
+      }
     }
   };
 

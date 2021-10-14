@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tabs, Tab, Divider, makeStyles } from "@material-ui/core";
+
 import FaqQuestionElement from "./FaqQuestionElement";
 
 const useStyles = makeStyles((theme) => {
@@ -15,28 +16,31 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default function UnfilteredFaqContent({ questionsBySection }) {
-  const [tabValue, setTabValue] = React.useState(0);
+  const [tabValue, setTabValue] = useState(0);
   const classes = useStyles();
+
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
+
   function TabContent({ value, index, children }) {
     return <div hidden={value !== index}>{children}</div>;
   }
+
   return (
-    <div>
+    <>
       <Tabs
-        value={tabValue}
-        onChange={handleTabChange}
-        indicatorColor="primary"
-        textColor="primary"
         className={classes.tabs}
+        indicatorColor="primary"
+        onChange={handleTabChange}
+        textColor="primary"
+        value={tabValue}
       >
         {Object.keys(questionsBySection).map((key, index) => (
           <Tab
-            key={key + "tab"}
-            label={Object.keys(questionsBySection)[index].toUpperCase()}
             className={classes.tab}
+            key={`${key}-${index}-tab`}
+            label={Object.keys(questionsBySection)[index].toUpperCase()}
           />
         ))}
       </Tabs>
@@ -44,10 +48,10 @@ export default function UnfilteredFaqContent({ questionsBySection }) {
       {Object.keys(questionsBySection).map((key, index) => (
         <TabContent value={tabValue} index={index} key={key}>
           {questionsBySection[key].map((q) => (
-            <FaqQuestionElement key={key + "-" + q} questionObject={q} />
+            <FaqQuestionElement key={key + "-" + q.question} questionObject={q} />
           ))}
         </TabContent>
       ))}
-    </div>
+    </>
   );
 }

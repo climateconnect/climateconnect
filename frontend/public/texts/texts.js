@@ -21,19 +21,20 @@ import settings_texts from "./settings.json";
 import getTutorialTexts from "./tutorial_texts";
 
 export default function getTexts({
-  page,
-  locale,
+  classes,
+  filterType,
+  goal,
   hubName,
+  idea,
+  isNarrowScreen,
+  locale,
+  location,
   organization,
+  page,
   profile,
   project,
-  classes,
-  isNarrowScreen,
   url_slug,
   user,
-  goal,
-  idea,
-  filterType,
 }) {
   // These are the multiple text files for various translations. They're
   // split up to reduce the amount of work required to download
@@ -44,7 +45,7 @@ export default function getTexts({
     chat: chat_texts,
     cookie: cookie_texts,
     communication: getCommunicationTexts(),
-    dashboard: getDashboardTexts({ user: user }),
+    dashboard: getDashboardTexts({ user: user, location: location }),
     donate: getDonateTexts({ classes: classes, goal: goal }),
     faq: getFaqTexts({ classes: classes, locale: locale }),
     filter_and_search: getFilterAndSearchTexts({

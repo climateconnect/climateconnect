@@ -1,5 +1,6 @@
 import { Link } from "@material-ui/core";
 import React from "react";
+
 import { getLocalePrefix } from "../lib/apiOperations";
 
 export default function getFaqTexts({ classes, locale }) {

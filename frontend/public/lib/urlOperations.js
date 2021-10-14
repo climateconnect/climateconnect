@@ -93,33 +93,38 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
     ) {
       // Stringify array values
       let filterValues;
-
-      if (Array.isArray(filters[filterKey])) {
-        filterValues = [
-          filters[filterKey].map((filter) => getFilterName(filter, filterKey, filterChoices)),
-        ].join();
-      } else {
-        const options = possibleFilters({
-          key: "all",
-          filterChoices: filterChoices,
-          locale: locale,
-        }).find((f) => f.key === filterKey).options;
-        filterValues = findOptionByNameDeep({
-          filterChoices: options,
-          propertyToFilterBy: "name",
-          valueToFilterBy: filters[filterKey],
-        })?.original_name; //options.find((o) => o.name === filters[filterKey]).original_name;
+      const possibleFiltersForFilterKey = possibleFilters({
+        key: "all",
+        filterChoices: filterChoices,
+        locale: locale,
+      }).find((f) => f.key === filterKey);
+      //If the filterKey is just a query param and not a filter option, do nothing
+      if (possibleFiltersForFilterKey) {
+        if (Array.isArray(filters[filterKey])) {
+          filterValues = [
+            filters[filterKey].map((filter) => getFilterName(filter, filterKey, filterChoices)),
+          ].join();
+        } else {
+          console.log(filterKey);
+          console.log(possibleFiltersForFilterKey);
+          const options = possibleFiltersForFilterKey.options;
+          filterValues = findOptionByNameDeep({
+            filterChoices: options,
+            propertyToFilterBy: "name",
+            valueToFilterBy: filters[filterKey],
+          })?.original_name; //options.find((o) => o.name === filters[filterKey]).original_name;
+        }
+        // We also need to handle reserved characters, which
+        // are not escaped by encodeURI as they're necessary
+        // to form a complete URI (notably, ";,/?:@&=+$#";).
+        // We can't guarantee what the input will be, so
+        // we use encodeURIComponent to handle these characters. We
+        // still only encode the filter values though.
+        const encodedKey = encodeURIComponent(filterKey);
+        const encodedValue = encodeURIComponent(filterValues);
+        const encodedFragment = `${encodedKey}=${encodedValue}&`;
+        queryParamFragment += encodedFragment;
       }
-      // We also need to handle reserved characters, which
-      // are not escaped by encodeURI as they're necessary
-      // to form a complete URI (notably, ";,/?:@&=+$#";).
-      // We can't guarantee what the input will be, so
-      // we use encodeURIComponent to handle these characters. We
-      // still only encode the filter values though.
-      const encodedKey = encodeURIComponent(filterKey);
-      const encodedValue = encodeURIComponent(filterValues);
-      const encodedFragment = `${encodedKey}=${encodedValue}&`;
-      queryParamFragment += encodedFragment;
     } else if (
       ["search", "radius"].includes(filterKey) &&
       filters[filterKey] &&
