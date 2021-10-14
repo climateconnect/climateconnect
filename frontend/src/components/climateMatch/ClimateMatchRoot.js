@@ -43,7 +43,7 @@ export default function ClimateMatchRoot({profileUrlSlug}) {
   const [questions, setQuestions] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [location, setLocation] = useState(null)
-  const [userAnswers, setUserAnswers] = useState([])
+  const [userAnswers, setUserAnswers] = useState({'user_question_answers': []})
   const cookies = new Cookies();
   const token = cookies.get('token');
 
@@ -67,7 +67,7 @@ export default function ClimateMatchRoot({profileUrlSlug}) {
   const handleForwardClick = (userQnA) => {
     // Set user answers for climate match
     const newUserAnswers = userAnswers
-    newUserAnswers.push({'question_id': userQnA})
+    newUserAnswers['user_question_answers'].push(userQnA)
     setUserAnswers(newUserAnswers);
 
     if(step < totalQuestions) {

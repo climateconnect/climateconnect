@@ -35,8 +35,7 @@ export default function getTexts({
   goal,
   idea,
   location,
-  filterType,
-  location,
+  filterType
 }) {
   // These are the multiple text files for various translations. They're
   // split up to reduce the amount of work required to download

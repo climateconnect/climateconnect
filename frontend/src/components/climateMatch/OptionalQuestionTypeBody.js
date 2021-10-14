@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Chip, makeStyles } from '@material-ui/core';
 import ClimateMatchHeadline from './ClimateMatchHeadline';
 import QuestionButtonBar from './QuestionButtonBar';
@@ -29,6 +29,10 @@ export default function OptionalQuestionTypeBody({question, onForwardClick, onBa
   const classes = useStyles();
   const answers = question.answers;
   console.log(question);
+  const [selectedAnswer, setSelectedAnswers] = useState()
+  const onSelectAnswer = (answer) => {
+    setSelectedAnswers(answer)
+  }
   return (
     <div>
       <ClimateMatchHeadline size="medium" className={classes.headline}>
@@ -39,7 +43,7 @@ export default function OptionalQuestionTypeBody({question, onForwardClick, onBa
           <div key={index} className={classes.answerContainer}>
             <Chip label={a.text} 
               clickable={true} 
-              onClick={() => onForwardClick({
+              onClick={() => onSelectAnswer({
                 'question_id': question.id,
                 'predefined_answer_id': a.id,
                 'answers': [],
@@ -49,6 +53,7 @@ export default function OptionalQuestionTypeBody({question, onForwardClick, onBa
             />  
           </div>
         ))}
+        <QuestionButtonBar onForwardClick={() => onForwardClick(selectedAnswer)} onBackClick={onBackClick}/>
       </div>
     </div>
   )

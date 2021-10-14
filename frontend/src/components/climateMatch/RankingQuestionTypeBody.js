@@ -71,10 +71,10 @@ const useStyles = makeStyles(theme => ({
 export default function RankingQuestionTypeBody({
   question, numberOfChoices, answers, onChangeAnswer, onForwardClick, onBackClick
 }) {
+  console.log("dip", answers);
   const classes = useStyles()
   // This will be used to set weight for each answer
   const weights = {0: 100, 1: 80, 2: 50}
-  const [selectableAnswers, setSelectableAnswers] = useState(answers)
   const [possibleAnswers, setPossibleAnswers] = useState([])
   const onDragEnd = (result) => {
     console.log(result);
@@ -86,9 +86,7 @@ export default function RankingQuestionTypeBody({
       possibleAnswers.length < numberOfChoices &&
       result.source.droppableId !== result.destination.droppableId
     ) {
-      console.log("dip")
-      console.log(selectableAnswers, possibleAnswers);
-      const selectedAnswer = selectableAnswers[result.source.index]
+      const selectedAnswer = answers[result.source.index]
       const newPossibleAnswers = possibleAnswers
       newPossibleAnswers.push({
         'id': selectedAnswer.id,
@@ -100,7 +98,6 @@ export default function RankingQuestionTypeBody({
 
   const onCloseIcon = (event, index) => {
     event.preventDefault();
-    console.log("dips")
     const newPossibleAnswers = possibleAnswers;
     newPossibleAnswers.splice(index);
     setPossibleAnswers(newPossibleAnswers);
@@ -154,7 +151,13 @@ export default function RankingQuestionTypeBody({
                 </div>
               )}
             </Droppable>
-            <QuestionButtonBar onForwardClick={onForwardClick} onBackClick={onBackClick}/>
+            <QuestionButtonBar 
+              onForwardClick={() => onForwardClick({
+                'question_id': question.id, 'answers': possibleAnswers,
+                'predefined_answer_id': null, 'answer_type': question.answer_type
+              })}
+              onBackClick={onBackClick}
+            />
           </div>
           <Droppable droppableId="possibleAnswers" isDropDisabled> 
             {(provided) => (
@@ -163,7 +166,7 @@ export default function RankingQuestionTypeBody({
                 {...provided.droppableProps}
                 ref={provided.innerRef}
               >                     
-                  {selectableAnswers.map((a, index) => (                
+                  {answers.map((a, index) => (                
                     <div key={a.id} className={classes.possibleAnswerContainer}>
                       <Typography className={classes.listEqualsChar}>=</Typography>
                         <Draggable 
