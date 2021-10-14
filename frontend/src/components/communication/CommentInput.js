@@ -35,12 +35,14 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+//@infoTextSize possible values: "short", "long", "hidden"
 export default function CommentInput({
   user,
   onSendComment,
   parent_comment,
   onCancel,
   hasComments,
+  infoTextSize,
 }) {
   const classes = useStyles();
   const [curComment, setCurComment] = React.useState("");
@@ -63,6 +65,19 @@ export default function CommentInput({
     if (onCancel) onCancel();
   };
 
+  //if `infoTextSize` is set, it overrides the screensize-based behavior
+  const getInfoText = () => {
+    if (!infoTextSize) {
+      if (isSmallScreen) return texts.how_to_mention_explainer_text_short;
+      else {
+        return texts.how_to_mention_explainer_text;
+      }
+    }
+    if (infoTextSize === "short") return texts.how_to_mention_explainer_text_short;
+    if (infoTextSize === "hidden") return "";
+    return texts.how_to_mention_explainer_text;
+  };
+
   if (user)
     return (
       <div>
@@ -80,11 +95,7 @@ export default function CommentInput({
             />
           </div>
           <div className={classes.commentButtonContainer}>
-            <Typography className={classes.explanation}>
-              {isSmallScreen
-                ? texts.how_to_mention_explainer_text_short
-                : texts.how_to_mention_explainer_text}
-            </Typography>
+            <Typography className={classes.explanation}>{getInfoText()}</Typography>
             <Button
               color="primary"
               variant="contained"

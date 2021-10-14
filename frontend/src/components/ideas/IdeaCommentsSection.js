@@ -90,6 +90,7 @@ export default function IdeaCommentsSection({ idea, handleAddComment, handleRemo
           user={user}
           onSendComment={onSendComment}
           hasComments={idea.comments?.length > 0}
+          infoTextSize="short"
         />
         <Divider className={classes.divider} />
         {idea.comments && idea.comments?.length > 0 && (
@@ -100,6 +101,7 @@ export default function IdeaCommentsSection({ idea, handleAddComment, handleRemo
             user={user}
             onSendComment={onSendComment}
             onDeletePost={onDeleteComment}
+            infoTextSize="short"
           />
         )}
       </div>
