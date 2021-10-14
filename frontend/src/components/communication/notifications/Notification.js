@@ -47,6 +47,8 @@ export const StyledMenuItem = withStyles((theme) => ({
   },
 }))(MenuItem);
 
+//When editing this: make sure all entries are still at the correct index afterwards
+//It has to match with Notification.NOTIFICATION_TYPES in the backend
 const NOTIFICATION_TYPES = [
   "broadcast",
   "private_message",
@@ -59,7 +61,6 @@ const NOTIFICATION_TYPES = [
   "group_message",
   "mention",
   null,
-  null,
   "idea_comment",
   "reply_to_idea_comment",
   "person_joined_idea",
@@ -71,6 +72,7 @@ export default function Notification({ notification, isPlaceholder }) {
   if (isPlaceholder) return <PlaceholderNotification />;
   else {
     const type = NOTIFICATION_TYPES[notification.notification_type];
+    console.log(type);
     if (type === "private_message")
       return <PrivateMessageNotification notification={notification} />;
     else if (type === "group_message")
@@ -167,13 +169,17 @@ const PlaceholderNotification = () => {
 
 const MentionNotification = ({ notification, texts, locale }) => {
   const classes = useStyles();
-  const sender = notification.project_comment.author_user;
+  const entityType = notification.project_comment ? "project" : "idea";
   console.log(notification);
+  const commentProp = `${entityType}_comment`;
+  const sender = notification[commentProp].author_user;
+  const urlEnding =
+    entityType === "project"
+      ? `/projects/${notification.project.url_slug}/#comments`
+      : `/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}#ideas`;
+  const previewText = getFragmentsWithMentions(notification[commentProp].content, false, locale);
   return (
-    <Link
-      href={getLocalePrefix(locale) + "/projects/" + notification.project.url_slug + "/#comments"}
-      underline="none"
-    >
+    <Link href={getLocalePrefix(locale) + urlEnding} underline="none">
       <StyledMenuItem>
         <ListItemIcon>
           <AlternateEmailIcon />
@@ -186,7 +192,7 @@ const MentionNotification = ({ notification, texts, locale }) => {
             " " +
             texts.mentioned_you_in_comment_about_project
           }
-          secondary={getFragmentsWithMentions(notification.project_comment.content, false, locale)}
+          secondary={previewText}
           primaryTypographyProps={{
             className: classes.messageSender,
           }}
