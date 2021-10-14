@@ -41,7 +41,6 @@ class UserAccountSettingsView(APIView):
                     'Incorrect password. Did you forget your password?')
 
         if 'email' in request.data:
-            # TODO: Add email confirmation method.
             new_verification_key = uuid.uuid4()
             user.user_profile.verification_key = new_verification_key
             user.user_profile.pending_new_email = request.data['email']
@@ -57,7 +56,7 @@ class UserAccountSettingsView(APIView):
             'email_on_comment_on_your_idea',
             'email_on_reply_to_your_comment',
             'email_on_new_project_follower',
-            'email_on_mention'
+            'email_on_mention',
             'email_on_idea_join'
         ]
         if 'send_newsletter' in request.data:
