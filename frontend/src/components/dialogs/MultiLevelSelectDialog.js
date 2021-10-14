@@ -26,8 +26,7 @@ export default function MultiLevelSelectDialog({
   const texts = getTexts({ page: "general", locale: locale });
 
   const applySkills = () => {
-    if(onSave)
-      onSave(selectedItems);
+    if (onSave) onSave(selectedItems);
     onClose(selectedItems);
   };
 
