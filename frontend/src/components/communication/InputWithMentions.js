@@ -42,7 +42,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function InputWithMentions({ baseUrl, value, onChange, placeholder }) {
+export default function InputWithMentions({ 
+  baseUrl, 
+  value, 
+  onChange, 
+  placeholder,
+  onKeyDown
+}) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const mentionsInputRef = useRef(null);
@@ -76,6 +82,7 @@ export default function InputWithMentions({ baseUrl, value, onChange, placeholde
           placeholder={placeholder}
           a11ySuggestionsListLabel={"Suggested users for mention"}
           allowSpaceInQuery
+          onKeyDown={onKeyDown}
         >
           <Mention
             displayTransform={(login) => `@${login}`}

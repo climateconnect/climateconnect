@@ -78,6 +78,10 @@ export default function CommentInput({
     return texts.how_to_mention_explainer_text;
   };
 
+  const handleMessageKeydown = (event) => {
+    if (event.key === "Enter" && event.ctrlKey) handleSendComment(event, curComment);
+  }
+
   if (user)
     return (
       <div>
@@ -92,6 +96,7 @@ export default function CommentInput({
               className={classes.messageInput}
               value={curComment}
               onChange={onCurCommentChange}
+              onKeyDown={handleMessageKeydown}
             />
           </div>
           <div className={classes.commentButtonContainer}>
