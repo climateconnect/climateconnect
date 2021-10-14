@@ -99,7 +99,7 @@ class Notification(models.Model):
 
 class Meta:
     verbose_name_plural = "Notifications"
-    ordering = ["-id"]
+    ordering = ["-created_at"]
 
 
 class UserNotification(models.Model):
@@ -122,6 +122,14 @@ class UserNotification(models.Model):
         help_text="Time when the notification was sent to the user",
         verbose_name="Created at", auto_now_add=True
     )
+
+    class Meta:
+        verbose_name_plural = "User notifications"
+
+    def __str__(self):
+        return "Notified %s %s about Notification %d at %s" % (
+            self.user.first_name, self.user.last_name, self.notification.id, self.notification.created_at
+        )
 
 
 class EmailNotification(models.Model):
