@@ -99,8 +99,10 @@ export default function getCommunicationTexts() {
       de: "Bitte antwortet auf mein Feedback",
     },
     how_to_mention_explainer_text: {
-      en: 'With "@" (e.g. "@Jane Doe") you can mention somebody. They will then receive a notification.',
-      de: 'Mit "@" (z.B. "@Max Mustermann") kannst du jemanden erwähnen. Die Person kriegt dann eine Benachrichtigung.',
+      en:
+        'With "@" (e.g. "@Jane Doe") you can mention somebody. They will then receive a notification.',
+      de:
+        'Mit "@" (z.B. "@Max Mustermann") kannst du jemanden erwähnen. Die Person kriegt dann eine Benachrichtigung.',
     },
     how_to_mention_explainer_text_short: {
       en: 'With "@" you can mention somebody.',
