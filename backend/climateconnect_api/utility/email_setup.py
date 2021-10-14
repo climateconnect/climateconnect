@@ -13,11 +13,13 @@ logger = logging.getLogger(__name__)
 mailjet_send_api = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE), version='v3.1')
 mailjet_api = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE))
 
+
 def get_template_id(template_key, lang_code):
     if not lang_code == "en":
         return getattr(settings, template_key + "_" + lang_code.upper())
     else:
         return getattr(settings, template_key)
+
 
 def check_send_email_notification(user):
     three_hours_ago = datetime.now() - timedelta(hours=3)
@@ -42,18 +44,17 @@ def send_email(
         try:
             user_profile = UserProfile.objects.get(user=user)
             # short circuit if the user has changed his settings to not
-            # receive emails on idea join
+            # receive emails on this topic
             if not getattr(user_profile, should_send_email_setting):
                 return
         except UserProfile.DoesNotExist:
-            print("there is no user profile (send_idea_join_email")
+            print("there is no user profile (send_email)")
     lang_code = get_user_lang_code(user)
     subject = subjects_by_language[lang_code]
     template_id = get_template_id(
-        template_key=template_key, 
+        template_key=template_key,
         lang_code=lang_code
     )
-
     data = {
         'Messages': [
             {
