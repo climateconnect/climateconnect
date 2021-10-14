@@ -20,12 +20,18 @@ from organization.models.content import ProjectComment
 from organization.serializers.content import ProjectCommentSerializer
 
 
-def create_project_comment_reply_notification(project, comment, sender):
+def create_project_comment_reply_notification(
+    project,
+    comment,
+    sender,
+    user_url_slugs_to_ignore
+):
     notification = send_comment_notification(
         is_reply=True,
         notification_type=Notification.REPLY_TO_PROJECT_COMMENT,
         comment=comment,
         sender=sender,
+        user_url_slugs_to_ignore=user_url_slugs_to_ignore,
         comment_model=ProjectComment,
         comment_object_name="project_comment",
         object_commented_on=project
@@ -34,12 +40,18 @@ def create_project_comment_reply_notification(project, comment, sender):
     return notification
 
 
-def create_project_comment_notification(project, comment, sender):
+def create_project_comment_notification(
+    project,
+    comment,
+    sender,
+    user_url_slugs_to_ignore
+):
     notification = send_comment_notification(
         is_reply=False,
         notification_type=Notification.PROJECT_COMMENT,
         comment=comment,
         sender=sender,
+        user_url_slugs_to_ignore=user_url_slugs_to_ignore,
         comment_model=ProjectComment,
         comment_object_name="project_comment",
         object_commented_on=project
@@ -47,13 +59,29 @@ def create_project_comment_notification(project, comment, sender):
     return notification
 
 
-def create_project_comment_mention_notification(project, comment, sender):
-    notification = Notification.objects.create(
-        notification_type=9, project_comment=comment
-    )
+def get_mentions(text, url_slugs_only):
     r = re.compile(
-        '(@@@__(?P<url_slug>[^\^]*)\^\^__(?P<display>[^\@]*)@@@\^\^\^)')
-    matches = re.findall(r, comment.content)
+        '(@@@__(?P<url_slug>[^\^]*)\^\^__(?P<display>[^\@]*)@@@\^\^\^)'
+    )
+    matches = re.findall(r, text)
+    if url_slugs_only:
+        return list(map((lambda m: m[1]), matches))
+    return matches
+
+
+def create_comment_mention_notification(entity_type, entity, comment, sender):
+    if entity_type == "project":
+        notification = Notification.objects.create(
+            notification_type=9, project_comment=comment
+        )
+    if entity_type == "idea":
+        notification = Notification.objects.create(
+            notification_type=9, idea_comment=comment
+        )
+    matches = get_mentions(
+        text=comment.content,
+        url_slugs_only=False
+    )
     sender_url_slug = UserProfile.objects.get(user=sender).url_slug
     for m in matches:
         _, url_slug, _ = m[0], m[1], m[2]
@@ -62,7 +90,12 @@ def create_project_comment_mention_notification(project, comment, sender):
             create_user_notification(user, notification)
             send_out_live_notification(user.id)
             send_mention_email(
-                user, project, comment.content, sender, notification
+                user=user,
+                entity_type=entity_type,
+                entity=entity,
+                comment=comment.content,
+                sender=sender,
+                notification=notification
             )
     return notification
 

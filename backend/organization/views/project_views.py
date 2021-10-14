@@ -46,10 +46,11 @@ from organization.serializers.project import (EditProjectSerializer,
 from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
-    create_project_comment_mention_notification,
+    create_comment_mention_notification,
     create_project_comment_notification,
     create_project_comment_reply_notification,
-    create_project_follower_notification)
+    create_project_follower_notification,
+    get_mentions)
 from organization.utility.organization import check_organization
 from organization.utility.project import (create_new_project,
                                           get_project_translations)
@@ -761,14 +762,31 @@ class ProjectCommentView(APIView):
                                request.data['parent_comment'], code=status.HTTP_404_NOT_FOUND)
             comment.parent_comment = parent_comment
         comment.save()
-
-        create_project_comment_mention_notification(
-            project, comment, request.user)
+        mentioned_users = get_mentions(
+            text=comment.content,
+            url_slugs_only=True
+        )
+        if len(mentioned_users) > 0:
+            create_comment_mention_notification(
+                entity_type="project",
+                entity=project,
+                comment=comment,
+                sender=request.user
+            )
         if comment.parent_comment:
             create_project_comment_reply_notification(
-                project, comment, request.user)
+                project=project,
+                comment=comment,
+                sender=request.user,
+                user_url_slugs_to_ignore=mentioned_users
+            )
         else:
-            create_project_comment_notification(project, comment, request.user)
+            create_project_comment_notification(
+                project=project,
+                comment=comment,
+                sender=request.user,
+                user_url_slugs_to_ignore=mentioned_users
+            )
         return Response({'comment': ProjectCommentSerializer(comment).data}, status=status.HTTP_200_OK)
 
     def delete(self, request, url_slug, comment_id):
