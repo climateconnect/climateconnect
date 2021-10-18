@@ -173,9 +173,9 @@ function ProjectLayout({
     let teamLabel = texts.team;
     if (project && project.team) {
       if (project.team.length === 12) {
-        teamLabel += ` (${project.team.length}+)`;
+        teamLabel += ` • ${project.team.length}+`;
       } else if (project.team.length < 12 && project.team.length > 0) {
-        teamLabel += ` (${project.team.length})`;
+        teamLabel += ` • ${project.team.length}`;
       }
     }
     return teamLabel;
@@ -189,9 +189,9 @@ function ProjectLayout({
     const number_of_coments = number_of_parent_comments + number_of_replies;
     if (project && project.comments) {
       if (project.comments.length === 10) {
-        discussionLabel += ` (${number_of_coments}+)`;
+        discussionLabel += ` • ${number_of_coments}+`;
       } else if (project?.team?.length < 10 && number_of_coments > 0) {
-        discussionLabel += ` (${number_of_coments})`;
+        discussionLabel += ` • ${number_of_coments}`;
       }
     }
     return discussionLabel;
