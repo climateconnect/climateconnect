@@ -70,10 +70,6 @@ export default function OrganizersContainer({
           />
         </div>
         <div className={blockClassName}>
-          <Typography className={classes.info}>
-            <InfoOutlinedIcon className={classes.infoIcon} />
-            {texts.use_the_search_bar_to_add_collaborating_organizations}
-          </Typography>
           {projectData.isPersonalProject ? (
             <Typography component="h2" variant="subtitle2" className={classes.header}>
               {texts.personal_project}

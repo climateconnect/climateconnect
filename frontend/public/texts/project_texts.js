@@ -146,7 +146,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       ),
     },
     you_cant_leave_a_project_as_the_creator: {
-      en: `You can't leave a project as the Super Admin. Please give the Super Admin role to another team member by clicking "Manage Members" in the team tab`,
+      en: `You can't leave a project as the Super Admin. Please give the Super Admin role to another team member by clicking "Manage Members" in the team tab.`,
       de: `Du kannst das Projekt als Super Admin nicht verlassen. Bitte übertrage diese Rolle auf ein anderes Teammitglied, indem du "Mitglieder verwalten" im Team-Tab klickst`,
     },
     do_you_really_want_to_unfollow: {
@@ -415,7 +415,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
         "Wenn du dein Projekt löscht, geht es verloren. Bist du dir sicher, dass du es löschen möchtest?",
     },
     briefly_summarise_what_you_are_doing_up_to_240_characters: {
-      en: "Briefly summarise what you are doing (up to 280 characters)\n\nPlease only use English!",
+      en: "Briefly summarize what you are doing (up to 280 characters)\n\nPlease only use English!",
       de: "Fass kurz zusammen, was ihr tun (bis zu 280 Zeichen)",
     },
     project_categories: {
@@ -598,7 +598,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de: "Fasse dein Projekt zusammen",
     },
     briefly_summarise_what_you_are_doing: {
-      en: "Briefly summarise what you are doing (up to 280 characters)",
+      en: "Briefly summarie what you are doing (up to 280 characters)",
       de: "Fasse kurz zusammen, was du tust (bis zu 280 Zeichen)",
     },
     search_for_your_team_members: {
@@ -669,10 +669,6 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Type the name of the collaborating organization you want to add next.",
       de:
         "Gib den Namen der zusammenarbeitenden Organisation ein, die du als nächstes hinzufügen möchtest.",
-    },
-    use_the_search_bar_to_add_collaborating_organizations: {
-      en: "Use the search bar to add collaborating organizations.",
-      de: "Verwende die Suchleiste, um zusammenarbeitende Organisationen hinzuzufügen.",
     },
     responsible_organization: {
       en: "Responsible Organization",

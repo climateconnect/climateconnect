@@ -2,6 +2,7 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Router from "next/router";
 import React, { useContext, useEffect, useState } from "react";
+
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
@@ -66,14 +67,14 @@ const getSteps = (texts, sourceLocale) => {
 
 export default function ShareProjectRoot({
   availabilityOptions,
-  userOrganizations,
   categoryOptions,
-  skillsOptions,
   rolesOptions,
-  user,
+  setMessage,
+  skillsOptions,
   statusOptions,
   token,
-  setMessage,
+  user,
+  userOrganizations,
 }) {
   const classes = useStyles();
   const { locale, locales } = useContext(UserContext);
