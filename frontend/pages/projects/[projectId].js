@@ -186,14 +186,14 @@ function ProjectLayout({
   const discussionTabLabel = () => {
     let discussionLabel = texts.discussion;
     const maxNumberComments = 10;
-    const number_of_parent_comments = project.comments.length;
-    const number_of_replies = project.comments.reduce((total, p) => total + p?.replies?.length, 0);
-    const number_of_coments = number_of_parent_comments + number_of_replies;
+    const numberOfParentComments = project.comments.length;
+    const numberOfReplies = project.comments.reduce((total, p) => total + p?.replies?.length, 0);
+    const numberOfComments = numberOfParentComments + numberOfReplies;
     if (project && project.comments) {
       if (project.comments.length >= maxNumberComments) {
         discussionLabel += ` • ${maxNumberComments}+`;
-      } else if (project?.team?.length < maxNumberComments && number_of_coments > 0) {
-        discussionLabel += ` • ${number_of_coments}`;
+      } else if (project?.team?.length < maxNumberComments && numberOfComments > 0) {
+        discussionLabel += ` • ${numberOfComments}`;
       }
     }
     return discussionLabel;
