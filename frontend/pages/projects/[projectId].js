@@ -1,27 +1,33 @@
-import { Container, Tab, Tabs, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import NextCookies from "next-cookies";
+import { AppBar, Button, Container, Tab, Tabs, Toolbar, Typography } from "@material-ui/core";
 import React, { useContext, useEffect, useRef } from "react";
-import Cookies from "universal-cookie";
-import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, redirect } from "../../public/lib/apiOperations";
-import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
-import getTexts from "../../public/texts/texts";
-import UserContext from "../../src/components/context/UserContext";
+import BottomOfPageAboveFooter from "../../src/components/hooks/BottomOfPageAboveFooter";
+import { CircularProgress } from "@material-ui/core";
 import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
+import ContactCreatorButton from "../../src/components/project/ContactCreatorButton";
+import Cookies from "universal-cookie";
+import ElementOnScreen from "../../src/components/hooks/ElementOnScreen";
+import ElementSpaceToRight from "../../src/components/hooks/ElementSpaceToRight";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import { IconButton } from "@material-ui/core";
+import { Link } from "@material-ui/core";
+import NextCookies from "next-cookies";
 import PageNotFound from "../../src/components/general/PageNotFound";
-import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectCommentsContent from "../../src/components/project/ProjectCommentsContent";
 import ProjectContent from "../../src/components/project/ProjectContent";
 import ProjectOverview from "../../src/components/project/ProjectOverview";
 import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
-import Tutorial from "../../src/components/tutorial/Tutorial";
-import FloatingMessageButton from "../../src/components/project/FloatingMessageButton";
-import ElementOnScreen from "../../src/components/hooks/ElementOnScreen";
+import ROLE_TYPES from "../../public/data/role_types";
 import Router from "next/router";
+import Tutorial from "../../src/components/tutorial/Tutorial";
+import UserContext from "../../src/components/context/UserContext";
+import WideLayout from "../../src/components/layouts/WideLayout";
+import { getParams } from "../../public/lib/generalOperations";
+import getTexts from "../../public/texts/texts";
+import { makeStyles } from "@material-ui/core/styles";
+import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
-import ElementSpaceToRight from "../../src/components/hooks/ElementSpaceToRight";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,14 +55,50 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(2),
     width: 145,
   },
-  floatingMessageButtonClass: (props) => ({
+  largeScreenButton: (props) => ({
     position: "fixed",
-    bottom: 5,
+    bottom: props.bottomInteractionFooter + 2,
     right: props.containerSpaceToRight,
+    boxShadow: "3px -3px 6px #00000029",
   }),
-  messageButtonContainer: {
-    backgroundColor: "yellow",
-    position: "relative",
+  bottomActionBar: (props) => ({
+    backgroundColor: "#ECECEC",
+    top: "auto",
+    bottom: props.bottomInteractionFooter,
+    boxShadow: "-3px -3px 6px #00000029",
+  }),
+  containerButtonsActionBar: {
+    display: "flex",
+    justifyContent: "space-around",
+  },
+  smallAvatar: {
+    height: theme.spacing(3),
+    width: theme.spacing(3),
+  },
+  followButtonContainer: (props) => ({
+    display: "inline-flex",
+    flexDirection: props.hasAdminPermissions ? "auto" : "column",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+  }),
+  followersLink: (props) => ({
+    cursor: "pointer",
+    textDecoration: "none",
+    marginLeft: props.hasAdminPermissions ? theme.spacing(1) : 0,
+  }),
+  followerNumber: {
+    fontWeight: 700,
+    color: theme.palette.secondary.main,
+  },
+  followersText: {
+    fontWeight: 500,
+    fontSize: 18,
+    color: theme.palette.secondary.light,
+  },
+  followingButton: {
+    whiteSpace: "nowrap",
+    marginLeft: theme.spacing(0.5),
   },
 }));
 
@@ -141,7 +183,7 @@ export default function ProjectPage({ project, members, posts, comments, followi
           followingChangePending={followingChangePending}
           setFollowingChangePending={setFollowingChangePending}
           texts={texts}
-          members={members}
+          projectAdmin={members.find((m) => m.permission === ROLE_TYPES.all_type)}
         />
       ) : (
         <PageNotFound itemName={texts.project} />
@@ -161,14 +203,16 @@ function ProjectLayout({
   followingChangePending,
   setFollowingChangePending,
   texts,
-  members,
+  projectAdmin,
 }) {
-  const containerRef = useRef(null);
-  const containerSpaceToRight = ElementSpaceToRight({ el: containerRef.current });
+  const bottomInteractionFooter = BottomOfPageAboveFooter();
+  const tabContentRef = useRef(null);
+  const containerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
 
-  const classes = useStyles({ containerSpaceToRight: containerSpaceToRight });
+  const classes = useStyles();
   const { locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const isTinyScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
   const [hash, setHash] = React.useState(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({ follow: false, leave: false });
   const typesByTabValue = ["project", "team", "comments"];
@@ -194,6 +238,7 @@ function ProjectLayout({
     const chat = await startPrivateChat(creator, token, locale);
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
+  const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
   const user_permission =
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
@@ -331,6 +376,31 @@ function ProjectLayout({
     else setConfirmDialogOpen({ ...confirmDialogOpen, leave: true });
   };
 
+  const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
+  const [followers, setFollowers] = React.useState([]);
+  const [showFollowers, setShowFollowers] = React.useState(false);
+  const toggleShowFollowers = async () => {
+    setShowFollowers(!showFollowers);
+    if (!initiallyCaughtFollowers) {
+      const retrievedFollowers = await getFollowers(project, token, locale);
+      const notification_to_set_read = notifications.filter(
+        (n) => n.notification_type === 4 && n.project.url_slug === project.url_slug
+      );
+      await setNotificationsRead(token, notification_to_set_read, locale);
+      await refreshNotifications();
+      setFollowers(retrievedFollowers);
+      setInitiallyCaughtFollowers(true);
+    }
+  };
+  const [gotParams, setGotParams] = React.useState(false);
+  useEffect(() => {
+    if (!gotParams) {
+      const params = getParams(window.location.href);
+      if (params.show_followers && !showFollowers) toggleShowFollowers();
+      setGotParams(true);
+    }
+  });
+
   return (
     <div className={classes.root}>
       <ProjectOverview
@@ -340,8 +410,16 @@ function ProjectLayout({
         isUserFollowing={isUserFollowing}
         followingChangePending={followingChangePending}
         contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-        projectAdmin={members.find((m) => m.permission === ROLE_TYPES.all_type)}
+        projectAdmin={projectAdmin}
         handleClickContact={handleClickContact}
+        hasAdminPermissions={hasAdminPermissions}
+        FollowButton={FollowButton}
+        toggleShowFollowers={toggleShowFollowers}
+        user={user}
+        followers={followers}
+        locale={locale}
+        showFollowers={showFollowers}
+        initiallyCaughtFollowers={initiallyCaughtFollowers}
       />
 
       <Container className={classes.noPadding}>
@@ -359,7 +437,7 @@ function ProjectLayout({
         </div>
       </Container>
 
-      <Container className={classes.tabContent}>
+      <Container className={classes.tabContent} ref={tabContentRef}>
         <TabContent value={tabValue} index={0}>
           <ProjectContent
             project={project}
@@ -380,12 +458,46 @@ function ProjectLayout({
           />
         </TabContent>
       </Container>
-      <Container className={classes.messageButtonContainer} ref={containerRef}>
-        {!hasAdminPermissions && !messageButtonIsVisible && (
-          <FloatingMessageButton
-            className={classes.floatingMessageButtonClass}
-            projectAdmin={members.find((m) => m.permission === ROLE_TYPES.all_type)}
+      <Container>
+        {isTinyScreen ? (
+          <TinyScreenInteractionFooter
+            project={project}
+            projectAdmin={projectAdmin}
             handleClickContact={handleClickContact}
+            hasAdminPermissions={hasAdminPermissions}
+            texts={texts}
+            bottomInteractionFooter={bottomInteractionFooter}
+            tinyScreen={isTinyScreen}
+            isUserFollowing={isUserFollowing}
+            handleToggleFollowProject={handleToggleFollowProject}
+            toggleShowFollowers={toggleShowFollowers}
+            FollowButton={FollowButton}
+            followingChangePending={followingChangePending}
+          />
+        ) : isNarrowScreen ? (
+          <SmallScreenInteractionFooter
+            project={project}
+            projectAdmin={projectAdmin}
+            handleClickContact={handleClickContact}
+            hasAdminPermissions={hasAdminPermissions}
+            texts={texts}
+            bottomInteractionFooter={bottomInteractionFooter}
+            smallScreen={isNarrowScreen}
+            isUserFollowing={isUserFollowing}
+            handleToggleFollowProject={handleToggleFollowProject}
+            toggleShowFollowers={toggleShowFollowers}
+            FollowButton={FollowButton}
+            followingChangePending={followingChangePending}
+          />
+        ) : (
+          <LargeScreenInteractionFooter
+            projectAdmin={projectAdmin}
+            handleClickContact={handleClickContact}
+            hasAdminPermissions={hasAdminPermissions}
+            messageButtonIsVisible={messageButtonIsVisible}
+            contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
+            bottomInteractionFooter={bottomInteractionFooter}
+            containerSpaceToRight={containerSpaceToRight}
           />
         )}
       </Container>
@@ -433,9 +545,194 @@ function ProjectLayout({
   );
 }
 
+function LargeScreenInteractionFooter({
+  projectAdmin,
+  handleClickContact,
+  hasAdminPermissions,
+  messageButtonIsVisible,
+  contactProjectCreatorButtonRef,
+  bottomInteractionFooter,
+  containerSpaceToRight,
+}) {
+  const classes = useStyles({
+    bottomInteractionFooter: bottomInteractionFooter,
+    containerSpaceToRight: containerSpaceToRight,
+  });
+  return (
+    <Container className={classes.largeScreenButtonContainer}>
+      {!hasAdminPermissions &&
+        !messageButtonIsVisible &&
+        contactProjectCreatorButtonRef?.current && (
+          <ContactCreatorButton
+            className={classes.largeScreenButton}
+            projectAdmin={projectAdmin}
+            handleClickContact={handleClickContact}
+          />
+        )}
+    </Container>
+  );
+}
+
+function SmallScreenInteractionFooter({
+  project,
+  projectAdmin,
+  handleClickContact,
+  hasAdminPermissions,
+  bottomInteractionFooter,
+  smallScreen,
+  isUserFollowing,
+  handleToggleFollowProject,
+  toggleShowFollowers,
+  FollowButton,
+  followingChangePending,
+  texts,
+}) {
+  const classes = useStyles({ bottomInteractionFooter: bottomInteractionFooter });
+  return (
+    <AppBar className={classes.bottomActionBar} position="fixed" elevation={0}>
+      <Toolbar className={classes.containerButtonsActionBar} variant="dense">
+        {!hasAdminPermissions && (
+          <ContactCreatorButton
+            projectAdmin={projectAdmin}
+            handleClickContact={handleClickContact}
+            smallScreen={smallScreen}
+          />
+        )}
+        <FollowButton
+          isUserFollowing={isUserFollowing}
+          handleToggleFollowProject={handleToggleFollowProject}
+          project={project}
+          hasAdminPermissions={hasAdminPermissions}
+          toggleShowFollowers={toggleShowFollowers}
+          followingChangePending={followingChangePending}
+          texts={texts}
+          smallScreen={smallScreen}
+        />
+        <IconButton size="small">
+          <FavoriteIcon fontSize="large" color="primary" />
+        </IconButton>
+      </Toolbar>
+    </AppBar>
+  );
+}
+
+function TinyScreenInteractionFooter({
+  project,
+  projectAdmin,
+  handleClickContact,
+  hasAdminPermissions,
+  bottomInteractionFooter,
+  tinyScreen,
+  isUserFollowing,
+  handleToggleFollowProject,
+  toggleShowFollowers,
+  FollowButton,
+  followingChangePending,
+  texts,
+}) {
+  const classes = useStyles({ bottomInteractionFooter: bottomInteractionFooter });
+  return (
+    <AppBar className={classes.bottomActionBar} position="fixed" elevation={0}>
+      <Toolbar className={classes.containerButtonsActionBar} variant="dense">
+        {!hasAdminPermissions && (
+          <ContactCreatorButton
+            projectAdmin={projectAdmin}
+            handleClickContact={handleClickContact}
+            tinyScreen={tinyScreen}
+          />
+        )}
+        <FollowButton
+          isUserFollowing={isUserFollowing}
+          handleToggleFollowProject={handleToggleFollowProject}
+          project={project}
+          hasAdminPermissions={hasAdminPermissions}
+          toggleShowFollowers={toggleShowFollowers}
+          followingChangePending={followingChangePending}
+          texts={texts}
+          tinyScreen={tinyScreen}
+        />
+        <IconButton size="small">
+          <FavoriteIcon fontSize="large" color="primary" />
+        </IconButton>
+      </Toolbar>
+    </AppBar>
+  );
+}
+
 function TabContent({ value, index, children }) {
   return <div hidden={value !== index}>{children}</div>;
 }
+
+function FollowButton({
+  project,
+  isUserFollowing,
+  handleToggleFollowProject,
+  hasAdminPermissions,
+  toggleShowFollowers,
+  followingChangePending,
+  texts,
+  smallScreen,
+  tinyScreen,
+}) {
+  const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
+  if (!(smallScreen || tinyScreen)) {
+    return (
+      <span className={classes.followButtonContainer}>
+        <Button
+          onClick={handleToggleFollowProject}
+          variant="contained"
+          color={isUserFollowing ? "secondary" : "primary"}
+          disabled={followingChangePending}
+          className={classes.followingButton}
+        >
+          {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
+          {isUserFollowing ? texts.following : texts.follow}
+        </Button>
+        {project.number_of_followers > 0 && (
+          <Link
+            color="secondary"
+            underline="always"
+            className={classes.followersLink}
+            onClick={toggleShowFollowers}
+          >
+            <Typography className={classes.followersText}>
+              <span className={classes.followerNumber}>{project.number_of_followers} </span>
+              {project.number_of_followers > 1 ? texts.followers : texts.follower}
+            </Typography>
+          </Link>
+        )}
+      </span>
+    );
+  } else {
+    return (
+      <Button
+        onClick={handleToggleFollowProject}
+        variant="contained"
+        color={isUserFollowing ? "secondary" : "primary"}
+        disabled={followingChangePending}
+        className={classes.followingButton}
+      >
+        {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
+        {isUserFollowing ? texts.following : texts.follow}
+      </Button>
+    );
+  }
+}
+
+const getFollowers = async (project, token, locale) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + project.url_slug + "/followers/",
+      token: token,
+      locale: locale,
+    });
+    return resp.data.results;
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+  }
+};
 
 async function getProjectByIdIfExists(projectUrl, token, locale) {
   try {

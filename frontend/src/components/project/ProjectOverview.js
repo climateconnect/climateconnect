@@ -1,49 +1,19 @@
-import { Button, CircularProgress, Container, Link, Tooltip, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Container, Link, Tooltip, Typography } from "@material-ui/core";
+import ContactCreatorButton from "./ContactCreatorButton";
 import ExploreIcon from "@material-ui/icons/Explore";
 import LanguageIcon from "@material-ui/icons/Language";
-import PlaceIcon from "@material-ui/icons/Place";
-import React, { useContext, useEffect } from "react";
 import Linkify from "react-linkify";
-import Cookies from "universal-cookie";
-import ROLE_TYPES from "../../../public/data/role_types";
-import { apiRequest } from "../../../public/lib/apiOperations";
-import { getParams } from "../../../public/lib/generalOperations";
-import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
-import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
-import UserContext from "../context/UserContext";
+import PlaceIcon from "@material-ui/icons/Place";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
+import React from "react";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
-import FloatingMessageButton from "./FloatingMessageButton";
+import getTexts from "../../../public/texts/texts";
+import { makeStyles } from "@material-ui/core/styles";
+import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
-  contactProjectButton: {
-    marginLeft: theme.spacing(1),
-    maxHeight: 40,
-  },
-  followButtonContainer: (props) => ({
-    display: "inline-flex",
-    flexDirection: props.hasAdminPermissions ? "auto" : "column",
-    justifyContent: "center",
-    alignItems: "center",
-    textAlign: "center",
-  }),
-  followersLink: (props) => ({
-    cursor: "pointer",
-    textDecoration: "none",
-    marginLeft: props.hasAdminPermissions ? theme.spacing(1) : 0,
-  }),
-  followerNumber: {
-    fontWeight: 700,
-    color: theme.palette.secondary.main,
-  },
-  followersText: {
-    fontWeight: 500,
-    fontSize: 18,
-    color: theme.palette.secondary.light,
-  },
   infoBottomBar: {
     display: "flex",
     marginTop: theme.spacing(3),
@@ -51,9 +21,6 @@ const useStyles = makeStyles((theme) => ({
   },
   smallScreenHeader: {
     fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))",
-  },
-  followingButton: {
-    height: 40,
   },
 }));
 
@@ -79,60 +46,23 @@ export default function ProjectOverview({
   contactProjectCreatorButtonRef,
   projectAdmin,
   handleClickContact,
+  toggleShowFollowers,
+  FollowButton,
+  hasAdminPermissions,
+  user,
+  followers,
+  locale,
+  showFollowers,
+  initiallyCaughtFollowers,
 }) {
   const classes = useStyles();
-  const cookies = new Cookies();
-  const { user, notifications, setNotificationsRead, refreshNotifications, locale } = useContext(
-    UserContext
-  );
-  const texts = getTexts({ page: "project", locale: locale, project: project });
-  const token = cookies.get("token");
-  const user_permission =
-    user && project.team && project.team.find((m) => m.id === user.id)
-      ? project.team.find((m) => m.id === user.id).permission
-      : null;
-  const hasAdminPermissions =
-    user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission);
 
-  const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
-  const [followers, setFollowers] = React.useState([]);
-  const [showFollowers, setShowFollowers] = React.useState(false);
-  const toggleShowFollowers = async () => {
-    setShowFollowers(!showFollowers);
-    if (!initiallyCaughtFollowers) {
-      const retrievedFollowers = await getFollowers(project, token, locale);
-      const notification_to_set_read = notifications.filter(
-        (n) => n.notification_type === 4 && n.project.url_slug === project.url_slug
-      );
-      await setNotificationsRead(token, notification_to_set_read, locale);
-      await refreshNotifications();
-      setFollowers(retrievedFollowers);
-      setInitiallyCaughtFollowers(true);
-    }
-  };
-  const [gotParams, setGotParams] = React.useState(false);
-  useEffect(() => {
-    if (!gotParams) {
-      const params = getParams(window.location.href);
-      if (params.show_followers && !showFollowers) toggleShowFollowers();
-      setGotParams(true);
-    }
-  });
+  const texts = getTexts({ page: "project", locale: locale, project: project });
 
   return (
     <Container className={classes.projectOverview}>
       {smallScreen ? (
-        <SmallScreenOverview
-          project={project}
-          handleToggleFollowProject={handleToggleFollowProject}
-          isUserFollowing={isUserFollowing}
-          handleClickContact={handleClickContact}
-          hasAdminPermissions={hasAdminPermissions}
-          toggleShowFollowers={toggleShowFollowers}
-          followingChangePending={followingChangePending}
-          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-          texts={texts}
-        />
+        <SmallScreenOverview project={project} texts={texts} />
       ) : (
         <LargeScreenOverview
           project={project}
@@ -145,6 +75,7 @@ export default function ProjectOverview({
           contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
           texts={texts}
           projectAdmin={projectAdmin}
+          FollowButton={FollowButton}
         />
       )}
       <ProjectFollowersDialog
@@ -160,15 +91,7 @@ export default function ProjectOverview({
   );
 }
 
-function SmallScreenOverview({
-  project,
-  handleToggleFollowProject,
-  isUserFollowing,
-  hasAdminPermissions,
-  toggleShowFollowers,
-  followingChangePending,
-  texts,
-}) {
+function SmallScreenOverview({ project, texts }) {
   const classes = useStyles();
   return (
     <>
@@ -209,17 +132,6 @@ function SmallScreenOverview({
             {project.tags.join(", ")}
           </Typography>
         </div>
-        <div className={classes.infoBottomBar}>
-          <FollowButton
-            isUserFollowing={isUserFollowing}
-            handleToggleFollowProject={handleToggleFollowProject}
-            project={project}
-            hasAdminPermissions={hasAdminPermissions}
-            toggleShowFollowers={toggleShowFollowers}
-            followingChangePending={followingChangePending}
-            texts={texts}
-          />
-        </div>
       </div>
     </>
   );
@@ -236,6 +148,7 @@ function LargeScreenOverview({
   contactProjectCreatorButtonRef,
   texts,
   projectAdmin,
+  FollowButton,
 }) {
   const classes = useStyles();
   return (
@@ -293,8 +206,7 @@ function LargeScreenOverview({
               texts={texts}
             />
             {!hasAdminPermissions && (
-              <FloatingMessageButton
-                className={classes.fixedMessageButton}
+              <ContactCreatorButton
                 projectAdmin={projectAdmin}
                 contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
                 handleClickContact={handleClickContact}
@@ -306,57 +218,3 @@ function LargeScreenOverview({
     </>
   );
 }
-
-function FollowButton({
-  project,
-  isUserFollowing,
-  handleToggleFollowProject,
-  hasAdminPermissions,
-  toggleShowFollowers,
-  followingChangePending,
-  texts,
-}) {
-  const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
-  return (
-    <span className={classes.followButtonContainer}>
-      <Button
-        onClick={handleToggleFollowProject}
-        variant="contained"
-        color={isUserFollowing ? "secondary" : "primary"}
-        disabled={followingChangePending}
-        className={classes.followingButton}
-      >
-        {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
-        {isUserFollowing ? texts.following : texts.follow}
-      </Button>
-      {project.number_of_followers > 0 && (
-        <Link
-          color="secondary"
-          underline="always"
-          className={classes.followersLink}
-          onClick={toggleShowFollowers}
-        >
-          <Typography className={classes.followersText}>
-            <span className={classes.followerNumber}>{project.number_of_followers} </span>
-            {project.number_of_followers > 1 ? texts.followers : texts.follower}
-          </Typography>
-        </Link>
-      )}
-    </span>
-  );
-}
-
-const getFollowers = async (project, token, locale) => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/projects/" + project.url_slug + "/followers/",
-      token: token,
-      locale: locale,
-    });
-    return resp.data.results;
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-  }
-};
