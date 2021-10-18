@@ -589,16 +589,12 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Role in project",
       de: "Funktion/Aufgabe im Projekt",
     },
-    use_the_search_bar_to_add_members_to_your_project: {
-      en: "Use the search bar to add members to your project.",
-      de: "Benutze die Suchleiste, um Mitglieder zu deinem Projekt hinzuzufügen.",
-    },
     summarize_your_project: {
       en: "Summarize your project",
       de: "Fasse dein Projekt zusammen",
     },
     briefly_summarise_what_you_are_doing: {
-      en: "Briefly summarie what you are doing (up to 280 characters)",
+      en: "Briefly summarize what you are doing (up to 280 characters)",
       de: "Fasse kurz zusammen, was du tust (bis zu 280 Zeichen)",
     },
     search_for_your_team_members: {
@@ -709,8 +705,8 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       ),
     },
     congratulations_your_project_has_been_published: {
-      en: "Congratulations! Your project has been published!",
-      de: "Glückwunsch! Dein Projekt ist veröffentlicht worden!",
+      en: "Congratulations! Your project has been published.",
+      de: "Glückwunsch! Dein Projekt ist veröffentlicht worden.",
     },
     we_are_really_happy_that_you_inspire_the_global_climate_action_community: {
       en: "We are really happy that you inspire the global climate action community!",

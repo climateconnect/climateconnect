@@ -1,10 +1,7 @@
-import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import React, { useContext } from "react";
+import React from "react";
+
 import ROLE_TYPES from "../../../public/data/role_types";
-import getTexts from "../../../public/texts/texts";
-import UserContext from "../context/UserContext";
 import MiniProfileInput from "../profile/MiniProfileInput";
 
 const useStyles = makeStyles((theme) => {
@@ -31,16 +28,14 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default function AddProjectMembersContainer({
-  projectData,
+  availabilityOptions,
   blockClassName,
   handleRemoveMember,
-  availabilityOptions,
-  rolesOptions,
   handleSetProjectData,
+  projectData,
+  rolesOptions,
 }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "project", locale: locale });
 
   const handleChangeMember = (m) => {
     handleSetProjectData({
@@ -55,26 +50,23 @@ export default function AddProjectMembersContainer({
   };
   return (
     <div className={blockClassName}>
-      <Typography className={classes.info}>
-        <InfoOutlinedIcon className={classes.infoIcon} />{" "}
-        {texts.use_the_search_bar_to_add_members_to_your_project}
-      </Typography>
       <div className={classes.memberContainer}>
         {projectData.team_members.map((m, index) => {
-          if (m)
+          if (m) {
             return (
               <MiniProfileInput
-                key={index}
-                className={classes.member}
-                profile={m}
-                onDelete={m.role.role_type !== ROLE_TYPES.all_type && (() => handleRemoveMember(m))}
                 availabilityOptions={availabilityOptions}
-                rolesOptions={rolesOptions}
-                onChange={handleChangeMember}
+                className={classes.member}
                 creatorRole={rolesOptions.find((r) => r.role_type === ROLE_TYPES.all_type)}
                 fullRolesOptions={rolesOptions}
+                key={index}
+                onChange={handleChangeMember}
+                onDelete={m.role.role_type !== ROLE_TYPES.all_type && (() => handleRemoveMember(m))}
+                profile={m}
+                rolesOptions={rolesOptions}
               />
             );
+          }
         })}
       </div>
     </div>
