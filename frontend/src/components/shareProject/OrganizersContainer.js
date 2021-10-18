@@ -1,8 +1,8 @@
 import { IconButton, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import React, { useContext } from "react";
+
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
