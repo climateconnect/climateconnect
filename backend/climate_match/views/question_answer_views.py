@@ -100,6 +100,10 @@ class UserQuestionAnswersView(APIView):
                     user=profile.user, question_id=question_answer['question_id']
                 )
 
+            # Clear current answer metadata objects before adding new objects
+            # in answer metadata.
+            user_question_answer.answers.clear()
+
             if question_answer['answer_type'] in STATIC_ANSWER_TYPE:
                 user_question_answer.predefined_answer_id = question_answer['predefined_answer_id']
                 user_question_answer.save()

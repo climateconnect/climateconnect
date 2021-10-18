@@ -69,15 +69,13 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function RankingQuestionTypeBody({
-  question, numberOfChoices, answers, onChangeAnswer, onForwardClick, onBackClick
+  question, numberOfChoices, answers, onChangeAnswer, handleForwardClick, onBackClick
 }) {
-  console.log("dip", answers);
   const classes = useStyles()
   // This will be used to set weight for each answer
   const weights = {0: 100, 1: 80, 2: 50}
   const [possibleAnswers, setPossibleAnswers] = useState([])
   const onDragEnd = (result) => {
-    console.log(result);
     if(!result.destination)
       return
     //The user selected an answer!
@@ -93,14 +91,25 @@ export default function RankingQuestionTypeBody({
         'text': selectedAnswer.text,
         'weight': weights[result.destination.index]
       })
+      setPossibleAnswers(newPossibleAnswers)
     }
   }
 
   const onCloseIcon = (event, index) => {
     event.preventDefault();
     const newPossibleAnswers = possibleAnswers;
+    console.log(newPossibleAnswers);
     newPossibleAnswers.splice(index);
+    console.log(newPossibleAnswers);
     setPossibleAnswers(newPossibleAnswers);
+  }
+
+  const onForwardClick = () => {
+    handleForwardClick({
+      'question_id': question.id, 'answers': possibleAnswers,
+      'predefined_answer_id': null, 'answer_type': question.answer_type
+    })
+    setPossibleAnswers([])
   }
   
   return (
@@ -152,10 +161,7 @@ export default function RankingQuestionTypeBody({
               )}
             </Droppable>
             <QuestionButtonBar 
-              onForwardClick={() => onForwardClick({
-                'question_id': question.id, 'answers': possibleAnswers,
-                'predefined_answer_id': null, 'answer_type': question.answer_type
-              })}
+              onForwardClick={onForwardClick}
               onBackClick={onBackClick}
             />
           </div>

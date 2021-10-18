@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function ClimateMatchQuestion({
-  questions, step, userAnswers, onChangeAnswer, onForwardClick, onBackClick
+  questions, step, userAnswers, onChangeAnswer, handleForwardClick, onBackClick
 }) {
   const question = questions.find(q => q.step === step)
   const classes = useStyles({image: getImageUrl(question.image)})
@@ -37,7 +37,7 @@ export default function ClimateMatchQuestion({
       {question.answer_type === "answer" ? (
         <OptionalQuestionTypeBody 
           question={question} 
-          onForwardClick={onForwardClick}
+          handleForwardClick={handleForwardClick}
           onBackClick={onBackClick}
         />
       ) : (
@@ -46,7 +46,7 @@ export default function ClimateMatchQuestion({
           numberOfChoices={question.number_of_choices}
           onChangeAnswer={onChangeAnswer}
           answers={answers}
-          onForwardClick={onForwardClick}
+          handleForwardClick={handleForwardClick}
           onBackClick={onBackClick}
         />
       )

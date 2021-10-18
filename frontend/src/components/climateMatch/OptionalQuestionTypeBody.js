@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function OptionalQuestionTypeBody({question, onForwardClick, onBackClick}) {
+export default function OptionalQuestionTypeBody({question, handleForwardClick, onBackClick}) {
   const classes = useStyles();
   const answers = question.answers;
   console.log(question);
@@ -53,7 +53,7 @@ export default function OptionalQuestionTypeBody({question, onForwardClick, onBa
             />  
           </div>
         ))}
-        <QuestionButtonBar onForwardClick={() => onForwardClick(selectedAnswer)} onBackClick={onBackClick}/>
+        <QuestionButtonBar onForwardClick={() => handleForwardClick(selectedAnswer)} onBackClick={onBackClick}/>
       </div>
     </div>
   )

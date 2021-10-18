@@ -7,6 +7,7 @@ import ClimateMatchQuestion from "./ClimateMatchQuestion"
 import WelcomeToClimateMatch from "./WelcomeToClimateMatch"
 import { apiRequest } from "../../../public/lib/apiOperations"
 import Cookies from 'universal-cookie';
+import Router from "next/router";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,9 +35,9 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function ClimateMatchRoot({profileUrlSlug}) {
+export default function ClimateMatchRoot() {
   const classes = useStyles()  
-  const { locale  } = useContext(UserContext)
+  const { locale, user  } = useContext(UserContext)
   const texts = getTexts({page: "climatematch", locale: locale})
   const [step, setStep] = useState(0)
   const [totalQuestions, setTotalQuestions] = useState(0)
@@ -64,6 +65,21 @@ export default function ClimateMatchRoot({profileUrlSlug}) {
     setStep(step+1)
   }
 
+  const submitUserQuestionAnswerForClimateMatch = (userAnswers, token, locale) => {
+    apiRequest({
+      method: "post",
+      url: `/api/members/${user.url_slug}/question_answers/`,
+      payload: userAnswers,
+      token: token,
+      locale: locale
+    }).then(function (response) {
+      console.log(response.data);
+      Router.push('/climatematchedresources');
+    }).catch(function (error) {
+      console.log(error);
+    })
+  }
+
   const handleForwardClick = (userQnA) => {
     // Set user answers for climate match
     const newUserAnswers = userAnswers
@@ -73,7 +89,7 @@ export default function ClimateMatchRoot({profileUrlSlug}) {
     if(step < totalQuestions) {
       setStep(step + 1);
     } else {
-      console.log("All questions over")
+      submitUserQuestionAnswerForClimateMatch(userAnswers, token, locale);
     }
   }
 
@@ -108,7 +124,7 @@ export default function ClimateMatchRoot({profileUrlSlug}) {
             step={step}
             userAnswers={userAnswers}
             onChangeAnswer={handleChangeAnswers}
-            onForwardClick={handleForwardClick}
+            handleForwardClick={handleForwardClick}
             onBackClick={handleBackClick}
           />
         )      
