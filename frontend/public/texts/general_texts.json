@@ -413,11 +413,11 @@
   },
   "email": {
     "en": "Email",
-    "de": "E-Mail"
+    "de": "email"
   },
   "email_address": {
     "en": "Email address",
-    "de": "E-Mail Adresse"
+    "de": "email Adresse"
   },
   "password": {
     "en": "Password",
