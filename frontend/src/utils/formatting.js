@@ -66,8 +66,6 @@ const yearAndDayFormatter = (
       plural: "Sekunden",
     },
   };
-  console.log(unit);
-  console.log(locale);
   // Only apply custom logic for the year case
   if (unit === "year") {
     // The days calculation comes directly from react-timeago:
