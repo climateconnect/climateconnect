@@ -1,14 +1,14 @@
-import React, { useContext, useEffect } from "react";
-import { apiRequest } from "../../public/lib/apiOperations";
-import Cookies from "universal-cookie";
 import NextCookies from "next-cookies";
-import PageNotFound from "../../src/components/general/PageNotFound";
+import React, { useContext, useEffect } from "react";
+import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
-import UserContext from "../../src/components/context/UserContext";
-import WideLayout from "../../src/components/layouts/WideLayout";
-import getTexts from "../../public/texts/texts";
+import { apiRequest } from "../../public/lib/apiOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
-import ProjectLayout from "../../src/components/project/ProjectLayout";
+import getTexts from "../../public/texts/texts";
+import UserContext from "../../src/components/context/UserContext";
+import PageNotFound from "../../src/components/general/PageNotFound";
+import WideLayout from "../../src/components/layouts/WideLayout";
+import ProjectPageRoot from "../../src/components/project/ProjectPageRoot";
 
 const parseComments = (comments) => {
   return comments
@@ -80,7 +80,7 @@ export default function ProjectPage({ project, members, posts, comments, followi
       title={project ? project.name : texts.project + " " + texts.not_found}
     >
       {project ? (
-        <ProjectLayout
+        <ProjectPageRoot
           project={{ ...project, team: members, timeline_posts: posts, comments: curComments }}
           token={token}
           setMessage={setMessage}

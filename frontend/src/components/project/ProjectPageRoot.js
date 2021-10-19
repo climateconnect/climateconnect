@@ -7,17 +7,17 @@ import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
-import UserContext from "../../components/context/UserContext";
-import ElementOnScreen from "../../components/hooks/ElementOnScreen";
-import ElementSpaceToRight from "../../components/hooks/ElementSpaceToRight";
-import VisibleFooterHeight from "../../components/hooks/VisibleFooterHeight";
+import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
-import ProjectCommentsContent from "../project/ProjectCommentsContent";
-import ProjectContent from "../project/ProjectContent";
-import ProjectOverview from "../project/ProjectOverview";
-import ProjectTeamContent from "../project/ProjectTeamContent";
+import ElementOnScreen from "../hooks/ElementOnScreen";
+import ElementSpaceToRight from "../hooks/ElementSpaceToRight";
+import VisibleFooterHeight from "../hooks/VisibleFooterHeight";
 import Tutorial from "../tutorial/Tutorial";
 import ProjectInteractionButtons from "./Buttons/ProjectInteractionButtons";
+import ProjectCommentsContent from "./ProjectCommentsContent";
+import ProjectContent from "./ProjectContent";
+import ProjectOverview from "./ProjectOverview";
+import ProjectTeamContent from "./ProjectTeamContent";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectLayout({
+export default function ProjectPageRoot({
   project,
   token,
   setMessage,
