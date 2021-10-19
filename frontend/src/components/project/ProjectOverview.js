@@ -1,17 +1,17 @@
 import { Container, Link, Tooltip, Typography } from "@material-ui/core";
-import ContactCreatorButton from "./ContactCreatorButton";
+import { makeStyles } from "@material-ui/core/styles";
 import ExploreIcon from "@material-ui/icons/Explore";
 import LanguageIcon from "@material-ui/icons/Language";
-import Linkify from "react-linkify";
-import MessageContent from "../communication/MessageContent";
 import PlaceIcon from "@material-ui/icons/Place";
-import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import React from "react";
-import { getImageUrl } from "./../../../public/lib/imageOperations";
-import getTexts from "../../../public/texts/texts";
-import { makeStyles } from "@material-ui/core/styles";
+import Linkify from "react-linkify";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
-import FollowButton from "./FollowButton";
+import getTexts from "../../../public/texts/texts";
+import MessageContent from "../communication/MessageContent";
+import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
+import { getImageUrl } from "./../../../public/lib/imageOperations";
+import ContactCreatorButton from "./Buttons/ContactCreatorButton";
+import FollowButton from "./Buttons/FollowButton";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
