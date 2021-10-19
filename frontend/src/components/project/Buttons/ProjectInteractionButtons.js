@@ -2,8 +2,8 @@ import { AppBar, Container, IconButton, Toolbar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import React from "react";
-import ContactCreatorButton from "./Buttons/ContactCreatorButton";
-import FollowButton from "./Buttons/FollowButton";
+import ContactCreatorButton from "./ContactCreatorButton";
+import FollowButton from "./FollowButton";
 
 const useStyles = makeStyles(() => ({
   largeScreenButton: (props) => ({

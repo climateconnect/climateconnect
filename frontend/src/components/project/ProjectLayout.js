@@ -17,7 +17,7 @@ import ProjectContent from "../project/ProjectContent";
 import ProjectOverview from "../project/ProjectOverview";
 import ProjectTeamContent from "../project/ProjectTeamContent";
 import Tutorial from "../tutorial/Tutorial";
-import ProjectInteractionButtons from "./ProjectInteractionButtons";
+import ProjectInteractionButtons from "./Buttons/ProjectInteractionButtons";
 
 const useStyles = makeStyles((theme) => ({
   root: {
