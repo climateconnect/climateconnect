@@ -16,6 +16,7 @@ import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import UserContext from "../../components/context/UserContext";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
