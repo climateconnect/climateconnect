@@ -892,19 +892,19 @@ class ManageJoinProject(RetrieveUpdateAPIView):
     """
     permission_classes = [ApproveDenyProjectMemberRequest]
 
-
-
     def post(self, request, project_slug, request_action,request_id):
+        print('here')
         try:
+            print('testing!')
             project = Project.objects.filter(url_slug=project_slug).first()
-
         except:
+            print('ecept')
             return Response({
                             'message': 'Project Does Not Exist'
                             }, status=status.HTTP_404_NOT_FOUND)
 
-
         try:
+            print('trying')
             request_manager = MembershipRequestsManager(membership_request_id = request_id, project=project)
             if request_manager.corrupt_membership_request_id:
                 return Response({'message': 'Request Does Not Exist'}, status=status.HTTP_404_NOT_FOUND)
@@ -915,14 +915,15 @@ class ManageJoinProject(RetrieveUpdateAPIView):
             if request_action == 'approve':
                 request_manager.approve_request()
                 create_project_join_request_approval_notification(requester=request.user,project=project)
-
             elif request_action == 'reject':
+                print('test')
                 request_manager.reject_request()
             else:
                 raise NotImplementedError(f"membership request action <{request_action}> is not implemented ")
 
             return Response(data={'message':'Operation Succeeded'}, status=status.HTTP_200_OK)
         except:
-            print(traceback.format_exc())
-            return Response({
-                            'message': f'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            print('except 2')
+            # print(traceback.format_exc())
+            # return Response({
+            #                 'message': f'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

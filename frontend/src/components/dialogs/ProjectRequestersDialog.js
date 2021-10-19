@@ -65,14 +65,29 @@ export default function ProjectRequestersDialog({
   const texts = getTexts({ page: "project", locale: locale });
 
   // See https://github.com/climateconnect/climateconnect/issues/672
+  /**
+   * This is to send a request to the backend, to approve
+   * the membership request into the organizations_membershiprequests
+   * table. The API expects 2 dynamic parameters: the current project
+   * URL slug, and the ID of the original request, which is generated
+   * and returned to the client during the initial request.
+   */
   async function handleApproveRequest() {
     const cookies = new Cookies();
     const token = cookies.get("token");
 
+    // debugger;
+
+    console.log("test");
+    console.log(requesters);
+
     const response = await apiRequest({
       method: "post",
-      // TODO(piper): fix with correct request ID
-      url: `/api/projects/${project.url_slug}/request_membership/approve/TODO-REQUEST-ID`,
+      // TODO(piper): fix with correct request ID to ensure
+      // that it maps to the correct member to be removed. This is
+      // TODO(piper): ?
+      url: `/api/projects/${project.url_slug}/request_membership/approve/6`,
+      // url: `/api/projects/${project.url_slug}/request_membership/approve/6`,
       headers: {
         Authorization: `Token ${token}`,
       },
@@ -86,14 +101,19 @@ export default function ProjectRequestersDialog({
   }
 
   // See https://github.com/climateconnect/climateconnect/issues/672
-  async function handleDenyRequest() {
+  async function handleRejectRequest() {
     const cookies = new Cookies();
     const token = cookies.get("token");
+
+    // http://127.0.0.1:8000/api/projects/Anotherproject6/request_membership/reject/6
+    // 404s
 
     const response = await apiRequest({
       method: "post",
       // TODO(piper): fix with correct request ID
-      url: `/api/projects/${project.url_slug}/request_membership/deny/TODO-REQUEST-ID`,
+      // 'projects/<str:project_slug>/request_membership/<str:request_action>/<str:request_id>/',
+      url: `/api/projects/${project.url_slug}/request_membership/reject/2/`,
+      // url: `/api/projects/${project.url_slug}/request_membership/reject/6`,
       headers: {
         Authorization: `Token ${token}`,
       },
@@ -137,7 +157,7 @@ export default function ProjectRequestersDialog({
             locale={locale}
             onApproveRequest={handleApproveRequest}
             onClose={onClose}
-            onDenyRequest={handleDenyRequest}
+            onDenyRequest={handleRejectRequest}
             requesters={requesters}
             texts={texts}
           />
@@ -202,7 +222,6 @@ const ProjectRequesters = ({
                       aria-label="deny project request"
                       disableRipple
                       onClick={onDenyRequest}
-                      tooltipText="whoa"
                     >
                       <BlockIcon />
                     </IconButton>

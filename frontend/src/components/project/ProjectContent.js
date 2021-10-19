@@ -161,6 +161,10 @@ async function getMembershipRequests(url_slug) {
     // TODO: error appropriately here
   }
 
+  // TODO(piper):
+  // Requeset IDs, are the order of entries
+  // returned from the array?
+
   return resp.data.results;
 }
 
@@ -196,6 +200,7 @@ export default function ProjectContent({
 
   async function viewOpenProjectRequests() {
     const membershipRequests = await getMembershipRequests(project.url_slug);
+    console.log(membershipRequests);
     setRequesters(membershipRequests);
     setShowRequesters(!showRequesters);
   }

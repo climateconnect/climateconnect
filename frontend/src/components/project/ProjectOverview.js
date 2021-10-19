@@ -137,7 +137,7 @@ export default function ProjectOverview({
         method: "post",
         url: `/api/projects/${projectName}/request_membership/${user.url_slug}/`,
         payload: {
-          message: "Would like to join the project!",
+          message: "Would like to join cothe project!",
           // TODO: fix user_availability
           user_availability: "4",
         },
@@ -146,6 +146,8 @@ export default function ProjectOverview({
           Authorization: `Token ${token}`,
         },
       });
+
+      console.log(response);
     } catch (error) {
       if (error?.response?.data?.message === "Request already exists to join project") {
         console.log("Already requested to join this project!");
@@ -190,12 +192,14 @@ export default function ProjectOverview({
 
   // TODO: fix, can't request to join a project you're already a member of!
   useEffect(() => {
-    try {
-      handleSendProjectJoinRequest();
-    } catch (error) {
-      console.error();
+    if (requestedToJoinProject) {
+      try {
+        handleSendProjectJoinRequest();
+      } catch (error) {
+        console.error();
+      }
     }
-  }, [requestedToJoinProject]);
+  }, []);
 
   return (
     <Container className={classes.projectOverview}>
@@ -240,6 +244,22 @@ export default function ProjectOverview({
     </Container>
   );
 }
+
+/**
+ * Button to request membership for a project. Updates text
+ * based on whether the user has requested membership or not already.
+ */
+const RequestMembershipButton = ({ requestedToJoin, handleSendProjectJoinRequest }) => {
+  return requestedToJoin ? (
+    <Button disabled variant="contained" color="primary" onClick={handleSendProjectJoinRequest}>
+      Already requested
+    </Button>
+  ) : (
+    <Button variant="contained" color="primary" onClick={handleSendProjectJoinRequest}>
+      Request to Join +
+    </Button>
+  );
+};
 
 function SmallScreenOverview({
   contactProjectCreatorButtonRef,
@@ -302,25 +322,10 @@ function SmallScreenOverview({
             of the project, then we don't want to show the membership request button. */}
             {!hasAdminPermissions && (
               <Box marginRight={2}>
-                {/* Update join text for a project if we've already requested to follow project. */}
-                {requestedToJoinProject ? (
-                  <Button
-                    disabled
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSendProjectJoinRequest}
-                  >
-                    Already requested
-                  </Button>
-                ) : (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSendProjectJoinRequest}
-                  >
-                    Request to Join +
-                  </Button>
-                )}
+                <RequestMembershipButton
+                  handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+                  requestedToJoin={requestedToJoinProject}
+                />
               </Box>
             )}
 
@@ -416,25 +421,10 @@ function LargeScreenOverview({
             of the project, then we don't want to show the membership request button. */}
             {!hasAdminPermissions && (
               <Box marginRight={3}>
-                {/* Update join text for a project if we've already requested to follow project. */}
-                {requestedToJoinProject ? (
-                  <Button
-                    disabled
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSendProjectJoinRequest}
-                  >
-                    Already requested
-                  </Button>
-                ) : (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSendProjectJoinRequest}
-                  >
-                    Request to Join +
-                  </Button>
-                )}
+                <RequestMembershipButton
+                  handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+                  requestedToJoin={requestedToJoinProject}
+                />
               </Box>
             )}
 
