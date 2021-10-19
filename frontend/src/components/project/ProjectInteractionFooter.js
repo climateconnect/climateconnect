@@ -50,22 +50,8 @@ export default function ProjectInteractionFooter({
         bottomInteractionFooter: bottomInteractionFooter,
         containerSpaceToRight: containerSpaceToRight,
     });
-    
-    if (!tinyScreen && !smallScreen)
-    return (
-        <Container className={classes.largeScreenButtonContainer}>
-        {!hasAdminPermissions &&
-            !messageButtonIsVisible &&
-            contactProjectCreatorButtonRef?.current && (
-            <ContactCreatorButton
-                className={classes.largeScreenButton}
-                projectAdmin={projectAdmin}
-                handleClickContact={handleClickContact}
-            />
-            )}
-        </Container>
-    );
-    if (smallScreen)
+
+    if (smallScreen && !tinyScreen)
     return (
         <AppBar className={classes.bottomActionBar} position="fixed" elevation={0}>
         <Toolbar className={classes.containerButtonsActionBar} variant="dense">
@@ -92,7 +78,7 @@ export default function ProjectInteractionFooter({
         </Toolbar>
         </AppBar>
     );
-    if(tinyScreen)
+    if(smallScreen && tinyScreen)
     return (
         <AppBar className={classes.bottomActionBar} position="fixed" elevation={0}>
         <Toolbar className={classes.containerButtonsActionBar} variant="dense">
@@ -118,6 +104,19 @@ export default function ProjectInteractionFooter({
             </IconButton>
         </Toolbar>
         </AppBar>
+    );
+    else return (
+        <Container className={classes.largeScreenButtonContainer}>
+        {!hasAdminPermissions &&
+            !messageButtonIsVisible &&
+            contactProjectCreatorButtonRef?.current && (
+            <ContactCreatorButton
+                className={classes.largeScreenButton}
+                projectAdmin={projectAdmin}
+                handleClickContact={handleClickContact}
+            />
+            )}
+        </Container>
     );
       
 }
