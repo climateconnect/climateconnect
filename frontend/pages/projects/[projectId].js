@@ -296,10 +296,6 @@ function TinyScreenInteractionFooter({
   );
 }
 
-function TabContent({ value, index, children }) {
-  return <div hidden={value !== index}>{children}</div>;
-}
-
 function FollowButton({
   project,
   isUserFollowing,

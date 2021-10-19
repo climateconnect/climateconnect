@@ -372,3 +372,7 @@ export default function ProjectLayout({
       </div>
     );
   }
+
+  function TabContent({ value, index, children }) {
+    return <div hidden={value !== index}>{children}</div>;
+  }
