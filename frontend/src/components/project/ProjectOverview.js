@@ -11,6 +11,7 @@ import { getImageUrl } from "./../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import { makeStyles } from "@material-ui/core/styles";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
+import FollowButton from "./FollowButton";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -47,7 +48,6 @@ export default function ProjectOverview({
   projectAdmin,
   handleClickContact,
   toggleShowFollowers,
-  FollowButton,
   hasAdminPermissions,
   user,
   followers,
@@ -75,7 +75,6 @@ export default function ProjectOverview({
           contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
           texts={texts}
           projectAdmin={projectAdmin}
-          FollowButton={FollowButton}
         />
       )}
       <ProjectFollowersDialog
@@ -148,7 +147,6 @@ function LargeScreenOverview({
   contactProjectCreatorButtonRef,
   texts,
   projectAdmin,
-  FollowButton,
 }) {
   const classes = useStyles();
   return (

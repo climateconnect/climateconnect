@@ -2,7 +2,7 @@ import React, { useContext, useRef, useEffect } from "react";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 import ContactCreatorButton from "./ContactCreatorButton";
 import BottomOfPageAboveFooter from "../../components/hooks/BottomOfPageAboveFooter";
-import {AppBar, Button, Container, Tab, Tabs, Toolbar, Typography } from "@material-ui/core";
+import {AppBar, Container, Tab, Tabs, Toolbar, Typography } from "@material-ui/core";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import { IconButton } from "@material-ui/core";
@@ -20,6 +20,7 @@ import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import UserContext from "../../components/context/UserContext";
 import { makeStyles } from "@material-ui/core/styles";
+import FollowButton from "./FollowButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -292,7 +293,6 @@ export default function ProjectLayout({
           projectAdmin={projectAdmin}
           handleClickContact={handleClickContact}
           hasAdminPermissions={hasAdminPermissions}
-          FollowButton={FollowButton}
           toggleShowFollowers={toggleShowFollowers}
           user={user}
           followers={followers}
@@ -350,7 +350,6 @@ export default function ProjectLayout({
               isUserFollowing={isUserFollowing}
               handleToggleFollowProject={handleToggleFollowProject}
               toggleShowFollowers={toggleShowFollowers}
-              FollowButton={FollowButton}
               followingChangePending={followingChangePending}
             />
           ) : isNarrowScreen ? (
@@ -365,7 +364,6 @@ export default function ProjectLayout({
               isUserFollowing={isUserFollowing}
               handleToggleFollowProject={handleToggleFollowProject}
               toggleShowFollowers={toggleShowFollowers}
-              FollowButton={FollowButton}
               followingChangePending={followingChangePending}
             />
           ) : (
@@ -466,7 +464,6 @@ export default function ProjectLayout({
     isUserFollowing,
     handleToggleFollowProject,
     toggleShowFollowers,
-    FollowButton,
     followingChangePending,
     texts,
   }) {
@@ -509,7 +506,6 @@ export default function ProjectLayout({
     isUserFollowing,
     handleToggleFollowProject,
     toggleShowFollowers,
-    FollowButton,
     followingChangePending,
     texts,
   }) {
