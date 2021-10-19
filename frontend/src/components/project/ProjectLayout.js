@@ -1,22 +1,22 @@
-import React, { useContext, useRef, useEffect } from "react";
-import { apiRequest, redirect } from "../../../public/lib/apiOperations";
-import BottomOfPageAboveFooter from "../../components/hooks/BottomOfPageAboveFooter";
 import { Container, Tab, Tabs, Typography } from "@material-ui/core";
-import ConfirmDialog from "../dialogs/ConfirmDialog";
+import { makeStyles } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import Router from "next/router";
+import React, { useContext, useEffect, useRef } from "react";
+import ROLE_TYPES from "../../../public/data/role_types";
+import { apiRequest, redirect } from "../../../public/lib/apiOperations";
+import { getParams } from "../../../public/lib/generalOperations";
+import { startPrivateChat } from "../../../public/lib/messagingOperations";
+import UserContext from "../../components/context/UserContext";
 import ElementOnScreen from "../../components/hooks/ElementOnScreen";
 import ElementSpaceToRight from "../../components/hooks/ElementSpaceToRight";
+import VisibleFooterHeight from "../../components/hooks/VisibleFooterHeight";
+import ConfirmDialog from "../dialogs/ConfirmDialog";
 import ProjectCommentsContent from "../project/ProjectCommentsContent";
 import ProjectContent from "../project/ProjectContent";
 import ProjectOverview from "../project/ProjectOverview";
 import ProjectTeamContent from "../project/ProjectTeamContent";
-import Router from "next/router";
-import ROLE_TYPES from "../../../public/data/role_types";
 import Tutorial from "../tutorial/Tutorial";
-import { getParams } from "../../../public/lib/generalOperations";
-import { startPrivateChat } from "../../../public/lib/messagingOperations";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import UserContext from "../../components/context/UserContext";
-import { makeStyles } from "@material-ui/core/styles";
 import ProjectInteractionFooter from "./ProjectInteractionFooter";
 
 const useStyles = makeStyles((theme) => ({
@@ -60,7 +60,7 @@ export default function ProjectLayout({
   texts,
   projectAdmin,
 }) {
-  const bottomInteractionFooter = BottomOfPageAboveFooter();
+  const visibleFooterHeight = VisibleFooterHeight();
   const tabContentRef = useRef(null);
   const containerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
 
@@ -322,7 +322,7 @@ export default function ProjectLayout({
           handleClickContact={handleClickContact}
           hasAdminPermissions={hasAdminPermissions}
           texts={texts}
-          bottomInteractionFooter={bottomInteractionFooter}
+          visibleFooterHeight={visibleFooterHeight}
           smallScreen={isNarrowScreen}
           isUserFollowing={isUserFollowing}
           handleToggleFollowProject={handleToggleFollowProject}

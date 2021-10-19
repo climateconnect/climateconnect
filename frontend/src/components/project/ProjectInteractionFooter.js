@@ -1,22 +1,21 @@
+import { AppBar, Container, IconButton, Toolbar } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import FavoriteIcon from "@material-ui/icons/Favorite";
 import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
-import { AppBar, Container, Toolbar } from "@material-ui/core";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import { IconButton } from "@material-ui/core";
 import FollowButton from "./FollowButton";
-import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   largeScreenButton: (props) => ({
     position: "fixed",
-    bottom: props.bottomInteractionFooter + 2,
+    bottom: props.visibleFooterHeight + 2,
     right: props.containerSpaceToRight,
     boxShadow: "3px -3px 6px #00000029",
   }),
   bottomActionBar: (props) => ({
     backgroundColor: "#ECECEC",
     top: "auto",
-    bottom: props.bottomInteractionFooter,
+    bottom: props.visibleFooterHeight,
     boxShadow: "-3px -3px 6px #00000029",
   }),
   containerButtonsActionBar: {
@@ -35,7 +34,7 @@ export default function ProjectInteractionFooter({
   hasAdminPermissions,
   messageButtonIsVisible,
   contactProjectCreatorButtonRef,
-  bottomInteractionFooter,
+  visibleFooterHeight,
   containerSpaceToRight,
   project,
   smallScreen,
@@ -47,7 +46,7 @@ export default function ProjectInteractionFooter({
   tinyScreen,
 }) {
   const classes = useStyles({
-    bottomInteractionFooter: bottomInteractionFooter,
+    visibleFooterHeight: visibleFooterHeight,
     containerSpaceToRight: containerSpaceToRight,
   });
 
