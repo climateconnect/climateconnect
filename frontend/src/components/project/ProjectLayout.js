@@ -17,6 +17,33 @@ import { startPrivateChat } from "../../public/lib/messagingOperations";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import UserContext from "../../src/components/context/UserContext";
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    textAlign: "center",
+    color: theme.palette.grey[800],
+    position: "relative",
+  },
+  tabsWrapper: {
+    borderBottom: `1px solid ${theme.palette.grey[500]}`,
+  },
+  noPadding: {
+    padding: 0,
+  },
+  tabContent: {
+    padding: theme.spacing(2),
+    textAlign: "left",
+  },
+  dialogText: {
+    textAlign: "center",
+    margin: "0 auto",
+    display: "block",
+  },
+  tab: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    width: 145,
+  },
+}));
 
 export default function ProjectLayout({
     project,
