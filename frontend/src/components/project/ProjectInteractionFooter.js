@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
   largeScreenButton: (props) => ({
     position: "fixed",
     bottom: props.visibleFooterHeight + 2,
-    right: props.containerSpaceToRight,
+    right: props.tabContentContainerSpaceToRight,
     boxShadow: "3px -3px 6px #00000029",
   }),
   bottomActionBar: (props) => ({
@@ -35,7 +35,7 @@ export default function ProjectInteractionFooter({
   messageButtonIsVisible,
   contactProjectCreatorButtonRef,
   visibleFooterHeight,
-  containerSpaceToRight,
+  tabContentContainerSpaceToRight,
   project,
   smallScreen,
   isUserFollowing,
@@ -47,7 +47,7 @@ export default function ProjectInteractionFooter({
 }) {
   const classes = useStyles({
     visibleFooterHeight: visibleFooterHeight,
-    containerSpaceToRight: containerSpaceToRight,
+    tabContentContainerSpaceToRight: tabContentContainerSpaceToRight,
   });
 
   if (smallScreen && !tinyScreen)

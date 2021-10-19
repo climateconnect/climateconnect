@@ -62,7 +62,7 @@ export default function ProjectLayout({
 }) {
   const visibleFooterHeight = VisibleFooterHeight();
   const tabContentRef = useRef(null);
-  const containerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
+  const tabContentContainerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
 
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -330,7 +330,7 @@ export default function ProjectLayout({
           followingChangePending={followingChangePending}
           messageButtonIsVisible={messageButtonIsVisible}
           contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-          containerSpaceToRight={containerSpaceToRight}
+          tabContentContainerSpaceToRight={tabContentContainerSpaceToRight}
         />
       </Container>
       <ConfirmDialog
