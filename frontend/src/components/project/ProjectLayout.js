@@ -1,8 +1,13 @@
 import React, { useContext, useRef, useEffect } from "react";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
+import { CircularProgress } from "@material-ui/core";
+import ContactCreatorButton from "./ContactCreatorButton";
 import BottomOfPageAboveFooter from "../../components/hooks/BottomOfPageAboveFooter";
-import {Container, Tab, Tabs, Typography } from "@material-ui/core";
+import {AppBar, Button, Container, Tab, Tabs, Toolbar, Typography } from "@material-ui/core";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import { IconButton } from "@material-ui/core";
+import { Link } from "@material-ui/core";
 import ElementOnScreen from "../../components/hooks/ElementOnScreen";
 import ElementSpaceToRight from "../../components/hooks/ElementSpaceToRight";
 import ProjectCommentsContent from "../project/ProjectCommentsContent";
@@ -404,3 +409,188 @@ export default function ProjectLayout({
   function TabContent({ value, index, children }) {
     return <div hidden={value !== index}>{children}</div>;
   }
+
+  function LargeScreenInteractionFooter({
+    projectAdmin,
+    handleClickContact,
+    hasAdminPermissions,
+    messageButtonIsVisible,
+    contactProjectCreatorButtonRef,
+    bottomInteractionFooter,
+    containerSpaceToRight,
+  }) {
+    const classes = useStyles({
+      bottomInteractionFooter: bottomInteractionFooter,
+      containerSpaceToRight: containerSpaceToRight,
+    });
+    return (
+      <Container className={classes.largeScreenButtonContainer}>
+        {!hasAdminPermissions &&
+          !messageButtonIsVisible &&
+          contactProjectCreatorButtonRef?.current && (
+            <ContactCreatorButton
+              className={classes.largeScreenButton}
+              projectAdmin={projectAdmin}
+              handleClickContact={handleClickContact}
+            />
+          )}
+      </Container>
+    );
+  }
+  
+  function SmallScreenInteractionFooter({
+    project,
+    projectAdmin,
+    handleClickContact,
+    hasAdminPermissions,
+    bottomInteractionFooter,
+    smallScreen,
+    isUserFollowing,
+    handleToggleFollowProject,
+    toggleShowFollowers,
+    FollowButton,
+    followingChangePending,
+    texts,
+  }) {
+    const classes = useStyles({ bottomInteractionFooter: bottomInteractionFooter });
+    return (
+      <AppBar className={classes.bottomActionBar} position="fixed" elevation={0}>
+        <Toolbar className={classes.containerButtonsActionBar} variant="dense">
+          {!hasAdminPermissions && (
+            <ContactCreatorButton
+              projectAdmin={projectAdmin}
+              handleClickContact={handleClickContact}
+              smallScreen={smallScreen}
+            />
+          )}
+          <FollowButton
+            isUserFollowing={isUserFollowing}
+            handleToggleFollowProject={handleToggleFollowProject}
+            project={project}
+            hasAdminPermissions={hasAdminPermissions}
+            toggleShowFollowers={toggleShowFollowers}
+            followingChangePending={followingChangePending}
+            texts={texts}
+            smallScreen={smallScreen}
+          />
+          <IconButton size="small">
+            <FavoriteIcon fontSize="large" color="primary" />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+    );
+  }
+  
+  function TinyScreenInteractionFooter({
+    project,
+    projectAdmin,
+    handleClickContact,
+    hasAdminPermissions,
+    bottomInteractionFooter,
+    tinyScreen,
+    isUserFollowing,
+    handleToggleFollowProject,
+    toggleShowFollowers,
+    FollowButton,
+    followingChangePending,
+    texts,
+  }) {
+    const classes = useStyles({ bottomInteractionFooter: bottomInteractionFooter });
+    return (
+      <AppBar className={classes.bottomActionBar} position="fixed" elevation={0}>
+        <Toolbar className={classes.containerButtonsActionBar} variant="dense">
+          {!hasAdminPermissions && (
+            <ContactCreatorButton
+              projectAdmin={projectAdmin}
+              handleClickContact={handleClickContact}
+              tinyScreen={tinyScreen}
+            />
+          )}
+          <FollowButton
+            isUserFollowing={isUserFollowing}
+            handleToggleFollowProject={handleToggleFollowProject}
+            project={project}
+            hasAdminPermissions={hasAdminPermissions}
+            toggleShowFollowers={toggleShowFollowers}
+            followingChangePending={followingChangePending}
+            texts={texts}
+            tinyScreen={tinyScreen}
+          />
+          <IconButton size="small">
+            <FavoriteIcon fontSize="large" color="primary" />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+    );
+  }
+  
+  function FollowButton({
+    project,
+    isUserFollowing,
+    handleToggleFollowProject,
+    hasAdminPermissions,
+    toggleShowFollowers,
+    followingChangePending,
+    texts,
+    smallScreen,
+    tinyScreen,
+  }) {
+    const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
+    if (!(smallScreen || tinyScreen)) {
+      return (
+        <span className={classes.followButtonContainer}>
+          <Button
+            onClick={handleToggleFollowProject}
+            variant="contained"
+            color={isUserFollowing ? "secondary" : "primary"}
+            disabled={followingChangePending}
+            className={classes.followingButton}
+          >
+            {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
+            {isUserFollowing ? texts.following : texts.follow}
+          </Button>
+          {project.number_of_followers > 0 && (
+            <Link
+              color="secondary"
+              underline="always"
+              className={classes.followersLink}
+              onClick={toggleShowFollowers}
+            >
+              <Typography className={classes.followersText}>
+                <span className={classes.followerNumber}>{project.number_of_followers} </span>
+                {project.number_of_followers > 1 ? texts.followers : texts.follower}
+              </Typography>
+            </Link>
+          )}
+        </span>
+      );
+    } else {
+      return (
+        <Button
+          onClick={handleToggleFollowProject}
+          variant="contained"
+          color={isUserFollowing ? "secondary" : "primary"}
+          disabled={followingChangePending}
+          className={classes.followingButton}
+        >
+          {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
+          {isUserFollowing ? texts.following : texts.follow}
+        </Button>
+      );
+    }
+  }
+  
+  const getFollowers = async (project, token, locale) => {
+    try {
+      const resp = await apiRequest({
+        method: "get",
+        url: "/api/projects/" + project.url_slug + "/followers/",
+        token: token,
+        locale: locale,
+      });
+      return resp.data.results;
+    } catch (err) {
+      console.log(err);
+      if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    }
+  };
