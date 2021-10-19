@@ -5,7 +5,7 @@ import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
 import FollowButton from "./FollowButton";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   largeScreenButton: (props) => ({
     position: "fixed",
     bottom: props.visibleFooterHeight + 2,
@@ -21,10 +21,6 @@ const useStyles = makeStyles((theme) => ({
   containerButtonsActionBar: {
     display: "flex",
     justifyContent: "space-around",
-  },
-  smallAvatar: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
   },
 }));
 
@@ -106,7 +102,7 @@ export default function ProjectInteractionButtons({
     );
   else
     return (
-      <Container className={classes.largeScreenButtonContainer}>
+      <Container>
         {!hasAdminPermissions &&
           !messageButtonIsVisible &&
           contactProjectCreatorButtonRef?.current && (
