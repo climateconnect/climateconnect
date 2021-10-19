@@ -17,7 +17,7 @@ import ProjectContent from "../project/ProjectContent";
 import ProjectOverview from "../project/ProjectOverview";
 import ProjectTeamContent from "../project/ProjectTeamContent";
 import Tutorial from "../tutorial/Tutorial";
-import ProjectInteractionFooter from "./ProjectInteractionFooter";
+import ProjectInteractionButtons from "./ProjectInteractionButtons";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -315,7 +315,7 @@ export default function ProjectLayout({
         </TabContent>
       </Container>
       <Container>
-        <ProjectInteractionFooter
+        <ProjectInteractionButtons
           tinyScreen={isTinyScreen}
           project={project}
           projectAdmin={projectAdmin}

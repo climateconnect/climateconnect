@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectInteractionFooter({
+export default function ProjectInteractionButtons({
   projectAdmin,
   handleClickContact,
   hasAdminPermissions,
