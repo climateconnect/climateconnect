@@ -21,6 +21,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import UserContext from "../../components/context/UserContext";
 import { makeStyles } from "@material-ui/core/styles";
 import FollowButton from "./FollowButton";
+import ProjectInteractionFooter from "./ProjectInteractionFooter";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -338,22 +339,8 @@ export default function ProjectLayout({
           </TabContent>
         </Container>
         <Container>
-          {isTinyScreen ? (
-            <TinyScreenInteractionFooter
-              project={project}
-              projectAdmin={projectAdmin}
-              handleClickContact={handleClickContact}
-              hasAdminPermissions={hasAdminPermissions}
-              texts={texts}
-              bottomInteractionFooter={bottomInteractionFooter}
+            <ProjectInteractionFooter
               tinyScreen={isTinyScreen}
-              isUserFollowing={isUserFollowing}
-              handleToggleFollowProject={handleToggleFollowProject}
-              toggleShowFollowers={toggleShowFollowers}
-              followingChangePending={followingChangePending}
-            />
-          ) : isNarrowScreen ? (
-            <SmallScreenInteractionFooter
               project={project}
               projectAdmin={projectAdmin}
               handleClickContact={handleClickContact}
@@ -365,18 +352,10 @@ export default function ProjectLayout({
               handleToggleFollowProject={handleToggleFollowProject}
               toggleShowFollowers={toggleShowFollowers}
               followingChangePending={followingChangePending}
-            />
-          ) : (
-            <LargeScreenInteractionFooter
-              projectAdmin={projectAdmin}
-              handleClickContact={handleClickContact}
-              hasAdminPermissions={hasAdminPermissions}
               messageButtonIsVisible={messageButtonIsVisible}
               contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-              bottomInteractionFooter={bottomInteractionFooter}
               containerSpaceToRight={containerSpaceToRight}
             />
-          )}
         </Container>
         <ConfirmDialog
           open={confirmDialogOpen.follow}
@@ -426,118 +405,6 @@ export default function ProjectLayout({
     return <div hidden={value !== index}>{children}</div>;
   }
 
-  function LargeScreenInteractionFooter({
-    projectAdmin,
-    handleClickContact,
-    hasAdminPermissions,
-    messageButtonIsVisible,
-    contactProjectCreatorButtonRef,
-    bottomInteractionFooter,
-    containerSpaceToRight,
-  }) {
-    const classes = useStyles({
-      bottomInteractionFooter: bottomInteractionFooter,
-      containerSpaceToRight: containerSpaceToRight,
-    });
-    return (
-      <Container className={classes.largeScreenButtonContainer}>
-        {!hasAdminPermissions &&
-          !messageButtonIsVisible &&
-          contactProjectCreatorButtonRef?.current && (
-            <ContactCreatorButton
-              className={classes.largeScreenButton}
-              projectAdmin={projectAdmin}
-              handleClickContact={handleClickContact}
-            />
-          )}
-      </Container>
-    );
-  }
-  
-  function SmallScreenInteractionFooter({
-    project,
-    projectAdmin,
-    handleClickContact,
-    hasAdminPermissions,
-    bottomInteractionFooter,
-    smallScreen,
-    isUserFollowing,
-    handleToggleFollowProject,
-    toggleShowFollowers,
-    followingChangePending,
-    texts,
-  }) {
-    const classes = useStyles({ bottomInteractionFooter: bottomInteractionFooter });
-    return (
-      <AppBar className={classes.bottomActionBar} position="fixed" elevation={0}>
-        <Toolbar className={classes.containerButtonsActionBar} variant="dense">
-          {!hasAdminPermissions && (
-            <ContactCreatorButton
-              projectAdmin={projectAdmin}
-              handleClickContact={handleClickContact}
-              smallScreen={smallScreen}
-            />
-          )}
-          <FollowButton
-            isUserFollowing={isUserFollowing}
-            handleToggleFollowProject={handleToggleFollowProject}
-            project={project}
-            hasAdminPermissions={hasAdminPermissions}
-            toggleShowFollowers={toggleShowFollowers}
-            followingChangePending={followingChangePending}
-            texts={texts}
-            smallScreen={smallScreen}
-          />
-          <IconButton size="small">
-            <FavoriteIcon fontSize="large" color="primary" />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-    );
-  }
-  
-  function TinyScreenInteractionFooter({
-    project,
-    projectAdmin,
-    handleClickContact,
-    hasAdminPermissions,
-    bottomInteractionFooter,
-    tinyScreen,
-    isUserFollowing,
-    handleToggleFollowProject,
-    toggleShowFollowers,
-    followingChangePending,
-    texts,
-  }) {
-    const classes = useStyles({ bottomInteractionFooter: bottomInteractionFooter });
-    return (
-      <AppBar className={classes.bottomActionBar} position="fixed" elevation={0}>
-        <Toolbar className={classes.containerButtonsActionBar} variant="dense">
-          {!hasAdminPermissions && (
-            <ContactCreatorButton
-              projectAdmin={projectAdmin}
-              handleClickContact={handleClickContact}
-              tinyScreen={tinyScreen}
-            />
-          )}
-          <FollowButton
-            isUserFollowing={isUserFollowing}
-            handleToggleFollowProject={handleToggleFollowProject}
-            project={project}
-            hasAdminPermissions={hasAdminPermissions}
-            toggleShowFollowers={toggleShowFollowers}
-            followingChangePending={followingChangePending}
-            texts={texts}
-            tinyScreen={tinyScreen}
-          />
-          <IconButton size="small">
-            <FavoriteIcon fontSize="large" color="primary" />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-    );
-  }
-  
   const getFollowers = async (project, token, locale) => {
     try {
       const resp = await apiRequest({
