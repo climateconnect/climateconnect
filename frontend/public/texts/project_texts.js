@@ -749,9 +749,9 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     },
     you_can_combine_categories_text: {
       en: `You can combine categories. For example if you fund treeplanting, select both
-      Afforestation/Reforestration and Funding`,
+      Afforestation/Reforestration and Funding.`,
       de: `Du kannst Kategorien kombinieren. Wenn du zum Beispiel Baumpflanzungen finanzierst, kannst du sowohl
-      Aufforstung/Wiederaufforstung, als auch Finanzierung wählen`,
+      Aufforstung/Wiederaufforstung, als auch Finanzierung wählen.`,
     },
     this_way_you_can_specify_what_you_are_doing_and_in_which_field: {
       en: "This way you can specify what you are doing and in which field.",
