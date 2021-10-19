@@ -1,21 +1,21 @@
 import React, { useContext, useRef, useEffect } from "react";
-import { apiRequest, redirect } from "../../public/lib/apiOperations";
-import BottomOfPageAboveFooter from "../../src/components/hooks/BottomOfPageAboveFooter";
+import { apiRequest, redirect } from "../../../public/lib/apiOperations";
+import BottomOfPageAboveFooter from "../../components/hooks/BottomOfPageAboveFooter";
 import {Container, Tab, Tabs, Typography } from "@material-ui/core";
-import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
-import ElementOnScreen from "../../src/components/hooks/ElementOnScreen";
-import ElementSpaceToRight from "../../src/components/hooks/ElementSpaceToRight";
-import ProjectCommentsContent from "../../src/components/project/ProjectCommentsContent";
-import ProjectContent from "../../src/components/project/ProjectContent";
-import ProjectOverview from "../../src/components/project/ProjectOverview";
-import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
+import ConfirmDialog from "../dialogs/ConfirmDialog";
+import ElementOnScreen from "../../components/hooks/ElementOnScreen";
+import ElementSpaceToRight from "../../components/hooks/ElementSpaceToRight";
+import ProjectCommentsContent from "../project/ProjectCommentsContent";
+import ProjectContent from "../project/ProjectContent";
+import ProjectOverview from "../project/ProjectOverview";
+import ProjectTeamContent from "../project/ProjectTeamContent";
 import Router from "next/router";
-import ROLE_TYPES from "../../public/data/role_types";
-import Tutorial from "../../src/components/tutorial/Tutorial";
-import { getParams } from "../../public/lib/generalOperations";
-import { startPrivateChat } from "../../public/lib/messagingOperations";
+import ROLE_TYPES from "../../../public/data/role_types";
+import Tutorial from "../tutorial/Tutorial";
+import { getParams } from "../../../public/lib/generalOperations";
+import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import UserContext from "../../src/components/context/UserContext";
+import UserContext from "../../components/context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
