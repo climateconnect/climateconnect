@@ -1,4 +1,4 @@
-import React, { useContext, useEffect} from "react";
+import React, { useContext, useEffect } from "react";
 import { apiRequest } from "../../public/lib/apiOperations";
 import Cookies from "universal-cookie";
 import NextCookies from "next-cookies";
@@ -99,10 +99,6 @@ export default function ProjectPage({ project, members, posts, comments, followi
     </WideLayout>
   );
 }
-
-
-
-
 
 async function getProjectByIdIfExists(projectUrl, token, locale) {
   try {

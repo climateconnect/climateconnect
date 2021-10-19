@@ -7,62 +7,62 @@ import FollowButton from "./FollowButton";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
-    largeScreenButton: (props) => ({
-      position: "fixed",
-      bottom: props.bottomInteractionFooter + 2,
-      right: props.containerSpaceToRight,
-      boxShadow: "3px -3px 6px #00000029",
-    }),
-    bottomActionBar: (props) => ({
-      backgroundColor: "#ECECEC",
-      top: "auto",
-      bottom: props.bottomInteractionFooter,
-      boxShadow: "-3px -3px 6px #00000029",
-    }),
-    containerButtonsActionBar: {
-      display: "flex",
-      justifyContent: "space-around",
-    },
-    smallAvatar: {
-      height: theme.spacing(3),
-      width: theme.spacing(3),
-    },
-  }));
+  largeScreenButton: (props) => ({
+    position: "fixed",
+    bottom: props.bottomInteractionFooter + 2,
+    right: props.containerSpaceToRight,
+    boxShadow: "3px -3px 6px #00000029",
+  }),
+  bottomActionBar: (props) => ({
+    backgroundColor: "#ECECEC",
+    top: "auto",
+    bottom: props.bottomInteractionFooter,
+    boxShadow: "-3px -3px 6px #00000029",
+  }),
+  containerButtonsActionBar: {
+    display: "flex",
+    justifyContent: "space-around",
+  },
+  smallAvatar: {
+    height: theme.spacing(3),
+    width: theme.spacing(3),
+  },
+}));
 
 export default function ProjectInteractionFooter({
-    projectAdmin,
-    handleClickContact,
-    hasAdminPermissions,
-    messageButtonIsVisible,
-    contactProjectCreatorButtonRef,
-    bottomInteractionFooter,
-    containerSpaceToRight,
-    project,
-    smallScreen,
-    isUserFollowing,
-    handleToggleFollowProject,
-    toggleShowFollowers,
-    followingChangePending,
-    texts,
-    tinyScreen,       
+  projectAdmin,
+  handleClickContact,
+  hasAdminPermissions,
+  messageButtonIsVisible,
+  contactProjectCreatorButtonRef,
+  bottomInteractionFooter,
+  containerSpaceToRight,
+  project,
+  smallScreen,
+  isUserFollowing,
+  handleToggleFollowProject,
+  toggleShowFollowers,
+  followingChangePending,
+  texts,
+  tinyScreen,
 }) {
-    const classes = useStyles({
-        bottomInteractionFooter: bottomInteractionFooter,
-        containerSpaceToRight: containerSpaceToRight,
-    });
+  const classes = useStyles({
+    bottomInteractionFooter: bottomInteractionFooter,
+    containerSpaceToRight: containerSpaceToRight,
+  });
 
-    if (smallScreen && !tinyScreen)
+  if (smallScreen && !tinyScreen)
     return (
-        <AppBar className={classes.bottomActionBar} position="fixed" elevation={0}>
+      <AppBar className={classes.bottomActionBar} position="fixed" elevation={0}>
         <Toolbar className={classes.containerButtonsActionBar} variant="dense">
-            {!hasAdminPermissions && (
+          {!hasAdminPermissions && (
             <ContactCreatorButton
-                projectAdmin={projectAdmin}
-                handleClickContact={handleClickContact}
-                smallScreen={smallScreen}
+              projectAdmin={projectAdmin}
+              handleClickContact={handleClickContact}
+              smallScreen={smallScreen}
             />
-            )}
-            <FollowButton
+          )}
+          <FollowButton
             isUserFollowing={isUserFollowing}
             handleToggleFollowProject={handleToggleFollowProject}
             project={project}
@@ -71,25 +71,25 @@ export default function ProjectInteractionFooter({
             followingChangePending={followingChangePending}
             texts={texts}
             smallScreen={smallScreen}
-            />
-            <IconButton size="small">
+          />
+          <IconButton size="small">
             <FavoriteIcon fontSize="large" color="primary" />
-            </IconButton>
+          </IconButton>
         </Toolbar>
-        </AppBar>
+      </AppBar>
     );
-    if(smallScreen && tinyScreen)
+  if (smallScreen && tinyScreen)
     return (
-        <AppBar className={classes.bottomActionBar} position="fixed" elevation={0}>
+      <AppBar className={classes.bottomActionBar} position="fixed" elevation={0}>
         <Toolbar className={classes.containerButtonsActionBar} variant="dense">
-            {!hasAdminPermissions && (
+          {!hasAdminPermissions && (
             <ContactCreatorButton
-                projectAdmin={projectAdmin}
-                handleClickContact={handleClickContact}
-                tinyScreen={tinyScreen}
+              projectAdmin={projectAdmin}
+              handleClickContact={handleClickContact}
+              tinyScreen={tinyScreen}
             />
-            )}
-            <FollowButton
+          )}
+          <FollowButton
             isUserFollowing={isUserFollowing}
             handleToggleFollowProject={handleToggleFollowProject}
             project={project}
@@ -98,25 +98,25 @@ export default function ProjectInteractionFooter({
             followingChangePending={followingChangePending}
             texts={texts}
             tinyScreen={tinyScreen}
-            />
-            <IconButton size="small">
+          />
+          <IconButton size="small">
             <FavoriteIcon fontSize="large" color="primary" />
-            </IconButton>
+          </IconButton>
         </Toolbar>
-        </AppBar>
+      </AppBar>
     );
-    else return (
-        <Container className={classes.largeScreenButtonContainer}>
+  else
+    return (
+      <Container className={classes.largeScreenButtonContainer}>
         {!hasAdminPermissions &&
-            !messageButtonIsVisible &&
-            contactProjectCreatorButtonRef?.current && (
+          !messageButtonIsVisible &&
+          contactProjectCreatorButtonRef?.current && (
             <ContactCreatorButton
-                className={classes.largeScreenButton}
-                projectAdmin={projectAdmin}
-                handleClickContact={handleClickContact}
+              className={classes.largeScreenButton}
+              projectAdmin={projectAdmin}
+              handleClickContact={handleClickContact}
             />
-            )}
-        </Container>
+          )}
+      </Container>
     );
-      
 }
