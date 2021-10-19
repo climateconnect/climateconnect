@@ -49,6 +49,51 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(2),
     width: 145,
   },
+  largeScreenButton: (props) => ({
+    position: "fixed",
+    bottom: props.bottomInteractionFooter + 2,
+    right: props.containerSpaceToRight,
+    boxShadow: "3px -3px 6px #00000029",
+  }),
+  bottomActionBar: (props) => ({
+    backgroundColor: "#ECECEC",
+    top: "auto",
+    bottom: props.bottomInteractionFooter,
+    boxShadow: "-3px -3px 6px #00000029",
+  }),
+  containerButtonsActionBar: {
+    display: "flex",
+    justifyContent: "space-around",
+  },
+  smallAvatar: {
+    height: theme.spacing(3),
+    width: theme.spacing(3),
+  },
+  followButtonContainer: (props) => ({
+    display: "inline-flex",
+    flexDirection: props.hasAdminPermissions ? "auto" : "column",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+  }),
+  followersLink: (props) => ({
+    cursor: "pointer",
+    textDecoration: "none",
+    marginLeft: props.hasAdminPermissions ? theme.spacing(1) : 0,
+  }),
+  followerNumber: {
+    fontWeight: 700,
+    color: theme.palette.secondary.main,
+  },
+  followersText: {
+    fontWeight: 500,
+    fontSize: 18,
+    color: theme.palette.secondary.light,
+  },
+  followingButton: {
+    whiteSpace: "nowrap",
+    marginLeft: theme.spacing(0.5),
+  },
 }));
 
 export default function ProjectLayout({

@@ -7,57 +7,8 @@ import ROLE_TYPES from "../../public/data/role_types";
 import UserContext from "../../src/components/context/UserContext";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import getTexts from "../../public/texts/texts";
-import { makeStyles } from "@material-ui/core/styles";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import ProjectLayout from "../../src/components/project/ProjectLayout";
-
-const useStyles = makeStyles((theme) => ({
-  largeScreenButton: (props) => ({
-    position: "fixed",
-    bottom: props.bottomInteractionFooter + 2,
-    right: props.containerSpaceToRight,
-    boxShadow: "3px -3px 6px #00000029",
-  }),
-  bottomActionBar: (props) => ({
-    backgroundColor: "#ECECEC",
-    top: "auto",
-    bottom: props.bottomInteractionFooter,
-    boxShadow: "-3px -3px 6px #00000029",
-  }),
-  containerButtonsActionBar: {
-    display: "flex",
-    justifyContent: "space-around",
-  },
-  smallAvatar: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
-  },
-  followButtonContainer: (props) => ({
-    display: "inline-flex",
-    flexDirection: props.hasAdminPermissions ? "auto" : "column",
-    justifyContent: "center",
-    alignItems: "center",
-    textAlign: "center",
-  }),
-  followersLink: (props) => ({
-    cursor: "pointer",
-    textDecoration: "none",
-    marginLeft: props.hasAdminPermissions ? theme.spacing(1) : 0,
-  }),
-  followerNumber: {
-    fontWeight: 700,
-    color: theme.palette.secondary.main,
-  },
-  followersText: {
-    fontWeight: 500,
-    fontSize: 18,
-    color: theme.palette.secondary.light,
-  },
-  followingButton: {
-    whiteSpace: "nowrap",
-    marginLeft: theme.spacing(0.5),
-  },
-}));
 
 const parseComments = (comments) => {
   return comments
