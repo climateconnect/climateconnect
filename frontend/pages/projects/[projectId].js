@@ -1,33 +1,21 @@
-import { AppBar, Button, Container, Tab, Tabs, Toolbar, Typography } from "@material-ui/core";
-import React, { useContext, useEffect, useRef } from "react";
-import { apiRequest, redirect } from "../../public/lib/apiOperations";
-import BottomOfPageAboveFooter from "../../src/components/hooks/BottomOfPageAboveFooter";
+import { AppBar, Button, Container, Toolbar, Typography } from "@material-ui/core";
+import React, { useContext, useEffect} from "react";
+import { apiRequest } from "../../public/lib/apiOperations";
 import { CircularProgress } from "@material-ui/core";
-import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
 import ContactCreatorButton from "../../src/components/project/ContactCreatorButton";
 import Cookies from "universal-cookie";
-import ElementOnScreen from "../../src/components/hooks/ElementOnScreen";
-import ElementSpaceToRight from "../../src/components/hooks/ElementSpaceToRight";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import { IconButton } from "@material-ui/core";
 import { Link } from "@material-ui/core";
 import NextCookies from "next-cookies";
 import PageNotFound from "../../src/components/general/PageNotFound";
-import ProjectCommentsContent from "../../src/components/project/ProjectCommentsContent";
-import ProjectContent from "../../src/components/project/ProjectContent";
-import ProjectOverview from "../../src/components/project/ProjectOverview";
-import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
 import ROLE_TYPES from "../../public/data/role_types";
-import Router from "next/router";
-import Tutorial from "../../src/components/tutorial/Tutorial";
 import UserContext from "../../src/components/context/UserContext";
 import WideLayout from "../../src/components/layouts/WideLayout";
-import { getParams } from "../../public/lib/generalOperations";
 import getTexts from "../../public/texts/texts";
 import { makeStyles } from "@material-ui/core/styles";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
-import { startPrivateChat } from "../../public/lib/messagingOperations";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import ProjectLayout from "../../src/components/project/ProjectLayout";
 
 const useStyles = makeStyles((theme) => ({
   root: {

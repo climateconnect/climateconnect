@@ -1,4 +1,22 @@
-import React from "react";
+import React, { useContext, useRef, useEffect } from "react";
+import { apiRequest, redirect } from "../../public/lib/apiOperations";
+import BottomOfPageAboveFooter from "../../src/components/hooks/BottomOfPageAboveFooter";
+import {Container, Tab, Tabs, Typography } from "@material-ui/core";
+import ConfirmDialog from "../../src/components/dialogs/ConfirmDialog";
+import ElementOnScreen from "../../src/components/hooks/ElementOnScreen";
+import ElementSpaceToRight from "../../src/components/hooks/ElementSpaceToRight";
+import ProjectCommentsContent from "../../src/components/project/ProjectCommentsContent";
+import ProjectContent from "../../src/components/project/ProjectContent";
+import ProjectOverview from "../../src/components/project/ProjectOverview";
+import ProjectTeamContent from "../../src/components/project/ProjectTeamContent";
+import Router from "next/router";
+import ROLE_TYPES from "../../public/data/role_types";
+import Tutorial from "../../src/components/tutorial/Tutorial";
+import { getParams } from "../../public/lib/generalOperations";
+import { startPrivateChat } from "../../public/lib/messagingOperations";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import UserContext from "../../src/components/context/UserContext";
+
 
 export default function ProjectLayout({
     project,
