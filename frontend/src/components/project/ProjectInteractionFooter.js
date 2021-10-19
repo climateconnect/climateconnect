@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     right: props.tabContentContainerSpaceToRight,
     boxShadow: "3px -3px 6px #00000029",
   }),
-  bottomActionBar: (props) => ({
+  actionBar: (props) => ({
     backgroundColor: "#ECECEC",
     top: "auto",
     bottom: props.visibleFooterHeight,
@@ -52,7 +52,7 @@ export default function ProjectInteractionFooter({
 
   if (smallScreen && !tinyScreen)
     return (
-      <AppBar className={classes.bottomActionBar} position="fixed" elevation={0}>
+      <AppBar className={classes.actionBar} position="fixed" elevation={0}>
         <Toolbar className={classes.containerButtonsActionBar} variant="dense">
           {!hasAdminPermissions && (
             <ContactCreatorButton
@@ -79,7 +79,7 @@ export default function ProjectInteractionFooter({
     );
   if (smallScreen && tinyScreen)
     return (
-      <AppBar className={classes.bottomActionBar} position="fixed" elevation={0}>
+      <AppBar className={classes.actionBar} position="fixed" elevation={0}>
         <Toolbar className={classes.containerButtonsActionBar} variant="dense">
           {!hasAdminPermissions && (
             <ContactCreatorButton
