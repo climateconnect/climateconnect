@@ -1,11 +1,8 @@
 import React, { useContext, useRef, useEffect } from "react";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
-import ContactCreatorButton from "./ContactCreatorButton";
 import BottomOfPageAboveFooter from "../../components/hooks/BottomOfPageAboveFooter";
-import {AppBar, Container, Tab, Tabs, Toolbar, Typography } from "@material-ui/core";
+import { Container, Tab, Tabs, Typography } from "@material-ui/core";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import { IconButton } from "@material-ui/core";
 import ElementOnScreen from "../../components/hooks/ElementOnScreen";
 import ElementSpaceToRight from "../../components/hooks/ElementSpaceToRight";
 import ProjectCommentsContent from "../project/ProjectCommentsContent";
@@ -20,7 +17,6 @@ import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import UserContext from "../../components/context/UserContext";
 import { makeStyles } from "@material-ui/core/styles";
-import FollowButton from "./FollowButton";
 import ProjectInteractionFooter from "./ProjectInteractionFooter";
 
 const useStyles = makeStyles((theme) => ({
@@ -48,26 +44,6 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     width: 145,
-  },
-  largeScreenButton: (props) => ({
-    position: "fixed",
-    bottom: props.bottomInteractionFooter + 2,
-    right: props.containerSpaceToRight,
-    boxShadow: "3px -3px 6px #00000029",
-  }),
-  bottomActionBar: (props) => ({
-    backgroundColor: "#ECECEC",
-    top: "auto",
-    bottom: props.bottomInteractionFooter,
-    boxShadow: "-3px -3px 6px #00000029",
-  }),
-  containerButtonsActionBar: {
-    display: "flex",
-    justifyContent: "space-around",
-  },
-  smallAvatar: {
-    height: theme.spacing(3),
-    width: theme.spacing(3),
   },
 }));
 
