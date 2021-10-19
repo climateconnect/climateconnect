@@ -60,7 +60,7 @@ export default function ProjectLayout({
   texts,
   projectAdmin,
 }) {
-  const visibleFooterHeight = VisibleFooterHeight();
+  const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
   const tabContentContainerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
 
