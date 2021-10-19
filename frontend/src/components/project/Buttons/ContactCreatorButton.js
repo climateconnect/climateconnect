@@ -1,11 +1,11 @@
 import { Avatar, Button, Card, CardHeader, Collapse } from "@material-ui/core";
-import React, { useContext, useState } from "react";
-import SendIcon from "@material-ui/icons/Send";
-import UserContext from "../context/UserContext";
-import { getImageUrl } from "../../../public/lib/imageOperations";
-import getTexts from "../../../public/texts/texts";
 import { makeStyles } from "@material-ui/core/styles";
-import theme from "../../themes/theme";
+import SendIcon from "@material-ui/icons/Send";
+import React, { useContext, useState } from "react";
+import { getImageUrl } from "../../../../public/lib/imageOperations";
+import getTexts from "../../../../public/texts/texts";
+import theme from "../../../themes/theme";
+import UserContext from "../../context/UserContext";
 
 const useStyles = makeStyles({
   root: {
