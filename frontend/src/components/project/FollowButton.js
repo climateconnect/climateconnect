@@ -2,6 +2,7 @@ import React from "react";
 import { CircularProgress } from "@material-ui/core";
 import { Button, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { Person } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   followButtonContainer: (props) => ({
@@ -27,7 +28,8 @@ const useStyles = makeStyles((theme) => ({
   },
   followingButton: {
     whiteSpace: "nowrap",
-    marginLeft: theme.spacing(0.5),
+    marginLeft: theme.spacing(0.25),
+    marginRight: theme.spacing(0.25),
   },
 }));
 
@@ -43,12 +45,40 @@ export default function FollowButton({
   tinyScreen,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
-  if (!(smallScreen || tinyScreen)) {
+  if (smallScreen) {
+    return (
+      <Button
+        onClick={handleToggleFollowProject}
+        variant="contained"
+        startIcon={<Person />}
+        color={isUserFollowing ? "secondary" : "primary"}
+        disabled={followingChangePending}
+        className={classes.followingButton}
+      >
+        {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
+        {isUserFollowing ? texts.following : texts.follow}
+      </Button>
+    );
+  } else if (tinyScreen) {
+    return (
+      <Button
+        onClick={handleToggleFollowProject}
+        variant="contained"
+        color={isUserFollowing ? "secondary" : "primary"}
+        disabled={followingChangePending}
+        className={classes.followingButton}
+      >
+        {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
+        {isUserFollowing ? texts.following : texts.follow}
+      </Button>
+    );
+  } else {
     return (
       <span className={classes.followButtonContainer}>
         <Button
           onClick={handleToggleFollowProject}
           variant="contained"
+          startIcon={<Person />}
           color={isUserFollowing ? "secondary" : "primary"}
           disabled={followingChangePending}
           className={classes.followingButton}
@@ -70,19 +100,6 @@ export default function FollowButton({
           </Link>
         )}
       </span>
-    );
-  } else {
-    return (
-      <Button
-        onClick={handleToggleFollowProject}
-        variant="contained"
-        color={isUserFollowing ? "secondary" : "primary"}
-        disabled={followingChangePending}
-        className={classes.followingButton}
-      >
-        {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
-        {isUserFollowing ? texts.following : texts.follow}
-      </Button>
     );
   }
 }
