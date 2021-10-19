@@ -200,10 +200,6 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de:
         "Bitte erstelle ein Konto oder melde dich an, um die Verantwortlichen des Projektes zu kontaktieren.",
     },
-    contact_the_projects_creator_with_just_one_click: {
-      en: "Contact the project's creator with just one click!",
-      de: "Kontaktiere die Verantwortlichen mit nur einem Klick",
-    },
     contact_creator: {
       en: "Contact creator",
       de: "Verantwortliche Kontaktieren",
