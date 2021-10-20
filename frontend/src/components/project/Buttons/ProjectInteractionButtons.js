@@ -1,6 +1,5 @@
-import { AppBar, Container, IconButton, Toolbar } from "@material-ui/core";
+import { AppBar, Container, Toolbar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import FavoriteIcon from "@material-ui/icons/Favorite";
 import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
 import FollowButton from "./FollowButton";
@@ -67,9 +66,6 @@ export default function ProjectInteractionButtons({
             texts={texts}
             smallScreen={smallScreen}
           />
-          <IconButton size="small">
-            <FavoriteIcon fontSize="large" color="primary" />
-          </IconButton>
         </Toolbar>
       </AppBar>
     );
@@ -94,9 +90,6 @@ export default function ProjectInteractionButtons({
             texts={texts}
             tinyScreen={tinyScreen}
           />
-          <IconButton size="small">
-            <FavoriteIcon fontSize="large" color="primary" />
-          </IconButton>
         </Toolbar>
       </AppBar>
     );
