@@ -45,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(2),
     width: 145,
   },
+  projectInteractionButtonContainer: {
+    position: "relative"
+  }
 }));
 
 export default function ProjectPageRoot({
@@ -314,7 +317,7 @@ export default function ProjectPageRoot({
           />
         </TabContent>
       </Container>
-      <Container>
+      <Container className={classes.projectInteractionButtonContainer}>
         <ProjectInteractionButtons
           tinyScreen={isTinyScreen}
           project={project}

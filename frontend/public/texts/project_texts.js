@@ -674,6 +674,10 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Responsible Organization",
       de: "Verantwortliche Organisation",
     },
+    responsible_person: {
+      en: "Project Creator",
+      de: "Verantwortliche*r",
+    },
     collaborating_organizations: {
       en: "Collaborating Organizations",
       de: "Zusammenarbeitende Organisation",
