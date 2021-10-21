@@ -3,7 +3,7 @@ import {
   Snackbar,
   SnackbarContent,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import Head from "next/head";
@@ -153,7 +153,7 @@ export default function LayoutWrapper({
         {loading || isLoading ? (
           <div className={classes.spinnerContainer}>
             <div>
-              <img className={classes.spinner} src="/images/logo.png" />
+              <img className={classes.spinner} src="/images/logo.svg" />
             </div>
             <CircularProgress />
             <Typography component="div">{texts.loading_and_waiting}</Typography>
