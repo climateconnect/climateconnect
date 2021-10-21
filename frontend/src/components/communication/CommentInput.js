@@ -38,8 +38,8 @@ const useStyles = makeStyles((theme) => {
 const INFO_TEXT_SIZES = {
   SHORT: "short",
   HIDDEN: "hidden",
-  LONG: "long"
-}
+  LONG: "long",
+};
 
 //@infoTextSize possible values: "short", "long", "hidden"
 function CommentInput({
@@ -86,7 +86,7 @@ function CommentInput({
 
   const handleMessageKeydown = (event) => {
     if (event.key === "Enter" && event.ctrlKey) handleSendComment(event, curComment);
-  }
+  };
 
   if (user)
     return (

@@ -11,7 +11,7 @@ import {
   IdeaCommentNotification,
   IdeaCommentReplyNotification,
   ProjectCommentNotification,
-  ProjectCommentReplyNotification
+  ProjectCommentReplyNotification,
 } from "./CommentNotifications";
 import GenericNotification from "./GenericNotification";
 

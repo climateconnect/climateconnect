@@ -42,13 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function InputWithMentions({ 
-  baseUrl, 
-  value, 
-  onChange, 
-  placeholder,
-  onKeyDown
-}) {
+export default function InputWithMentions({ baseUrl, value, onChange, placeholder, onKeyDown }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const mentionsInputRef = useRef(null);
