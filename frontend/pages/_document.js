@@ -8,7 +8,7 @@ import theme from "../src/themes/theme";
 export default class MyDocument extends Document {
   render() {
     return (
-      <Html lang="en">
+      <Html>
         <Head>
           <link rel="icon" href="/icons/favicon.ico" />
           <meta charSet="utf-8" />
