@@ -100,9 +100,9 @@ export default function getCommunicationTexts() {
     },
     how_to_mention_explainer_text: {
       en:
-        'With "@" (e.g. "@Jane Doe") you can mention somebody. They will then receive a notification.',
+        'With "@" (e.g. "@Jesse Doe") you can mention somebody. They will then receive a notification.',
       de:
-        'Mit "@" (z.B. "@Max Mustermann") kannst du jemanden erwähnen. Die Person kriegt dann eine Benachrichtigung.',
+        'Mit "@" (z.B. "@Micha Mustermann") kannst du jemanden erwähnen. Die Person kriegt dann eine Benachrichtigung.',
     },
     how_to_mention_explainer_text_short: {
       en: 'With "@" you can mention somebody.',
