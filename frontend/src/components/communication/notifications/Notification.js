@@ -11,7 +11,7 @@ import {
   IdeaCommentNotification,
   IdeaCommentReplyNotification,
   ProjectCommentNotification,
-  ProjectCommentReplyNotification,
+  ProjectCommentReplyNotification
 } from "./CommentNotifications";
 import GenericNotification from "./GenericNotification";
 
@@ -72,7 +72,6 @@ export default function Notification({ notification, isPlaceholder }) {
   if (isPlaceholder) return <PlaceholderNotification />;
   else {
     const type = NOTIFICATION_TYPES[notification.notification_type];
-    console.log(type);
     if (type === "private_message")
       return <PrivateMessageNotification notification={notification} />;
     else if (type === "group_message")
@@ -170,7 +169,6 @@ const PlaceholderNotification = () => {
 const MentionNotification = ({ notification, texts, locale }) => {
   const classes = useStyles();
   const entityType = notification.project_comment ? "project" : "idea";
-  console.log(notification);
   const commentProp = `${entityType}_comment`;
   const sender = notification[commentProp].author_user;
   const urlEnding =
