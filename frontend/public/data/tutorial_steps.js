@@ -80,9 +80,9 @@ export default function get_steps({
       text: <span>{texts.tutorial_lets_start_with_a_question_text}</span>,
       setsValue: "isActivist",
       possibleAnswers: {
-        No: "false",
+        [texts.no]: "false",
         [texts.no_but_i_would_like_to]: "soon",
-        Yes: "true",
+        [texts.yes]: "true",
       },
     },
     {
