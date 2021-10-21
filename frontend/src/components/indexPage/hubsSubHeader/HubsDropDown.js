@@ -3,7 +3,7 @@ import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import React, { useRef, useState } from "react";
 import DropDownList from "./DropDownList";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   hubsDropDownButton: {
     textTransform: "none",
     color: "white",
@@ -12,17 +12,17 @@ const useStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
   },
-}))
+}));
 
-export default function HubsDropDown({ hubs, label, isNarrowScreen }){
+export default function HubsDropDown({ hubs, label, isNarrowScreen }) {
   const classes = useStyles();
   const buttonRef = useRef(null);
   const [open, setOpen] = useState(false);
 
   const handleToggleOpen = (e) => {
     e.preventDefault();
-    setOpen(!open)
-  }
+    setOpen(!open);
+  };
 
   const handleOpen = (e) => {
     e.preventDefault();
@@ -33,10 +33,10 @@ export default function HubsDropDown({ hubs, label, isNarrowScreen }){
     setOpen(false);
   };
 
-  const toggleButtonProps = {}
-  if(!isNarrowScreen) {
-    toggleButtonProps.onMouseEnter = handleOpen
-    toggleButtonProps.onMouseLeave = handleClose
+  const toggleButtonProps = {};
+  if (!isNarrowScreen) {
+    toggleButtonProps.onMouseEnter = handleOpen;
+    toggleButtonProps.onMouseLeave = handleClose;
   }
 
   return (

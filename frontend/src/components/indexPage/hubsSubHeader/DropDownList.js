@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import UserContext from "../../context/UserContext";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   cityHubOption: {
     textAlign: "center",
     paddingLeft: theme.spacing(3),
@@ -12,10 +12,10 @@ const useStyles = makeStyles(theme => ({
     width: "100%",
     display: "flex",
     justifyContent: "center",
-  }
-}))
+  },
+}));
 
-export default function DropDownList({ buttonRef, handleOpen, handleClose, hubs, open }){
+export default function DropDownList({ buttonRef, handleOpen, handleClose, hubs, open }) {
   const classes = useStyles();
   const { locale, startLoading } = useContext(UserContext);
   const handleClickLink = () => {

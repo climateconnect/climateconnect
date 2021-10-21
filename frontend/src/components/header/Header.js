@@ -17,7 +17,7 @@ import {
   Paper,
   Popper,
   SwipeableDrawer,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -321,13 +321,13 @@ export default function Header({
   const onNotificationsClose = () => setAnchorEl(null);
 
   const getLogo = () => {
-    if(isMediumScreen){
-      return transparentHeader ? "/images/logo_white_no_text.svg" : "/images/logo_no_text.svg"
+    if (isMediumScreen) {
+      return transparentHeader ? "/images/logo_white_no_text.svg" : "/images/logo_no_text.svg";
     }
-    return transparentHeader ? "/images/logo_white_beta.svg" : "/images/logo.png"
-  }
+    return transparentHeader ? "/images/logo_white_beta.svg" : "/images/logo.png";
+  };
 
-  const logo = getLogo()
+  const logo = getLogo();
 
   return (
     <Box
@@ -336,11 +336,7 @@ export default function Header({
     >
       <Container className={classes.container}>
         <Link href={localePrefix + "/"}>
-          <img
-            src={logo}
-            alt={texts.climate_connect_logo}
-            className={classes.logo}
-          />
+          <img src={logo} alt={texts.climate_connect_logo} className={classes.logo} />
         </Link>
         {isNarrowScreen ? (
           <NarrowScreenLinks

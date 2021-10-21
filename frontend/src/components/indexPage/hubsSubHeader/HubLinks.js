@@ -8,12 +8,12 @@ const useStyles = makeStyles(() => ({
   spaceAround: {
     display: "flex",
     justifyContent: "flex-end",
-    width: "100%"
-  }
-}))
+    width: "100%",
+  },
+}));
 
 export default function HubLinks({ hubs, locale, linkClassName, isNarrowScreen }) {
-  const classes = useStyles()
+  const classes = useStyles();
   const sectorHubs = hubs.filter((h) => h.hub_type === "sector hub");
   const locationHubs = hubs.filter((h) => h.hub_type === "location hub");
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -29,8 +29,12 @@ export default function HubLinks({ hubs, locale, linkClassName, isNarrowScreen }
             {hub.name}
           </Link>
         ))}
-      {sectorHubs?.length > 3 && <HubsDropDown hubs={sectorHubs} label="SectorHubs" isNarrowScreen={isNarrowScreen} />}
-      {locationHubs?.length > 0 && <HubsDropDown hubs={locationHubs} label="CityHubs" isNarrowScreen={isNarrowScreen} />}
+      {sectorHubs?.length > 3 && (
+        <HubsDropDown hubs={sectorHubs} label="SectorHubs" isNarrowScreen={isNarrowScreen} />
+      )}
+      {locationHubs?.length > 0 && (
+        <HubsDropDown hubs={locationHubs} label="CityHubs" isNarrowScreen={isNarrowScreen} />
+      )}
     </div>
   );
 }

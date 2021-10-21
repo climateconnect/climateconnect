@@ -1,8 +1,4 @@
-import {
-  Container,
-  Link,
-  makeStyles, useMediaQuery
-} from "@material-ui/core";
+import { Container, Link, makeStyles, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -39,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
   popoverContent: {
     pointerEvents: "auto",
-  }
+  },
 }));
 
 export default function HubsSubHeader({ hubs, subHeaderRef }) {
@@ -55,7 +51,14 @@ export default function HubsSubHeader({ hubs, subHeaderRef }) {
             {texts.all_hubs}
           </Link>
         )}
-        {hubs && <HubLinks linkClassName={classes.link} hubs={hubs} locale={locale} isNarrowScreen={isNarrowScreen} />}
+        {hubs && (
+          <HubLinks
+            linkClassName={classes.link}
+            hubs={hubs}
+            locale={locale}
+            isNarrowScreen={isNarrowScreen}
+          />
+        )}
       </Container>
     </div>
   );

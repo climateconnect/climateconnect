@@ -9,7 +9,6 @@ import UserContext from "../context/UserContext";
 import StyledMenu from "../general/StyledMenu";
 import StyledMenuItem from "../general/StyledMenuItem";
 
-
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
     color: props.transparentHeader ? "white" : theme.palette.primary.main,
@@ -73,13 +72,10 @@ export default function LanguageSelect({ transparentHeader }) {
     }
   };
 
-  const hoverButtonProps = {
-    
-  }
+  const hoverButtonProps = {};
 
-  if(!isNarrowScreen) {
-    hoverButtonProps.onMouseEnter = handleOpen,
-    hoverButtonProps.onMouseLeave = handleClose
+  if (!isNarrowScreen) {
+    (hoverButtonProps.onMouseEnter = handleOpen), (hoverButtonProps.onMouseLeave = handleClose);
   }
 
   // TODO: this could be generalized into a HoverButton component,
