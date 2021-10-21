@@ -114,7 +114,7 @@ def send_mention_email(
 ):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
-        "en": "Somebody mentioned you in a comment  on Climate Connect",
+        "en": "Somebody mentioned you in a comment on Climate Connect",
         "de": "Jemand hat dich in einem Kommentar auf Climate Connect erwähnt"
     }
 
