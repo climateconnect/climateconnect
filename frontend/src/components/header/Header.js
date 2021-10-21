@@ -324,7 +324,7 @@ export default function Header({
     if(isMediumScreen){
       return transparentHeader ? "/images/logo_white_no_text.svg" : "/images/logo_no_text.svg"
     }
-    return transparentHeader ? "/images/logo_white_beta.svg" : "/images/logo.svg"
+    return transparentHeader ? "/images/logo_white_beta.svg" : "/images/logo.png"
   }
 
   const logo = getLogo()
