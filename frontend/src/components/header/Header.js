@@ -530,7 +530,6 @@ function NarrowScreenLinks({
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
   );
-  console.log(linksOutsideDrawer);
   return (
     <>
       <Box>
