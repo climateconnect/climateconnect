@@ -68,4 +68,7 @@ def create_idea_join_notification(idea, idea_supporter, chat_uuid):
                 notification=notification
             )
     except IdeaSupporter.DoesNotExist:
-        print("This is the only supporter!")
+        username = idea.user.first_name + " " + idea.user.last_name
+        print("{user} is the only supporter of idea {idea}!".format(
+            user=username, idea=idea.name
+        ))
