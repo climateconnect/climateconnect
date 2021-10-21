@@ -72,28 +72,45 @@ def create_email_notification(receiver, chat, message_content, sender, notificat
             notification
         )
 
-def send_comment_notification(is_reply, notification_type, comment, sender, comment_model, comment_object_name, object_commented_on):
+
+# The users in @user_url_slugs_to_ignore were already notified about this comment
+# and should therefore not be notified again
+def send_comment_notification(
+    is_reply,
+    notification_type,
+    comment,
+    sender,
+    comment_model,
+    comment_object_name,
+    object_commented_on,
+    user_url_slugs_to_ignore
+):
     notification = Notification.objects.create(
-        notification_type = notification_type
+        notification_type=notification_type
     )
     setattr(notification, comment_object_name, comment)
     notification.save()
     users_notification_sent = []
+    users_to_ignore = UserProfile.objects.filter(
+            url_slug__in=user_url_slugs_to_ignore
+        ).values('user')
+    ids_to_ignore = list(map((lambda u: u["user"]), users_to_ignore))
     if is_reply:
         comments_in_thread = comment_model.objects.filter(
             Q(id=comment.parent_comment.id) | Q(parent_comment=comment.parent_comment.id)
-        ).order_by('author_user').distinct('author_user').values('author_user')       
-        for thread_comment in comments_in_thread :
-            if not thread_comment['author_user'] == sender.id:
+        ).order_by('author_user').distinct('author_user').values('author_user')
+        for thread_comment in comments_in_thread:
+            if not thread_comment['author_user'] == sender.id \
+            and not thread_comment['author_user'] in ids_to_ignore:
                 user = User.objects.filter(id=thread_comment['author_user'])[0]
                 create_user_notification(user, notification)
                 send_out_live_notification(user.id)
                 send_comment_email_notification(
-                    user=user, 
-                    notification_type_id=notification_type, 
-                    object_commented_on=object_commented_on, 
-                    comment=comment, 
-                    sender=sender, 
+                    user=user,
+                    notification_type_id=notification_type,
+                    object_commented_on=object_commented_on,
+                    comment=comment,
+                    sender=sender,
                     notification=notification
                 )
                 users_notification_sent.append(user.id)
@@ -107,21 +124,31 @@ def send_comment_notification(is_reply, notification_type, comment, sender, comm
             team.append(object_commented_on.user.id)
 
     for member in team:
-        if not member['user'] == sender.id and not member['user'] in users_notification_sent:
+        if not member['user'] == sender.id \
+        and not member['user'] in users_notification_sent \
+        and not member['user'] in ids_to_ignore:
             user = User.objects.filter(id=member['user'])[0]
-            create_user_notification(user, notification)      
-            send_out_live_notification(user.id)      
+            create_user_notification(user, notification)
+            send_out_live_notification(user.id)
             send_comment_email_notification(
-                user=user, 
-                notification_type_id=notification_type, 
-                object_commented_on=object_commented_on, 
-                comment=comment, 
-                sender=sender, 
+                user=user,
+                notification_type_id=notification_type,
+                object_commented_on=object_commented_on,
+                comment=comment,
+                sender=sender,
                 notification=notification
             )
     return notification
 
-def send_comment_email_notification(user, notification_type_id, object_commented_on, comment, sender, notification):
+
+def send_comment_email_notification(
+    user,
+    notification_type_id,
+    object_commented_on,
+    comment,
+    sender,
+    notification
+):
     properties_by_type = {
         'project_comment': {
             'send_email_function': send_project_comment_email,

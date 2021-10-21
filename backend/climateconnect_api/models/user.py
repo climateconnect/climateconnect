@@ -1,8 +1,6 @@
-from django.db import models
-from climateconnect_api.models.common import (
-    Availability, Skill
-)
+from climateconnect_api.models.common import Availability, Skill
 from climateconnect_api.models.language import Language
+from django.db import models
 from location.models import Location
 
 
@@ -169,6 +167,11 @@ class UserProfile(models.Model):
     email_on_comment_on_your_project = models.BooleanField(
         help_text="Check if user wants to receive emails when they receive a comment on a project they're a member of",
         verbose_name="Email on project comment", null=True, blank=True, default=True
+    )
+
+    email_on_mention = models.BooleanField(
+        help_text="Check if user wants to receive emails when they are mentioned in a comment on a project",
+        verbose_name="Email on mention", null=True, blank=True, default=True
     )
 
     email_on_comment_on_your_idea = models.BooleanField(

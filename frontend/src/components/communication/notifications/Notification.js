@@ -1,15 +1,17 @@
-import { Link, ListItemText, MenuItem, withStyles } from "@material-ui/core";
+import { Link, ListItemIcon, ListItemText, MenuItem, withStyles } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
 import GroupIcon from "@material-ui/icons/Group";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
+import { getFragmentsWithMentions } from "../../../utils/mentions_markdown";
 import UserContext from "../../context/UserContext";
 import {
   IdeaCommentNotification,
   IdeaCommentReplyNotification,
   ProjectCommentNotification,
-  ProjectCommentReplyNotification,
+  ProjectCommentReplyNotification
 } from "./CommentNotifications";
 import GenericNotification from "./GenericNotification";
 
@@ -45,6 +47,8 @@ export const StyledMenuItem = withStyles((theme) => ({
   },
 }))(MenuItem);
 
+//When editing this: make sure all entries are still at the correct index afterwards
+//It has to match with Notification.NOTIFICATION_TYPES in the backend
 const NOTIFICATION_TYPES = [
   "broadcast",
   "private_message",
@@ -55,7 +59,7 @@ const NOTIFICATION_TYPES = [
   "post_comment",
   "reply_to_post_comment",
   "group_message",
-  null,
+  "mention",
   null,
   "idea_comment",
   "reply_to_idea_comment",
@@ -63,6 +67,8 @@ const NOTIFICATION_TYPES = [
 ];
 
 export default function Notification({ notification, isPlaceholder }) {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale, idea: notification?.idea });
   if (isPlaceholder) return <PlaceholderNotification />;
   else {
     const type = NOTIFICATION_TYPES[notification.notification_type];
@@ -72,6 +78,8 @@ export default function Notification({ notification, isPlaceholder }) {
       return <GroupMessageNotification notification={notification} />;
     else if (type === "project_comment")
       return <ProjectCommentNotification notification={notification} />;
+    else if (type === "mention")
+      return <MentionNotification notification={notification} texts={texts} locale={locale} />;
     else if (type === "reply_to_project_comment")
       return <ProjectCommentReplyNotification notification={notification} />;
     else if (type === "project_follower")
@@ -153,6 +161,43 @@ const PlaceholderNotification = () => {
             <Link className={classes.goToInboxText}>{texts.go_to_inbox}</Link>
           </div>
         </ListItemText>
+      </StyledMenuItem>
+    </Link>
+  );
+};
+
+const MentionNotification = ({ notification, texts, locale }) => {
+  const classes = useStyles();
+  const entityType = notification.project_comment ? "project" : "idea";
+  const commentProp = `${entityType}_comment`;
+  const sender = notification[commentProp].author_user;
+  const urlEnding =
+    entityType === "project"
+      ? `/projects/${notification.project.url_slug}/#comments`
+      : `/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}#ideas`;
+  const previewText = getFragmentsWithMentions(notification[commentProp].content, false, locale);
+  return (
+    <Link href={getLocalePrefix(locale) + urlEnding} underline="none">
+      <StyledMenuItem>
+        <ListItemIcon>
+          <AlternateEmailIcon />
+        </ListItemIcon>
+        <ListItemText
+          primary={
+            sender.first_name +
+            " " +
+            sender.last_name +
+            " " +
+            texts.mentioned_you_in_comment_about_project
+          }
+          secondary={previewText}
+          primaryTypographyProps={{
+            className: classes.messageSender,
+          }}
+          secondaryTypographyProps={{
+            className: classes.notificationText,
+          }}
+        />
       </StyledMenuItem>
     </Link>
   );

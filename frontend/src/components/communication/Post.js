@@ -68,6 +68,7 @@ export default function Post({
   user,
   onSendComment,
   onDeletePost,
+  infoTextSize,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -142,6 +143,7 @@ export default function Post({
                     onSendComment={handleSendComment}
                     parent_comment={post.id}
                     onCancel={unexpandReplyInterface}
+                    infoTextSize={infoTextSize}
                   />
                 ) : (
                   <Button onClick={expandReplyInterface} className={classes.replyButton}>
@@ -183,6 +185,7 @@ export default function Post({
               user={user}
               maxLines={maxLines}
               onDeletePost={onDeletePost}
+              infoTextSize={infoTextSize}
             />
           )}
       </div>
