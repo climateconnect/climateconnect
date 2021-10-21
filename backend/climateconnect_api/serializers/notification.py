@@ -103,7 +103,6 @@ class NotificationSerializer(serializers.ModelSerializer):
             return serializer.data
 
     def get_idea(self, obj):
-        print("getting idea")
         if obj.idea_comment:
             return {
                 "name": obj.idea_comment.idea.name,
