@@ -46,8 +46,8 @@ const useStyles = makeStyles((theme) => ({
     width: 145,
   },
   projectInteractionButtonContainer: {
-    position: "relative"
-  }
+    position: "relative",
+  },
 }));
 
 export default function ProjectPageRoot({
