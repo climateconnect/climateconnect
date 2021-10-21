@@ -310,6 +310,7 @@ export default function Header({
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = React.useState(false);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
+  const isMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const LINKS = getLinks(pathName, texts);
   const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
@@ -320,7 +321,7 @@ export default function Header({
   const onNotificationsClose = () => setAnchorEl(null);
 
   const getLogo = () => {
-    if(isNarrowScreen){
+    if(isMediumScreen){
       return transparentHeader ? "/images/logo_white_no_text.svg" : "/images/logo_no_text.svg"
     }
     return transparentHeader ? "/images/logo_white_beta.svg" : "/images/logo.svg"
