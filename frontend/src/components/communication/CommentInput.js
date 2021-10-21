@@ -35,8 +35,14 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+const INFO_TEXT_SIZES = {
+  SHORT: "short",
+  HIDDEN: "hidden",
+  LONG: "long"
+}
+
 //@infoTextSize possible values: "short", "long", "hidden"
-export default function CommentInput({
+function CommentInput({
   user,
   onSendComment,
   parent_comment,
@@ -73,8 +79,8 @@ export default function CommentInput({
         return texts.how_to_mention_explainer_text;
       }
     }
-    if (infoTextSize === "short") return texts.how_to_mention_explainer_text_short;
-    if (infoTextSize === "hidden") return "";
+    if (infoTextSize === INFO_TEXT_SIZES.short) return texts.how_to_mention_explainer_text_short;
+    if (infoTextSize === INFO_TEXT_SIZES.hidden) return "";
     return texts.how_to_mention_explainer_text;
   };
 
@@ -120,3 +126,5 @@ export default function CommentInput({
     );
   else return <LoginNudge whatToDo={texts.to_write_a_comment} />;
 }
+
+export { CommentInput as default, INFO_TEXT_SIZES };

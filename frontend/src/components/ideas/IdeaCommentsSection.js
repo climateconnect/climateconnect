@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
-import CommentInput from "../communication/CommentInput";
+import CommentInput, { INFO_TEXT_SIZES } from "../communication/CommentInput";
 import Posts from "../communication/Posts";
 import UserContext from "../context/UserContext";
 
@@ -90,7 +90,7 @@ export default function IdeaCommentsSection({ idea, handleAddComment, handleRemo
           user={user}
           onSendComment={onSendComment}
           hasComments={idea.comments?.length > 0}
-          infoTextSize="short"
+          infoTextSize={INFO_TEXT_SIZES.short}
         />
         <Divider className={classes.divider} />
         {idea.comments && idea.comments?.length > 0 && (
@@ -101,7 +101,7 @@ export default function IdeaCommentsSection({ idea, handleAddComment, handleRemo
             user={user}
             onSendComment={onSendComment}
             onDeletePost={onDeleteComment}
-            infoTextSize="short"
+            infoTextSize={INFO_TEXT_SIZES.short}
           />
         )}
       </div>
