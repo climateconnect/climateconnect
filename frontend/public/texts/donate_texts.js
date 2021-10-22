@@ -27,7 +27,7 @@ export default function getDonateTexts({ classes, goal }) {
       en: `Great that you want to support us!
       We believe that the possibility to connect and get active in the climate movement should be free and include everyone.
       With a donation you enable us to stay independent. Our full-time team is working hard every day to multiply the impact of climate actors around the globe.`,
-      de: `Gut, dass du uns unterstützt! 
+      de: `Gut, dass du uns unterstützen möchtest! 
 	    Wir glauben, dass die Möglichkeit, sich in der Klimabewegung zu vernetzen und aktiv zu werden, kostenlos sein und jeden einschließen sollte.
       Mit einer Spende ermöglichst du uns, unabhängig zu bleiben. Unser hauptamtliches Team arbeitet jeden Tag hart daran, die Wirkung von Klimaakteuren rund um den Globus zu vervielfachen.`,
     },
