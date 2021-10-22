@@ -32,7 +32,7 @@ export async function getServerSideProps(ctx) {
   const projectUrl = encodeURI(ctx.query.projectId);
   const [project, members, posts, comments, following] = await Promise.all([
     getProjectByIdIfExists(projectUrl, token, ctx.locale),
-    token ? getProjectMembersByIdIfExists(projectUrl, token, ctx.locale) : [],
+    getProjectMembersByIdIfExists(projectUrl, ctx.locale),
     getPostsByProject(projectUrl, token, ctx.locale),
     getCommentsByProject(projectUrl, token, ctx.locale),
     token ? getIsUserFollowing(projectUrl, token, ctx.locale) : false,
@@ -173,12 +173,11 @@ async function getCommentsByProject(projectUrl, token, locale) {
   }
 }
 
-async function getProjectMembersByIdIfExists(projectUrl, token, locale) {
+async function getProjectMembersByIdIfExists(projectUrl, locale) {
   try {
     const resp = await apiRequest({
       method: "get",
       url: "/api/projects/" + projectUrl + "/members/",
-      token: token,
       locale: locale,
     });
     if (resp.data.results.length === 0) return null;
