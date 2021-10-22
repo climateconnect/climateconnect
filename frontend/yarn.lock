@@ -1082,6 +1082,20 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@babel/runtime@7.4.5":
+  version "7.4.5"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.4.5.tgz#582bb531f5f9dc67d2fcb682979894f75e253f12"
+  integrity sha512-TuI4qpWZP6lGOGIuGWtp9sPluqYICmbk8T/1vpSysqJxRPkudh/ofFWyqdcMsDf2s7KvDL4/YHgKyvcS3g9CJQ==
+  dependencies:
+    regenerator-runtime "^0.13.2"
+
+"@babel/runtime@^7.3.4":
+  version "7.15.4"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.15.4.tgz#fd17d16bfdf878e6dd02d19753a39fa8a8d9c84a"
+  integrity sha512-99catp6bHCaxr4sJ/DbTGgHS4+Rs2RVd2g7iOap6SLGPDknRK9ztKNsE/Fg6QhSeh1FGE5f6gHGQmvvn3I3xhw==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
 "@babel/template@^7.12.13", "@babel/template@^7.12.7", "@babel/template@^7.3.3":
   version "7.12.13"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.12.13.tgz#530265be8a2589dbb37523844c5bcb55947fb327"
@@ -10335,6 +10349,16 @@ react-loader-spinner@^3.1.14:
     babel-runtime "^6.26.0"
     prop-types "^15.7.2"
 
+react-mentions@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/react-mentions/-/react-mentions-4.3.0.tgz#6ff2c4226c9362964ff8e97a7af42cb138446892"
+  integrity sha512-qr60FhczwzDX/0ZHWKaV8nriDx0a/+totqa7z1jGiz8YipNMp3ReAJMfA+UUlIVj1lnbCzpFUAo/bTQBW0IVlg==
+  dependencies:
+    "@babel/runtime" "7.4.5"
+    invariant "^2.2.4"
+    prop-types "^15.5.8"
+    substyle "^9.1.0"
+
 react-minimal-pie-chart@^8.1.0:
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/react-minimal-pie-chart/-/react-minimal-pie-chart-8.1.0.tgz#2b5a239ca2ab8d88f8915abf4f602cff3e0c72eb"
@@ -10589,6 +10613,11 @@ regenerator-runtime@^0.11.0:
   version "0.11.1"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
   integrity sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==
+
+regenerator-runtime@^0.13.2:
+  version "0.13.9"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.9.tgz#8925742a98ffd90814988d7566ad30ca3b263b52"
+  integrity sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==
 
 regenerator-runtime@^0.13.4, regenerator-runtime@^0.13.7:
   version "0.13.7"
@@ -11694,6 +11723,14 @@ stylis@3.5.4:
   version "3.5.4"
   resolved "https://registry.yarnpkg.com/stylis/-/stylis-3.5.4.tgz#f665f25f5e299cf3d64654ab949a57c768b73fbe"
   integrity sha512-8/3pSmthWM7lsPBKv7NXkzn2Uc9W7NotcwGNpJaa3k7WMM1XDCA4MgT5k/8BIexd5ydZdboXtU90XH9Ec4Bv/Q==
+
+substyle@^9.1.0:
+  version "9.4.1"
+  resolved "https://registry.yarnpkg.com/substyle/-/substyle-9.4.1.tgz#6a4647f363bc14fecc51aac371d4dbeda082aa50"
+  integrity sha512-VOngeq/W1/UkxiGzeqVvDbGDPM8XgUyJVWjrqeh+GgKqspEPiLYndK+XRcsKUHM5Muz/++1ctJ1QCF/OqRiKWA==
+  dependencies:
+    "@babel/runtime" "^7.3.4"
+    invariant "^2.2.4"
 
 supports-color@^2.0.0:
   version "2.0.0"
