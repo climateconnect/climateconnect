@@ -44,6 +44,7 @@ export default function CreateIdeaDialog({
   userOrganizations,
   hubLocation,
   hubData,
+  resetTabsWhereFiltersWereApplied,
 }) {
   const [waitingForCreation, setWaitingForCreation] = useState(false);
   const classes = useStyles({ userOrganization: userOrganizations });
@@ -118,6 +119,7 @@ export default function CreateIdeaDialog({
       });
       const url_slug = response.data;
       //TODO: link idea!
+      resetTabsWhereFiltersWereApplied();
       redirect(
         window.location.pathname,
         {

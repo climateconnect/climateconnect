@@ -7,7 +7,7 @@ import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions,
+  getStatusOptions
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -129,6 +129,17 @@ export default function Hub({
   };
   const contentRef = useRef(null);
 
+  /* 
+  * When you share an idea through CreateIdeaDialog, you will be
+  * redirected to the idea's board with the new idea open.
+  * However this redirect does not reset state which is why we need
+  * this function to make sure ideas are caught again after refreshing.
+  * otherwise the idea's board will be empty.
+  */
+  const resetTabsWhereFiltersWereApplied = () => {
+    setTabsWhereFiltersWereApplied([]);
+  };
+
   //Refs and state for tutorial
   const hubQuickInfoRef = useRef(null);
   const hubProjectsButtonRef = useRef(null);
@@ -172,7 +183,7 @@ export default function Hub({
       token: token,
       handleAddFilters: handleAddFilters,
       handleSetErrorMessage: handleSetErrorMessage,
-      tabsWhereFiltersWereApplied,
+      tabsWhereFiltersWereApplied: tabsWhereFiltersWereApplied,
       handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
       hubUrl: hubUrl,
     });
@@ -241,6 +252,7 @@ export default function Hub({
             initialIdeaUrlSlug={initialIdeaUrlSlug}
             hubLocation={hubLocation}
             hubData={hubData}
+            resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
           />
         </div>
       </div>

@@ -1,6 +1,12 @@
 import { getLocationFilterKeys } from "../data/locationFilters";
 import possibleFilters from "../data/possibleFilters";
 
+const encodeObjectToQueryParams = (obj) => {
+  return Object.keys(obj).reduce((str, curKey) => {
+    str += `${curKey}=${encodeURIComponent(obj[curKey])}&`;
+    return str;
+  }, "");
+};
 /**
  * For example when filtering by location="San Francisco", the url should
  * automatically change to active filters. This enables filtered searches
@@ -9,17 +15,28 @@ import possibleFilters from "../data/possibleFilters";
  * Builds a URL with the new filters, e.g. something like:
  * http://localhost:3000/browse?&country=Austria&city=vienna&
  */
-const getFilterUrl = ({ activeFilters, infoMetadata, filterChoices, locale, idea }) => {
+const getFilterUrl = ({
+  activeFilters,
+  infoMetadata,
+  filterChoices,
+  locale,
+  idea,
+  nonFilterParams,
+}) => {
   const filteredParams = encodeQueryParamsFromFilters({
     filters: activeFilters,
     infoMetadata: infoMetadata,
     filterChoices: filterChoices,
     locale: locale,
   });
+  const encodedNonFilterParams = encodeObjectToQueryParams(nonFilterParams);
   // Only include "?" if query params aren't nullish
-  const filteredQueryParams = filteredParams
-    ? `?${filteredParams}${idea ? `idea=${idea.url_slug}` : ""}`
-    : "";
+  const filteredQueryParams =
+    filteredParams || encodedNonFilterParams
+      ? `?${filteredParams ? filteredParams : ""}${
+          encodedNonFilterParams ? encodedNonFilterParams : ""
+        }${idea ? `idea=${idea.url_slug}` : ""}`
+      : "";
 
   // Build a URL with properties. E.g., /browse?...
   const origin = window?.location?.origin;

@@ -4,18 +4,19 @@ import _ from "lodash";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import getFilters from "../../../public/data/possibleFilters";
+import { splitFiltersFromQueryObject } from "../../../public/lib/filterOperations";
 import { loadMoreData } from "../../../public/lib/getDataOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 import {
   getInfoMetadataByType,
-  getReducedPossibleFilters,
+  getReducedPossibleFilters
 } from "../../../public/lib/parsingOperations";
 import {
   findOptionByNameDeep,
   getFilterUrl,
-  getSearchParams,
+  getSearchParams
 } from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
 import LoadingContext from "../context/LoadingContext";
@@ -73,6 +74,7 @@ export default function BrowseContent({
   filters,
   handleUpdateFilterValues,
   initialLocationFilter,
+  resetTabsWhereFiltersWereApplied,
 }) {
   const initialState = {
     items: {
@@ -167,6 +169,8 @@ export default function BrowseContent({
    */
   const [initialized, setInitialized] = useState(false);
 
+  const [nonFilterParams, setNonFilterParams] = useState({});
+
   useEffect(() => {
     const newHash = window?.location?.hash.replace("#", "");
     if (window.location.hash) {
@@ -183,22 +187,30 @@ export default function BrowseContent({
 
       // For each query param option, ensure that it's
       // split into array before spreading onto the new filters object.
-      const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
-      const newFilters = {
-        ...queryObject,
-      };
       const tabKey = newHash ? newHash : TYPES_BY_TAB_VALUE[0];
+      const possibleFilters = getFilters({
+        key: tabKey,
+        filterChoices: filterChoices,
+        locale: locale,
+      });
+      const queryObject = getQueryObjectFromUrl(getSearchParams(window.location.search));
+      const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFilters);
+      const newFilters = {
+        ...queryObject.filters,
+      };
+      setNonFilterParams(splitQueryObject.nonFilterParams);
+
       if (initialLocationFilter) {
-        const possibleFilters = getFilters({
-          key: tabKey,
-          filterChoices: filterChoices,
-          locale: locale,
-        });
         const locationFilter = possibleFilters.find((f) => f.type === "location");
         newFilters[locationFilter.key] = initialLocationFilter;
       }
       // Apply new filters with the query object immediately:
-      handleApplyNewFilters(tabKey, newFilters, false, state.urlEnding);
+      handleApplyNewFilters({
+        type: tabKey,
+        newFilters: newFilters,
+        closeFilters: false,
+        nonFilterParams: splitQueryObject.nonFilters,
+      });
 
       // And then update state
       setInitialized(true);
@@ -236,12 +248,17 @@ export default function BrowseContent({
       });
       const locationFilter = possibleFilters.find((f) => f.type === "location");
       queryObject[locationFilter.key] = filters[locationFilter.key];
-      queryObject;
+      const splitQueryObject = splitFiltersFromQueryObject(newFilters, possibleFilters);
 
-      const newFilters = { ...emptyFilters, ...queryObject };
+      const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
       const tabValue = TYPES_BY_TAB_VALUE[newValue];
       // Apply new filters with the query object immediately:
-      handleApplyNewFilters(tabValue, newFilters, false, state.urlEnding);
+      handleApplyNewFilters({
+        type: tabValue,
+        newFilters: newFilters,
+        closeFilters: false,
+        nonFilterParams: splitQueryObject.nonFilters,
+      });
     }
 
     window.location.hash = TYPES_BY_TAB_VALUE[newValue];
@@ -334,12 +351,13 @@ export default function BrowseContent({
    * returned from applying the new filters. Then updates the
    * state, and persists the new filters as query params in the URL.
    */
-  const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
+  const handleApplyNewFilters = async ({ type, newFilters, closeFilters, nonFilterParams }) => {
     const newUrl = getFilterUrl({
       activeFilters: newFilters,
       infoMetadata: getInfoMetadataByType(type),
       filterChoices: filterChoices,
       locale: locale,
+      nonFilterParams: nonFilterParams,
     });
     if (newUrl !== window?.location?.href) {
       window.history.pushState({}, "", newUrl);
@@ -359,7 +377,6 @@ export default function BrowseContent({
 
     handleSetErrorMessage("");
     setIsFiltering(true);
-
     const res = await applyNewFilters(type, newFilters, closeFilters);
     if (res?.closeFilters) {
       if (isMobileScreen) setFiltersExpandedOnMobile(false);
@@ -390,6 +407,7 @@ export default function BrowseContent({
       infoMetadata: getInfoMetadataByType(type),
       filterChoices: filterChoices,
       locale: locale,
+      nonFilterParams: nonFilterParams,
     });
     const res = await applyNewFilters(type, newFilters, false);
     setIsFiltering(false);
@@ -447,6 +465,7 @@ export default function BrowseContent({
     isFiltering: isFiltering,
     state: state,
     hubName: hubName,
+    nonFilterParams: nonFilterParams,
   };
   return (
     <LoadingContext.Provider
@@ -535,6 +554,7 @@ export default function BrowseContent({
               hubLocation={hubLocation}
               hubData={hubData}
               filters={filters}
+              resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
               filterChoices={filterChoices}
             />
           </TabContentWrapper>

@@ -96,6 +96,7 @@ export default function FilterContent({
   initialLocationFilter,
   filters,
   handleUpdateFilters,
+  nonFilterParams,
 }) {
   const isMediumScreen = useMediaQuery(theme.breakpoints.between("xs", "md"));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
@@ -166,7 +167,12 @@ export default function FilterContent({
     if (results) {
       const updatedFilters = { ...filters, [prop]: results.map((x) => x.name) };
       handleUpdateFilters(updatedFilters);
-      applyFilters(type, updatedFilters, isSmallScreen);
+      applyFilters({
+        type: type,
+        newFilters: updatedFilters,
+        closeFilters: isSmallScreen,
+        nonFilterParams: nonFilterParams,
+      });
     }
 
     setOpen({ ...open, [prop]: false });
@@ -182,12 +188,22 @@ export default function FilterContent({
 
   const handleValueChange = (key, newValue) => {
     const updatedFilters = { ...filters, [key]: newValue };
-    applyFilters(type, updatedFilters, isSmallScreen);
+    applyFilters({
+      type: type,
+      newFilters: updatedFilters,
+      closeFilters: isSmallScreen,
+      nonFilterParams: nonFilterParams,
+    });
     handleUpdateFilters(updatedFilters);
   };
 
   const handleApplyFilters = () => {
-    applyFilters(type, filters, isSmallScreen);
+    applyFilters({
+      type: type,
+      newFilters: filters,
+      closeFilters: isSmallScreen,
+      nonFilterParams: nonFilterParams,
+    });
   };
 
   const getUpdatedFiltersAfterUnselect = (filterName, filterKey) => {
@@ -225,7 +241,12 @@ export default function FilterContent({
     // When dismissing a selected filter chip, we also want to update the
     // window state to reflect the currently active filters, and fetch
     // the updated data from the server
-    applyFilters(type, updatedFilters, isSmallScreen);
+    applyFilters({
+      type: type,
+      newFilters: updatedFilters,
+      closeFilters: isSmallScreen,
+      nonFilterParams: nonFilterParams,
+    });
     handleUpdateFilters(updatedFilters);
 
     // Also re-select items
