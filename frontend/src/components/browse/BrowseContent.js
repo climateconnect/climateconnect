@@ -11,12 +11,12 @@ import { indicateWrongLocation, isLocationValid } from "../../../public/lib/loca
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 import {
   getInfoMetadataByType,
-  getReducedPossibleFilters
+  getReducedPossibleFilters,
 } from "../../../public/lib/parsingOperations";
 import {
   findOptionByNameDeep,
   getFilterUrl,
-  getSearchParams
+  getSearchParams,
 } from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";
@@ -160,8 +160,8 @@ export default function BrowseContent({
   const [isFetchingMoreData, setIsFetchingMoreData] = useState(false);
 
   const hasQueryParams = (Object.keys(getSearchParams(window.location.search)).length === 0) !== 0;
-  
-  const { showFeedbackMessage } = useContext(FeedbackContext)
+
+  const { showFeedbackMessage } = useContext(FeedbackContext);
   /**
    * Support the functionality of a user entering
    * a provided URL, that already has URL encoded
@@ -201,10 +201,10 @@ export default function BrowseContent({
         ...queryObject.filters,
       };
       setNonFilterParams(splitQueryObject.nonFilters);
-      if(splitQueryObject?.nonFilters?.message) {
+      if (splitQueryObject?.nonFilters?.message) {
         showFeedbackMessage({
-          message: splitQueryObject.nonFilters.message
-        })
+          message: splitQueryObject.nonFilters.message,
+        });
       }
 
       if (initialLocationFilter) {
@@ -290,7 +290,7 @@ export default function BrowseContent({
       filterChoices: filterChoices,
       locale: locale,
     });
-    const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFiltersMetadata)
+    const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFiltersMetadata);
     for (const [key, value] of Object.entries(splitQueryObject.filters)) {
       const metadata = possibleFiltersMetadata.find((f) => f.key === key);
 

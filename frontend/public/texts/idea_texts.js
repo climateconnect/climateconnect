@@ -197,7 +197,7 @@ export default function getIdeaTexts({ idea }) {
     },
     idea_has_been_created: {
       en: "Congratulations, your idea has been created!",
-      de: "Herzlichen Glückwunsch, deine Idee wurde erstellt!"
-    }
+      de: "Herzlichen Glückwunsch, deine Idee wurde erstellt!",
+    },
   };
 }
