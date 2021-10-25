@@ -220,7 +220,6 @@ const BottomContent = ({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
-  console.log("displaying bottom content");
   return (
     <>
       <div className={`${classes.quickInfo} ${classes.marginTop}`} ref={hubQuickInfoRef}>

@@ -1,0 +1,23 @@
+# Weekly dependency upgrades to the develop branch.
+#
+# Read more about the config here:
+# https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates#target-branch
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    target-branch: "develop"
+    labels:
+      - "pip dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    target-branch: "develop"
+    labels:
+      - "npm dependencies"

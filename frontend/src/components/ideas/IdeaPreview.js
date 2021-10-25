@@ -101,6 +101,7 @@ export default function IdeaPreview({
   hubLocation,
   hubData,
   sendToIdeaPageOnClick,
+  resetTabsWhereFiltersWereApplied,
 }) {
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale });
@@ -154,6 +155,7 @@ export default function IdeaPreview({
           userOrganizations={userOrganizations}
           hubLocation={hubLocation}
           hubData={hubData}
+          resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
         />
       )}
     </>

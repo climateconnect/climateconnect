@@ -1,11 +1,12 @@
-import { Avatar, Button, TextField } from "@material-ui/core";
+import { Avatar, Button, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
-
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
+import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
+import InputWithMentions from "./InputWithMentions";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -13,10 +14,7 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       alignItems: "center",
     },
-    messageInput: {
-      marginLeft: theme.spacing(3),
-      flexGrow: 1,
-    },
+
     cancelButton: {
       float: "right",
       marginTop: theme.spacing(1),
@@ -29,24 +27,37 @@ const useStyles = makeStyles((theme) => {
     commentButtonContainer: {
       height: 60,
     },
+    explanation: {
+      float: "left",
+      marginLeft: theme.spacing(8.5),
+      fontSize: 13,
+    },
   };
 });
 
-export default function CommentInput({
+const INFO_TEXT_SIZES = {
+  SHORT: "short",
+  HIDDEN: "hidden",
+  LONG: "long",
+};
+
+//@infoTextSize possible values: "short", "long", "hidden"
+function CommentInput({
   user,
   onSendComment,
   parent_comment,
   onCancel,
   hasComments,
+  infoTextSize,
 }) {
   const classes = useStyles();
   const [curComment, setCurComment] = React.useState("");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
-  const onCurCommentChange = (e) => setCurComment(e.target.value);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const handleMessageKeydown = (event) => {
-    if (event.key === "Enter" && event.ctrlKey) handleSendComment(event, curComment);
+  const onCurCommentChange = (e) => {
+    setCurComment(e.target.value);
   };
 
   const handleSendComment = (event) => {
@@ -60,25 +71,42 @@ export default function CommentInput({
     if (onCancel) onCancel();
   };
 
+  //if `infoTextSize` is set, it overrides the screensize-based behavior
+  const getInfoText = () => {
+    if (!infoTextSize) {
+      if (isSmallScreen) return texts.how_to_mention_explainer_text_short;
+      else {
+        return texts.how_to_mention_explainer_text;
+      }
+    }
+    if (infoTextSize === INFO_TEXT_SIZES.short) return texts.how_to_mention_explainer_text_short;
+    if (infoTextSize === INFO_TEXT_SIZES.hidden) return "";
+    return texts.how_to_mention_explainer_text;
+  };
+
+  const handleMessageKeydown = (event) => {
+    if (event.key === "Enter" && event.ctrlKey) handleSendComment(event, curComment);
+  };
+
   if (user)
     return (
       <div>
         <form onSubmit={onSendComment}>
           <div className={classes.flexBox}>
             <Avatar src={getImageUrl(user.image)} />
-            <TextField
-              size="small"
+            <InputWithMentions
               autoFocus
               multiline
+              baseUrl={process.env.API_URL + "/api/members/?search="}
               placeholder={(hasComments ? texts.write_a_comment : texts.start_a_discussion) + "..."}
               className={classes.messageInput}
               value={curComment}
               onChange={onCurCommentChange}
               onKeyDown={handleMessageKeydown}
-              required
             />
           </div>
           <div className={classes.commentButtonContainer}>
+            <Typography className={classes.explanation}>{getInfoText()}</Typography>
             <Button
               color="primary"
               variant="contained"
@@ -98,3 +126,5 @@ export default function CommentInput({
     );
   else return <LoginNudge whatToDo={texts.to_write_a_comment} />;
 }
+
+export { CommentInput as default, INFO_TEXT_SIZES };

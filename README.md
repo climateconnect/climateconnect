@@ -1,6 +1,6 @@
 # Climate Connect
 
-The code for https://climateconnect.earth.
+The client and server code for the web platform on https://climateconnect.earth.
 
 ## Pre-steps
 

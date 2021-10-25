@@ -1,3 +1,4 @@
+from organization.utility.email import linkify_mentions
 from ideas.models.ideas import Idea
 from ideas.models.comment import IdeaComment
 from ideas.serializers.comment import IdeaCommentSerializer
@@ -70,12 +71,16 @@ class NotificationSerializer(serializers.ModelSerializer):
     def get_project_comment(self, obj): 
         if obj.project_comment:
             serializer = ProjectCommentSerializer(obj.project_comment)
-            return serializer.data
+            comment = serializer.data
+            comment["content"] = linkify_mentions(comment["content"])
+            return comment
 
     def get_project_comment_parent(self, obj): 
         if obj.project_comment:
             serializer = ProjectCommentSerializer(obj.project_comment.parent_comment)
-            return serializer.data
+            comment = serializer.data
+            comment["content"] = linkify_mentions(comment["content"])
+            return comment
 
     def get_project(self, obj):
         if obj.project_comment:
@@ -91,7 +96,9 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     def get_project_follower(self, obj):
         if obj.project_follower:
-            follower_user = UserProfile.objects.filter(user=obj.project_follower.user)
+            follower_user = UserProfile.objects.filter(
+                user=obj.project_follower.user
+            )
             serializer = UserProfileStubSerializer(follower_user[0])
             return serializer.data
 
@@ -99,18 +106,22 @@ class NotificationSerializer(serializers.ModelSerializer):
         if obj.idea_comment:
             return {
                 "name": obj.idea_comment.idea.name,
-                "url_slug": obj.idea_comment.idea.url_slug
+                "url_slug": obj.idea_comment.idea.url_slug,
+                "hub_url_slug": obj.idea_comment.idea.hub_shared_in.url_slug
             }
         if obj.idea_supporter:
             return {
                 "name": obj.idea_supporter.idea.name,
-                "url_slug": obj.idea_supporter.idea.url_slug
+                "url_slug": obj.idea_supporter.idea.url_slug,
+                "hub_url_slug": obj.idea_supporter.idea.hub_shared_in.url_slug
             }
 
     def get_idea_comment(self, obj):
         if obj.idea_comment:
             serializer = IdeaCommentSerializer(obj.idea_comment)
-            return serializer.data
+            comment = serializer.data
+            comment["content"] = linkify_mentions(comment["content"])
+            return comment
 
     def get_idea_comment_parent(self, obj):
         if obj.idea_comment and obj.idea_comment.parent_comment:

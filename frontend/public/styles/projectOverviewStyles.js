@@ -45,7 +45,7 @@ const projectOverviewStyles = (theme) => {
     },
     flexContainer: {
       display: "flex",
-      alignItems: "flex-start",
+      alignItems: "stretch",
       marginBottom: theme.spacing(1),
       flexWrap: "wrap",
     },
@@ -55,7 +55,6 @@ const projectOverviewStyles = (theme) => {
       maxWidth: 550,
     },
     inlineProjectInfo: {
-      display: "inline-block",
       width: "50%",
       verticalAlign: "top",
       padding: theme.spacing(1),

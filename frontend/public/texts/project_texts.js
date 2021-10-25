@@ -124,9 +124,9 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Team",
       de: "Team",
     },
-    comments: {
-      en: "Comments",
-      de: "Kommentare",
+    discussion: {
+      en: "Discussion",
+      de: "Diskussion",
     },
     you_have_successfully_left_the_project: {
       en: "You have successfully left the project.",
@@ -199,10 +199,6 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Please create an account or log in to contact a project's organizer.",
       de:
         "Bitte erstelle ein Konto oder melde dich an, um die Verantwortlichen des Projektes zu kontaktieren.",
-    },
-    contact_the_projects_creator_with_just_one_click: {
-      en: "Contact the project's creator with just one click!",
-      de: "Kontaktiere die Verantwortlichen mit nur einem Klick",
     },
     contact_creator: {
       en: "Contact creator",
@@ -677,6 +673,10 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     responsible_organization: {
       en: "Responsible Organization",
       de: "Verantwortliche Organisation",
+    },
+    responsible_person: {
+      en: "Project Creator",
+      de: "Verantwortliche*r",
     },
     collaborating_organizations: {
       en: "Collaborating Organizations",

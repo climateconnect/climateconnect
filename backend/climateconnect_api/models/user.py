@@ -1,8 +1,6 @@
-from django.db import models
-from climateconnect_api.models.common import (
-    Availability, Skill
-)
+from climateconnect_api.models.common import Availability, Skill
 from climateconnect_api.models.language import Language
+from django.db import models
 from location.models import Location
 
 
@@ -171,6 +169,11 @@ class UserProfile(models.Model):
         verbose_name="Email on project comment", null=True, blank=True, default=True
     )
 
+    email_on_mention = models.BooleanField(
+        help_text="Check if user wants to receive emails when they are mentioned in a comment on a project",
+        verbose_name="Email on mention", null=True, blank=True, default=True
+    )
+
     email_on_comment_on_your_idea = models.BooleanField(
         help_text="Check if user wants to receive emails when they receive a comment on an idea they're a member of",
         verbose_name="Email on idea comment", null=True, blank=True, default=True
@@ -225,24 +228,24 @@ class UserProfile(models.Model):
 
     from_tutorial = models.BooleanField(
         help_text="Check whether the user signed up by clicking the \"sign up\" link in the tutorial",
-        verbose_name="Signed up through tutorial?", 
-        null=True, 
-        blank=True, 
+        verbose_name="Signed up through tutorial?",
+        null=True,
+        blank=True,
         default=False
     )
 
     is_activist = models.CharField(
         help_text="Options: [\"yes\", \"soon\", \"no\"]. Soon means they said they're interested in becoming active.",
-        verbose_name="Is already active in climate action?", 
-        null=True, 
+        verbose_name="Is already active in climate action?",
+        null=True,
         blank=True,
         max_length=8
     )
 
     last_completed_tutorial_step = models.SmallIntegerField(
         help_text="Last tutorial step the user completed (16=finished)",
-        verbose_name="Last completed tutorial step", 
-        null=True, 
+        verbose_name="Last completed tutorial step",
+        null=True,
         blank=True
     )
 
@@ -303,6 +306,6 @@ class UserProfileTranslation(models.Model):
         verbose_name = "User profile translation"
         verbose_name_plural = "User profile translations"
         unique_together = [['user_profile', 'language']]
-    
+
     def __str__(self):
         return "{}: {} translation of user {}".format(self.id, self.language.name, self.user_profile.name)

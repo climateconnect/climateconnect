@@ -86,6 +86,10 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       text: texts.email_on_new_project_follower_text,
     },
     {
+      key: "email_on_mention",
+      text: texts.email_on_mention_text,
+    },
+    {
       key: "email_on_idea_join",
       text: texts.email_on_new_idea_join_text,
     },
