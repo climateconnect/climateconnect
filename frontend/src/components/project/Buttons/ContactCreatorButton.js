@@ -71,9 +71,9 @@ export default function ContactCreatorButton({
     setHoveringButton(false);
   };
 
-  const creatorImageURL = getImageUrl(projectAdmin.thumbnail_image);
-  const creatorName = projectAdmin.name;
-  const creatorsRoleInProject = projectAdmin.role ? projectAdmin.role : texts.responsible_person;
+  const creatorImageURL = getImageUrl(projectAdmin?.thumbnail_image);
+  const creatorName = projectAdmin?.name;
+  const creatorsRoleInProject = projectAdmin?.role ? projectAdmin?.role : texts.responsible_person;
   const buttonText = texts.contact;
 
   if (smallScreen) {
@@ -130,7 +130,7 @@ export default function ContactCreatorButton({
           {!isFixed && (
             <Fade in={hoveringButton}>
               <Typography className={classes.helperText}>
-                Contact {projectAdmin.first_name} if you want to chat about this project.
+                Contact {projectAdmin?.first_name} if you want to chat about this project.
               </Typography>
             </Fade>
           )}

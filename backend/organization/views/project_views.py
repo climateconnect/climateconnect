@@ -647,7 +647,7 @@ class ListProjectMembersView(ListAPIView):
     lookup_field = 'url_slug'
     serializer_class = ProjectMemberSerializer
     pagination_class = MembersPagination
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         project = Project.objects.get(url_slug=self.kwargs['url_slug'])

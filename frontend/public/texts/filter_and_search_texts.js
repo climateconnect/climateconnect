@@ -77,10 +77,10 @@ export default function getFilterAndSearchTexts({ filterType, hubName, locale })
     could_not_find_any_items_of_type: {
       en: `Could not find any ${filterType ? general_texts[filterType][locale] : ""} ${
         hubName ? `in the ${hubName} hub ` : ""
-      }that match your filters`,
+      }that match your filters.`,
       de: `Wir konnten keine ${filterType ? general_texts[filterType][locale] : ""} ${
         hubName ? `im ${hubName} Hub ` : ""
-      }finden, die deinen Filtern entsprechen`,
+      }finden, die deinen Filtern entsprechen.`,
     },
   };
 }

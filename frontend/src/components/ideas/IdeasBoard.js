@@ -35,6 +35,7 @@ export default function IdeasBoard({
   hubData,
   filters,
   filterChoices,
+  resetTabsWhereFiltersWereApplied,
 }) {
   const { locale } = useContext(UserContext);
   const getInitialIdea = (initialIdeaUrlSlug) => {
@@ -119,6 +120,7 @@ export default function IdeasBoard({
         className={classes.ideaPreviews}
         hubLocation={hubLocation}
         hubData={hubData}
+        resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
       />
       {idea && !isNarrowScreen && (
         <div
