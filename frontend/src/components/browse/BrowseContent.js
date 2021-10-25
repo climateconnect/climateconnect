@@ -19,6 +19,7 @@ import {
   getSearchParams
 } from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
+import FeedbackContext from "../context/FeedbackContext";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
 import IdeasBoard from "../ideas/IdeasBoard";
@@ -159,7 +160,8 @@ export default function BrowseContent({
   const [isFetchingMoreData, setIsFetchingMoreData] = useState(false);
 
   const hasQueryParams = (Object.keys(getSearchParams(window.location.search)).length === 0) !== 0;
-
+  
+  const { showFeedbackMessage } = useContext(FeedbackContext)
   /**
    * Support the functionality of a user entering
    * a provided URL, that already has URL encoded
@@ -198,7 +200,12 @@ export default function BrowseContent({
       const newFilters = {
         ...queryObject.filters,
       };
-      setNonFilterParams(splitQueryObject.nonFilterParams);
+      setNonFilterParams(splitQueryObject.nonFilters);
+      if(splitQueryObject?.nonFilters?.message) {
+        showFeedbackMessage({
+          message: splitQueryObject.nonFilters.message
+        })
+      }
 
       if (initialLocationFilter) {
         const locationFilter = possibleFilters.find((f) => f.type === "location");
@@ -283,7 +290,8 @@ export default function BrowseContent({
       filterChoices: filterChoices,
       locale: locale,
     });
-    for (const [key, value] of Object.entries(queryObject)) {
+    const splitQueryObject = splitFiltersFromQueryObject(queryObject, possibleFiltersMetadata)
+    for (const [key, value] of Object.entries(splitQueryObject.filters)) {
       const metadata = possibleFiltersMetadata.find((f) => f.key === key);
 
       if (value.indexOf(",") > 0) {

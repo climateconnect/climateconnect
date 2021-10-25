@@ -195,5 +195,9 @@ export default function getIdeaTexts({ idea }) {
       en: `You can only use up to ${SHORT_DESCRIPTION_MAX_LENGTH} characters in you idea's description.`,
       de: `Die Beschreibung deiner Idee kann nur bis zu ${SHORT_DESCRIPTION_MAX_LENGTH} Zeichen lang sein.`,
     },
+    idea_has_been_created: {
+      en: "Congratulations, your idea has been created!",
+      de: "Herzlichen Glückwunsch, deine Idee wurde erstellt!"
+    }
   };
 }

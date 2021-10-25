@@ -123,7 +123,7 @@ export default function CreateIdeaDialog({
       redirect(
         window.location.pathname,
         {
-          message: "Congratulations! Your idea " + idea.name + " has been created!",
+          message: texts.idea_has_been_created,
           idea: url_slug,
         },
         window.location.hash
