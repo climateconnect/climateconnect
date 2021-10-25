@@ -2,6 +2,9 @@ import { getLocationFilterKeys } from "../data/locationFilters";
 import possibleFilters from "../data/possibleFilters";
 
 const encodeObjectToQueryParams = (obj) => {
+  if(!obj) {
+    return ""
+  }
   return Object.keys(obj).reduce((str, curKey) => {
     str += `${curKey}=${encodeURIComponent(obj[curKey])}&`;
     return str;
