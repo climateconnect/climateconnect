@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
 import FollowButton from "./FollowButton";
+import LikeButton from "./LikeButton";
 
 const useStyles = makeStyles(() => ({
   largeScreenButton: (props) => ({
@@ -66,6 +67,7 @@ export default function ProjectInteractionButtons({
             texts={texts}
             smallScreen={smallScreen}
           />
+          <LikeButton texts={texts} smallScreen={smallScreen} />
         </Toolbar>
       </AppBar>
     );
@@ -90,6 +92,7 @@ export default function ProjectInteractionButtons({
             texts={texts}
             tinyScreen={tinyScreen}
           />
+          <LikeButton texts={texts} tinyScreen={tinyScreen} />
         </Toolbar>
       </AppBar>
     );

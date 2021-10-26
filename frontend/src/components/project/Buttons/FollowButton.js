@@ -1,8 +1,7 @@
-import React from "react";
-import { CircularProgress } from "@material-ui/core";
-import { Button, Link, Typography } from "@material-ui/core";
+import { Button, CircularProgress, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Person } from "@material-ui/icons";
+import React from "react";
 
 const useStyles = makeStyles((theme) => ({
   followButtonContainer: (props) => ({
@@ -28,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
   followingButton: {
     whiteSpace: "nowrap",
+    height: 40,
     marginLeft: theme.spacing(0.25),
     marginRight: theme.spacing(0.25),
   },

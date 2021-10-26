@@ -12,6 +12,7 @@ import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "./Buttons/FollowButton";
+import LikeButton from "./Buttons/LikeButton";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -194,6 +195,7 @@ function LargeScreenOverview({
             </Typography>
           </div>
           <div className={classes.infoBottomBar}>
+            <LikeButton texts={texts} />
             <FollowButton
               isUserFollowing={isUserFollowing}
               handleToggleFollowProject={handleToggleFollowProject}

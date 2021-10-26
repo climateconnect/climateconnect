@@ -11,6 +11,7 @@ const useStyles = makeStyles({
   root: {
     position: "relative",
     height: 40,
+    width: 200,
   },
   smallAvatar: {
     height: theme.spacing(3),
