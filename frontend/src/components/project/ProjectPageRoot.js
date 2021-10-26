@@ -300,11 +300,23 @@ export default function ProjectPageRoot({
       setInitiallyCaughtFollowers(true);
     }
   };
+  const [initiallyCaughtLikes, setInitiallyCaughtLikes] = React.useState(false);
+  const [likes, setLikes] = React.useState([]);
+  const [showLikes, setShowLikes] = React.useState(false);
+  const toggleShowLikes = async () => {
+    setShowLikes(!showLikes);
+    if (!initiallyCaughtLikes) {
+      const retrievedLikes = await getLikes(project, token, locale);
+      setLikes(retrievedLikes);
+      setInitiallyCaughtLikes(true);
+    }
+  };
   const [gotParams, setGotParams] = React.useState(false);
   useEffect(() => {
     if (!gotParams) {
       const params = getParams(window.location.href);
       if (params.show_followers && !showFollowers) toggleShowFollowers();
+      if (params.likes && !showLikes) toggleShowLikes();
       setGotParams(true);
     }
   });
@@ -330,6 +342,10 @@ export default function ProjectPageRoot({
         locale={locale}
         showFollowers={showFollowers}
         initiallyCaughtFollowers={initiallyCaughtFollowers}
+        likes={likes}
+        toggleShowLikes={toggleShowLikes}
+        showLikes={showLikes}
+        initiallyCaughtLikes={initiallyCaughtLikes}
       />
 
       <Container className={classes.noPadding}>
@@ -454,6 +470,21 @@ const getFollowers = async (project, token, locale) => {
     const resp = await apiRequest({
       method: "get",
       url: "/api/projects/" + project.url_slug + "/followers/",
+      token: token,
+      locale: locale,
+    });
+    return resp.data.results;
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+  }
+};
+
+const getLikes = async (project, token, locale) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + project.url_slug + "/likes/",
       token: token,
       locale: locale,
     });

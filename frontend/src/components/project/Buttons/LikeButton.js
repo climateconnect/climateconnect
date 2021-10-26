@@ -33,6 +33,7 @@ export default function LikeButton({
   smallScreen,
   tinyScreen,
   project,
+  toggleShowLikes,
 }) {
   const classes = useStyles({});
   if (smallScreen) {
@@ -60,7 +61,12 @@ export default function LikeButton({
           {isUserLiking ? texts.liked : texts.like}
         </Button>
         {project.number_of_likes > 0 && (
-          <Link color="secondary" className={classes.likesLink} underline="none">
+          <Link
+            color="secondary"
+            className={classes.likesLink}
+            underline="none"
+            onClick={toggleShowLikes}
+          >
             <Typography className={classes.likesText}>
               <span className={classes.likeNumber}>{project.number_of_likes} </span>
               {project.number_of_likes > 1 ? texts.likes : texts.one_like}
