@@ -10,7 +10,7 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import React, { useContext } from "react";
 import ReactTimeago from "react-timeago";
@@ -97,7 +97,6 @@ export default function ProjectFollowersDialog({
 
 const ProjectFollowers = ({ followers, texts, locale }) => {
   const classes = useStyles();
-  console.log(followers);
   return (
     <>
       <Divider />
