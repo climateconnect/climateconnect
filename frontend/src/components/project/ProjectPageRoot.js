@@ -56,10 +56,14 @@ export default function ProjectPageRoot({
   setMessage,
   isUserFollowing,
   setIsUserFollowing,
+  isUserLiking,
+  setIsUserLiking,
   user,
   setCurComments,
   followingChangePending,
   setFollowingChangePending,
+  likingChangePending,
+  setLikingChangePending,
   texts,
   projectAdmin,
 }) {
@@ -222,6 +226,40 @@ export default function ProjectPageRoot({
       });
   };
 
+  const handleToggleLikeProject = () => {
+    if (!token)
+      setMessage({
+        message: <span>{texts.please_log_in_to_like_a_project}</span>,
+        messageType: "error",
+      });
+    else toggleLikeProject();
+  };
+
+  const toggleLikeProject = () => {
+    const new_value = !isUserLiking;
+    setIsUserLiking(new_value);
+    setLikingChangePending(true);
+    apiRequest({
+      method: "post",
+      url: "/api/projects/" + project.url_slug + "/set_like/",
+      payload: { liking: new_value },
+      token: token,
+      locale: locale,
+    })
+      .then(function (response) {
+        setIsUserLiking(response.data.liking);
+        setLikingChangePending(false);
+        setMessage({
+          message: response.data.message,
+          messageType: "success",
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error && error.reponse) console.log(error.response);
+      });
+  };
+
   const requestLeaveProject = () => {
     const user_permission =
       user && project.team && project.team.find((m) => m.id === user.id)
@@ -267,8 +305,11 @@ export default function ProjectPageRoot({
         project={project}
         smallScreen={isNarrowScreen}
         handleToggleFollowProject={handleToggleFollowProject}
+        handleToggleLikeProject={handleToggleLikeProject}
         isUserFollowing={isUserFollowing}
+        isUserLiking={isUserLiking}
         followingChangePending={followingChangePending}
+        likingChangePending={likingChangePending}
         contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
         projectAdmin={projectAdmin}
         handleClickContact={handleClickContact}
@@ -328,7 +369,9 @@ export default function ProjectPageRoot({
           visibleFooterHeight={visibleFooterHeight}
           smallScreen={isNarrowScreen}
           isUserFollowing={isUserFollowing}
+          isUserLiking={isUserLiking}
           handleToggleFollowProject={handleToggleFollowProject}
+          handleToggleLikeProject={handleToggleLikeProject}
           toggleShowFollowers={toggleShowFollowers}
           followingChangePending={followingChangePending}
           messageButtonIsVisible={messageButtonIsVisible}

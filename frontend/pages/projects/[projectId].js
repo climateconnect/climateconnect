@@ -57,11 +57,12 @@ export default function ProjectPage({ project, members, posts, comments, followi
   const [isUserFollowing, setIsUserFollowing] = React.useState(following);
   const [isUserLiking, setIsUserLiking] = React.useState(liking);
   const [followingChangePending, setFollowingChangePending] = React.useState(false);
+  const [likingChangePending, setLikingChangePending] = React.useState(false);
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
   const handleWindowClose = (e) => {
-    if (curComments.filter((c) => c.unconfirmed).length > 0 || followingChangePending) {
+    if (curComments.filter((c) => c.unconfirmed).length > 0 || followingChangePending || likingChangePending) {
       e.preventDefault();
       return (e.returnValue = texts.changes_might_not_be_saved);
     }
@@ -93,6 +94,8 @@ export default function ProjectPage({ project, members, posts, comments, followi
           setCurComments={setCurComments}
           followingChangePending={followingChangePending}
           setFollowingChangePending={setFollowingChangePending}
+          likingChangePending={likingChangePending}
+          setLikingChangePending={setLikingChangePending}
           texts={texts}
           projectAdmin={members.find((m) => m.permission === ROLE_TYPES.all_type)}
           isUserLiking={isUserLiking}

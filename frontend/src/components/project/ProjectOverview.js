@@ -43,7 +43,9 @@ export default function ProjectOverview({
   project,
   smallScreen,
   handleToggleFollowProject,
+  handleToggleLikeProject,
   isUserFollowing,
+  isUserLiking,
   followingChangePending,
   contactProjectCreatorButtonRef,
   projectAdmin,
@@ -68,7 +70,9 @@ export default function ProjectOverview({
         <LargeScreenOverview
           project={project}
           handleToggleFollowProject={handleToggleFollowProject}
+          handleToggleLikeProject={handleToggleLikeProject}
           isUserFollowing={isUserFollowing}
+          isUserLiking={isUserLiking}
           handleClickContact={handleClickContact}
           hasAdminPermissions={hasAdminPermissions}
           toggleShowFollowers={toggleShowFollowers}
@@ -140,7 +144,9 @@ function SmallScreenOverview({ project, texts }) {
 function LargeScreenOverview({
   project,
   handleToggleFollowProject,
+  handleToggleLikeProject,
   isUserFollowing,
+  isUserLiking,
   handleClickContact,
   hasAdminPermissions,
   toggleShowFollowers,
@@ -195,7 +201,10 @@ function LargeScreenOverview({
             </Typography>
           </div>
           <div className={classes.infoBottomBar}>
-            <LikeButton texts={texts} />
+            <LikeButton 
+              texts={texts}
+              isUserLiking={isUserLiking}
+              handleToggleLikeProject={handleToggleLikeProject} />
             <FollowButton
               isUserFollowing={isUserFollowing}
               handleToggleFollowProject={handleToggleFollowProject}
