@@ -254,6 +254,14 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Liked",
       de: "Gelikt",
     },
+    one_like: {
+      en: "Like",
+      de: "Like",
+    },
+    likes: {
+      en: "Likes",
+      de: "Likes",
+    },
     leave_project: {
       en: "Leave project",
       de: "Projekt verlassen",

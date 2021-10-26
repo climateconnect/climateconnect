@@ -1,4 +1,4 @@
-import { Button, IconButton } from "@material-ui/core";
+import { Button, IconButton, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import LikeIcon from "./LikeIcon";
@@ -11,6 +11,19 @@ const useStyles = makeStyles((theme) => ({
   largeLikeButton: {
     height: 40,
   },
+  likesLink: {
+    cursor: "pointer",
+    textAlign: "center",
+  },
+  likeNumber: {
+    fontWeight: 700,
+    color: theme.palette.secondary.main,
+  },
+  likesText: {
+    fontWeight: 500,
+    fontSize: 18,
+    color: theme.palette.secondary.light,
+  },
 }));
 
 export default function LikeButton({
@@ -19,6 +32,7 @@ export default function LikeButton({
   texts,
   smallScreen,
   tinyScreen,
+  project,
 }) {
   const classes = useStyles({});
   if (smallScreen) {
@@ -45,6 +59,14 @@ export default function LikeButton({
         >
           {isUserLiking ? texts.liked : texts.like}
         </Button>
+        {project.number_of_likes > 0 && (
+          <Link color="secondary" className={classes.likesLink} underline="none">
+            <Typography className={classes.likesText}>
+              <span className={classes.likeNumber}>{project.number_of_likes} </span>
+              {project.number_of_likes > 1 ? texts.likes : texts.one_like}
+            </Typography>
+          </Link>
+        )}
       </span>
     );
   }

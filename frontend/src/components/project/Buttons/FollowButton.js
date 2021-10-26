@@ -4,18 +4,10 @@ import { Person } from "@material-ui/icons";
 import React from "react";
 
 const useStyles = makeStyles((theme) => ({
-  followButtonContainer: (props) => ({
-    display: "inline-flex",
-    flexDirection: props.hasAdminPermissions ? "auto" : "column",
-    justifyContent: "center",
-    alignItems: "center",
-    textAlign: "center",
-  }),
-  followersLink: (props) => ({
+  followersLink: {
     cursor: "pointer",
-    textDecoration: "none",
-    marginLeft: props.hasAdminPermissions ? theme.spacing(1) : 0,
-  }),
+    textAlign: "center",
+  },
   followerNumber: {
     fontWeight: 700,
     color: theme.palette.secondary.main,
@@ -89,7 +81,7 @@ export default function FollowButton({
         {project.number_of_followers > 0 && (
           <Link
             color="secondary"
-            underline="always"
+            underline="none"
             className={classes.followersLink}
             onClick={toggleShowFollowers}
           >

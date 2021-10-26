@@ -247,6 +247,7 @@ function parseProject(project) {
     ),
     website: project.website,
     number_of_followers: project.number_of_followers,
+    number_of_likes: project.number_of_likes,
   };
 }
 

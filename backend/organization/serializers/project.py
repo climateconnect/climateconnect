@@ -36,6 +36,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
+    number_of_likes = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     loc = serializers.SerializerMethodField()
     helpful_connections = serializers.SerializerMethodField()
@@ -53,7 +54,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             'skills', 'helpful_connections',
             'project_parents', 'tags',
             'created_at', 'collaborating_organizations', 'is_draft',
-            'website', 'number_of_followers', 'language'
+            'website', 'number_of_followers', 'number_of_likes', 
+            'language'
         )
         read_only_fields = ['url_slug']
 
@@ -85,6 +87,9 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_number_of_followers(self, obj):
         return obj.project_following.count()
+
+    def get_number_of_likes(self, obj):
+        return obj.project_liked.count()
 
     def get_loc(self, obj):
         if obj.loc == None:

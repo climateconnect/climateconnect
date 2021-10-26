@@ -205,6 +205,7 @@ function LargeScreenOverview({
               texts={texts}
               isUserLiking={isUserLiking}
               handleToggleLikeProject={handleToggleLikeProject}
+              project={project}
             />
             <FollowButton
               isUserFollowing={isUserFollowing}

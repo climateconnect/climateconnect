@@ -74,6 +74,7 @@ export default function ProjectInteractionButtons({
             smallScreen={smallScreen}
             isUserLiking={isUserLiking}
             handleToggleLikeProject={handleToggleLikeProject}
+            project={project}
           />
         </Toolbar>
       </AppBar>
