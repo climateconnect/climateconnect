@@ -201,10 +201,11 @@ function LargeScreenOverview({
             </Typography>
           </div>
           <div className={classes.infoBottomBar}>
-            <LikeButton 
+            <LikeButton
               texts={texts}
               isUserLiking={isUserLiking}
-              handleToggleLikeProject={handleToggleLikeProject} />
+              handleToggleLikeProject={handleToggleLikeProject}
+            />
             <FollowButton
               isUserFollowing={isUserFollowing}
               handleToggleFollowProject={handleToggleFollowProject}

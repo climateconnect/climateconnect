@@ -69,11 +69,12 @@ export default function ProjectInteractionButtons({
             texts={texts}
             smallScreen={smallScreen}
           />
-          <LikeButton 
-            texts={texts} 
+          <LikeButton
+            texts={texts}
             smallScreen={smallScreen}
             isUserLiking={isUserLiking}
-            handleToggleLikeProject={handleToggleLikeProject} />
+            handleToggleLikeProject={handleToggleLikeProject}
+          />
         </Toolbar>
       </AppBar>
     );
@@ -98,11 +99,12 @@ export default function ProjectInteractionButtons({
             texts={texts}
             tinyScreen={tinyScreen}
           />
-          <LikeButton 
-            texts={texts} 
+          <LikeButton
+            texts={texts}
             tinyScreen={tinyScreen}
             isUserLiking={isUserLiking}
-            handleToggleLikeProject={handleToggleLikeProject} />
+            handleToggleLikeProject={handleToggleLikeProject}
+          />
         </Toolbar>
       </AppBar>
     );

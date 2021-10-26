@@ -62,7 +62,11 @@ export default function ProjectPage({ project, members, posts, comments, followi
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
   const handleWindowClose = (e) => {
-    if (curComments.filter((c) => c.unconfirmed).length > 0 || followingChangePending || likingChangePending) {
+    if (
+      curComments.filter((c) => c.unconfirmed).length > 0 ||
+      followingChangePending ||
+      likingChangePending
+    ) {
       e.preventDefault();
       return (e.returnValue = texts.changes_might_not_be_saved);
     }
