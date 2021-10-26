@@ -9,6 +9,7 @@ import projectOverviewStyles from "../../../public/styles/projectOverviewStyles"
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
+import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "./Buttons/FollowButton";
@@ -54,9 +55,13 @@ export default function ProjectOverview({
   hasAdminPermissions,
   user,
   followers,
+  likes,
   locale,
   showFollowers,
+  showLikes,
   initiallyCaughtFollowers,
+  initiallyCaughtLikes,
+  toggleShowLikes,
 }) {
   const classes = useStyles();
 
@@ -80,6 +85,8 @@ export default function ProjectOverview({
           contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
           texts={texts}
           projectAdmin={projectAdmin}
+          likes={likes}
+          toggleShowLikes={toggleShowLikes}
         />
       )}
       <ProjectFollowersDialog
@@ -90,6 +97,15 @@ export default function ProjectOverview({
         onClose={toggleShowFollowers}
         user={user}
         url={"projects/" + project.url_slug + "?show_followers=true"}
+      />
+      <ProjectLikesDialog
+        open={showLikes}
+        loading={!initiallyCaughtLikes}
+        likes={likes}
+        project={project}
+        onClose={toggleShowLikes}
+        user={user}
+        url={"projects/" + project.url_slug + "?show_likes=true"}
       />
     </Container>
   );
@@ -154,6 +170,8 @@ function LargeScreenOverview({
   contactProjectCreatorButtonRef,
   texts,
   projectAdmin,
+  likes,
+  toggleShowLikes,
 }) {
   const classes = useStyles();
   return (
@@ -206,6 +224,8 @@ function LargeScreenOverview({
               isUserLiking={isUserLiking}
               handleToggleLikeProject={handleToggleLikeProject}
               project={project}
+              likes={likes}
+              toggleShowLikes={toggleShowLikes}
             />
             <FollowButton
               isUserFollowing={isUserFollowing}
