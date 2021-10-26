@@ -111,3 +111,18 @@ def create_project_follower_notification(project_follower):
             user = User.objects.filter(id=member['user'])[0]
             create_user_notification(user, notification)
             send_project_follower_email(user, project_follower, notification)
+
+def create_project_like_notification(project_like):
+    notification = Notification.objects.create(
+        notification_type=10, project_like=project_like
+    )
+    project_team = ProjectMember.objects.filter(
+        project=project_like.project).values('user')
+    for member in project_team:
+        if not member['user'] == project_like.user.id:
+            user = User.objects.filter(id=member['user'])[0]
+            create_user_notification(user, notification)
+            # send_project_like_email(user, project_like, notification) 
+
+
+            

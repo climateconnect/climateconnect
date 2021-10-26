@@ -51,6 +51,7 @@ from organization.utility.notification import (
     create_project_comment_notification,
     create_project_comment_reply_notification,
     create_project_follower_notification,
+    create_project_like_notification,
     get_mentions)
 from organization.utility.organization import check_organization
 from organization.utility.project import (create_new_project,
@@ -740,9 +741,8 @@ class SetLikeView(APIView):
             if ProjectLike.objects.filter(user=request.user, project=project).exists():
                 raise ValidationError("You've already liked this project.")
             else:
-                #project_like = 
-                ProjectLike.objects.create(user=request.user, project=project)
-                #create_project_like_notification(project_like)
+                project_like = ProjectLike.objects.create(user=request.user, project=project)
+                create_project_like_notification(project_like)
                 return Response({
                     'message': 'You have liked this project.',
                     'liking': True
