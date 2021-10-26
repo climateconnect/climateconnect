@@ -60,7 +60,7 @@ const NOTIFICATION_TYPES = [
   "reply_to_post_comment",
   "group_message",
   "mention",
-  null,
+  "project_like",
   "idea_comment",
   "reply_to_idea_comment",
   "person_joined_idea",
@@ -90,6 +90,8 @@ export default function Notification({ notification, isPlaceholder }) {
       return <IdeaCommentReplyNotification notification={notification} />;
     else if (type === "person_joined_idea")
       return <PersonJoinedIdeaNotification notification={notification} />;
+    else if (type === "project_like")
+      return <ProjectLikeNotification notification={notification} />;
     else return <></>;
   }
 }
@@ -216,6 +218,24 @@ const ProjectFollowerNotification = ({ notification }) => {
         image: notification.project_follower.thumbnail_image,
       }}
       primaryText={`${followerName} ${texts.now_follows_your_project} "${notification.project.name}"`}
+      secondaryText={texts.congratulations}
+    />
+  );
+};
+
+const ProjectLikeNotification = ({ notification }) => {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale });
+  const likingUserName =
+    notification.project_like.first_name + " " + notification.project_like.last_name;
+  return (
+    <GenericNotification
+      link={`/projects/${notification.project.url_slug}?show_likes=true`}
+      avatar={{
+        alt: likingUserName,
+        image: notification.project_like.thumbnail_image,
+      }}
+      primaryText={`${likingUserName} ${texts.liked_your_project} "${notification.project.name}"`}
       secondaryText={texts.congratulations}
     />
   );

@@ -26,6 +26,10 @@ export default function getNotificationTexts({ idea }) {
       en: "now follows your project",
       de: "folgt jetzt deinem Projekt",
     },
+    liked_your_project: {
+      en: "liked your project",
+      de: "gefällt dein Projekt",
+    },
     go_to_inbox: {
       en: "Go to Inbox",
       de: "Zum Posteingang",
