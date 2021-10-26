@@ -110,6 +110,10 @@ urlpatterns = [
         project_views.IsUserFollowing.as_view(), name='am-i-following-view'
     ),
     path(
+        'projects/<str:url_slug>/am_i_liking/',
+        project_views.IsUserLiking.as_view(), name='am-i-liking-view'
+    ),
+    path(
         'projects/<str:url_slug>/comment/',
         project_views.ProjectCommentView.as_view(), name='project-comments-view'
     ),

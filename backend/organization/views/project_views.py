@@ -23,7 +23,7 @@ from organization.models import (Organization, OrganizationTagging,
                                  ProjectCollaborators, ProjectComment,
                                  ProjectFollower, ProjectMember,
                                  ProjectParents, ProjectStatus, ProjectTagging,
-                                 ProjectTags)
+                                 ProjectTags, ProjectLike)
 from organization.models.translations import ProjectTranslation
 from organization.pagination import (MembersPagination,
                                      ProjectCommentPagination,
@@ -736,6 +736,17 @@ class IsUserFollowing(APIView):
             user=request.user, project=project).exists()
         return Response({'is_following': is_following}, status=status.HTTP_200_OK)
 
+class IsUserLiking(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, url_slug):
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            raise NotFound(detail="Project not found:"+url_slug, code=status.HTTP_404_NOT_FOUND)
+        is_liking = ProjectLike.objects.filter(
+            user=request.user, project=project).exists()
+        return Response({'is_liking': is_liking}, status=status.HTTP_200_OK) 
 
 class ProjectCommentView(APIView):
     permission_classes = [IsAuthenticated]
