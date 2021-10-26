@@ -42,7 +42,8 @@ from organization.serializers.project import (EditProjectSerializer,
                                               ProjectMinimalSerializer,
                                               ProjectSerializer,
                                               ProjectSitemapEntrySerializer,
-                                              ProjectStubSerializer)
+                                              ProjectStubSerializer,
+                                              ProjectLikeSerializer)
 from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
@@ -882,6 +883,16 @@ class ListProjectFollowersView(ListAPIView):
         followers = ProjectFollower.objects.filter(project=project[0])
         return followers
 
+class ListProjectLikesView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ProjectLikeSerializer
+
+    def get_queryset(self):
+        project = Project.objects.filter(url_slug=self.kwargs['url_slug'])
+        if not project.exists():
+            return None
+        likes = ProjectLike.objects.filter(project=project[0])
+        return likes        
 
 class LeaveProject(RetrieveUpdateAPIView):
     """

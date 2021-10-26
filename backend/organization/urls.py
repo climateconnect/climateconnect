@@ -130,6 +130,10 @@ urlpatterns = [
         project_views.ListProjectFollowersView.as_view(), name='list-followers-view'
     ),
     path(
+        'projects/<str:url_slug>/likes/',
+        project_views.ListProjectLikesView.as_view(), name='list-likes-view'
+    ),
+    path(
         'projecttags/', project_views.ListProjectTags.as_view(), 
         name='list-project-tags'
     ),
