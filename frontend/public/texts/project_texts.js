@@ -320,6 +320,10 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "to see this project's followers",
       de: ", um die Followers des Projektes zu sehen",
     },
+    to_see_this_projects_likes: {
+      en: "to see this project's likes",
+      de: ", um die Likes des Projektes zu sehen",
+    },
     we_could_not_find_any_members_of_this_project: {
       en: "We could not find any members of this project.",
       de: "Wir konnten keine Mitglieder für dieses Projekt finden.",
@@ -374,13 +378,25 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Followers of",
       de: "Follower von",
     },
+    likes_of: {
+      en: "Likes of",
+      de: "Likes von",
+    },
     this_project_does_not_have_any_followers_yet: {
       en: "This project does not have any followers yet.",
       de: "Dieses Projekt hat noch keine Follower",
     },
+    this_project_does_not_have_any_likes_yet: {
+      en: "This project does not have any likes yet.",
+      de: "Dieses Projekt hat noch keine Likes",
+    },
     following_since: {
       en: "Following since",
       de: "Folgt seit",
+    },
+    liking_since: {
+      en: "Liking since",
+      de: "Gefällt seit",
     },
     delete_draft: {
       en: "Delete Draft",
