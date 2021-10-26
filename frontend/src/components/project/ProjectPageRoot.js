@@ -398,8 +398,8 @@ export default function ProjectPageRoot({
             {texts.are_you_sure_that_you_want_to_unfollow_this_project}
           </span>
         }
-        confirmText="Yes"
-        cancelText="No"
+        confirmText={texts.yes}
+        cancelText={texts.no}
       />
       <ConfirmDialog
         open={confirmDialogOpen.like}
@@ -429,8 +429,8 @@ export default function ProjectPageRoot({
             )}
           </span>
         }
-        confirmText="Yes"
-        cancelText="No"
+        confirmText={texts.yes}
+        cancelText={texts.no}
       />
       <Tutorial
         fixedPosition
