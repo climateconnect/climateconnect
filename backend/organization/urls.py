@@ -106,6 +106,10 @@ urlpatterns = [
         project_views.SetFollowView.as_view(), name='set-follow-view'
     ),
     path(
+        'projects/<str:url_slug>/set_like/',
+        project_views.SetLikeView.as_view(), name='set-like-view'
+    ),
+    path(
         'projects/<str:url_slug>/am_i_following/',
         project_views.IsUserFollowing.as_view(), name='am-i-following-view'
     ),
