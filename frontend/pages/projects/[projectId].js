@@ -30,12 +30,13 @@ const parseComments = (comments) => {
 export async function getServerSideProps(ctx) {
   const { token } = NextCookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectId);
-  const [project, members, posts, comments, following] = await Promise.all([
+  const [project, members, posts, comments, following, liking] = await Promise.all([
     getProjectByIdIfExists(projectUrl, token, ctx.locale),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
     getPostsByProject(projectUrl, token, ctx.locale),
     getCommentsByProject(projectUrl, token, ctx.locale),
     token ? getIsUserFollowing(projectUrl, token, ctx.locale) : false,
+    token ? getIsUserLiking(projectUrl, token, ctx.locale) : false,
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -44,15 +45,17 @@ export async function getServerSideProps(ctx) {
       posts: posts,
       comments: comments,
       following: following,
+      liking: liking,
     }),
   };
 }
 
-export default function ProjectPage({ project, members, posts, comments, following }) {
+export default function ProjectPage({ project, members, posts, comments, following, liking }) {
   const token = new Cookies().get("token");
   const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
   const [isUserFollowing, setIsUserFollowing] = React.useState(following);
+  const [isUserLiking, setIsUserLiking] = React.useState(liking);
   const [followingChangePending, setFollowingChangePending] = React.useState(false);
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
@@ -92,6 +95,8 @@ export default function ProjectPage({ project, members, posts, comments, followi
           setFollowingChangePending={setFollowingChangePending}
           texts={texts}
           projectAdmin={members.find((m) => m.permission === ROLE_TYPES.all_type)}
+          isUserLiking={isUserLiking}
+          setIsUserLiking={setIsUserLiking}
         />
       ) : (
         <PageNotFound itemName={texts.project} />
@@ -130,6 +135,24 @@ async function getIsUserFollowing(projectUrl, token, locale) {
     else {
       //TODO: get comments and timeline posts and project taggings
       return resp.data.is_following;
+    }
+  } catch (err) {
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+async function getIsUserLiking(projectUrl, token, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/am_i_liking/",
+      token: token,
+      locale: locale,
+    });
+    if (resp.data.length === 0) return null;
+    else {
+      return resp.data.is_liking;
     }
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
