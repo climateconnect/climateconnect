@@ -284,6 +284,14 @@ export default function ProjectPageRoot({
     else setConfirmDialogOpen({ ...confirmDialogOpen, leave: true });
   };
 
+  const handleReadNotifications = async (notificationType) => {
+    const notification_to_set_read = notifications.filter(
+      (n) => n.notification_type === notificationType && n.project.url_slug === project.url_slug
+    );
+    await setNotificationsRead(token, notification_to_set_read, locale);
+    await refreshNotifications();
+  }
+  
   const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
   const [followers, setFollowers] = React.useState([]);
   const [showFollowers, setShowFollowers] = React.useState(false);
@@ -291,11 +299,7 @@ export default function ProjectPageRoot({
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
       const retrievedFollowers = await getFollowers(project, token, locale);
-      const notification_to_set_read = notifications.filter(
-        (n) => n.notification_type === 4 && n.project.url_slug === project.url_slug
-      );
-      await setNotificationsRead(token, notification_to_set_read, locale);
-      await refreshNotifications();
+      handleReadNotifications(4);
       setFollowers(retrievedFollowers);
       setInitiallyCaughtFollowers(true);
     }
@@ -307,6 +311,7 @@ export default function ProjectPageRoot({
     setShowLikes(!showLikes);
     if (!initiallyCaughtLikes) {
       const retrievedLikes = await getLikes(project, token, locale);
+      handleReadNotifications(10);                                                             // "10" should not be hardcoded
       setLikes(retrievedLikes);
       setInitiallyCaughtLikes(true);
     }
