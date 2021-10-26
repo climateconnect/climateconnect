@@ -76,7 +76,11 @@ export default function ProjectPageRoot({
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const isTinyScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
   const [hash, setHash] = React.useState(null);
-  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({ follow: false, leave: false });
+  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({
+    follow: false,
+    leave: false,
+    like: false,
+  });
   const typesByTabValue = ["project", "team", "comments"];
 
   //refs for tutorial
@@ -159,6 +163,11 @@ export default function ProjectPageRoot({
     setConfirmDialogOpen({ ...confirmDialogOpen, follow: false });
   };
 
+  const onLikeDialogClose = (confirmed) => {
+    if (confirmed) toggleLikeProject();
+    setConfirmDialogOpen({ ...confirmDialogOpen, like: false });
+  };
+
   const leaveProject = async () => {
     try {
       const resp = await apiRequest({
@@ -232,6 +241,7 @@ export default function ProjectPageRoot({
         message: <span>{texts.please_log_in_to_like_a_project}</span>,
         messageType: "error",
       });
+    else if (isUserLiking) setConfirmDialogOpen({ ...confirmDialogOpen, like: true });
     else toggleLikeProject();
   };
 
@@ -390,6 +400,18 @@ export default function ProjectPageRoot({
         }
         confirmText="Yes"
         cancelText="No"
+      />
+      <ConfirmDialog
+        open={confirmDialogOpen.like}
+        onClose={onLikeDialogClose}
+        title={texts.do_you_really_want_to_dislike}
+        text={
+          <span className={classes.dialogText}>
+            {texts.are_you_sure_that_you_want_to_dislike_this_project}
+          </span>
+        }
+        confirmText={texts.yes}
+        cancelText={texts.no}
       />
       <ConfirmDialog
         open={confirmDialogOpen.leave}
