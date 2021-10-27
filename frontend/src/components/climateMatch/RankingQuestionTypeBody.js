@@ -1,11 +1,16 @@
 import { Chip, makeStyles, Typography } from "@material-ui/core"
 import CloseIcon from '@material-ui/icons/Close'
-import React from "react"
+import React, { useContext } from "react"
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd"
+import climateMatchStyles from "../../../public/styles/climateMatchStyles"
+import getTexts from "../../../public/texts/texts"
+import FeedbackContext from "../context/FeedbackContext"
+import UserContext from "../context/UserContext"
 import ClimateMatchHeadline from "./ClimateMatchHeadline"
 import QuestionButtonBar from "./QuestionButtonBar"
 
 const useStyles = makeStyles(theme => ({
+  ...climateMatchStyles(theme),
   root: {
     display: "flex",
     marginTop: theme.spacing(4),
@@ -52,19 +57,6 @@ const useStyles = makeStyles(theme => ({
     fontSize: 30,
     marginRight: theme.spacing(1.5)
   },
-  possibleAnswerChip: {
-    background: theme.palette.primary.light,
-    color: "white",
-    fontWeight: 600,
-    fontSize: 18,
-    height: 40,
-    borderRadius: 20,
-    width: "100%",
-    cursor: "pointer",
-    "&:hover": {
-      background: "#89d9d2"
-    }
-  },
   alreadySelectedPossibleAnswer: {
     background: "#e0e0e0",
     color: theme.palette.secondary.main
@@ -81,6 +73,9 @@ export default function RankingQuestionTypeBody({
   step, question, numberOfChoices, answers, onChangeAnswer, handleForwardClick, onBackClick, userAnswer
 }) {
   const classes = useStyles()
+  const { locale } = useContext(UserContext)
+  const { showFeedbackMessage } = useContext(FeedbackContext)
+  const texts = getTexts({page: "climatematch", locale: locale})
   // This will be used to set weight for each answer
   const weights = {0: 100, 1: 80, 2: 50}
   const onDragEnd = (result) => {
@@ -122,7 +117,14 @@ export default function RankingQuestionTypeBody({
   }
 
   const onForwardClick = () => {
-    handleForwardClick()
+    if(userAnswer.length === 0) {
+      showFeedbackMessage({
+        message: texts.please_choose_at_least_one_answer_to_progress,
+        error: true
+      })
+    } else {
+      handleForwardClick()
+    }
   }
 
   const handleClickChip = (index) => {

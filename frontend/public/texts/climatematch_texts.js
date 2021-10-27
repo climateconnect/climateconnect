@@ -27,6 +27,10 @@ export default function getClimatematchTexts({location}) {
     lets_stop_the_climate_crisis_together_have_fun: {
       en: "Let's take on the climate crisis together. Have fun!",
       de: "Lass uns die Klimakrise gemeinsam anpacken. Viel Spaß!"
+    },
+    please_choose_at_least_one_answer_to_progress: {
+      en: "Please choose at least one field.",
+      de: "Bitte wähle mindestens ein Thema aus."
     }
   }
 }
