@@ -1,4 +1,4 @@
-import { Button, IconButton, Link, Typography } from "@material-ui/core";
+import { Button, CircularProgress, IconButton, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import LikeIcon from "./LikeIcon";
@@ -34,17 +34,26 @@ export default function LikeButton({
   tinyScreen,
   project,
   toggleShowLikes,
+  likingChangePending,
 }) {
   const classes = useStyles({});
   if (smallScreen) {
     return (
-      <IconButton onClick={handleToggleLikeProject} color={isUserLiking ? "secondary" : "primary"}>
+      <IconButton
+        onClick={handleToggleLikeProject}
+        color={isUserLiking ? "secondary" : "primary"}
+        disabled={likingChangePending}
+      >
         <LikeIcon size={30} color={isUserLiking ? "earth" : "primary"} />
       </IconButton>
     );
   } else if (tinyScreen) {
     return (
-      <IconButton onClick={handleToggleLikeProject} color={isUserLiking ? "secondary" : "primary"}>
+      <IconButton
+        onClick={handleToggleLikeProject}
+        color={isUserLiking ? "secondary" : "primary"}
+        disabled={likingChangePending}
+      >
         <LikeIcon size={30} color={isUserLiking ? "earth" : "primary"} />
       </IconButton>
     );
@@ -56,8 +65,10 @@ export default function LikeButton({
           variant="contained"
           startIcon={<LikeIcon size={20} color={isUserLiking ? "earth" : "white"} />}
           color={isUserLiking ? "secondary" : "primary"}
+          disabled={likingChangePending}
           className={classes.largeLikeButton}
         >
+          {likingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
           {isUserLiking ? texts.liked : texts.like}
         </Button>
         {project.number_of_likes > 0 && (

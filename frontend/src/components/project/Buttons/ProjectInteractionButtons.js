@@ -40,6 +40,7 @@ export default function ProjectInteractionButtons({
   handleToggleLikeProject,
   toggleShowFollowers,
   followingChangePending,
+  likingChangePending,
   texts,
   tinyScreen,
 }) {
@@ -75,6 +76,7 @@ export default function ProjectInteractionButtons({
             isUserLiking={isUserLiking}
             handleToggleLikeProject={handleToggleLikeProject}
             project={project}
+            likingChangePending={likingChangePending}
           />
         </Toolbar>
       </AppBar>

@@ -290,8 +290,8 @@ export default function ProjectPageRoot({
     );
     await setNotificationsRead(token, notification_to_set_read, locale);
     await refreshNotifications();
-  }
-  
+  };
+
   const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
   const [followers, setFollowers] = React.useState([]);
   const [showFollowers, setShowFollowers] = React.useState(false);
@@ -311,7 +311,7 @@ export default function ProjectPageRoot({
     setShowLikes(!showLikes);
     if (!initiallyCaughtLikes) {
       const retrievedLikes = await getLikes(project, token, locale);
-      handleReadNotifications(10);                                                             // "10" should not be hardcoded
+      handleReadNotifications(10); // "10" should not be hardcoded
       setLikes(retrievedLikes);
       setInitiallyCaughtLikes(true);
     }
@@ -405,6 +405,7 @@ export default function ProjectPageRoot({
           handleToggleLikeProject={handleToggleLikeProject}
           toggleShowFollowers={toggleShowFollowers}
           followingChangePending={followingChangePending}
+          likingChangePending={likingChangePending}
           messageButtonIsVisible={messageButtonIsVisible}
           contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
           tabContentContainerSpaceToRight={tabContentContainerSpaceToRight}

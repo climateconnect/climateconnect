@@ -48,6 +48,7 @@ export default function ProjectOverview({
   isUserFollowing,
   isUserLiking,
   followingChangePending,
+  likingChangePending,
   contactProjectCreatorButtonRef,
   projectAdmin,
   handleClickContact,
@@ -87,6 +88,7 @@ export default function ProjectOverview({
           projectAdmin={projectAdmin}
           likes={likes}
           toggleShowLikes={toggleShowLikes}
+          likingChangePending={likingChangePending}
         />
       )}
       <ProjectFollowersDialog
@@ -172,6 +174,7 @@ function LargeScreenOverview({
   projectAdmin,
   likes,
   toggleShowLikes,
+  likingChangePending,
 }) {
   const classes = useStyles();
   return (
@@ -226,6 +229,7 @@ function LargeScreenOverview({
               project={project}
               likes={likes}
               toggleShowLikes={toggleShowLikes}
+              likingChangePending={likingChangePending}
             />
             <FollowButton
               isUserFollowing={isUserFollowing}
