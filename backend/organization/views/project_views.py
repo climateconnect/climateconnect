@@ -654,7 +654,7 @@ class ListProjectMembersView(ListAPIView):
     def get_queryset(self):
         project = Project.objects.get(url_slug=self.kwargs['url_slug'])
 
-        return project.project_member.filter(is_active=True)
+        return project.project_member_project.filter(is_active=True)
 
 
 class ListProjectTags(ListAPIView):
