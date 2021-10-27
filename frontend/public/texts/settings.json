@@ -87,6 +87,10 @@
     "en": "Get notified when somebody follows a project you're part of.",
     "de": "Ich möchte benachrichtigt werden, wenn jemand einem Projekt folgt, an dem ich beteiligt bin"
   },
+  "email_on_new_project_like_text": {
+    "en": "Get notified when somebody likes your project",
+    "de": "Ich möchte benachrichtigt werden, wenn jemand mein Projekt likt"
+  },
   "email_on_mention_text": {
     "en": "Get notified when somebody mentions you in comment.",
     "de": "Ich möchte benachrichtigt werden, wenn mich jemand in einem Kommentar erwähnt"
