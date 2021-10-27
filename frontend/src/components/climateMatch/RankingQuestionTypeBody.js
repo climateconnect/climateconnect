@@ -60,7 +60,10 @@ const useStyles = makeStyles(theme => ({
     height: 40,
     borderRadius: 20,
     width: "100%",
-    cursor: "pointer"
+    cursor: "pointer",
+    "&:hover": {
+      background: "#89d9d2"
+    }
   },
   alreadySelectedPossibleAnswer: {
     background: "#e0e0e0",
@@ -86,17 +89,30 @@ export default function RankingQuestionTypeBody({
     //The user selected an answer!
     if(
       result.destination.droppableId === "selectedAnswers" && 
-      userAnswer?.length < numberOfChoices &&
-      result.source.droppableId !== result.destination.droppableId
+      userAnswer?.length <= numberOfChoices
     ) {
-      const selectedAnswer = answers[result.source.index]
-      const newAnswer = userAnswer
-      newAnswer.push({
-        'id': selectedAnswer.id,
-        'text': selectedAnswer.text,
-        'weight': weights[result.destination.index]
-      })
-      onChangeAnswer(step, newAnswer)
+      if(result.source.droppableId !== result.destination.droppableId){
+        //element has been added to the user's choices
+        const selectedAnswer = answers[result.source.index]
+        const newAnswerObject = [
+          ...userAnswer.slice(0, result.destination.index),
+          {
+            'id': selectedAnswer.id,
+            'text': selectedAnswer.text,
+            'weight': weights[result.destination.index]
+          },
+          ...userAnswer.slice(result.destination.index, numberOfChoices)
+        ]
+        onChangeAnswer(step, newAnswerObject)
+      } else {
+        //elements have been moved within the user's choices
+        const newAnswerObject = [...userAnswer]
+        //switch the item that have been moved and the item in the position it has been moved to
+        const itemBeingMoved = newAnswerObject[result.source.index]
+        newAnswerObject[result.source.index] = newAnswerObject[result.destination.index]
+        newAnswerObject[result.destination.index] = itemBeingMoved
+        onChangeAnswer(step, newAnswerObject)
+      }
     }
   }
 
@@ -107,6 +123,17 @@ export default function RankingQuestionTypeBody({
 
   const onForwardClick = () => {
     handleForwardClick()
+  }
+
+  const handleClickChip = (index) => {
+    const selectedAnswer = answers[index]
+    if(userAnswer.length < numberOfChoices) {
+      onChangeAnswer(step, [...userAnswer, {
+        'id': selectedAnswer.id,
+        'text': selectedAnswer.text,
+        'weight': weights[userAnswer.length]
+      }])
+    }
   }
 
   
@@ -139,6 +166,7 @@ export default function RankingQuestionTypeBody({
                                     label={userAnswer[i].text}
                                     className={classes.possibleAnswerChip}
                                     ref={provided.innerRef}
+                                    onClick={(event) => onRemoveAnswer(event, i)}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
                                   />
@@ -189,6 +217,7 @@ export default function RankingQuestionTypeBody({
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
                                 disabled={userAnswer.map(c=>c.id).includes(a.id)}
+                                onClick={() => handleClickChip(index)}
                               />
                             )
                           }}                    
