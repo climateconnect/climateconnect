@@ -1,13 +1,13 @@
 import { Container, makeStyles } from "@material-ui/core"
+import Router from "next/router"
 import React, { useContext, useEffect, useState } from "react"
+import Cookies from 'universal-cookie'
+import { apiRequest } from "../../../public/lib/apiOperations"
 import getTexts from "../../../public/texts/texts"
 import UserContext from "../context/UserContext"
 import LoadingSpinner from "../general/LoadingSpinner"
 import ClimateMatchQuestion from "./ClimateMatchQuestion"
 import WelcomeToClimateMatch from "./WelcomeToClimateMatch"
-import { apiRequest } from "../../../public/lib/apiOperations"
-import Cookies from 'universal-cookie';
-import Router from "next/router";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -136,19 +136,16 @@ export default function ClimateMatchRoot() {
 const getQuestions = async (token, locale, location) => {
   // TODO (Dip): Check about location logic here
   // "location" determines what images to show and could lead to different questions
-  if(token) {
-    try {
-      const resp = await apiRequest({
-        method: "get",
-        url: "/api/questions/",
-        locale: locale,
-        token: token
-      })
-      return resp.data;
-    } catch(e) {
-      console.log(e)
-    }
-  } else {
-    return null;
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/questions/",
+      locale: locale,
+      token: token,
+      location: location
+    })
+    return resp.data;
+  } catch(e) {
+    console.log(e)
   }
 }

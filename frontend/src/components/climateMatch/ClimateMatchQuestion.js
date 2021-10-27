@@ -1,9 +1,8 @@
 import { makeStyles } from "@material-ui/core"
 import React from "react"
-import RankingQuestionTypeBody from "./RankingQuestionTypeBody"
-import OptionalQuestionTypeBody from "./OptionalQuestionTypeBody"
 import { getImageUrl } from "../../../public/lib/imageOperations"
-import QuestionButtonBar from "./QuestionButtonBar"
+import OptionalQuestionTypeBody from "./OptionalQuestionTypeBody"
+import RankingQuestionTypeBody from "./RankingQuestionTypeBody"
 
 
 const useStyles = makeStyles(theme => ({
@@ -19,7 +18,7 @@ const useStyles = makeStyles(theme => ({
     backgroundSize: "cover",
     backgroundPositionX: "center",
     height: 500,
-    width: "25%"
+    minWidth: 300
   })
 }))
 

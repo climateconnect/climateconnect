@@ -1,4 +1,4 @@
-import { Button, makeStyles, Typography } from "@material-ui/core"
+import { Button, Container, makeStyles, Typography } from "@material-ui/core"
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos'
 import React, { useContext } from "react"
 import { capitalizeFirstLetter } from "../../../public/lib/parsingOperations"
@@ -36,7 +36,8 @@ const useStyles = makeStyles(theme => ({
     width: "100%"
   },
   questionsGraphicContainer: {
-    width: 1050,
+    width: "100%",
+    maxWidth: 1050,
     margin: "0 auto"
   },
   questionsGraphic: {
@@ -48,7 +49,8 @@ const useStyles = makeStyles(theme => ({
     color: "white"
   },
   buttonBar: {
-    width: 1050,
+    width: "100%",
+    maxWidth: 1050,
     display: "flex",
     justifyContent: "space-between",
     margin: "0 auto",
@@ -67,7 +69,7 @@ export default function WelcomeToClimateMatch({ goToNextStep, location }) {
   }
   return (
     <div className={classes.root}>
-      <div className={classes.nonImageContent}>
+      <Container className={classes.nonImageContent}>
         <ClimateMatchHeadline className={classes.headline}>
           {texts.welcome_to_climate_match}
         </ClimateMatchHeadline>
@@ -76,17 +78,17 @@ export default function WelcomeToClimateMatch({ goToNextStep, location }) {
           {texts.answer_the_next_four_questions_to_get_suggestions}<br />
           {texts.lets_stop_the_climate_crisis_together_have_fun}
         </Typography>
-      </div>
+      </Container>
       <div className={classes.imageContainer}>
         <div className={classes.questionsGraphicContainer}>
           <img src="/images/questions_pana.svg" className={classes.questionsGraphic}/>
         </div>
         <img src="/images/erlangen_climatematch.jpg" className={classes.image} />
       </div>
-      <div className={classes.buttonBar}>
+      <Container className={classes.buttonBar}>
         <Button className={classes.backIcon}><ArrowBackIosIcon />{texts.back}</Button>
         <ClimateMatchButton wide onClick={handleClickStart}>{texts.start}</ClimateMatchButton>
-      </div>
+      </Container>
     </div>
   )
 }

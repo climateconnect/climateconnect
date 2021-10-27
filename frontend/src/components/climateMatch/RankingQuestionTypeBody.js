@@ -65,6 +65,12 @@ const useStyles = makeStyles(theme => ({
   alreadySelectedPossibleAnswer: {
     background: "#e0e0e0",
     color: theme.palette.secondary.main
+  },
+  closeIcon: {
+    cursor: "pointer"
+  },
+  selectedAnswers: {
+    height: 170
   }
 }))
 
@@ -74,43 +80,40 @@ export default function RankingQuestionTypeBody({
   const classes = useStyles()
   // This will be used to set weight for each answer
   const weights = {0: 100, 1: 80, 2: 50}
-  const [possibleAnswers, setPossibleAnswers] = useState([])
+  const [userChoices, setUserChoices] = useState([])
   const onDragEnd = (result) => {
     if(!result.destination)
       return
     //The user selected an answer!
     if(
       result.destination.droppableId === "selectedAnswers" && 
-      possibleAnswers.length < numberOfChoices &&
+      userChoices.length < numberOfChoices &&
       result.source.droppableId !== result.destination.droppableId
     ) {
       const selectedAnswer = answers[result.source.index]
-      const newPossibleAnswers = possibleAnswers
-      newPossibleAnswers.push({
+      const newChoices = userChoices
+      newChoices.push({
         'id': selectedAnswer.id,
         'text': selectedAnswer.text,
         'weight': weights[result.destination.index]
       })
-      setPossibleAnswers(newPossibleAnswers)
+      setUserChoices(newChoices)
     }
   }
 
-  const onCloseIcon = (event, index) => {
+  const onRemoveAnswer = (event, index) => {
     event.preventDefault();
-    const newPossibleAnswers = possibleAnswers;
-    console.log(newPossibleAnswers);
-    newPossibleAnswers.splice(index);
-    console.log(newPossibleAnswers);
-    setPossibleAnswers(newPossibleAnswers);
+    setUserChoices(userChoices.filter((choice, curChoiceIndex) => curChoiceIndex !== index));
   }
 
   const onForwardClick = () => {
     handleForwardClick({
-      'question_id': question.id, 'answers': possibleAnswers,
+      'question_id': question.id, 'answers': userChoices,
       'predefined_answer_id': null, 'answer_type': question.answer_type
     })
-    setPossibleAnswers([])
+    setUserChoices([])
   }
+
   
   return (
     <DragDropContext onDragEnd={onDragEnd}>      
@@ -126,24 +129,25 @@ export default function RankingQuestionTypeBody({
                 <div 
                   {...provided.droppableProps}
                   ref={provided.innerRef}
+                  className={classes.selectedAnswers}
                 >
                   {
                     [...Array(numberOfChoices)].map((e, i) => (
                       <div key={i} className={classes.selectedAnswerContainer}>
                         <span className={classes.choiceRankText}>{i+1}.</span>
                         {
-                          possibleAnswers?.length >= i+1 ? (    
+                          userChoices?.length >= i+1 ? (    
                             <Draggable key={i} draggableId={"draggable_choice" + i} index={i}>
                               {(provided) => (  
                                 <>                      
                                   <Chip
-                                    label={possibleAnswers[i].text}
+                                    label={userChoices[i].text}
                                     className={classes.possibleAnswerChip}
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
                                   />
-                                  <CloseIcon onClick={(event) => onCloseIcon(event, i)}/>
+                                  <CloseIcon className={classes.closeIcon} onClick={(event) => onRemoveAnswer(event, i)}/>
                                 </>
                               )}
                             </Draggable>
@@ -179,6 +183,7 @@ export default function RankingQuestionTypeBody({
                           key={a.id} 
                           draggableId={"draggable" + a.id} 
                           index={index}
+                          isDragDisabled={userChoices.map(c=>c.id).includes(a.id)}
                         >
                           {(provided) => {
                             return (
@@ -188,6 +193,7 @@ export default function RankingQuestionTypeBody({
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
+                                disabled={userChoices.map(c=>c.id).includes(a.id)}
                               />
                             )
                           }}                    
