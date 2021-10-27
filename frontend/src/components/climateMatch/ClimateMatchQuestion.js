@@ -41,12 +41,14 @@ export default function ClimateMatchQuestion({
         />
       ) : (
         <RankingQuestionTypeBody 
-          question={question} 
+          question={question}
+          step={step}
           numberOfChoices={question.number_of_choices}
           onChangeAnswer={onChangeAnswer}
           answers={answers}
           handleForwardClick={handleForwardClick}
           onBackClick={onBackClick}
+          userAnswer={userAnswers[step-1]}
         />
       )
       } 

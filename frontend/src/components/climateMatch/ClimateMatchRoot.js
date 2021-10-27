@@ -35,6 +35,12 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const getInitialUserAnswerArray = (questions) => {
+  //initialize answers to choice questions with "" and answers to ranking questions
+  //with an empty array
+  return questions.sort((a,b) => a.step - b.step).map(q => q.answer_type === "answer" ? "" : [])
+}
+
 export default function ClimateMatchRoot() {
   const classes = useStyles()  
   const { locale, user  } = useContext(UserContext)
@@ -44,7 +50,7 @@ export default function ClimateMatchRoot() {
   const [questions, setQuestions] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [location, setLocation] = useState(null)
-  const [userAnswers, setUserAnswers] = useState({'user_question_answers': []})
+  const [userAnswers, setUserAnswers] = useState([])
   const cookies = new Cookies();
   const token = cookies.get('token');
 
@@ -58,6 +64,7 @@ export default function ClimateMatchRoot() {
     const retrievedQuestionsData = await getQuestions(token, locale, params.location)
     setQuestions(retrievedQuestionsData.results)
     setTotalQuestions(retrievedQuestionsData.total_questions)
+    setUserAnswers(getInitialUserAnswerArray(retrievedQuestionsData.results))
     setIsLoading(false)
   }, [])
 
@@ -69,7 +76,7 @@ export default function ClimateMatchRoot() {
     apiRequest({
       method: "post",
       url: `/api/members/${user.url_slug}/question_answers/`,
-      payload: userAnswers,
+      payload: {user_question_answers: userAnswers},
       token: token,
       locale: locale
     }).then(function (response) {
@@ -80,12 +87,7 @@ export default function ClimateMatchRoot() {
     })
   }
 
-  const handleForwardClick = (userQnA) => {
-    // Set user answers for climate match
-    const newUserAnswers = userAnswers
-    newUserAnswers['user_question_answers'].push(userQnA)
-    setUserAnswers(newUserAnswers);
-
+  const handleForwardClick = () => {
     if(step < totalQuestions) {
       setStep(step + 1);
     } else {
@@ -101,9 +103,9 @@ export default function ClimateMatchRoot() {
 
   const handleChangeAnswers = (step, newAnswer) => (
     setUserAnswers([
-      ...userAnswers.splice(0, step), 
-      newAnswer, 
-      ...userAnswers.slice(newAnswer+1, newAnswer.length)
+      ...userAnswers.slice(0, step-1),
+      newAnswer,
+      ...userAnswers.slice(step)
     ])
   )
   return (

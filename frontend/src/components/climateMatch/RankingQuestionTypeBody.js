@@ -1,6 +1,6 @@
 import { Chip, makeStyles, Typography } from "@material-ui/core"
 import CloseIcon from '@material-ui/icons/Close'
-import React, { useState } from "react"
+import React from "react"
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd"
 import ClimateMatchHeadline from "./ClimateMatchHeadline"
 import QuestionButtonBar from "./QuestionButtonBar"
@@ -75,43 +75,38 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function RankingQuestionTypeBody({
-  question, numberOfChoices, answers, onChangeAnswer, handleForwardClick, onBackClick
+  step, question, numberOfChoices, answers, onChangeAnswer, handleForwardClick, onBackClick, userAnswer
 }) {
   const classes = useStyles()
   // This will be used to set weight for each answer
   const weights = {0: 100, 1: 80, 2: 50}
-  const [userChoices, setUserChoices] = useState([])
   const onDragEnd = (result) => {
     if(!result.destination)
       return
     //The user selected an answer!
     if(
       result.destination.droppableId === "selectedAnswers" && 
-      userChoices.length < numberOfChoices &&
+      userAnswer?.length < numberOfChoices &&
       result.source.droppableId !== result.destination.droppableId
     ) {
       const selectedAnswer = answers[result.source.index]
-      const newChoices = userChoices
-      newChoices.push({
+      const newAnswer = userAnswer
+      newAnswer.push({
         'id': selectedAnswer.id,
         'text': selectedAnswer.text,
         'weight': weights[result.destination.index]
       })
-      setUserChoices(newChoices)
+      onChangeAnswer(step, newAnswer)
     }
   }
 
   const onRemoveAnswer = (event, index) => {
     event.preventDefault();
-    setUserChoices(userChoices.filter((choice, curChoiceIndex) => curChoiceIndex !== index));
+    onChangeAnswer(step, userAnswer.filter((choice, curChoiceIndex) => curChoiceIndex !== index));
   }
 
   const onForwardClick = () => {
-    handleForwardClick({
-      'question_id': question.id, 'answers': userChoices,
-      'predefined_answer_id': null, 'answer_type': question.answer_type
-    })
-    setUserChoices([])
+    handleForwardClick()
   }
 
   
@@ -136,12 +131,12 @@ export default function RankingQuestionTypeBody({
                       <div key={i} className={classes.selectedAnswerContainer}>
                         <span className={classes.choiceRankText}>{i+1}.</span>
                         {
-                          userChoices?.length >= i+1 ? (    
+                          userAnswer?.length >= i+1 ? (    
                             <Draggable key={i} draggableId={"draggable_choice" + i} index={i}>
                               {(provided) => (  
                                 <>                      
                                   <Chip
-                                    label={userChoices[i].text}
+                                    label={userAnswer[i].text}
                                     className={classes.possibleAnswerChip}
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
@@ -183,7 +178,7 @@ export default function RankingQuestionTypeBody({
                           key={a.id} 
                           draggableId={"draggable" + a.id} 
                           index={index}
-                          isDragDisabled={userChoices.map(c=>c.id).includes(a.id)}
+                          isDragDisabled={userAnswer.map(c=>c.id).includes(a.id)}
                         >
                           {(provided) => {
                             return (
@@ -193,7 +188,7 @@ export default function RankingQuestionTypeBody({
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                disabled={userChoices.map(c=>c.id).includes(a.id)}
+                                disabled={userAnswer.map(c=>c.id).includes(a.id)}
                               />
                             )
                           }}                    
