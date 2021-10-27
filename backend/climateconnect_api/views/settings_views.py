@@ -56,6 +56,7 @@ class UserAccountSettingsView(APIView):
             'email_on_comment_on_your_idea',
             'email_on_reply_to_your_comment',
             'email_on_new_project_follower',
+            'email_on_new_project_like',
             'email_on_mention',
             'email_on_idea_join'
         ]
@@ -78,6 +79,8 @@ class UserAccountSettingsView(APIView):
                 'email_on_reply_to_your_comment']
             user.user_profile.email_on_new_project_follower = request.data[
                 'email_on_new_project_follower']
+            user.user_profile.email_on_new_project_like = request.data[
+                'email_on_new_project_like']    
             user.user_profile.email_on_comment_on_your_idea = request.data[
                 'email_on_comment_on_your_idea']
             user.user_profile.email_on_idea_join = request.data['email_on_idea_join']
