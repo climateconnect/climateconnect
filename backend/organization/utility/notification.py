@@ -121,7 +121,7 @@ def create_project_like_notification(project_like):
         project=project_like.project).values('user')
     for member in project_team:
         if not member['user'] == project_like.user.id:
-            user = User.objects.filter(id=member['user'])[0]
+            user = User.objects.get(id=member['user'])
             create_user_notification(user, notification)
             send_project_like_email(user, project_like, notification) 
 
