@@ -28,7 +28,6 @@ export default function ClimateMatchQuestion({
   const question = questions.find(q => q.step === step)
   const classes = useStyles({image: getImageUrl(question.image)})
   const answers = question.answers;
-  console.log(userAnswers);
 
   return (
     <div className={classes.root}>
