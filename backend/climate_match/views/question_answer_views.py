@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 
@@ -18,7 +18,8 @@ STATIC_ANSWER_TYPE = ['answer']
 
 
 class QuestionAnswerView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
+
     def get(self, request, format=None):
         questions = Question.objects.all()
         serializer = QuestionAnswerSerializer(questions, many=True)
