@@ -4,18 +4,18 @@ import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import LoadingContext from "../context/LoadingContext";
 
-const useStyles = makeStyles(theme => ({
-  spinner: props => ({
+const useStyles = makeStyles((theme) => ({
+  spinner: (props) => ({
     marginTop: props.noMarginTop ? 0 : "48px",
-    color: props.color ? props.color : "default"
+    color: props.color ? props.color : "default",
   }),
   text: {
     marginTop: theme.spacing(2),
-    textAlign: "center"
+    textAlign: "center",
   },
   progressAndMessageContainer: {
-    textAlign: "center"
-  }
+    textAlign: "center",
+  },
 }));
 
 /**
@@ -23,16 +23,29 @@ const useStyles = makeStyles(theme => ({
  * for search and filtering use cases. Uses a global loading context
  * to determine if the spinnner should be rendered.
  */
-const LoadingSpinner = ({ isLoading = false, className, color, noMarginTop, message, messageVariant }) => {
-  const classes = useStyles({color: color, noMarginTop: noMarginTop});
+const LoadingSpinner = ({
+  isLoading = false,
+  className,
+  color,
+  noMarginTop,
+  message,
+  messageVariant,
+}) => {
+  const classes = useStyles({ color: color, noMarginTop: noMarginTop });
 
   // A short-circuit isLoading prop will bypass the loading context.
   if (isLoading) {
     return (
-      <Grid direction="column" container justify="center" alignContent="center" className={className}>
+      <Grid
+        direction="column"
+        container
+        justify="center"
+        alignContent="center"
+        className={className}
+      >
         <div className={classes.progressAndMessageContainer}>
-          <CircularProgress className={classes.spinner} /> 
-          { message && <Typography className={classes.text}>{message}</Typography> }       
+          <CircularProgress className={classes.spinner} />
+          {message && <Typography className={classes.text}>{message}</Typography>}
         </div>
       </Grid>
     );

@@ -9,8 +9,8 @@ const climateMatchStyles = (theme) => ({
     width: "100%",
     cursor: "pointer",
     "&:hover": {
-      background: "#89d9d2"
-    }
+      background: "#89d9d2",
+    },
   },
 });
 

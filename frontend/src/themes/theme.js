@@ -42,7 +42,7 @@ const coreTheme = createMuiTheme({
     climateMatch: {
       fontFamily: "flood-std, sans-serif",
       fontWeight: 300,
-    }
+    },
   },
 });
 

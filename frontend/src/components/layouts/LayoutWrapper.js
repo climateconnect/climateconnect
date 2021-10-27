@@ -3,7 +3,7 @@ import {
   Snackbar,
   SnackbarContent,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import Head from "next/head";
@@ -16,7 +16,6 @@ import FeedbackButton from "../feedback/FeedbackButton";
 import CookieBanner from "../general/CookieBanner";
 import CloseSnackbarAction from "../snackbarActions/CloseSnackbarAction";
 import LogInAction from "../snackbarActions/LogInAction";
-
 
 const useStyles = makeStyles((theme) => ({
   leaveSpaceForFooter: {
@@ -131,7 +130,7 @@ export default function LayoutWrapper({
     showFeedbackMessage: showFeedbackMessage,
     handleUpdateHash: handleUpdateHash,
   };
-  console.log(useFloodStdFont)
+  console.log(useFloodStdFont);
   return (
     <>
       <Head>
@@ -140,9 +139,7 @@ export default function LayoutWrapper({
           href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800"
           rel="stylesheet"
         />
-        {useFloodStdFont && (
-          <link rel="stylesheet" href="https://use.typekit.net/hoy3dgi.css"/>
-        )}
+        {useFloodStdFont && <link rel="stylesheet" href="https://use.typekit.net/hoy3dgi.css" />}
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
