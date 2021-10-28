@@ -19,7 +19,8 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
         model = Question
         fields = (
 			'id', 'text', 'answer_type',
-			'image', 'step', 'number_of_choices', 'answers'
+			'image', 'step', 'number_of_choices', 'answers',
+            'minimum_choices_required'
 		)
 
     def get_text(self, obj: Question) -> str:

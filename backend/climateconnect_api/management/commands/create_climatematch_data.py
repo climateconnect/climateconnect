@@ -187,7 +187,8 @@ class Command(BaseCommand):
                 'translations': {
                     'de': "Möchtest du dich mit bestimmten Fähigkeiten einbringen?"
                 },
-                'number_of_choices': 3
+                'number_of_choices': 3,
+                'minimum_choices_required': 0
             },
         ]
         for question in questions:
@@ -202,7 +203,9 @@ class Command(BaseCommand):
                     answer_type=answer_content_type
                 )
                 if "number_of_choices" in question:
-                    question_in_db.number_of_choices=question['number_of_choices']
+                    question_in_db.number_of_choices = question['number_of_choices']
+                    if "minimum_choices" in question:
+                        question_in_db.minimum_choices = question['minimum_choices']
                     question_in_db.save()
                 print("inserted question #{}".format(question['step']))
                 if "translations" in question:

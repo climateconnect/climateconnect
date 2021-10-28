@@ -69,6 +69,14 @@ class Question(models.Model):
 		blank=True
 	)
 
+	minimum_choices_required = models.IntegerField(
+		help_text="How many choices does the user have to select to be able to go forward?",
+		verbose_name="Minimum choices required",
+		null=True,
+		blank=True,
+		default=1
+	)
+
 	class Meta:
 		verbose_name = "Question"
 		verbose_name_plural = "Questions"
