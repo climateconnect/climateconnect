@@ -64,6 +64,8 @@ export default function ProjectOverview({
   initiallyCaughtFollowers,
   initiallyCaughtLikes,
   toggleShowLikes,
+  mediumScreen,
+  largeScreen,
 }) {
   const classes = useStyles();
 
@@ -90,6 +92,8 @@ export default function ProjectOverview({
           likes={likes}
           toggleShowLikes={toggleShowLikes}
           likingChangePending={likingChangePending}
+          mediumScreen={mediumScreen}
+          largeScreen={largeScreen}
         />
       )}
       <ProjectFollowersDialog
@@ -176,6 +180,8 @@ function LargeScreenOverview({
   likes,
   toggleShowLikes,
   likingChangePending,
+  mediumScreen,
+  largeScreen,
 }) {
   const classes = useStyles();
   return (
@@ -231,6 +237,9 @@ function LargeScreenOverview({
               likes={likes}
               toggleShowLikes={toggleShowLikes}
               likingChangePending={likingChangePending}
+              mediumScreen={mediumScreen}
+              largeScreen={largeScreen}
+              hasAdminPermissions={hasAdminPermissions}
             />
             <FollowButton
               isUserFollowing={isUserFollowing}
@@ -240,6 +249,7 @@ function LargeScreenOverview({
               toggleShowFollowers={toggleShowFollowers}
               followingChangePending={followingChangePending}
               texts={texts}
+              largeScreen={largeScreen}
             />
             {!hasAdminPermissions && (
               <ContactCreatorButton

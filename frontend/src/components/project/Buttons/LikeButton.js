@@ -4,16 +4,19 @@ import React from "react";
 import LikeIcon from "./LikeIcon";
 
 const useStyles = makeStyles((theme) => ({
-  largeLikeButtonContainer: {
-    marginLeft: theme.spacing(0.25),
-    marginRight: theme.spacing(0.25),
-  },
-  largeLikeButton: {
-    height: 40,
-  },
-  likesLink: {
+  largeScreenButtonContainer: (props) => ({
+    display: "inline-flex",
+    flexDirection: props.displayNextToButton,
+    alignItems: "center",
+  }),
+  likesLink: (props) => ({
     cursor: "pointer",
     textAlign: "center",
+    marginLeft: theme.spacing(props.addMarginLeft),
+  }),
+  largeLikeButton: {
+    height: 40,
+    maxWidth: 120,
   },
   likeNumber: {
     fontWeight: 700,
@@ -24,19 +27,28 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 18,
     color: theme.palette.secondary.light,
   },
+  mediumScreenIconButton: {
+    height: 40,
+  },
 }));
 
 export default function LikeButton({
   isUserLiking,
   handleToggleLikeProject,
   texts,
+  mediumScreen,
   smallScreen,
   tinyScreen,
   project,
   toggleShowLikes,
   likingChangePending,
+  hasAdminPermissions,
+  largeScreen,
 }) {
-  const classes = useStyles({});
+  const classes = useStyles({
+    displayNextToButton: hasAdminPermissions && largeScreen ? "row" : "column",
+    addMarginLeft: hasAdminPermissions && largeScreen ? 1 : 0,
+  });
   if (smallScreen) {
     return (
       <IconButton
@@ -57,9 +69,35 @@ export default function LikeButton({
         <LikeIcon size={30} color={isUserLiking ? "earth" : "primary"} />
       </IconButton>
     );
+  } else if (mediumScreen && !hasAdminPermissions) {
+    return (
+      <span className={classes.largeScreenButtonContainer}>
+        <IconButton
+          onClick={handleToggleLikeProject}
+          color={isUserLiking ? "secondary" : "primary"}
+          disabled={likingChangePending}
+          className={classes.mediumScreenIconButton}
+        >
+          <LikeIcon size={30} color={isUserLiking ? "earth" : "primary"} />
+        </IconButton>
+        {project.number_of_likes > 0 && (
+          <Link
+            color="secondary"
+            className={classes.likesLink}
+            underline="none"
+            onClick={toggleShowLikes}
+          >
+            <Typography className={classes.likesText}>
+              <span className={classes.likeNumber}>{project.number_of_likes} </span>
+              {project.number_of_likes > 1 ? texts.likes : texts.one_like}
+            </Typography>
+          </Link>
+        )}
+      </span>
+    );
   } else {
     return (
-      <span className={classes.largeLikeButtonContainer}>
+      <span className={classes.largeScreenButtonContainer}>
         <Button
           onClick={handleToggleLikeProject}
           variant="contained"

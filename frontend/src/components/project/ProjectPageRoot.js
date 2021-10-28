@@ -73,8 +73,12 @@ export default function ProjectPageRoot({
 
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+
+  const isMediumScreen = useMediaQuery("(max-width:1100px)");
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const isTinyScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
+  const isLargeScreen = !isMediumScreen && !isNarrowScreen && !isTinyScreen ? true : false;
+  
   const [hash, setHash] = React.useState(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({
     follow: false,
@@ -331,6 +335,7 @@ export default function ProjectPageRoot({
       <ProjectOverview
         project={project}
         smallScreen={isNarrowScreen}
+        mediumScreen={isMediumScreen}
         handleToggleFollowProject={handleToggleFollowProject}
         handleToggleLikeProject={handleToggleLikeProject}
         isUserFollowing={isUserFollowing}
@@ -351,6 +356,7 @@ export default function ProjectPageRoot({
         toggleShowLikes={toggleShowLikes}
         showLikes={showLikes}
         initiallyCaughtLikes={initiallyCaughtLikes}
+        largeScreen={isLargeScreen}
       />
 
       <Container className={classes.noPadding}>

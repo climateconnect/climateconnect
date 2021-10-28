@@ -4,10 +4,16 @@ import { Person } from "@material-ui/icons";
 import React from "react";
 
 const useStyles = makeStyles((theme) => ({
-  followersLink: {
+  followButtonContainer: (props) => ({
+    display: "inline-flex",
+    flexDirection: props.displayNextToButton,
+    alignItems: "center",
+  }),
+  followersLink: (props) => ({
     cursor: "pointer",
     textAlign: "center",
-  },
+    marginLeft: theme.spacing(props.addMarginLeft),
+  }),
   followerNumber: {
     fontWeight: 700,
     color: theme.palette.secondary.main,
@@ -20,8 +26,7 @@ const useStyles = makeStyles((theme) => ({
   followingButton: {
     whiteSpace: "nowrap",
     height: 40,
-    marginLeft: theme.spacing(0.25),
-    marginRight: theme.spacing(0.25),
+    maxWidth: 140,
   },
 }));
 
@@ -35,8 +40,12 @@ export default function FollowButton({
   texts,
   smallScreen,
   tinyScreen,
+  largeScreen,
 }) {
-  const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
+  const classes = useStyles({
+    displayNextToButton: hasAdminPermissions && largeScreen ? "row" : "column",
+    addMarginLeft: hasAdminPermissions && largeScreen ? 1 : 0,
+  });
   if (smallScreen) {
     return (
       <Button
