@@ -13,6 +13,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
   },
+  popper: {
+    zIndex: 25
+  }
 }));
 
 export default function DropDownList({ buttonRef, handleOpen, handleClose, items, open, loadOnClick }) {
@@ -23,7 +26,7 @@ export default function DropDownList({ buttonRef, handleOpen, handleClose, items
   };
 
   return (
-    <Popper open={open} anchorEl={buttonRef.current}>
+    <Popper open={open} anchorEl={buttonRef.current} className={classes.popper}>
       <Paper onMouseEnter={handleOpen} onMouseLeave={handleClose}>
         <MenuList>
           {items?.map((item, index) => (
