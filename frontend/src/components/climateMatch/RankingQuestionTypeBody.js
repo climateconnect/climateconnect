@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(4),
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
-    maxHeight: 500 - theme.spacing(8)
+    maxHeight: 500 - theme.spacing(8),
   },
   headline: {
     marginBottom: theme.spacing(4),
@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.secondary.main,
       borderRadius: 20,
     },
-  }
+  },
 }));
 
 export default function RankingQuestionTypeBody({
@@ -100,7 +100,7 @@ export default function RankingQuestionTypeBody({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const { showFeedbackMessage } = useContext(FeedbackContext);
-  const texts = getTexts({ page: "climatematch", locale: locale });
+  const texts = getTexts({ page: "climatematch", locale: locale, climateMatchQuestion: question });
   // This will be used to set weight for each answer
   const weights = { 0: 100, 1: 80, 2: 50 };
   const onDragEnd = (result) => {
@@ -144,7 +144,7 @@ export default function RankingQuestionTypeBody({
   };
 
   const onForwardClick = () => {
-    if (userAnswer.length === 0) {
+    if (userAnswer.length < question.minimum_choices_required) {
       showFeedbackMessage({
         message: texts.please_choose_at_least_one_answer_to_progress,
         error: true,
@@ -217,7 +217,11 @@ export default function RankingQuestionTypeBody({
         </div>
         <Droppable droppableId="possibleAnswers" isDropDisabled>
           {(provided) => (
-            <div className={`${classes.container} ${classes.answerOptions}`} {...provided.droppableProps} ref={provided.innerRef}>
+            <div
+              className={`${classes.container} ${classes.answerOptions}`}
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
               {answers.map((a, index) => (
                 <div key={a.id} className={classes.possibleAnswerContainer}>
                   <Typography className={classes.listEqualsChar}>=</Typography>

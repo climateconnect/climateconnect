@@ -36,6 +36,7 @@ export default function getTexts({
   idea,
   location,
   filterType,
+  climateMatchQuestion,
 }) {
   // These are the multiple text files for various translations. They're
   // split up to reduce the amount of work required to download
@@ -44,7 +45,7 @@ export default function getTexts({
     account: account_texts,
     activate_email: activate_email,
     chat: chat_texts,
-    climatematch: getClimatematchTexts({ location: location }),
+    climatematch: getClimatematchTexts({ location: location, question: climateMatchQuestion }),
     cookie: cookie_texts,
     communication: getCommunicationTexts(),
     dashboard: getDashboardTexts({ user: user, location: location }),

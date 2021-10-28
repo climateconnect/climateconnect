@@ -1,4 +1,4 @@
-export default function getClimatematchTexts({ location }) {
+export default function getClimatematchTexts({ location, question }) {
   return {
     climate_match_title: {
       en: "ClimateMatch - Find out how you can best get involved in climate action",
@@ -36,8 +36,16 @@ export default function getClimatematchTexts({ location }) {
       de: "Lass uns die Klimakrise gemeinsam anpacken. Viel Spaß!",
     },
     please_choose_at_least_one_answer_to_progress: {
-      en: "Please choose at least one field.",
-      de: "Bitte wähle mindestens ein Thema aus.",
+      en: `Please choose at least ${
+        question?.minimum_choices_required > 1
+          ? question.minimum_choices_required + " options"
+          : " one option"
+      }.`,
+      de: `Bitte wähle mindestens ${
+        question?.minimum_choices_required > 1
+          ? question.minimum_choices_required + " Optionen"
+          : " eine Option"
+      } aus.`,
     },
   };
 }
