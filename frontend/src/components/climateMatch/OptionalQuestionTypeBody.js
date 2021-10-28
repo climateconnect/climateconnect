@@ -44,7 +44,7 @@ export default function OptionalQuestionTypeBody({ question, handleForwardClick,
   const answers = question.answers;
 
   const handleSelectAnswer = (a) => {
-    handleForwardClick(a)
+    handleForwardClick(a);
   };
 
   return (

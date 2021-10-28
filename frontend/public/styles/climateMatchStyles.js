@@ -12,8 +12,8 @@ const climateMatchStyles = (theme) => ({
       background: "#89d9d2",
     },
     "&:focus": {
-      background: theme.palette.primary.light
-    }
+      background: theme.palette.primary.light,
+    },
   },
 });
 

@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     borderColor: "white",
   },
   backIconButton: {
-    color: "white"
+    color: "white",
   },
   forwardButton: {
     height: 40,
@@ -25,20 +25,20 @@ const useStyles = makeStyles((theme) => ({
 
 export default function QuestionButtonBar({ onForwardClick, onBackClick, disableForward }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext)
-  const texts = getTexts({page: "climatematch", locale: locale})
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "climatematch", locale: locale });
   return (
     <div>
-      {disableForward ? 
+      {disableForward ? (
         <Button className={classes.backIconButton} onClick={onBackClick}>
           <ArrowBackIosIcon />
           {texts.back}
         </Button>
-        :
+      ) : (
         <Button variant="outlined" className={classes.backButton} onClick={onBackClick}>
           {texts.back}
         </Button>
-      }
+      )}
       {!disableForward && (
         <LightBigButton className={classes.forwardButton} onClick={onForwardClick}>
           {texts.forward}
