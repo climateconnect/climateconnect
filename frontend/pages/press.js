@@ -6,14 +6,16 @@ import parseHtml from 'html-react-parser'
 import Head from 'next/head'
 import React from "react"
 import WideLayout from '../src/components/layouts/WideLayout'
+import { retrievePage } from "../src/utils/webflow"
 
 export default function Press({bodyContent, headContent}) {
+
   return (
     <>
       <Head>
-          {parseHtml(headContent)}
-        </Head>
-      <WideLayout title="Press" hideHeadline isStaticPage noSpacingBottom>
+        {parseHtml(headContent)}
+      </Head>
+      <WideLayout title="Press" hideHeadline isStaticPage noSpaceBottom>
         <div dangerouslySetInnerHTML={{ __html: bodyContent }} />
       </WideLayout>
     </>
@@ -21,27 +23,12 @@ export default function Press({bodyContent, headContent}) {
 }
 
 export async function getStaticProps(ctx) {
-  // Import modules in here that aren't needed in the component
-  const cheerio = await import(`cheerio`)
-  const axios = (await import(`axios`)).default
-  const WEBFLOW_URL = "https://climateconnect.webflow.io/presse"
-
-  // Fetch HTML
-  const res = await axios(WEBFLOW_URL).catch((err) => {
-    console.error(err)
-  })
-  const html = res.data
-
-  // Parse HTML with Cheerio
-  const $ = cheerio.load(html)
-  const bodyContent = $(`body`).html()
-const headContent = $(`head`).html()
-
-  // Send HTML to component via props
+  const WEBFLOW_URLS = {
+    de: "https://climateconnect.webflow.io/presse",
+    en: "https://climateconnect.webflow.io/press-en"
+  }
+  const props = await retrievePage(WEBFLOW_URLS[ctx.locale])
   return {
-    props: {
-      bodyContent,
-      headContent
-    },
+    props: props,
   }
 }
