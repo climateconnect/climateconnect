@@ -172,6 +172,10 @@ const useStyles = makeStyles((theme) => {
     loggedInPopper: {
       zIndex: 30,
     },
+    normalScreenIcon: {
+      fontSize: 20,
+      marginRight: theme.spacing(0.25)
+    }
   };
 });
 
@@ -497,6 +501,7 @@ function NormalScreenLinks({
                   </DropDownButton>
                 ) : (
                   <Button color="primary" {...buttonProps}>
+                    {link.icon && <link.icon className={classes.normalScreenIcon}/>}
                     {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
                   </Button>
                 )}

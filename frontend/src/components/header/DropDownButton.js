@@ -6,6 +6,10 @@ import DropDownList from "../header/DropDownList";
 const useStyles = makeStyles(theme => ({
   root: {
     position: "relative"
+  },
+  button: {
+    paddingRight: theme.spacing(0.5),
+    paddingLeft: theme.spacing(1.5)
   }
 }))
 
@@ -33,6 +37,7 @@ export default function DropDownButton({buttonProps, options, children}) {
         onMouseEnter={handleShowOptions}
         onMouseLeave={handleHideOptions}
         {...buttonProps} 
+        className={classes.button}
       >
         {children}
         <ArrowDropDownIcon />
