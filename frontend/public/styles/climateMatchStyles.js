@@ -11,6 +11,9 @@ const climateMatchStyles = (theme) => ({
     "&:hover": {
       background: "#89d9d2",
     },
+    "&:focus": {
+      background: theme.palette.primary.light
+    }
   },
 });
 

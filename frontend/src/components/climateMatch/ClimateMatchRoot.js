@@ -90,11 +90,18 @@ export default function ClimateMatchRoot() {
       });
   };
 
-  const handleForwardClick = () => {
+  const handleForwardClick = (answer) => {
+    const newUserAnswers = answer
+      ? [...userAnswers.slice(0, step - 1), answer, ...userAnswers.slice(step)]
+      : userAnswers;
+    if (answer) {
+      setUserAnswers(newUserAnswers);
+    }
     if (step < totalQuestions) {
       setStep(step + 1);
     } else {
-      submitUserQuestionAnswerForClimateMatch(userAnswers, token, locale);
+      const answersToSubmit = answer ? newUserAnswers : userAnswers;
+      submitUserQuestionAnswerForClimateMatch(answersToSubmit, token, locale);
     }
   };
 

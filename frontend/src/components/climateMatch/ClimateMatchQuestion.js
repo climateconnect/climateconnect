@@ -12,16 +12,17 @@ const useStyles = makeStyles((theme) => ({
   },
   imageContainer: (props) => ({
     borderRadius: 30,
-    background: `url('${props.image}')`,
+    backgroundImage: `url('${props.image}')`,
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
     backgroundPositionX: "center",
+    backgroundPositionY: props.questionType === "optional" ? "bottom" : "auto",
     height: 500,
-    minWidth: 300,
+    minWidth: props.questionType === "optional" ? 400 : 300,
   }),
   optionalQuestionImageContainer: {
-    minWidth: 700
-  }
+    minWidth: 700,
+  },
 }));
 
 export default function ClimateMatchQuestion({
@@ -33,31 +34,38 @@ export default function ClimateMatchQuestion({
   onBackClick,
 }) {
   const question = questions.find((q) => q.step === step);
-  const classes = useStyles({ image: getImageUrl(question.image) });
+  const classes = useStyles({
+    image: getImageUrl(question.image),
+    questionType: question.answer_type === "answer" ? "optional" : "ranking",
+  });
   const answers = question.answers;
 
   return (
     <div className={classes.root}>
-      <div
-        className={classes.imageContainer}
-      />
       {question.answer_type === "answer" ? (
-        <OptionalQuestionTypeBody
-          question={question}
-          handleForwardClick={handleForwardClick}
-          onBackClick={onBackClick}
-        />
+        <>
+          <div className={classes.imageContainer} />
+          <OptionalQuestionTypeBody
+            question={question}
+            handleForwardClick={handleForwardClick}
+            onBackClick={onBackClick}
+            userAnswer={userAnswers[step - 1]}
+          />
+        </>
       ) : (
-        <RankingQuestionTypeBody
-          question={question}
-          step={step}
-          numberOfChoices={question.number_of_choices}
-          onChangeAnswer={onChangeAnswer}
-          answers={answers}
-          handleForwardClick={handleForwardClick}
-          onBackClick={onBackClick}
-          userAnswer={userAnswers[step - 1]}
-        />
+        <>
+          <div className={classes.imageContainer} />
+          <RankingQuestionTypeBody
+            question={question}
+            step={step}
+            numberOfChoices={question.number_of_choices}
+            onChangeAnswer={onChangeAnswer}
+            answers={answers}
+            handleForwardClick={handleForwardClick}
+            onBackClick={onBackClick}
+            userAnswer={userAnswers[step - 1]}
+          />
+        </>
       )}
     </div>
   );

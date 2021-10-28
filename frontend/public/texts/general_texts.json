@@ -694,5 +694,9 @@
   "orgs": {
     "en": "Orgs",
     "de": "Orgs"
+  },
+  "forward": {
+    "en": "Forward",
+    "de": "Weiter"
   }
 }
