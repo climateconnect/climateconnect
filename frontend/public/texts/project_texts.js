@@ -252,7 +252,7 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     },
     liked: {
       en: "Liked",
-      de: "Gelikt",
+      de: "Geliked",
     },
     one_like: {
       en: "Like",
