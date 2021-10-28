@@ -24,6 +24,8 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.secondary.light,
   },
   followingButton: {
+    marginLeft: theme.spacing(0.25),
+    marginRight: theme.spacing(0.25),
     whiteSpace: "nowrap",
     height: 40,
     maxWidth: 140,
