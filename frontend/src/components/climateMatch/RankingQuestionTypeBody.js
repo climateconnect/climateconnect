@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(4),
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
+    maxHeight: 500 - theme.spacing(8)
   },
   headline: {
     marginBottom: theme.spacing(4),
@@ -67,6 +68,23 @@ const useStyles = makeStyles((theme) => ({
   selectedAnswers: {
     height: 170,
   },
+  answerOptions: {
+    height: "100%",
+    paddingRight: theme.spacing(1),
+    overflowY: "scroll",
+    ["&::-webkit-scrollbar"]: {
+      display: "block",
+      height: 10,
+    },
+    "&::-webkit-scrollbar-track": {
+      backgroundColor: "rgba(255,255,255,0.1)",
+      borderRadius: 20,
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: theme.palette.secondary.main,
+      borderRadius: 20,
+    },
+  }
 }));
 
 export default function RankingQuestionTypeBody({
@@ -199,7 +217,7 @@ export default function RankingQuestionTypeBody({
         </div>
         <Droppable droppableId="possibleAnswers" isDropDisabled>
           {(provided) => (
-            <div className={classes.container} {...provided.droppableProps} ref={provided.innerRef}>
+            <div className={`${classes.container} ${classes.answerOptions}`} {...provided.droppableProps} ref={provided.innerRef}>
               {answers.map((a, index) => (
                 <div key={a.id} className={classes.possibleAnswerContainer}>
                   <Typography className={classes.listEqualsChar}>=</Typography>
