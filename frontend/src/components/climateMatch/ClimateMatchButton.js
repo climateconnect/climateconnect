@@ -1,14 +1,8 @@
-import { Button, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import React from "react";
+import LightBigButton from "../staticpages/LightBigButton";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    background: theme.palette.primary.light,
-    borderRadius: theme.spacing(4),
-    ["&:hover"]: {
-      background: "#76c2bc",
-    },
-  },
+const useStyles = makeStyles(() => ({
   wide: {
     width: 250,
   },
@@ -17,13 +11,8 @@ const useStyles = makeStyles((theme) => ({
 export default function ClimateMatchButton({ children, className, wide, onClick }) {
   const classes = useStyles();
   return (
-    <Button
-      onClick={onClick}
-      size="large"
-      variant="contained"
-      className={`${classes.root} ${wide && classes.wide} ${className}`}
-    >
+    <LightBigButton className={`${wide && classes.wide} ${className}`} onClick={onClick}>
       {children}
-    </Button>
+    </LightBigButton>
   );
 }
