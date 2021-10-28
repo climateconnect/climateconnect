@@ -1,7 +1,7 @@
 import { Link, makeStyles, MenuItem, MenuList, Paper, Popper } from "@material-ui/core";
 import React, { useContext } from "react";
-import { getLocalePrefix } from "../../../../public/lib/apiOperations";
-import UserContext from "../../context/UserContext";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   cityHubOption: {
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function DropDownList({ buttonRef, handleOpen, handleClose, hubs, open }) {
+export default function DropDownList({ buttonRef, handleOpen, handleClose, items, open, loadOnClick }) {
   const classes = useStyles();
   const { locale, startLoading } = useContext(UserContext);
   const handleClickLink = () => {
@@ -26,14 +26,14 @@ export default function DropDownList({ buttonRef, handleOpen, handleClose, hubs,
     <Popper open={open} anchorEl={buttonRef.current}>
       <Paper onMouseEnter={handleOpen} onMouseLeave={handleClose}>
         <MenuList>
-          {hubs?.map((h) => (
+          {items?.map((item, index) => (
             <Link
-              key={h.url_slug}
-              href={`${getLocalePrefix(locale)}/hubs/${h.url_slug}/`}
-              onClick={handleClickLink}
+              key={index}
+              href={`${getLocalePrefix(locale)}${item.href}`}
+              onClick={loadOnClick && handleClickLink}
             >
               <MenuItem component="button" className={classes.cityHubOption}>
-                {h.name}
+                {item.text}
               </MenuItem>
             </Link>
           ))}

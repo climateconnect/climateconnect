@@ -17,7 +17,7 @@ import {
   Paper,
   Popper,
   SwipeableDrawer,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -42,6 +42,7 @@ import theme from "../../themes/theme";
 import Notification from "../communication/notifications/Notification";
 import NotificationsBox from "../communication/notifications/NotificationsBox";
 import UserContext from "../context/UserContext";
+import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 
 const useStyles = makeStyles((theme) => {
@@ -184,6 +185,8 @@ const getLinks = (path_to_redirect, texts) => [
     href: "/about",
     text: texts.about,
     iconForDrawer: InfoIcon,
+    showStaticLinksInDropdown: true,
+    hideOnStaticPages: true
   },
   {
     href: "/donate",
@@ -192,6 +195,7 @@ const getLinks = (path_to_redirect, texts) => [
     isOutlinedInHeader: true,
     icon: FavoriteBorderIcon,
     vanillaIfLoggedOut: true,
+    hideOnStaticPages: true
   },
   {
     href: "/share",
@@ -248,6 +252,10 @@ const getStaticPageLinks = (texts) => [
     href: "/faq",
     text: texts.faq,
   },
+  {
+    href: "/press",
+    text: texts.press
+  }
 ];
 
 const getLoggedInLinks = ({ loggedInUser, texts }) => {
@@ -365,6 +373,7 @@ export default function Header({
             LINKS={LINKS}
             texts={texts}
             localePrefix={localePrefix}
+            isStaticPage={isStaticPage}
           />
         )}
       </Container>
@@ -416,9 +425,11 @@ function NormalScreenLinks({
   LINKS,
   texts,
   localePrefix,
+  isStaticPage,
 }) {
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
   return (
     <Box className={classes.linkContainer}>
       {LINKS.filter(
@@ -438,7 +449,7 @@ function NormalScreenLinks({
         });
         const Icon = link.icon;
 
-        if (!(isMediumScreen && link.hideOnMediumScreen))
+        if (!(isMediumScreen && link.hideOnMediumScreen) && !(isStaticPage && link.hideOnStaticPages))
           return (
             <React.Fragment key={index}>
               <span className={classes.menuLink}>
@@ -480,6 +491,10 @@ function NormalScreenLinks({
                       </NotificationsBox>
                     )}
                   </>
+                ) : link?.showStaticLinksInDropdown ? (
+                  <DropDownButton options={STATIC_PAGE_LINKS} buttonProps={{...buttonProps}}>
+                    {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
+                  </DropDownButton>
                 ) : (
                   <Button color="primary" {...buttonProps}>
                     {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}

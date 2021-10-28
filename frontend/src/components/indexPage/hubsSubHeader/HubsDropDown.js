@@ -1,7 +1,7 @@
 import { Button, makeStyles } from "@material-ui/core";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import React, { useRef, useState } from "react";
-import DropDownList from "./DropDownList";
+import DropDownList from "../../header/DropDownList";
 
 const useStyles = makeStyles((theme) => ({
   hubsDropDownButton: {
@@ -54,7 +54,10 @@ export default function HubsDropDown({ hubs, label, isNarrowScreen }) {
       <DropDownList
         buttonRef={buttonRef}
         handleOpen={handleOpen}
-        hubs={hubs}
+        items={hubs.map(h => ({
+          href: `/hubs/${h.url_slug}/`,
+          text: h.name
+        }))}
         handleClose={handleClose}
         open={open}
       />
