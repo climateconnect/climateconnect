@@ -14,7 +14,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubsDropDown({ open, hubs, label, isNarrowScreen, onToggleOpen, onOpen, onClose }) {
+export default function HubsDropDown({
+  open,
+  hubs,
+  label,
+  isNarrowScreen,
+  onToggleOpen,
+  onOpen,
+  onClose,
+}) {
   const classes = useStyles();
   const buttonRef = useRef(null);
 
@@ -25,10 +33,10 @@ export default function HubsDropDown({ open, hubs, label, isNarrowScreen, onTogg
   }
 
   const handleBlur = () => {
-    if(isNarrowScreen) {
-      onClose()
+    if (isNarrowScreen) {
+      onClose();
     }
-  }
+  };
 
   return (
     <span onBlur={handleBlur}>
@@ -45,9 +53,9 @@ export default function HubsDropDown({ open, hubs, label, isNarrowScreen, onTogg
       <DropDownList
         buttonRef={buttonRef}
         handleOpen={onOpen}
-        items={hubs.map(h => ({
+        items={hubs.map((h) => ({
           href: `/hubs/${h.url_slug}/`,
-          text: h.name
+          text: h.name,
         }))}
         handleClose={onClose}
         open={open}

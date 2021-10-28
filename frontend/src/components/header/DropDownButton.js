@@ -3,40 +3,38 @@ import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import React, { useRef, useState } from "react";
 import DropDownList from "../header/DropDownList";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    position: "relative"
+    position: "relative",
   },
   button: {
     paddingRight: theme.spacing(0.5),
-    paddingLeft: theme.spacing(1.5)
-  }
-}))
+    paddingLeft: theme.spacing(1.5),
+  },
+}));
 
-export default function DropDownButton({buttonProps, options, children}) {
-  const classes = useStyles()
-  const [showOptions, setShowOptions] = useState(false)
-  const buttonRef = useRef(null)
-  
+export default function DropDownButton({ buttonProps, options, children }) {
+  const classes = useStyles();
+  const [showOptions, setShowOptions] = useState(false);
+  const buttonRef = useRef(null);
+
   const handleShowOptions = (e) => {
-    e.preventDefault()
-    setShowOptions(true)
-  }
+    e.preventDefault();
+    setShowOptions(true);
+  };
 
   const handleHideOptions = () => {
-    setShowOptions(false)
-  }
-  
+    setShowOptions(false);
+  };
+
   return (
-    <div 
-      className={classes.root}
-    >
-      <Button 
-        color="primary" 
+    <div className={classes.root}>
+      <Button
+        color="primary"
         ref={buttonRef}
         onMouseEnter={handleShowOptions}
         onMouseLeave={handleHideOptions}
-        {...buttonProps} 
+        {...buttonProps}
         className={classes.button}
       >
         {children}
@@ -50,5 +48,5 @@ export default function DropDownButton({buttonProps, options, children}) {
         open={showOptions}
       />
     </div>
-  )
+  );
 }

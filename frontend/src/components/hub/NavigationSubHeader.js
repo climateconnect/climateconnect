@@ -24,15 +24,15 @@ const useStyles = makeStyles((theme) => ({
   flexContainer: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
   },
   rightSideContainer: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
   },
   allProjectsLink: {
-    marginRight: theme.spacing(1.5)
-  }
+    marginRight: theme.spacing(1.5),
+  },
 }));
 
 export default function NavigationSubHeader({ hubName, allHubs }) {
@@ -61,9 +61,14 @@ export default function NavigationSubHeader({ hubName, allHubs }) {
               )}
             </>
           )}
-        </Typography>        
+        </Typography>
         <Typography component="div" className={classes.rightSideContainer}>
-          <HubLinks hubs={allHubs} locale={locale} isNarrowScreen={isNarrowScreen} showAllProjectsButton/>
+          <HubLinks
+            hubs={allHubs}
+            locale={locale}
+            isNarrowScreen={isNarrowScreen}
+            showAllProjectsButton
+          />
         </Typography>
       </Container>
     </div>

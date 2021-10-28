@@ -17,7 +17,7 @@ import {
   Paper,
   Popper,
   SwipeableDrawer,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -174,8 +174,8 @@ const useStyles = makeStyles((theme) => {
     },
     normalScreenIcon: {
       fontSize: 20,
-      marginRight: theme.spacing(0.25)
-    }
+      marginRight: theme.spacing(0.25),
+    },
   };
 });
 
@@ -190,7 +190,7 @@ const getLinks = (path_to_redirect, texts) => [
     text: texts.about,
     iconForDrawer: InfoIcon,
     showStaticLinksInDropdown: true,
-    hideOnStaticPages: true
+    hideOnStaticPages: true,
   },
   {
     href: "/donate",
@@ -199,7 +199,7 @@ const getLinks = (path_to_redirect, texts) => [
     isOutlinedInHeader: true,
     icon: FavoriteBorderIcon,
     vanillaIfLoggedOut: true,
-    hideOnStaticPages: true
+    hideOnStaticPages: true,
   },
   {
     href: "/share",
@@ -258,8 +258,8 @@ const getStaticPageLinks = (texts) => [
   },
   {
     href: "/press",
-    text: texts.press
-  }
+    text: texts.press,
+  },
 ];
 
 const getLoggedInLinks = ({ loggedInUser, texts }) => {
@@ -453,7 +453,10 @@ function NormalScreenLinks({
         });
         const Icon = link.icon;
 
-        if (!(isMediumScreen && link.hideOnMediumScreen) && !(isStaticPage && link.hideOnStaticPages))
+        if (
+          !(isMediumScreen && link.hideOnMediumScreen) &&
+          !(isStaticPage && link.hideOnStaticPages)
+        )
           return (
             <React.Fragment key={index}>
               <span className={classes.menuLink}>
@@ -496,12 +499,12 @@ function NormalScreenLinks({
                     )}
                   </>
                 ) : link?.showStaticLinksInDropdown ? (
-                  <DropDownButton options={STATIC_PAGE_LINKS} buttonProps={{...buttonProps}}>
+                  <DropDownButton options={STATIC_PAGE_LINKS} buttonProps={{ ...buttonProps }}>
                     {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
                   </DropDownButton>
                 ) : (
                   <Button color="primary" {...buttonProps}>
-                    {link.icon && <link.icon className={classes.normalScreenIcon}/>}
+                    {link.icon && <link.icon className={classes.normalScreenIcon} />}
                     {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
                   </Button>
                 )}

@@ -13,9 +13,15 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function HubLinks({ hubs, locale, linkClassName, isNarrowScreen, showAllProjectsButton }) {
+export default function HubLinks({
+  hubs,
+  locale,
+  linkClassName,
+  isNarrowScreen,
+  showAllProjectsButton,
+}) {
   const classes = useStyles();
-  const [open, setOpen] = useState({"sectorHubs": false, "cityHubs": false})
+  const [open, setOpen] = useState({ sectorHubs: false, cityHubs: false });
   const texts = getTexts({ page: "navigation", locale: locale });
   const sectorHubs = hubs.filter((h) => h.hub_type === "sector hub");
   const locationHubs = hubs.filter((h) => h.hub_type === "location hub");
@@ -25,55 +31,60 @@ export default function HubLinks({ hubs, locale, linkClassName, isNarrowScreen, 
     e.preventDefault();
     const newOpen = {
       ...open,
-      [type]: true
-    }
-    for(const key of Object.keys(open)) {
-      if(key !== type) {
-        newOpen[key] = false
+      [type]: true,
+    };
+    for (const key of Object.keys(open)) {
+      if (key !== type) {
+        newOpen[key] = false;
       }
     }
-    setOpen(newOpen)
+    setOpen(newOpen);
   };
 
   const handleClose = (type) => {
-    setOpen({...open, [type]: false});
+    setOpen({ ...open, [type]: false });
   };
 
   const handleToggleOpen = (e, type) => {
     e.preventDefault();
     const newOpen = {
       ...open,
-      [type]: !open[type]
-    }
-    if(!open[type]) {
-      for(const key of Object.keys(open)) {
-        if(key !== type) {
-          newOpen[key] = false
+      [type]: !open[type],
+    };
+    if (!open[type]) {
+      for (const key of Object.keys(open)) {
+        if (key !== type) {
+          newOpen[key] = false;
         }
       }
     }
-    setOpen(newOpen)
+    setOpen(newOpen);
   };
   return (
     <div className={isNarrowScreen && classes.spaceAround}>
       {!isMediumScreen &&
         (showAllProjectsButton ? (
-          <Link className={`${classes.link} ${classes.allProjectsLink}`} href={getLocalePrefix(locale) + "/browse"}>
+          <Link
+            className={`${classes.link} ${classes.allProjectsLink}`}
+            href={getLocalePrefix(locale) + "/browse"}
+          >
             {texts.all_projects}
           </Link>
-        ): sectorHubs.slice(0, 3).map((hub) => (
-          <Link
-            className={linkClassName}
-            key={hub.url_slug}
-            href={`${getLocalePrefix(locale)}/hubs/${hub.url_slug}`}
-          >
-            {hub.name}
-          </Link>
-        )))}
+        ) : (
+          sectorHubs.slice(0, 3).map((hub) => (
+            <Link
+              className={linkClassName}
+              key={hub.url_slug}
+              href={`${getLocalePrefix(locale)}/hubs/${hub.url_slug}`}
+            >
+              {hub.name}
+            </Link>
+          ))
+        ))}
       {sectorHubs?.length > 3 && (
-        <HubsDropDown 
-          hubs={sectorHubs} 
-          label="SectorHubs" 
+        <HubsDropDown
+          hubs={sectorHubs}
+          label="SectorHubs"
           isNarrowScreen={isNarrowScreen}
           onToggleOpen={(e) => handleToggleOpen(e, "sectorHubs")}
           open={open["sectorHubs"]}
@@ -82,10 +93,10 @@ export default function HubLinks({ hubs, locale, linkClassName, isNarrowScreen, 
         />
       )}
       {locationHubs?.length > 0 && (
-        <HubsDropDown 
-          hubs={locationHubs} 
-          label="CityHubs" 
-          isNarrowScreen={isNarrowScreen} 
+        <HubsDropDown
+          hubs={locationHubs}
+          label="CityHubs"
+          isNarrowScreen={isNarrowScreen}
           onToggleOpen={(e) => handleToggleOpen(e, "cityHubs")}
           open={open["cityHubs"]}
           onOpen={(e) => handleOpen(e, "cityHubs")}

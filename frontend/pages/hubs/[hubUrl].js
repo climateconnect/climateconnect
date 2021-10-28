@@ -7,7 +7,7 @@ import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions
+  getStatusOptions,
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -85,7 +85,7 @@ export async function getServerSideProps(ctx) {
         project_statuses: project_statuses,
       },
       initialLocationFilter: location_filtered_by,
-      sectorHubs: allHubs.filter(h=>h.hub_type === "sector hub"),
+      sectorHubs: allHubs.filter((h) => h.hub_type === "sector hub"),
       allHubs: allHubs,
       initialIdeaUrlSlug: ideaToOpen ? encodeURIComponent(ideaToOpen) : null,
     },

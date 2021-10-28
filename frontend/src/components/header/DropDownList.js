@@ -14,11 +14,18 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   popper: {
-    zIndex: 25
-  }
+    zIndex: 25,
+  },
 }));
 
-export default function DropDownList({ buttonRef, handleOpen, handleClose, items, open, loadOnClick }) {
+export default function DropDownList({
+  buttonRef,
+  handleOpen,
+  handleClose,
+  items,
+  open,
+  loadOnClick,
+}) {
   const classes = useStyles();
   const { locale, startLoading } = useContext(UserContext);
   const handleClickLink = () => {
