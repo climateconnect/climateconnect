@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
   smallScreenHeader: {
     fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))",
+    paddingBottom: theme.spacing(2),
   },
 }));
 
