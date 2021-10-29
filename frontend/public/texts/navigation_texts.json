@@ -11,6 +11,10 @@
     "en": "About",
     "de": "Über uns"
   },
+  "press": {
+    "en": "Press",
+    "de": "Presse"
+  },
   "notifications": {
     "en": "Notifications",
     "de": "Benachrichtigungen"
@@ -66,5 +70,9 @@
   "all_hubs": {
     "en": "All Hubs",
     "de": "Alle Hubs"
+  },
+  "all_projects": {
+    "en": "All Projects",
+    "de": "Alle Projekte"
   }
 }
