@@ -1,6 +1,8 @@
 import { Container, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { Person } from "@material-ui/icons";
 import ExploreIcon from "@material-ui/icons/Explore";
+import FavoriteIcon from "@material-ui/icons/Favorite";
 import LanguageIcon from "@material-ui/icons/Language";
 import PlaceIcon from "@material-ui/icons/Place";
 import React from "react";
@@ -25,6 +27,21 @@ const useStyles = makeStyles((theme) => ({
   smallScreenHeader: {
     fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))",
     paddingBottom: theme.spacing(2),
+  },
+  rootLinksContainer: {
+    display: "flex",
+    justifyContent: "space-around",
+    paddingTop: theme.spacing(0.5),
+    paddingBottom: theme.spacing(1),
+  },
+  linkContainer: {
+    display: "flex",
+    cursor: "pointer",
+    marginRight: theme.spacing(1),
+  },
+  linkIcon: {
+    marginRight: theme.spacing(1),
+    color: theme.palette.primary.main,
   },
 }));
 
@@ -74,7 +91,12 @@ export default function ProjectOverview({
   return (
     <Container className={classes.projectOverview}>
       {smallScreen ? (
-        <SmallScreenOverview project={project} texts={texts} />
+        <SmallScreenOverview
+          project={project}
+          texts={texts}
+          toggleShowFollowers={toggleShowFollowers}
+          toggleShowLikes={toggleShowLikes}
+        />
       ) : (
         <LargeScreenOverview
           project={project}
@@ -118,7 +140,7 @@ export default function ProjectOverview({
   );
 }
 
-function SmallScreenOverview({ project, texts }) {
+function SmallScreenOverview({ project, texts, toggleShowFollowers, toggleShowLikes }) {
   const classes = useStyles();
   return (
     <>
@@ -159,8 +181,47 @@ function SmallScreenOverview({ project, texts }) {
             {project.tags.join(", ")}
           </Typography>
         </div>
+        <div className={classes.projectInfoEl}>
+          <InteractionCountLinks
+            project={project}
+            texts={texts}
+            toggleShowFollowers={toggleShowFollowers}
+            toggleShowLikes={toggleShowLikes}
+          />
+        </div>
+        <div />
       </div>
     </>
+  );
+}
+
+function InteractionCountLinks({ project, texts, toggleShowFollowers, toggleShowLikes }) {
+  const classes = useStyles();
+  return (
+    <div className={classes.rootLinksContainer}>
+      {project.number_of_likes > 0 && (
+        <div className={classes.linkContainer}>
+          <FavoriteIcon className={classes.linkIcon} />
+          <Link color="secondary" underline="none" onClick={toggleShowLikes}>
+            <Typography>
+              <span>{project.number_of_likes} </span>
+              {project.number_of_likes > 1 ? texts.likes : texts.one_like}
+            </Typography>
+          </Link>
+        </div>
+      )}
+      {project.number_of_followers > 0 && (
+        <div className={classes.linkContainer}>
+          <Person className={classes.linkIcon} />
+          <Link color="secondary" underline="none" onClick={toggleShowFollowers}>
+            <Typography>
+              <span>{project.number_of_followers} </span>
+              {project.number_of_followers > 1 ? texts.followers : texts.follower}
+            </Typography>
+          </Link>
+        </div>
+      )}
+    </div>
   );
 }
 
