@@ -325,7 +325,7 @@ export default function ProjectPageRoot({
     if (!gotParams) {
       const params = getParams(window.location.href);
       if (params.show_followers && !showFollowers) toggleShowFollowers();
-      if (params.likes && !showLikes) toggleShowLikes();
+      if (params.show_likes && !showLikes) toggleShowLikes();
       setGotParams(true);
     }
   });
