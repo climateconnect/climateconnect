@@ -38,9 +38,8 @@ def send_email(
     should_send_email_setting,
     notification
 ):
-    print("sending mail")
-    #if not check_send_email_notification(user):
-    #    return
+    if not check_send_email_notification(user):
+        return
     if should_send_email_setting:
         try:
             user_profile = UserProfile.objects.get(user=user)
@@ -50,7 +49,6 @@ def send_email(
                 return
         except UserProfile.DoesNotExist:
             print("there is no user profile (send_email)")
-    print("actually sending mail")        
     lang_code = get_user_lang_code(user)
     subject = subjects_by_language[lang_code]
     template_id = get_template_id(
@@ -84,7 +82,6 @@ def send_email(
 
     try:
         mail = mailjet_send_api.send.create(data=data)
-        print(mail)
         if notification:
             EmailNotification.objects.create(
                 user=user,
@@ -93,8 +90,6 @@ def send_email(
             )
         return mail
     except Exception as ex:
-        print("did not log")
-        print(ex)
         logger.error("%s: Error sending email: %s" % (
             send_email.__name__, ex
         ))
