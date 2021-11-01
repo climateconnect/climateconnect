@@ -78,7 +78,7 @@ export default function ProjectPageRoot({
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const isTinyScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
   const isLargeScreen = !isMediumScreen && !isNarrowScreen && !isTinyScreen ? true : false;
-  
+
   const [hash, setHash] = React.useState(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({
     follow: false,

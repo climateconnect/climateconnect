@@ -10,7 +10,7 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import React, { useContext } from "react";
 import ReactTimeago from "react-timeago";
