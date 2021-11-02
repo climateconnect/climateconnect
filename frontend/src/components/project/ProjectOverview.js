@@ -1,8 +1,6 @@
 import { Container, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Person } from "@material-ui/icons";
 import ExploreIcon from "@material-ui/icons/Explore";
-import FavoriteIcon from "@material-ui/icons/Favorite";
 import LanguageIcon from "@material-ui/icons/Language";
 import PlaceIcon from "@material-ui/icons/Place";
 import React from "react";

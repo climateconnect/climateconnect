@@ -41,7 +41,7 @@ export default function FollowButton({
   screenSize,
   numberOfFollowers,
 }) {
-  const classes = useStyles({hasAdminPermissions: hasAdminPermissions});
+  const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   if (screenSize.belowSmall && !screenSize.belowTiny) {
     return (
       <Button
