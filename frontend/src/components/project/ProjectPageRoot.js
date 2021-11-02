@@ -56,21 +56,17 @@ export default function ProjectPageRoot({
   token,
   setMessage,
   isUserFollowing,
-  setIsUserFollowing,
   isUserLiking,
-  setIsUserLiking,
   user,
   setCurComments,
   followingChangePending,
-  setFollowingChangePending,
   likingChangePending,
-  setLikingChangePending,
   texts,
   projectAdmin,
   numberOfLikes,
-  setNumberOfLikes,
   numberOfFollowers,
-  setNumberOfFollowers,
+  handleLike,
+  handleFollow,
 }) {
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
@@ -223,8 +219,7 @@ export default function ProjectPageRoot({
 
   const toggleFollowProject = () => {
     const new_value = !isUserFollowing;
-    setIsUserFollowing(new_value);
-    setFollowingChangePending(true);
+    handleFollow(new_value, false, true);
     apiRequest({
       method: "post",
       url: "/api/projects/" + project.url_slug + "/set_follow/",
@@ -233,9 +228,7 @@ export default function ProjectPageRoot({
       locale: locale,
     })
       .then(function (response) {
-        setIsUserFollowing(response.data.following);
-        updateFollowCount(response.data.following);
-        setFollowingChangePending(false);
+        handleFollow(response.data.following, true, false);
         setMessage({
           message: response.data.message,
           messageType: "success",
@@ -245,11 +238,6 @@ export default function ProjectPageRoot({
         console.log(error);
         if (error && error.reponse) console.log(error.response);
       });
-  };
-
-  const updateFollowCount = (following) => {
-    if (following) setNumberOfFollowers(numberOfFollowers + 1);
-    else setNumberOfFollowers(numberOfFollowers - 1);
   };
 
   const handleToggleLikeProject = () => {
@@ -264,8 +252,7 @@ export default function ProjectPageRoot({
 
   const toggleLikeProject = () => {
     const new_value = !isUserLiking;
-    setIsUserLiking(new_value);
-    setLikingChangePending(true);
+    handleLike(new_value, false, true);
     apiRequest({
       method: "post",
       url: "/api/projects/" + project.url_slug + "/set_like/",
@@ -274,9 +261,7 @@ export default function ProjectPageRoot({
       locale: locale,
     })
       .then(function (response) {
-        setIsUserLiking(response.data.liking);
-        updateLikeCount(response.data.liking);
-        setLikingChangePending(false);
+        handleLike(response.data.liking, true, false);
         setMessage({
           message: response.data.message,
           messageType: "success",
@@ -286,11 +271,6 @@ export default function ProjectPageRoot({
         console.log(error);
         if (error && error.reponse) console.log(error.response);
       });
-  };
-
-  const updateLikeCount = (liking) => {
-    if (liking) setNumberOfLikes(numberOfLikes + 1);
-    else setNumberOfLikes(numberOfLikes - 1);
   };
 
   const requestLeaveProject = () => {

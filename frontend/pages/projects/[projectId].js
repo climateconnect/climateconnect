@@ -63,6 +63,30 @@ export default function ProjectPage({ project, members, posts, comments, followi
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
+  const handleFollow = (userFollows, updateCount, pending) => {
+    setIsUserFollowing(userFollows);
+    if (updateCount) {
+      if (userFollows) {
+        setNumberOfFollowers(numberOfFollowers + 1);
+      } else {
+        setNumberOfFollowers(numberOfFollowers - 1);
+      }
+    }
+    setFollowingChangePending(pending);
+  };
+
+  const handleLike = (userLikes, updateCount, pending) => {
+    setIsUserLiking(userLikes);
+    if (updateCount) {
+      if (userLikes) {
+        setNumberOfLikes(numberOfLikes + 1);
+      } else {
+        setNumberOfLikes(numberOfLikes - 1);
+      }
+    }
+    setLikingChangePending(pending);
+  };
+
   const handleWindowClose = (e) => {
     if (
       curComments.filter((c) => c.unconfirmed).length > 0 ||
@@ -95,21 +119,17 @@ export default function ProjectPage({ project, members, posts, comments, followi
           token={token}
           setMessage={setMessage}
           isUserFollowing={isUserFollowing}
-          setIsUserFollowing={setIsUserFollowing}
           user={user}
           setCurComments={setCurComments}
           followingChangePending={followingChangePending}
-          setFollowingChangePending={setFollowingChangePending}
           likingChangePending={likingChangePending}
-          setLikingChangePending={setLikingChangePending}
           texts={texts}
           projectAdmin={members.find((m) => m.permission === ROLE_TYPES.all_type)}
           isUserLiking={isUserLiking}
-          setIsUserLiking={setIsUserLiking}
           numberOfLikes={numberOfLikes}
-          setNumberOfLikes={setNumberOfLikes}
           numberOfFollowers={numberOfFollowers}
-          setNumberOfFollowers={setNumberOfFollowers}
+          handleFollow={handleFollow}
+          handleLike={handleLike}
         />
       ) : (
         <PageNotFound itemName={texts.project} />
