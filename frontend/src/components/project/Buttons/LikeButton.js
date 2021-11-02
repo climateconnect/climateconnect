@@ -64,7 +64,11 @@ export default function LikeButton({
 
   if (screenSize.belowSmall) {
     return (
-      <span className={classes.mobileButtonContainer} onClick={handleToggleLikeProject} {...bindLike}>
+      <span
+        className={classes.mobileButtonContainer}
+        onClick={handleToggleLikeProject}
+        {...bindLike}
+      >
         <IconButton
           className={classes.iconButton}
           color={isUserLiking ? "secondary" : "primary"}
