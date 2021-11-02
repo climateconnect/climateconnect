@@ -81,6 +81,8 @@ export default function ProjectOverview({
   initiallyCaughtFollowers,
   initiallyCaughtLikes,
   toggleShowLikes,
+  numberOfLikes,
+  numberOfFollowers,
 }) {
   const classes = useStyles();
 
@@ -94,6 +96,8 @@ export default function ProjectOverview({
           texts={texts}
           toggleShowFollowers={toggleShowFollowers}
           toggleShowLikes={toggleShowLikes}
+          numberOfLikes={numberOfLikes}
+          numberOfFollowers={numberOfFollowers}
         />
       ) : (
         <LargeScreenOverview
@@ -113,6 +117,8 @@ export default function ProjectOverview({
           toggleShowLikes={toggleShowLikes}
           likingChangePending={likingChangePending}
           screenSize={screenSize}
+          numberOfLikes={numberOfLikes}
+          numberOfFollowers={numberOfFollowers}
         />
       )}
       <ProjectFollowersDialog
@@ -137,7 +143,14 @@ export default function ProjectOverview({
   );
 }
 
-function SmallScreenOverview({ project, texts, toggleShowFollowers, toggleShowLikes }) {
+function SmallScreenOverview({
+  project,
+  texts,
+  toggleShowFollowers,
+  toggleShowLikes,
+  numberOfLikes,
+  numberOfFollowers,
+}) {
   const classes = useStyles();
   return (
     <>
@@ -184,6 +197,8 @@ function SmallScreenOverview({ project, texts, toggleShowFollowers, toggleShowLi
             texts={texts}
             toggleShowFollowers={toggleShowFollowers}
             toggleShowLikes={toggleShowLikes}
+            numberOfLikes={numberOfLikes}
+            numberOfFollowers={numberOfFollowers}
           />
         </div>
         <div />
@@ -192,28 +207,34 @@ function SmallScreenOverview({ project, texts, toggleShowFollowers, toggleShowLi
   );
 }
 
-function InteractionCountLinks({ project, texts, toggleShowFollowers, toggleShowLikes }) {
+function InteractionCountLinks({
+  texts,
+  toggleShowFollowers,
+  toggleShowLikes,
+  numberOfLikes,
+  numberOfFollowers,
+}) {
   const classes = useStyles();
   return (
     <div className={classes.rootLinksContainer}>
-      {project.number_of_likes > 0 && (
+      {numberOfLikes > 0 && (
         <div className={classes.linkContainer}>
           <FavoriteIcon className={classes.linkIcon} />
           <Link color="secondary" underline="none" onClick={toggleShowLikes}>
             <Typography>
-              <span>{project.number_of_likes} </span>
-              {project.number_of_likes > 1 ? texts.likes : texts.one_like}
+              <span>{numberOfLikes} </span>
+              {numberOfLikes > 1 ? texts.likes : texts.one_like}
             </Typography>
           </Link>
         </div>
       )}
-      {project.number_of_followers > 0 && (
+      {numberOfFollowers > 0 && (
         <div className={classes.linkContainer}>
           <Person className={classes.linkIcon} />
           <Link color="secondary" underline="none" onClick={toggleShowFollowers}>
             <Typography>
-              <span>{project.number_of_followers} </span>
-              {project.number_of_followers > 1 ? texts.followers : texts.follower}
+              <span>{numberOfFollowers} </span>
+              {numberOfFollowers > 1 ? texts.followers : texts.follower}
             </Typography>
           </Link>
         </div>
@@ -239,6 +260,8 @@ function LargeScreenOverview({
   toggleShowLikes,
   likingChangePending,
   screenSize,
+  numberOfLikes,
+  numberOfFollowers,
 }) {
   const classes = useStyles();
   return (
@@ -296,6 +319,7 @@ function LargeScreenOverview({
               likingChangePending={likingChangePending}
               screenSize={screenSize}
               hasAdminPermissions={hasAdminPermissions}
+              numberOfLikes={numberOfLikes}
             />
             <FollowButton
               isUserFollowing={isUserFollowing}
@@ -306,6 +330,7 @@ function LargeScreenOverview({
               followingChangePending={followingChangePending}
               texts={texts}
               screenSize={screenSize}
+              numberOfFollowers={numberOfFollowers}
             />
             {!hasAdminPermissions && (
               <ContactCreatorButton

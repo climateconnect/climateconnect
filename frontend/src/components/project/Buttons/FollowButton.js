@@ -33,7 +33,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function FollowButton({
-  project,
   isUserFollowing,
   handleToggleFollowProject,
   hasAdminPermissions,
@@ -41,6 +40,7 @@ export default function FollowButton({
   followingChangePending,
   texts,
   screenSize,
+  numberOfFollowers,
 }) {
   const classes = useStyles({
     displayNextToButton: hasAdminPermissions && !screenSize.belowMedium ? "row" : "column",
@@ -87,7 +87,7 @@ export default function FollowButton({
           {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
           {isUserFollowing ? texts.following : texts.follow}
         </Button>
-        {project.number_of_followers > 0 && (
+        {numberOfFollowers > 0 && (
           <Link
             color="secondary"
             underline="none"
@@ -95,8 +95,8 @@ export default function FollowButton({
             onClick={toggleShowFollowers}
           >
             <Typography className={classes.followersText}>
-              <span className={classes.followerNumber}>{project.number_of_followers} </span>
-              {project.number_of_followers > 1 ? texts.followers : texts.follower}
+              <span className={classes.followerNumber}>{numberOfFollowers} </span>
+              {numberOfFollowers > 1 ? texts.followers : texts.follower}
             </Typography>
           </Link>
         )}

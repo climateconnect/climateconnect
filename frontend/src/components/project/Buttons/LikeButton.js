@@ -36,11 +36,11 @@ export default function LikeButton({
   isUserLiking,
   handleToggleLikeProject,
   texts,
-  project,
   toggleShowLikes,
   likingChangePending,
   hasAdminPermissions,
   screenSize,
+  numberOfLikes,
 }) {
   const classes = useStyles({
     displayNextToButton: hasAdminPermissions && !screenSize.belowMedium ? "row" : "column",
@@ -77,7 +77,7 @@ export default function LikeButton({
         >
           <LikeIcon size={30} color={isUserLiking ? "earth" : "primary"} />
         </IconButton>
-        {project.number_of_likes > 0 && (
+        {numberOfLikes > 0 && (
           <Link
             color="secondary"
             className={classes.likesLink}
@@ -85,8 +85,8 @@ export default function LikeButton({
             onClick={toggleShowLikes}
           >
             <Typography className={classes.likesText}>
-              <span className={classes.likeNumber}>{project.number_of_likes} </span>
-              {project.number_of_likes > 1 ? texts.likes : texts.one_like}
+              <span className={classes.likeNumber}>{numberOfLikes} </span>
+              {numberOfLikes > 1 ? texts.likes : texts.one_like}
             </Typography>
           </Link>
         )}
@@ -106,7 +106,7 @@ export default function LikeButton({
           {likingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
           {isUserLiking ? texts.liked : texts.like}
         </Button>
-        {project.number_of_likes > 0 && (
+        {numberOfLikes > 0 && (
           <Link
             color="secondary"
             className={classes.likesLink}
@@ -114,8 +114,8 @@ export default function LikeButton({
             onClick={toggleShowLikes}
           >
             <Typography className={classes.likesText}>
-              <span className={classes.likeNumber}>{project.number_of_likes} </span>
-              {project.number_of_likes > 1 ? texts.likes : texts.one_like}
+              <span className={classes.likeNumber}>{numberOfLikes} </span>
+              {numberOfLikes > 1 ? texts.likes : texts.one_like}
             </Typography>
           </Link>
         )}

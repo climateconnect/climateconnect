@@ -58,6 +58,8 @@ export default function ProjectPage({ project, members, posts, comments, followi
   const [isUserLiking, setIsUserLiking] = React.useState(liking);
   const [followingChangePending, setFollowingChangePending] = React.useState(false);
   const [likingChangePending, setLikingChangePending] = React.useState(false);
+  const [numberOfLikes, setNumberOfLikes] = React.useState(project.number_of_likes);
+  const [numberOfFollowers, setNumberOfFollowers] = React.useState(project.number_of_followers);
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
@@ -104,6 +106,10 @@ export default function ProjectPage({ project, members, posts, comments, followi
           projectAdmin={members.find((m) => m.permission === ROLE_TYPES.all_type)}
           isUserLiking={isUserLiking}
           setIsUserLiking={setIsUserLiking}
+          numberOfLikes={numberOfLikes}
+          setNumberOfLikes={setNumberOfLikes}
+          numberOfFollowers={numberOfFollowers}
+          setNumberOfFollowers={setNumberOfFollowers}
         />
       ) : (
         <PageNotFound itemName={texts.project} />

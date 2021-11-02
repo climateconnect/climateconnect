@@ -66,6 +66,10 @@ export default function ProjectPageRoot({
   setLikingChangePending,
   texts,
   projectAdmin,
+  numberOfLikes,
+  setNumberOfLikes,
+  numberOfFollowers,
+  setNumberOfFollowers,
 }) {
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
@@ -229,6 +233,7 @@ export default function ProjectPageRoot({
     })
       .then(function (response) {
         setIsUserFollowing(response.data.following);
+        updateFollowCount(response.data.following);
         setFollowingChangePending(false);
         setMessage({
           message: response.data.message,
@@ -239,6 +244,11 @@ export default function ProjectPageRoot({
         console.log(error);
         if (error && error.reponse) console.log(error.response);
       });
+  };
+
+  const updateFollowCount = (following) => {
+    if (following) setNumberOfFollowers(numberOfFollowers + 1);
+    if (!following) setNumberOfFollowers(numberOfFollowers - 1);
   };
 
   const handleToggleLikeProject = () => {
@@ -264,6 +274,7 @@ export default function ProjectPageRoot({
     })
       .then(function (response) {
         setIsUserLiking(response.data.liking);
+        updateLikeCount(response.data.liking);
         setLikingChangePending(false);
         setMessage({
           message: response.data.message,
@@ -274,6 +285,11 @@ export default function ProjectPageRoot({
         console.log(error);
         if (error && error.reponse) console.log(error.response);
       });
+  };
+
+  const updateLikeCount = (liking) => {
+    if (liking) setNumberOfLikes(numberOfLikes + 1);
+    if (!liking) setNumberOfLikes(numberOfLikes - 1);
   };
 
   const requestLeaveProject = () => {
@@ -357,6 +373,8 @@ export default function ProjectPageRoot({
         toggleShowLikes={toggleShowLikes}
         showLikes={showLikes}
         initiallyCaughtLikes={initiallyCaughtLikes}
+        numberOfLikes={numberOfLikes}
+        numberOfFollowers={numberOfFollowers}
       />
 
       <Container className={classes.noPadding}>
