@@ -1,4 +1,4 @@
-export default function getNotificationTexts({ idea }) {
+export default function getNotificationTexts({ idea, project }) {
   return {
     message_from: {
       en: "Message from",
@@ -27,8 +27,8 @@ export default function getNotificationTexts({ idea }) {
       de: "folgt jetzt deinem Projekt",
     },
     liked_your_project: {
-      en: "liked your project",
-      de: "hat dein Projekt geliked",
+      en: `liked your project "${project?.name}"`,
+      de: `hat dein Projekt "${project?.name}" geliked`,
     },
     go_to_inbox: {
       en: "Go to Inbox",

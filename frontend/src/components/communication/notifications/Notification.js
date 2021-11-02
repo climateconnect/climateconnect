@@ -225,7 +225,7 @@ const ProjectFollowerNotification = ({ notification }) => {
 
 const ProjectLikeNotification = ({ notification }) => {
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "notification", locale: locale });
+  const texts = getTexts({ page: "notification", locale: locale, project: notification.project  });
   const likingUserName =
     notification.project_like.first_name + " " + notification.project_like.last_name;
   return (
@@ -235,7 +235,7 @@ const ProjectLikeNotification = ({ notification }) => {
         alt: likingUserName,
         image: notification.project_like.thumbnail_image,
       }}
-      primaryText={`${likingUserName} ${texts.liked_your_project} "${notification.project.name}"`}
+      primaryText={`${likingUserName} ${texts.liked_your_project}`}
       secondaryText={texts.congratulations}
     />
   );
