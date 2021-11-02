@@ -122,6 +122,7 @@ export default function ProjectInteractionButtons({
               handleClickContact={handleClickContact}
               isUserLiking={isUserLiking}
               handleToggleLikeProject={handleToggleLikeProject}
+              screenSize={screenSize}
             />
           )}
       </Container>

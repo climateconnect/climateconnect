@@ -312,6 +312,7 @@ function LargeScreenOverview({
                 projectAdmin={projectAdmin}
                 contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
                 handleClickContact={handleClickContact}
+                screenSize={screenSize}
               />
             )}
           </div>
