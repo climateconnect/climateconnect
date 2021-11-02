@@ -18,6 +18,7 @@ import ProjectCommentsContent from "./ProjectCommentsContent";
 import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
 import ProjectTeamContent from "./ProjectTeamContent";
+import { useLongPress } from "use-long-press";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -248,7 +249,7 @@ export default function ProjectPageRoot({
 
   const updateFollowCount = (following) => {
     if (following) setNumberOfFollowers(numberOfFollowers + 1);
-    if (!following) setNumberOfFollowers(numberOfFollowers - 1);
+    else setNumberOfFollowers(numberOfFollowers - 1);
   };
 
   const handleToggleLikeProject = () => {
@@ -289,7 +290,7 @@ export default function ProjectPageRoot({
 
   const updateLikeCount = (liking) => {
     if (liking) setNumberOfLikes(numberOfLikes + 1);
-    if (!liking) setNumberOfLikes(numberOfLikes - 1);
+    else setNumberOfLikes(numberOfLikes - 1);
   };
 
   const requestLeaveProject = () => {
@@ -346,6 +347,12 @@ export default function ProjectPageRoot({
       if (params.show_likes && !showLikes) toggleShowLikes();
       setGotParams(true);
     }
+  });
+  const bindLike = useLongPress(() => {
+    toggleShowLikes();
+  });
+  const bindFollow = useLongPress(() => {
+    toggleShowFollowers();
   });
 
   return (
@@ -432,6 +439,10 @@ export default function ProjectPageRoot({
           messageButtonIsVisible={messageButtonIsVisible}
           contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
           tabContentContainerSpaceToRight={tabContentContainerSpaceToRight}
+          numberOfFollowers={numberOfFollowers}
+          numberOfLikes={numberOfLikes}
+          bindLike={bindLike}
+          bindFollow={bindFollow}
         />
       </Container>
       <ConfirmDialog

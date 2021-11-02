@@ -21,6 +21,11 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 700,
     color: theme.palette.secondary.main,
   },
+  likeNumberMobile: {
+    fontWeight: 600,
+    color: theme.palette.primary.main,
+    whiteSpace: "nowrap",
+  },
   likesText: {
     fontWeight: 500,
     fontSize: 18,
@@ -28,6 +33,19 @@ const useStyles = makeStyles((theme) => ({
   },
   mediumScreenIconButton: {
     height: 40,
+  },
+  mobileButtonContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    cursor: "pointer",
+    height: 40,
+  },
+  iconButton: {
+    padding: theme.spacing(1),
+    "&:hover": {
+      background: "none",
+    },
   },
 }));
 
@@ -40,27 +58,24 @@ export default function LikeButton({
   hasAdminPermissions,
   screenSize,
   numberOfLikes,
+  bindLike,
 }) {
   const classes = useStyles();
-  if (screenSize.belowSmall && !screenSize.belowTiny) {
+
+  if (screenSize.belowSmall) {
     return (
-      <IconButton
-        onClick={handleToggleLikeProject}
-        color={isUserLiking ? "secondary" : "primary"}
-        disabled={likingChangePending}
-      >
-        <LikeIcon size={30} color={isUserLiking ? "earth" : "primary"} />
-      </IconButton>
-    );
-  } else if (screenSize.belowTiny) {
-    return (
-      <IconButton
-        onClick={handleToggleLikeProject}
-        color={isUserLiking ? "secondary" : "primary"}
-        disabled={likingChangePending}
-      >
-        <LikeIcon size={30} color={isUserLiking ? "earth" : "primary"} />
-      </IconButton>
+      <span className={classes.mobileButtonContainer} onClick={handleToggleLikeProject} {...bindLike}>
+        <IconButton
+          className={classes.iconButton}
+          color={isUserLiking ? "secondary" : "primary"}
+          disabled={likingChangePending}
+        >
+          <LikeIcon size={30} color={isUserLiking ? "earth" : "primary"} />
+        </IconButton>
+        {numberOfLikes > 0 && (
+          <Typography className={classes.likeNumberMobile}>• {numberOfLikes}</Typography>
+        )}
+      </span>
     );
   } else if (screenSize.belowMedium && !screenSize.belowSmall && !hasAdminPermissions) {
     return (

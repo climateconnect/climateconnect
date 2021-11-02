@@ -42,6 +42,10 @@ export default function ProjectInteractionButtons({
   likingChangePending,
   texts,
   screenSize,
+  numberOfFollowers,
+  numberOfLikes,
+  bindLike,
+  bindFollow,
 }) {
   const classes = useStyles({
     visibleFooterHeight: visibleFooterHeight,
@@ -68,6 +72,8 @@ export default function ProjectInteractionButtons({
             followingChangePending={followingChangePending}
             texts={texts}
             screenSize={screenSize}
+            numberOfFollowers={numberOfFollowers}
+            bindFollow={bindFollow}
           />
           <LikeButton
             texts={texts}
@@ -75,6 +81,8 @@ export default function ProjectInteractionButtons({
             isUserLiking={isUserLiking}
             handleToggleLikeProject={handleToggleLikeProject}
             likingChangePending={likingChangePending}
+            numberOfLikes={numberOfLikes}
+            bindLike={bindLike}
           />
         </Toolbar>
       </AppBar>

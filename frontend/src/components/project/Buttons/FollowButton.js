@@ -40,11 +40,13 @@ export default function FollowButton({
   texts,
   screenSize,
   numberOfFollowers,
+  bindFollow,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   if (screenSize.belowSmall && !screenSize.belowTiny) {
     return (
       <Button
+        {...bindFollow}
         onClick={handleToggleFollowProject}
         variant="contained"
         startIcon={<Person />}
@@ -54,11 +56,13 @@ export default function FollowButton({
       >
         {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
         {isUserFollowing ? texts.following : texts.follow}
+        {numberOfFollowers > 0 ? " • " + numberOfFollowers : ""}
       </Button>
     );
   } else if (screenSize.belowTiny) {
     return (
       <Button
+        {...bindFollow}
         onClick={handleToggleFollowProject}
         variant="contained"
         color={isUserFollowing ? "secondary" : "primary"}
@@ -67,6 +71,7 @@ export default function FollowButton({
       >
         {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
         {isUserFollowing ? texts.following : texts.follow}
+        {numberOfFollowers > 0 ? " • " + numberOfFollowers : ""}
       </Button>
     );
   } else {
