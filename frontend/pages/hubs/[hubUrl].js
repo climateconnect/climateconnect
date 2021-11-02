@@ -62,7 +62,7 @@ export async function getServerSideProps(ctx) {
     getSkillsOptions(ctx.locale),
     getStatusOptions(ctx.locale),
     getLocationFilteredBy(ctx.query),
-    getAllHubs(ctx.locale, true),
+    getAllHubs(ctx.locale, false),
   ]);
   return {
     props: {
@@ -85,7 +85,8 @@ export async function getServerSideProps(ctx) {
         project_statuses: project_statuses,
       },
       initialLocationFilter: location_filtered_by,
-      allHubs,
+      sectorHubs: allHubs.filter((h) => h.hub_type === "sector hub"),
+      allHubs: allHubs,
       initialIdeaUrlSlug: ideaToOpen ? encodeURIComponent(ideaToOpen) : null,
     },
   };
@@ -104,6 +105,7 @@ export default function Hub({
   subHeadline,
   initialLocationFilter,
   filterChoices,
+  sectorHubs,
   allHubs,
   initialIdeaUrlSlug,
   hubLocation,
@@ -204,7 +206,7 @@ export default function Hub({
   return (
     <WideLayout title={headline} fixedHeader headerBackground="#FFF">
       <div className={classes.contentUnderHeader}>
-        <NavigationSubHeader hubName={name} />
+        <NavigationSubHeader hubName={name} allHubs={allHubs} />
         {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
         <HubHeaderImage
           image={getImageUrl(image)}
@@ -248,7 +250,7 @@ export default function Hub({
             // initialProjects={initialProjects}
             nextStepTriggeredBy={nextStepTriggeredBy}
             showIdeas={isLocationHub}
-            allHubs={allHubs}
+            allHubs={sectorHubs}
             initialIdeaUrlSlug={initialIdeaUrlSlug}
             hubLocation={hubLocation}
             hubData={hubData}
