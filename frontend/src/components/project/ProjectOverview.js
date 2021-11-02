@@ -91,14 +91,7 @@ export default function ProjectOverview({
   return (
     <Container className={classes.projectOverview}>
       {screenSize.belowSmall ? (
-        <SmallScreenOverview
-          project={project}
-          texts={texts}
-          toggleShowFollowers={toggleShowFollowers}
-          toggleShowLikes={toggleShowLikes}
-          numberOfLikes={numberOfLikes}
-          numberOfFollowers={numberOfFollowers}
-        />
+        <SmallScreenOverview project={project} texts={texts} />
       ) : (
         <LargeScreenOverview
           project={project}
@@ -143,14 +136,7 @@ export default function ProjectOverview({
   );
 }
 
-function SmallScreenOverview({
-  project,
-  texts,
-  toggleShowFollowers,
-  toggleShowLikes,
-  numberOfLikes,
-  numberOfFollowers,
-}) {
+function SmallScreenOverview({ project, texts }) {
   const classes = useStyles();
   return (
     <>
@@ -191,55 +177,8 @@ function SmallScreenOverview({
             {project.tags.join(", ")}
           </Typography>
         </div>
-        <div className={classes.projectInfoEl}>
-          <InteractionCountLinks
-            project={project}
-            texts={texts}
-            toggleShowFollowers={toggleShowFollowers}
-            toggleShowLikes={toggleShowLikes}
-            numberOfLikes={numberOfLikes}
-            numberOfFollowers={numberOfFollowers}
-          />
-        </div>
-        <div />
       </div>
     </>
-  );
-}
-
-function InteractionCountLinks({
-  texts,
-  toggleShowFollowers,
-  toggleShowLikes,
-  numberOfLikes,
-  numberOfFollowers,
-}) {
-  const classes = useStyles();
-  return (
-    <div className={classes.rootLinksContainer}>
-      {numberOfLikes > 0 && (
-        <div className={classes.linkContainer}>
-          <FavoriteIcon className={classes.linkIcon} />
-          <Link color="secondary" underline="none" onClick={toggleShowLikes}>
-            <Typography>
-              <span>{numberOfLikes} </span>
-              {numberOfLikes > 1 ? texts.likes : texts.one_like}
-            </Typography>
-          </Link>
-        </div>
-      )}
-      {numberOfFollowers > 0 && (
-        <div className={classes.linkContainer}>
-          <Person className={classes.linkIcon} />
-          <Link color="secondary" underline="none" onClick={toggleShowFollowers}>
-            <Typography>
-              <span>{numberOfFollowers} </span>
-              {numberOfFollowers > 1 ? texts.followers : texts.follower}
-            </Typography>
-          </Link>
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -263,7 +202,7 @@ function LargeScreenOverview({
   numberOfLikes,
   numberOfFollowers,
 }) {
-  const classes = useStyles({hasAdminPermissions: hasAdminPermissions});
+  const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   return (
     <>
       <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
