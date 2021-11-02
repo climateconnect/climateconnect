@@ -33,7 +33,6 @@ export default function ProjectInteractionButtons({
   visibleFooterHeight,
   tabContentContainerSpaceToRight,
   project,
-  smallScreen,
   isUserFollowing,
   isUserLiking,
   handleToggleFollowProject,
@@ -42,14 +41,14 @@ export default function ProjectInteractionButtons({
   followingChangePending,
   likingChangePending,
   texts,
-  tinyScreen,
+  screenSize,
 }) {
   const classes = useStyles({
     visibleFooterHeight: visibleFooterHeight,
     tabContentContainerSpaceToRight: tabContentContainerSpaceToRight,
   });
 
-  if (smallScreen && !tinyScreen)
+  if (screenSize.belowSmall && !screenSize.belowTiny)
     return (
       <AppBar className={classes.actionBar} position="fixed" elevation={0}>
         <Toolbar className={classes.containerButtonsActionBar} variant="dense">
@@ -57,7 +56,7 @@ export default function ProjectInteractionButtons({
             <ContactCreatorButton
               projectAdmin={projectAdmin}
               handleClickContact={handleClickContact}
-              smallScreen={smallScreen}
+              screenSize={screenSize}
             />
           )}
           <FollowButton
@@ -68,11 +67,11 @@ export default function ProjectInteractionButtons({
             toggleShowFollowers={toggleShowFollowers}
             followingChangePending={followingChangePending}
             texts={texts}
-            smallScreen={smallScreen}
+            screenSize={screenSize}
           />
           <LikeButton
             texts={texts}
-            smallScreen={smallScreen}
+            screenSize={screenSize}
             isUserLiking={isUserLiking}
             handleToggleLikeProject={handleToggleLikeProject}
             project={project}
@@ -81,7 +80,7 @@ export default function ProjectInteractionButtons({
         </Toolbar>
       </AppBar>
     );
-  if (smallScreen && tinyScreen)
+  if (screenSize.belowTiny)
     return (
       <AppBar className={classes.actionBar} position="fixed" elevation={0}>
         <Toolbar className={classes.containerButtonsActionBar} variant="dense">
@@ -89,7 +88,7 @@ export default function ProjectInteractionButtons({
             <ContactCreatorButton
               projectAdmin={projectAdmin}
               handleClickContact={handleClickContact}
-              tinyScreen={tinyScreen}
+              screenSize={screenSize}
             />
           )}
           <FollowButton
@@ -100,11 +99,11 @@ export default function ProjectInteractionButtons({
             toggleShowFollowers={toggleShowFollowers}
             followingChangePending={followingChangePending}
             texts={texts}
-            tinyScreen={tinyScreen}
+            screenSize={screenSize}
           />
           <LikeButton
             texts={texts}
-            tinyScreen={tinyScreen}
+            screenSize={screenSize}
             isUserLiking={isUserLiking}
             handleToggleLikeProject={handleToggleLikeProject}
           />

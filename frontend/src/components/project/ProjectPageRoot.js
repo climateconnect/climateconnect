@@ -74,10 +74,12 @@ export default function ProjectPageRoot({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
 
-  const isMediumScreen = useMediaQuery("(max-width:1100px)");
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-  const isTinyScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
-  const isLargeScreen = !isMediumScreen && !isNarrowScreen && !isTinyScreen ? true : false;
+  const screenSize = {
+    belowTiny: useMediaQuery((theme) => theme.breakpoints.down("xs")),
+    belowSmall: useMediaQuery((theme) => theme.breakpoints.down("sm")),
+    belowMedium: useMediaQuery("(max-width:1100px)"),
+    belowLarge: useMediaQuery((theme) => theme.breakpoints.down("xl")),
+  };
 
   const [hash, setHash] = React.useState(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({
@@ -334,8 +336,7 @@ export default function ProjectPageRoot({
     <div className={classes.root}>
       <ProjectOverview
         project={project}
-        smallScreen={isNarrowScreen}
-        mediumScreen={isMediumScreen}
+        screenSize={screenSize}
         handleToggleFollowProject={handleToggleFollowProject}
         handleToggleLikeProject={handleToggleLikeProject}
         isUserFollowing={isUserFollowing}
@@ -356,13 +357,12 @@ export default function ProjectPageRoot({
         toggleShowLikes={toggleShowLikes}
         showLikes={showLikes}
         initiallyCaughtLikes={initiallyCaughtLikes}
-        largeScreen={isLargeScreen}
       />
 
       <Container className={classes.noPadding}>
         <div className={classes.tabsWrapper} ref={projectTabsRef}>
           <Tabs
-            variant={isNarrowScreen ? "fullWidth" : "standard"}
+            variant={screenSize.belowSmall ? "fullWidth" : "standard"}
             value={tabValue}
             onChange={handleTabChange}
             indicatorColor="primary"
@@ -397,14 +397,13 @@ export default function ProjectPageRoot({
       </Container>
       <Container className={classes.projectInteractionButtonContainer}>
         <ProjectInteractionButtons
-          tinyScreen={isTinyScreen}
+          screenSize={screenSize}
           project={project}
           projectAdmin={projectAdmin}
           handleClickContact={handleClickContact}
           hasAdminPermissions={hasAdminPermissions}
           texts={texts}
           visibleFooterHeight={visibleFooterHeight}
-          smallScreen={isNarrowScreen}
           isUserFollowing={isUserFollowing}
           isUserLiking={isUserLiking}
           handleToggleFollowProject={handleToggleFollowProject}

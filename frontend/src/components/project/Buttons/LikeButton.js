@@ -36,20 +36,17 @@ export default function LikeButton({
   isUserLiking,
   handleToggleLikeProject,
   texts,
-  mediumScreen,
-  smallScreen,
-  tinyScreen,
   project,
   toggleShowLikes,
   likingChangePending,
   hasAdminPermissions,
-  largeScreen,
+  screenSize,
 }) {
   const classes = useStyles({
-    displayNextToButton: hasAdminPermissions && largeScreen ? "row" : "column",
-    addMarginLeft: hasAdminPermissions && largeScreen ? 1 : 0,
+    displayNextToButton: hasAdminPermissions && !screenSize.belowMedium ? "row" : "column",
+    addMarginLeft: hasAdminPermissions && !screenSize.belowMedium ? 1 : 0,
   });
-  if (smallScreen) {
+  if (screenSize.belowSmall && !screenSize.belowTiny) {
     return (
       <IconButton
         onClick={handleToggleLikeProject}
@@ -59,7 +56,7 @@ export default function LikeButton({
         <LikeIcon size={30} color={isUserLiking ? "earth" : "primary"} />
       </IconButton>
     );
-  } else if (tinyScreen) {
+  } else if (screenSize.belowTiny) {
     return (
       <IconButton
         onClick={handleToggleLikeProject}
@@ -69,7 +66,7 @@ export default function LikeButton({
         <LikeIcon size={30} color={isUserLiking ? "earth" : "primary"} />
       </IconButton>
     );
-  } else if (mediumScreen && !hasAdminPermissions) {
+  } else if (screenSize.belowMedium && !screenSize.belowSmall && !hasAdminPermissions) {
     return (
       <span className={classes.largeScreenButtonContainer}>
         <IconButton

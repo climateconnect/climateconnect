@@ -60,7 +60,7 @@ const componentDecorator = (href, text, key) => (
 
 export default function ProjectOverview({
   project,
-  smallScreen,
+  screenSize,
   handleToggleFollowProject,
   handleToggleLikeProject,
   isUserFollowing,
@@ -81,8 +81,6 @@ export default function ProjectOverview({
   initiallyCaughtFollowers,
   initiallyCaughtLikes,
   toggleShowLikes,
-  mediumScreen,
-  largeScreen,
 }) {
   const classes = useStyles();
 
@@ -90,7 +88,7 @@ export default function ProjectOverview({
 
   return (
     <Container className={classes.projectOverview}>
-      {smallScreen ? (
+      {screenSize.belowSmall ? (
         <SmallScreenOverview
           project={project}
           texts={texts}
@@ -114,8 +112,7 @@ export default function ProjectOverview({
           likes={likes}
           toggleShowLikes={toggleShowLikes}
           likingChangePending={likingChangePending}
-          mediumScreen={mediumScreen}
-          largeScreen={largeScreen}
+          screenSize={screenSize}
         />
       )}
       <ProjectFollowersDialog
@@ -241,8 +238,7 @@ function LargeScreenOverview({
   likes,
   toggleShowLikes,
   likingChangePending,
-  mediumScreen,
-  largeScreen,
+  screenSize,
 }) {
   const classes = useStyles();
   return (
@@ -298,8 +294,7 @@ function LargeScreenOverview({
               likes={likes}
               toggleShowLikes={toggleShowLikes}
               likingChangePending={likingChangePending}
-              mediumScreen={mediumScreen}
-              largeScreen={largeScreen}
+              screenSize={screenSize}
               hasAdminPermissions={hasAdminPermissions}
             />
             <FollowButton
@@ -310,7 +305,7 @@ function LargeScreenOverview({
               toggleShowFollowers={toggleShowFollowers}
               followingChangePending={followingChangePending}
               texts={texts}
-              largeScreen={largeScreen}
+              screenSize={screenSize}
             />
             {!hasAdminPermissions && (
               <ContactCreatorButton

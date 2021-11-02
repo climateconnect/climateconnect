@@ -40,15 +40,13 @@ export default function FollowButton({
   toggleShowFollowers,
   followingChangePending,
   texts,
-  smallScreen,
-  tinyScreen,
-  largeScreen,
+  screenSize,
 }) {
   const classes = useStyles({
-    displayNextToButton: hasAdminPermissions && largeScreen ? "row" : "column",
-    addMarginLeft: hasAdminPermissions && largeScreen ? 1 : 0,
+    displayNextToButton: hasAdminPermissions && !screenSize.belowMedium ? "row" : "column",
+    addMarginLeft: hasAdminPermissions && !screenSize.belowMedium ? 1 : 0,
   });
-  if (smallScreen) {
+  if (screenSize.belowSmall && !screenSize.belowTiny) {
     return (
       <Button
         onClick={handleToggleFollowProject}
@@ -62,7 +60,7 @@ export default function FollowButton({
         {isUserFollowing ? texts.following : texts.follow}
       </Button>
     );
-  } else if (tinyScreen) {
+  } else if (screenSize.belowTiny) {
     return (
       <Button
         onClick={handleToggleFollowProject}
