@@ -48,7 +48,7 @@ export default function ProjectInteractionButtons({
     tabContentContainerSpaceToRight: tabContentContainerSpaceToRight,
   });
 
-  if (screenSize.belowSmall && !screenSize.belowTiny)
+  if (screenSize.belowSmall)
     return (
       <AppBar className={classes.actionBar} position="fixed" elevation={0}>
         <Toolbar className={classes.containerButtonsActionBar} variant="dense">
@@ -74,38 +74,7 @@ export default function ProjectInteractionButtons({
             screenSize={screenSize}
             isUserLiking={isUserLiking}
             handleToggleLikeProject={handleToggleLikeProject}
-            project={project}
             likingChangePending={likingChangePending}
-          />
-        </Toolbar>
-      </AppBar>
-    );
-  if (screenSize.belowTiny)
-    return (
-      <AppBar className={classes.actionBar} position="fixed" elevation={0}>
-        <Toolbar className={classes.containerButtonsActionBar} variant="dense">
-          {!hasAdminPermissions && (
-            <ContactCreatorButton
-              projectAdmin={projectAdmin}
-              handleClickContact={handleClickContact}
-              screenSize={screenSize}
-            />
-          )}
-          <FollowButton
-            isUserFollowing={isUserFollowing}
-            handleToggleFollowProject={handleToggleFollowProject}
-            project={project}
-            hasAdminPermissions={hasAdminPermissions}
-            toggleShowFollowers={toggleShowFollowers}
-            followingChangePending={followingChangePending}
-            texts={texts}
-            screenSize={screenSize}
-          />
-          <LikeButton
-            texts={texts}
-            screenSize={screenSize}
-            isUserLiking={isUserLiking}
-            handleToggleLikeProject={handleToggleLikeProject}
           />
         </Toolbar>
       </AppBar>
