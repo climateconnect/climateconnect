@@ -4,16 +4,15 @@ import React from "react";
 import LikeIcon from "./LikeIcon";
 
 const useStyles = makeStyles((theme) => ({
-  largeScreenButtonContainer: (props) => ({
+  largeScreenButtonContainer: {
     display: "inline-flex",
-    flexDirection: props.displayNextToButton,
+    flexDirection: "column",
     alignItems: "center",
-  }),
-  likesLink: (props) => ({
+  },
+  likesLink: {
     cursor: "pointer",
     textAlign: "center",
-    marginLeft: theme.spacing(props.addMarginLeft),
-  }),
+  },
   largeLikeButton: {
     height: 40,
     maxWidth: 120,
@@ -42,10 +41,7 @@ export default function LikeButton({
   screenSize,
   numberOfLikes,
 }) {
-  const classes = useStyles({
-    displayNextToButton: hasAdminPermissions && !screenSize.belowMedium ? "row" : "column",
-    addMarginLeft: hasAdminPermissions && !screenSize.belowMedium ? 1 : 0,
-  });
+  const classes = useStyles();
   if (screenSize.belowSmall && !screenSize.belowTiny) {
     return (
       <IconButton

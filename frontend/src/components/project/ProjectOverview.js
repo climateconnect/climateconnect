@@ -19,11 +19,11 @@ import LikeButton from "./Buttons/LikeButton";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
-  infoBottomBar: {
+  infoBottomBar: (props) => ({
     display: "flex",
     marginTop: theme.spacing(3),
-    justifyContent: "space-between",
-  },
+    justifyContent: props.hasAdminPermissions ? "flex-start" : "space-between",
+  }),
   smallScreenHeader: {
     fontSize: "calc(1.6rem + 6 * ((100vw - 320px) / 680))",
     paddingBottom: theme.spacing(2),
@@ -263,7 +263,7 @@ function LargeScreenOverview({
   numberOfLikes,
   numberOfFollowers,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({hasAdminPermissions: hasAdminPermissions});
   return (
     <>
       <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>

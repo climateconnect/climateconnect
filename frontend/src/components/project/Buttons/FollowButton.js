@@ -4,16 +4,15 @@ import { Person } from "@material-ui/icons";
 import React from "react";
 
 const useStyles = makeStyles((theme) => ({
-  followButtonContainer: (props) => ({
+  followButtonContainer: {
     display: "inline-flex",
-    flexDirection: props.displayNextToButton,
+    flexDirection: "column",
     alignItems: "center",
-  }),
-  followersLink: (props) => ({
+  },
+  followersLink: {
     cursor: "pointer",
     textAlign: "center",
-    marginLeft: theme.spacing(props.addMarginLeft),
-  }),
+  },
   followerNumber: {
     fontWeight: 700,
     color: theme.palette.secondary.main,
@@ -23,13 +22,13 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 18,
     color: theme.palette.secondary.light,
   },
-  followingButton: {
-    marginLeft: theme.spacing(0.25),
-    marginRight: theme.spacing(0.25),
+  followingButton: (props) => ({
+    marginLeft: props.hasAdminPermissions ? theme.spacing(2) : theme.spacing(0.25),
+    marginRight: props.hasAdminPermissions ? theme.spacing(2) : theme.spacing(0.25),
     whiteSpace: "nowrap",
     height: 40,
     maxWidth: 140,
-  },
+  }),
 }));
 
 export default function FollowButton({
@@ -42,10 +41,7 @@ export default function FollowButton({
   screenSize,
   numberOfFollowers,
 }) {
-  const classes = useStyles({
-    displayNextToButton: hasAdminPermissions && !screenSize.belowMedium ? "row" : "column",
-    addMarginLeft: hasAdminPermissions && !screenSize.belowMedium ? 1 : 0,
-  });
+  const classes = useStyles({hasAdminPermissions: hasAdminPermissions});
   if (screenSize.belowSmall && !screenSize.belowTiny) {
     return (
       <Button
