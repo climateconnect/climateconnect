@@ -229,6 +229,7 @@ export default function ProjectPageRoot({
     })
       .then(function (response) {
         handleFollow(response.data.following, true, false);
+        updateFollowers();
         setMessage({
           message: response.data.message,
           messageType: "success",
@@ -262,6 +263,7 @@ export default function ProjectPageRoot({
     })
       .then(function (response) {
         handleLike(response.data.liking, true, false);
+        updateLikes();
         setMessage({
           message: response.data.message,
           messageType: "success",
@@ -301,23 +303,29 @@ export default function ProjectPageRoot({
   const toggleShowFollowers = async () => {
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
-      const retrievedFollowers = await getFollowers(project, token, locale);
-      handleReadNotifications(4);
-      setFollowers(retrievedFollowers);
+      updateFollowers();
       setInitiallyCaughtFollowers(true);
     }
   };
+  const updateFollowers = async () => {
+    const retrievedFollowers = await getFollowers(project, token, locale);
+    handleReadNotifications(4);
+    setFollowers(retrievedFollowers);
+};
   const [initiallyCaughtLikes, setInitiallyCaughtLikes] = React.useState(false);
   const [likes, setLikes] = React.useState([]);
   const [showLikes, setShowLikes] = React.useState(false);
   const toggleShowLikes = async () => {
     setShowLikes(!showLikes);
     if (!initiallyCaughtLikes) {
+      updateLikes();
+      setInitiallyCaughtLikes(true);
+    }
+  };
+  const updateLikes = async () => {
       const retrievedLikes = await getLikes(project, token, locale);
       handleReadNotifications(10); // "10" should not be hardcoded
       setLikes(retrievedLikes);
-      setInitiallyCaughtLikes(true);
-    }
   };
   const [gotParams, setGotParams] = React.useState(false);
   useEffect(() => {
