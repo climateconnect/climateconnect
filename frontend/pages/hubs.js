@@ -55,7 +55,7 @@ export default function Hubs({ hubs }) {
   const texts = getTexts({ page: "hub", locale: locale });
   return (
     <WideLayout largeFooter noSpaceBottom title={texts.climate_action_hubs}>
-      <NavigationSubHeader />
+      <NavigationSubHeader allHubs={hubs}/>
       <HubHeaderImage
         image="/images/hubs_background.jpg"
         alt={texts.hubs_overview_image_alt}

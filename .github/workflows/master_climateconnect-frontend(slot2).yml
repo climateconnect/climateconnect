@@ -15,6 +15,7 @@ jobs:
       name: 'slot2'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
+
     steps:
     - uses: actions/checkout@master
 
