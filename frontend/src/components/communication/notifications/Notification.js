@@ -240,3 +240,5 @@ const ProjectLikeNotification = ({ notification }) => {
     />
   );
 };
+
+export {NOTIFICATION_TYPES};

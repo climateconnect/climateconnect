@@ -19,6 +19,7 @@ import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { useLongPress } from "use-long-press";
+import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -304,7 +305,7 @@ export default function ProjectPageRoot({
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
       updateFollowers();
-      handleReadNotifications(4);
+      handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_follower"));
       setInitiallyCaughtFollowers(true);
     }
   };
@@ -319,7 +320,7 @@ export default function ProjectPageRoot({
     setShowLikes(!showLikes);
     if (!initiallyCaughtLikes) {
       updateLikes();
-      handleReadNotifications(10); // "10" should not be hardcoded
+      handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_like"));
       setInitiallyCaughtLikes(true);
     }
   };
