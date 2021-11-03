@@ -304,12 +304,12 @@ export default function ProjectPageRoot({
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
       updateFollowers();
+      handleReadNotifications(4);
       setInitiallyCaughtFollowers(true);
     }
   };
   const updateFollowers = async () => {
     const retrievedFollowers = await getFollowers(project, token, locale);
-    handleReadNotifications(4);
     setFollowers(retrievedFollowers);
   };
   const [initiallyCaughtLikes, setInitiallyCaughtLikes] = React.useState(false);
@@ -319,12 +319,12 @@ export default function ProjectPageRoot({
     setShowLikes(!showLikes);
     if (!initiallyCaughtLikes) {
       updateLikes();
+      handleReadNotifications(10); // "10" should not be hardcoded
       setInitiallyCaughtLikes(true);
     }
   };
   const updateLikes = async () => {
     const retrievedLikes = await getLikes(project, token, locale);
-    handleReadNotifications(10); // "10" should not be hardcoded
     setLikes(retrievedLikes);
   };
   const [gotParams, setGotParams] = React.useState(false);
