@@ -311,7 +311,7 @@ export default function ProjectPageRoot({
     const retrievedFollowers = await getFollowers(project, token, locale);
     handleReadNotifications(4);
     setFollowers(retrievedFollowers);
-};
+  };
   const [initiallyCaughtLikes, setInitiallyCaughtLikes] = React.useState(false);
   const [likes, setLikes] = React.useState([]);
   const [showLikes, setShowLikes] = React.useState(false);
@@ -323,9 +323,9 @@ export default function ProjectPageRoot({
     }
   };
   const updateLikes = async () => {
-      const retrievedLikes = await getLikes(project, token, locale);
-      handleReadNotifications(10); // "10" should not be hardcoded
-      setLikes(retrievedLikes);
+    const retrievedLikes = await getLikes(project, token, locale);
+    handleReadNotifications(10); // "10" should not be hardcoded
+    setLikes(retrievedLikes);
   };
   const [gotParams, setGotParams] = React.useState(false);
   useEffect(() => {

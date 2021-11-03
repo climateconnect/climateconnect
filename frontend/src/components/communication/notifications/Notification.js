@@ -225,7 +225,7 @@ const ProjectFollowerNotification = ({ notification }) => {
 
 const ProjectLikeNotification = ({ notification }) => {
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "notification", locale: locale, project: notification.project  });
+  const texts = getTexts({ page: "notification", locale: locale, project: notification.project });
   const likingUserName =
     notification.project_like.first_name + " " + notification.project_like.last_name;
   return (
