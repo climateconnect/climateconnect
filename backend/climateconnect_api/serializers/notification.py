@@ -111,10 +111,10 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     def get_project_like(self, obj):
         if obj.project_like:
-            like_user = UserProfile.objects.filter(
+            liking_user = UserProfile.objects.get(
                 user=obj.project_like.user
             )
-            serializer = UserProfileStubSerializer(like_user[0])
+            serializer = UserProfileStubSerializer(liking_user)
             return serializer.data         
 
     def get_idea(self, obj):
