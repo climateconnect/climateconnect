@@ -75,6 +75,7 @@ export default function ProjectPage({ project, members, posts, comments, followi
     setFollowingChangePending(pending);
   };
 
+//We only update the count once the frontend received a response from the backend. This is what the updateCount variable is for
   const handleLike = (userLikes, updateCount, pending) => {
     setIsUserLiking(userLikes);
     if (updateCount) {
