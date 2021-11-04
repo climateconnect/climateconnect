@@ -115,7 +115,7 @@ def create_project_follower_notification(project_follower):
 
 def create_project_like_notification(project_like):
     notification = Notification.objects.create(
-        notification_type=10, project_like=project_like
+        notification_type=Notification.PROJECT_LIKE, project_like=project_like
     )
     project_team = ProjectMember.objects.filter(
         project=project_like.project).values('user')
