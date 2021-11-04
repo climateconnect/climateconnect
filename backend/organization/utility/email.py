@@ -206,7 +206,7 @@ def send_project_like_email(user, project_like, notification):
         " " + project_like.user.last_name
     subjects_by_language = {
         "en": "{} liked your project on Climate Connect".format(liking_user_name),
-        "de": "{} folgt jetzt deinem Projekt auf Climate Connect".format(liking_user_name)
+        "de": "{} gefällt dein Projekt auf Climate Connect".format(liking_user_name)
     }
 
     base_url = settings.FRONTEND_URL
