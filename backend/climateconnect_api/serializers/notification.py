@@ -21,6 +21,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     project_comment_parent = serializers.SerializerMethodField()
     project = serializers.SerializerMethodField()
     project_follower = serializers.SerializerMethodField()
+    project_like = serializers.SerializerMethodField()
     idea = serializers.SerializerMethodField()
     idea_comment = serializers.SerializerMethodField()
     idea_comment_parent = serializers.SerializerMethodField()
@@ -40,6 +41,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             'project_comment_parent',
             'project',
             'project_follower',
+            'project_like',
             'idea',
             'idea_comment',
             'idea_comment_parent',
@@ -93,6 +95,11 @@ class NotificationSerializer(serializers.ModelSerializer):
                 "name": obj.project_follower.project.name,
                 "url_slug": obj.project_follower.project.url_slug
             }
+        if obj.project_like:
+            return {
+                "name": obj.project_like.project.name,
+                "url_slug": obj.project_like.project.url_slug
+            }    
 
     def get_project_follower(self, obj):
         if obj.project_follower:
@@ -101,6 +108,14 @@ class NotificationSerializer(serializers.ModelSerializer):
             )
             serializer = UserProfileStubSerializer(follower_user[0])
             return serializer.data
+
+    def get_project_like(self, obj):
+        if obj.project_like:
+            liking_user = UserProfile.objects.get(
+                user=obj.project_like.user
+            )
+            serializer = UserProfileStubSerializer(liking_user)
+            return serializer.data         
 
     def get_idea(self, obj):
         if obj.idea_comment:

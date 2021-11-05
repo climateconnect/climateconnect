@@ -189,6 +189,11 @@ class UserProfile(models.Model):
         verbose_name="Email on new project follower", null=True, blank=True, default=True
     )
 
+    email_on_new_project_like = models.BooleanField(
+        help_text="Check if user wants to receive emails when somebody likes their project",
+        verbose_name="Email on new project like", null=True, blank=True, default=True
+    )
+
     email_on_idea_join = models.BooleanField(
         help_text="Check if user wants to receive emails when somebody joins an idea they are part of",
         verbose_name="Email on new idea join", null=True, blank=True, default=True

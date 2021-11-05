@@ -18,6 +18,8 @@ import ProjectCommentsContent from "./ProjectCommentsContent";
 import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
 import ProjectTeamContent from "./ProjectTeamContent";
+import { useLongPress } from "use-long-press";
+import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,13 +57,17 @@ export default function ProjectPageRoot({
   token,
   setMessage,
   isUserFollowing,
-  setIsUserFollowing,
+  isUserLiking,
   user,
   setCurComments,
   followingChangePending,
-  setFollowingChangePending,
+  likingChangePending,
   texts,
   projectAdmin,
+  numberOfLikes,
+  numberOfFollowers,
+  handleLike,
+  handleFollow,
 }) {
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
@@ -69,10 +75,20 @@ export default function ProjectPageRoot({
 
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-  const isTinyScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
+
+  const screenSize = {
+    belowTiny: useMediaQuery((theme) => theme.breakpoints.down("xs")),
+    belowSmall: useMediaQuery((theme) => theme.breakpoints.down("sm")),
+    belowMedium: useMediaQuery("(max-width:1100px)"),
+    belowLarge: useMediaQuery((theme) => theme.breakpoints.down("xl")),
+  };
+
   const [hash, setHash] = React.useState(null);
-  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({ follow: false, leave: false });
+  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState({
+    follow: false,
+    leave: false,
+    like: false,
+  });
   const typesByTabValue = ["project", "team", "comments"];
 
   //refs for tutorial
@@ -155,6 +171,11 @@ export default function ProjectPageRoot({
     setConfirmDialogOpen({ ...confirmDialogOpen, follow: false });
   };
 
+  const onLikeDialogClose = (confirmed) => {
+    if (confirmed) toggleLikeProject();
+    setConfirmDialogOpen({ ...confirmDialogOpen, like: false });
+  };
+
   const leaveProject = async () => {
     try {
       const resp = await apiRequest({
@@ -199,8 +220,7 @@ export default function ProjectPageRoot({
 
   const toggleFollowProject = () => {
     const new_value = !isUserFollowing;
-    setIsUserFollowing(new_value);
-    setFollowingChangePending(true);
+    handleFollow(new_value, false, true);
     apiRequest({
       method: "post",
       url: "/api/projects/" + project.url_slug + "/set_follow/",
@@ -209,8 +229,42 @@ export default function ProjectPageRoot({
       locale: locale,
     })
       .then(function (response) {
-        setIsUserFollowing(response.data.following);
-        setFollowingChangePending(false);
+        handleFollow(response.data.following, true, false);
+        updateFollowers();
+        setMessage({
+          message: response.data.message,
+          messageType: "success",
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error && error.reponse) console.log(error.response);
+      });
+  };
+
+  const handleToggleLikeProject = () => {
+    if (!token)
+      setMessage({
+        message: <span>{texts.please_log_in_to_like_a_project}</span>,
+        messageType: "error",
+      });
+    else if (isUserLiking) setConfirmDialogOpen({ ...confirmDialogOpen, like: true });
+    else toggleLikeProject();
+  };
+
+  const toggleLikeProject = () => {
+    const new_value = !isUserLiking;
+    handleLike(new_value, false, true);
+    apiRequest({
+      method: "post",
+      url: "/api/projects/" + project.url_slug + "/set_like/",
+      payload: { liking: new_value },
+      token: token,
+      locale: locale,
+    })
+      .then(function (response) {
+        handleLike(response.data.liking, true, false);
+        updateLikes();
         setMessage({
           message: response.data.message,
           messageType: "success",
@@ -236,39 +290,71 @@ export default function ProjectPageRoot({
     else setConfirmDialogOpen({ ...confirmDialogOpen, leave: true });
   };
 
+  const handleReadNotifications = async (notificationType) => {
+    const notification_to_set_read = notifications.filter(
+      (n) => n.notification_type === notificationType && n.project.url_slug === project.url_slug
+    );
+    await setNotificationsRead(token, notification_to_set_read, locale);
+    await refreshNotifications();
+  };
+
   const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
   const [followers, setFollowers] = React.useState([]);
   const [showFollowers, setShowFollowers] = React.useState(false);
   const toggleShowFollowers = async () => {
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
-      const retrievedFollowers = await getFollowers(project, token, locale);
-      const notification_to_set_read = notifications.filter(
-        (n) => n.notification_type === 4 && n.project.url_slug === project.url_slug
-      );
-      await setNotificationsRead(token, notification_to_set_read, locale);
-      await refreshNotifications();
-      setFollowers(retrievedFollowers);
+      updateFollowers();
+      handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_follower"));
       setInitiallyCaughtFollowers(true);
     }
+  };
+  const updateFollowers = async () => {
+    const retrievedFollowers = await getFollowers(project, token, locale);
+    setFollowers(retrievedFollowers);
+  };
+  const [initiallyCaughtLikes, setInitiallyCaughtLikes] = React.useState(false);
+  const [likes, setLikes] = React.useState([]);
+  const [showLikes, setShowLikes] = React.useState(false);
+  const toggleShowLikes = async () => {
+    setShowLikes(!showLikes);
+    if (!initiallyCaughtLikes) {
+      updateLikes();
+      handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_like"));
+      setInitiallyCaughtLikes(true);
+    }
+  };
+  const updateLikes = async () => {
+    const retrievedLikes = await getLikes(project, token, locale);
+    setLikes(retrievedLikes);
   };
   const [gotParams, setGotParams] = React.useState(false);
   useEffect(() => {
     if (!gotParams) {
       const params = getParams(window.location.href);
       if (params.show_followers && !showFollowers) toggleShowFollowers();
+      if (params.show_likes && !showLikes) toggleShowLikes();
       setGotParams(true);
     }
+  });
+  const bindLike = useLongPress(() => {
+    toggleShowLikes();
+  });
+  const bindFollow = useLongPress(() => {
+    toggleShowFollowers();
   });
 
   return (
     <div className={classes.root}>
       <ProjectOverview
         project={project}
-        smallScreen={isNarrowScreen}
+        screenSize={screenSize}
         handleToggleFollowProject={handleToggleFollowProject}
+        handleToggleLikeProject={handleToggleLikeProject}
         isUserFollowing={isUserFollowing}
+        isUserLiking={isUserLiking}
         followingChangePending={followingChangePending}
+        likingChangePending={likingChangePending}
         contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
         projectAdmin={projectAdmin}
         handleClickContact={handleClickContact}
@@ -279,12 +365,18 @@ export default function ProjectPageRoot({
         locale={locale}
         showFollowers={showFollowers}
         initiallyCaughtFollowers={initiallyCaughtFollowers}
+        likes={likes}
+        toggleShowLikes={toggleShowLikes}
+        showLikes={showLikes}
+        initiallyCaughtLikes={initiallyCaughtLikes}
+        numberOfLikes={numberOfLikes}
+        numberOfFollowers={numberOfFollowers}
       />
 
       <Container className={classes.noPadding}>
         <div className={classes.tabsWrapper} ref={projectTabsRef}>
           <Tabs
-            variant={isNarrowScreen ? "fullWidth" : "standard"}
+            variant={screenSize.belowSmall ? "fullWidth" : "standard"}
             value={tabValue}
             onChange={handleTabChange}
             indicatorColor="primary"
@@ -319,21 +411,27 @@ export default function ProjectPageRoot({
       </Container>
       <Container className={classes.projectInteractionButtonContainer}>
         <ProjectInteractionButtons
-          tinyScreen={isTinyScreen}
+          screenSize={screenSize}
           project={project}
           projectAdmin={projectAdmin}
           handleClickContact={handleClickContact}
           hasAdminPermissions={hasAdminPermissions}
           texts={texts}
           visibleFooterHeight={visibleFooterHeight}
-          smallScreen={isNarrowScreen}
           isUserFollowing={isUserFollowing}
+          isUserLiking={isUserLiking}
           handleToggleFollowProject={handleToggleFollowProject}
+          handleToggleLikeProject={handleToggleLikeProject}
           toggleShowFollowers={toggleShowFollowers}
           followingChangePending={followingChangePending}
+          likingChangePending={likingChangePending}
           messageButtonIsVisible={messageButtonIsVisible}
           contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
           tabContentContainerSpaceToRight={tabContentContainerSpaceToRight}
+          numberOfFollowers={numberOfFollowers}
+          numberOfLikes={numberOfLikes}
+          bindLike={bindLike}
+          bindFollow={bindFollow}
         />
       </Container>
       <ConfirmDialog
@@ -345,8 +443,20 @@ export default function ProjectPageRoot({
             {texts.are_you_sure_that_you_want_to_unfollow_this_project}
           </span>
         }
-        confirmText="Yes"
-        cancelText="No"
+        confirmText={texts.yes}
+        cancelText={texts.no}
+      />
+      <ConfirmDialog
+        open={confirmDialogOpen.like}
+        onClose={onLikeDialogClose}
+        title={texts.do_you_really_want_to_dislike}
+        text={
+          <span className={classes.dialogText}>
+            {texts.are_you_sure_that_you_want_to_dislike_this_project}
+          </span>
+        }
+        confirmText={texts.yes}
+        cancelText={texts.no}
       />
       <ConfirmDialog
         open={confirmDialogOpen.leave}
@@ -364,8 +474,8 @@ export default function ProjectPageRoot({
             )}
           </span>
         }
-        confirmText="Yes"
-        cancelText="No"
+        confirmText={texts.yes}
+        cancelText={texts.no}
       />
       <Tutorial
         fixedPosition
@@ -389,6 +499,21 @@ const getFollowers = async (project, token, locale) => {
     const resp = await apiRequest({
       method: "get",
       url: "/api/projects/" + project.url_slug + "/followers/",
+      token: token,
+      locale: locale,
+    });
+    return resp.data.results;
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+  }
+};
+
+const getLikes = async (project, token, locale) => {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + project.url_slug + "/likes/",
       token: token,
       locale: locale,
     });
