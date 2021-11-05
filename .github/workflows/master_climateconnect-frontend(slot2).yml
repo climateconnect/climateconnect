@@ -46,5 +46,5 @@ jobs:
       with:
         app-name: 'climateconnect-frontend'
         slot-name: 'slot2'
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_63820DFB02BC4C2A8134B132ED1B39C6 }}
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_78B48DB31EFC4B22B07F8812D028F9DF }}
         package: .
