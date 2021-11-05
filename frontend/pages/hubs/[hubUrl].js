@@ -9,7 +9,7 @@ import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions
+  getStatusOptions,
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -46,12 +46,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 const DESCRIPTION_WEBFLOW_LINKS = {
-  "energy": {
-    en: "energy-hub"
-  }
-}
+  energy: {
+    en: "energy-hub",
+  },
+};
 
 //potentially switch back to getinitialprops here?!
 export async function getServerSideProps(ctx) {
@@ -66,7 +65,7 @@ export async function getServerSideProps(ctx) {
     project_statuses,
     location_filtered_by,
     allHubs,
-    hubDescription
+    hubDescription,
   ] = await Promise.all([
     getHubData(hubUrl, ctx.locale),
     getProjectTagsOptions(hubUrl, ctx.locale),
@@ -75,7 +74,7 @@ export async function getServerSideProps(ctx) {
     getStatusOptions(ctx.locale),
     getLocationFilteredBy(ctx.query),
     getAllHubs(ctx.locale, false),
-    retrieveDescriptionFromWebflow(ctx.query, ctx.locale)
+    retrieveDescriptionFromWebflow(ctx.query, ctx.locale),
   ]);
 
   return {
@@ -102,7 +101,7 @@ export async function getServerSideProps(ctx) {
       sectorHubs: allHubs.filter((h) => h.hub_type === "sector hub"),
       allHubs: allHubs,
       initialIdeaUrlSlug: ideaToOpen ? encodeURIComponent(ideaToOpen) : null,
-      hubDescription: hubDescription
+      hubDescription: hubDescription,
     },
   };
 }
@@ -219,10 +218,9 @@ export default function Hub({
     });
   };
 
-
   return (
     <>
-      {(hubDescription && hubDescription.headContent) && (
+      {hubDescription && hubDescription.headContent && (
         <Head>{parseHtml(hubDescription.headContent)}</Head>
       )}
       <WideLayout title={headline} fixedHeader headerBackground="#FFF">
@@ -244,11 +242,13 @@ export default function Hub({
             statBoxTitle={statBoxTitle}
             stats={stats}
             scrollToSolutions={scrollToSolutions}
-            detailledInfo={(hubDescription?.bodyContent) ? (
-              <div dangerouslySetInnerHTML={{ __html: hubDescription.bodyContent }} />
-            ) : (
-              <HubDescription hub={hubUrl} texts={texts} />
-            )}
+            detailledInfo={
+              hubDescription?.bodyContent ? (
+                <div dangerouslySetInnerHTML={{ __html: hubDescription.bodyContent }} />
+              ) : (
+                <HubDescription hub={hubUrl} texts={texts} />
+              )
+            }
             subHeadline={subHeadline}
             hubProjectsButtonRef={hubProjectsButtonRef}
             isLocationHub={isLocationHub}
@@ -299,15 +299,20 @@ const HubDescription = ({ hub, texts }) => {
   );
 };
 
-const WEBFLOW_BASE_LINK = "https://climateconnect.webflow.io/"
+const WEBFLOW_BASE_LINK = "https://climateconnect.webflow.io/";
 
 const retrieveDescriptionFromWebflow = async (query, locale) => {
-  if(DESCRIPTION_WEBFLOW_LINKS[query?.hubUrl] && DESCRIPTION_WEBFLOW_LINKS[query?.hubUrl][locale]) {
-    const props = await retrievePage(WEBFLOW_BASE_LINK + DESCRIPTION_WEBFLOW_LINKS[query.hubUrl][locale]);
-    return props
+  if (
+    DESCRIPTION_WEBFLOW_LINKS[query?.hubUrl] &&
+    DESCRIPTION_WEBFLOW_LINKS[query?.hubUrl][locale]
+  ) {
+    const props = await retrievePage(
+      WEBFLOW_BASE_LINK + DESCRIPTION_WEBFLOW_LINKS[query.hubUrl][locale]
+    );
+    return props;
   }
-  return null
-}
+  return null;
+};
 
 const getHubData = async (url_slug, locale) => {
   console.log("getting data for hub " + url_slug);
