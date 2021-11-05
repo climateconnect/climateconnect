@@ -1,22 +1,18 @@
-import React from "react";
-import { CircularProgress } from "@material-ui/core";
-import { Button, Link, Typography } from "@material-ui/core";
+import { Button, CircularProgress, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Person } from "@material-ui/icons";
+import React from "react";
 
 const useStyles = makeStyles((theme) => ({
-  followButtonContainer: (props) => ({
+  followButtonContainer: {
     display: "inline-flex",
-    flexDirection: props.hasAdminPermissions ? "auto" : "column",
-    justifyContent: "center",
+    flexDirection: "column",
     alignItems: "center",
-    textAlign: "center",
-  }),
-  followersLink: (props) => ({
+  },
+  followersLink: {
     cursor: "pointer",
-    textDecoration: "none",
-    marginLeft: props.hasAdminPermissions ? theme.spacing(1) : 0,
-  }),
+    textAlign: "center",
+  },
   followerNumber: {
     fontWeight: 700,
     color: theme.palette.secondary.main,
@@ -26,28 +22,31 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 18,
     color: theme.palette.secondary.light,
   },
-  followingButton: {
+  followingButton: (props) => ({
+    marginLeft: props.hasAdminPermissions ? theme.spacing(2) : theme.spacing(0.25),
+    marginRight: props.hasAdminPermissions ? theme.spacing(2) : theme.spacing(0.25),
     whiteSpace: "nowrap",
-    marginLeft: theme.spacing(0.25),
-    marginRight: theme.spacing(0.25),
-  },
+    height: 40,
+    maxWidth: 140,
+  }),
 }));
 
 export default function FollowButton({
-  project,
   isUserFollowing,
   handleToggleFollowProject,
   hasAdminPermissions,
   toggleShowFollowers,
   followingChangePending,
   texts,
-  smallScreen,
-  tinyScreen,
+  screenSize,
+  numberOfFollowers,
+  bindFollow,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
-  if (smallScreen) {
+  if (screenSize.belowSmall && !screenSize.belowTiny) {
     return (
       <Button
+        {...bindFollow}
         onClick={handleToggleFollowProject}
         variant="contained"
         startIcon={<Person />}
@@ -57,11 +56,13 @@ export default function FollowButton({
       >
         {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
         {isUserFollowing ? texts.following : texts.follow}
+        {numberOfFollowers > 0 ? " • " + numberOfFollowers : ""}
       </Button>
     );
-  } else if (tinyScreen) {
+  } else if (screenSize.belowTiny) {
     return (
       <Button
+        {...bindFollow}
         onClick={handleToggleFollowProject}
         variant="contained"
         color={isUserFollowing ? "secondary" : "primary"}
@@ -70,6 +71,7 @@ export default function FollowButton({
       >
         {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
         {isUserFollowing ? texts.following : texts.follow}
+        {numberOfFollowers > 0 ? " • " + numberOfFollowers : ""}
       </Button>
     );
   } else {
@@ -86,16 +88,16 @@ export default function FollowButton({
           {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
           {isUserFollowing ? texts.following : texts.follow}
         </Button>
-        {project.number_of_followers > 0 && (
+        {numberOfFollowers > 0 && (
           <Link
             color="secondary"
-            underline="always"
+            underline="none"
             className={classes.followersLink}
             onClick={toggleShowFollowers}
           >
             <Typography className={classes.followersText}>
-              <span className={classes.followerNumber}>{project.number_of_followers} </span>
-              {project.number_of_followers > 1 ? texts.followers : texts.follower}
+              <span className={classes.followerNumber}>{numberOfFollowers} </span>
+              {numberOfFollowers > 1 ? texts.followers : texts.follower}
             </Typography>
           </Link>
         )}

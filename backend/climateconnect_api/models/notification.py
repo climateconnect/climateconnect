@@ -5,6 +5,7 @@ from ideas.models.comment import IdeaComment
 from ideas.models.support import IdeaSupporter
 from organization.models.content import Post, PostComment, ProjectComment
 from organization.models.followers import ProjectFollower
+from organization.models.likes import ProjectLike
 from organization.models.project import Project
 
 
@@ -19,6 +20,7 @@ class Notification(models.Model):
     REPLY_TO_POST_COMMENT = 7
     GROUP_MESSAGE = 8
     MENTION = 9
+    PROJECT_LIKE = 10
     IDEA_COMMENT = 11
     REPLY_TO_IDEA_COMMENT = 12
     PERSON_JOINED_IDEA = 13
@@ -33,6 +35,7 @@ class Notification(models.Model):
         (REPLY_TO_POST_COMMENT, "reply_to_post_comment"),
         (GROUP_MESSAGE, "group_message"),
         (MENTION, "mention"),
+        (PROJECT_LIKE, "project_like"),
         (IDEA_COMMENT, "idea_comment"),
         (REPLY_TO_IDEA_COMMENT, "reply_to_idea_comment"),
         (PERSON_JOINED_IDEA, "person_joined_idea")
@@ -82,6 +85,12 @@ class Notification(models.Model):
     project_follower = models.ForeignKey(
         ProjectFollower, related_name="notification_project_follower",
         verbose_name="Project Follower", on_delete=models.CASCADE,
+        null=True, blank=True
+    )
+
+    project_like = models.ForeignKey(
+        ProjectLike, related_name="notification_project_like",
+        verbose_name="Project Like", on_delete=models.CASCADE,
         null=True, blank=True
     )
 

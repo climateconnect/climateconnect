@@ -145,6 +145,19 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
         </>
       ),
     },
+    please_log_in_to_like_a_project: {
+      en: (
+        <>
+          Please <Link href={getLocalePrefix(locale) + "/signin"}>log in</Link> to like a project.
+        </>
+      ),
+      de: (
+        <>
+          Bitte <Link href={getLocalePrefix(locale) + "/signin"}>logge dich ein</Link>, um ein
+          Projekt zu liken.
+        </>
+      ),
+    },
     you_cant_leave_a_project_as_the_creator: {
       en: `You can't leave a project as the Super Admin. Please give the Super Admin role to another team member by clicking "Manage Members" in the team tab`,
       de: `Du kannst das Projekt als Super Admin nicht verlassen. Bitte übertrage diese Rolle auf ein anderes Teammitglied, indem du "Mitglieder verwalten" im Team-Tab klickst`,
@@ -168,6 +181,15 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
           Du wirst keine Updates mehr davon erhalten
         </>
       ),
+    },
+    do_you_really_want_to_dislike: {
+      en: "Do you really want to remove your like?",
+      de: "Möchtest du deinen Like wirklich entfernen? ",
+    },
+
+    are_you_sure_that_you_want_to_dislike_this_project: {
+      en: "Are you sure that you want to remove your like from this project?",
+      de: "Bist du sicher, dass du dieses Projekt nicht mehr liken möchtest?",
     },
     do_you_really_want_to_leave_this_project: {
       en: "Do you really want to leave this project?",
@@ -223,6 +245,22 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     following: {
       en: "Following",
       de: "Du folgst",
+    },
+    like: {
+      en: "Like",
+      de: "Liken",
+    },
+    liked: {
+      en: "Liked",
+      de: "Geliked",
+    },
+    one_like: {
+      en: "Like",
+      de: "Like",
+    },
+    likes: {
+      en: "Likes",
+      de: "Likes",
     },
     leave_project: {
       en: "Leave project",
@@ -282,6 +320,10 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "to see this project's followers",
       de: ", um die Followers des Projektes zu sehen",
     },
+    to_see_this_projects_likes: {
+      en: "to see this project's likes",
+      de: ", um die Likes des Projektes zu sehen",
+    },
     we_could_not_find_any_members_of_this_project: {
       en: "We could not find any members of this project.",
       de: "Wir konnten keine Mitglieder für dieses Projekt finden.",
@@ -336,13 +378,25 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Followers of",
       de: "Follower von",
     },
+    likes_of: {
+      en: "Likes of",
+      de: "Likes von",
+    },
     this_project_does_not_have_any_followers_yet: {
       en: "This project does not have any followers yet.",
       de: "Dieses Projekt hat noch keine Follower",
     },
+    this_project_does_not_have_any_likes_yet: {
+      en: "This project does not have any likes yet.",
+      de: "Dieses Projekt hat noch keine Likes",
+    },
     following_since: {
       en: "Following since",
       de: "Folgt seit",
+    },
+    liking_since: {
+      en: "Liking since",
+      de: "Gefällt seit",
     },
     delete_draft: {
       en: "Delete Draft",

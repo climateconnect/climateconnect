@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
 import FollowButton from "./FollowButton";
+import LikeButton from "./LikeButton";
 
 const useStyles = makeStyles(() => ({
   largeScreenButton: (props) => ({
@@ -32,20 +33,26 @@ export default function ProjectInteractionButtons({
   visibleFooterHeight,
   tabContentContainerSpaceToRight,
   project,
-  smallScreen,
   isUserFollowing,
+  isUserLiking,
   handleToggleFollowProject,
+  handleToggleLikeProject,
   toggleShowFollowers,
   followingChangePending,
+  likingChangePending,
   texts,
-  tinyScreen,
+  screenSize,
+  numberOfFollowers,
+  numberOfLikes,
+  bindLike,
+  bindFollow,
 }) {
   const classes = useStyles({
     visibleFooterHeight: visibleFooterHeight,
     tabContentContainerSpaceToRight: tabContentContainerSpaceToRight,
   });
 
-  if (smallScreen && !tinyScreen)
+  if (screenSize.belowSmall)
     return (
       <AppBar className={classes.actionBar} position="fixed" elevation={0}>
         <Toolbar className={classes.containerButtonsActionBar} variant="dense">
@@ -53,7 +60,7 @@ export default function ProjectInteractionButtons({
             <ContactCreatorButton
               projectAdmin={projectAdmin}
               handleClickContact={handleClickContact}
-              smallScreen={smallScreen}
+              screenSize={screenSize}
             />
           )}
           <FollowButton
@@ -64,31 +71,18 @@ export default function ProjectInteractionButtons({
             toggleShowFollowers={toggleShowFollowers}
             followingChangePending={followingChangePending}
             texts={texts}
-            smallScreen={smallScreen}
+            screenSize={screenSize}
+            numberOfFollowers={numberOfFollowers}
+            bindFollow={bindFollow}
           />
-        </Toolbar>
-      </AppBar>
-    );
-  if (smallScreen && tinyScreen)
-    return (
-      <AppBar className={classes.actionBar} position="fixed" elevation={0}>
-        <Toolbar className={classes.containerButtonsActionBar} variant="dense">
-          {!hasAdminPermissions && (
-            <ContactCreatorButton
-              projectAdmin={projectAdmin}
-              handleClickContact={handleClickContact}
-              tinyScreen={tinyScreen}
-            />
-          )}
-          <FollowButton
-            isUserFollowing={isUserFollowing}
-            handleToggleFollowProject={handleToggleFollowProject}
-            project={project}
-            hasAdminPermissions={hasAdminPermissions}
-            toggleShowFollowers={toggleShowFollowers}
-            followingChangePending={followingChangePending}
+          <LikeButton
             texts={texts}
-            tinyScreen={tinyScreen}
+            screenSize={screenSize}
+            isUserLiking={isUserLiking}
+            handleToggleLikeProject={handleToggleLikeProject}
+            likingChangePending={likingChangePending}
+            numberOfLikes={numberOfLikes}
+            bindLike={bindLike}
           />
         </Toolbar>
       </AppBar>
@@ -103,6 +97,9 @@ export default function ProjectInteractionButtons({
               className={classes.largeScreenButton}
               projectAdmin={projectAdmin}
               handleClickContact={handleClickContact}
+              isUserLiking={isUserLiking}
+              handleToggleLikeProject={handleToggleLikeProject}
+              screenSize={screenSize}
             />
           )}
       </Container>

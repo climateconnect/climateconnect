@@ -23,7 +23,7 @@ from organization.models import (Organization, OrganizationTagging,
                                  ProjectCollaborators, ProjectComment,
                                  ProjectFollower, ProjectMember,
                                  ProjectParents, ProjectStatus, ProjectTagging,
-                                 ProjectTags)
+                                 ProjectTags, ProjectLike)
 from organization.models.translations import ProjectTranslation
 from organization.pagination import (MembersPagination,
                                      ProjectCommentPagination,
@@ -42,7 +42,8 @@ from organization.serializers.project import (EditProjectSerializer,
                                               ProjectMinimalSerializer,
                                               ProjectSerializer,
                                               ProjectSitemapEntrySerializer,
-                                              ProjectStubSerializer)
+                                              ProjectStubSerializer,
+                                              ProjectLikeSerializer)
 from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
@@ -50,6 +51,7 @@ from organization.utility.notification import (
     create_project_comment_notification,
     create_project_comment_reply_notification,
     create_project_follower_notification,
+    create_project_like_notification,
     get_mentions)
 from organization.utility.organization import check_organization
 from organization.utility.project import (create_new_project,
@@ -652,7 +654,7 @@ class ListProjectMembersView(ListAPIView):
     def get_queryset(self):
         project = Project.objects.get(url_slug=self.kwargs['url_slug'])
 
-        return project.project_member.filter(is_active=True)
+        return project.project_member_project.filter(is_active=True)
 
 
 class ListProjectTags(ListAPIView):
@@ -722,6 +724,41 @@ class SetFollowView(APIView):
                 'message': 'Invalid value for variable "following"'
             }, status=status.HTTP_400_BAD_REQUEST)
 
+class SetLikeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, url_slug):
+        if 'liking' not in request.data:
+            return Response({
+                'message': 'Missing required parameters'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            raise NotFound(detail="Project not found.", code=status.HTTP_404_NOT_FOUND)
+
+        if request.data['liking'] == True:
+            if ProjectLike.objects.filter(user=request.user, project=project).exists():
+                raise ValidationError("You've already liked this project.")
+            else:
+                project_like = ProjectLike.objects.create(user=request.user, project=project)
+                create_project_like_notification(project_like)
+                return Response({
+                    'message': 'You have liked this project.',
+                    'liking': True
+                }, status=status.HTTP_201_CREATED)
+        if request.data['liking'] == False:
+            try:
+                liking_user_object = ProjectLike.objects.get(user=request.user, project=project)
+            except ProjectLike.DoesNotExist:
+                raise NotFound(
+                    detail="You haven't been liking this project.", code=status.HTTP_404_NOT_FOUND)
+            liking_user_object.delete()
+            return Response({'message': 'You do not like this project anymore.', 'liking': False}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({
+                'message': 'Invalid value for variable "liking"'
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 class IsUserFollowing(APIView):
     permission_classes = [IsAuthenticated]
@@ -736,6 +773,17 @@ class IsUserFollowing(APIView):
             user=request.user, project=project).exists()
         return Response({'is_following': is_following}, status=status.HTTP_200_OK)
 
+class IsUserLiking(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, url_slug):
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            raise NotFound(detail="Project not found:"+url_slug, code=status.HTTP_404_NOT_FOUND)
+        is_liking = ProjectLike.objects.filter(
+            user=request.user, project=project).exists()
+        return Response({'is_liking': is_liking}, status=status.HTTP_200_OK) 
 
 class ProjectCommentView(APIView):
     permission_classes = [IsAuthenticated]
@@ -835,6 +883,16 @@ class ListProjectFollowersView(ListAPIView):
         followers = ProjectFollower.objects.filter(project=project[0])
         return followers
 
+class ListProjectLikesView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ProjectLikeSerializer
+
+    def get_queryset(self):
+        project = Project.objects.get(url_slug=self.kwargs['url_slug'])
+        if not project.exists():
+            return None
+        likes = ProjectLike.objects.filter(project=project)
+        return likes        
 
 class LeaveProject(RetrieveUpdateAPIView):
     """

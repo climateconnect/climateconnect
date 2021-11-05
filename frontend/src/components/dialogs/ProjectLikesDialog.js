@@ -19,7 +19,6 @@ import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import GenericDialog from "./GenericDialog";
-
 const useStyles = makeStyles((theme) => ({
   user: {
     display: "flex",
@@ -31,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   username: {
     fontWeight: 600,
   },
-  followedText: {
+  likedText: {
     [theme.breakpoints.down("xs")]: {
       fontSize: 13,
     },
@@ -44,16 +43,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
 }));
-
-export default function ProjectFollowersDialog({
-  open,
-  onClose,
-  project,
-  followers,
-  loading,
-  user,
-  url,
-}) {
+export default function ProjectLikesDialog({ open, onClose, project, likes, loading, user, url }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -61,18 +51,14 @@ export default function ProjectFollowersDialog({
     onClose();
   };
   return (
-    <GenericDialog
-      onClose={handleClose}
-      open={open}
-      title={texts.followers_of + " " + project.name}
-    >
+    <GenericDialog onClose={handleClose} open={open} title={texts.likes_of + " " + project.name}>
       <div>
         {loading ? (
           <LinearProgress />
         ) : !user ? (
           <>
             <Typography>
-              {texts.please_log_in + " " + texts.to_see_this_projects_followers + "!"}
+              {texts.please_log_in + " " + texts.to_see_this_projects_likes + "!"}
             </Typography>
             <Container className={classes.loginButtonContainer}>
               <Button
@@ -85,44 +71,43 @@ export default function ProjectFollowersDialog({
               </Button>
             </Container>
           </>
-        ) : followers && followers.length > 0 ? (
-          <ProjectFollowers followers={followers} texts={texts} locale={locale} />
+        ) : likes && likes.length > 0 ? (
+          <ProjectLikes likes={likes} texts={texts} locale={locale} />
         ) : (
-          <Typography>{texts.this_project_does_not_have_any_followers_yet}</Typography>
+          <Typography>{texts.this_project_does_not_have_any_likes_yet}</Typography>
         )}
       </div>
     </GenericDialog>
   );
 }
-
-const ProjectFollowers = ({ followers, texts, locale }) => {
+const ProjectLikes = ({ likes, texts, locale }) => {
   const classes = useStyles();
   return (
     <>
       <Divider />
       <Table>
         <TableBody>
-          {followers.map((f, index) => {
+          {likes.map((l, index) => {
             return (
-              <TableRow key={index} className={classes.follower}>
+              <TableRow key={index}>
                 <TableCell>
                   <Link
                     className={classes.user}
-                    href={getLocalePrefix(locale) + "/profiles/" + f.user_profile.url_slug}
+                    href={getLocalePrefix(locale) + "/profiles/" + l.user_profile.url_slug}
                   >
                     <Avatar
                       className={classes.avatar}
-                      src={getImageUrl(f.user_profile.image)}
-                      alt={f.user_profile.first_name + " " + f.user_profile.last_name}
+                      src={getImageUrl(l.user_profile.image)}
+                      alt={l.user_profile.first_name + " " + l.user_profile.last_name}
                     />
                     <Typography component="span" color="secondary" className={classes.username}>
-                      {f.user_profile.first_name + " " + f.user_profile.last_name}
+                      {l.user_profile.first_name + " " + l.user_profile.last_name}
                     </Typography>
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <Typography className={classes.followedText}>
-                    {texts.following_since} <ReactTimeago date={f.created_at} />
+                  <Typography className={classes.likedText}>
+                    {texts.liking_since} <ReactTimeago date={l.created_at} />
                   </Typography>
                 </TableCell>
               </TableRow>

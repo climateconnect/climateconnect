@@ -11,6 +11,7 @@ const useStyles = makeStyles({
   root: {
     position: "relative",
     height: 40,
+    width: 200,
   },
   smallAvatar: {
     height: theme.spacing(3),
@@ -55,8 +56,7 @@ export default function ContactCreatorButton({
   projectAdmin,
   contactProjectCreatorButtonRef,
   handleClickContact,
-  smallScreen,
-  tinyScreen,
+  screenSize,
   isFixed,
 }) {
   const classes = useStyles();
@@ -76,7 +76,7 @@ export default function ContactCreatorButton({
   const creatorsRoleInProject = projectAdmin?.role ? projectAdmin?.role : texts.responsible_person;
   const buttonText = texts.contact;
 
-  if (smallScreen) {
+  if (screenSize.belowSmall && !screenSize.belowTiny) {
     return (
       <Button
         variant="contained"
@@ -88,7 +88,7 @@ export default function ContactCreatorButton({
         {buttonText}
       </Button>
     );
-  } else if (tinyScreen) {
+  } else if (screenSize.belowTiny) {
     return (
       <Button variant="contained" color="primary" onClick={handleClickContact}>
         {buttonText}

@@ -30,12 +30,13 @@ const parseComments = (comments) => {
 export async function getServerSideProps(ctx) {
   const { token } = NextCookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectId);
-  const [project, members, posts, comments, following] = await Promise.all([
+  const [project, members, posts, comments, following, liking] = await Promise.all([
     getProjectByIdIfExists(projectUrl, token, ctx.locale),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
     getPostsByProject(projectUrl, token, ctx.locale),
     getCommentsByProject(projectUrl, token, ctx.locale),
     token ? getIsUserFollowing(projectUrl, token, ctx.locale) : false,
+    token ? getIsUserLiking(projectUrl, token, ctx.locale) : false,
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -44,21 +45,55 @@ export async function getServerSideProps(ctx) {
       posts: posts,
       comments: comments,
       following: following,
+      liking: liking,
     }),
   };
 }
 
-export default function ProjectPage({ project, members, posts, comments, following }) {
+export default function ProjectPage({ project, members, posts, comments, following, liking }) {
   const token = new Cookies().get("token");
   const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
   const [isUserFollowing, setIsUserFollowing] = React.useState(following);
+  const [isUserLiking, setIsUserLiking] = React.useState(liking);
   const [followingChangePending, setFollowingChangePending] = React.useState(false);
+  const [likingChangePending, setLikingChangePending] = React.useState(false);
+  const [numberOfLikes, setNumberOfLikes] = React.useState(project.number_of_likes);
+  const [numberOfFollowers, setNumberOfFollowers] = React.useState(project.number_of_followers);
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
+  const handleFollow = (userFollows, updateCount, pending) => {
+    setIsUserFollowing(userFollows);
+    if (updateCount) {
+      if (userFollows) {
+        setNumberOfFollowers(numberOfFollowers + 1);
+      } else {
+        setNumberOfFollowers(numberOfFollowers - 1);
+      }
+    }
+    setFollowingChangePending(pending);
+  };
+
+//We only update the count once the frontend received a response from the backend. This is what the updateCount variable is for
+  const handleLike = (userLikes, updateCount, pending) => {
+    setIsUserLiking(userLikes);
+    if (updateCount) {
+      if (userLikes) {
+        setNumberOfLikes(numberOfLikes + 1);
+      } else {
+        setNumberOfLikes(numberOfLikes - 1);
+      }
+    }
+    setLikingChangePending(pending);
+  };
+
   const handleWindowClose = (e) => {
-    if (curComments.filter((c) => c.unconfirmed).length > 0 || followingChangePending) {
+    if (
+      curComments.filter((c) => c.unconfirmed).length > 0 ||
+      followingChangePending ||
+      likingChangePending
+    ) {
       e.preventDefault();
       return (e.returnValue = texts.changes_might_not_be_saved);
     }
@@ -85,13 +120,17 @@ export default function ProjectPage({ project, members, posts, comments, followi
           token={token}
           setMessage={setMessage}
           isUserFollowing={isUserFollowing}
-          setIsUserFollowing={setIsUserFollowing}
           user={user}
           setCurComments={setCurComments}
           followingChangePending={followingChangePending}
-          setFollowingChangePending={setFollowingChangePending}
+          likingChangePending={likingChangePending}
           texts={texts}
           projectAdmin={members.find((m) => m.permission === ROLE_TYPES.all_type)}
+          isUserLiking={isUserLiking}
+          numberOfLikes={numberOfLikes}
+          numberOfFollowers={numberOfFollowers}
+          handleFollow={handleFollow}
+          handleLike={handleLike}
         />
       ) : (
         <PageNotFound itemName={texts.project} />
@@ -130,6 +169,24 @@ async function getIsUserFollowing(projectUrl, token, locale) {
     else {
       //TODO: get comments and timeline posts and project taggings
       return resp.data.is_following;
+    }
+  } catch (err) {
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+async function getIsUserLiking(projectUrl, token, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/projects/" + projectUrl + "/am_i_liking/",
+      token: token,
+      locale: locale,
+    });
+    if (resp.data.length === 0) return null;
+    else {
+      return resp.data.is_liking;
     }
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
@@ -217,6 +274,7 @@ function parseProject(project) {
     ),
     website: project.website,
     number_of_followers: project.number_of_followers,
+    number_of_likes: project.number_of_likes,
   };
 }
 
