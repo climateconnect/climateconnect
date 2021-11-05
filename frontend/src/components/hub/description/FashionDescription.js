@@ -34,10 +34,9 @@ const useStyles = makeStyles((theme) => ({
 export default function FashionDescription() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "navigation", locale: locale, hubName: "Fashion" });
+  const texts = getTexts({ page: "hub", locale: locale, hubName: "Fashion" });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  console.log(isMediumScreen);
   return (
     <ThemeProvider theme={hubTheme}>
       <div>
