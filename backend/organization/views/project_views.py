@@ -888,9 +888,12 @@ class ListProjectLikesView(ListAPIView):
     serializer_class = ProjectLikeSerializer
 
     def get_queryset(self):
-        project = Project.objects.get(url_slug=self.kwargs['url_slug'])
-        if not project.exists():
+        try:
+            project = Project.objects.get(url_slug=self.kwargs['url_slug'])
+        except Project.DoesNotExist:
             return None
+            
+        
         likes = ProjectLike.objects.filter(project=project)
         return likes        
 
