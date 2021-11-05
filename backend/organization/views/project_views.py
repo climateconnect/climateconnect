@@ -888,10 +888,10 @@ class ListProjectLikesView(ListAPIView):
     serializer_class = ProjectLikeSerializer
 
     def get_queryset(self):
-        project = Project.objects.get(url_slug=self.kwargs['url_slug'])
+        project = Project.objects.filter(url_slug=self.kwargs['url_slug'])
         if not project.exists():
             return None
-        likes = ProjectLike.objects.filter(project=project)
+        likes = ProjectLike.objects.filter(project=project[0])
         return likes        
 
 class LeaveProject(RetrieveUpdateAPIView):
