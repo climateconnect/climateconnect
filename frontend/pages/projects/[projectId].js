@@ -1,5 +1,5 @@
 import NextCookies from "next-cookies";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest } from "../../public/lib/apiOperations";
@@ -9,6 +9,8 @@ import UserContext from "../../src/components/context/UserContext";
 import PageNotFound from "../../src/components/general/PageNotFound";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPageRoot from "../../src/components/project/ProjectPageRoot";
+import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
+import { getAllHubs } from "../../public/lib/hubOperations.js";
 
 const parseComments = (comments) => {
   return comments
@@ -30,13 +32,14 @@ const parseComments = (comments) => {
 export async function getServerSideProps(ctx) {
   const { token } = NextCookies(ctx);
   const projectUrl = encodeURI(ctx.query.projectId);
-  const [project, members, posts, comments, following, liking] = await Promise.all([
+  const [project, members, posts, comments, following, liking, hubs] = await Promise.all([
     getProjectByIdIfExists(projectUrl, token, ctx.locale),
     getProjectMembersByIdIfExists(projectUrl, ctx.locale),
     getPostsByProject(projectUrl, token, ctx.locale),
     getCommentsByProject(projectUrl, token, ctx.locale),
     token ? getIsUserFollowing(projectUrl, token, ctx.locale) : false,
     token ? getIsUserLiking(projectUrl, token, ctx.locale) : false,
+    getAllHubs(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -46,11 +49,20 @@ export async function getServerSideProps(ctx) {
       comments: comments,
       following: following,
       liking: liking,
+      hubs: hubs,
     }),
   };
 }
 
-export default function ProjectPage({ project, members, posts, comments, following, liking }) {
+export default function ProjectPage({
+  project,
+  members,
+  posts,
+  comments,
+  following,
+  liking,
+  hubs,
+}) {
   const token = new Cookies().get("token");
   const [curComments, setCurComments] = React.useState(parseComments(comments));
   const [message, setMessage] = React.useState({});
@@ -107,12 +119,15 @@ export default function ProjectPage({ project, members, posts, comments, followi
     };
   });
 
+  const hubsSubHeaderRef = useRef(null);
+
   return (
     <WideLayout
       description={project?.short_description}
       message={message?.message}
       messageType={message?.messageType}
       title={project ? project.name : texts.project + " " + texts.not_found}
+      subHeader={<HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} />}
     >
       {project ? (
         <ProjectPageRoot
