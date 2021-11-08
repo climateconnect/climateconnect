@@ -1,6 +1,6 @@
 # Climate Connect
 
-The code for https://climateconnect.earth.
+The client and server code for the web platform on https://climateconnect.earth.
 
 ## Pre-steps
 
@@ -46,7 +46,7 @@ git clone https://github.com/climateconnect/climateconnect
 
 After you've cloned the repository, we can set up the local Redis server and backend.
 
-Note: we use Python 3, so for all instructions we insume `python` means `python3`.
+Note: we use Python 3, so for all instructions we assume `python` means `python3`.
 
 #### First Time Setup
 

@@ -42,6 +42,7 @@ import theme from "../../themes/theme";
 import Notification from "../communication/notifications/Notification";
 import NotificationsBox from "../communication/notifications/NotificationsBox";
 import UserContext from "../context/UserContext";
+import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 
 const useStyles = makeStyles((theme) => {
@@ -171,6 +172,10 @@ const useStyles = makeStyles((theme) => {
     loggedInPopper: {
       zIndex: 30,
     },
+    normalScreenIcon: {
+      fontSize: 20,
+      marginRight: theme.spacing(0.25),
+    },
   };
 });
 
@@ -184,6 +189,8 @@ const getLinks = (path_to_redirect, texts) => [
     href: "/about",
     text: texts.about,
     iconForDrawer: InfoIcon,
+    showStaticLinksInDropdown: true,
+    hideOnStaticPages: true,
   },
   {
     href: "/donate",
@@ -192,6 +199,7 @@ const getLinks = (path_to_redirect, texts) => [
     isOutlinedInHeader: true,
     icon: FavoriteBorderIcon,
     vanillaIfLoggedOut: true,
+    hideOnStaticPages: true,
   },
   {
     href: "/share",
@@ -247,6 +255,10 @@ const getStaticPageLinks = (texts) => [
   {
     href: "/faq",
     text: texts.faq,
+  },
+  {
+    href: "/press",
+    text: texts.press,
   },
 ];
 
@@ -310,6 +322,7 @@ export default function Header({
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = React.useState(false);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
+  const isMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const LINKS = getLinks(pathName, texts);
   const toggleShowNotifications = (event) => {
     if (!anchorEl) setAnchorEl(event.currentTarget);
@@ -319,6 +332,15 @@ export default function Header({
 
   const onNotificationsClose = () => setAnchorEl(null);
 
+  const getLogo = () => {
+    if (isMediumScreen) {
+      return transparentHeader ? "/images/logo_white_no_text.svg" : "/images/logo_no_text.svg";
+    }
+    return transparentHeader ? "/images/logo_white_beta.svg" : "/images/logo.png";
+  };
+
+  const logo = getLogo();
+
   return (
     <Box
       component="header"
@@ -326,11 +348,7 @@ export default function Header({
     >
       <Container className={classes.container}>
         <Link href={localePrefix + "/"}>
-          <img
-            src={transparentHeader ? "/images/logo_white_beta.svg" : "/images/logo.png"}
-            alt={texts.climate_connect_logo}
-            className={classes.logo}
-          />
+          <img src={logo} alt={texts.climate_connect_logo} className={classes.logo} />
         </Link>
         {isNarrowScreen ? (
           <NarrowScreenLinks
@@ -359,6 +377,7 @@ export default function Header({
             LINKS={LINKS}
             texts={texts}
             localePrefix={localePrefix}
+            isStaticPage={isStaticPage}
           />
         )}
       </Container>
@@ -370,9 +389,11 @@ export default function Header({
 function StaticPageLinks() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+
   const texts = getTexts({ page: "navigation", locale: locale });
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
   const localePrefix = getLocalePrefix(locale);
+
   return (
     <div className={classes.staticPageLinksWrapper}>
       <Container className={classes.staticPageLinksContainer}>
@@ -408,9 +429,11 @@ function NormalScreenLinks({
   LINKS,
   texts,
   localePrefix,
+  isStaticPage,
 }) {
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
   return (
     <Box className={classes.linkContainer}>
       {LINKS.filter(
@@ -430,7 +453,10 @@ function NormalScreenLinks({
         });
         const Icon = link.icon;
 
-        if (!(isMediumScreen && link.hideOnMediumScreen))
+        if (
+          !(isMediumScreen && link.hideOnMediumScreen) &&
+          !(isStaticPage && link.hideOnStaticPages)
+        )
           return (
             <React.Fragment key={index}>
               <span className={classes.menuLink}>
@@ -472,8 +498,13 @@ function NormalScreenLinks({
                       </NotificationsBox>
                     )}
                   </>
+                ) : link?.showStaticLinksInDropdown ? (
+                  <DropDownButton options={STATIC_PAGE_LINKS} buttonProps={{ ...buttonProps }}>
+                    {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
+                  </DropDownButton>
                 ) : (
                   <Button color="primary" {...buttonProps}>
+                    {link.icon && <link.icon className={classes.normalScreenIcon} />}
                     {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
                   </Button>
                 )}
@@ -518,7 +549,6 @@ function NarrowScreenLinks({
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
   );
-  console.log(linksOutsideDrawer);
   return (
     <>
       <Box>
@@ -754,9 +784,11 @@ const getLinkButtonProps = ({
   if (contained) {
     buttonProps.variant = "contained";
   }
+
   if (!isNarrowScreen && (loggedInUser || !link.vanillaIfLoggedOut) && link.icon) {
-    buttonProps.startIcon = <link.icon />;
+    buttonProps.starticon = <link.icon />;
   }
+
   if (!transparentHeader) buttonProps.color = "primary";
   else if (!contained && link.type !== "notificationsButton") buttonProps.color = "inherit";
   if (link.type === "notificationsButton") buttonProps.onClick = toggleShowNotifications;

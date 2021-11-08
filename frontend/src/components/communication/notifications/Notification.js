@@ -1,9 +1,11 @@
-import { Link, ListItemText, MenuItem, withStyles } from "@material-ui/core";
+import { Link, ListItemIcon, ListItemText, MenuItem, withStyles } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
 import GroupIcon from "@material-ui/icons/Group";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
+import { getFragmentsWithMentions } from "../../../utils/mentions_markdown";
 import UserContext from "../../context/UserContext";
 import {
   IdeaCommentNotification,
@@ -45,6 +47,8 @@ export const StyledMenuItem = withStyles((theme) => ({
   },
 }))(MenuItem);
 
+//When editing this: make sure all entries are still at the correct index afterwards
+//It has to match with Notification.NOTIFICATION_TYPES in the backend
 const NOTIFICATION_TYPES = [
   "broadcast",
   "private_message",
@@ -55,14 +59,16 @@ const NOTIFICATION_TYPES = [
   "post_comment",
   "reply_to_post_comment",
   "group_message",
-  null,
-  null,
+  "mention",
+  "project_like",
   "idea_comment",
   "reply_to_idea_comment",
   "person_joined_idea",
 ];
 
 export default function Notification({ notification, isPlaceholder }) {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale, idea: notification?.idea });
   if (isPlaceholder) return <PlaceholderNotification />;
   else {
     const type = NOTIFICATION_TYPES[notification.notification_type];
@@ -72,6 +78,8 @@ export default function Notification({ notification, isPlaceholder }) {
       return <GroupMessageNotification notification={notification} />;
     else if (type === "project_comment")
       return <ProjectCommentNotification notification={notification} />;
+    else if (type === "mention")
+      return <MentionNotification notification={notification} texts={texts} locale={locale} />;
     else if (type === "reply_to_project_comment")
       return <ProjectCommentReplyNotification notification={notification} />;
     else if (type === "project_follower")
@@ -82,6 +90,8 @@ export default function Notification({ notification, isPlaceholder }) {
       return <IdeaCommentReplyNotification notification={notification} />;
     else if (type === "person_joined_idea")
       return <PersonJoinedIdeaNotification notification={notification} />;
+    else if (type === "project_like")
+      return <ProjectLikeNotification notification={notification} />;
     else return <></>;
   }
 }
@@ -158,6 +168,43 @@ const PlaceholderNotification = () => {
   );
 };
 
+const MentionNotification = ({ notification, texts, locale }) => {
+  const classes = useStyles();
+  const entityType = notification.project_comment ? "project" : "idea";
+  const commentProp = `${entityType}_comment`;
+  const sender = notification[commentProp].author_user;
+  const urlEnding =
+    entityType === "project"
+      ? `/projects/${notification.project.url_slug}/#comments`
+      : `/hubs/${notification.idea.hub_url_slug}?idea=${notification.idea.url_slug}#ideas`;
+  const previewText = getFragmentsWithMentions(notification[commentProp].content, false, locale);
+  return (
+    <Link href={getLocalePrefix(locale) + urlEnding} underline="none">
+      <StyledMenuItem>
+        <ListItemIcon>
+          <AlternateEmailIcon />
+        </ListItemIcon>
+        <ListItemText
+          primary={
+            sender.first_name +
+            " " +
+            sender.last_name +
+            " " +
+            texts.mentioned_you_in_comment_about_project
+          }
+          secondary={previewText}
+          primaryTypographyProps={{
+            className: classes.messageSender,
+          }}
+          secondaryTypographyProps={{
+            className: classes.notificationText,
+          }}
+        />
+      </StyledMenuItem>
+    </Link>
+  );
+};
+
 const ProjectFollowerNotification = ({ notification }) => {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale });
@@ -175,3 +222,23 @@ const ProjectFollowerNotification = ({ notification }) => {
     />
   );
 };
+
+const ProjectLikeNotification = ({ notification }) => {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale, project: notification.project });
+  const likingUserName =
+    notification.project_like.first_name + " " + notification.project_like.last_name;
+  return (
+    <GenericNotification
+      link={`/projects/${notification.project.url_slug}?show_likes=true`}
+      avatar={{
+        alt: likingUserName,
+        image: notification.project_like.thumbnail_image,
+      }}
+      primaryText={`${likingUserName} ${texts.liked_your_project}`}
+      secondaryText={texts.congratulations}
+    />
+  );
+};
+
+export { NOTIFICATION_TYPES };

@@ -118,6 +118,25 @@ export function getInitialFilters({ filterChoices, locale, initialLocationFilter
   };
 }
 
+//Splits a query array from a url into filters and non-fitlers
+export function splitFiltersFromQueryObject(queryObject, possibleFilters) {
+  if (!queryObject) return { filters: {}, nonFilters: {} };
+  const possibleFilterKeys = possibleFilters.map((f) => f.key);
+  const filters = Object.keys(queryObject).reduce((obj, curKey) => {
+    if (possibleFilterKeys.includes(curKey)) {
+      obj[curKey] = queryObject[curKey];
+    }
+    return obj;
+  }, {});
+  const restOfQueryObject = Object.keys(queryObject).reduce((obj, curKey) => {
+    if (!possibleFilterKeys.includes(curKey)) {
+      obj[curKey] = queryObject[curKey];
+    }
+    return obj;
+  }, {});
+  return { filters: filters, nonFilters: restOfQueryObject };
+}
+
 /**
  * Fetches data from the server based on the newly provided
  * filters. Returns an object with the new filter data, as well

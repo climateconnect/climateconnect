@@ -1,11 +1,12 @@
-from ideas.models.support import IdeaSupporter
-from ideas.models.comment import IdeaComment
-from django.db import models
 from chat_messages.models.message import MessageParticipants, MessageReceiver
-from organization.models.content import (ProjectComment, PostComment, Post)
-from organization.models.followers import ProjectFollower
-from organization.models.project import Project
 from django.contrib.auth.models import User
+from django.db import models
+from ideas.models.comment import IdeaComment
+from ideas.models.support import IdeaSupporter
+from organization.models.content import Post, PostComment, ProjectComment
+from organization.models.followers import ProjectFollower
+from organization.models.likes import ProjectLike
+from organization.models.project import Project
 
 
 class Notification(models.Model):
@@ -18,6 +19,8 @@ class Notification(models.Model):
     POST_COMMENT = 6
     REPLY_TO_POST_COMMENT = 7
     GROUP_MESSAGE = 8
+    MENTION = 9
+    PROJECT_LIKE = 10
     IDEA_COMMENT = 11
     REPLY_TO_IDEA_COMMENT = 12
     PERSON_JOINED_IDEA = 13
@@ -31,6 +34,8 @@ class Notification(models.Model):
         (POST_COMMENT, "post_comment"),
         (REPLY_TO_POST_COMMENT, "reply_to_post_comment"),
         (GROUP_MESSAGE, "group_message"),
+        (MENTION, "mention"),
+        (PROJECT_LIKE, "project_like"),
         (IDEA_COMMENT, "idea_comment"),
         (REPLY_TO_IDEA_COMMENT, "reply_to_idea_comment"),
         (PERSON_JOINED_IDEA, "person_joined_idea")
@@ -43,7 +48,7 @@ class Notification(models.Model):
 
     text = models.CharField(
         help_text="Text to be displayed in Notification",
-        verbose_name="Text", max_length= 280, null=True, blank=True
+        verbose_name="Text", max_length=280, null=True, blank=True
     )
 
     chat = models.ForeignKey(
@@ -58,7 +63,7 @@ class Notification(models.Model):
         verbose_name="Project comment", on_delete=models.CASCADE,
         null=True, blank=True
     )
-    
+
     post_comment = models.ForeignKey(
         PostComment, related_name="notification_post_comment",
         verbose_name="Post comment", on_delete=models.CASCADE,
@@ -73,13 +78,19 @@ class Notification(models.Model):
 
     idea_supporter = models.ForeignKey(
         IdeaSupporter, related_name="notification_idea_supporter",
-        verbose_name= "Idea Supporter", on_delete=models.CASCADE,
+        verbose_name="Idea Supporter", on_delete=models.CASCADE,
         null=True, blank=True
     )
 
     project_follower = models.ForeignKey(
         ProjectFollower, related_name="notification_project_follower",
         verbose_name="Project Follower", on_delete=models.CASCADE,
+        null=True, blank=True
+    )
+
+    project_like = models.ForeignKey(
+        ProjectLike, related_name="notification_project_like",
+        verbose_name="Project Like", on_delete=models.CASCADE,
         null=True, blank=True
     )
 
@@ -94,9 +105,10 @@ class Notification(models.Model):
         verbose_name="Created at", auto_now_add=True
     )
 
-    class Meta:
-        verbose_name_plural = "Notifications"
-        ordering = ["-id"]
+
+class Meta:
+    verbose_name_plural = "Notifications"
+    ordering = ["-created_at"]
 
 
 class UserNotification(models.Model):
@@ -119,6 +131,14 @@ class UserNotification(models.Model):
         help_text="Time when the notification was sent to the user",
         verbose_name="Created at", auto_now_add=True
     )
+
+    class Meta:
+        verbose_name_plural = "User notifications"
+
+    def __str__(self):
+        return "Notified %s %s about Notification %d at %s" % (
+            self.user.first_name, self.user.last_name, self.notification.id, self.notification.created_at
+        )
 
 
 class EmailNotification(models.Model):

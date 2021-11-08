@@ -124,9 +124,9 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Team",
       de: "Team",
     },
-    comments: {
-      en: "Comments",
-      de: "Kommentare",
+    discussion: {
+      en: "Discussion",
+      de: "Diskussion",
     },
     you_have_successfully_left_the_project: {
       en: "You have successfully left the project.",
@@ -142,6 +142,19 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
         <>
           Bitte <Link href={getLocalePrefix(locale) + "/signin"}>logge dich ein</Link>, um einem
           Projekt zu folgen.
+        </>
+      ),
+    },
+    please_log_in_to_like_a_project: {
+      en: (
+        <>
+          Please <Link href={getLocalePrefix(locale) + "/signin"}>log in</Link> to like a project.
+        </>
+      ),
+      de: (
+        <>
+          Bitte <Link href={getLocalePrefix(locale) + "/signin"}>logge dich ein</Link>, um ein
+          Projekt zu liken.
         </>
       ),
     },
@@ -168,6 +181,15 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
           Du wirst keine Updates mehr davon erhalten
         </>
       ),
+    },
+    do_you_really_want_to_dislike: {
+      en: "Do you really want to remove your like?",
+      de: "Möchtest du deinen Like wirklich entfernen? ",
+    },
+
+    are_you_sure_that_you_want_to_dislike_this_project: {
+      en: "Are you sure that you want to remove your like from this project?",
+      de: "Bist du sicher, dass du dieses Projekt nicht mehr liken möchtest?",
     },
     do_you_really_want_to_leave_this_project: {
       en: "Do you really want to leave this project?",
@@ -200,10 +222,6 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de:
         "Bitte erstelle ein Konto oder melde dich an, um die Verantwortlichen des Projektes zu kontaktieren.",
     },
-    contact_the_projects_creator_with_just_one_click: {
-      en: "Contact the project's creator with just one click!",
-      de: "Kontaktiere die Verantwortlichen mit nur einem Klick",
-    },
     contact_creator: {
       en: "Contact creator",
       de: "Verantwortliche Kontaktieren",
@@ -227,6 +245,22 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     following: {
       en: "Following",
       de: "Du folgst",
+    },
+    like: {
+      en: "Like",
+      de: "Liken",
+    },
+    liked: {
+      en: "Liked",
+      de: "Geliked",
+    },
+    one_like: {
+      en: "Like",
+      de: "Like",
+    },
+    likes: {
+      en: "Likes",
+      de: "Likes",
     },
     leave_project: {
       en: "Leave project",
@@ -286,6 +320,10 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "to see this project's followers",
       de: ", um die Followers des Projektes zu sehen",
     },
+    to_see_this_projects_likes: {
+      en: "to see this project's likes",
+      de: ", um die Likes des Projektes zu sehen",
+    },
     we_could_not_find_any_members_of_this_project: {
       en: "We could not find any members of this project.",
       de: "Wir konnten keine Mitglieder für dieses Projekt finden.",
@@ -340,13 +378,25 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Followers of",
       de: "Follower von",
     },
+    likes_of: {
+      en: "Likes of",
+      de: "Likes von",
+    },
     this_project_does_not_have_any_followers_yet: {
       en: "This project does not have any followers yet.",
       de: "Dieses Projekt hat noch keine Follower",
     },
+    this_project_does_not_have_any_likes_yet: {
+      en: "This project does not have any likes yet.",
+      de: "Dieses Projekt hat noch keine Likes",
+    },
     following_since: {
       en: "Following since",
       de: "Folgt seit",
+    },
+    liking_since: {
+      en: "Liking since",
+      de: "Gefällt seit",
     },
     delete_draft: {
       en: "Delete Draft",
@@ -677,6 +727,10 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     responsible_organization: {
       en: "Responsible Organization",
       de: "Verantwortliche Organisation",
+    },
+    responsible_person: {
+      en: "Project Creator",
+      de: "Verantwortliche*r",
     },
     collaborating_organizations: {
       en: "Collaborating Organizations",
