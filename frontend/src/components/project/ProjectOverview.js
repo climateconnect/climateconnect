@@ -13,6 +13,7 @@ import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "./Buttons/FollowButton";
+import GoBackButton from "./Buttons/GoBackButton";
 import LikeButton from "./Buttons/LikeButton";
 
 const useStyles = makeStyles((theme) => ({
@@ -81,6 +82,7 @@ export default function ProjectOverview({
   toggleShowLikes,
   numberOfLikes,
   numberOfFollowers,
+  hubsSubHeaderRef,
 }) {
   const classes = useStyles();
 
@@ -88,6 +90,11 @@ export default function ProjectOverview({
 
   return (
     <Container className={classes.projectOverview}>
+      <GoBackButton
+        hubsSubHeaderRef={hubsSubHeaderRef}
+        texts={texts}
+        screenSize={screenSize}
+      />
       {screenSize.belowSmall ? (
         <SmallScreenOverview project={project} texts={texts} />
       ) : (

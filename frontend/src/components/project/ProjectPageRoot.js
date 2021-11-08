@@ -68,6 +68,7 @@ export default function ProjectPageRoot({
   numberOfFollowers,
   handleLike,
   handleFollow,
+  hubsSubHeaderRef,
 }) {
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
@@ -371,6 +372,7 @@ export default function ProjectPageRoot({
         initiallyCaughtLikes={initiallyCaughtLikes}
         numberOfLikes={numberOfLikes}
         numberOfFollowers={numberOfFollowers}
+        hubsSubHeaderRef={hubsSubHeaderRef}
       />
 
       <Container className={classes.noPadding}>
