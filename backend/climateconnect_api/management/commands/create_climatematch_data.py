@@ -60,10 +60,10 @@ class Command(BaseCommand):
                         ]
                     },
                     {
-                        'text': "I want to start by getting active in a one-off project.",
+                        'text': "I'd prefer a one-off project.",
                         'language': "en",
                         'translations': {
-                            'de': "Ich möchste erst mal mit einem einmaligen Projekt starten."
+                            'de': "Erstmal ein einmaliges Projekt."
                         },
                         'metadata': [
                             {
