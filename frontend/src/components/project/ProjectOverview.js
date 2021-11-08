@@ -42,6 +42,11 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
     color: theme.palette.primary.main,
   },
+  largeScreenHeader: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+    textAlign: "center",
+  },
 }));
 
 const componentDecorator = (href, text, key) => (
