@@ -37,9 +37,11 @@ export default function GoBackButton({ texts, hubsSubHeaderRef, screenSize, loca
 
   const router = useRouter();
   const goBack = () => {
-    const hubsLink = "/" + locale + "/hubs/" + window.location.search.substring(1);
+    const urlParams = new URLSearchParams(window.location.search);
+    const hubPage = urlParams.get("hubPage");
+    const hubsLink = "/" + locale + "/hubs/" + hubPage;
     const browseLink = "/" + locale + "/browse";
-    if (window.location.search) {
+    if (hubPage) {
       router.push(hubsLink);
     } else {
       router.push(browseLink);
