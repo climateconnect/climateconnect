@@ -99,6 +99,7 @@ export default function ProjectOverview({
         hubsSubHeaderRef={hubsSubHeaderRef}
         texts={texts}
         screenSize={screenSize}
+        locale={locale}
       />
       {screenSize.belowSmall ? (
         <SmallScreenOverview project={project} texts={texts} />

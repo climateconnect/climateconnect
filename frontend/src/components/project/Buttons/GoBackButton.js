@@ -3,6 +3,7 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import React from "react";
 import useElementProps from "../../hooks/useElementProps";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -26,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   }),
 }));
 
-export default function GoBackButton({ texts, hubsSubHeaderRef, screenSize }) {
+export default function GoBackButton({ texts, hubsSubHeaderRef, screenSize, locale }) {
   const specsSubHeader = useElementProps({ el: hubsSubHeaderRef });
   const classes = useStyles({
     containerHeight: specsSubHeader.height,
@@ -34,10 +35,21 @@ export default function GoBackButton({ texts, hubsSubHeaderRef, screenSize }) {
     tinyScreen: screenSize.belowTiny,
   });
 
+  const router = useRouter();
+  const goBack = () => {
+    const hubsLink = "/" + locale + "/hubs/" + window.location.search.substring(1);
+    const browseLink = "/" + locale + "/browse";
+    if (window.location.search) {
+      router.push(hubsLink);
+    } else {
+      router.push(browseLink);
+    }
+  };
+
   if (screenSize.belowTiny)
     return (
       <div className={classes.root}>
-        <IconButton className={classes.button}>
+        <IconButton onClick={goBack} className={classes.button}>
           <ArrowBackIosIcon fontSize="small" viewBox="-4.5 0 24 24" />
         </IconButton>
       </div>
@@ -45,7 +57,7 @@ export default function GoBackButton({ texts, hubsSubHeaderRef, screenSize }) {
   else
     return (
       <div className={classes.root}>
-        <Button className={classes.button} startIcon={<ArrowBackIcon />}>
+        <Button onClick={goBack} className={classes.button} startIcon={<ArrowBackIcon />}>
           {texts.go_back}
         </Button>
       </div>
