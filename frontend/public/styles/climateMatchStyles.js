@@ -14,6 +14,10 @@ const climateMatchStyles = (theme) => ({
     "&:focus": {
       background: theme.palette.primary.light,
     },
+    ["@media (max-width: 760px)"]: {
+      fontSize: 16,
+      marginRight: theme.spacing(0.5)
+    }
   },
 });
 

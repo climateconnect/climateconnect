@@ -10,7 +10,7 @@ import ClimateMatchQuestion from "./ClimateMatchQuestion";
 import WelcomeToClimateMatch from "./WelcomeToClimateMatch";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  root: props => ({
     background: theme.palette.primary.main,
     marginTop: theme.spacing(-2),
     color: "white",
@@ -20,7 +20,10 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 0,
     paddingRight: 0,
     position: "relative",
-  },
+    ["@media (max-width: 760px"]: {
+      maxHeight: "calc(100vh - 98px)"
+    }
+  }),
   loadingOverlay: {
     background: theme.palette.primary.main,
     position: "absolute",
@@ -43,11 +46,11 @@ const getInitialUserAnswerArray = (questions) => {
     .map((q) => (q.answer_type === "answer" ? "" : []));
 };
 
-export default function ClimateMatchRoot() {
-  const classes = useStyles();
+export default function ClimateMatchRoot() {  
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
   const [step, setStep] = useState(0);
+  const classes = useStyles({step: step});
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [questions, setQuestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

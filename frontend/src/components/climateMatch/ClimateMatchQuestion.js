@@ -19,6 +19,12 @@ const useStyles = makeStyles((theme) => ({
     backgroundPositionY: props.questionType === "optional" ? "bottom" : "auto",
     height: 500,
     minWidth: props.questionType === "optional" ? 400 : 300,
+    [theme.breakpoints.down("md")]: {
+      minWidth: props.questionType !== "optional" && 200,
+    },
+    [theme.breakpoints.down("sm")]: {
+      display:  "none"
+    }
   }),
   optionalQuestionImageContainer: {
     minWidth: 700,

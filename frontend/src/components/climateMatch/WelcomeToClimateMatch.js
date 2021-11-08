@@ -1,9 +1,11 @@
-import { Button, Container, makeStyles, Typography } from "@material-ui/core";
+import { Button, Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import { capitalizeFirstLetter } from "../../../public/lib/parsingOperations";
 import getTexts from "../../../public/texts/texts";
+import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
+import ElementOnScreen from "../hooks/ElementOnScreen";
 import ClimateMatchButton from "./ClimateMatchButton";
 import ClimateMatchHeadline from "./ClimateMatchHeadline";
 
@@ -11,17 +13,26 @@ const useStyles = makeStyles((theme) => ({
   root: {
     position: "relative",
     paddingBottom: theme.spacing(4),
+    [theme.breakpoints.down("xs")]: {
+      paddingBottom: theme.spacing(2)
+    }
   },
   nonImageContent: {
     paddingTop: theme.spacing(4),
     maxWidth: 1050,
     margin: "0 auto",
+    [theme.breakpoints.down("xs")]: {
+      paddingTop: theme.spacing(2),
+    },
   },
   text: {
     fontSize: 20,
   },
   headline: {
     marginBottom: theme.spacing(4),
+    [theme.breakpoints.down("xs")]: {
+      marginBottom: theme.spacing(2),
+    },
   },
   imageContainer: {
     position: "relative",
@@ -55,12 +66,35 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     margin: "0 auto",
     marginTop: theme.spacing(4),
+    [theme.breakpoints.down("xs")]: {
+      marginTop: theme.spacing(1)
+    }
   },
+  fixedOnMobile: {
+    [theme.breakpoints.down("xs")]: {
+      position: "fixed",
+      bottom: 0,
+      width: "auto",
+      left: theme.spacing(0),
+      right: theme.spacing(0),
+      backgroundColor: theme.palette.primary.main
+    }
+  },
+  buttonBarPlaceholder: props => ({
+    height: !props.unfixButtonBar && 55,
+  })
 }));
 
 export default function WelcomeToClimateMatch({ goToNextStep, location }) {
-  const classes = useStyles();
+  const bottomRef= useRef(null)
+  const unfixButtonBar = ElementOnScreen({
+    el: bottomRef.current,
+    minSpaceFromBottom: 55
+  })
+  const classes = useStyles({unfixButtonBar: unfixButtonBar});
   const { locale } = useContext(UserContext);
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+
   const texts = getTexts({
     page: "climatematch",
     locale: locale,
@@ -71,10 +105,11 @@ export default function WelcomeToClimateMatch({ goToNextStep, location }) {
     e.preventDefault();
     goToNextStep();
   };
+
   return (
     <div className={classes.root}>
       <Container className={classes.nonImageContent}>
-        <ClimateMatchHeadline className={classes.headline}>
+        <ClimateMatchHeadline className={classes.headline} size={isNarrowScreen && "tiny"}>
           {texts.welcome_to_climate_match}
         </ClimateMatchHeadline>
         <Typography className={classes.text}>
@@ -85,18 +120,18 @@ export default function WelcomeToClimateMatch({ goToNextStep, location }) {
           {texts.lets_stop_the_climate_crisis_together_have_fun}
         </Typography>
       </Container>
-      <div className={classes.imageContainer}>
+      <div className={classes.imageContainer} ref={bottomRef}>
         <div className={classes.questionsGraphicContainer}>
           <img src="/images/questions_pana.svg" className={classes.questionsGraphic} />
         </div>
         <img src="/images/erlangen_climatematch.jpg" className={classes.image} />
       </div>
-      <Container className={classes.buttonBar}>
+      <Container className={`${classes.buttonBar} ${!unfixButtonBar && classes.fixedOnMobile}`}>
         <Button className={classes.backIcon}>
           <ArrowBackIosIcon />
           {texts.back}
         </Button>
-        <ClimateMatchButton wide onClick={handleClickStart}>
+        <ClimateMatchButton wide={!isNarrowScreen} onClick={handleClickStart}>
           {texts.start}
         </ClimateMatchButton>
       </Container>

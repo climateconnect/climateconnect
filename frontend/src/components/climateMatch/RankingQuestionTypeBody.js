@@ -1,9 +1,10 @@
-import { Chip, makeStyles, Typography } from "@material-ui/core";
+import { Chip, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import React, { useContext } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import climateMatchStyles from "../../../public/styles/climateMatchStyles";
 import getTexts from "../../../public/texts/texts";
+import theme from "../../themes/theme";
 import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import ClimateMatchHeadline from "./ClimateMatchHeadline";
@@ -18,10 +19,18 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
     maxHeight: 500 - theme.spacing(8),
+    ["@media (max-width: 760px)"]: {
+      flexDirection: "column-reverse",
+      maxHeight: "calc(100vh - 138px)",
+      marginTop: theme.spacing(2)
+    }
   },
   headline: {
     marginBottom: theme.spacing(4),
     textAlign: "center",
+    ["@media (max-width: 760px)"]: {
+      marginBottom: theme.spacing(1)
+    }
   },
   container: {
     flex: "1 1 0px",
@@ -31,6 +40,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
+    ["@media (max-width: 760px)"]: {
+      marginRight: 0
+    }
   },
   selectedAnswerContainer: {
     display: "flex",
@@ -85,6 +97,33 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: 20,
     },
   },
+  rightContainer: {
+    display: "flex",
+    ["@media (max-width: 760px)"]: {
+      overflow: "auto",
+      maxHeight: "100%"
+    }
+  },
+  desktopHeadline: {
+    ["@media (max-width: 760px)"]: {
+      display: "none"
+    }
+  },
+  mobileHeadline: {
+    ["@media (min-width: 760px)"]: {
+      display: "none"
+    }
+  },
+  stylisticEqualSigns: {
+    overflow: "hidden"
+  },
+  selectExplainer: {
+    textAlign: "center",
+    font: "inherit",
+    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(1),
+    fontSize: 18
+  }
 }));
 
 export default function RankingQuestionTypeBody({
@@ -100,6 +139,9 @@ export default function RankingQuestionTypeBody({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const { showFeedbackMessage } = useContext(FeedbackContext);
+  const isSmallerThanLg = theme.breakpoints.down("lg")
+  const isSmallerThanMd = theme.breakpoints.down("md")
+  const isMobileScreen = useMediaQuery("(max-width:760px)")
   const texts = getTexts({ page: "climatematch", locale: locale, climateMatchQuestion: question });
   // This will be used to set weight for each answer
   const weights = { 0: 100, 1: 80, 2: 50 };
@@ -170,9 +212,9 @@ export default function RankingQuestionTypeBody({
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className={classes.root}>
+      <div className={classes.root}>        
         <div className={`${classes.container} ${classes.questionAndSelectedAnswersContainer}`}>
-          <ClimateMatchHeadline size="medium" className={classes.headline}>
+          <ClimateMatchHeadline size={isSmallerThanMd ? "tiny" : isSmallerThanLg ? "small" : "medium"} className={`${classes.headline} ${classes.desktopHeadline}`}>
             {question.text}
           </ClimateMatchHeadline>
           <Droppable droppableId="selectedAnswers">
@@ -215,42 +257,56 @@ export default function RankingQuestionTypeBody({
           </Droppable>
           <QuestionButtonBar onForwardClick={onForwardClick} onBackClick={onBackClick} />
         </div>
-        <Droppable droppableId="possibleAnswers" isDropDisabled>
-          {(provided) => (
-            <div
-              className={`${classes.container} ${classes.answerOptions}`}
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-              {answers.map((a, index) => (
-                <div key={a.id} className={classes.possibleAnswerContainer}>
-                  <Typography className={classes.listEqualsChar}>=</Typography>
-                  <Draggable
-                    key={a.id}
-                    draggableId={"draggable" + a.id}
-                    index={index}
-                    isDragDisabled={userAnswer.map((c) => c.id).includes(a.id)}
-                  >
-                    {(provided) => {
-                      return (
-                        <Chip
-                          label={a.text}
-                          className={classes.possibleAnswerChip}
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          disabled={userAnswer.map((c) => c.id).includes(a.id)}
-                          onClick={() => handleClickChip(index)}
-                        />
-                      );
-                    }}
-                  </Draggable>
-                </div>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
+        {isMobileScreen && (
+          <Typography className={classes.selectExplainer}>
+            Select up to 3
+          </Typography>
+        )}        
+        <div className={classes.rightContainer}>
+          <div className={classes.stylisticEqualSigns}>
+            {answers.map((a, index) => (
+              <Typography key={index} className={classes.listEqualsChar}>=</Typography>
+            ))}
+          </div>
+          <Droppable droppableId="possibleAnswers" isDropDisabled>
+            {(provided) => (
+              <div
+                className={`${classes.container} ${classes.answerOptions}`}
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {answers.map((a, index) => (
+                  <div key={a.id} className={classes.possibleAnswerContainer}>
+                    <Draggable
+                      key={a.id}
+                      draggableId={"draggable" + a.id}
+                      index={index}
+                      isDragDisabled={userAnswer.map((c) => c.id).includes(a.id)}
+                    >
+                      {(provided) => {
+                        return (
+                          <Chip
+                            label={a.text}
+                            className={classes.possibleAnswerChip}
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            disabled={userAnswer.map((c) => c.id).includes(a.id)}
+                            onClick={() => handleClickChip(index)}
+                          />
+                        );
+                      }}
+                    </Draggable>
+                  </div>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}            
+          </Droppable>          
+        </div>
+        <ClimateMatchHeadline size={isSmallerThanMd ? "tiny" : isSmallerThanLg ? "small" : "medium"} className={`${classes.headline} ${classes.mobileHeadline}`}>
+          {question.text}
+        </ClimateMatchHeadline>
       </div>
     </DragDropContext>
   );

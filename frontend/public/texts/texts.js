@@ -36,10 +36,6 @@ export default function getTexts({
   project,
   url_slug,
   user,
-  goal,
-  idea,
-  location,
-  filterType,
   climateMatchQuestion,
 }) {
   // These are the multiple text files for various translations. They're
