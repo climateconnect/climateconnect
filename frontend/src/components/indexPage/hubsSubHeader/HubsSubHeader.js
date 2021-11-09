@@ -23,6 +23,11 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  hubsContainer: {
+    display: "flex",
     justifyContent: "flex-end",
     [theme.breakpoints.down("xs")]: {
       justifyContent: "center",
@@ -37,10 +42,6 @@ const useStyles = makeStyles((theme) => ({
   popoverContent: {
     pointerEvents: "auto",
   },
-  goBackButtonContainer: {
-    alignSelf: "center",
-    width: "100%",
-  },
 }));
 
 export default function HubsSubHeader({ hubs, subHeaderRef, onProjectPage }) {
@@ -51,28 +52,32 @@ export default function HubsSubHeader({ hubs, subHeaderRef, onProjectPage }) {
   return (
     <div className={classes.root} ref={subHeaderRef}>
       <Container className={classes.container}>
-        {!isNarrowScreen && onProjectPage && (
-          <GoBackButton
-            containerClassName={classes.goBackButtonContainer}
-            texts={texts}
-            locale={locale}
-            tinyScreen={isNarrowScreen}
-          />
-        )}
-        {!isNarrowScreen && !onProjectPage && (
-          <Link className={classes.link} key={"/hubs"} href={`${getLocalePrefix(locale)}/hubs/`}>
-            {texts.all_hubs}
-          </Link>
-        )}
-        {hubs && (
-          <HubLinks
-            linkClassName={classes.link}
-            hubs={hubs}
-            locale={locale}
-            isNarrowScreen={isNarrowScreen}
-            onProjectPage={onProjectPage}
-          />
-        )}
+        <div>
+          {!isNarrowScreen && onProjectPage && (
+            <GoBackButton
+              containerClassName={classes.goBackButtonContainer}
+              texts={texts}
+              locale={locale}
+              tinyScreen={isNarrowScreen}
+            />
+          )}
+        </div>
+        <div className={classes.hubsContainer}>
+          {!isNarrowScreen && !onProjectPage && (
+            <Link className={classes.link} key={"/hubs"} href={`${getLocalePrefix(locale)}/hubs/`}>
+              {texts.all_hubs}
+            </Link>
+          )}
+          {hubs && (
+            <HubLinks
+              linkClassName={classes.link}
+              hubs={hubs}
+              locale={locale}
+              isNarrowScreen={isNarrowScreen}
+              onProjectPage={onProjectPage}
+            />
+          )}
+        </div>
       </Container>
     </div>
   );
