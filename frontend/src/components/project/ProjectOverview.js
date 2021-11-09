@@ -95,12 +95,13 @@ export default function ProjectOverview({
 
   return (
     <Container className={classes.projectOverview}>
-      <GoBackButton
-        hubsSubHeaderRef={hubsSubHeaderRef}
-        texts={texts}
-        tinyScreen={screenSize.belowTiny}
-        locale={locale}
-      />
+      {screenSize.belowTiny && (
+        <GoBackButton
+          hubsSubHeaderRef={hubsSubHeaderRef}
+          texts={texts}
+          tinyScreen={screenSize.belowTiny}
+          locale={locale}
+      />)}
       {screenSize.belowSmall ? (
         <SmallScreenOverview project={project} texts={texts} />
       ) : (
