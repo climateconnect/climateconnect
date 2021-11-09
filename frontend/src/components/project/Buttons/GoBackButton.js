@@ -1,19 +1,10 @@
 import { Button, IconButton, makeStyles } from "@material-ui/core";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import React from "react";
-import useElementProps from "../../hooks/useElementProps";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme) => ({
-  root: (props) => ({
-    position: "absolute",
-    height: props.tinyScreen ? 0 : props.containerHeight,
-    top: props.tinyScreen ? 0 : props.containerTop,
-    display: "flex",
-    marginLeft: props.tinyScreen ? theme.spacing(1) : theme.spacing(2),
-    marginTop: props.tinyScreen ? theme.spacing(1) : 0,
-  }),
   button: {
     color: "white",
     [theme.breakpoints.down("xs")]: {
@@ -29,13 +20,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function GoBackButton({ texts, hubsSubHeaderRef, tinyScreen, locale }) {
-  const specsSubHeader = useElementProps({ el: hubsSubHeaderRef });
-  const classes = useStyles({
-    containerHeight: specsSubHeader.height,
-    containerTop: -specsSubHeader.height,
-    tinyScreen: tinyScreen,
-  });
+export default function GoBackButton({ texts, hubsSubHeaderRef, tinyScreen, locale, containerClassName}) {
+  const classes = useStyles();
 
   const router = useRouter();
   const goBack = () => {
@@ -52,7 +38,7 @@ export default function GoBackButton({ texts, hubsSubHeaderRef, tinyScreen, loca
 
   if (tinyScreen)
     return (
-      <div className={classes.root}>
+      <div className={containerClassName}>
         <IconButton onClick={goBack} className={classes.button}>
           <ArrowBackIosIcon fontSize="small" viewBox="-4.5 0 24 24" />
         </IconButton>
@@ -60,7 +46,7 @@ export default function GoBackButton({ texts, hubsSubHeaderRef, tinyScreen, loca
     );
   else
     return (
-      <div className={classes.root}>
+      <div className={containerClassName}>
         <Button onClick={goBack} className={classes.button} startIcon={<ArrowBackIcon />}>
           {texts.go_back}
         </Button>

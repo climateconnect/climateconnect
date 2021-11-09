@@ -47,6 +47,10 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(4),
     textAlign: "center",
   },
+  goBackButtonContainer: {
+    marginLeft: theme.spacing(1),
+    marginTop: theme.spacing(1),
+  },
 }));
 
 const componentDecorator = (href, text, key) => (
@@ -97,6 +101,7 @@ export default function ProjectOverview({
     <Container className={classes.projectOverview}>
       {screenSize.belowTiny && (
         <GoBackButton
+          containerClassName={classes.goBackButtonContainer}
           hubsSubHeaderRef={hubsSubHeaderRef}
           texts={texts}
           tinyScreen={screenSize.belowTiny}
