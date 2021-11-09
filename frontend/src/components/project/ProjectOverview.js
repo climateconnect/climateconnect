@@ -98,16 +98,13 @@ export default function ProjectOverview({
 
   return (
     <Container className={classes.projectOverview}>
-      {screenSize.belowTiny && (
-        <GoBackButton
-          containerClassName={classes.goBackButtonContainer}
+      {screenSize.belowSmall ? (
+        <SmallScreenOverview
+          project={project}
           texts={texts}
-          tinyScreen={screenSize.belowTiny}
+          screenSize={screenSize}
           locale={locale}
         />
-      )}
-      {screenSize.belowSmall ? (
-        <SmallScreenOverview project={project} texts={texts} />
       ) : (
         <LargeScreenOverview
           project={project}
@@ -152,10 +149,18 @@ export default function ProjectOverview({
   );
 }
 
-function SmallScreenOverview({ project, texts }) {
+function SmallScreenOverview({ project, texts, screenSize, locale }) {
   const classes = useStyles();
   return (
     <>
+      {screenSize.belowTiny && (
+        <GoBackButton
+          containerClassName={classes.goBackButtonContainer}
+          texts={texts}
+          tinyScreen={screenSize.belowTiny}
+          locale={locale}
+        />
+      )}
       <img
         className={classes.fullWidthImage}
         src={getImageUrl(project.image)}
