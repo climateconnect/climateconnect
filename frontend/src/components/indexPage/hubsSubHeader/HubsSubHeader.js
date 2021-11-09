@@ -51,7 +51,7 @@ export default function HubsSubHeader({ hubs, subHeaderRef, onProjectPage }) {
   return (
     <div className={classes.root} ref={subHeaderRef}>
       <Container className={classes.container}>
-        {!isNarrowScreen && (
+        {!isNarrowScreen && onProjectPage && (
           <GoBackButton
             containerClassName={classes.goBackButtonContainer}
             texts={texts}
