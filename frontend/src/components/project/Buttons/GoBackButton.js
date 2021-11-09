@@ -14,17 +14,19 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: props.tinyScreen ? theme.spacing(1) : theme.spacing(2),
     marginTop: props.tinyScreen ? theme.spacing(1) : 0,
   }),
-  button: (props) => ({
+  button: {
     color: "white",
-    backgroundColor: props.tinyScreen ? theme.palette.primary.main : "none",
-    "&:hover": {
-      backgroundColor: props.tinyScreen ? theme.palette.primary.main : "none",
+    [theme.breakpoints.down("xs")]: {
+      minWidth: 35, 
+      maxWidth: 35, 
+      minHeight: 35, 
+      maxHeight: 35,
+      backgroundColor: theme.palette.primary.main,
+      "&:hover": {
+        backgroundColor: theme.palette.primary.main,
+      },
     },
-    minWidth: props.tinyScreen ? 35 : "none",
-    maxWidth: props.tinyScreen ? 35 : "none",
-    minHeight: props.tinyScreen ? 35 : "none",
-    maxHeight: props.tinyScreen ? 35 : "none",
-  }),
+  },
 }));
 
 export default function GoBackButton({ texts, hubsSubHeaderRef, tinyScreen, locale }) {
