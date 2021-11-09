@@ -40,6 +40,7 @@ export default function GoBackButton({ texts, tinyScreen, locale, containerClass
     return (
       <div className={containerClassName}>
         <IconButton onClick={goBack} className={classes.button}>
+          {/*adjusted viewBox to center the icon*/}
           <ArrowBackIosIcon fontSize="small" viewBox="-4.5 0 24 24" />
         </IconButton>
       </div>
