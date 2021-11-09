@@ -27,12 +27,12 @@ const useStyles = makeStyles((theme) => ({
   }),
 }));
 
-export default function GoBackButton({ texts, hubsSubHeaderRef, screenSize, locale }) {
+export default function GoBackButton({ texts, hubsSubHeaderRef, tinyScreen, locale }) {
   const specsSubHeader = useElementProps({ el: hubsSubHeaderRef });
   const classes = useStyles({
     containerHeight: specsSubHeader.height,
     containerTop: -specsSubHeader.height,
-    tinyScreen: screenSize.belowTiny,
+    tinyScreen: tinyScreen,
   });
 
   const router = useRouter();
@@ -48,7 +48,7 @@ export default function GoBackButton({ texts, hubsSubHeaderRef, screenSize, loca
     }
   };
 
-  if (screenSize.belowTiny)
+  if (tinyScreen)
     return (
       <div className={classes.root}>
         <IconButton onClick={goBack} className={classes.button}>

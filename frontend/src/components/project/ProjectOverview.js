@@ -98,7 +98,7 @@ export default function ProjectOverview({
       <GoBackButton
         hubsSubHeaderRef={hubsSubHeaderRef}
         texts={texts}
-        screenSize={screenSize}
+        tinyScreen={screenSize.belowTiny}
         locale={locale}
       />
       {screenSize.belowSmall ? (
