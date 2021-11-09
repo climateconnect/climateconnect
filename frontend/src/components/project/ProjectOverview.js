@@ -91,7 +91,6 @@ export default function ProjectOverview({
   toggleShowLikes,
   numberOfLikes,
   numberOfFollowers,
-  hubsSubHeaderRef,
 }) {
   const classes = useStyles();
 
@@ -102,7 +101,6 @@ export default function ProjectOverview({
       {screenSize.belowTiny && (
         <GoBackButton
           containerClassName={classes.goBackButtonContainer}
-          hubsSubHeaderRef={hubsSubHeaderRef}
           texts={texts}
           tinyScreen={screenSize.belowTiny}
           locale={locale}

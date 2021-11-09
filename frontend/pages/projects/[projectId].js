@@ -146,7 +146,6 @@ export default function ProjectPage({
           numberOfFollowers={numberOfFollowers}
           handleFollow={handleFollow}
           handleLike={handleLike}
-          hubsSubHeaderRef={hubsSubHeaderRef}
         />
       ) : (
         <PageNotFound itemName={texts.project} />
