@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubsSubHeader({ hubs, subHeaderRef, onProjectPage }) {
+export default function HubsSubHeader({ hubs, subHeaderRef, onlyShowDropDown }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const { locale } = useContext(UserContext);
@@ -53,7 +53,7 @@ export default function HubsSubHeader({ hubs, subHeaderRef, onProjectPage }) {
     <div className={classes.root} ref={subHeaderRef}>
       <Container className={classes.container}>
         <div>
-          {!isNarrowScreen && onProjectPage && (
+          {!isNarrowScreen && onlyShowDropDown && (
             <GoBackFromProjectPageButton
               containerClassName={classes.goBackButtonContainer}
               texts={texts}
@@ -63,7 +63,7 @@ export default function HubsSubHeader({ hubs, subHeaderRef, onProjectPage }) {
           )}
         </div>
         <div className={classes.hubsContainer}>
-          {!isNarrowScreen && !onProjectPage && (
+          {!isNarrowScreen && !onlyShowDropDown && (
             <Link className={classes.link} key={"/hubs"} href={`${getLocalePrefix(locale)}/hubs/`}>
               {texts.all_hubs}
             </Link>
@@ -74,7 +74,7 @@ export default function HubsSubHeader({ hubs, subHeaderRef, onProjectPage }) {
               hubs={hubs}
               locale={locale}
               isNarrowScreen={isNarrowScreen}
-              onProjectPage={onProjectPage}
+              onlyShowDropDown={onlyShowDropDown}
             />
           )}
         </div>

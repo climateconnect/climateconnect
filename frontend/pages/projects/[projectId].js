@@ -129,7 +129,11 @@ export default function ProjectPage({
       message={message?.message}
       messageType={message?.messageType}
       title={project ? project.name : texts.project + " " + texts.not_found}
-      subHeader={!tinyScreen&&<HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} onProjectPage={true} />}
+      subHeader={
+        !tinyScreen && (
+          <HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} onlyShowDropDown={true} />
+        )
+      }
     >
       {project ? (
         <ProjectPageRoot
