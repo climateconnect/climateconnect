@@ -11,6 +11,7 @@ import WideLayout from "../../src/components/layouts/WideLayout";
 import ProjectPageRoot from "../../src/components/project/ProjectPageRoot";
 import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
 import { getAllHubs } from "../../public/lib/hubOperations.js";
+import { useMediaQuery } from "@material-ui/core";
 
 const parseComments = (comments) => {
   return comments
@@ -120,6 +121,7 @@ export default function ProjectPage({
   });
 
   const hubsSubHeaderRef = useRef(null);
+  const tinyScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
 
   return (
     <WideLayout
@@ -127,7 +129,7 @@ export default function ProjectPage({
       message={message?.message}
       messageType={message?.messageType}
       title={project ? project.name : texts.project + " " + texts.not_found}
-      subHeader={<HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} onProjectPage={true} />}
+      subHeader={!tinyScreen&&<HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} onProjectPage={true} />}
     >
       {project ? (
         <ProjectPageRoot
