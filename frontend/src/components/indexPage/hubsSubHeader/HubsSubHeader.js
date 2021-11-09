@@ -4,7 +4,7 @@ import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
-import GoBackButton from "../../project/Buttons/GoBackButton";
+import GoBackFromProjectPageButton from "../../project/Buttons/GoBackFromProjectPageButton";
 import HubLinks from "./HubLinks";
 
 const useStyles = makeStyles((theme) => ({
@@ -54,7 +54,7 @@ export default function HubsSubHeader({ hubs, subHeaderRef, onProjectPage }) {
       <Container className={classes.container}>
         <div>
           {!isNarrowScreen && onProjectPage && (
-            <GoBackButton
+            <GoBackFromProjectPageButton
               containerClassName={classes.goBackButtonContainer}
               texts={texts}
               locale={locale}

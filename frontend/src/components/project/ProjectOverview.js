@@ -13,7 +13,7 @@ import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "./Buttons/FollowButton";
-import GoBackButton from "./Buttons/GoBackButton";
+import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
 import LikeButton from "./Buttons/LikeButton";
 
 const useStyles = makeStyles((theme) => ({
@@ -155,7 +155,7 @@ function SmallScreenOverview({ project, texts, screenSize, locale }) {
   return (
     <>
       {screenSize.belowTiny && (
-        <GoBackButton
+        <GoBackFromProjectPageButton
           containerClassName={classes.goBackButtonContainer}
           texts={texts}
           tinyScreen={screenSize.belowTiny}
