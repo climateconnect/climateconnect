@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubsSubHeader({ hubs, subHeaderRef }) {
+export default function HubsSubHeader({ hubs, subHeaderRef, onProjectPage }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const { locale } = useContext(UserContext);
@@ -46,7 +46,7 @@ export default function HubsSubHeader({ hubs, subHeaderRef }) {
   return (
     <div className={classes.root} ref={subHeaderRef}>
       <Container className={classes.container}>
-        {!isNarrowScreen && (
+        {!isNarrowScreen && !onProjectPage && (
           <Link className={classes.link} key={"/hubs"} href={`${getLocalePrefix(locale)}/hubs/`}>
             {texts.all_hubs}
           </Link>
@@ -57,6 +57,7 @@ export default function HubsSubHeader({ hubs, subHeaderRef }) {
             hubs={hubs}
             locale={locale}
             isNarrowScreen={isNarrowScreen}
+            onProjectPage={onProjectPage}
           />
         )}
       </Container>

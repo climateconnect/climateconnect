@@ -127,7 +127,7 @@ export default function ProjectPage({
       message={message?.message}
       messageType={message?.messageType}
       title={project ? project.name : texts.project + " " + texts.not_found}
-      subHeader={<HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} />}
+      subHeader={<HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} onProjectPage={true} />}
     >
       {project ? (
         <ProjectPageRoot
