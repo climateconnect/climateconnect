@@ -106,7 +106,8 @@ export default function ProjectOverview({
           texts={texts}
           tinyScreen={screenSize.belowTiny}
           locale={locale}
-      />)}
+        />
+      )}
       {screenSize.belowSmall ? (
         <SmallScreenOverview project={project} texts={texts} />
       ) : (

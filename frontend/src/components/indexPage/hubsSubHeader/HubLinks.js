@@ -63,7 +63,8 @@ export default function HubLinks({
   };
   return (
     <div className={isNarrowScreen && classes.spaceAround}>
-      {!isMediumScreen && !onProjectPage &&
+      {!isMediumScreen &&
+        !onProjectPage &&
         (showAllProjectsButton ? (
           <Link
             className={`${classes.link} ${classes.allProjectsLink}`}

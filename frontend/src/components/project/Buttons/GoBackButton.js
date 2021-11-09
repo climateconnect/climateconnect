@@ -8,9 +8,9 @@ const useStyles = makeStyles((theme) => ({
   button: {
     color: "white",
     [theme.breakpoints.down("xs")]: {
-      minWidth: 35, 
-      maxWidth: 35, 
-      minHeight: 35, 
+      minWidth: 35,
+      maxWidth: 35,
+      minHeight: 35,
       maxHeight: 35,
       backgroundColor: theme.palette.primary.main,
       "&:hover": {
@@ -20,7 +20,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function GoBackButton({ texts, hubsSubHeaderRef, tinyScreen, locale, containerClassName}) {
+export default function GoBackButton({
+  texts,
+  hubsSubHeaderRef,
+  tinyScreen,
+  locale,
+  containerClassName,
+}) {
   const classes = useStyles();
 
   const router = useRouter();
