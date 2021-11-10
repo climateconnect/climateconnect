@@ -1,12 +1,14 @@
-import { Button, Typography } from "@material-ui/core";
+import { Avatar, Button, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import humanizeDuration from "humanize-duration";
 import React, { useContext } from "react";
 import TimeAgo from "react-timeago";
+import Truncate from "react-truncate";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
 import MessageContent from "../communication/MessageContent";
@@ -16,6 +18,7 @@ import MiniProfilePreview from "../profile/MiniProfilePreview";
 import Posts from "./../communication/Posts.js";
 import DateDisplay from "./../general/DateDisplay";
 import ProjectStatus from "./ProjectStatus";
+import UnfoldMoreIcon from "@material-ui/icons/UnfoldMore";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -134,6 +137,37 @@ const useStyles = makeStyles((theme) => ({
   finishedDate: {
     marginTop: theme.spacing(0.5),
   },
+  discussionPreview: {
+    borderBottom: `1px solid ${theme.palette.grey[500]}`,
+    borderTop: `1px solid ${theme.palette.grey[500]}`,
+    marginBottom: theme.spacing(4),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+  },
+  topSectionDiscussionPreview: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  headingDiscussionPreview: {
+    fontWeight: "bold",
+    marginBottom: theme.spacing(0.5),
+  },
+  iconDiscussionPreview: {
+    marginRight: theme.spacing(2),
+  },
+  commentDiscussionPreview: {
+    display: "flex",
+    alignItems: "center",
+  },
+  commentAvatarDiscussionPreview: {
+    margin: theme.spacing(1),
+    marginRight: theme.spacing(2),
+  },
+  commentTextDiscussionPreview: {
+    color: theme.palette.secondary.main,
+    overflow: "hidden",
+    marginRight: theme.spacing(2),
+  },
 }));
 
 export default function ProjectContent({
@@ -141,6 +175,8 @@ export default function ProjectContent({
   leaveProject,
   projectDescriptionRef,
   collaborationSectionRef,
+  discussionTabLabel,
+  latestParentComment,
 }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -285,6 +321,14 @@ export default function ProjectContent({
           </Button>
         )}
       </div>
+      {latestParentComment && (
+        <DiscussionPreview
+          latestParentComment={latestParentComment}
+          discussionTabLabel={discussionTabLabel}
+          locale={locale}
+          project={project}
+        />
+      )}
       <div className={classes.contentBlock} ref={collaborationSectionRef}>
         <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
           {texts.collaboration}
@@ -354,6 +398,46 @@ function CollaborateContent({ project, texts }) {
           </div>
         )}
       </div>
+    </>
+  );
+}
+
+function DiscussionPreview({ latestParentComment, discussionTabLabel, locale, project }) {
+  const classes = useStyles();
+  return (
+    <>
+      <Link
+        href={`${getLocalePrefix(locale)}/projects/${project.url_slug}#comments`}
+        underline="none"
+      >
+        <div className={classes.discussionPreview}>
+          <div className={classes.topSectionDiscussionPreview}>
+            <Typography
+              display="inline"
+              color="primary"
+              className={classes.headingDiscussionPreview}
+            >
+              {discussionTabLabel}
+            </Typography>
+            <UnfoldMoreIcon color="secondary" className={classes.iconDiscussionPreview} />
+          </div>
+          <div className={classes.commentDiscussionPreview}>
+            <Avatar
+              className={classes.commentAvatarDiscussionPreview}
+              src={
+                latestParentComment.author_user.image
+                  ? getImageUrl(latestParentComment.author_user.image)
+                  : getImageUrl(latestParentComment.author_user.thumbnail_image)
+              }
+            />
+            <Typography className={classes.commentTextDiscussionPreview}>
+              <Truncate lines={3} ellipsis={"..."}>
+                {latestParentComment.content}
+              </Truncate>
+            </Typography>
+          </div>
+        </div>
+      </Link>
     </>
   );
 }
