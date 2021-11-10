@@ -306,12 +306,12 @@ export default function ProjectPageRoot({
     if (!initiallyCaughtFollowers) {
       updateFollowers();
       handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_follower"));
-      setInitiallyCaughtFollowers(true);
     }
   };
   const updateFollowers = async () => {
     const retrievedFollowers = await getFollowers(project, token, locale);
     setFollowers(retrievedFollowers);
+    setInitiallyCaughtFollowers(true);
   };
   const [initiallyCaughtLikes, setInitiallyCaughtLikes] = React.useState(false);
   const [likes, setLikes] = React.useState([]);
@@ -321,12 +321,12 @@ export default function ProjectPageRoot({
     if (!initiallyCaughtLikes) {
       updateLikes();
       handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_like"));
-      setInitiallyCaughtLikes(true);
     }
   };
   const updateLikes = async () => {
     const retrievedLikes = await getLikes(project, token, locale);
     setLikes(retrievedLikes);
+    setInitiallyCaughtLikes(true);
   };
   const [gotParams, setGotParams] = React.useState(false);
   useEffect(() => {
