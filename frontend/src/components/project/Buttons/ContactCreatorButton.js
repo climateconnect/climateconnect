@@ -18,7 +18,6 @@ const useStyles = makeStyles({
     width: theme.spacing(3),
   },
   slideInCard: {
-    width: 200,
     display: "flex",
     justifyContent: "center",
     backgroundColor: "#F8F8F8",
@@ -50,14 +49,24 @@ const useStyles = makeStyles({
     textAlign: "center",
     cursor: "pointer",
   },
+  detailledInfoMaxWidth: {
+    width: 200,
+  },
+  largeButton: {
+    display: "flex",
+    flexDirection: "column",
+    width: 300,
+  },
 });
 export default function ContactCreatorButton({
   className,
   projectAdmin,
   contactProjectCreatorButtonRef,
   handleClickContact,
-  screenSize,
+  tiny,
+  small,
   isFixed,
+  large,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -76,7 +85,7 @@ export default function ContactCreatorButton({
   const creatorsRoleInProject = projectAdmin?.role ? projectAdmin?.role : texts.responsible_person;
   const buttonText = texts.contact;
 
-  if (screenSize.belowSmall && !screenSize.belowTiny) {
+  if (small) {
     return (
       <Button
         variant="contained"
@@ -84,15 +93,34 @@ export default function ContactCreatorButton({
         startIcon={<SendIcon />}
         endIcon={<Avatar src={creatorImageURL} className={classes.smallAvatar} />}
         onClick={handleClickContact}
+        className={className}
       >
         {buttonText}
       </Button>
     );
-  } else if (screenSize.belowTiny) {
+  } else if (tiny) {
     return (
-      <Button variant="contained" color="primary" onClick={handleClickContact}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleClickContact}
+        className={className}
+      >
         {buttonText}
       </Button>
+    );
+  } else if (large) {
+    return (
+      <div className={`${classes.largeButton} ${className}`} onClick={handleClickContact}>
+        <DetailledContactCreatorInfo
+          creatorName={creatorName}
+          creatorImageURL={creatorImageURL}
+          creatorsRoleInProject={creatorsRoleInProject}
+        />
+        <Button variant="contained" color="primary">
+          {buttonText}
+        </Button>
+      </div>
     );
   } else {
     return (
@@ -104,18 +132,12 @@ export default function ContactCreatorButton({
       >
         <div className={classes.buttonWithCollapseContainer}>
           <Collapse in={hoveringButton} timeout={550}>
-            <Card className={classes.slideInCard} variant="outlined">
-              <CardHeader
-                classes={{
-                  root: classes.slideInRoot,
-                  subheader: classes.slideInSubheader,
-                  title: classes.slideInTitle,
-                }}
-                avatar={<Avatar src={creatorImageURL} />}
-                title={creatorName}
-                subheader={creatorsRoleInProject}
-              />
-            </Card>
+            <DetailledContactCreatorInfo
+              className={classes.detailledInfoMaxWidth}
+              creatorName={creatorName}
+              creatorImageURL={creatorImageURL}
+              creatorsRoleInProject={creatorsRoleInProject}
+            />
           </Collapse>
           <Button
             className={classes.contactButton}
@@ -139,3 +161,22 @@ export default function ContactCreatorButton({
     );
   }
 }
+
+const DetailledContactCreatorInfo = ({ creatorName, creatorImageURL, creatorsRoleInProject }) => {
+  const classes = useStyles();
+
+  return (
+    <Card className={classes.slideInCard} variant="outlined">
+      <CardHeader
+        classes={{
+          root: classes.slideInRoot,
+          subheader: classes.slideInSubheader,
+          title: classes.slideInTitle,
+        }}
+        avatar={<Avatar src={creatorImageURL} />}
+        title={creatorName}
+        subheader={creatorsRoleInProject}
+      />
+    </Card>
+  );
+};

@@ -888,6 +888,14 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Internal Server Error",
       de: "Interner Serverfehler",
     },
+    number_of_likes: {
+      en: "Number of likes",
+      de: "Anzahl der Likes",
+    },
+    number_of_comments: {
+      en: "Number of comments",
+      de: "Anzahl an Kommentaren",
+    },
     error_when_publishing_project: {
       en: (
         <>

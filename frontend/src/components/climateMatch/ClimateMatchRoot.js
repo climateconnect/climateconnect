@@ -4,13 +4,14 @@ import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
+import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import LoadingSpinner from "../general/LoadingSpinner";
 import ClimateMatchQuestion from "./ClimateMatchQuestion";
 import WelcomeToClimateMatch from "./WelcomeToClimateMatch";
 
 const useStyles = makeStyles((theme) => ({
-  root: props => ({
+  root: {
     background: theme.palette.primary.main,
     marginTop: theme.spacing(-2),
     color: "white",
@@ -21,9 +22,9 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: 0,
     position: "relative",
     ["@media (max-width: 760px"]: {
-      maxHeight: "calc(100vh - 98px)"
-    }
-  }),
+      maxHeight: "calc(100vh - 98px)",
+    },
+  },
   loadingOverlay: {
     background: theme.palette.primary.main,
     position: "absolute",
@@ -46,11 +47,11 @@ const getInitialUserAnswerArray = (questions) => {
     .map((q) => (q.answer_type === "answer" ? "" : []));
 };
 
-export default function ClimateMatchRoot() {  
+export default function ClimateMatchRoot() {
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
   const [step, setStep] = useState(0);
-  const classes = useStyles({step: step});
+  const classes = useStyles({ step: step });
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [questions, setQuestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,6 +59,7 @@ export default function ClimateMatchRoot() {
   const [userAnswers, setUserAnswers] = useState([]);
   const cookies = new Cookies();
   const token = cookies.get("token");
+  const { showFeedbackMessage } = useContext(FeedbackContext);
 
   //get initial props after the page loaded
   useEffect(async function () {
@@ -80,16 +82,23 @@ export default function ClimateMatchRoot() {
     apiRequest({
       method: "post",
       url: `/api/members/${user.url_slug}/question_answers/`,
-      payload: { user_question_answers: userAnswers },
+      payload: parseUserQuestionAnswers(userAnswers, questions),
       token: token,
       locale: locale,
     })
       .then(function (response) {
         console.log(response.data);
-        Router.push("/climatematchedresources");
+        Router.push("/climatematchresults");
       })
       .catch(function (error) {
         console.log(error);
+        console.log(error?.response?.data?.message);
+        if (error?.response?.data?.message) {
+          showFeedbackMessage({
+            message: error.response.data.message,
+            error: true,
+          });
+        }
       });
   };
 
@@ -149,6 +158,16 @@ export default function ClimateMatchRoot() {
     </Container>
   );
 }
+
+const parseUserQuestionAnswers = (userAnswers, questions) => {
+  const userQuestionAnswers = questions.map((q, i) => ({
+    question_id: q.id,
+    answers: userAnswers[i],
+  }));
+  return {
+    user_question_answers: userQuestionAnswers,
+  };
+};
 
 const getQuestions = async (token, locale, location) => {
   // TODO (Dip): Check about location logic here

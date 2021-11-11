@@ -47,5 +47,13 @@ export default function getClimatematchTexts({ location, question }) {
           : " eine Option"
       } aus.`,
     },
+    suggestions_for_you: {
+      en: "Suggestions For You",
+      de: "Vorschläge für dich",
+    },
+    your_climate_match_results: {
+      en: "Your ClimateMatch Results",
+      de: "Deine ClimateMatch Ergebnisse",
+    },
   };
 }

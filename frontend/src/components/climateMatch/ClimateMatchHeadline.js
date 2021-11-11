@@ -3,9 +3,11 @@ import React from "react";
 
 const useStyles = makeStyles(() => ({
   header: (props) => ({
-    fontSize: props.size === "tiny" ? 30 : props.size === "small" ? 35 : props.size === "medium" ? 40 : 60,
+    fontSize:
+      props.size === "tiny" ? 30 : props.size === "small" ? 35 : props.size === "medium" ? 40 : 60,
     textAlign: "center",
     fontWeight: 300,
+    fontFamily: "flood-std, sans-serif",
   }),
 }));
 
