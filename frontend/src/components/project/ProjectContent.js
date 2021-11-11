@@ -135,6 +135,9 @@ const useStyles = makeStyles((theme) => ({
   finishedDate: {
     marginTop: theme.spacing(0.5),
   },
+  linkDiscussionPreview: {
+    color: theme.palette.secondary.main,
+  },
   discussionPreview: {
     borderBottom: `1px solid ${theme.palette.grey[500]}`,
     borderTop: `1px solid ${theme.palette.grey[500]}`,
@@ -152,9 +155,6 @@ const useStyles = makeStyles((theme) => ({
   },
   iconDiscussionPreview: {
     marginRight: theme.spacing(2),
-  },
-  linkDiscussionPreview: {
-    color: theme.palette.secondary.main,
   },
 }));
 
@@ -412,8 +412,9 @@ function DiscussionPreview({ latestParentComment, discussionTabLabel, locale, pr
           </div>
           <Posts
             posts={latestParentComment}
-            type="openingpost"
+            type="preview"
             user={latestParentComment.author_user}
+            truncate={3}
           />
         </div>
       </Link>

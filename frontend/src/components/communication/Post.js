@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import React, { useContext } from "react";
+import Truncate from "react-truncate";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -17,9 +18,10 @@ const useStyles = makeStyles((theme) => ({
   postDate: {
     color: theme.palette.grey[700],
   },
-  commentFlexBox: {
+  commentFlexBox: (props) => ({
     display: "flex",
-  },
+    alignItems: props.preview ? "center" : "stretch",
+  }),
   messageWithMetaData: {
     display: "flex",
     flexDirection: "column",
@@ -69,8 +71,9 @@ export default function Post({
   onSendComment,
   onDeletePost,
   infoTextSize,
+  truncate,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ preview: type === "preview" ? true : false });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
   const [open, setOpen] = React.useState(false);
@@ -115,28 +118,39 @@ export default function Post({
             />
           </Link>
           <span className={classes.messageWithMetaData}>
-            <div className={classes.metadata}>
-              <Link
-                color="inherit"
-                href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
-                target="_blank"
-              >
-                <Typography variant="body2" className={classes.username}>
-                  {post.author_user.first_name + " " + post.author_user.last_name}
+            {type != "preview" && (
+              <div className={classes.metadata}>
+                <Link
+                  color="inherit"
+                  href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
+                  target="_blank"
+                >
+                  <Typography variant="body2" className={classes.username}>
+                    {post.author_user.first_name + " " + post.author_user.last_name}
+                  </Typography>
+                </Link>
+                <Typography variant="body2" className={classes.postDate}>
+                  {post.unconfirmed && (
+                    <Tooltip title={texts.sending_message + "..."}>
+                      <CircularProgress size={10} color="inherit" className={classes.loader} />
+                    </Tooltip>
+                  )}
+                  <DateDisplay date={new Date(post.created_at)} />
                 </Typography>
-              </Link>
-              <Typography variant="body2" className={classes.postDate}>
-                {post.unconfirmed && (
-                  <Tooltip title={texts.sending_message + "..."}>
-                    <CircularProgress size={10} color="inherit" className={classes.loader} />
-                  </Tooltip>
-                )}
-                <DateDisplay date={new Date(post.created_at)} />
+              </div>
+            )}
+            {type === "preview" ? (
+              <Typography>
+                <Truncate lines={truncate} ellipsis={"..."}>
+                  <MessageContent content={post.content} maxLines={maxLines} />
+                </Truncate>
               </Typography>
-            </div>
-            <MessageContent content={post.content} maxLines={maxLines} />
+            ) : (
+              <MessageContent content={post.content} maxLines={maxLines} />
+            )}
             <div>
               {type != "reply" &&
+                type != "preview" &&
                 (replyInterfaceExpanded ? (
                   <CommentInput
                     user={user}
@@ -150,12 +164,12 @@ export default function Post({
                     {texts.reply}
                   </Button>
                 ))}
-              {user && user.id === post.author_user.id && (
+              {user && user.id === post.author_user.id && type != "preview" && (
                 <Button onClick={toggleDeleteDialogOpen}>Delete</Button>
               )}
             </div>
             <div>
-              {type != "reply" && !!post.replies && post.replies.length > 0 && (
+              {type != "reply" && !!post.replies && post.replies.length > 0 && type != "preview" && (
                 <Link className={classes.toggleReplies} onClick={handleViewRepliesClick}>
                   {!displayReplies ? (
                     <>
@@ -178,7 +192,8 @@ export default function Post({
         {post.replies &&
           post.replies.length > 0 &&
           displayReplies &&
-          (type === "openingpost" || type === "progresspost") && (
+          (type === "openingpost" || type === "progresspost") &&
+          type != "preview" && (
             <Posts
               posts={post.replies}
               type="reply"
