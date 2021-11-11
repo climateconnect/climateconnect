@@ -1,4 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
+from climate_match.models.answers import Answer
+from hubs.models import Hub
+from climateconnect_api.models import Skill
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -13,8 +16,8 @@ from climateconnect_api.models import UserProfile
 import logging
 logger = logging.getLogger(__name__)
 
-DYNAMIC_ANSWER_TYPE = ['hub', 'skill']
-STATIC_ANSWER_TYPE = ['answer']
+DYNAMIC_ANSWER_TYPE = [Hub, Skill]
+STATIC_ANSWER_TYPE = [Answer]
 
 
 class QuestionAnswerView(APIView):
@@ -57,8 +60,6 @@ class UserQuestionAnswersView(APIView):
                             'name': Name of the entity. Note: This is not a required field
                         }
                     ],
-                    'answer_type': <What entity are we storing for this question?
-                    i.e. Hub, Skill or Predefined Answer(climate_match_answer).>
                 }
             ]
         }
@@ -78,14 +79,20 @@ class UserQuestionAnswersView(APIView):
 
         # requried_params will be used inside a for loop to verify all keys are present.
         required_params = ['question_id', 'predefined_answer_id', 'answers', 'answer_type']
-        for question_answer in request.data['user_question_answers']:
+        for (index, question_answer) in enumerate(request.data['user_question_answers']):
             for param in required_params:
                 if param not in question_answer:
                     logger.error(f"ClimateMatchError: Missing parameter -> {param}")
                     continue
+            try:
+                question = Question.objects.get(id=question_answer['question_id'])
+            except Question.DoesNotExist:
+                return Response({
+                    'message': 'Question does not exist'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
             # Get django contenttype based on answer_type.
-            resource_type = ContentType.objects.get(model=question_answer['answer_type'])
+            resource_type = question.answer_type
 
             # Check if user's question-answer object already exisits.
             # We do not want to create duplicated objects for user.
@@ -94,31 +101,44 @@ class UserQuestionAnswersView(APIView):
                 question_id=question_answer['question_id']
             ).exists():
                 user_question_answer = UserQuestionAnswer.objects.get(
-                    user=profile.user, question_id=question_answer['question_id']
+                    user=profile.user, question=question
                 )
             else:
                 user_question_answer = UserQuestionAnswer.objects.create(
-                    user=profile.user, question_id=question_answer['question_id']
+                    user=profile.user, question=question
                 )
 
-            # Clear current answer metadata objects before adding new objects
-            # in answer metadata.
-            user_question_answer.answers.clear()
-
-            if question_answer['answer_type'] in STATIC_ANSWER_TYPE:
-                user_question_answer.predefined_answer_id = question_answer['predefined_answer_id']
+            #resource_type is a ContentType instance. model_class retrieves the corresponding model.
+            if resource_type.model_class() in STATIC_ANSWER_TYPE:
+                try:
+                    answer = Answer.objects.get(id=question_answer['answers']['id'])
+                except Answer.DoesNotExist:
+                    return Response({
+                        'message': 'Answer does not exist'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+                user_question_answer.predefined_answer = answer
                 user_question_answer.save()
-            elif question_answer['answer_type'] in DYNAMIC_ANSWER_TYPE:
+            elif resource_type.model_class() in DYNAMIC_ANSWER_TYPE:
+                # For answers where you can choose out of multiple contenttypes such as skills or hubs:
+                # Make sure users have selected the minimum amount of answers required
+                mc = question.minimum_choices_required
+                if len(question_answer['answers']) < mc:
+                    return Response({
+                        'message': 'Please choose at least {} to question {}'.format(
+                            mc + ("answer" if mc < 2 else "answers"),
+                            index
+                        )
+                    }, status=status.HTTP_400_BAD_REQUEST)
                 for answer in question_answer['answers']:
                     if AnswerMetaData.objects.filter(
                         weight=answer['weight'],
                         resource_type=resource_type,
                         reference_id=answer['id']
                     ).exists():
-                        answer_metadata = AnswerMetaData.objects.filter(
+                        answer_metadata = AnswerMetaData.objects.get(
                             weight=answer['weight'],resource_type=resource_type,
                             reference_id=answer['id']
-                        ).first()
+                        )
                     else:
                         answer_metadata = AnswerMetaData.objects.create(
                             weight=answer['weight'], resource_type=resource_type,
@@ -126,6 +146,10 @@ class UserQuestionAnswersView(APIView):
                         )
                     user_question_answer.answers.add(answer_metadata)
                 user_question_answer.save()
+            else:
+                return Response({
+                        'message': 'Invalid answer type'
+                    }, status=status.HTTP_400_BAD_REQUEST)
             user_question_answers.append(user_question_answer)
 
         serializer = UserQuestionAnswerSerializer(user_question_answers, many=True)
