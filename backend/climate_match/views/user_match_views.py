@@ -7,22 +7,23 @@ from climateconnect_api.models import UserProfile
 from ideas.serializers.idea import IdeaSerializer
 from ideas.models import Idea
 from organization.serializers.organization import OrganizationSerializer
-from organization.serializers.project import ProjectSerializer
+from organization.serializers.project import ProjectSerializer, ProjectStubSerializer, ProjectSuggestionSeralizer
 from organization.models import Project, Organization
+from rest_framework.permissions import AllowAny
 
 import logging
 logger = logging.getLogger(__name__)
 
 
 class UserResourcesMatchView(APIView):
-	permission_classes = [UserResourceMatchPermission]
+	permission_classes = [AllowAny]
 
-	def get(self, request, url_slug):
+	def get(self, request):
 		"""
 		params required in URL: `range_start` and `range_end`. example: range_start=0&range_end=10
 		"""
 		try:
-			user_profile = UserProfile.objects.get(url_slug=str(url_slug))
+			user_profile = UserProfile.objects.get(user=request.user)
 		except UserProfile.DoesNotExist:
 			return Response({
 				'message': 'Profile not found'
@@ -49,7 +50,7 @@ class UserResourcesMatchView(APIView):
 				except Project.DoesNotExist:
 					logger.info(f"{LOGGER_PREFIX} Project not found for resource id {resource_id}")
 					continue
-				resource_data = ProjectSerializer(project).data
+				resource_data = ProjectSuggestionSeralizer(project).data
 			elif table_name == 'idea':
 				try:
 					idea = Idea.objects.get(id=resource_id)
@@ -67,6 +68,7 @@ class UserResourcesMatchView(APIView):
 			else:
 				logger.info(f"{LOGGER_PREFIX} Unknown table name {table_name}")
 				continue
+			resource_data['ressource_type'] = table_name
 			user_matched_resources.append(resource_data)
 		
 		return Response({

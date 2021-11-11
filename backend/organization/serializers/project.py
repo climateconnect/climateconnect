@@ -1,4 +1,5 @@
 from climateconnect_api.models import UserProfile
+from climateconnect_api.models.role import Role
 from climateconnect_api.serializers.common import (AvailabilitySerializer,
                                                    SkillSerializer)
 from climateconnect_api.serializers.role import RoleSerializer
@@ -7,6 +8,7 @@ from django.conf import settings
 from django.utils.translation import get_language
 from location.models import Location
 from location.serializers import LocationStubSerializer
+from organization.models.content import ProjectComment
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
@@ -218,7 +220,8 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
-    print(get_language())
+    number_of_comments = serializers.SerializerMethodField()
+    number_of_likes = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -226,7 +229,8 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             'id', 'name', 'url_slug',
             'image', 'location', 'status',
             'project_parents', 'tags',
-            'is_draft', 'short_description'
+            'is_draft', 'short_description',
+            'number_of_comments', 'number_of_likes'
         )
 
     def get_name(self, obj):
@@ -259,7 +263,21 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
         return serializer.data['name']
+    
+    def get_number_of_comments(self, obj):
+        return ProjectComment.objects.filter(project=obj).count()
 
+    def get_number_of_likes(self, obj):
+        return ProjectLike.objects.filter(project=obj).count()
+
+class ProjectSuggestionSeralizer(ProjectStubSerializer):
+    project_creator = serializers.SerializerMethodField()
+    class Meta(ProjectStubSerializer.Meta):
+        fields = ProjectStubSerializer.Meta.fields + ('project_creator',)
+
+    def get_project_creator(self, obj):
+        member = ProjectMember.objects.filter(project=obj, role__role_type=Role.ALL_TYPE).first()
+        return (ProjectMemberSerializer(member)).data
 
 class ProjectMemberSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
