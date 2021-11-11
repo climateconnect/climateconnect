@@ -16,8 +16,8 @@ const climateMatchStyles = (theme) => ({
     },
     ["@media (max-width: 760px)"]: {
       fontSize: 16,
-      marginRight: theme.spacing(0.5)
-    }
+      marginRight: theme.spacing(0.5),
+    },
   },
 });
 

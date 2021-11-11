@@ -13,8 +13,8 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     ["@media (max-width: 760px)"]: {
       marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(1)
-    }
+      marginBottom: theme.spacing(1),
+    },
   },
   answerContainer: {
     textAlign: "center",
@@ -26,15 +26,15 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     [theme.breakpoints.down("sm")]: {
-      maxWidth: 1000
-    }
+      maxWidth: 1000,
+    },
   },
   optionalPossibleAnswerChip: {
     width: 500,
     marginBottom: theme.spacing(2),
     ["@media (max-width: 760px)"]: {
-      width: "100%"
-    }
+      width: "100%",
+    },
   },
   answersAndButtonsContainer: {
     display: "flex",
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "center",
   },
-  imageContainer: props => ({
+  imageContainer: (props) => ({
     backgroundImage: `url('${props.image}')`,
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
@@ -58,16 +58,16 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(-4),
     marginRight: theme.spacing(-4),
     height: "calc(100vh - 550px)",
-    marginBottom: theme.spacing(1)
-  })
+    marginBottom: theme.spacing(1),
+  }),
 }));
 
 export default function OptionalQuestionTypeBody({ question, handleForwardClick, onBackClick }) {
   const classes = useStyles({
-    image: getImageUrl(question.image)
-  })
+    image: getImageUrl(question.image),
+  });
   const answers = question.answers;
-  const isSmallerThanSm = useMediaQuery(theme.breakpoints.down("sm"))
+  const isSmallerThanSm = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleSelectAnswer = (a) => {
     handleForwardClick(a);
@@ -91,9 +91,7 @@ export default function OptionalQuestionTypeBody({ question, handleForwardClick,
             </div>
           ))}
         </div>
-        {isSmallerThanSm && (
-          <div className={classes.imageContainer} />
-        )}
+        {isSmallerThanSm && <div className={classes.imageContainer} />}
         <QuestionButtonBar disableForward onBackClick={onBackClick} />
       </div>
     </Container>

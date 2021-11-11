@@ -4,7 +4,6 @@ import ClimateMatchRoot from "../src/components/climateMatch/ClimateMatchRoot";
 import UserContext from "../src/components/context/UserContext";
 import WideLayout from "../src/components/layouts/WideLayout";
 
-
 export default function ClimateMatch() {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });

@@ -23,8 +23,8 @@ const useStyles = makeStyles((theme) => ({
       minWidth: props.questionType !== "optional" && 200,
     },
     [theme.breakpoints.down("sm")]: {
-      display:  "none"
-    }
+      display: "none",
+    },
   }),
   optionalQuestionImageContainer: {
     minWidth: 700,

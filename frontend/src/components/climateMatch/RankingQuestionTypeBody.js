@@ -22,15 +22,15 @@ const useStyles = makeStyles((theme) => ({
     ["@media (max-width: 760px)"]: {
       flexDirection: "column-reverse",
       maxHeight: "calc(100vh - 138px)",
-      marginTop: theme.spacing(2)
-    }
+      marginTop: theme.spacing(2),
+    },
   },
   headline: {
     marginBottom: theme.spacing(4),
     textAlign: "center",
     ["@media (max-width: 760px)"]: {
-      marginBottom: theme.spacing(1)
-    }
+      marginBottom: theme.spacing(1),
+    },
   },
   container: {
     flex: "1 1 0px",
@@ -41,8 +41,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "space-between",
     ["@media (max-width: 760px)"]: {
-      marginRight: 0
-    }
+      marginRight: 0,
+    },
   },
   selectedAnswerContainer: {
     display: "flex",
@@ -101,29 +101,29 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     ["@media (max-width: 760px)"]: {
       overflow: "auto",
-      maxHeight: "100%"
-    }
+      maxHeight: "100%",
+    },
   },
   desktopHeadline: {
     ["@media (max-width: 760px)"]: {
-      display: "none"
-    }
+      display: "none",
+    },
   },
   mobileHeadline: {
     ["@media (min-width: 760px)"]: {
-      display: "none"
-    }
+      display: "none",
+    },
   },
   stylisticEqualSigns: {
-    overflow: "hidden"
+    overflow: "hidden",
   },
   selectExplainer: {
     textAlign: "center",
     font: "inherit",
     marginBottom: theme.spacing(2),
     marginTop: theme.spacing(1),
-    fontSize: 18
-  }
+    fontSize: 18,
+  },
 }));
 
 export default function RankingQuestionTypeBody({
@@ -139,9 +139,9 @@ export default function RankingQuestionTypeBody({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const { showFeedbackMessage } = useContext(FeedbackContext);
-  const isSmallerThanLg = theme.breakpoints.down("lg")
-  const isSmallerThanMd = theme.breakpoints.down("md")
-  const isMobileScreen = useMediaQuery("(max-width:760px)")
+  const isSmallerThanLg = theme.breakpoints.down("lg");
+  const isSmallerThanMd = theme.breakpoints.down("md");
+  const isMobileScreen = useMediaQuery("(max-width:760px)");
   const texts = getTexts({ page: "climatematch", locale: locale, climateMatchQuestion: question });
   // This will be used to set weight for each answer
   const weights = { 0: 100, 1: 80, 2: 50 };
@@ -212,9 +212,12 @@ export default function RankingQuestionTypeBody({
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className={classes.root}>        
+      <div className={classes.root}>
         <div className={`${classes.container} ${classes.questionAndSelectedAnswersContainer}`}>
-          <ClimateMatchHeadline size={isSmallerThanMd ? "tiny" : isSmallerThanLg ? "small" : "medium"} className={`${classes.headline} ${classes.desktopHeadline}`}>
+          <ClimateMatchHeadline
+            size={isSmallerThanMd ? "tiny" : isSmallerThanLg ? "small" : "medium"}
+            className={`${classes.headline} ${classes.desktopHeadline}`}
+          >
             {question.text}
           </ClimateMatchHeadline>
           <Droppable droppableId="selectedAnswers">
@@ -258,14 +261,14 @@ export default function RankingQuestionTypeBody({
           <QuestionButtonBar onForwardClick={onForwardClick} onBackClick={onBackClick} />
         </div>
         {isMobileScreen && (
-          <Typography className={classes.selectExplainer}>
-            Select up to 3
-          </Typography>
-        )}        
+          <Typography className={classes.selectExplainer}>Select up to 3</Typography>
+        )}
         <div className={classes.rightContainer}>
           <div className={classes.stylisticEqualSigns}>
             {answers.map((a, index) => (
-              <Typography key={index} className={classes.listEqualsChar}>=</Typography>
+              <Typography key={index} className={classes.listEqualsChar}>
+                =
+              </Typography>
             ))}
           </div>
           <Droppable droppableId="possibleAnswers" isDropDisabled>
@@ -301,10 +304,13 @@ export default function RankingQuestionTypeBody({
                 ))}
                 {provided.placeholder}
               </div>
-            )}            
-          </Droppable>          
+            )}
+          </Droppable>
         </div>
-        <ClimateMatchHeadline size={isSmallerThanMd ? "tiny" : isSmallerThanLg ? "small" : "medium"} className={`${classes.headline} ${classes.mobileHeadline}`}>
+        <ClimateMatchHeadline
+          size={isSmallerThanMd ? "tiny" : isSmallerThanLg ? "small" : "medium"}
+          className={`${classes.headline} ${classes.mobileHeadline}`}
+        >
           {question.text}
         </ClimateMatchHeadline>
       </div>

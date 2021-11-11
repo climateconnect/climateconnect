@@ -14,8 +14,8 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     paddingBottom: theme.spacing(4),
     [theme.breakpoints.down("xs")]: {
-      paddingBottom: theme.spacing(2)
-    }
+      paddingBottom: theme.spacing(2),
+    },
   },
   nonImageContent: {
     paddingTop: theme.spacing(4),
@@ -67,8 +67,8 @@ const useStyles = makeStyles((theme) => ({
     margin: "0 auto",
     marginTop: theme.spacing(4),
     [theme.breakpoints.down("xs")]: {
-      marginTop: theme.spacing(1)
-    }
+      marginTop: theme.spacing(1),
+    },
   },
   fixedOnMobile: {
     [theme.breakpoints.down("xs")]: {
@@ -77,21 +77,21 @@ const useStyles = makeStyles((theme) => ({
       width: "auto",
       left: theme.spacing(0),
       right: theme.spacing(0),
-      backgroundColor: theme.palette.primary.main
-    }
+      backgroundColor: theme.palette.primary.main,
+    },
   },
-  buttonBarPlaceholder: props => ({
+  buttonBarPlaceholder: (props) => ({
     height: !props.unfixButtonBar && 55,
-  })
+  }),
 }));
 
 export default function WelcomeToClimateMatch({ goToNextStep, location }) {
-  const bottomRef= useRef(null)
+  const bottomRef = useRef(null);
   const unfixButtonBar = ElementOnScreen({
     el: bottomRef.current,
-    minSpaceFromBottom: 55
-  })
-  const classes = useStyles({unfixButtonBar: unfixButtonBar});
+    minSpaceFromBottom: 55,
+  });
+  const classes = useStyles({ unfixButtonBar: unfixButtonBar });
   const { locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
 
