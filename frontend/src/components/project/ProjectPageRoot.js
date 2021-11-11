@@ -304,7 +304,7 @@ export default function ProjectPageRoot({
   const toggleShowFollowers = async () => {
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
-      updateFollowers();
+      await updateFollowers();
       handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_follower"));
     }
   };
