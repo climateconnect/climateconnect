@@ -1,7 +1,7 @@
 import { Button, CircularProgress, IconButton, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
-import LikeIcon from "./LikeIcon";
+import ButtonIcon from "./ButtonIcon";
 
 const useStyles = makeStyles((theme) => ({
   largeScreenButtonContainer: {
@@ -74,7 +74,7 @@ export default function LikeButton({
           color={isUserLiking ? "secondary" : "primary"}
           disabled={likingChangePending}
         >
-          <LikeIcon size={30} color={isUserLiking ? "earth" : "primary"} />
+          <ButtonIcon icon ="like" size={30} color={isUserLiking ? "earth" : "primary"} />
         </IconButton>
         {numberOfLikes > 0 && (
           <Typography className={classes.likeNumberMobile}>• {numberOfLikes}</Typography>
@@ -90,7 +90,7 @@ export default function LikeButton({
           disabled={likingChangePending}
           className={classes.mediumScreenIconButton}
         >
-          <LikeIcon size={30} color={isUserLiking ? "earth" : "primary"} />
+          <ButtonIcon icon ="like" size={30} color={isUserLiking ? "earth" : "primary"} />
         </IconButton>
         {numberOfLikes > 0 && (
           <Link
@@ -113,7 +113,7 @@ export default function LikeButton({
         <Button
           onClick={handleToggleLikeProject}
           variant="contained"
-          startIcon={<LikeIcon size={20} color={isUserLiking ? "earth" : "white"} />}
+          startIcon={<ButtonIcon icon ="like" size={20} color={isUserLiking ? "earth" : "white"} />}
           color={isUserLiking ? "secondary" : "primary"}
           disabled={likingChangePending}
           className={classes.largeLikeButton}
