@@ -14,7 +14,7 @@ urlpatterns = [
         name='user-question-answer-list'
     ),
     path(
-        'members/<str:url_slug>/matched_resources/', UserResourcesMatchView.as_view(),
-        name='user-matched-resources'
+        'climatematch_results/', UserResourcesMatchView.as_view(),
+        name='climatematch-results'
     )
 ]
