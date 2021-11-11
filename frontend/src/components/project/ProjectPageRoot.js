@@ -343,7 +343,7 @@ export default function ProjectPageRoot({
   const bindFollow = useLongPress(() => {
     toggleShowFollowers();
   });
-  const latestParentComment = project.comments[0];
+  const latestParentComment = [project.comments[0]];
   return (
     <div className={classes.root}>
       <ProjectOverview

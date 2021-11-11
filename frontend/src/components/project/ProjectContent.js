@@ -1,14 +1,12 @@
-import { Avatar, Button, Link, Typography } from "@material-ui/core";
+import { Button, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import humanizeDuration from "humanize-duration";
 import React, { useContext } from "react";
 import TimeAgo from "react-timeago";
-import Truncate from "react-truncate";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
 import MessageContent from "../communication/MessageContent";
@@ -155,18 +153,8 @@ const useStyles = makeStyles((theme) => ({
   iconDiscussionPreview: {
     marginRight: theme.spacing(2),
   },
-  commentDiscussionPreview: {
-    display: "flex",
-    alignItems: "center",
-  },
-  commentAvatarDiscussionPreview: {
-    margin: theme.spacing(1),
-    marginRight: theme.spacing(2),
-  },
-  commentTextDiscussionPreview: {
+  linkDiscussionPreview: {
     color: theme.palette.secondary.main,
-    overflow: "hidden",
-    marginRight: theme.spacing(2),
   },
 }));
 
@@ -409,6 +397,7 @@ function DiscussionPreview({ latestParentComment, discussionTabLabel, locale, pr
       <Link
         href={`${getLocalePrefix(locale)}/projects/${project.url_slug}#comments`}
         underline="none"
+        className={classes.linkDiscussionPreview}
       >
         <div className={classes.discussionPreview}>
           <div className={classes.topSectionDiscussionPreview}>
@@ -421,21 +410,11 @@ function DiscussionPreview({ latestParentComment, discussionTabLabel, locale, pr
             </Typography>
             <UnfoldMoreIcon color="secondary" className={classes.iconDiscussionPreview} />
           </div>
-          <div className={classes.commentDiscussionPreview}>
-            <Avatar
-              className={classes.commentAvatarDiscussionPreview}
-              src={
-                latestParentComment.author_user.image
-                  ? getImageUrl(latestParentComment.author_user.image)
-                  : getImageUrl(latestParentComment.author_user.thumbnail_image)
-              }
-            />
-            <Typography className={classes.commentTextDiscussionPreview}>
-              <Truncate lines={3} ellipsis={"..."}>
-                {latestParentComment.content}
-              </Truncate>
-            </Typography>
-          </div>
+          <Posts
+            posts={latestParentComment}
+            type="openingpost"
+            user={latestParentComment.author_user}
+          />
         </div>
       </Link>
     </>
