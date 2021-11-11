@@ -319,7 +319,7 @@ export default function ProjectPageRoot({
   const toggleShowLikes = async () => {
     setShowLikes(!showLikes);
     if (!initiallyCaughtLikes) {
-      updateLikes();
+      await updateLikes();
       handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_like"));
     }
   };
