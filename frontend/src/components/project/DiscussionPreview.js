@@ -1,19 +1,18 @@
-import { Link, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import UnfoldMoreIcon from "@material-ui/icons/UnfoldMore";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import Posts from "../communication/Posts";
 
 const useStyles = makeStyles((theme) => ({
-    linkDiscussionPreview: {
-        color: theme.palette.secondary.main,
-      },
       discussionPreview: {
         borderBottom: `1px solid ${theme.palette.grey[500]}`,
         borderTop: `1px solid ${theme.palette.grey[500]}`,
         marginBottom: theme.spacing(4),
         paddingTop: theme.spacing(1),
         paddingBottom: theme.spacing(1),
+        "&:hover": {
+          cursor: "pointer",
+        },
       },
       topSectionDiscussionPreview: {
         display: "flex",
@@ -28,16 +27,15 @@ const useStyles = makeStyles((theme) => ({
       },
     }));
 
-export default function DiscussionPreview({ latestParentComment, discussionTabLabel, locale, project }) {
+export default function DiscussionPreview({ latestParentComment, discussionTabLabel, handleTabChange, typesByTabValue }) {
     const classes = useStyles();
+
+    function switchToDiscussionTab(event) {
+      handleTabChange(event, typesByTabValue.indexOf("comments"));
+    }
+    
     return (
-      <>
-        <Link
-          href={`${getLocalePrefix(locale)}/projects/${project.url_slug}#comments`}
-          underline="none"
-          className={classes.linkDiscussionPreview}
-        >
-          <div className={classes.discussionPreview}>
+          <div className={classes.discussionPreview} onClick={switchToDiscussionTab}>
             <div className={classes.topSectionDiscussionPreview}>
               <Typography
                 display="inline"
@@ -55,7 +53,5 @@ export default function DiscussionPreview({ latestParentComment, discussionTabLa
               truncate={3}
             />
           </div>
-        </Link>
-      </>
     );
   }

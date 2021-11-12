@@ -397,6 +397,8 @@ export default function ProjectPageRoot({
             collaborationSectionRef={collaborationSectionRef}
             discussionTabLabel={discussionTabLabel()}
             latestParentComment={latestParentComment}
+            handleTabChange={handleTabChange}
+            typesByTabValue={typesByTabValue}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
