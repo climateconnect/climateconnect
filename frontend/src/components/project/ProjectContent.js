@@ -290,7 +290,7 @@ export default function ProjectContent({
           </Button>
         )}
       </div>
-      {latestParentComment && (
+      {latestParentComment[0] && (
         <DiscussionPreview
           latestParentComment={latestParentComment}
           discussionTabLabel={discussionTabLabel}
