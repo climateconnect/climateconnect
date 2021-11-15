@@ -698,5 +698,9 @@
   "forward": {
     "en": "Forward",
     "de": "Weiter"
+  },
+  "new": {
+    "en": "new",
+    "de": "Neu"
   }
 }
