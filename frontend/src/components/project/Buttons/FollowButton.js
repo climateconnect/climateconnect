@@ -75,7 +75,9 @@ export default function FollowButton({
         {...bindFollow}
         onClick={handleToggleFollowProject}
         variant="contained"
-        startIcon={<ButtonIcon icon ="follow" size={30} color={isUserFollowing ? "earth" : "white"} />}
+        startIcon={
+          <ButtonIcon icon="follow" size={30} color={isUserFollowing ? "earth" : "white"} />
+        }
         color={isUserFollowing ? "secondary" : "primary"}
         disabled={followingChangePending}
         className={classes.followingButton}
@@ -114,13 +116,17 @@ export default function FollowButton({
         <Button
           onClick={handleToggleFollowProject}
           variant="contained"
-          startIcon={<ButtonIcon icon ="follow" size={30} color={isUserFollowing ? "earth" : "white"} />}
+          startIcon={
+            <ButtonIcon icon="follow" size={30} color={isUserFollowing ? "earth" : "white"} />
+          }
           color={isUserFollowing ? "secondary" : "primary"}
           disabled={followingChangePending}
           className={classes.followingButton}
         >
           <div className={classes.buttonLabel}>
-            {followingChangePending && <CircularProgress size={20} className={classes.fabProgress} />}
+            {followingChangePending && (
+              <CircularProgress size={20} className={classes.fabProgress} />
+            )}
             <div className={classes.buttonText}>
               {isUserFollowing ? texts.following : texts.follow}
             </div>
