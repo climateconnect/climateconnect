@@ -219,12 +219,11 @@ export default function ProjectPageRoot({
   };
 
   const toggleFollowProject = () => {
-    const new_value = !isUserFollowing;
-    handleFollow(new_value, false, true);
+    handleFollow(isUserFollowing, false, true);
     apiRequest({
       method: "post",
       url: "/api/projects/" + project.url_slug + "/set_follow/",
-      payload: { following: new_value },
+      payload: { following: !isUserFollowing },
       token: token,
       locale: locale,
     })
