@@ -252,12 +252,11 @@ export default function ProjectPageRoot({
   };
 
   const toggleLikeProject = () => {
-    const new_value = !isUserLiking;
-    handleLike(new_value, false, true);
+    handleLike(isUserLiking, false, true);
     apiRequest({
       method: "post",
       url: "/api/projects/" + project.url_slug + "/set_like/",
-      payload: { liking: new_value },
+      payload: { liking: !isUserLiking },
       token: token,
       locale: locale,
     })
