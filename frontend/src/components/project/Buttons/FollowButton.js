@@ -27,7 +27,29 @@ const useStyles = makeStyles((theme) => ({
     marginRight: props.hasAdminPermissions ? theme.spacing(2) : theme.spacing(0.25),
     whiteSpace: "nowrap",
     height: 40,
-    maxWidth: 140,
+    maxWidth: props.belowSmallScreen ? 180 : 140,
+    "&:disabled": {
+      color: "white",
+      background: theme.palette.secondary.main,
+    },
+  }),
+  fabProgress: {
+    color: "white",
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginTop: "auto",
+    marginBottom: "auto",
+  },
+  buttonLabel: {
+    position: "relative",
+  },
+  buttonText: (props) => ({
+    visibility: props.followingChangePending ? "hidden" : "visible",
   }),
 }));
 
@@ -42,7 +64,11 @@ export default function FollowButton({
   numberOfFollowers,
   bindFollow,
 }) {
-  const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
+  const classes = useStyles({
+    hasAdminPermissions: hasAdminPermissions,
+    followingChangePending: followingChangePending,
+    belowSmallScreen: screenSize.belowSmall,
+  });
   if (screenSize.belowSmall && !screenSize.belowTiny) {
     return (
       <Button
@@ -54,9 +80,13 @@ export default function FollowButton({
         disabled={followingChangePending}
         className={classes.followingButton}
       >
-        {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
-        {isUserFollowing ? texts.following : texts.follow}
-        {numberOfFollowers > 0 ? " • " + numberOfFollowers : ""}
+        <div className={classes.buttonLabel}>
+          {followingChangePending && <CircularProgress size={20} className={classes.fabProgress} />}
+          <div className={classes.buttonText}>
+            {isUserFollowing ? texts.following : texts.follow}
+            {!followingChangePending && numberOfFollowers > 0 ? " • " + numberOfFollowers : ""}
+          </div>
+        </div>
       </Button>
     );
   } else if (screenSize.belowTiny) {
@@ -69,9 +99,13 @@ export default function FollowButton({
         disabled={followingChangePending}
         className={classes.followingButton}
       >
-        {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
-        {isUserFollowing ? texts.following : texts.follow}
-        {numberOfFollowers > 0 ? " • " + numberOfFollowers : ""}
+        <div className={classes.buttonLabel}>
+          {followingChangePending && <CircularProgress size={20} className={classes.fabProgress} />}
+          <div className={classes.buttonText}>
+            {isUserFollowing ? texts.following : texts.follow}
+            {!followingChangePending && numberOfFollowers > 0 ? " • " + numberOfFollowers : ""}
+          </div>
+        </div>
       </Button>
     );
   } else {
@@ -85,8 +119,12 @@ export default function FollowButton({
           disabled={followingChangePending}
           className={classes.followingButton}
         >
-          {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
-          {isUserFollowing ? texts.following : texts.follow}
+          <div className={classes.buttonLabel}>
+            {followingChangePending && <CircularProgress size={20} className={classes.fabProgress} />}
+            <div className={classes.buttonText}>
+              {isUserFollowing ? texts.following : texts.follow}
+            </div>
+          </div>
         </Button>
         {numberOfFollowers > 0 && (
           <Link
