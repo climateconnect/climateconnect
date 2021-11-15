@@ -46,10 +46,20 @@ with get_user_resource_preference as (
     select reference_table.table_name, reference_table.id as resource_id, sum(gusp.weight) as skill_weight
     from get_user_skill_preference as gusp
     join (
-        select op.id, cs.id as skill_id, 'project' as table_name
-        from organization_project op
-        left join organization_project_skills ops on ops.project_id  = op.id
-        left join climateconnect_skill cs on cs.id = ops.skill_id
+        (
+            select op.id, cs.id as skill_id, 'project' as table_name
+            from organization_project op
+            left join organization_project_skills ops on ops.project_id  = op.id
+            left join climateconnect_skill cs on cs.id = ops.skill_id
+        )
+        union (
+            select oo.id, cs.id as skill_id, 'organization' as table_name
+            from organization_organization oo
+            left join organization_projectparents opp on opp.parent_organization_id = oo.id
+            left join organization_project op on op.id = opp.project_id
+            left join organization_project_skills ops on ops.project_id = op.id
+            left join climateconnect_skill cs on cs.id = ops.skill_id
+        )
     ) as reference_table on reference_table.skill_id = gusp.reference_id
     group by 1, 2
 ), get_user_reference_table_relevancy_score_by_hubs as (
@@ -73,7 +83,7 @@ with get_user_resource_preference as (
         ) union (
             select ii.id, hh.id as hub_id, 'idea' as table_name
             from ideas_idea ii
-            join hubs_hub hh on hh.id = ii.hub_id 
+            join hubs_hub hh on hh.id = ii.hub_id
         )
     ) as reference_table on reference_table.hub_id = guhp.reference_id
     group by 1, 2
@@ -86,7 +96,7 @@ with get_user_resource_preference as (
         ) as table_name
         , sum(
             (
-                case when gurtrs.skill_weight is not null and gurtrh.hub_weight is not null 
+                case when gurtrs.skill_weight is not null and gurtrh.hub_weight is not null
                     then gurtrs.skill_weight + gurtrh.hub_weight
                 when gurtrs.skill_weight is null and gurtrh.hub_weight is not null
                     then gurtrh.hub_weight
@@ -94,15 +104,15 @@ with get_user_resource_preference as (
                     then gurtrs.skill_weight
                 else 0
                 end
-            ) + 
+            ) +
             coalesce((
-                select total_weight from get_user_resource_preference 
-                where resource_model = gurtrs.table_name 
+                select total_weight from get_user_resource_preference
+                where resource_model = gurtrs.table_name
                     or resource_model = gurtrh.table_name
             ), 0)
         ) as total_score
     from get_user_reference_table_relevancy_score_by_skills as gurtrs
-    full join get_user_reference_table_relevancy_score_by_hubs as gurtrh 
+    full join get_user_reference_table_relevancy_score_by_hubs as gurtrh
         on gurtrh.resource_id = gurtrs.resource_id
             and gurtrh.table_name = gurtrs.table_name
     group by 1, 2
@@ -116,4 +126,3 @@ select * from get_user_reference_relevancy_score;
         user_resource_preferences = [dict(zip(columns, row)) for row in cursor.fetchall()]
 
     return user_resource_preferences
-
