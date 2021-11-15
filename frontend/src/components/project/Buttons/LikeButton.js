@@ -16,6 +16,10 @@ const useStyles = makeStyles((theme) => ({
   largeLikeButton: {
     height: 40,
     maxWidth: 120,
+    "&:disabled": {
+      color: "white",
+      background: theme.palette.secondary.main,
+    },
   },
   likeNumber: {
     fontWeight: 700,
@@ -47,6 +51,24 @@ const useStyles = makeStyles((theme) => ({
       background: "none",
     },
   },
+  fabProgress: {
+    color: "white",
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginTop: "auto",
+    marginBottom: "auto",
+  },
+  buttonLabel: {
+    position: "relative",
+  },
+  buttonText: (props) => ({
+    visibility: props.likingChangePending ? "hidden" : "visible",
+  }),
 }));
 
 export default function LikeButton({
@@ -60,7 +82,7 @@ export default function LikeButton({
   numberOfLikes,
   bindLike,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ likingChangePending: likingChangePending });
 
   if (screenSize.belowSmall) {
     return (
@@ -118,8 +140,10 @@ export default function LikeButton({
           disabled={likingChangePending}
           className={classes.largeLikeButton}
         >
-          {likingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
-          {isUserLiking ? texts.liked : texts.like}
+          <div className={classes.buttonLabel}>
+            {likingChangePending && <CircularProgress size={20} className={classes.fabProgress} />}
+            <div className={classes.buttonText}>{isUserLiking ? texts.liked : texts.like}</div>
+          </div>
         </Button>
         {numberOfLikes > 0 && (
           <Link
