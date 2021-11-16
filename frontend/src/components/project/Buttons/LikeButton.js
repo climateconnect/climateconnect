@@ -96,7 +96,7 @@ export default function LikeButton({
           color={isUserLiking ? "secondary" : "primary"}
           disabled={likingChangePending}
         >
-          <ButtonIcon icon="like" size={30} color={isUserLiking ? "earth" : "primary"} />
+          <ButtonIcon icon="like" size={40} color={isUserLiking ? "earth" : "primary"} />
         </IconButton>
         {numberOfLikes > 0 && (
           <Typography className={classes.likeNumberMobile}>• {numberOfLikes}</Typography>
@@ -112,7 +112,7 @@ export default function LikeButton({
           disabled={likingChangePending}
           className={classes.mediumScreenIconButton}
         >
-          <ButtonIcon icon="like" size={30} color={isUserLiking ? "earth" : "primary"} />
+          <ButtonIcon icon="like" size={40} color={isUserLiking ? "earth" : "primary"} />
         </IconButton>
         {numberOfLikes > 0 && (
           <Link
@@ -135,7 +135,7 @@ export default function LikeButton({
         <Button
           onClick={handleToggleLikeProject}
           variant="contained"
-          startIcon={<ButtonIcon icon="like" size={20} color={isUserLiking ? "earth" : "white"} />}
+          startIcon={<ButtonIcon icon="like" size={26} color={isUserLiking ? "earth" : "white"} />}
           color={isUserLiking ? "secondary" : "primary"}
           disabled={likingChangePending}
           className={classes.largeLikeButton}

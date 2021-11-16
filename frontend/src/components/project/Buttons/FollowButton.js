@@ -76,7 +76,7 @@ export default function FollowButton({
         onClick={handleToggleFollowProject}
         variant="contained"
         startIcon={
-          <ButtonIcon icon="follow" size={30} color={isUserFollowing ? "earth" : "white"} />
+          <ButtonIcon icon="follow" size={27} color={isUserFollowing ? "earth" : "white"} />
         }
         color={isUserFollowing ? "secondary" : "primary"}
         disabled={followingChangePending}
@@ -117,7 +117,7 @@ export default function FollowButton({
           onClick={handleToggleFollowProject}
           variant="contained"
           startIcon={
-            <ButtonIcon icon="follow" size={30} color={isUserFollowing ? "earth" : "white"} />
+            <ButtonIcon icon="follow" size={27} color={isUserFollowing ? "earth" : "white"} />
           }
           color={isUserFollowing ? "secondary" : "primary"}
           disabled={followingChangePending}

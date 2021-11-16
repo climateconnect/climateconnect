@@ -12,13 +12,13 @@ export default function ButtonIcon({ icon, color, size }) {
 
   if (icon === "like") {
     if (color === "white") {
-      return <img className={classes.icon} src={"/images/planet-earth-white.svg"} />;
+      return <img className={classes.icon} src={"/images/like-white.svg"} />;
     }
     if (color === "earth") {
-      return <img className={classes.icon} src={"/images/planet-earth-heart.svg"} />;
+      return <img className={classes.icon} src={"/images/like-planet-earth.svg"} />;
     }
     if (color === "primary") {
-      return <img className={classes.icon} src={"/images/planet-earth-primary.svg"} />;
+      return <img className={classes.icon} src={"/images/like-primary.svg"} />;
     }
   }
   if (icon === "follow") {
