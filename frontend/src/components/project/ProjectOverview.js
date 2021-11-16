@@ -15,6 +15,7 @@ import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "./Buttons/FollowButton";
 import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
 import LikeButton from "./Buttons/LikeButton";
+import SocialMediaShareButton from "./Buttons/SocialMediaShareButton";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -48,9 +49,19 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
   goBackButtonContainer: {
+    position: "absolute",
     marginLeft: theme.spacing(1),
     marginTop: theme.spacing(1),
+  },
+  shareButtonContainer: {
     position: "absolute",
+    right: 0,
+    bottom: 0,
+    marginRight: theme.spacing(1),
+    marginBottom: theme.spacing(1.6),
+  },
+  imageContainer: {
+    position: "relative",
   },
 }));
 
@@ -154,19 +165,22 @@ function SmallScreenOverview({ project, texts, screenSize, locale }) {
   const classes = useStyles();
   return (
     <>
-      {screenSize.belowTiny && (
-        <GoBackFromProjectPageButton
-          containerClassName={classes.goBackButtonContainer}
-          texts={texts}
-          tinyScreen={screenSize.belowTiny}
-          locale={locale}
+      <div className={classes.imageContainer}>
+        {screenSize.belowTiny && (
+          <GoBackFromProjectPageButton
+            containerClassName={classes.goBackButtonContainer}
+            texts={texts}
+            tinyScreen={screenSize.belowTiny}
+            locale={locale}
+          />
+        )}
+        <SocialMediaShareButton containerClassName={classes.shareButtonContainer} />
+        <img
+          className={classes.fullWidthImage}
+          src={getImageUrl(project.image)}
+          alt={texts.project_image_of_project + " " + project.name}
         />
-      )}
-      <img
-        className={classes.fullWidthImage}
-        src={getImageUrl(project.image)}
-        alt={texts.project_image_of_project + " " + project.name}
-      />
+      </div>
       <div className={classes.blockProjectInfo}>
         <Typography component="h1" variant="h3" className={classes.smallScreenHeader}>
           {project.name}

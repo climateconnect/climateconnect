@@ -20,6 +20,7 @@ import ProjectOverview from "./ProjectOverview";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { useLongPress } from "use-long-press";
 import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
+import SocialMediaShareButton from "./Buttons/SocialMediaShareButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,11 +28,12 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.grey[800],
     position: "relative",
   },
-  tabsWrapper: {
-    borderBottom: `1px solid ${theme.palette.grey[500]}`,
-  },
-  noPadding: {
+  tabsContainerWithoutPadding: {
     padding: 0,
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderBottom: `1px solid ${theme.palette.grey[500]}`,
   },
   tabContent: {
     padding: theme.spacing(2),
@@ -49,6 +51,9 @@ const useStyles = makeStyles((theme) => ({
   },
   projectInteractionButtonContainer: {
     position: "relative",
+  },
+  shareButtonContainer: {
+    paddingRight: theme.spacing(4),
   },
 }));
 
@@ -373,8 +378,8 @@ export default function ProjectPageRoot({
         numberOfFollowers={numberOfFollowers}
       />
 
-      <Container className={classes.noPadding}>
-        <div className={classes.tabsWrapper} ref={projectTabsRef}>
+      <Container className={classes.tabsContainerWithoutPadding}>
+        <div ref={projectTabsRef}>
           <Tabs
             variant={screenSize.belowSmall ? "fullWidth" : "standard"}
             value={tabValue}
@@ -386,6 +391,9 @@ export default function ProjectPageRoot({
             <Tab label={discussionTabLabel()} className={classes.tab} />
           </Tabs>
         </div>
+        {!screenSize.belowSmall && (
+          <SocialMediaShareButton containerClassName={classes.shareButtonContainer} />
+        )}
       </Container>
 
       <Container className={classes.tabContent} ref={tabContentRef}>
