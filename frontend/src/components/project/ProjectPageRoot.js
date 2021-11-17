@@ -411,6 +411,7 @@ export default function ProjectPageRoot({
               texts={texts}
               project={project}
               locale={locale}
+              projectAdmin={projectAdmin}
             />
           </>
         )}

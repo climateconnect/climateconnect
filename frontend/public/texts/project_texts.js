@@ -915,5 +915,13 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Link",
       de: "Link",
     },
+    climate_protection_project_by: {
+      en: "Climate Protection Project by ",
+      de: "Klimaschutzprojekt von  ",
+    },
+    this_is_the_link_to_the_project: {
+      en: 'This is the link to "' + project?.name + '" on Climate Connect: ',
+      de: 'Das ist der Link zu "' + project?.name + '" auf Climate Connect: ',
+    },
   };
 }

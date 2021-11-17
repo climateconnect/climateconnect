@@ -121,6 +121,7 @@ export default function ProjectOverview({
           locale={locale}
           toggleShowSocials={toggleShowSocials}
           showSocials={showSocials}
+          projectAdmin={projectAdmin}
         />
       ) : (
         <LargeScreenOverview
@@ -173,6 +174,7 @@ function SmallScreenOverview({
   locale,
   toggleShowSocials,
   showSocials,
+  projectAdmin,
 }) {
   const classes = useStyles();
   return (
@@ -196,6 +198,7 @@ function SmallScreenOverview({
           texts={texts}
           project={project}
           locale={locale}
+          projectAdmin={projectAdmin}
         />
         <img
           className={classes.fullWidthImage}
