@@ -409,6 +409,8 @@ export default function ProjectPageRoot({
               open={showSocials}
               onClose={toggleShowSocials}
               texts={texts}
+              project={project}
+              locale={locale}
             />
           </>
         )}

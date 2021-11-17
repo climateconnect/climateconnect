@@ -194,6 +194,8 @@ function SmallScreenOverview({
           open={showSocials}
           onClose={toggleShowSocials}
           texts={texts}
+          project={project}
+          locale={locale}
         />
         <img
           className={classes.fullWidthImage}

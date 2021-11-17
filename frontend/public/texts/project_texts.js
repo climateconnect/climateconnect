@@ -907,5 +907,13 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Tell others about this project!",
       de: "Erzähle anderen von diesem Projekt!",
     },
+    copy_link: {
+      en: "Copy link",
+      de: "Link kopieren",
+    },
+    link: {
+      en: "Link",
+      de: "Link",
+    },
   };
 }
