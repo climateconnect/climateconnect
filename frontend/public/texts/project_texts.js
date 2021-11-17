@@ -903,5 +903,9 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
         </>
       ),
     },
+    tell_others_about_this_project: {
+      en: "Tell others about this project!",
+      de: "Erzähle anderen von diesem Projekt!",
+    },
   };
 }

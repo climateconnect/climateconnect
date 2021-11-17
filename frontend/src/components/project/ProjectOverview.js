@@ -10,6 +10,7 @@ import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
+import SocialMediaShareDialog from "../dialogs/SocialMediaShareDialog";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "./Buttons/FollowButton";
@@ -103,6 +104,8 @@ export default function ProjectOverview({
   toggleShowLikes,
   numberOfLikes,
   numberOfFollowers,
+  toggleShowSocials,
+  showSocials,
 }) {
   const classes = useStyles();
 
@@ -116,6 +119,8 @@ export default function ProjectOverview({
           texts={texts}
           screenSize={screenSize}
           locale={locale}
+          toggleShowSocials={toggleShowSocials}
+          showSocials={showSocials}
         />
       ) : (
         <LargeScreenOverview
@@ -161,7 +166,14 @@ export default function ProjectOverview({
   );
 }
 
-function SmallScreenOverview({ project, texts, screenSize, locale }) {
+function SmallScreenOverview({
+  project,
+  texts,
+  screenSize,
+  locale,
+  toggleShowSocials,
+  showSocials,
+}) {
   const classes = useStyles();
   return (
     <>
@@ -174,7 +186,15 @@ function SmallScreenOverview({ project, texts, screenSize, locale }) {
             locale={locale}
           />
         )}
-        <SocialMediaShareButton containerClassName={classes.shareButtonContainer} />
+        <SocialMediaShareButton
+          containerClassName={classes.shareButtonContainer}
+          toggleShowSocials={toggleShowSocials}
+        />
+        <SocialMediaShareDialog
+          open={showSocials}
+          onClose={toggleShowSocials}
+          texts={texts}
+        />
         <img
           className={classes.fullWidthImage}
           src={getImageUrl(project.image)}

@@ -21,6 +21,7 @@ import ProjectTeamContent from "./ProjectTeamContent";
 import { useLongPress } from "use-long-press";
 import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
 import SocialMediaShareButton from "./Buttons/SocialMediaShareButton";
+import SocialMediaShareDialog from "../dialogs/SocialMediaShareDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -303,6 +304,11 @@ export default function ProjectPageRoot({
     await refreshNotifications();
   };
 
+  const [showSocials, setShowSocials] = React.useState(false);
+  const toggleShowSocials = (value) => {
+    setShowSocials(value);
+  };
+
   const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
   const [followers, setFollowers] = React.useState([]);
   const [showFollowers, setShowFollowers] = React.useState(false);
@@ -376,6 +382,8 @@ export default function ProjectPageRoot({
         initiallyCaughtLikes={initiallyCaughtLikes}
         numberOfLikes={numberOfLikes}
         numberOfFollowers={numberOfFollowers}
+        toggleShowSocials={toggleShowSocials}
+        showSocials={showSocials}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -392,7 +400,17 @@ export default function ProjectPageRoot({
           </Tabs>
         </div>
         {!screenSize.belowSmall && (
-          <SocialMediaShareButton containerClassName={classes.shareButtonContainer} />
+          <>
+            <SocialMediaShareButton
+              containerClassName={classes.shareButtonContainer}
+              toggleShowSocials={toggleShowSocials}
+            />
+            <SocialMediaShareDialog
+              open={showSocials}
+              onClose={toggleShowSocials}
+              texts={texts}
+            />
+          </>
         )}
       </Container>
 

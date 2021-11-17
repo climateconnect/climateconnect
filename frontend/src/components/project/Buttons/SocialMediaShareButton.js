@@ -14,12 +14,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SocialMediaShareButton({ containerClassName }) {
+export default function SocialMediaShareButton({ containerClassName, toggleShowSocials }) {
   const classes = useStyles();
-
+  const handleClick = () => {
+    toggleShowSocials(true);
+  };
   return (
     <div className={containerClassName}>
-      <IconButton className={classes.button}>
+      <IconButton className={classes.button} onClick={handleClick}>
         {/*adjusted viewBox to center the icon*/}
         <ShareIcon viewBox="2 0 24 24" />
       </IconButton>
