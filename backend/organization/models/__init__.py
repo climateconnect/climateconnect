@@ -24,3 +24,4 @@ from organization.models.translations import (
     ProjectTranslation, OrganizationTranslation,
     PostTranslation, CommentTranslation
 )
+from organization.models.shared_projects import ProjectsShared 
