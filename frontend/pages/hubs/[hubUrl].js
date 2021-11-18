@@ -9,7 +9,7 @@ import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions,
+  getStatusOptions
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -189,7 +189,7 @@ export default function Hub({
     setTabsWhereFiltersWereApplied(tabs);
   };
 
-  const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
+  const handleApplyNewFilters = async ({ type, newFilters, closeFilters, nonFilterParams }) => {
     return await applyNewFilters({
       type: type,
       filters: filters,
@@ -203,6 +203,7 @@ export default function Hub({
       tabsWhereFiltersWereApplied: tabsWhereFiltersWereApplied,
       handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
       hubUrl: hubUrl,
+      idea: nonFilterParams.idea,
     });
   };
 
