@@ -1,7 +1,12 @@
 from typing import Dict, List
+
+from climate_match.models import (Answer, AnswerMetaData, Question,
+                                  UserQuestionAnswer)
+from climateconnect_api.serializers.common import SkillSerializer
 from django.utils.translation import get_language
+from hubs.models.hub import Hub
+from hubs.serializers.hub import HubClimateMatchSerializer, HubStubSerializer
 from rest_framework import serializers
-from climate_match.models import Answer, AnswerMetaData, Question, UserQuestionAnswer
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -14,14 +19,14 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
     text = serializers.SerializerMethodField()
     answer_type = serializers.SerializerMethodField()
     answers = serializers.SerializerMethodField()
-	
+
     class Meta:
         model = Question
         fields = (
-			'id', 'text', 'answer_type',
-			'image', 'step', 'number_of_choices', 'answers',
+            'id', 'text', 'answer_type',
+            'image', 'step', 'number_of_choices', 'answers',
             'minimum_choices_required'
-		)
+        )
 
     def get_text(self, obj: Question) -> str:
         user_language_code = get_language()
@@ -30,33 +35,40 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
                 language__language_code=user_language_code
             ).first().text
         return obj.text
-    
+
     def get_answer_type(self, obj: Question) -> str:
         return obj.answer_type.model
-	
+
     def get_answers(self, obj: Question) -> List:
-	    answers = []
-	    resource_mapping = [
-	    	{
-	    		'resource_type': 'hub', 'filter': {'hub_type': 0}
-	    	}, 
-	    	{
-	    		'resource_type': 'skill', 'filter': {'parent_skill': None}
-	    	}
-	    ]
-	    if obj.answer_type.model == 'answer':
-	    	predefined_answers = obj.answer_question.all()
-	    	return AnswerSerializer(predefined_answers, many=True).data
-	    	for answer in obj.answer_question.all():
-	    		answers.append({'text': answer.text, 'id': answer.id})
-	    else:
-	    	for resource in resource_mapping:
-	    		if obj.answer_type.model == resource['resource_type']:
-	    			resource_objects = obj.answer_type.get_all_objects_for_this_type(**resource['filter'])
-	    			for r_obj in resource_objects:
-	    				answers.append({'text': r_obj.name, 'id': r_obj.id})
-    	
-	    return answers
+        answers = []
+        user_language_code = get_language()
+        resource_mapping = [
+            {
+                'resource_type': 'hub', 'filter': {'hub_type': Hub.SECTOR_HUB_TYPE}
+            },
+            {
+                'resource_type': 'skill', 'filter': {'parent_skill': None}
+            }
+        ]
+        if obj.answer_type.model == 'answer':
+            predefined_answers = obj.answer_question.all()
+            return AnswerSerializer(predefined_answers, many=True).data
+            for answer in obj.answer_question.all():
+                answers.append({'text': answer.text, 'id': answer.id})
+        else:
+            for resource in resource_mapping:
+                if obj.answer_type.model == resource['resource_type']:
+
+                    resource_objects = obj.answer_type.get_all_objects_for_this_type(**resource['filter'])
+                    if resource['resource_type'] == 'hub':
+                        resource_objects = (HubClimateMatchSerializer(resource_objects, many=True)).data
+                    if resource['resource_type'] == 'skill':
+                        resource_objects = (SkillSerializer(resource_objects, many=True)).data
+                    for r_obj in resource_objects:
+                        answers.append({'text': r_obj['name'], 'id': r_obj['id']})
+
+        return answers
+
 
 class AnswerSerializer(serializers.ModelSerializer):
     text = serializers.SerializerMethodField()
