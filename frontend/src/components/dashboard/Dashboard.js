@@ -8,7 +8,7 @@ import {
   MenuList,
   Paper,
   Popper,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) => {
       justifyContent: "space-around",
     },
     newBadge: {
-      background: theme.palette.yellow.main
+      background: theme.palette.yellow.main,
     },
     cityHubOption: {
       width: "100%",
@@ -286,7 +286,14 @@ export default function Dashboard({ className, headline, location }) {
                 ]}
               />
               <Badge badgeContent={texts.new} className={classes.newBadge} color="error">
-                <Button href={`${getLocalePrefix(locale)}/climatematch?from_hub=erlangen`} variant="contained" color="primary" size="small">ClimateMatch</Button>
+                <Button
+                  href={`${getLocalePrefix(locale)}/climatematch?from_hub=erlangen`}
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                >
+                  ClimateMatch
+                </Button>
               </Badge>
               {/* TODO: restore Climate Match icon and link once CM is live  */}
               {/* <Button type="submit">Climate Match</Button> */}

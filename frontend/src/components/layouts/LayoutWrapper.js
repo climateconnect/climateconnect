@@ -130,7 +130,7 @@ export default function LayoutWrapper({
     showFeedbackMessage: showFeedbackMessage,
     handleUpdateHash: handleUpdateHash,
   };
-  console.log(useFloodStdFont);
+
   return (
     <>
       <Head>
