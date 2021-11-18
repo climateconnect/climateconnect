@@ -20,6 +20,7 @@ import ProjectOverview from "./ProjectOverview";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { useLongPress } from "use-long-press";
 import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
+import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -97,6 +98,8 @@ export default function ProjectPageRoot({
   const contactProjectCreatorButtonRef = useRef(null);
   const projectTabsRef = useRef(null);
 
+  const projectTabsSpaceToTop = ElementSpaceToTop({el: projectTabsRef.current});
+  
   const messageButtonIsVisible = ElementOnScreen({ el: contactProjectCreatorButtonRef.current });
 
   const handleClickContact = async (event) => {
@@ -399,6 +402,7 @@ export default function ProjectPageRoot({
             latestParentComment={latestParentComment}
             handleTabChange={handleTabChange}
             typesByTabValue={typesByTabValue}
+            projectTabsSpaceToTop={projectTabsSpaceToTop}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>

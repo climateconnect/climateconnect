@@ -146,6 +146,7 @@ export default function ProjectContent({
   latestParentComment,
   handleTabChange,
   typesByTabValue,
+  projectTabsSpaceToTop,
 }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -298,6 +299,7 @@ export default function ProjectContent({
           project={project}
           handleTabChange={handleTabChange}
           typesByTabValue={typesByTabValue}
+          projectTabsSpaceToTop={projectTabsSpaceToTop}
         />
       )}
       <div className={classes.contentBlock} ref={collaborationSectionRef}>
