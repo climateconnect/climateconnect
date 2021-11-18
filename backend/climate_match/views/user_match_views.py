@@ -1,13 +1,13 @@
+from organization.serializers.climatematch import OrganizationSuggestionSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from climate_match.permissions import  UserResourceMatchPermission
 from climate_match.utility.sort_resources import sort_user_resource_preferences
 from climateconnect_api.models import UserProfile
-from ideas.serializers.idea import IdeaSerializer
+from ideas.serializers.idea import IdeaMinimalSerializer
 from ideas.models import Idea
-from organization.serializers.organization import OrganizationSerializer
-from organization.serializers.project import ProjectSerializer, ProjectStubSerializer, ProjectSuggestionSeralizer
+from organization.serializers.project import ProjectSerializer, ProjectSuggestionSerializer
 from organization.models import Project, Organization
 from rest_framework.permissions import AllowAny
 
@@ -50,21 +50,21 @@ class UserResourcesMatchView(APIView):
 				except Project.DoesNotExist:
 					logger.info(f"{LOGGER_PREFIX} Project not found for resource id {resource_id}")
 					continue
-				resource_data = ProjectSuggestionSeralizer(project).data
+				resource_data = ProjectSuggestionSerializer(project).data
 			elif table_name == 'idea':
 				try:
 					idea = Idea.objects.get(id=resource_id)
 				except Idea.DoesNotExist:
 					logger.info(f"{LOGGER_PREFIX} Idea not found for resource id {resource_id}")
 					continue
-				resource_data = IdeaSerializer(idea).data
+				resource_data = IdeaMinimalSerializer(idea).data
 			elif table_name == 'organization':
 				try:
 					organization = Organization.objects.get(id=resource_id)
 				except Organization.DoesNotExist:
 					logger.info(f"{LOGGER_PREFIX} Organization not found for resource id {resource_id}")
 					continue
-				resource_data = OrganizationSerializer(organization).data
+				resource_data = OrganizationSuggestionSerializer(organization).data
 			else:
 				logger.info(f"{LOGGER_PREFIX} Unknown table name {table_name}")
 				continue

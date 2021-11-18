@@ -270,7 +270,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     def get_number_of_likes(self, obj):
         return ProjectLike.objects.filter(project=obj).count()
 
-class ProjectSuggestionSeralizer(ProjectStubSerializer):
+class ProjectSuggestionSerializer(ProjectStubSerializer):
     project_creator = serializers.SerializerMethodField()
     class Meta(ProjectStubSerializer.Meta):
         fields = ProjectStubSerializer.Meta.fields + ('project_creator',)
