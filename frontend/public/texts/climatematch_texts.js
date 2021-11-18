@@ -55,5 +55,17 @@ export default function getClimatematchTexts({ location, question }) {
       en: "Your ClimateMatch Results",
       de: "Deine ClimateMatch Ergebnisse",
     },
+    idea: {
+      en: "Idea",
+      de: "Idee",
+    },
+    idea_creator: {
+      en: "created the idea",
+      de: "hat die Idee erstellt",
+    },
+    projects_by: {
+      en: "Projects shared by",
+      de: "Projekte von",
+    },
   };
 }
