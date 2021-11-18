@@ -118,7 +118,7 @@ export default function Post({
             />
           </Link>
           <span className={classes.messageWithMetaData}>
-            {type != "preview" && (
+            {type !== "preview" && (
               <div className={classes.metadata}>
                 <Link
                   color="inherit"
