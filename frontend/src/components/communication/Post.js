@@ -149,8 +149,8 @@ export default function Post({
               <MessageContent content={post.content} maxLines={maxLines} />
             )}
             <div>
-              {type != "reply" &&
-                type != "preview" &&
+              {type !== "reply" &&
+                type !== "preview" &&
                 (replyInterfaceExpanded ? (
                   <CommentInput
                     user={user}
@@ -164,12 +164,12 @@ export default function Post({
                     {texts.reply}
                   </Button>
                 ))}
-              {user && user.id === post.author_user.id && type != "preview" && (
+              {user && user.id === post.author_user.id && type !== "preview" && (
                 <Button onClick={toggleDeleteDialogOpen}>Delete</Button>
               )}
             </div>
             <div>
-              {type != "reply" && !!post.replies && post.replies.length > 0 && type != "preview" && (
+              {type !== "reply" && !!post.replies && post.replies.length > 0 && type !== "preview" && (
                 <Link className={classes.toggleReplies} onClick={handleViewRepliesClick}>
                   {!displayReplies ? (
                     <>
@@ -193,7 +193,7 @@ export default function Post({
           post.replies.length > 0 &&
           displayReplies &&
           (type === "openingpost" || type === "progresspost") &&
-          type != "preview" && (
+          type !== "preview" && (
             <Posts
               posts={post.replies}
               type="reply"
