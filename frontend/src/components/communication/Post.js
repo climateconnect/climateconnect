@@ -73,7 +73,7 @@ export default function Post({
   infoTextSize,
   truncate,
 }) {
-  const classes = useStyles({ preview: type === "preview" ? true : false });
+  const classes = useStyles({ preview: type === "preview" });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
   const [open, setOpen] = React.useState(false);
