@@ -69,6 +69,9 @@ const useStyles = makeStyles((theme) => ({
   buttonText: (props) => ({
     visibility: props.likingChangePending ? "hidden" : "visible",
   }),
+  hidden: {
+    visibility: "hidden",
+  },
 }));
 
 export default function LikeButton({
