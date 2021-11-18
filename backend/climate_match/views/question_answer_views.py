@@ -129,6 +129,9 @@ class UserQuestionAnswersView(APIView):
                             index
                         )
                     }, status=status.HTTP_400_BAD_REQUEST)
+                # Clear the old answers to make room for new answers
+                # Without this line all the answers would add up and the results wouldn't make sense anymore
+                user_question_answer.answers.clear()
                 for answer in question_answer['answers']:
                     if AnswerMetaData.objects.filter(
                         weight=answer['weight'],
