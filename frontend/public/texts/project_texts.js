@@ -133,30 +133,12 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       de: "Du hast das Projekt erfolgreich verlassen.",
     },
     please_log_in_to_follow_a_project: {
-      en: (
-        <>
-          Please <Link href={getLocalePrefix(locale) + "/signin"}>log in</Link> to follow a project.
-        </>
-      ),
-      de: (
-        <>
-          Bitte <Link href={getLocalePrefix(locale) + "/signin"}>logge dich ein</Link>, um einem
-          Projekt zu folgen.
-        </>
-      ),
+      en: "Please log in to follow a project.",
+      de: "Bitte logge dich ein, um einem Projekt zu folgen.",
     },
     please_log_in_to_like_a_project: {
-      en: (
-        <>
-          Please <Link href={getLocalePrefix(locale) + "/signin"}>log in</Link> to like a project.
-        </>
-      ),
-      de: (
-        <>
-          Bitte <Link href={getLocalePrefix(locale) + "/signin"}>logge dich ein</Link>, um ein
-          Projekt zu liken.
-        </>
-      ),
+      en: "Please log in to like a project.",
+      de: "Bitte logge dich ein, um ein Projekt zu liken.",
     },
     you_cant_leave_a_project_as_the_creator: {
       en: `You can't leave a project as the Super Admin. Please give the Super Admin role to another team member by clicking "Manage Members" in the team tab`,
