@@ -35,15 +35,13 @@ export default function DiscussionPreview({
   discussionTabLabel,
   handleTabChange,
   typesByTabValue,
-  projectTabsSpaceToTop,
+  projectTabsRef,
 }) {
   const classes = useStyles();
 
   function switchToDiscussionTab(event) {
     handleTabChange(event, typesByTabValue.indexOf("comments"));
-    if (scrollY > projectTabsSpaceToTop.page) {
-      window.scrollTo({top: projectTabsSpaceToTop.page, left: 0});
-    }
+    projectTabsRef.current.scrollIntoView();
   }
 
   return (
