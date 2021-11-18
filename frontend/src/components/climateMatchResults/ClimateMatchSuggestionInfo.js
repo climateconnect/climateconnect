@@ -4,6 +4,8 @@ import ModeCommentIcon from "@material-ui/icons/ModeComment";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import IdeaHubIcon from "../ideas/IdeaHubIcon";
+import IdeaRatingIcon from "../ideas/IdeaRatingIcon";
 import LocationDisplay from "../project/LocationDisplay";
 import ProjectCategoriesDisplay from "../project/ProjectCategoriesDisplay";
 import IconNumberDisplay from "./IconNumberDisplay";
@@ -23,13 +25,17 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
   },
+  lowerBarIdeas: {
+    alignItems: "center",
+    paddingTop: theme.spacing(1),
+  },
   lowerBarLeftSide: {
     display: "flex",
   },
   lowerBarRightSide: {
     display: "flex",
   },
-  projectInfoOverview: {
+  infoOverview: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
@@ -58,9 +64,61 @@ export default function ClimateMatchSuggestionInfo({ suggestion, className }) {
   return (
     <div className={`${classes.root} ${className}`}>
       {suggestion.ressource_type === "project" && <ProjectInfoOverview project={suggestion} />}
+      {suggestion.ressource_type === "idea" && <IdeaInfoOverview idea={suggestion} />}
+      {suggestion.ressource_type === "organization" && (
+        <OrganizationInfoOverview org={suggestion} />
+      )}
     </div>
   );
 }
+
+const SuggestionContent = ({ name, description }) => {
+  const classes = useStyles();
+  return (
+    <div>
+      <Typography component="h2" color="secondary" className={classes.projectTitle}>
+        {name}
+      </Typography>
+      <Typography className={classes.shortDescription}>{description}</Typography>
+    </div>
+  );
+};
+
+const OrganizationInfoOverview = ({ org }) => {
+  const classes = useStyles();
+  return (
+    <div className={classes.infoOverview}>
+      <SuggestionContent name={org.name} description={org.short_description} />
+    </div>
+  );
+};
+
+const IdeaInfoOverview = ({ idea }) => {
+  const classes = useStyles();
+  return (
+    <div className={classes.infoOverview}>
+      <SuggestionContent name={idea.name} description={idea.short_description} />
+      <div className={`${classes.lowerBar} ${classes.lowerBarIdeas}`}>
+        <div className={classes.lowerBarLeftSide}>
+          <IdeaHubIcon idea={idea} />
+          <IdeaRatingIcon
+            rating={idea.rating.rating_score}
+            number_of_ratings={idea.rating.number_of_ratings}
+          />
+        </div>
+        <div className={classes.lowerBarRightSide}>
+          <LocationDisplay
+            location={idea.location}
+            color="primary"
+            textClassName={classes.locationText}
+            iconClassName={classes.locationIcon}
+            className={classes.locationDisplay}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ProjectInfoOverview = ({ project }) => {
   const classes = useStyles();
@@ -68,13 +126,8 @@ const ProjectInfoOverview = ({ project }) => {
   const texts = getTexts({ page: "project", locale: locale });
 
   return (
-    <div className={classes.projectInfoOverview}>
-      <div>
-        <Typography component="h2" color="secondary" className={classes.projectTitle}>
-          {project.name}
-        </Typography>
-        <Typography className={classes.shortDescription}>{project.short_description}</Typography>
-      </div>
+    <div className={classes.infoOverview}>
+      <SuggestionContent name={project.name} description={project.short_description} />
       <div className={classes.lowerBar}>
         <div className={classes.lowerBarLeftSide}>
           <LocationDisplay

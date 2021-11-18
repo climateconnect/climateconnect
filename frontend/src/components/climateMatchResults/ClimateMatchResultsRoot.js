@@ -1,4 +1,12 @@
-import { Container, Link, List, ListItem, ListItemIcon, makeStyles, Typography } from "@material-ui/core";
+import {
+  Container,
+  Link,
+  List,
+  ListItem,
+  ListItemIcon,
+  makeStyles,
+  Typography
+} from "@material-ui/core";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -47,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       textDecoration: "inherit",
     },
-    color: "inherit"
+    color: "inherit",
   },
 }));
 
@@ -60,8 +68,7 @@ export default function ClimateMatchResultsRoot() {
   const [page, setPage] = useState(0);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
-  const headerContainerRef = useRef(null)
-  
+  const headerContainerRef = useRef(null);
 
   useEffect(async () => {
     setSuggestions((await getSuggestions(token, page)).matched_resources);
@@ -80,8 +87,12 @@ export default function ClimateMatchResultsRoot() {
             <div>
               <List className={classes.suggestionsOverviewContainer}>
                 {suggestions.map((suggestion, index) => (
-                  <Link href={`#${suggestion.url_slug}`} className={classes.noUnderline} key={index}>
-                    <ListItem  button className={classes.suggestionOverviewItem}>
+                  <Link
+                    href={`#${suggestion.url_slug}`}
+                    className={classes.noUnderline}
+                    key={index}
+                  >
+                    <ListItem button className={classes.suggestionOverviewItem}>
                       <ListItemIcon className={classes.suggestionsOverViewItemIcon}>
                         <Typography color="primary" className={classes.suggestionOverviewNumber}>
                           {index + 1}.

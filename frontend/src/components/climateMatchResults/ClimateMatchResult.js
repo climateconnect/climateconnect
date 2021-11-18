@@ -9,6 +9,7 @@ import UserContext from "../context/UserContext";
 import ContactCreatorButton from "../project/Buttons/ContactCreatorButton";
 import ClimateMatchResultImage from "./ClimateMatchResultImage";
 import ClimateMatchSuggestionInfo from "./ClimateMatchSuggestionInfo";
+import ProjectsSlider from "./ProjectsSlider";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -62,6 +63,16 @@ const useStyles = makeStyles((theme) => ({
   contactCreatorButton: {
     marginLeft: theme.spacing(2),
   },
+  projectSliderContainer: {
+    position: "relative",
+    height: 200,
+    width: "100%",
+  },
+  projects_by_text: {
+    marginLeft: theme.spacing(10),
+    marginBottom: theme.spacing(1),
+    fontSize: 18,
+  },
 }));
 
 export default function ClimateMatchResult({ suggestion, pos }) {
@@ -70,7 +81,7 @@ export default function ClimateMatchResult({ suggestion, pos }) {
   const cookies = new Cookies();
   const token = cookies.get("token");
   const texts = getTexts({ page: "climatematch", locale: locale });
-  const creator = parseCreator(suggestion);
+  const creator = parseCreator(suggestion, texts);
   const handleClickContact = async (e) => {
     e.preventDefault();
     if (!user) {
@@ -83,48 +94,65 @@ export default function ClimateMatchResult({ suggestion, pos }) {
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
   return (
-    <Link
-      className={classes.noUnderline}
-      href={getSuggestionHref(locale, suggestion)}
-      target="_blank"
-    >
-      <div className={classes.root} id={suggestion.url_slug}>
-        <div className={classes.resultContainer}>
-          <div className={classes.rankAndTypeContainer}>
-            <div className={classes.rankNumber}>{pos + 1}</div>
-            <Typography className={classes.ressourceType}>
-              {texts[suggestion.ressource_type]}:
-            </Typography>
-          </div>
-          <div className={classes.contentContainer}>
-            <div className={classes.contentContainerLeftSide}>
-              <ClimateMatchResultImage suggestion={suggestion} />
-              <ClimateMatchSuggestionInfo
-                suggestion={suggestion}
-                className={classes.suggestionInfoBlock}
-              />
+    <div>
+      <Link
+        className={classes.noUnderline}
+        href={getSuggestionHref(locale, suggestion)}
+        target="_blank"
+      >
+        <div className={classes.root} id={suggestion.url_slug}>
+          <div className={classes.resultContainer}>
+            <div className={classes.rankAndTypeContainer}>
+              <div className={classes.rankNumber}>{pos + 1}</div>
+              <Typography className={classes.ressourceType}>
+                {texts[suggestion.ressource_type]}:
+              </Typography>
             </div>
-            <div>
-              <ContactCreatorButton
-                large
-                projectAdmin={creator}
-                handleClickContact={handleClickContact}
-                className={classes.contactCreatorButton}
-              />
+            <div className={classes.contentContainer}>
+              <div className={classes.contentContainerLeftSide}>
+                <ClimateMatchResultImage suggestion={suggestion} />
+                <ClimateMatchSuggestionInfo
+                  suggestion={suggestion}
+                  className={classes.suggestionInfoBlock}
+                />
+              </div>
+              <div>
+                <ContactCreatorButton
+                  large
+                  projectAdmin={creator}
+                  handleClickContact={handleClickContact}
+                  className={classes.contactCreatorButton}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+      {suggestion.ressource_type === "organization" && (
+        <>
+          <Typography className={classes.projects_by_text}>
+            {texts.projects_by} {suggestion.name}:
+          </Typography>
+          <div className={classes.projectSliderContainer}>
+            <ProjectsSlider projects={suggestion.projects} />
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
 const getSuggestionHref = (locale, suggestion) => {
   const ressourceNamePlural = `${suggestion.ressource_type}s`;
+  if (suggestion.ressource_type === "idea") {
+    const hubUrlSlug = `/hubs/${suggestion?.hub_shared_in?.url_slug}`;
+    const urlPrefix = getLocalePrefix(locale) + hubUrlSlug;
+    return `${urlPrefix}?idea=${suggestion.url_slug}#ideas`;
+  }
   return `${getLocalePrefix(locale)}/${ressourceNamePlural}/${suggestion.url_slug}`;
 };
 
-const parseCreator = (suggestion) => {
+const parseCreator = (suggestion, texts) => {
   if (suggestion.ressource_type === "project") {
     const pc = suggestion.project_creator;
     return {
@@ -133,6 +161,31 @@ const parseCreator = (suggestion) => {
       role: pc.role_in_project,
       first_name: pc.user.first_name,
       ...pc.user,
+    };
+  }
+  if (suggestion.ressource_type === "idea") {
+    const ic = suggestion.user;
+    return {
+      name: `${ic.first_name} ${ic.last_name}`,
+      thumbnail_image: ic.thumbnail_image ? ic.thumbnail_image : ic.image,
+      role: texts.idea_creator,
+      first_name: ic.first_name,
+      ...ic,
+    };
+  }
+  if (suggestion.ressource_type === "idea") {
+    const ic = suggestion.user;
+    return {
+      name: `${ic.first_name} ${ic.last_name}`,
+      thumbnail_image: ic.thumbnail_image ? ic.thumbnail_image : ic.image,
+      role: texts.idea_creator,
+    };
+  }
+  if (suggestion.ressource_type === "organization") {
+    const creator = suggestion.creator;
+    return {
+      name: `${creator?.first_name} ${creator?.last_name}`,
+      ...creator,
     };
   }
 };
