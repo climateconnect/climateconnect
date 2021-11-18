@@ -58,6 +58,7 @@ export default function Posts({
   onDeletePost,
   infoTextSize,
   truncate,
+  noLink,
 }) {
   const classes = useStyles();
   const classNames = {
@@ -82,6 +83,7 @@ export default function Posts({
             onDeletePost={onDeletePost}
             infoTextSize={infoTextSize}
             truncate={truncate}
+            noLink={noLink}
           />
         ))}
     </div>

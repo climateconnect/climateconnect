@@ -72,6 +72,7 @@ export default function Post({
   onDeletePost,
   infoTextSize,
   truncate,
+  noLink,
 }) {
   const classes = useStyles({ preview: type === "preview" });
   const { locale } = useContext(UserContext);
@@ -96,6 +97,9 @@ export default function Post({
     setOpen(false);
     if (confirmed) onDeletePost(post);
   };
+
+  const handleClick = (element) => noLink && element.preventDefault();
+
   return (
     <div className={className}>
       {type === "progresspost" ? (
@@ -107,6 +111,7 @@ export default function Post({
           <Link
             href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
             target="_blank"
+            onClick={handleClick}
           >
             <Avatar
               src={
@@ -124,6 +129,7 @@ export default function Post({
                   color="inherit"
                   href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
                   target="_blank"
+                  onClick={handleClick}
                 >
                   <Typography variant="body2" className={classes.username}>
                     {post.author_user.first_name + " " + post.author_user.last_name}

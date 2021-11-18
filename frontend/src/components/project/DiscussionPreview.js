@@ -57,6 +57,7 @@ export default function DiscussionPreview({
           type="preview"
           user={latestParentComment.author_user}
           truncate={3}
+          noLink={true}
         />
       </div>
     </ButtonBase>
