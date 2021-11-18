@@ -27,7 +27,6 @@ const useStyles = makeStyles((theme) => ({
   },
   headingDiscussionPreview: {
     fontWeight: "bold",
-    marginBottom: theme.spacing(0.5),
   },
 }));
 

@@ -123,7 +123,6 @@ export default function Post({
             />
           </Link>
           <span className={classes.messageWithMetaData}>
-            {type !== "preview" && (
               <div className={classes.metadata}>
                 <Link
                   color="inherit"
@@ -144,7 +143,6 @@ export default function Post({
                   <DateDisplay date={new Date(post.created_at)} />
                 </Typography>
               </div>
-            )}
             {type === "preview" ? (
               <Typography>
                 <Truncate lines={truncate} ellipsis={"..."}>
