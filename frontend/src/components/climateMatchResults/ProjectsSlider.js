@@ -1,9 +1,9 @@
-import { Link, makeStyles } from "@material-ui/core";
+import { Link, makeStyles, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import Carousel from "react-multi-carousel";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import { getImageUrl } from "../../../public/lib/imageOperations";
 import UserContext from "../context/UserContext";
+import ProjectPreview from "../project/ProjectPreview";
 import ClimateMatchSuggestionInfo from "./ClimateMatchSuggestionInfo";
 
 const useStyles = makeStyles((theme) => ({
@@ -15,6 +15,15 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 20,
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
+    [theme.breakpoints.down("lg")]: {
+      left: theme.spacing(1),
+      right: theme.spacing(1),
+    },
+    [theme.breakpoints.down("sm")]: {
+      border: "none",
+      left: 0,
+      right: 0,
+    },
   },
   projectImage: {
     height: 150,
@@ -25,6 +34,9 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(16),
     display: "flex",
     justifyContent: "center",
+    [theme.breakpoints.down("sm")]: {
+      padding: 0,
+    },
   },
   noUnderline: {
     textDecoration: "inherit",
@@ -33,34 +45,52 @@ const useStyles = makeStyles((theme) => ({
     },
     color: "inherit",
   },
+  projectCard: {
+    width: 290,
+  },
 }));
 
 export default function ProjectsSlider({ projects }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext);
+  const under500 = useMediaQuery("(max-width: 500px)")
   const responsive = {
     all: {
       breakpoint: { max: 10000, min: 0 },
       items: 1,
     },
   };
+
   return (
     <div className={classes.root}>
-      <Carousel responsive={responsive} infinite>
+      <Carousel 
+        responsive={responsive} infinite={projects?.length > 1}
+        arrows={!under500}
+      >
         {projects.map((p, index) => (
-          <Link
-            key={index}
-            href={`${getLocalePrefix(locale)}/projects/${p.url_slug}`}
-            target="_blank"
-            className={classes.noUnderline}
-          >
-            <div key={index} className={classes.carouselEntry}>
-              <img src={getImageUrl(p?.image)} className={classes.projectImage} />
-              <ClimateMatchSuggestionInfo suggestion={{ ...p, ressource_type: "project" }} />
-            </div>
-          </Link>
+          <CarouselItem key={index} project={p} />
         ))}
       </Carousel>
     </div>
   );
+}
+
+const CarouselItem = ({project}) => {
+  const { locale } = useContext(UserContext);
+  const isSmallOrMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const classes = useStyles()
+  return (
+    <Link
+      href={`${getLocalePrefix(locale)}/projects/${project.url_slug}`}
+      target="_blank"
+      className={classes.noUnderline}
+    >
+      <div className={classes.carouselEntry}>
+        {isSmallOrMediumScreen ? (
+          <ProjectPreview project={project} className={classes.projectCard} />
+        ) : (
+          <ClimateMatchSuggestionInfo suggestion={{ ...project, ressource_type: "project" }} />
+        )}
+      </div>
+    </Link>
+  )
 }
