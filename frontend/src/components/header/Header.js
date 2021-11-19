@@ -113,6 +113,9 @@ const useStyles = makeStyles((theme) => {
       [theme.breakpoints.down("md")]: {
         maxWidth: "calc(100% - 150px)",
       },
+      [theme.breakpoints.down("sm")]: {
+        maxWidth: "calc(100% - 35px)",
+      },
       justifyContent: "space-around",
     },
     menuLink: (props) => ({
@@ -184,6 +187,7 @@ const getLinks = (path_to_redirect, texts) => [
     href: "/browse",
     text: texts.browse,
     iconForDrawer: HomeIcon,
+    showJustIconUnderSm: HomeIcon,
   },
   {
     href: "/about",
@@ -198,6 +202,7 @@ const getLinks = (path_to_redirect, texts) => [
     iconForDrawer: FavoriteBorderIcon,
     isOutlinedInHeader: true,
     icon: FavoriteBorderIcon,
+    hideDesktopIconUnderSm: true,
     vanillaIfLoggedOut: true,
     hideOnStaticPages: true,
   },
@@ -432,6 +437,7 @@ function NormalScreenLinks({
   isStaticPage,
 }) {
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
+  const isSmallMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
   return (
@@ -502,9 +508,15 @@ function NormalScreenLinks({
                   <DropDownButton options={STATIC_PAGE_LINKS} buttonProps={{ ...buttonProps }}>
                     {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
                   </DropDownButton>
+                ) : link?.showJustIconUnderSm && isSmallMediumScreen ? (
+                  <IconButton {...buttonProps} className={classes.link}>
+                    <link.showJustIconUnderSm />
+                  </IconButton>
                 ) : (
                   <Button color="primary" {...buttonProps}>
-                    {link.icon && <link.icon className={classes.normalScreenIcon} />}
+                    {link.icon && !(link.hideDesktopIconUnderSm && isSmallMediumScreen) && (
+                      <link.icon className={classes.normalScreenIcon} />
+                    )}
                     {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
                   </Button>
                 )}
