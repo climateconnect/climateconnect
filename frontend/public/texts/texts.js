@@ -37,6 +37,7 @@ export default function getTexts({
   url_slug,
   user,
   climateMatchQuestion,
+  creator,
 }) {
   // These are the multiple text files for various translations. They're
   // split up to reduce the amount of work required to download
@@ -64,7 +65,13 @@ export default function getTexts({
     notification: getNotificationTexts({ idea: idea, project: project }),
     organization: getOrganizationTexts({ organization: organization, locale: locale }),
     profile: getProfileTexts({ profile: profile, locale: locale }),
-    project: getProjectTexts({ project: project, user: user, url_slug: url_slug, locale: locale }),
+    project: getProjectTexts({
+      project: project,
+      user: user,
+      url_slug: url_slug,
+      locale: locale,
+      creator: creator,
+    }),
     settings: settings_texts,
     tutorial: getTutorialTexts({ hubName: hubName, classes: classes, locale: locale }),
   };

@@ -12,6 +12,7 @@ const useStyles = makeStyles({
     position: "relative",
     height: 40,
     width: 200,
+    zIndex: 1,
   },
   smallAvatar: {
     height: theme.spacing(3),
@@ -43,12 +44,13 @@ const useStyles = makeStyles({
       background: theme.palette.primary.main,
     },
   },
-  helperText: {
+  helperText: (props) => ({
     position: "absolute",
     fontSize: 13,
     textAlign: "center",
     cursor: "pointer",
-  },
+    background: props.explanationBackground ? props.explanationBackground : "auto",
+  }),
   detailledInfoMaxWidth: {
     width: 200,
   },
@@ -57,20 +59,26 @@ const useStyles = makeStyles({
     flexDirection: "column",
     width: 300,
   },
+  avatar: {
+    height: 50,
+    width: 50
+  }
 });
 export default function ContactCreatorButton({
   className,
-  projectAdmin,
+  creator,
   contactProjectCreatorButtonRef,
   handleClickContact,
   tiny,
   small,
   isFixed,
   large,
+  contentType,
+  explanationBackground,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ explanationBackground: explanationBackground });
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "project", locale: locale });
+  const texts = getTexts({ page: "project", locale: locale, creator: creator });
   const [hoveringButton, setHoveringButton] = useState(false);
 
   const handleMouseEnter = () => {
@@ -80,9 +88,15 @@ export default function ContactCreatorButton({
     setHoveringButton(false);
   };
 
-  const creatorImageURL = getImageUrl(projectAdmin?.thumbnail_image);
-  const creatorName = projectAdmin?.name;
-  const creatorsRoleInProject = projectAdmin?.role ? projectAdmin?.role : texts.responsible_person;
+  const creatorImageURL = getImageUrl(creator?.thumbnail_image);
+  const creatorName = creator?.name;
+  const creatorsRoleInProject = creator?.role
+    ? creator?.role
+    : contentType === "idea"
+    ? texts.responsible_person_idea:
+    contentType === "organization"
+    ? texts.responsible_person_org
+    : texts.responsible_person_project;
   const buttonText = texts.contact;
 
   if (small) {
@@ -152,7 +166,11 @@ export default function ContactCreatorButton({
           {!isFixed && (
             <Fade in={hoveringButton}>
               <Typography className={classes.helperText}>
-                Contact {projectAdmin?.first_name} if you want to chat about this project.
+                {
+                  texts[
+                    `contact_creator_to_know_more_about_${contentType ? contentType : "project"}`
+                  ]
+                }
               </Typography>
             </Fade>
           )}
@@ -173,7 +191,7 @@ const DetailledContactCreatorInfo = ({ creatorName, creatorImageURL, creatorsRol
           subheader: classes.slideInSubheader,
           title: classes.slideInTitle,
         }}
-        avatar={<Avatar src={creatorImageURL} />}
+        avatar={<Avatar src={creatorImageURL} className={classes.avatar}/>}
         title={creatorName}
         subheader={creatorsRoleInProject}
       />
