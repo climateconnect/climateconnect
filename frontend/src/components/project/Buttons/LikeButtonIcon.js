@@ -7,7 +7,7 @@ const useStyles = makeStyles(() => ({
   }),
 }));
 
-export default function LikeIcon({ color, size }) {
+export default function LikeButtonIcon({ color, size }) {
   const classes = useStyles({ size });
 
   if (color === "white")
