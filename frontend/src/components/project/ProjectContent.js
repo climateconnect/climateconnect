@@ -16,6 +16,7 @@ import MiniProfilePreview from "../profile/MiniProfilePreview";
 import Posts from "./../communication/Posts.js";
 import DateDisplay from "./../general/DateDisplay";
 import ProjectStatus from "./ProjectStatus";
+import DiscussionPreview from "./DiscussionPreview";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -141,6 +142,11 @@ export default function ProjectContent({
   leaveProject,
   projectDescriptionRef,
   collaborationSectionRef,
+  discussionTabLabel,
+  latestParentComment,
+  handleTabChange,
+  typesByTabValue,
+  projectTabsRef,
 }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -285,6 +291,17 @@ export default function ProjectContent({
           </Button>
         )}
       </div>
+      {latestParentComment[0] && (
+        <DiscussionPreview
+          latestParentComment={latestParentComment}
+          discussionTabLabel={discussionTabLabel}
+          locale={locale}
+          project={project}
+          handleTabChange={handleTabChange}
+          typesByTabValue={typesByTabValue}
+          projectTabsRef={projectTabsRef}
+        />
+      )}
       <div className={classes.contentBlock} ref={collaborationSectionRef}>
         <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
           {texts.collaboration}
