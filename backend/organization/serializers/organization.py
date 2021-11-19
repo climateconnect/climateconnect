@@ -63,9 +63,9 @@ class OrganizationSerializer(serializers.ModelSerializer):
     def get_parent_organization(self, obj):
         serializer = OrganizationStubSerializer(obj.parent_organization)
         return serializer.data
-    
+
     def get_location(self, obj):
-        if obj.location == None:
+        if obj.location is None:
             return None
         return obj.location.name
 
@@ -75,7 +75,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     def get_about(self, obj):
         return get_organization_about_section(obj, get_language())
-    
+
     def get_hubs(self, obj):
         serializer = HubStubSerializer(obj.hubs, many=True)
         return serializer.data
@@ -87,7 +87,9 @@ class OrganizationSerializer(serializers.ModelSerializer):
                 role__role_type=Role.ALL_TYPE
             )
             creator_profile = UserProfile.objects.get(user_id=creator.user_id)
-            return (UserProfileStubSerializer(creator_profile)).data
+            creator_data = (UserProfileStubSerializer(creator_profile)).data
+            creator_data['role'] = creator.role_in_organization
+            return creator_data
         except (OrganizationMember.DoesNotExist, UserProfile.DoesNotExist):
             print("No creator!")
 
