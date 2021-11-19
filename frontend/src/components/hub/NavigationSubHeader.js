@@ -1,4 +1,4 @@
-import { Container, Link, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Button, Container, Link, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -33,18 +33,23 @@ const useStyles = makeStyles((theme) => ({
   allProjectsLink: {
     marginRight: theme.spacing(1.5),
   },
+  climateMatchButton: {
+    background: theme.palette.primary.light,
+    color: "black"
+  }
 }));
 
-export default function NavigationSubHeader({ hubName, allHubs }) {
+export default function NavigationSubHeader({ hubName, allHubs,isLocationHub }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isSmallMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <div className={classes.root}>
       <Container className={classes.flexContainer}>
         <Typography className={classes.path} component="div">
-          {!isNarrowScreen && (
+          {(!isNarrowScreen && !(isLocationHub && isSmallMediumScreen)) && (
             <>
               <Link className={classes.link} href={getLocalePrefix(locale) + "/browse"}>
                 {texts.browse}
@@ -61,7 +66,18 @@ export default function NavigationSubHeader({ hubName, allHubs }) {
               )}
             </>
           )}
-        </Typography>
+          {isLocationHub && isSmallMediumScreen && (
+            <Button
+              href={`${getLocalePrefix(locale)}/climatematch?from_hub=erlangen`}
+              variant="contained"
+              color="primary"
+              size="small"
+              className={classes.climateMatchButton}
+            >
+              {texts.get_active}
+            </Button>
+          )}
+        </Typography>        
         <Typography component="div" className={classes.rightSideContainer}>
           <HubLinks
             hubs={allHubs}

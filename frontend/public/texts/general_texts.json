@@ -702,5 +702,9 @@
   "new": {
     "en": "new",
     "de": "Neu"
+  },
+  "get_active": {
+    "en": "Act now",
+    "de": "Engagieren"
   }
 }
