@@ -2,7 +2,6 @@ import { Card, CardContent, CardMedia, Link, Typography } from "@material-ui/cor
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import Truncate from "react-truncate";
-
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -98,7 +97,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function ProjectPreview({ project, projectRef }) {
+export default function ProjectPreview({ project, projectRef, className }) {
   const [hovering, setHovering] = React.useState(false);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -119,7 +118,7 @@ export default function ProjectPreview({ project, projectRef }) {
       className={classes.noUnderline}
     >
       <Card
-        className={classes.root}
+        className={`${classes.root} ${className}`}
         variant="outlined"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}

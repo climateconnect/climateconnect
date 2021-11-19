@@ -1,4 +1,4 @@
-import { Link, makeStyles, Typography } from "@material-ui/core";
+import { Box, Link, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import Router from "next/router";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
@@ -7,7 +7,7 @@ import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ContactCreatorButton from "../project/Buttons/ContactCreatorButton";
-import ClimateMatchResultImage from "./ClimateMatchResultImage";
+import ClimateMatchResultFirstLine from "./ClimateMatchResultFirstLine";
 import ClimateMatchSuggestionInfo from "./ClimateMatchSuggestionInfo";
 import ProjectsSlider from "./ProjectsSlider";
 
@@ -19,25 +19,23 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       background: "#f5f5f5",
     },
-  }),
-  rankNumber: {
-    color: theme.palette.primary.main,
-    fontFamily: "flood-std, sans-serif",
-    fontSize: 30,
-    border: `3px solid ${theme.palette.yellow.main}`,
-    width: 40,
-    height: 40,
     display: "flex",
-    alignItems: "center",
+    flexDirection: "column",
     justifyContent: "center",
-    borderRadius: "100%",
-  },
-  ressourceType: {
-    marginLeft: theme.spacing(1),
-    fontWeight: 600,
+    alignItems: "center",
+    position: "relative",
+  }),
+  resultContainer: {
+    flexGrow: 1,
+    width: "100%",
+    maxWidth: 1300,
   },
   contentContainerLeftSide: {
     display: "flex",
+    marginLeft: theme.spacing(2),
+    [theme.breakpoints.down("xs")]: {
+      marginLeft: 0,
+    },
   },
   contentContainer: {
     marginLeft: 48,
@@ -45,13 +43,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     marginRight: theme.spacing(3),
-  },
-  rankAndTypeContainer: {
-    display: "flex",
-    alignItems: "center",
-  },
-  suggestionInfoBlock: {
-    marginLeft: theme.spacing(2),
+    [theme.breakpoints.down("sm")]: {
+      marginRight: theme.spacing(0),
+      marginLeft: theme.spacing(-1),
+    },
   },
   noUnderline: {
     textDecoration: "inherit",
@@ -59,6 +54,8 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: "inherit",
     },
     color: "inherit",
+    width: "100%",
+    maxWidth: 1300,
   },
   contactCreatorButton: {
     marginLeft: theme.spacing(2),
@@ -67,11 +64,49 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     height: 200,
     width: "100%",
+    [theme.breakpoints.down("lg")]: {
+      height: 238,
+    },
+    [theme.breakpoints.down("sm")]: {
+      height: 360,
+    },
   },
   projects_by_text: {
     marginLeft: theme.spacing(10),
     marginBottom: theme.spacing(1),
     fontSize: 18,
+    [theme.breakpoints.down("xs")]: {
+      marginLeft: 0,
+      fontWeight: 600
+    }
+  },
+  contactCreatorButtonContainer: {
+    flexGrow: 1,
+    display: "flex",
+    justifyContent: "center",
+  },
+  orgProjectsContainer: {
+    marginTop: theme.spacing(2),
+    [theme.breakpoints.up("lg")]: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    },
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
+  },
+  orgProjectsInnerContainer: {
+    width: 1200,
+    [theme.breakpoints.down("lg")]: {
+      width: 900,
+    },
+    [theme.breakpoints.down("md")]: {
+      width: 920,
+    },
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
   },
 }));
 
@@ -81,7 +116,9 @@ export default function ClimateMatchResult({ suggestion, pos }) {
   const cookies = new Cookies();
   const token = cookies.get("token");
   const texts = getTexts({ page: "climatematch", locale: locale });
+  const displayContactButtonBelow = useMediaQuery("(max-width:1100px)");
   const creator = parseCreator(suggestion, texts);
+  console.log(suggestion);
   const handleClickContact = async (e) => {
     e.preventDefault();
     if (!user) {
@@ -94,49 +131,48 @@ export default function ClimateMatchResult({ suggestion, pos }) {
     Router.push("/chat/" + chat.chat_uuid + "/");
   };
   return (
-    <div>
+    <div className={classes.root} id={suggestion.url_slug}>
       <Link
         className={classes.noUnderline}
         href={getSuggestionHref(locale, suggestion)}
         target="_blank"
       >
-        <div className={classes.root} id={suggestion.url_slug}>
-          <div className={classes.resultContainer}>
-            <div className={classes.rankAndTypeContainer}>
-              <div className={classes.rankNumber}>{pos + 1}</div>
-              <Typography className={classes.ressourceType}>
-                {texts[suggestion.ressource_type]}:
-              </Typography>
-            </div>
-            <div className={classes.contentContainer}>
-              <div className={classes.contentContainerLeftSide}>
-                <ClimateMatchResultImage suggestion={suggestion} />
-                <ClimateMatchSuggestionInfo
-                  suggestion={suggestion}
-                  className={classes.suggestionInfoBlock}
-                />
-              </div>
-              <div>
+        <div className={classes.resultContainer}>
+          <ClimateMatchResultFirstLine pos={pos} suggestion={suggestion} />
+          <div className={classes.contentContainer} onClick={(e) => e.preventDefault()}>
+            <ClimateMatchSuggestionInfo
+              className={classes.contentContainerLeftSide}
+              suggestion={suggestion}
+              displayContactButton={displayContactButtonBelow}
+              creator={creator}
+              handleClickContact={handleClickContact}
+              background={pos % 2 === 0 ? "#f5f5f5" : "#fff"}
+            />
+            {!displayContactButtonBelow && (
+              <div className={classes.contactCreatorButtonContainer}>
                 <ContactCreatorButton
                   large
-                  projectAdmin={creator}
+                  creator={creator}
                   handleClickContact={handleClickContact}
                   className={classes.contactCreatorButton}
+                  contentType={suggestion.ressource_type}
                 />
               </div>
-            </div>
+            )}
           </div>
         </div>
       </Link>
-      {suggestion.ressource_type === "organization" && (
-        <>
-          <Typography className={classes.projects_by_text}>
-            {texts.projects_by} {suggestion.name}:
-          </Typography>
-          <div className={classes.projectSliderContainer}>
-            <ProjectsSlider projects={suggestion.projects} />
+      {suggestion.ressource_type === "organization" && suggestion?.projects?.length > 0 && false && (
+        <Box className={classes.orgProjectsContainer}>
+          <div className={classes.orgProjectsInnerContainer}>
+            <Typography className={classes.projects_by_text}>
+              {texts.projects_by} {suggestion.name}:
+            </Typography>
+            <div className={classes.projectSliderContainer}>
+              <ProjectsSlider projects={suggestion.projects} />
+            </div>
           </div>
-        </>
+        </Box>
       )}
     </div>
   );

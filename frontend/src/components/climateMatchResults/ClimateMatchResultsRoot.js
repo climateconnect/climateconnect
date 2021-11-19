@@ -5,7 +5,8 @@ import {
   ListItem,
   ListItemIcon,
   makeStyles,
-  Typography
+  Typography,
+  useMediaQuery,
 } from "@material-ui/core";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
   suggestionsOverviewContainer: {
     maxWidth: 300,
+    minWidth: 230,
     paddingTop: 0,
   },
   suggestionOverviewNumber: {
@@ -69,6 +71,8 @@ export default function ClimateMatchResultsRoot() {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
   const headerContainerRef = useRef(null);
+  const screenIsSmallerThanMd = useMediaQuery((theme) => theme.breakpoints.down("md"));
+  const screenIsSmallerThanSm = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   useEffect(async () => {
     setSuggestions((await getSuggestions(token, page)).matched_resources);
@@ -81,31 +85,35 @@ export default function ClimateMatchResultsRoot() {
       ) : (
         <div>
           <div className={classes.headerContainer} ref={headerContainerRef}>
-            <ClimateMatchHeadline>{texts.suggestions_for_you}</ClimateMatchHeadline>
+            <ClimateMatchHeadline size={screenIsSmallerThanSm && "small"}>
+              {texts.suggestions_for_you}
+            </ClimateMatchHeadline>
           </div>
           <Container maxWidth="xl" className={classes.contentContainer} disableGutters>
-            <div>
-              <List className={classes.suggestionsOverviewContainer}>
-                {suggestions.map((suggestion, index) => (
-                  <Link
-                    href={`#${suggestion.url_slug}`}
-                    className={classes.noUnderline}
-                    key={index}
-                  >
-                    <ListItem button className={classes.suggestionOverviewItem}>
-                      <ListItemIcon className={classes.suggestionsOverViewItemIcon}>
-                        <Typography color="primary" className={classes.suggestionOverviewNumber}>
-                          {index + 1}.
+            {!screenIsSmallerThanMd && (
+              <div>
+                <List className={classes.suggestionsOverviewContainer}>
+                  {suggestions.map((suggestion, index) => (
+                    <Link
+                      href={`#${suggestion.url_slug}`}
+                      className={classes.noUnderline}
+                      key={index}
+                    >
+                      <ListItem button className={classes.suggestionOverviewItem}>
+                        <ListItemIcon className={classes.suggestionsOverViewItemIcon}>
+                          <Typography color="primary" className={classes.suggestionOverviewNumber}>
+                            {index + 1}.
+                          </Typography>
+                        </ListItemIcon>
+                        <Typography className={classes.suggestionOverviewName}>
+                          {suggestion.name}
                         </Typography>
-                      </ListItemIcon>
-                      <Typography className={classes.suggestionOverviewName}>
-                        {suggestion.name}
-                      </Typography>
-                    </ListItem>
-                  </Link>
-                ))}
-              </List>
-            </div>
+                      </ListItem>
+                    </Link>
+                  ))}
+                </List>
+              </div>
+            )}
             <div className={classes.resultsContainer}>
               {suggestions.map((suggestion, index) => (
                 <ClimateMatchResult key={index} suggestion={suggestion} pos={index} />

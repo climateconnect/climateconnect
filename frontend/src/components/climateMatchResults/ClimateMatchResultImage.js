@@ -3,22 +3,21 @@ import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import OrganizationAvatar from "../organization/OrganizationAvatar";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   projectOrIdeaImage: {
     height: 150,
   },
-}));
+});
 
-export default function ClimateMatchResultImage({ suggestion }) {
+export default function ClimateMatchResultImage({ suggestion, className }) {
   const imageUrl = getImageUrl(
     suggestion.thumbnail_image ? suggestion.thumbnail_image : suggestion.image
   );
   const classes = useStyles();
   return (
-    <div>
-      {/*TODO: Make sure this works for organizations*/}
+    <div className={className}>
       {suggestion.ressource_type === "organization" ? (
-        <OrganizationAvatar organization={suggestion} />
+        <OrganizationAvatar organization={suggestion} inlineVersionOnMobile />
       ) : (
         ["project", "idea"].includes(suggestion.ressource_type) && (
           <img src={imageUrl} className={classes.projectOrIdeaImage} />

@@ -1,4 +1,4 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ModeCommentIcon from "@material-ui/icons/ModeComment";
 import React, { useContext } from "react";
@@ -6,17 +6,28 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import IdeaHubIcon from "../ideas/IdeaHubIcon";
 import IdeaRatingIcon from "../ideas/IdeaRatingIcon";
+import ContactCreatorButton from "../project/Buttons/ContactCreatorButton";
 import LocationDisplay from "../project/LocationDisplay";
 import ProjectCategoriesDisplay from "../project/ProjectCategoriesDisplay";
+import ClimateMatchResultImage from "./ClimateMatchResultImage";
 import IconNumberDisplay from "./IconNumberDisplay";
 
 const useStyles = makeStyles((theme) => ({
+  wrapper: (props) => ({
+    width: props.displayContactButton ? "100%" : "default",
+  }),
   root: {
-    maxWidth: 650,
+    display: "flex",
   },
-  projectTitle: {
+  suggestionInfoContainer: {
+    maxWidth: 650,
+    marginLeft: theme.spacing(2),
+  },
+  suggestionTitle: {
     fontSize: 17,
     fontWeight: 700,
+    display: "flex",
+    justifyContent: "space-between",
   },
   shortDescription: {
     marginTop: theme.spacing(1),
@@ -24,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
   lowerBar: {
     display: "flex",
     justifyContent: "space-between",
+    width: "100%",
   },
   lowerBarIdeas: {
     alignItems: "center",
@@ -31,9 +43,17 @@ const useStyles = makeStyles((theme) => ({
   },
   lowerBarLeftSide: {
     display: "flex",
+    ["@media(max-width: 500px)"]: {
+      flexDirection: "column"
+    }
   },
   lowerBarRightSide: {
     display: "flex",
+    marginLeft: theme.spacing(2),
+    ["@media(max-width: 500px)"]: {
+      marginLeft: 0,
+      flexDirection: "column"
+    }
   },
   infoOverview: {
     display: "flex",
@@ -57,106 +77,184 @@ const useStyles = makeStyles((theme) => ({
   projectCategories: {
     cursor: "default",
   },
+  smallLocationIcon: {
+    fontSize: 15,
+  },
+  smallTextIcon: {
+    fontSize: 12,
+  },
+  smalLocationDisplay: {
+    marginTop: theme.spacing(0.5),
+    display: "flex",
+    justifyContent: "center",
+  },
+  spaceBetween: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  flexEnd: {
+    display: "flex",
+    justifyContent: "flex-end",
+  },
+  contactCreatorButton: {
+    marginTop: theme.spacing(2),
+    [theme.breakpoints.down("xs")]: {
+      width: "100%",
+      marginLeft: theme.spacing(2),
+      marginRight: theme.spacing(2)
+    }
+  },
+  contactCreatorBelowContainer: {
+    display: "flex",
+    justifyContent: "flex-end",
+    marginBottom: theme.spacing(2),
+    [theme.breakpoints.down("xs")]: {
+      justifyContent: "center",
+    }
+  },
 }));
 
-export default function ClimateMatchSuggestionInfo({ suggestion, className }) {
-  const classes = useStyles();
+export default function ClimateMatchSuggestionInfo({
+  suggestion,
+  className,
+  displayContactButton,
+  creator,
+  handleClickContact,
+  background,
+}) {
+  const classes = useStyles({ displayContactButton: displayContactButton });
+  const suggestionInfoUnderImage = useMediaQuery("(max-width:1525px)");
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
   return (
-    <div className={`${classes.root} ${className}`}>
-      {suggestion.ressource_type === "project" && <ProjectInfoOverview project={suggestion} />}
-      {suggestion.ressource_type === "idea" && <IdeaInfoOverview idea={suggestion} />}
-      {suggestion.ressource_type === "organization" && (
-        <OrganizationInfoOverview org={suggestion} />
-      )}
+    <div className={classes.wrapper}>
+      <div className={`${className} ${classes.root}`}>
+        <div>
+          {!isNarrowScreen && <ClimateMatchResultImage suggestion={suggestion} />}
+          {!isNarrowScreen &&
+            suggestionInfoUnderImage &&
+            suggestion.ressource_type === "organization" && (
+              <LocationDisplay
+                location={suggestion.location}
+                color="primary"
+                className={classes.smalLocationDisplay}
+                iconClassName={classes.smallLocationIcon}
+                textClassName={classes.smallTextIcon}
+              />
+            )}
+        </div>
+        <div className={classes.suggestionInfoContainer}>
+          <div className={classes.infoOverview}>
+            <SuggestionContent
+              name={suggestion.name}
+              description={suggestion.short_description}
+              isNarrowScreen={isNarrowScreen}
+              location={
+                suggestion.ressource_type === "organization" &&
+                !suggestionInfoUnderImage &&
+                suggestion.location
+              }
+            />
+            {!suggestionInfoUnderImage && <SuggestionBottomBar suggestion={suggestion} />}
+          </div>
+        </div>
+      </div>
+      <div className={classes.contactCreatorBelowContainer}>
+        {displayContactButton && (
+          <ContactCreatorButton
+            creator={creator}
+            contentType={suggestion.ressource_type}
+            handleClickContact={handleClickContact}
+            explanationBackground={background}
+            className={classes.contactCreatorButton}
+            large={isNarrowScreen}
+          />
+        )}
+      </div>
+      <div>{suggestionInfoUnderImage && <SuggestionBottomBar suggestion={suggestion} />}</div>
     </div>
   );
 }
 
-const SuggestionContent = ({ name, description }) => {
+const SuggestionBottomBar = ({ suggestion }) => (
+  <>
+    {suggestion.ressource_type === "project" && <ProjectBottomBar project={suggestion} />}
+    {suggestion.ressource_type === "idea" && <IdeaBottomBar idea={suggestion} />}
+  </>
+);
+
+const SuggestionContent = ({ name, description, location, isNarrowScreen }) => {
   const classes = useStyles();
   return (
     <div>
-      <Typography component="h2" color="secondary" className={classes.projectTitle}>
-        {name}
-      </Typography>
+      {!isNarrowScreen && (
+        <Typography component="h2" color="secondary" className={classes.suggestionTitle}>
+          {name}
+          {location && <LocationDisplay location={location} color="primary" />}
+        </Typography>
+      )}
       <Typography className={classes.shortDescription}>{description}</Typography>
     </div>
   );
 };
 
-const OrganizationInfoOverview = ({ org }) => {
+const IdeaBottomBar = ({ idea }) => {
   const classes = useStyles();
   return (
-    <div className={classes.infoOverview}>
-      <SuggestionContent name={org.name} description={org.short_description} />
-    </div>
-  );
-};
-
-const IdeaInfoOverview = ({ idea }) => {
-  const classes = useStyles();
-  return (
-    <div className={classes.infoOverview}>
-      <SuggestionContent name={idea.name} description={idea.short_description} />
-      <div className={`${classes.lowerBar} ${classes.lowerBarIdeas}`}>
-        <div className={classes.lowerBarLeftSide}>
-          <IdeaHubIcon idea={idea} />
-          <IdeaRatingIcon
-            rating={idea.rating.rating_score}
-            number_of_ratings={idea.rating.number_of_ratings}
-          />
-        </div>
-        <div className={classes.lowerBarRightSide}>
-          <LocationDisplay
-            location={idea.location}
-            color="primary"
-            textClassName={classes.locationText}
-            iconClassName={classes.locationIcon}
-            className={classes.locationDisplay}
-          />
-        </div>
+    <div className={`${classes.lowerBar} ${classes.lowerBarIdeas}`}>
+      <div className={classes.lowerBarLeftSide}>
+        <IdeaHubIcon idea={idea} />
+        <IdeaRatingIcon
+          rating={idea.rating.rating_score}
+          number_of_ratings={idea.rating.number_of_ratings}
+        />
+      </div>
+      <div className={classes.lowerBarRightSide}>
+        <LocationDisplay
+          location={idea.location}
+          color="primary"
+          textClassName={classes.locationText}
+          iconClassName={classes.locationIcon}
+          className={classes.locationDisplay}
+        />
       </div>
     </div>
   );
 };
 
-const ProjectInfoOverview = ({ project }) => {
+const ProjectBottomBar = ({ project }) => {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
 
   return (
-    <div className={classes.infoOverview}>
-      <SuggestionContent name={project.name} description={project.short_description} />
-      <div className={classes.lowerBar}>
-        <div className={classes.lowerBarLeftSide}>
-          <LocationDisplay
-            location={project.location}
-            color="primary"
-            textClassName={classes.locationText}
-            iconClassName={classes.locationIcon}
-            className={classes.locationDisplay}
-          />
-          <ProjectCategoriesDisplay
-            className={classes.projectCategories}
-            main_project_tag={project.tags[0]?.project_tag?.name}
-            color="primary"
-          />
-        </div>
-        <div className={classes.lowerBarRightSide}>
-          <IconNumberDisplay
-            icon={{ icon: ModeCommentIcon }}
-            number={project.number_of_comments}
-            name={texts.number_of_comments}
-            className={classes.iconNumberDisplay}
-          />
-          <IconNumberDisplay
-            icon={{ icon: FavoriteIcon }}
-            number={project.number_of_likes}
-            name={texts.number_of_likes}
-            className={classes.iconNumberDisplay}
-          />
-        </div>
+    <div className={classes.lowerBar}>
+      <div className={classes.lowerBarLeftSide}>
+        <LocationDisplay
+          location={project.location}
+          color="primary"
+          textClassName={classes.locationText}
+          iconClassName={classes.locationIcon}
+          className={classes.locationDisplay}
+        />
+        <ProjectCategoriesDisplay
+          className={classes.projectCategories}
+          main_project_tag={project.tags[0]?.project_tag?.name}
+          color="primary"
+        />
+      </div>
+      <div className={classes.lowerBarRightSide}>
+        <IconNumberDisplay
+          icon={{ icon: ModeCommentIcon }}
+          number={project.number_of_comments}
+          name={texts.number_of_comments}
+          className={classes.iconNumberDisplay}
+        />
+        <IconNumberDisplay
+          icon={{ icon: FavoriteIcon }}
+          number={project.number_of_likes}
+          name={texts.number_of_likes}
+          className={classes.iconNumberDisplay}
+        />
       </div>
     </div>
   );
