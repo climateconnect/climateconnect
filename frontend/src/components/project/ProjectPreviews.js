@@ -23,6 +23,7 @@ export default function ProjectPreviews({
   parentHandlesGridItems,
   projects,
   firstProjectCardRef,
+  hubUrl,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -34,6 +35,7 @@ export default function ProjectPreviews({
         project={p}
         isFirstProject={projects.indexOf(p) === 0}
         firstProjectCardRef={firstProjectCardRef}
+        hubUrl={hubUrl}
       />
     ));
 
@@ -85,7 +87,7 @@ export default function ProjectPreviews({
   );
 }
 
-function GridItem({ project, isFirstProject, firstProjectCardRef }) {
+function GridItem({ project, isFirstProject, firstProjectCardRef, hubUrl }) {
   const projectPreviewProps = {
     project: project,
   };
@@ -94,7 +96,7 @@ function GridItem({ project, isFirstProject, firstProjectCardRef }) {
   }
   return (
     <Grid key={project.url_slug} item xs={12} sm={6} md={4} lg={3} component="li">
-      <ProjectPreview {...projectPreviewProps} />
+      <ProjectPreview {...projectPreviewProps} hubUrl={hubUrl} />
     </Grid>
   );
 }

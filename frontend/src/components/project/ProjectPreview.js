@@ -97,7 +97,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function ProjectPreview({ project, projectRef, className }) {
+export default function ProjectPreview({ project, projectRef, hubUrl, className }) {
   const [hovering, setHovering] = React.useState(false);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -108,12 +108,13 @@ export default function ProjectPreview({ project, projectRef, className }) {
   const handleMouseLeave = () => {
     setHovering(false);
   };
+  const queryString = hubUrl ? "?hubPage=" + hubUrl : "";
   return (
     <Link
       href={
         project.is_draft
           ? `${getLocalePrefix(locale)}/editProject/${project.url_slug}`
-          : `${getLocalePrefix(locale)}/projects/${project.url_slug}`
+          : `${getLocalePrefix(locale)}/projects/${project.url_slug}${queryString}`
       }
       className={classes.noUnderline}
     >

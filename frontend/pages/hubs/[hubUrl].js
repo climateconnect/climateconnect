@@ -281,6 +281,7 @@ export default function Hub({
               hubLocation={hubLocation}
               hubData={hubData}
               resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
+              hubUrl={hubUrl}
             />
           </div>
         </div>

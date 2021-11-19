@@ -76,6 +76,7 @@ export default function BrowseContent({
   handleUpdateFilterValues,
   initialLocationFilter,
   resetTabsWhereFiltersWereApplied,
+  hubUrl,
 }) {
   const initialState = {
     items: {
@@ -537,6 +538,7 @@ export default function BrowseContent({
               parentHandlesGridItems
               projects={state.items.projects}
               firstProjectCardRef={firstProjectCardRef}
+              hubUrl={hubUrl}
             />
           </TabContentWrapper>
           <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>

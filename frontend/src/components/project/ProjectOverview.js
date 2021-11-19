@@ -13,6 +13,7 @@ import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "./Buttons/FollowButton";
+import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
 import LikeButton from "./Buttons/LikeButton";
 
 const useStyles = makeStyles((theme) => ({
@@ -40,6 +41,16 @@ const useStyles = makeStyles((theme) => ({
   linkIcon: {
     marginRight: theme.spacing(1),
     color: theme.palette.primary.main,
+  },
+  largeScreenHeader: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+    textAlign: "center",
+  },
+  goBackButtonContainer: {
+    marginLeft: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    position: "absolute",
   },
 }));
 
@@ -89,7 +100,12 @@ export default function ProjectOverview({
   return (
     <Container className={classes.projectOverview}>
       {screenSize.belowSmall ? (
-        <SmallScreenOverview project={project} texts={texts} />
+        <SmallScreenOverview
+          project={project}
+          texts={texts}
+          screenSize={screenSize}
+          locale={locale}
+        />
       ) : (
         <LargeScreenOverview
           project={project}
@@ -134,10 +150,18 @@ export default function ProjectOverview({
   );
 }
 
-function SmallScreenOverview({ project, texts }) {
+function SmallScreenOverview({ project, texts, screenSize, locale }) {
   const classes = useStyles();
   return (
     <>
+      {screenSize.belowTiny && (
+        <GoBackFromProjectPageButton
+          containerClassName={classes.goBackButtonContainer}
+          texts={texts}
+          tinyScreen={screenSize.belowTiny}
+          locale={locale}
+        />
+      )}
       <img
         className={classes.fullWidthImage}
         src={getImageUrl(project.image)}
