@@ -5,9 +5,33 @@ from django.contrib.auth.models import User
 
 def sort_user_resource_preferences(user: User) -> List:
     user_resource_preferences = []
+    # TODO: make generic
+    hub_location_id = 6
     with connection.cursor() as cursor:
         cursor.execute(f"""
-with get_user_resource_preference as (
+WITH hub_location_ids AS (
+    SELECT location_id
+    FROM hubs_hub_location
+    WHERE hub_id={hub_location_id}
+),
+projects AS (
+    SELECT * FROM organization_project
+    JOIN hub_location_ids
+    ON organization_project.loc_id=hub_location_ids.location_id
+),
+orgs AS (
+    SELECT *
+    FROM organization_organization
+    JOIN hub_location_ids
+    ON organization_organization.location_id=hub_location_ids.location_id
+),
+ideas AS (
+    SELECT *
+    FROM ideas_idea
+    JOIN hub_location_ids
+    ON ideas_idea.location_id=hub_location_ids.location_id
+),
+get_user_resource_preference AS (
     select CMUQA.user_id as user_id
         , CMAMD.resource_type_id as resource_type_id
         , DCT.model as resource_model
@@ -52,7 +76,7 @@ with get_user_resource_preference as (
             THEN cs.id
             ELSE cs.parent_skill_id END as skill_id,
             'project' as table_name
-            FROM organization_project op
+            FROM projects op
             LEFT JOIN organization_project_skills ops on ops.project_id  = op.id
             LEFT JOIN climateconnect_skill cs on cs.id = ops.skill_id
             WHERE cs.id IS NOT NULL
@@ -63,9 +87,9 @@ with get_user_resource_preference as (
             THEN cs.id
             ELSE cs.parent_skill_id END as skill_id,
             'organization' as table_name
-            FROM organization_organization oo
+            FROM orgs oo
             LEFT JOIN organization_projectparents opp on opp.parent_organization_id = oo.id
-            LEFT JOIN organization_project op on op.id = opp.project_id
+            LEFT JOIN projects op on op.id = opp.project_id
             LEFT JOIN organization_project_skills ops on ops.project_id = op.id
             LEFT JOIN climateconnect_skill cs on cs.id = ops.skill_id
             WHERE cs.id IS NOT NULL
@@ -84,15 +108,15 @@ with get_user_resource_preference as (
                 or optags.parent_tag_id = hhfpt.projecttags_id
             join organization_projecttagging opt on opt.project_tag_id = optags.id
                 or  opt.project_tag_id  = optags.parent_tag_id
-            join organization_project op on op.id = opt.project_id
+            join projects op on op.id = opt.project_id
         ) union (
             select oo.id, hh.id as hub_id, 'organization' as table_name
             from hubs_hub hh
             join organization_organization_hubs ooh on ooh.hub_id = hh.id
-            join organization_organization oo on oo.id = ooh.organization_id
+            join orgs oo on oo.id = ooh.organization_id
         ) union (
             select ii.id, hh.id as hub_id, 'idea' as table_name
-            from ideas_idea ii
+            from ideas ii
             join hubs_hub hh on hh.id = ii.hub_id
         )
     ) as reference_table on reference_table.hub_id = guhp.reference_id
