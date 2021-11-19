@@ -8,19 +8,19 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     [theme.breakpoints.down("xs")]: {
-      flexDirection: props.inlineVersionOnMobile ? "row" : "column"
-    }
+      flexDirection: props.inlineVersionOnMobile ? "row" : "column",
+    },
   }),
-  avatar: props => ({
+  avatar: (props) => ({
     width: 120,
     height: 120,
     [theme.breakpoints.down("xs")]: {
-      marginRight: props.inlineVersionOnMobile && theme.spacing(2)
+      marginRight: props.inlineVersionOnMobile && theme.spacing(2),
     },
     ["@media(max-width: 500px)"]: {
       width: props.inlineVersionOnMobile ? 90 : 120,
-      height: props.inlineVersionOnMobile ? 90 : 120
-    }
+      height: props.inlineVersionOnMobile ? 90 : 120,
+    },
   }),
   chip: (props) => ({
     borderRadius: 100,
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
     [theme.breakpoints.down("xs")]: {
       marginTop: props.inlineVersionOnMobile ? 0 : theme.spacing(-3),
-    }
+    },
   }),
   inlineRightContainer: {
     display: "flex",
@@ -37,8 +37,8 @@ const useStyles = makeStyles((theme) => ({
   },
   suggestionTitle: {
     fontSize: 17,
-    fontWeight: 700
-  }
+    fontWeight: 700,
+  },
 }));
 
 export default function OrganizationAvatar({ organization, inlineVersionOnMobile }) {

@@ -44,16 +44,16 @@ const useStyles = makeStyles((theme) => ({
   lowerBarLeftSide: {
     display: "flex",
     ["@media(max-width: 500px)"]: {
-      flexDirection: "column"
-    }
+      flexDirection: "column",
+    },
   },
   lowerBarRightSide: {
     display: "flex",
     marginLeft: theme.spacing(2),
     ["@media(max-width: 500px)"]: {
       marginLeft: 0,
-      flexDirection: "column"
-    }
+      flexDirection: "column",
+    },
   },
   infoOverview: {
     display: "flex",
@@ -101,8 +101,8 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       width: "100%",
       marginLeft: theme.spacing(2),
-      marginRight: theme.spacing(2)
-    }
+      marginRight: theme.spacing(2),
+    },
   },
   contactCreatorBelowContainer: {
     display: "flex",
@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     [theme.breakpoints.down("xs")]: {
       justifyContent: "center",
-    }
+    },
   },
 }));
 

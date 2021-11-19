@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProjectsSlider({ projects }) {
   const classes = useStyles();
-  const under500 = useMediaQuery("(max-width: 500px)")
+  const under500 = useMediaQuery("(max-width: 500px)");
   const responsive = {
     all: {
       breakpoint: { max: 10000, min: 0 },
@@ -62,10 +62,7 @@ export default function ProjectsSlider({ projects }) {
 
   return (
     <div className={classes.root}>
-      <Carousel 
-        responsive={responsive} infinite={projects?.length > 1}
-        arrows={!under500}
-      >
+      <Carousel responsive={responsive} infinite={projects?.length > 1} arrows={!under500}>
         {projects.map((p, index) => (
           <CarouselItem key={index} project={p} />
         ))}
@@ -74,10 +71,10 @@ export default function ProjectsSlider({ projects }) {
   );
 }
 
-const CarouselItem = ({project}) => {
+const CarouselItem = ({ project }) => {
   const { locale } = useContext(UserContext);
   const isSmallOrMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-  const classes = useStyles()
+  const classes = useStyles();
   return (
     <Link
       href={`${getLocalePrefix(locale)}/projects/${project.url_slug}`}
@@ -92,5 +89,5 @@ const CarouselItem = ({project}) => {
         )}
       </div>
     </Link>
-  )
-}
+  );
+};

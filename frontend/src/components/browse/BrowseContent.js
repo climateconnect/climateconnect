@@ -11,12 +11,12 @@ import { indicateWrongLocation, isLocationValid } from "../../../public/lib/loca
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
 import {
   getInfoMetadataByType,
-  getReducedPossibleFilters
+  getReducedPossibleFilters,
 } from "../../../public/lib/parsingOperations";
 import {
   findOptionByNameDeep,
   getFilterUrl,
-  getSearchParams
+  getSearchParams,
 } from "../../../public/lib/urlOperations";
 import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";

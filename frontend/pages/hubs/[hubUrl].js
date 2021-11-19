@@ -9,7 +9,7 @@ import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions
+  getStatusOptions,
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";

@@ -77,8 +77,8 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 18,
     [theme.breakpoints.down("xs")]: {
       marginLeft: 0,
-      fontWeight: 600
-    }
+      fontWeight: 600,
+    },
   },
   contactCreatorButtonContainer: {
     flexGrow: 1,

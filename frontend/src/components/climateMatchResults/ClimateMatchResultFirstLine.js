@@ -30,11 +30,11 @@ const useStyles = makeStyles((theme) => ({
     ["@media(max-width: 550px)"]: {
       width: 50,
       height: 50,
-      fontSize: 40
+      fontSize: 40,
     },
     ["@media(max-width: 400px)"]: {
-      marginRight: theme.spacing(1)
-    }
+      marginRight: theme.spacing(1),
+    },
   },
   ressourceType: {
     marginLeft: theme.spacing(1),
@@ -48,8 +48,8 @@ const useStyles = makeStyles((theme) => ({
   resultImageMobile: {
     paddingLeft: theme.spacing(3),
     ["@media(max-width: 400px)"]: {
-      paddingLeft: theme.spacing(1)
-    }
+      paddingLeft: theme.spacing(1),
+    },
   },
 }));
 

@@ -61,8 +61,8 @@ const useStyles = makeStyles({
   },
   avatar: {
     height: 50,
-    width: 50
-  }
+    width: 50,
+  },
 });
 export default function ContactCreatorButton({
   className,
@@ -93,8 +93,8 @@ export default function ContactCreatorButton({
   const creatorsRoleInProject = creator?.role
     ? creator?.role
     : contentType === "idea"
-    ? texts.responsible_person_idea:
-    contentType === "organization"
+    ? texts.responsible_person_idea
+    : contentType === "organization"
     ? texts.responsible_person_org
     : texts.responsible_person_project;
   const buttonText = texts.contact;
@@ -191,7 +191,7 @@ const DetailledContactCreatorInfo = ({ creatorName, creatorImageURL, creatorsRol
           subheader: classes.slideInSubheader,
           title: classes.slideInTitle,
         }}
-        avatar={<Avatar src={creatorImageURL} className={classes.avatar}/>}
+        avatar={<Avatar src={creatorImageURL} className={classes.avatar} />}
         title={creatorName}
         subheader={creatorsRoleInProject}
       />
