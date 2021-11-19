@@ -13,6 +13,15 @@ class UserQuestionAnswer(models.Model):
         on_delete=models.CASCADE
     )
 
+    token = models.UUIDField(
+        help_text="Unique token to store for user who are not logged in.",
+        verbose_name="Token",
+        unique=True,
+        editable=True,
+        null=True,
+        blank=True
+    )
+
     question = models.ForeignKey(
         Question,
         related_name="user_question",
