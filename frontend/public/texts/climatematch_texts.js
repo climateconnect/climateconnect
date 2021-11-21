@@ -67,5 +67,9 @@ export default function getClimatematchTexts({ location, question }) {
       en: "Projects shared by",
       de: "Projekte von",
     },
+    you_havent_done_the_climatematch: {
+      en: "You have to first do the ClimateMatch before seeing your results.",
+      de: "Bevor du deine Ergebnisse sehen kannst, musst du erst mal das ClimateMatch machen."
+    }
   };
 }

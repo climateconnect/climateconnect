@@ -92,10 +92,14 @@ class UserQuestionAnswerSerializer(serializers.ModelSerializer):
     predefined_answer = AnswerSerializer()
     answers = serializers.SerializerMethodField()
     answer_type = serializers.SerializerMethodField()
+    climatematch_token = serializers.SerializerMethodField()
 
     class Meta:
         model = UserQuestionAnswer
-        fields = ('id', 'question', 'predefined_answer', 'answers', 'answer_type')
+        fields = (
+            'id', 'question', 'predefined_answer',
+            'answers', 'answer_type', 'climatematch_token'
+        )
 
     def get_answers(self, obj: UserQuestionAnswer):
         answers = []
@@ -108,3 +112,6 @@ class UserQuestionAnswerSerializer(serializers.ModelSerializer):
     
     def get_answer_type(self, obj: UserQuestionAnswer) -> str:
         return obj.question.answer_type.model
+
+    def get_climatematch_token(self, obj: UserQuestionAnswer) -> str:
+        return obj.token

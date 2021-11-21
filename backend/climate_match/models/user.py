@@ -10,13 +10,14 @@ class UserQuestionAnswer(models.Model):
         related_name="user_qna",
         help_text="Points user who answered questions",
         verbose_name="User",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
     )
 
     token = models.UUIDField(
         help_text="Unique token to store for user who are not logged in.",
         verbose_name="Token",
-        unique=True,
         editable=True,
         null=True,
         blank=True
@@ -68,4 +69,4 @@ class UserQuestionAnswer(models.Model):
         verbose_name_plural = "User question answers"
 
     def __str__(self):
-        return f"{self.user.first_name} answered question {self.question.text}"
+        return f"{self.user.first_name if self.user else self.token} answered question {self.question.text}"

@@ -10,7 +10,7 @@ urlpatterns = [
         name='question-answer-list'
     ),
     path(
-        'members/<str:url_slug>/question_answers/', UserQuestionAnswersView.as_view(),
+        'climatematch_question_answers/', UserQuestionAnswersView.as_view(),
         name='user-question-answer-list'
     ),
     path(

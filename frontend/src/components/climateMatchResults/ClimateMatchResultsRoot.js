@@ -6,8 +6,9 @@ import {
   ListItemIcon,
   makeStyles,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
+import { Router } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -65,6 +66,7 @@ export default function ClimateMatchResultsRoot() {
   const classes = useStyles();
   const cookies = new Cookies();
   const token = cookies.get("token");
+  const climatematch_token = cookies.get("climatematch_token")
   const [loading, setLoading] = useState(true);
   const [suggestions, setSuggestions] = useState([]);
   const [page, setPage] = useState(0);
@@ -75,7 +77,13 @@ export default function ClimateMatchResultsRoot() {
   const screenIsSmallerThanSm = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   useEffect(async () => {
-    setSuggestions((await getSuggestions(token, page)).matched_resources);
+    const suggestions = await getSuggestions({
+      token: token,
+      climatematch_token: climatematch_token,
+      page: page,
+      texts: texts
+    })
+    setSuggestions(suggestions.matched_resources);
     setLoading(false);
   }, []);
   return (
@@ -93,7 +101,7 @@ export default function ClimateMatchResultsRoot() {
             {!screenIsSmallerThanMd && (
               <div>
                 <List className={classes.suggestionsOverviewContainer}>
-                  {suggestions.map((suggestion, index) => (
+                  {suggestions?.map((suggestion, index) => (
                     <Link
                       href={`#${suggestion.url_slug}`}
                       className={classes.noUnderline}
@@ -115,7 +123,7 @@ export default function ClimateMatchResultsRoot() {
               </div>
             )}
             <div className={classes.resultsContainer}>
-              {suggestions.map((suggestion, index) => (
+              {suggestions?.map((suggestion, index) => (
                 <ClimateMatchResult key={index} suggestion={suggestion} pos={index} />
               ))}
             </div>
@@ -126,13 +134,25 @@ export default function ClimateMatchResultsRoot() {
   );
 }
 
-const getSuggestions = async (token, page) => {
+const getSuggestions = async ({texts, token, page, climatematch_token}) => {
   try {
-    const resp = await apiRequest({
+    const args = {
       method: "get",
-      url: `/api/climatematch_results/?range_start=${page * 10}&range_end=${(page + 1) * 10}`,
-      token: token,
-    });
+      url: `/api/climatematch_results/?range_start=${page * 10}&range_end=${(page + 1) * 10}`
+    }
+    if(token) {
+      args.token = token
+    } else if(climatematch_token) {
+      args.url += `&climatematch_token=${climatematch_token}`
+    } else {
+      Router.push({
+        pathname: "/climatemath",
+        query: {
+          message: texts.you_havent_done_the_climatematch
+        }
+      })
+    }
+    const resp = await apiRequest(args);
     console.log(resp.data);
     return resp.data;
   } catch (e) {

@@ -1,12 +1,18 @@
 from typing import List
-from django.db import connection
+from uuid import UUID
+
 from django.contrib.auth.models import User
+from django.db import connection
 
 
-def sort_user_resource_preferences(user: User) -> List:
+def sort_user_resource_preferences(user: User, climatematch_token: UUID) -> List:
     user_resource_preferences = []
     # TODO: make generic
     hub_location_id = 6
+    if user.is_authenticated:
+        personalized_filter = "user = {}".format(user.id)
+    else:
+        personalized_filter = "token = '{}'".format(climatematch_token)
     with connection.cursor() as cursor:
         cursor.execute(f"""
 WITH hub_location_ids AS (
@@ -41,7 +47,7 @@ get_user_resource_preference AS (
     join climate_match_answer_answer_metadata CMAAMD on CMAAMD.answer_id = CMA.id
     join climate_match_answermetadata CMAMD on CMAMD.id = CMAAMD.answermetadata_id
     join django_content_type DCT on DCT.id = CMAMD.resource_type_id
-    where CMUQA.predefined_answer_id is not null and CMUQA.user_id = {user.id}
+    where CMUQA.predefined_answer_id is not null and CMUQA.{personalized_filter}
     group by 1, 2, 3
     order by total_weight desc
 ), get_user_skill_preference as (
@@ -54,7 +60,7 @@ get_user_resource_preference AS (
     join climate_match_userquestionanswer_answers cmua on cmua.userquestionanswer_id = cmu.id
     join climate_match_answermetadata cma on cma.id = cmua.answermetadata_id
     join django_content_type dct on dct.id = cma.resource_type_id
-    where dct.model = 'skill' and cmu.user_id = {user.id}
+    where dct.model = 'skill' and cmu.{personalized_filter}
 ), get_user_hub_preference as (
     select cmu.user_id
         , cma.weight
@@ -65,7 +71,7 @@ get_user_resource_preference AS (
     join climate_match_userquestionanswer_answers cmua on cmua.userquestionanswer_id = cmu.id
     join climate_match_answermetadata cma on cma.id = cmua.answermetadata_id
     join django_content_type dct on dct.id = cma.resource_type_id
-    where dct.model = 'hub' and cmu.user_id = {user.id}
+    where dct.model = 'hub' and cmu.{personalized_filter}
 ), get_user_reference_table_relevancy_score_by_skills AS (
     SELECT reference_table.table_name, reference_table.id as resource_id, SUM(gusp.weight) as skill_weight
     FROM get_user_skill_preference as gusp

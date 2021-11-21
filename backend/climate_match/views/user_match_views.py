@@ -1,17 +1,18 @@
-from organization.serializers.climatematch import OrganizationSuggestionSerializer
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from climate_match.permissions import  UserResourceMatchPermission
+import logging
+
 from climate_match.utility.sort_resources import sort_user_resource_preferences
 from climateconnect_api.models import UserProfile
-from ideas.serializers.idea import IdeaMinimalSerializer
 from ideas.models import Idea
-from organization.serializers.project import ProjectSerializer, ProjectSuggestionSerializer
-from organization.models import Project, Organization
+from ideas.serializers.idea import IdeaMinimalSerializer
+from organization.models import Organization, Project
+from organization.serializers.climatematch import \
+    OrganizationSuggestionSerializer
+from organization.serializers.project import ProjectSuggestionSerializer
+from rest_framework import status
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -22,12 +23,16 @@ class UserResourcesMatchView(APIView):
 		"""
 		params required in URL: `range_start` and `range_end`. example: range_start=0&range_end=10
 		"""
-		try:
-			user_profile = UserProfile.objects.get(user=request.user)
-		except UserProfile.DoesNotExist:
-			return Response({
-				'message': 'Profile not found'
-			}, status=status.status.HTTP_404_NOT_FOUND)
+		is_logged_in = request.user.is_authenticated
+		if is_logged_in:
+			try:
+				user_profile = UserProfile.objects.get(user=request.user)
+			except UserProfile.DoesNotExist:
+				return Response({
+					'message': 'Profile not found'
+				}, status=status.status.HTTP_404_NOT_FOUND)
+		elif 'climatematch_token' not in request.query_params:
+			return Response({'message': 'You seem to not be logged in or not have not done the ClimateMatch before'}, status=status.HTTP_400_BAD_REQUEST)
 		
 		# Get offset number from frontend to return range of data instead of returning the entire list
 		# This range start from 0 to 
@@ -36,9 +41,11 @@ class UserResourcesMatchView(APIView):
 		
 		range_start = int(request.query_params.get('range_start'))
 		range_end = int(request.query_params.get('range_end'))
-		
 		LOGGER_PREFIX = 'ResourceNotFound'
-		user_resources = sort_user_resource_preferences(user=user_profile.user)
+		user_resources = sort_user_resource_preferences(
+			user=request.user,
+			climatematch_token=request.query_params.get('climatematch_token')
+		)
 		total_resources = len(user_resources)
 		user_matched_resources = []
 		for resource in user_resources[range_start:range_end]:
@@ -75,5 +82,5 @@ class UserResourcesMatchView(APIView):
 			'current_range_start': range_start,
 			'current_range_end': range_end,
 			'total_resources': total_resources,
-			'matched_resources' : user_matched_resources
+			'matched_resources': user_matched_resources
 		}, status=status.HTTP_200_OK)

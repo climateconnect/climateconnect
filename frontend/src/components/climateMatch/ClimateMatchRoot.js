@@ -3,6 +3,7 @@ import Router from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
+import { getCookieProps } from "../../../public/lib/cookieOperations";
 import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
@@ -78,16 +79,31 @@ export default function ClimateMatchRoot() {
     setStep(step + 1);
   };
 
+  const handleSetClimateMatchCookie = (data) => {
+    const now = new Date();
+    const ONE_YEAR_FROM_NOW = new Date(now.setFullYear(now.getFullYear() + 1));
+    const cookieProps = getCookieProps(ONE_YEAR_FROM_NOW);
+
+    cookies.set("climatematch_token", data.climatematch_token, cookieProps);
+  }
+
   const submitUserQuestionAnswerForClimateMatch = (userAnswers, token, locale) => {
-    apiRequest({
+    const climatematch_token = cookies.get("climatematch_token")
+    const payload = {
       method: "post",
-      url: `/api/members/${user.url_slug}/question_answers/`,
-      payload: parseUserQuestionAnswers(userAnswers, questions),
-      token: token,
+      url: `/api/climatematch_question_answers/`,
+      payload: parseUserQuestionAnswers(userAnswers, questions, user, climatematch_token),
       locale: locale,
-    })
+    }
+    if(user){
+      payload.token = token
+    }
+    apiRequest(payload)
       .then(function (response) {
         console.log(response.data);
+        if(!user) {
+          handleSetClimateMatchCookie(response.data)
+        }
         Router.push("/climatematchresults");
       })
       .catch(function (error) {
@@ -159,14 +175,18 @@ export default function ClimateMatchRoot() {
   );
 }
 
-const parseUserQuestionAnswers = (userAnswers, questions) => {
+const parseUserQuestionAnswers = (userAnswers, questions, user, climatematch_token) => {
   const userQuestionAnswers = questions.map((q, i) => ({
     question_id: q.id,
     answers: userAnswers[i],
   }));
-  return {
+  const ret =  {
     user_question_answers: userQuestionAnswers,
-  };
+  }
+  if(!user && climatematch_token) {
+    ret.climatematch_token = climatematch_token
+  }
+  return ret;
 };
 
 const getQuestions = async (token, locale, location) => {
