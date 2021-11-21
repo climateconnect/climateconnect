@@ -4,6 +4,7 @@ import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
+import GoBackFromProjectPageButton from "../../project/Buttons/GoBackFromProjectPageButton";
 import HubLinks from "./HubLinks";
 
 const useStyles = makeStyles((theme) => ({
@@ -22,6 +23,11 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  hubsContainer: {
+    display: "flex",
     justifyContent: "flex-end",
     [theme.breakpoints.down("xs")]: {
       justifyContent: "center",
@@ -38,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubsSubHeader({ hubs, subHeaderRef }) {
+export default function HubsSubHeader({ hubs, subHeaderRef, onlyShowDropDown }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const { locale } = useContext(UserContext);
@@ -46,19 +52,32 @@ export default function HubsSubHeader({ hubs, subHeaderRef }) {
   return (
     <div className={classes.root} ref={subHeaderRef}>
       <Container className={classes.container}>
-        {!isNarrowScreen && (
-          <Link className={classes.link} key={"/hubs"} href={`${getLocalePrefix(locale)}/hubs/`}>
-            {texts.all_hubs}
-          </Link>
-        )}
-        {hubs && (
-          <HubLinks
-            linkClassName={classes.link}
-            hubs={hubs}
-            locale={locale}
-            isNarrowScreen={isNarrowScreen}
-          />
-        )}
+        <div>
+          {!isNarrowScreen && onlyShowDropDown && (
+            <GoBackFromProjectPageButton
+              containerClassName={classes.goBackButtonContainer}
+              texts={texts}
+              locale={locale}
+              tinyScreen={isNarrowScreen}
+            />
+          )}
+        </div>
+        <div className={classes.hubsContainer}>
+          {!isNarrowScreen && !onlyShowDropDown && (
+            <Link className={classes.link} key={"/hubs"} href={`${getLocalePrefix(locale)}/hubs/`}>
+              {texts.all_hubs}
+            </Link>
+          )}
+          {hubs && (
+            <HubLinks
+              linkClassName={classes.link}
+              hubs={hubs}
+              locale={locale}
+              isNarrowScreen={isNarrowScreen}
+              onlyShowDropDown={onlyShowDropDown}
+            />
+          )}
+        </div>
       </Container>
     </div>
   );

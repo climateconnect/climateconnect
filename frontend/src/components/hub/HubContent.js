@@ -2,9 +2,7 @@ import {
   Button,
   Collapse,
   Container,
-  makeStyles,
-  Typography,
-  useMediaQuery,
+  makeStyles, useMediaQuery
 } from "@material-ui/core";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -15,22 +13,12 @@ import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
 import Dashboard from "../dashboard/Dashboard";
 import ElementOnScreen from "../hooks/ElementOnScreen";
+import HubHeadlineContainer from "./HubHeadlineContainer";
 import StatBox from "./StatBox";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: theme.spacing(3),
-  },
-  h1: {
-    fontSize: 30,
-    fontWeight: 700,
-    marginBottom: theme.spacing(2),
-    [theme.breakpoints.down("sm")]: {
-      fontSize: 25,
-    },
-    [theme.breakpoints.down("xs")]: {
-      fontSize: 20,
-    },
   },
   expandMoreButton: {
     width: "100%",
@@ -75,6 +63,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     height: 40,
     marginTop: theme.spacing(2),
+    [theme.breakpoints.down("sm")]: {
+      marginTop: theme.spacing(1)
+    }
   }),
   quickInfo: {
     fontSize: 17,
@@ -110,6 +101,7 @@ export default function HubContent({
   hubProjectsButtonRef,
   isLocationHub,
   location,
+  hubName
 }) {
   const { locale, user } = useContext(UserContext);
   const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user });
@@ -131,6 +123,7 @@ export default function HubContent({
   if (fixed && showMoreVisible) {
     setFixed(false);
   }
+
   return (
     <Container>
       <div className={classes.root}>
@@ -146,14 +139,12 @@ export default function HubContent({
                 {user ? (
                   <Dashboard location={location} headline={headline} />
                 ) : (
-                  <>
-                    <Typography color="primary" component="h1" className={classes.h1}>
-                      {headline}
-                    </Typography>
-                    <Typography component="h2" className={classes.textHeadline}>
-                      {subHeadline}
-                    </Typography>
-                  </>
+                  <HubHeadlineContainer
+                    subHeadline={subHeadline}
+                    headline={headline}
+                    hubName={hubName}
+                    headlineClassName={classes.h1}
+                  />
                 )}
                 <BottomContent
                   hubQuickInfoRef={hubQuickInfoRef}
@@ -161,6 +152,7 @@ export default function HubContent({
                   quickInfo={quickInfo}
                   expanded={expanded}
                   handleClickExpand={handleClickExpand}
+                  isLocationHub={isLocationHub}
                 />
               </div>
               {user && (
@@ -172,18 +164,19 @@ export default function HubContent({
           </Container>
         ) : (
           <div>
-            <Typography color="primary" component="h1" className={classes.h1}>
-              {headline}
-            </Typography>
-            <Typography component="h2" className={classes.textHeadline}>
-              {subHeadline}
-            </Typography>
+            <HubHeadlineContainer
+              subHeadline={subHeadline}
+              headline={headline}
+              hubName={hubName}
+              headlineClassName={classes.h1}
+            />
             <BottomContent
               hubQuickInfoRef={hubQuickInfoRef}
               detailledInfo={detailledInfo}
               quickInfo={quickInfo}
               expanded={expanded}
               handleClickExpand={handleClickExpand}
+              isLocationHub={isLocationHub}
             />
           </div>
         )}
@@ -216,17 +209,27 @@ const BottomContent = ({
   quickInfo,
   expanded,
   handleClickExpand,
+  isLocationHub
 }) => {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
   return (
     <>
-      <div className={`${classes.quickInfo} ${classes.marginTop}`} ref={hubQuickInfoRef}>
-        <MessageContent content={quickInfo} />
-      </div>
       <div>
-        <Collapse in={expanded}>{detailledInfo}</Collapse>
+        {!isLocationHub && (
+          <div className={`${classes.quickInfo} ${classes.marginTop}`} ref={hubQuickInfoRef}>
+          <MessageContent content={quickInfo} />
+        </div>
+        )}
+        <Collapse in={expanded}>
+          {isLocationHub && (
+            <div className={`${classes.quickInfo} ${classes.marginTop}`} ref={hubQuickInfoRef}>
+              <MessageContent content={quickInfo} />
+            </div>
+          )}
+          {detailledInfo}
+        </Collapse>
       </div>
       <div className={classes.buttonContainer}>
         <Button className={classes.expandMoreButton} onClick={handleClickExpand}>
