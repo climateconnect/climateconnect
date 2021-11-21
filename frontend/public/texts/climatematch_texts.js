@@ -73,11 +73,19 @@ export default function getClimatematchTexts({ location, question }) {
     },
     get_active_now_with_climatematch: {
       en: "ClimateMatch - get active now",
-      de: "ClimateMatch - werde jetzt aktiv"
+      de: "ClimateMatch - werde jetzt aktiv",
     },
     your_last_result: {
       en: "Last result",
-      de: "letztes Ergebnis"
-    }
+      de: "letztes Ergebnis",
+    },
+    restart: {
+      en: "restart",
+      de: "Neu starten",
+    },
+    cityhub: {
+      en: "CityHub",
+      de: "CityHub",
+    },
   };
 }

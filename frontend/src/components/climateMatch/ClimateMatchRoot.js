@@ -57,11 +57,11 @@ export default function ClimateMatchRoot() {
   const [questions, setQuestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fromHub, setFromHub] = useState(null);
-  const [hasDoneClimateMatch, setHasDoneClimateMatch] = useState(false)
+  const [hasDoneClimateMatch, setHasDoneClimateMatch] = useState(false);
   const [userAnswers, setUserAnswers] = useState([]);
   const cookies = new Cookies();
   const token = cookies.get("token");
-  const climatematch_token = cookies.get("climatematch_token")
+  const climatematch_token = cookies.get("climatematch_token");
   const { showFeedbackMessage } = useContext(FeedbackContext);
 
   //get initial props after the page loaded
@@ -70,8 +70,13 @@ export default function ClimateMatchRoot() {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const params = Object.fromEntries(urlSearchParams.entries());
     if (params.from_hub) setFromHub(params.from_hub);
-    const retrievedQuestionsData = await getQuestions(token, locale, params.location, climatematch_token);
-    setHasDoneClimateMatch(retrievedQuestionsData.has_done_climatematch)
+    const retrievedQuestionsData = await getQuestions(
+      token,
+      locale,
+      params.location,
+      climatematch_token
+    );
+    setHasDoneClimateMatch(retrievedQuestionsData.has_done_climatematch);
     setQuestions(retrievedQuestionsData.results);
     setTotalQuestions(retrievedQuestionsData.total_questions);
     setUserAnswers(getInitialUserAnswerArray(retrievedQuestionsData.results));
@@ -98,7 +103,7 @@ export default function ClimateMatchRoot() {
       payload: {
         ...parseUserQuestionAnswers(userAnswers, questions, user, climatematch_token),
         //hub contains the url slug of the current (location) hub.
-        hub: fromHub
+        hub: fromHub,
       },
       locale: locale,
     };
@@ -198,9 +203,9 @@ const parseUserQuestionAnswers = (userAnswers, questions, user, climatematch_tok
 };
 
 const getQuestions = async (token, locale, fromHub, climatematch_token) => {
-  let url = `/api/questions/?hub=${fromHub}`
-  if(climatematch_token) {
-    url += `&climatematch_token=${climatematch_token}`
+  let url = `/api/questions/?hub=${fromHub}`;
+  if (climatematch_token) {
+    url += `&climatematch_token=${climatematch_token}`;
   }
 
   // "fromHub" determines what images to show and could lead to different questions

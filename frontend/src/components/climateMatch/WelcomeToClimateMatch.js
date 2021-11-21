@@ -1,5 +1,5 @@
 import { Button, Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
-import RestoreIcon from '@material-ui/icons/Restore';
+import RestoreIcon from "@material-ui/icons/Restore";
 import React, { useContext, useRef } from "react";
 import { capitalizeFirstLetter } from "../../../public/lib/parsingOperations";
 import getTexts from "../../../public/texts/texts";
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
   },
   lastResultIcon: {
     color: "white",
-    marginRight: theme.spacing(0.5)
+    marginRight: theme.spacing(0.5),
   },
   buttonBar: {
     width: "100%",
@@ -85,12 +85,12 @@ const useStyles = makeStyles((theme) => ({
     height: !props.unfixButtonBar && 55,
   }),
   lastResultButton: {
-    color: "white"
+    color: "white",
   },
   buttonBarLeft: {
     alignItems: "center",
-    display: "flex"
-  }
+    display: "flex",
+  },
 }));
 
 export default function WelcomeToClimateMatch({ goToNextStep, location, hasDoneClimateMatch }) {
@@ -138,7 +138,7 @@ export default function WelcomeToClimateMatch({ goToNextStep, location, hasDoneC
         <div className={classes.buttonBarLeft}>
           {hasDoneClimateMatch && (
             <Button href="/climatematchresults" className={classes.lastResultButton}>
-              <RestoreIcon className={classes.lastResultIcon}/>
+              <RestoreIcon className={classes.lastResultIcon} />
               {texts.your_last_result}
             </Button>
           )}

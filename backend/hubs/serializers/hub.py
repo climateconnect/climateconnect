@@ -99,7 +99,8 @@ class HubClimateMatchSerializer(serializers.ModelSerializer):
         model = Hub
         fields = (
             "name",
-            "id"
+            "id",
+            "url_slug"
         )
 
     def get_name(self, obj):

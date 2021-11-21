@@ -1,4 +1,5 @@
 import {
+  Button,
   Container,
   Link,
   List,
@@ -8,10 +9,12 @@ import {
   Typography,
   useMediaQuery,
 } from "@material-ui/core";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import SettingsBackupRestoreIcon from "@material-ui/icons/SettingsBackupRestore";
 import { Router } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest } from "../../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import ClimateMatchHeadline from "../climateMatch/ClimateMatchHeadline";
 import UserContext from "../context/UserContext";
@@ -60,7 +63,22 @@ const useStyles = makeStyles((theme) => ({
     },
     color: "inherit",
   },
+  backButton: {
+    color: "white",
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+  },
+  backIcon: {
+    fontSize: 18,
+  },
+  backButtonsContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
 }));
+
+//TODO: Replace by locationhub select as first step of climatematch if no hub is passed
+const FALLBACK_HUB = "test";
 
 export default function ClimateMatchResultsRoot() {
   const classes = useStyles();
@@ -70,6 +88,7 @@ export default function ClimateMatchResultsRoot() {
   const [loading, setLoading] = useState(true);
   const [suggestions, setSuggestions] = useState([]);
   const [page, setPage] = useState(0);
+  const [fromHub, setFromHub] = useState(FALLBACK_HUB);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
   const headerContainerRef = useRef(null);
@@ -83,6 +102,7 @@ export default function ClimateMatchResultsRoot() {
       page: page,
       texts: texts,
     });
+    setFromHub(suggestions.hub);
     setSuggestions(suggestions.matched_resources);
     setLoading(false);
   }, []);
@@ -93,6 +113,22 @@ export default function ClimateMatchResultsRoot() {
       ) : (
         <div>
           <div className={classes.headerContainer} ref={headerContainerRef}>
+            <div className={classes.backButtonsContainer}>
+              <Button
+                className={classes.backButton}
+                href={`${getLocalePrefix(locale)}/hubs/${fromHub?.url_slug}`}
+              >
+                <ArrowBackIosIcon className={classes.backIcon} />
+                {texts.cityhub} {fromHub?.name}
+              </Button>
+              <Button
+                className={classes.backButton}
+                href={`${getLocalePrefix(locale)}/climatematch?from_hub=${fromHub?.url_slug}`}
+              >
+                <SettingsBackupRestoreIcon />
+                {texts.restart}
+              </Button>
+            </div>
             <ClimateMatchHeadline size={screenIsSmallerThanSm && "small"}>
               {texts.suggestions_for_you}
             </ClimateMatchHeadline>
@@ -153,7 +189,6 @@ const getSuggestions = async ({ texts, token, page, climatematch_token }) => {
       });
     }
     const resp = await apiRequest(args);
-    console.log(resp.data);
     return resp.data;
   } catch (e) {
     console.log(e.response);

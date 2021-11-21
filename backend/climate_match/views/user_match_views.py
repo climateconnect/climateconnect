@@ -1,7 +1,10 @@
 import logging
+from climate_match.models.user import UserQuestionAnswer
 
 from climate_match.utility.sort_resources import sort_user_resource_preferences
 from climateconnect_api.models import UserProfile
+from hubs.models.hub import Hub
+from hubs.serializers.hub import HubClimateMatchSerializer
 from ideas.models import Idea
 from ideas.serializers.idea import IdeaMinimalSerializer
 from organization.models import Organization, Project
@@ -42,9 +45,23 @@ class UserResourcesMatchView(APIView):
 		range_start = int(request.query_params.get('range_start'))
 		range_end = int(request.query_params.get('range_end'))
 		LOGGER_PREFIX = 'ResourceNotFound'
+		climatematch_token = request.query_params.get('climatematch_token')
+		# Fall back to Erlangen hub if no hub is passed
+		FALLBACK_HUB_URL_SLUG = 'erlangen'
+
+		if request.user.is_authenticated:
+			uqa = UserQuestionAnswer.objects.filter(user=request.user)
+		else:
+			uqa = UserQuestionAnswer.objects.filter(token=climatematch_token)
+		
+		if uqa.exists() and uqa[0].hub:
+			hub = uqa[0].hub
+		else:
+			hub = Hub.objects.get(url_slug=FALLBACK_HUB_URL_SLUG)
 		user_resources = sort_user_resource_preferences(
 			user=request.user,
-			climatematch_token=request.query_params.get('climatematch_token')
+			climatematch_token=climatematch_token,
+			hub_id=hub.id
 		)
 		total_resources = len(user_resources)
 		user_matched_resources = []
@@ -82,5 +99,6 @@ class UserResourcesMatchView(APIView):
 			'current_range_start': range_start,
 			'current_range_end': range_end,
 			'total_resources': total_resources,
-			'matched_resources': user_matched_resources
+			'matched_resources': user_matched_resources,
+			'hub': (HubClimateMatchSerializer(hub)).data
 		}, status=status.HTTP_200_OK)

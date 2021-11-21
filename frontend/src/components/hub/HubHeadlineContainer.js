@@ -16,8 +16,8 @@ const useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(-13),
     },
     ["@media(max-width:1100px)"]: {
-      maxWidth: 550
-    }
+      maxWidth: 550,
+    },
   },
   headlineContainer: {
     display: "flex",
@@ -54,9 +54,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "right",
     marginTop: theme.spacing(1),
     [theme.breakpoints.down("sm")]: {
-      display: "none"
-    }
-  }
+      display: "none",
+    },
+  },
 }));
 
 export default function HubHeadlineContainer({
@@ -105,10 +105,7 @@ export default function HubHeadlineContainer({
         </Typography>
         {isLocationHub && (
           <div className={classes.climateMatchButtonContainer}>
-            <OpenClimateMatchButton
-              hubUrl={hubUrl}
-              text={texts.get_active_now_with_climatematch}
-            />
+            <OpenClimateMatchButton hubUrl={hubUrl} text={texts.get_active_now_with_climatematch} />
           </div>
         )}
       </div>

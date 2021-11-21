@@ -118,7 +118,6 @@ export default function ClimateMatchResult({ suggestion, pos }) {
   const texts = getTexts({ page: "climatematch", locale: locale });
   const displayContactButtonBelow = useMediaQuery("(max-width:1100px)");
   const creator = parseCreator(suggestion, texts);
-  console.log(suggestion);
   const handleClickContact = async (e) => {
     e.preventDefault();
     if (!user) {

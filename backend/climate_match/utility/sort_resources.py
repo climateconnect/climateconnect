@@ -7,19 +7,16 @@ from django.db import connection
 from climate_match.models.user import UserQuestionAnswer
 
 
-def sort_user_resource_preferences(user: User, climatematch_token: UUID) -> List:
+def sort_user_resource_preferences(
+    user: User, 
+    climatematch_token: UUID,
+    hub_id: int
+) -> List:
     user_resource_preferences = []
     if user.is_authenticated:
         personalized_filter = "user_id = {}".format(user.id)
-        uqa = UserQuestionAnswer.objects.filter(user=user)
     else:
         personalized_filter = "token = '{}'".format(climatematch_token)
-        uqa = UserQuestionAnswer.objects.filter(token=climatematch_token)
-    
-    if uqa.exists() and uqa[0].hub:
-        hub_id = uqa[0].hub.id
-    else:
-        hub_id = 6
     with connection.cursor() as cursor:
         cursor.execute(f"""
 WITH hub_location_ids AS (
