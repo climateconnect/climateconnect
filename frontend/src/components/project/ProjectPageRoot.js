@@ -20,6 +20,7 @@ import ProjectOverview from "./ProjectOverview";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { useLongPress } from "use-long-press";
 import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
+import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -304,7 +305,7 @@ export default function ProjectPageRoot({
   const toggleShowFollowers = async () => {
     setShowFollowers(!showFollowers);
     if (!initiallyCaughtFollowers) {
-      updateFollowers();
+      await updateFollowers();
       handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_follower"));
       setInitiallyCaughtFollowers(true);
     }
@@ -319,7 +320,7 @@ export default function ProjectPageRoot({
   const toggleShowLikes = async () => {
     setShowLikes(!showLikes);
     if (!initiallyCaughtLikes) {
-      updateLikes();
+      await updateLikes();
       handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_like"));
       setInitiallyCaughtLikes(true);
     }
@@ -343,7 +344,7 @@ export default function ProjectPageRoot({
   const bindFollow = useLongPress(() => {
     toggleShowFollowers();
   });
-
+  const latestParentComment = [project.comments[0]];
   return (
     <div className={classes.root}>
       <ProjectOverview
@@ -395,6 +396,11 @@ export default function ProjectPageRoot({
             leaveProject={requestLeaveProject}
             projectDescriptionRef={projectDescriptionRef}
             collaborationSectionRef={collaborationSectionRef}
+            discussionTabLabel={discussionTabLabel()}
+            latestParentComment={latestParentComment}
+            handleTabChange={handleTabChange}
+            typesByTabValue={typesByTabValue}
+            projectTabsRef={projectTabsRef}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
