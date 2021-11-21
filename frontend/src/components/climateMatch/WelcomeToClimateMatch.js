@@ -1,5 +1,5 @@
 import { Button, Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import RestoreIcon from '@material-ui/icons/Restore';
 import React, { useContext, useRef } from "react";
 import { capitalizeFirstLetter } from "../../../public/lib/parsingOperations";
 import getTexts from "../../../public/texts/texts";
@@ -56,8 +56,9 @@ const useStyles = makeStyles((theme) => ({
     top: theme.spacing(2),
     height: `calc(100% - ${theme.spacing(4)}px)`,
   },
-  backIcon: {
+  lastResultIcon: {
     color: "white",
+    marginRight: theme.spacing(0.5)
   },
   buttonBar: {
     width: "100%",
@@ -83,9 +84,16 @@ const useStyles = makeStyles((theme) => ({
   buttonBarPlaceholder: (props) => ({
     height: !props.unfixButtonBar && 55,
   }),
+  lastResultButton: {
+    color: "white"
+  },
+  buttonBarLeft: {
+    alignItems: "center",
+    display: "flex"
+  }
 }));
 
-export default function WelcomeToClimateMatch({ goToNextStep, location }) {
+export default function WelcomeToClimateMatch({ goToNextStep, location, hasDoneClimateMatch }) {
   const bottomRef = useRef(null);
   const unfixButtonBar = ElementOnScreen({
     el: bottomRef.current,
@@ -127,10 +135,14 @@ export default function WelcomeToClimateMatch({ goToNextStep, location }) {
         <img src="/images/erlangen_climatematch.jpg" className={classes.image} />
       </div>
       <Container className={`${classes.buttonBar} ${!unfixButtonBar && classes.fixedOnMobile}`}>
-        <Button className={classes.backIcon}>
-          <ArrowBackIosIcon />
-          {texts.back}
-        </Button>
+        <div className={classes.buttonBarLeft}>
+          {hasDoneClimateMatch && (
+            <Button href="/climatematchresults" className={classes.lastResultButton}>
+              <RestoreIcon className={classes.lastResultIcon}/>
+              {texts.your_last_result}
+            </Button>
+          )}
+        </div>
         <ClimateMatchButton wide={!isNarrowScreen} onClick={handleClickStart}>
           {texts.start}
         </ClimateMatchButton>

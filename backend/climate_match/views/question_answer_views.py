@@ -24,9 +24,20 @@ class QuestionAnswerView(APIView):
     def get(self, request, format=None):
         questions = Question.objects.all()
         serializer = QuestionAnswerSerializer(questions, many=True)
+        if request.user.is_authenticated:
+            has_done_climatematch = UserQuestionAnswer.objects.filter(
+                user=request.user
+            ).exists()
+        elif 'climatematch_token' in request.query_params:
+            has_done_climatematch = UserQuestionAnswer.objects.filter(
+                token=request.query_params['climatematch_token']
+            ).exists()
+        else: 
+            has_done_climatematch = False
         return Response({
             'total_questions': questions.count(),
-            'results': serializer.data
+            'results': serializer.data,
+            'has_done_climatematch': has_done_climatematch
         }, status=status.HTTP_200_OK)
 
 
@@ -122,6 +133,8 @@ class UserQuestionAnswersView(APIView):
                         return Response({
                             'message': 'Hub does not exist.'
                         }, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    hub_shared_from = False
                 question_answer_object = UserQuestionAnswer.objects.create(
                     question=question
                 )
