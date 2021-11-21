@@ -10,7 +10,7 @@ def sort_user_resource_preferences(user: User, climatematch_token: UUID) -> List
     # TODO: make generic
     hub_location_id = 6
     if user.is_authenticated:
-        personalized_filter = "user = {}".format(user.id)
+        personalized_filter = "user_id = {}".format(user.id)
     else:
         personalized_filter = "token = '{}'".format(climatematch_token)
     with connection.cursor() as cursor:
