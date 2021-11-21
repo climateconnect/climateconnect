@@ -1,4 +1,4 @@
-import { Button, Container, Link, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Badge, Button, Container, Link, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -67,15 +67,17 @@ export default function NavigationSubHeader({ hubName, allHubs,isLocationHub }) 
             </>
           )}
           {isLocationHub && isSmallMediumScreen && (
-            <Button
-              href={`${getLocalePrefix(locale)}/climatematch?from_hub=erlangen`}
-              variant="contained"
-              color="primary"
-              size="small"
-              className={classes.climateMatchButton}
-            >
-              {texts.get_active}
-            </Button>
+            <Badge badgeContent={texts.new} color="error">
+              <Button
+                href={`${getLocalePrefix(locale)}/climatematch?from_hub=erlangen`}
+                variant="contained"
+                color="primary"
+                size="small"
+                className={classes.climateMatchButton}
+              >
+                {texts.get_active}
+              </Button>
+            </Badge>
           )}
         </Typography>        
         <Typography component="div" className={classes.rightSideContainer}>
