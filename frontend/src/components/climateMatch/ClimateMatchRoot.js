@@ -56,7 +56,7 @@ export default function ClimateMatchRoot() {
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [questions, setQuestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [location, setLocation] = useState(null);
+  const [fromHub, setFromHub] = useState(null);
   const [userAnswers, setUserAnswers] = useState([]);
   const cookies = new Cookies();
   const token = cookies.get("token");
@@ -67,7 +67,7 @@ export default function ClimateMatchRoot() {
     //getHubClimateMatchInfo if ?location="..." is set in the url
     const urlSearchParams = new URLSearchParams(window.location.search);
     const params = Object.fromEntries(urlSearchParams.entries());
-    if (params.location) setLocation(params.location);
+    if (params.from_hub) setFromHub(params.from_hub);
     const retrievedQuestionsData = await getQuestions(token, locale, params.location);
     setQuestions(retrievedQuestionsData.results);
     setTotalQuestions(retrievedQuestionsData.total_questions);
@@ -94,6 +94,8 @@ export default function ClimateMatchRoot() {
       url: `/api/climatematch_question_answers/`,
       payload: {
         ...parseUserQuestionAnswers(userAnswers, questions, user, climatematch_token),
+        //hub contains the url slug of the current (location) hub.
+        hub: fromHub
       },
       locale: locale,
     };
@@ -161,7 +163,7 @@ export default function ClimateMatchRoot() {
         <WelcomeToClimateMatch
           isLoading={isLoading}
           goToNextStep={goToNextStep}
-          location={location}
+          hub={fromHub}
         />
       ) : (
         <ClimateMatchQuestion
@@ -191,16 +193,14 @@ const parseUserQuestionAnswers = (userAnswers, questions, user, climatematch_tok
   return ret;
 };
 
-const getQuestions = async (token, locale, location) => {
-  // TODO (Dip): Check about location logic here
-  // "location" determines what images to show and could lead to different questions
+const getQuestions = async (token, locale, fromHub) => {
+  // "fromHub" determines what images to show and could lead to different questions
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/questions/",
+      url: `/api/questions/?hub=${fromHub}`,
       locale: locale,
       token: token,
-      location: location,
     });
     return resp.data;
   } catch (e) {
