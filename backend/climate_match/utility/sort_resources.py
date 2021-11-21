@@ -4,21 +4,28 @@ from uuid import UUID
 from django.contrib.auth.models import User
 from django.db import connection
 
+from climate_match.models.user import UserQuestionAnswer
+
 
 def sort_user_resource_preferences(user: User, climatematch_token: UUID) -> List:
     user_resource_preferences = []
-    # TODO: make generic
-    hub_location_id = 6
     if user.is_authenticated:
         personalized_filter = "user = {}".format(user.id)
+        uqa = UserQuestionAnswer.objects.filter(user=user)
     else:
         personalized_filter = "token = '{}'".format(climatematch_token)
+        uqa = UserQuestionAnswer.objects.filter(token=climatematch_token)
+    
+    if uqa.exists() and uqa[0].hub:
+        hub_id = uqa[0].hub.id
+    else:
+        hub_id = 6
     with connection.cursor() as cursor:
         cursor.execute(f"""
 WITH hub_location_ids AS (
     SELECT location_id
     FROM hubs_hub_location
-    WHERE hub_id={hub_location_id}
+    WHERE hub_id={hub_id}
 ),
 projects AS (
     SELECT * FROM organization_project

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from climate_match.models import Question, Answer, AnswerMetaData
+from hubs.models.hub import Hub
 
 
 class UserQuestionAnswer(models.Model):
@@ -50,6 +51,15 @@ class UserQuestionAnswer(models.Model):
         verbose_name="Answers",
         related_name="user_ans_metadata",
         blank=True
+    )
+
+    hub = models.ForeignKey(
+        Hub,
+        related_name="user_question_answer_locatin_hub",
+        help_text="Shows from which (location) hub the user came to the ClimateMatch",
+        verbose_name="Hub",
+        on_delete=models.CASCADE,
+        null=True, blank=True
     )
 
     created_at = models.DateTimeField(

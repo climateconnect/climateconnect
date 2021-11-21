@@ -60,7 +60,8 @@ class UserQuestionAnswersView(APIView):
                     ],
                 }
             ],
-            'climatematch_token': <optional token if user is not logged in and has done climatematch before>
+            'climatematch_token': <optional token if user is not logged in and has done climatematch before>,
+            'hub': <url_slug of the (location-)hub the user came from. This is used to determine the results
         }
 
         """
@@ -114,6 +115,13 @@ class UserQuestionAnswersView(APIView):
             if old_question_answer_objects.exists():
                 question_answer_object = old_question_answer_objects[0]
             else:
+                if request.data['hub']:
+                    try:
+                        hub_shared_from = Hub.objects.get(url_slug=request.data['hub'])
+                    except Hub.DoesNotExist:
+                        return Response({
+                            'message': 'Hub does not exist.'
+                        }, status=status.HTTP_400_BAD_REQUEST)
                 question_answer_object = UserQuestionAnswer.objects.create(
                     question=question
                 )
@@ -121,6 +129,8 @@ class UserQuestionAnswersView(APIView):
                     question_answer_object.user = request.user
                 else:
                     question_answer_object.token = logged_out_token
+                if hub_shared_from:
+                    question_answer_object.hub = hub_shared_from
                 question_answer_object.save()
 
             # resource_type is a ContentType instance. model_class retrieves the corresponding model.
