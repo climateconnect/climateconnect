@@ -9,7 +9,7 @@ import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions
+  getStatusOptions,
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -32,8 +32,8 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(4),
     position: "relative",
     [theme.breakpoints.down("sm")]: {
-      paddingTop: theme.spacing(1)
-    }
+      paddingTop: theme.spacing(1),
+    },
   },
   contentUnderHeader: {
     marginTop: 112,
@@ -253,6 +253,7 @@ export default function Hub({
                 <HubDescription hub={hubUrl} texts={texts} />
               )
             }
+            hubUrl={hubUrl}
             subHeadline={subHeadline}
             hubProjectsButtonRef={hubProjectsButtonRef}
             isLocationHub={isLocationHub}

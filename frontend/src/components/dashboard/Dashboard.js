@@ -1,5 +1,4 @@
 import {
-  Badge,
   Box,
   Button,
   Link,
@@ -19,6 +18,7 @@ import React, { useContext, useRef, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import OpenClimateMatchButton from "../climateMatch/OpenClimateMatchButton";
 import UserContext from "../context/UserContext";
 import UserImage from "./UserImage";
 
@@ -97,9 +97,6 @@ const useStyles = makeStyles((theme) => {
     buttonContainer: {
       display: "flex",
       justifyContent: "space-around",
-    },
-    newBadge: {
-      background: theme.palette.yellow.main,
     },
     cityHubOption: {
       width: "100%",
@@ -185,7 +182,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
   );
 };
 
-export default function Dashboard({ className, headline, location }) {
+export default function Dashboard({ className, headline, location, hubUrl }) {
   const classes = useStyles();
 
   const { user, locale } = useContext(UserContext);
@@ -285,16 +282,7 @@ export default function Dashboard({ className, headline, location }) {
                   },
                 ]}
               />
-              <Badge badgeContent={texts.new} className={classes.newBadge} color="error">
-                <Button
-                  href={`${getLocalePrefix(locale)}/climatematch?from_hub=erlangen`}
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                >
-                  ClimateMatch
-                </Button>
-              </Badge>
+              <OpenClimateMatchButton hubUrl={hubUrl} />
               {/* TODO: restore Climate Match icon and link once CM is live  */}
               {/* <Button type="submit">Climate Match</Button> */}
             </>

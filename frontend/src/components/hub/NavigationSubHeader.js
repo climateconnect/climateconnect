@@ -1,4 +1,12 @@
-import { Badge, Button, Container, Link, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import {
+  Badge,
+  Button,
+  Container,
+  Link,
+  makeStyles,
+  Typography,
+  useMediaQuery,
+} from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -35,11 +43,11 @@ const useStyles = makeStyles((theme) => ({
   },
   climateMatchButton: {
     background: theme.palette.primary.light,
-    color: "black"
-  }
+    color: "black",
+  },
 }));
 
-export default function NavigationSubHeader({ hubName, allHubs,isLocationHub }) {
+export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "navigation", locale: locale });
@@ -49,7 +57,7 @@ export default function NavigationSubHeader({ hubName, allHubs,isLocationHub }) 
     <div className={classes.root}>
       <Container className={classes.flexContainer}>
         <Typography className={classes.path} component="div">
-          {(!isNarrowScreen && !(isLocationHub && isSmallMediumScreen)) && (
+          {!isNarrowScreen && !(isLocationHub && isSmallMediumScreen) && (
             <>
               <Link className={classes.link} href={getLocalePrefix(locale) + "/browse"}>
                 {texts.browse}
@@ -79,7 +87,7 @@ export default function NavigationSubHeader({ hubName, allHubs,isLocationHub }) 
               </Button>
             </Badge>
           )}
-        </Typography>        
+        </Typography>
         <Typography component="div" className={classes.rightSideContainer}>
           <HubLinks
             hubs={allHubs}

@@ -69,7 +69,11 @@ export default function getClimatematchTexts({ location, question }) {
     },
     you_havent_done_the_climatematch: {
       en: "You have to first do the ClimateMatch before seeing your results.",
-      de: "Bevor du deine Ergebnisse sehen kannst, musst du erst mal das ClimateMatch machen."
+      de: "Bevor du deine Ergebnisse sehen kannst, musst du erst mal das ClimateMatch machen.",
+    },
+    get_active_now_with_climatematch: {
+      en: "ClimateMatch - get active now",
+      de: "ClimateMatch - werde jetzt aktiv"
     }
   };
 }

@@ -85,24 +85,26 @@ export default function ClimateMatchRoot() {
     const cookieProps = getCookieProps(ONE_YEAR_FROM_NOW);
 
     cookies.set("climatematch_token", data.climatematch_token, cookieProps);
-  }
+  };
 
   const submitUserQuestionAnswerForClimateMatch = (userAnswers, token, locale) => {
-    const climatematch_token = cookies.get("climatematch_token")
+    const climatematch_token = cookies.get("climatematch_token");
     const payload = {
       method: "post",
       url: `/api/climatematch_question_answers/`,
-      payload: parseUserQuestionAnswers(userAnswers, questions, user, climatematch_token),
+      payload: {
+        ...parseUserQuestionAnswers(userAnswers, questions, user, climatematch_token),
+      },
       locale: locale,
-    }
-    if(user){
-      payload.token = token
+    };
+    if (user) {
+      payload.token = token;
     }
     apiRequest(payload)
       .then(function (response) {
         console.log(response.data);
-        if(!user) {
-          handleSetClimateMatchCookie(response.data)
+        if (!user) {
+          handleSetClimateMatchCookie(response.data);
         }
         Router.push("/climatematchresults");
       })
@@ -180,11 +182,11 @@ const parseUserQuestionAnswers = (userAnswers, questions, user, climatematch_tok
     question_id: q.id,
     answers: userAnswers[i],
   }));
-  const ret =  {
+  const ret = {
     user_question_answers: userQuestionAnswers,
-  }
-  if(!user && climatematch_token) {
-    ret.climatematch_token = climatematch_token
+  };
+  if (!user && climatematch_token) {
+    ret.climatematch_token = climatematch_token;
   }
   return ret;
 };

@@ -6,7 +6,7 @@ import {
   ListItemIcon,
   makeStyles,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import { Router } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -66,7 +66,7 @@ export default function ClimateMatchResultsRoot() {
   const classes = useStyles();
   const cookies = new Cookies();
   const token = cookies.get("token");
-  const climatematch_token = cookies.get("climatematch_token")
+  const climatematch_token = cookies.get("climatematch_token");
   const [loading, setLoading] = useState(true);
   const [suggestions, setSuggestions] = useState([]);
   const [page, setPage] = useState(0);
@@ -81,8 +81,8 @@ export default function ClimateMatchResultsRoot() {
       token: token,
       climatematch_token: climatematch_token,
       page: page,
-      texts: texts
-    })
+      texts: texts,
+    });
     setSuggestions(suggestions.matched_resources);
     setLoading(false);
   }, []);
@@ -134,23 +134,23 @@ export default function ClimateMatchResultsRoot() {
   );
 }
 
-const getSuggestions = async ({texts, token, page, climatematch_token}) => {
+const getSuggestions = async ({ texts, token, page, climatematch_token }) => {
   try {
     const args = {
       method: "get",
-      url: `/api/climatematch_results/?range_start=${page * 10}&range_end=${(page + 1) * 10}`
-    }
-    if(token) {
-      args.token = token
-    } else if(climatematch_token) {
-      args.url += `&climatematch_token=${climatematch_token}`
+      url: `/api/climatematch_results/?range_start=${page * 10}&range_end=${(page + 1) * 10}`,
+    };
+    if (token) {
+      args.token = token;
+    } else if (climatematch_token) {
+      args.url += `&climatematch_token=${climatematch_token}`;
     } else {
       Router.push({
         pathname: "/climatemath",
         query: {
-          message: texts.you_havent_done_the_climatematch
-        }
-      })
+          message: texts.you_havent_done_the_climatematch,
+        },
+      });
     }
     const resp = await apiRequest(args);
     console.log(resp.data);
