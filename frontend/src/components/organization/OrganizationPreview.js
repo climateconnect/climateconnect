@@ -1,25 +1,33 @@
-import { Avatar, Card, CardContent, Link, Typography } from "@material-ui/core";
+import { Card, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import { getImageUrl } from "../../../public/lib/imageOperations";
 import UserContext from "../context/UserContext";
-import OrganizationMetaData from "./OrganizationMetadata";
+import OrganizationPreviewHeader from "./OrganizationPreviewHeader";
+import OrganizationPreviewBody from "./OrganizationPreviewBody";
 
 const useStyles = makeStyles((theme) => {
   return {
     root: {
+      display: "grid",
+      gridTemplateRows: "min-content",
       "&:hover": {
         cursor: "pointer",
+        backgroundColor: "#f1f1f1",
+        boxShadow: "rgba(99, 99, 99, 0.33) 0px 2px 8px 0px;",
       },
       "-webkit-user-select": "none",
       "-moz-user-select": "none",
       "-ms-user-select": "none",
       userSelect: "none",
-      backgroundColor: "inherit",
-      borderRadius: 0,
+      backgroundColor: "#f7f7f7",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "calc(100% - 1px) 100%",
+      borderRadius: "5px",
       textAlign: "center",
-      height: 250,
+      height: "350px",
+      boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;",
+      padding: "0 12px",
     },
     bold: {
       fontWeight: "bold",
@@ -48,28 +56,18 @@ const useStyles = makeStyles((theme) => {
 export default function OrganizationPreview({ organization, showOrganizationType }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+
   return (
     <Link
       href={getLocalePrefix(locale) + `/organizations/${organization.url_slug}`}
       className={classes.noUnderline}
     >
       <Card className={classes.root} variant="outlined">
-        <Avatar
-          alt={organization.name}
-          size="large"
-          src={getImageUrl(organization.thumbnail_image)}
-          className={classes.media}
-          component="div"
+        <OrganizationPreviewHeader organization={organization} />
+        <OrganizationPreviewBody
+          organization={organization}
+          showOrganizationType={showOrganizationType}
         />
-        <CardContent>
-          <Typography variant="subtitle1" component="h2" className={classes.bold}>
-            {organization.name}
-          </Typography>
-          <OrganizationMetaData
-            organization={organization}
-            showOrganizationType={showOrganizationType}
-          />
-        </CardContent>
       </Card>
     </Link>
   );
