@@ -31,6 +31,9 @@ const useStyles = makeStyles((theme) => ({
   contentRefContainer: {
     paddingTop: theme.spacing(4),
     position: "relative",
+    [theme.breakpoints.down("sm")]: {
+      paddingTop: theme.spacing(1)
+    }
   },
   contentUnderHeader: {
     marginTop: 112,
@@ -254,6 +257,7 @@ export default function Hub({
             hubProjectsButtonRef={hubProjectsButtonRef}
             isLocationHub={isLocationHub}
             location={hubLocation}
+            hubName={name}
           />
           <div className={classes.contentRefContainer}>
             <div ref={contentRef} className={classes.contentRef} />
