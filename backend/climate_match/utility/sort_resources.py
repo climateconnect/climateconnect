@@ -30,19 +30,21 @@ WITH hub_location_ids AS (
 projects AS (
     SELECT * FROM organization_project
     JOIN hub_location_ids
-    ON organization_project.loc_id=hub_location_ids.location_id
+    ON organization_project.loc_id = hub_location_ids.location_id
 ),
 orgs AS (
-    SELECT *
-    FROM organization_organization
-    JOIN hub_location_ids
-    ON organization_organization.location_id=hub_location_ids.location_id
+    SELECT O.*, HLI.*
+    FROM organization_organization O
+    JOIN hub_location_ids HLI ON O.location_id = HLI.location_id
+    JOIN organization_organizationtagging OTG ON OTG.organization_id = O.id
+    JOIN organization_organizationtags OTags ON OTags.id = OTG.organization_tag_id
+    WHERE Otags.show_in_climatematch = true
 ),
 ideas AS (
     SELECT *
     FROM ideas_idea
     JOIN hub_location_ids
-    ON ideas_idea.location_id=hub_location_ids.location_id
+    ON ideas_idea.location_id = hub_location_ids.location_id
 ),
 get_user_resource_preference AS (
     select CMUQA.user_id as user_id
