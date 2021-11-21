@@ -69,7 +69,7 @@ class UserQuestionAnswersView(APIView):
         # if the user is logged in, we use their user id as a unique identifier
         if is_logged_in:
             try:
-                profile = UserProfile.objects.get(user=str(request.user))
+                profile = UserProfile.objects.get(user=request.user)
             except UserProfile.DoesNotExist:
                 return Response({'message': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
         # If the user is logged out we use a generated uuid which will then be saved in a cookie

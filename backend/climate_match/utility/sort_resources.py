@@ -10,7 +10,7 @@ from climate_match.models.user import UserQuestionAnswer
 def sort_user_resource_preferences(user: User, climatematch_token: UUID) -> List:
     user_resource_preferences = []
     if user.is_authenticated:
-        personalized_filter = "user = {}".format(user.id)
+        personalized_filter = "user_id = {}".format(user.id)
         uqa = UserQuestionAnswer.objects.filter(user=user)
     else:
         personalized_filter = "token = '{}'".format(climatematch_token)
