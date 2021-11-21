@@ -1,5 +1,4 @@
-import { makeStyles, Tooltip, Typography } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+import { makeStyles, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -9,6 +8,7 @@ const useStyles = makeStyles((theme) => ({
     background: `url('${props.image}')`,
     backgroundSize: "cover",
     backgroundPosition: "bottom center",
+    zIndex: -1,
     width: "100%",
     [theme.breakpoints.down("sm")]: {
       minHeight: 100,
@@ -62,11 +62,6 @@ export default function HubHeaderImage({ image, source, fullWidth, onClose, isLo
   return (
     <>
       <div className={classes.imageContainer}>
-        {onClose && (
-          <Tooltip title={texts.click_here_to_minimize_info}>
-            <CloseIcon color="primary" className={classes.closeButton} onClick={onClose} />
-          </Tooltip>
-        )}
         <img src={image} className={classes.img} />
       </div>
       {source && (
