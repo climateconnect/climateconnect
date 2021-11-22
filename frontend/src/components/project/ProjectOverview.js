@@ -203,6 +203,7 @@ function SmallScreenOverview({
           locale={locale}
           projectAdmin={projectAdmin}
           createShareRecord={createShareRecord}
+          screenSize={screenSize}
         />
         <img
           className={classes.fullWidthImage}

@@ -911,6 +911,10 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Copy link",
       de: "Link kopieren",
     },
+    copy: {
+      en: "Copy",
+      de: "Kopieren",
+    },
     link: {
       en: "Link",
       de: "Link",

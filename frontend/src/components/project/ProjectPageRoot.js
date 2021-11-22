@@ -428,6 +428,7 @@ export default function ProjectPageRoot({
               locale={locale}
               projectAdmin={projectAdmin}
               createShareRecord={createShareRecord}
+              screenSize={screenSize}
             />
           </>
         )}

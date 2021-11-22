@@ -24,6 +24,10 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(2),
     display: "flex",
     justifyContent: "space-between",
+    [theme.breakpoints.down("xs")]: {
+      justifyContent: "flex-start",
+      flexWrap: "wrap",
+    },
   },
 }));
 
@@ -35,6 +39,7 @@ export default function SocialMediaShareDialog({
   locale,
   projectAdmin,
   createShareRecord,
+  screenSize,
 }) {
   const classes = useStyles();
 
@@ -118,7 +123,7 @@ export default function SocialMediaShareDialog({
           ),
           endAdornment: (
             <InputAdornment position="end">
-              <Button onClick={() => handleClick(SHARE_OPTIONS.link)}>{texts.copy_link}</Button>
+              <Button onClick={() => handleClick(SHARE_OPTIONS.link)}> {screenSize.belowTiny ? texts.copy : texts.copy_link} </Button>
             </InputAdornment>
           ),
         }}
