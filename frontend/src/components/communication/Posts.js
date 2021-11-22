@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-//@type: possible values are "openingpost", "reply", "progresspost"
+//@type: possible values are "openingpost", "reply", "progresspost", "preview"
 export default function Posts({
   posts,
   type,
@@ -57,6 +57,8 @@ export default function Posts({
   onSendComment,
   onDeletePost,
   infoTextSize,
+  truncate,
+  noLink,
 }) {
   const classes = useStyles();
   const classNames = {
@@ -80,6 +82,8 @@ export default function Posts({
             onSendComment={onSendComment}
             onDeletePost={onDeletePost}
             infoTextSize={infoTextSize}
+            truncate={truncate}
+            noLink={noLink}
           />
         ))}
     </div>

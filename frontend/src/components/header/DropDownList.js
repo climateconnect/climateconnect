@@ -25,6 +25,7 @@ export default function DropDownList({
   items,
   open,
   loadOnClick,
+  popperRef,
 }) {
   const classes = useStyles();
   const { locale, startLoading } = useContext(UserContext);
@@ -34,7 +35,7 @@ export default function DropDownList({
 
   return (
     <Popper open={open} anchorEl={buttonRef.current} className={classes.popper}>
-      <Paper onMouseEnter={handleOpen} onMouseLeave={handleClose}>
+      <Paper ref={popperRef} onMouseEnter={handleOpen} onMouseLeave={handleClose}>
         <MenuList>
           {items?.map((item, index) => (
             <Link

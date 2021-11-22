@@ -346,7 +346,7 @@ export default function ProjectPageRoot({
   const bindFollow = useLongPress(() => {
     toggleShowFollowers();
   });
-
+  const latestParentComment = [project.comments[0]];
   return (
     <div className={classes.root}>
       <ProjectOverview
@@ -398,6 +398,11 @@ export default function ProjectPageRoot({
             leaveProject={requestLeaveProject}
             projectDescriptionRef={projectDescriptionRef}
             collaborationSectionRef={collaborationSectionRef}
+            discussionTabLabel={discussionTabLabel()}
+            latestParentComment={latestParentComment}
+            handleTabChange={handleTabChange}
+            typesByTabValue={typesByTabValue}
+            projectTabsRef={projectTabsRef}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
