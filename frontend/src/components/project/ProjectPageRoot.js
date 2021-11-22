@@ -355,7 +355,9 @@ export default function ProjectPageRoot({
     toggleShowFollowers();
   });
 
+  const [projectLinkShared, setProjectLinkShared] = React.useState(false);
   const createShareRecord = (sharedVia) => {
+    if (sharedVia === 8 && projectLinkShared) return  //only create a share-record for the link once per session
     apiRequest({
       method: "post",
       url: "/api/projects/" + project.url_slug + "/set_shared_project/",
@@ -363,6 +365,11 @@ export default function ProjectPageRoot({
       token: token,
       locale: locale,
     })
+      .then(() => {
+        if (sharedVia === 8) {
+          setProjectLinkShared(true);
+        }
+      })
       .catch(function (error) {
         console.log(error);
         if (error && error.reponse) console.log(error.response);
