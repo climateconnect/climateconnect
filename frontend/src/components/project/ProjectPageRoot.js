@@ -355,6 +355,20 @@ export default function ProjectPageRoot({
     toggleShowFollowers();
   });
 
+  const createShareRecord = (sharedVia) => {
+    apiRequest({
+      method: "post",
+      url: "/api/projects/" + project.url_slug + "/set_shared_project/",
+      payload: { shared_via: sharedVia },
+      token: token,
+      locale: locale,
+    })
+      .catch(function (error) {
+        console.log(error);
+        if (error && error.reponse) console.log(error.response);
+      });
+  };
+
   return (
     <div className={classes.root}>
       <ProjectOverview
@@ -384,6 +398,7 @@ export default function ProjectPageRoot({
         numberOfFollowers={numberOfFollowers}
         toggleShowSocials={toggleShowSocials}
         showSocials={showSocials}
+        createShareRecord={createShareRecord}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -412,6 +427,7 @@ export default function ProjectPageRoot({
               project={project}
               locale={locale}
               projectAdmin={projectAdmin}
+              createShareRecord={createShareRecord}
             />
           </>
         )}

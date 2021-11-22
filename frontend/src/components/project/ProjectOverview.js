@@ -106,6 +106,7 @@ export default function ProjectOverview({
   numberOfFollowers,
   toggleShowSocials,
   showSocials,
+  createShareRecord,
 }) {
   const classes = useStyles();
 
@@ -122,6 +123,7 @@ export default function ProjectOverview({
           toggleShowSocials={toggleShowSocials}
           showSocials={showSocials}
           projectAdmin={projectAdmin}
+          createShareRecord={createShareRecord}
         />
       ) : (
         <LargeScreenOverview
@@ -175,6 +177,7 @@ function SmallScreenOverview({
   toggleShowSocials,
   showSocials,
   projectAdmin,
+  createShareRecord,
 }) {
   const classes = useStyles();
   return (
@@ -199,6 +202,7 @@ function SmallScreenOverview({
           project={project}
           locale={locale}
           projectAdmin={projectAdmin}
+          createShareRecord={createShareRecord}
         />
         <img
           className={classes.fullWidthImage}

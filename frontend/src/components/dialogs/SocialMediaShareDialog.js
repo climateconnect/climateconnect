@@ -34,6 +34,7 @@ export default function SocialMediaShareDialog({
   project,
   locale,
   projectAdmin,
+  createShareRecord,
 }) {
   const classes = useStyles();
 
@@ -47,32 +48,60 @@ export default function SocialMediaShareDialog({
   const twitterHastags = ["believeintogether"];
   const message = texts.climate_protection_project_by + projectAdmin.name + ": " + project.name;
   const mailBody = texts.this_is_the_link_to_the_project;
-  const copyProjectLink = () => {
+  const handleClick = (sharedVia) => {
+    createShareRecord(sharedVia);
     navigator.clipboard.writeText(projectLink);
+  };
+  //Assignment of the numbers has to match with SharedProjects.SHARE_OPTIONS in the backend
+  const SHARE_OPTIONS = {
+    facebook: 0,
+    fb_messenger: 1,
+    twitter: 2,
+    whatsapp: 3,
+    linkedin: 4,
+    reddit: 5,
+    telegram: 6,
+    e_mail: 7,
+    link: 8,
   };
 
   return (
     <GenericDialog onClose={handleClose} open={open} title={texts.tell_others_about_this_project}>
       <div className={classes.shareButtonsContainer}>
-        <EmailShareButton url={projectLink} subject={message} body={mailBody}>
+        <EmailShareButton
+          beforeOnClick={() => createShareRecord(SHARE_OPTIONS.e_mail)}
+          url={projectLink}
+          subject={message}
+          body={mailBody}
+        >
           <EmailIcon size={50} round={true} />
         </EmailShareButton>
-        <FacebookShareButton url={projectLink} quote={message} hashtag={facebookHashtag}>
+        <FacebookShareButton
+          beforeOnClick={() => createShareRecord(SHARE_OPTIONS.facebook)}
+          url={projectLink}
+          quote={message}
+          hashtag={facebookHashtag}
+        >
           <FacebookIcon size={50} round={true} />
         </FacebookShareButton>
-        <TwitterShareButton url={projectLink} title={message} hashtags={twitterHastags}>
+        <TwitterShareButton
+          beforeOnClick={() => createShareRecord(SHARE_OPTIONS.twitter)}
+          url={projectLink}
+          title={message}
+          hashtags={twitterHastags}
+        >
           <TwitterIcon size={50} round={true} />
         </TwitterShareButton>
-        <WhatsappShareButton url={projectLink} title={message}>
+        <WhatsappShareButton beforeOnClick={() => createShareRecord(SHARE_OPTIONS.whatsapp)} url={projectLink} title={message}>
           <WhatsappIcon size={50} round={true} />
         </WhatsappShareButton>
-        <LinkedinShareButton url={projectLink}>
+        <LinkedinShareButton beforeOnClick={() => createShareRecord(SHARE_OPTIONS.linkedin)} url={projectLink}>
           <LinkedinIcon size={50} round={true} />
         </LinkedinShareButton>
-        <RedditShareButton url={projectLink} title={message}>
+        <RedditShareButton beforeOnClick={() => createShareRecord(SHARE_OPTIONS.reddit)} url={projectLink} title={message}>
           <RedditIcon size={50} round={true} />
         </RedditShareButton>
-        <TelegramShareButton url={projectLink} title={message}>
+        <TelegramShareButton beforeOnClick={() => createShareRecord(SHARE_OPTIONS.telegram)} url={projectLink} title={message}>
           <TelegramIcon size={50} round={true} />
         </TelegramShareButton>
       </div>
@@ -89,7 +118,7 @@ export default function SocialMediaShareDialog({
           ),
           endAdornment: (
             <InputAdornment position="end">
-              <Button onClick={copyProjectLink}>{texts.copy_link}</Button>
+              <Button onClick={() => handleClick(SHARE_OPTIONS.link)}>{texts.copy_link}</Button>
             </InputAdornment>
           ),
         }}

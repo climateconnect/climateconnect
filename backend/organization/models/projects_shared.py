@@ -40,7 +40,7 @@ class ProjectsShared(models.Model):
         (LINKEDIN, 'linkedin'),
         (REDDIT, 'reddit'),
         (TELEGRAM, 'telegram'),
-        (MAIL, 'e-mail'),
+        (MAIL, 'e_mail'),
         (LINK, 'link'),
         (DEVICE_NATIVE, 'native_share_dialog_of_device'),
     )
