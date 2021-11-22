@@ -155,5 +155,9 @@ urlpatterns = [
         'projects/<str:url_slug>/leave/',
         project_views.LeaveProject.as_view(),
         name='leave-project'
-    )
+    ),
+    path(
+        'projects/<str:url_slug>/set_shared_project/',
+        project_views.SetProjectsSharedView.as_view(), name="set-shared-projects-view"
+    ),
 ]
