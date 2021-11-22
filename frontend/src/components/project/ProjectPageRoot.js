@@ -357,7 +357,7 @@ export default function ProjectPageRoot({
 
   const [projectLinkShared, setProjectLinkShared] = React.useState(false);
   const createShareRecord = (sharedVia) => {
-    if (sharedVia === 8 && projectLinkShared) return  //only create a share-record for the link once per session
+    if (sharedVia === 8 && projectLinkShared) return; //only create a share-record for the link once per session
     apiRequest({
       method: "post",
       url: "/api/projects/" + project.url_slug + "/set_shared_project/",

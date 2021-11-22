@@ -97,16 +97,31 @@ export default function SocialMediaShareDialog({
         >
           <TwitterIcon size={50} round={true} />
         </TwitterShareButton>
-        <WhatsappShareButton beforeOnClick={() => createShareRecord(SHARE_OPTIONS.whatsapp)} url={projectLink} title={message}>
+        <WhatsappShareButton
+          beforeOnClick={() => createShareRecord(SHARE_OPTIONS.whatsapp)}
+          url={projectLink}
+          title={message}
+        >
           <WhatsappIcon size={50} round={true} />
         </WhatsappShareButton>
-        <LinkedinShareButton beforeOnClick={() => createShareRecord(SHARE_OPTIONS.linkedin)} url={projectLink}>
+        <LinkedinShareButton
+          beforeOnClick={() => createShareRecord(SHARE_OPTIONS.linkedin)}
+          url={projectLink}
+        >
           <LinkedinIcon size={50} round={true} />
         </LinkedinShareButton>
-        <RedditShareButton beforeOnClick={() => createShareRecord(SHARE_OPTIONS.reddit)} url={projectLink} title={message}>
+        <RedditShareButton
+          beforeOnClick={() => createShareRecord(SHARE_OPTIONS.reddit)}
+          url={projectLink}
+          title={message}
+        >
           <RedditIcon size={50} round={true} />
         </RedditShareButton>
-        <TelegramShareButton beforeOnClick={() => createShareRecord(SHARE_OPTIONS.telegram)} url={projectLink} title={message}>
+        <TelegramShareButton
+          beforeOnClick={() => createShareRecord(SHARE_OPTIONS.telegram)}
+          url={projectLink}
+          title={message}
+        >
           <TelegramIcon size={50} round={true} />
         </TelegramShareButton>
       </div>
@@ -123,7 +138,9 @@ export default function SocialMediaShareDialog({
           ),
           endAdornment: (
             <InputAdornment position="end">
-              <Button onClick={() => handleClick(SHARE_OPTIONS.link)}> {screenSize.belowTiny ? texts.copy : texts.copy_link} </Button>
+              <Button onClick={() => handleClick(SHARE_OPTIONS.link)}>
+                {screenSize.belowTiny ? texts.copy : texts.copy_link}
+              </Button>
             </InputAdornment>
           ),
         }}
