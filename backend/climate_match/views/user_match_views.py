@@ -1,6 +1,6 @@
 import logging
-from climate_match.models.user import UserQuestionAnswer
 
+from climate_match.models.user import UserQuestionAnswer
 from climate_match.utility.sort_resources import sort_user_resource_preferences
 from climateconnect_api.models import UserProfile
 from hubs.models.hub import Hub
@@ -94,11 +94,11 @@ class UserResourcesMatchView(APIView):
 				continue
 			resource_data['ressource_type'] = table_name
 			user_matched_resources.append(resource_data)
-		
 		return Response({
 			'current_range_start': range_start,
 			'current_range_end': range_end,
 			'total_resources': total_resources,
 			'matched_resources': user_matched_resources,
-			'hub': (HubClimateMatchSerializer(hub)).data
+			'hub': (HubClimateMatchSerializer(hub)).data,
+			'has_more': len(user_resources) > range_end+1
 		}, status=status.HTTP_200_OK)

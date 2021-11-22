@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
   contactCreatorButtonContainer: {
     flexGrow: 1,
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "flex-end",
   },
   orgProjectsContainer: {
     marginTop: theme.spacing(2),

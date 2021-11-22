@@ -1,25 +1,18 @@
-import {
-  Button,
-  Container,
-  Link,
-  List,
-  ListItem,
-  ListItemIcon,
-  makeStyles,
-  Typography,
-  useMediaQuery,
-} from "@material-ui/core";
+import { Button, Container, makeStyles, useMediaQuery } from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import SettingsBackupRestoreIcon from "@material-ui/icons/SettingsBackupRestore";
 import { Router } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import InfiniteScroll from "react-infinite-scroller";
 import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import ClimateMatchHeadline from "../climateMatch/ClimateMatchHeadline";
 import UserContext from "../context/UserContext";
 import LoadingContainer from "../general/LoadingContainer";
+import LoadingSpinner from "../general/LoadingSpinner";
 import ClimateMatchResult from "./ClimateMatchResult";
+import ClimateMatchResultsOverviewBar from "./ClimateMatchResultsOverviewBar";
 
 const useStyles = makeStyles((theme) => ({
   headerContainer: {
@@ -33,35 +26,9 @@ const useStyles = makeStyles((theme) => ({
   contentContainer: {
     display: "flex",
   },
-  suggestionsOverviewContainer: {
-    maxWidth: 300,
-    minWidth: 230,
-    paddingTop: 0,
-  },
-  suggestionOverviewNumber: {
-    fontFamily: "flood-std, sans-serif",
-    fontSize: 22,
-  },
-  suggestionOverviewName: {
-    fontWeight: 600,
-  },
-  suggestionOverviewItem: {
-    display: "flex",
-    alignItems: "flex-start",
-  },
-  suggestionsOverViewItemIcon: {
-    minWidth: 30,
-  },
   resultsContainer: {
     flexGrow: 1,
     borderLeft: "1px solid black",
-  },
-  noUnderline: {
-    textDecoration: "inherit",
-    "&:hover": {
-      textDecoration: "inherit",
-    },
-    color: "inherit",
   },
   backButton: {
     color: "white",
@@ -86,26 +53,59 @@ export default function ClimateMatchResultsRoot() {
   const token = cookies.get("token");
   const climatematch_token = cookies.get("climatematch_token");
   const [loading, setLoading] = useState(true);
-  const [suggestions, setSuggestions] = useState([]);
+
+  const [suggestions, setSuggestions] = useState({
+    hasMore: true,
+    matched_resources: [],
+  });
   const [page, setPage] = useState(0);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+
   const [fromHub, setFromHub] = useState(FALLBACK_HUB);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "climatematch", locale: locale });
   const headerContainerRef = useRef(null);
   const screenIsSmallerThanMd = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const screenIsSmallerThanSm = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-
   useEffect(async () => {
-    const suggestions = await getSuggestions({
+    const result = await getSuggestions({
       token: token,
       climatematch_token: climatematch_token,
       page: page,
       texts: texts,
     });
-    setFromHub(suggestions.hub);
-    setSuggestions(suggestions.matched_resources);
+    setPage(page + 1);
+    setFromHub(result.hub);
+    setSuggestions({ 
+      ...suggestions, 
+      matched_resources: result.matched_resources,
+      hasMore: result.has_more
+    });
     setLoading(false);
   }, []);
+
+  const loadMore = async () => {
+    // Sometimes InfiniteScroll calls loadMore twice really fast. Therefore
+    // to improve performance, we aim to guard against subsequent
+    // fetches to the API by maintaining a local state flag.
+    if (!isFetchingMore) {
+      setIsFetchingMore(true);
+      const newRessources = await getSuggestions({
+        token: token,
+        climatematch_token: climatematch_token,
+        page: page,
+        texts: texts,
+      });
+      setPage(page + 1);
+      setSuggestions({
+        ...suggestions,
+        hasMore: newRessources.has_more,
+        matched_resources: [...suggestions.matched_resources, ...newRessources.matched_resources],
+      });
+      setIsFetchingMore(false);
+    }
+  };
+
   return (
     <div className={classes.root}>
       {loading ? (
@@ -135,34 +135,23 @@ export default function ClimateMatchResultsRoot() {
           </div>
           <Container maxWidth="xl" className={classes.contentContainer} disableGutters>
             {!screenIsSmallerThanMd && (
-              <div>
-                <List className={classes.suggestionsOverviewContainer}>
-                  {suggestions?.map((suggestion, index) => (
-                    <Link
-                      href={`#${suggestion.url_slug}`}
-                      className={classes.noUnderline}
-                      key={index}
-                    >
-                      <ListItem button className={classes.suggestionOverviewItem}>
-                        <ListItemIcon className={classes.suggestionsOverViewItemIcon}>
-                          <Typography color="primary" className={classes.suggestionOverviewNumber}>
-                            {index + 1}.
-                          </Typography>
-                        </ListItemIcon>
-                        <Typography className={classes.suggestionOverviewName}>
-                          {suggestion.name}
-                        </Typography>
-                      </ListItem>
-                    </Link>
-                  ))}
-                </List>
-              </div>
+              <ClimateMatchResultsOverviewBar suggestions={suggestions?.matched_resources} />
             )}
-            <div className={classes.resultsContainer}>
-              {suggestions?.map((suggestion, index) => (
+            <InfiniteScroll
+              className={classes.resultsContainer}
+              component="div"
+              container
+              // We block subsequent invocations from InfinteScroll until we update local state
+              hasMore={suggestions.hasMore && !isFetchingMore && !loading}
+              loadMore={loadMore}
+              pageStart={1}
+              spacing={2}
+            >
+              {suggestions?.matched_resources?.map((suggestion, index) => (
                 <ClimateMatchResult key={index} suggestion={suggestion} pos={index} />
               ))}
-            </div>
+              {isFetchingMore && <LoadingSpinner isLoading key="project-previews-spinner" />}
+            </InfiniteScroll>
           </Container>
         </div>
       )}
