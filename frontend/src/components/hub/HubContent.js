@@ -1,9 +1,4 @@
-import {
-  Button,
-  Collapse,
-  Container,
-  makeStyles, useMediaQuery
-} from "@material-ui/core";
+import { Button, Collapse, Container, makeStyles, useMediaQuery } from "@material-ui/core";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import React, { useContext } from "react";
@@ -64,8 +59,8 @@ const useStyles = makeStyles((theme) => ({
     height: 40,
     marginTop: theme.spacing(2),
     [theme.breakpoints.down("sm")]: {
-      marginTop: theme.spacing(1)
-    }
+      marginTop: theme.spacing(1),
+    },
   }),
   quickInfo: {
     fontSize: 17,
@@ -101,7 +96,7 @@ export default function HubContent({
   hubProjectsButtonRef,
   isLocationHub,
   location,
-  hubName
+  hubName,
 }) {
   const { locale, user } = useContext(UserContext);
   const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user });
@@ -209,7 +204,7 @@ const BottomContent = ({
   quickInfo,
   expanded,
   handleClickExpand,
-  isLocationHub
+  isLocationHub,
 }) => {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -219,8 +214,8 @@ const BottomContent = ({
       <div>
         {!isLocationHub && (
           <div className={`${classes.quickInfo} ${classes.marginTop}`} ref={hubQuickInfoRef}>
-          <MessageContent content={quickInfo} />
-        </div>
+            <MessageContent content={quickInfo} />
+          </div>
         )}
         <Collapse in={expanded}>
           {isLocationHub && (

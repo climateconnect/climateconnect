@@ -6,14 +6,14 @@ import React from "react";
 import WebflowPage from "../src/components/webflow/WebflowPage";
 import { retrievePage } from "../src/utils/webflow";
 
-export default function Press({ bodyContent, headContent }) {
-  return <WebflowPage bodyContent={bodyContent} headContent={headContent} pageKey="press" />;
+export default function Join({ bodyContent, headContent }) {
+  return <WebflowPage bodyContent={bodyContent} headContent={headContent} pageKey="join" />;
 }
 
 export async function getStaticProps(ctx) {
   const WEBFLOW_URLS = {
-    de: "https://climateconnect.webflow.io/presse",
-    en: "https://climateconnect.webflow.io/press-en",
+    de: "https://climateconnect.webflow.io/join-de",
+    en: "https://climateconnect.webflow.io/join-en",
   };
   const props = await retrievePage(WEBFLOW_URLS[ctx.locale]);
   return {
