@@ -17,7 +17,7 @@ import {
   Paper,
   Popper,
   SwipeableDrawer,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -266,10 +266,6 @@ const getStaticPageLinks = (texts) => [
   {
     href: "/press",
     text: texts.press,
-  },
-  {
-    href: "/join",
-    text: texts.join,
   },
 ];
 
