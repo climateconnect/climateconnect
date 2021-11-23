@@ -536,7 +536,6 @@ export default function BrowseContent({
               loadFunc={() => handleLoadMoreData("organizations")}
               organizations={state.items.organizations}
               parentHandlesGridItems
-              showOrganizationType
             />
           </TabContentWrapper>
           {!hideMembers && (

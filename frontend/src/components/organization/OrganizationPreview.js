@@ -1,10 +1,11 @@
-import { Card, Link } from "@material-ui/core";
+import {Box, Card, CardActions, Link, Tooltip, Typography} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
 import OrganizationPreviewHeader from "./OrganizationPreviewHeader";
 import OrganizationPreviewBody from "./OrganizationPreviewBody";
+import { AssignmentSharp, GroupSharp } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -27,10 +28,7 @@ const useStyles = makeStyles((theme) => {
       textAlign: "center",
       height: "350px",
       boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;",
-      padding: "0 12px",
-    },
-    bold: {
-      fontWeight: "bold",
+      padding: "0 14px",
     },
     button: {
       marginTop: theme.spacing(1),
@@ -50,10 +48,30 @@ const useStyles = makeStyles((theme) => {
         textDecoration: "inherit",
       },
     },
+    footer: {
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      alignSelf: "end",
+      marginBottom: "10px",
+    },
+    members: {
+      float: "right",
+      marginRight: "20px",
+      display: "grid",
+      gridTemplateColumns: "40px min-content",
+      justifyContent: "center",
+    },
+    hubs: {
+      float: "left",
+      marginLeft: "20px",
+      display: "grid",
+      gridTemplateColumns: "40px min-content",
+      justifyContent: "center",
+    },
   };
 });
 
-export default function OrganizationPreview({ organization, showOrganizationType }) {
+export default function OrganizationPreview({ organization }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
 
@@ -64,10 +82,25 @@ export default function OrganizationPreview({ organization, showOrganizationType
     >
       <Card className={classes.root} variant="outlined">
         <OrganizationPreviewHeader organization={organization} />
-        <OrganizationPreviewBody
-          organization={organization}
-          showOrganizationType={showOrganizationType}
-        />
+        <OrganizationPreviewBody organization={organization} />
+        <CardActions className={classes.footer}>
+          <Box>
+            <span className={classes.members}>
+              <Tooltip title="Members in organization">
+                <GroupSharp className={classes.icon} color="primary" />
+              </Tooltip>
+              <Typography>{organization.organization_size}</Typography>
+            </span>
+          </Box>
+          <Box>
+            <span className={classes.hubs}>
+              <Tooltip title="Number of hubs">
+                <AssignmentSharp className={classes.icon} color="primary" />
+              </Tooltip>
+              <Typography>{organization.hubs_count}</Typography>
+            </span>
+          </Box>
+        </CardActions>
       </Card>
     </Link>
   );

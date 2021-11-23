@@ -120,10 +120,12 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
     types = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
+    hubs_count = serializers.SerializerMethodField()
     class Meta:
         model = Organization
         fields = (
-            'id', 'name', 'url_slug', 'thumbnail_image', 'location', 'types', 'short_description'
+            'id', 'name', 'url_slug', 'thumbnail_image', 'location', 'types', 'short_description', 'organization_size',
+            'hubs_count'
         )
     
     def get_name(self, obj):
@@ -141,6 +143,9 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
         serializer = OrganizationTaggingSerializer(obj.tag_organization, many=True)
         return serializer.data
 
+    def get_hubs_count(self, obj):
+        serializer = HubStubSerializer(obj.hubs, many=True)
+        return len(serializer.data)
 
 class OrganizationMemberSerializer(serializers.ModelSerializer):
     class Meta:

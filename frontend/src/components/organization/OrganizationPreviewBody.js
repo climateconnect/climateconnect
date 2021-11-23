@@ -5,11 +5,8 @@ import PlaceIcon from "@material-ui/icons/Place";
 
 const useStyles = makeStyles((theme) => {
   return {
-    bold: {
-      fontWeight: "bold",
-    },
     locationName: {
-      fontWeight: "bold",
+      fontWeight: "600",
       whiteSpace: "nowrap",
       width: "100%",
       overflow: "hidden",
