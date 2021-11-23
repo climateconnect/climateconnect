@@ -267,6 +267,10 @@ const getStaticPageLinks = (texts) => [
     href: "/press",
     text: texts.press,
   },
+  {
+    href: "/join",
+    text: texts.join,
+  },
 ];
 
 const getLoggedInLinks = ({ loggedInUser, texts }) => {
