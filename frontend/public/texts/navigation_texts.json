@@ -78,5 +78,9 @@
   "all_projects": {
     "en": "All Projects",
     "de": "Alle Projekte"
+  },
+  "jobs": {
+    "en": "Jobs",
+    "de": "Jobs"
   }
 }
