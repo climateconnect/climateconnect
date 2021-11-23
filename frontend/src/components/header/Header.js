@@ -260,12 +260,12 @@ const getStaticPageLinks = (texts) => [
     text: texts.faq,
   },
   {
-    href: "/press",
-    text: texts.press,
-  },
-  {
     href: "/join",
     text: texts.join,
+  },
+  {
+    href: "/press",
+    text: texts.press,
   },
 ];
 
