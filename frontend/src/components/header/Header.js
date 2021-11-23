@@ -17,7 +17,7 @@ import {
   Paper,
   Popper,
   SwipeableDrawer,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -176,6 +176,9 @@ const useStyles = makeStyles((theme) => {
       fontSize: 20,
       marginRight: theme.spacing(0.25),
     },
+    moreButtonMobile: {
+      color: "white",
+    },
   };
 });
 
@@ -259,6 +262,10 @@ const getStaticPageLinks = (texts) => [
   {
     href: "/press",
     text: texts.press,
+  },
+  {
+    href: "/join",
+    text: texts.join,
   },
 ];
 
@@ -389,16 +396,24 @@ export default function Header({
 function StaticPageLinks() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
 
   const texts = getTexts({ page: "navigation", locale: locale });
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
   const localePrefix = getLocalePrefix(locale);
 
+  const getLinksToShow = () => {
+    if (isNarrowScreen) {
+      return STATIC_PAGE_LINKS.slice(0, 2);
+    } else {
+      return STATIC_PAGE_LINKS;
+    }
+  };
   return (
     <div className={classes.staticPageLinksWrapper}>
       <Container className={classes.staticPageLinksContainer}>
         <div className={classes.staticPageLinks}>
-          {STATIC_PAGE_LINKS.map((link, index) => {
+          {getLinksToShow().map((link, index) => {
             return (
               <Link
                 href={localePrefix + link.href}
@@ -411,6 +426,18 @@ function StaticPageLinks() {
               </Link>
             );
           })}
+          {isNarrowScreen && (
+            <DropDownButton
+              options={STATIC_PAGE_LINKS}
+              buttonProps={{
+                classes: {
+                  root: classes.moreButtonMobile,
+                },
+              }}
+            >
+              {texts.more}
+            </DropDownButton>
+          )}
         </div>
       </Container>
     </div>

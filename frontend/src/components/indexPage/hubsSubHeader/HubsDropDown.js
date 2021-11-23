@@ -25,7 +25,7 @@ export default function HubsDropDown({
 }) {
   const classes = useStyles();
   const buttonRef = useRef(null);
-  const popperRef = useRef(null)
+  const popperRef = useRef(null);
 
   const toggleButtonProps = {};
   if (!isNarrowScreen) {

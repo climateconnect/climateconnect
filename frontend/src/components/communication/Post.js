@@ -123,26 +123,26 @@ export default function Post({
             />
           </Link>
           <span className={classes.messageWithMetaData}>
-              <div className={classes.metadata}>
-                <Link
-                  color="inherit"
-                  href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
-                  target="_blank"
-                  onClick={handleClick}
-                >
-                  <Typography variant="body2" className={classes.username}>
-                    {post.author_user.first_name + " " + post.author_user.last_name}
-                  </Typography>
-                </Link>
-                <Typography variant="body2" className={classes.postDate}>
-                  {post.unconfirmed && (
-                    <Tooltip title={texts.sending_message + "..."}>
-                      <CircularProgress size={10} color="inherit" className={classes.loader} />
-                    </Tooltip>
-                  )}
-                  <DateDisplay date={new Date(post.created_at)} />
+            <div className={classes.metadata}>
+              <Link
+                color="inherit"
+                href={getLocalePrefix(locale) + "/profiles/" + post.author_user.url_slug}
+                target="_blank"
+                onClick={handleClick}
+              >
+                <Typography variant="body2" className={classes.username}>
+                  {post.author_user.first_name + " " + post.author_user.last_name}
                 </Typography>
-              </div>
+              </Link>
+              <Typography variant="body2" className={classes.postDate}>
+                {post.unconfirmed && (
+                  <Tooltip title={texts.sending_message + "..."}>
+                    <CircularProgress size={10} color="inherit" className={classes.loader} />
+                  </Tooltip>
+                )}
+                <DateDisplay date={new Date(post.created_at)} />
+              </Typography>
+            </div>
             {type === "preview" ? (
               <Typography>
                 <Truncate lines={truncate} ellipsis={"..."}>
