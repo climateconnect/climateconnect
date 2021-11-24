@@ -9,7 +9,6 @@ import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import ClimateMatchHeadline from "../climateMatch/ClimateMatchHeadline";
 import UserContext from "../context/UserContext";
-import LoadingContainer from "../general/LoadingContainer";
 import LoadingSpinner from "../general/LoadingSpinner";
 import ClimateMatchResult from "./ClimateMatchResult";
 import ClimateMatchResultsOverviewBar from "./ClimateMatchResultsOverviewBar";
@@ -42,6 +41,18 @@ const useStyles = makeStyles((theme) => ({
   backButtonsContainer: {
     display: "flex",
     justifyContent: "space-between",
+  },
+  loadingOverlay: {
+    background: theme.palette.primary.main,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: theme.spacing(4),
+    zIndex: 10,
+    display: "flex",
+    alignItems: "center",
   },
 }));
 
@@ -124,7 +135,14 @@ export default function ClimateMatchResultsRoot() {
   return (
     <div className={classes.root}>
       {loading ? (
-        <LoadingContainer />
+        <div className={classes.loadingOverlay}>
+          <LoadingSpinner
+            isLoading
+            color="#fff"
+            noMarginTop
+            message={texts.calculating_your_results}
+          />
+        </div>
       ) : (
         <div>
           <div className={classes.headerContainer} ref={headerContainerRef}>

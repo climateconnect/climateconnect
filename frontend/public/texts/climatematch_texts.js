@@ -13,6 +13,10 @@ export default function getClimatematchTexts({ location, question }) {
       en: "Loading the ClimateMatch...",
       de: "Loading the ClimateMatch...",
     },
+    calculating_your_results: {
+      en: "Calculating your results...",
+      de: "Wir berechnen deine Ergebnisse..."
+    },
     start: {
       en: "Start",
       de: "Starten",
