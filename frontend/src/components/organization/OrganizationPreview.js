@@ -94,7 +94,7 @@ export default function OrganizationPreview({ organization }) {
           </Box>
           <Box>
             <span className={classes.hubs}>
-              <Tooltip title="Number of hubs">
+              <Tooltip title="Number of projects">
                 <AssignmentSharp className={classes.icon} color="primary" />
               </Tooltip>
               <Typography>{organization.projects_count}</Typography>
