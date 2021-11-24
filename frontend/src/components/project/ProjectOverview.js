@@ -10,7 +10,6 @@ import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
-import SocialMediaShareDialog from "../dialogs/SocialMediaShareDialog";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "./Buttons/FollowButton";
@@ -194,10 +193,7 @@ function SmallScreenOverview({
         <SocialMediaShareButton
           containerClassName={classes.shareButtonContainer}
           toggleShowSocials={toggleShowSocials}
-        />
-        <SocialMediaShareDialog
-          open={showSocials}
-          onClose={toggleShowSocials}
+          showSocials={showSocials}
           texts={texts}
           project={project}
           locale={locale}

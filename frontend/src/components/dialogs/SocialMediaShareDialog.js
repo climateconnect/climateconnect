@@ -35,11 +35,11 @@ export default function SocialMediaShareDialog({
   open,
   onClose,
   texts,
-  project,
-  locale,
-  projectAdmin,
   createShareRecord,
   screenSize,
+  SHARE_OPTIONS,
+  projectLink,
+  title,
 }) {
   const classes = useStyles();
 
@@ -47,27 +47,12 @@ export default function SocialMediaShareDialog({
     onClose(false);
   };
 
-  const BASE_URL = process.env.BASE_URL ? process.env.BASE_URL : "https://climateconnect.earth";
-  const projectLink = BASE_URL + "/" + locale + "/projects/" + project.url_slug;
   const facebookHashtag = "#believeintogether";
   const twitterHastags = ["believeintogether"];
-  const message = texts.climate_protection_project_by + projectAdmin.name + ": " + project.name;
   const mailBody = texts.this_is_the_link_to_the_project;
   const handleClick = (sharedVia) => {
     createShareRecord(sharedVia);
     navigator.clipboard.writeText(projectLink);
-  };
-  //Assignment of the numbers has to match with SharedProjects.SHARE_OPTIONS in the backend
-  const SHARE_OPTIONS = {
-    facebook: 0,
-    fb_messenger: 1,
-    twitter: 2,
-    whatsapp: 3,
-    linkedin: 4,
-    reddit: 5,
-    telegram: 6,
-    e_mail: 7,
-    link: 8,
   };
 
   return (
@@ -76,7 +61,7 @@ export default function SocialMediaShareDialog({
         <EmailShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.e_mail)}
           url={projectLink}
-          subject={message}
+          subject={title}
           body={mailBody}
         >
           <EmailIcon size={50} round={true} />
@@ -84,7 +69,7 @@ export default function SocialMediaShareDialog({
         <FacebookShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.facebook)}
           url={projectLink}
-          quote={message}
+          quote={title}
           hashtag={facebookHashtag}
         >
           <FacebookIcon size={50} round={true} />
@@ -92,7 +77,7 @@ export default function SocialMediaShareDialog({
         <TwitterShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.twitter)}
           url={projectLink}
-          title={message}
+          title={title}
           hashtags={twitterHastags}
         >
           <TwitterIcon size={50} round={true} />
@@ -100,7 +85,7 @@ export default function SocialMediaShareDialog({
         <WhatsappShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.whatsapp)}
           url={projectLink}
-          title={message}
+          title={title}
         >
           <WhatsappIcon size={50} round={true} />
         </WhatsappShareButton>
@@ -113,14 +98,14 @@ export default function SocialMediaShareDialog({
         <RedditShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.reddit)}
           url={projectLink}
-          title={message}
+          title={title}
         >
           <RedditIcon size={50} round={true} />
         </RedditShareButton>
         <TelegramShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.telegram)}
           url={projectLink}
-          title={message}
+          title={title}
         >
           <TelegramIcon size={50} round={true} />
         </TelegramShareButton>
