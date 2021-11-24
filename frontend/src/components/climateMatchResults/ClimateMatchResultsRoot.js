@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
   contentContainer: {
     display: "flex",
-    marginTop: 0
+    marginTop: 0,
   },
   resultsContainer: {
     flexGrow: 1,
@@ -69,9 +69,9 @@ export default function ClimateMatchResultsRoot() {
   const screenIsSmallerThanMd = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const screenIsSmallerThanSm = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   useEffect(async () => {
-    try{
+    try {
       setIsFetchingMore(true);
-      if(!token && !climatematch_token) {
+      if (!token && !climatematch_token) {
         return Router.push({
           pathname: "/climatematch",
           query: {
@@ -87,16 +87,16 @@ export default function ClimateMatchResultsRoot() {
       });
       setPage(page + 1);
       setFromHub(result.hub);
-      setSuggestions({ 
-        ...suggestions, 
+      setSuggestions({
+        ...suggestions,
         matched_resources: result.matched_resources,
-        hasMore: result.has_more
+        hasMore: result.has_more,
       });
       setIsFetchingMore(false);
       setLoading(false);
-    } catch(e) {
-      console.log(e)
-    }    
+    } catch (e) {
+      console.log(e);
+    }
   }, []);
 
   const loadMore = async () => {
