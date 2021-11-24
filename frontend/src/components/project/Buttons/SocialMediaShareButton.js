@@ -15,11 +15,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SocialMediaShareButton({ containerClassName, toggleShowSocials, showSocials, texts, project, locale, projectAdmin, createShareRecord, screenSize }) {
+export default function SocialMediaShareButton({
+  containerClassName,
+  toggleShowSocials,
+  showSocials,
+  texts,
+  project,
+  locale,
+  projectAdmin,
+  createShareRecord,
+  screenSize,
+}) {
   const classes = useStyles();
-  const handleClick = () => {
-    toggleShowSocials(true);
-  };
 
   //Assignment of the numbers has to match with SharedProjects.SHARE_OPTIONS in the backend
   const SHARE_OPTIONS = {
@@ -32,29 +39,46 @@ export default function SocialMediaShareButton({ containerClassName, toggleShowS
     telegram: 6,
     e_mail: 7,
     link: 8,
+    native_share_dialog_of_device: 9,
   };
   const BASE_URL = process.env.BASE_URL ? process.env.BASE_URL : "https://climateconnect.earth";
   const projectLink = BASE_URL + "/" + locale + "/projects/" + project.url_slug;
   const title = texts.climate_protection_project_by + projectAdmin.name + ": " + project.name;
 
+  const handleClick = () => {
+    //navigator.share (Web Share API) is only available with https
+    if (navigator.share) {
+      navigator.share({
+        title: title,
+        url: projectLink,
+        })
+        .then(() => {
+          createShareRecord(SHARE_OPTIONS.native_share_dialog_of_device);
+        })
+        .catch(console.error);
+    } else {
+      toggleShowSocials(true);
+    }
+  };
+
   return (
     <>
-    <div className={containerClassName}>
-      <IconButton className={classes.button} onClick={handleClick}>
-        {/*adjusted viewBox to center the icon*/}
-        <ShareIcon viewBox="2 0 24 24" />
-      </IconButton>
-    </div>
-    <SocialMediaShareDialog
-          open={showSocials}
-          onClose={toggleShowSocials}
-          texts={texts}
-          createShareRecord={createShareRecord}
-          screenSize={screenSize}
-          SHARE_OPTIONS={SHARE_OPTIONS}
-          projectLink={projectLink}
-          title={title}
-        />
+      <div className={containerClassName}>
+        <IconButton className={classes.button} onClick={handleClick}>
+          {/*adjusted viewBox to center the icon*/}
+          <ShareIcon viewBox="2 0 24 24" />
+        </IconButton>
+      </div>
+      <SocialMediaShareDialog
+        open={showSocials}
+        onClose={toggleShowSocials}
+        texts={texts}
+        createShareRecord={createShareRecord}
+        screenSize={screenSize}
+        SHARE_OPTIONS={SHARE_OPTIONS}
+        projectLink={projectLink}
+        title={title}
+      />
     </>
   );
 }
