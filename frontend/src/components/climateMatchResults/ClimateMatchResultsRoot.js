@@ -1,7 +1,7 @@
 import { Button, Container, makeStyles, useMediaQuery } from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import SettingsBackupRestoreIcon from "@material-ui/icons/SettingsBackupRestore";
-import { Router } from "next/router";
+import Router from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import Cookies from "universal-cookie";
@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
   contentContainer: {
     display: "flex",
+    marginTop: 0
   },
   resultsContainer: {
     flexGrow: 1,
@@ -68,20 +69,34 @@ export default function ClimateMatchResultsRoot() {
   const screenIsSmallerThanMd = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const screenIsSmallerThanSm = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   useEffect(async () => {
-    const result = await getSuggestions({
-      token: token,
-      climatematch_token: climatematch_token,
-      page: page,
-      texts: texts,
-    });
-    setPage(page + 1);
-    setFromHub(result.hub);
-    setSuggestions({ 
-      ...suggestions, 
-      matched_resources: result.matched_resources,
-      hasMore: result.has_more
-    });
-    setLoading(false);
+    try{
+      setIsFetchingMore(true);
+      if(!token && !climatematch_token) {
+        return Router.push({
+          pathname: "/climatematch",
+          query: {
+            message: texts.you_havent_done_the_climatematch,
+          },
+        });
+      }
+      const result = await getSuggestions({
+        token: token,
+        climatematch_token: climatematch_token,
+        page: page,
+        texts: texts,
+      });
+      setPage(page + 1);
+      setFromHub(result.hub);
+      setSuggestions({ 
+        ...suggestions, 
+        matched_resources: result.matched_resources,
+        hasMore: result.has_more
+      });
+      setIsFetchingMore(false);
+      setLoading(false);
+    } catch(e) {
+      console.log(e)
+    }    
   }, []);
 
   const loadMore = async () => {
@@ -159,7 +174,7 @@ export default function ClimateMatchResultsRoot() {
   );
 }
 
-const getSuggestions = async ({ texts, token, page, climatematch_token }) => {
+const getSuggestions = async ({ token, page, climatematch_token }) => {
   try {
     const args = {
       method: "get",
@@ -169,13 +184,6 @@ const getSuggestions = async ({ texts, token, page, climatematch_token }) => {
       args.token = token;
     } else if (climatematch_token) {
       args.url += `&climatematch_token=${climatematch_token}`;
-    } else {
-      Router.push({
-        pathname: "/climatemath",
-        query: {
-          message: texts.you_havent_done_the_climatematch,
-        },
-      });
     }
     const resp = await apiRequest(args);
     return resp.data;
