@@ -52,6 +52,7 @@ export default function WideLayout({
   landingPage,
   headerBackground,
   subHeader,
+  useFloodStdFont,
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -76,6 +77,7 @@ export default function WideLayout({
       noFeedbackButton={noFeedbackButton}
       noSpaceForFooter={noSpaceBottom}
       description={description}
+      useFloodStdFont={useFloodStdFont}
       theme={theme}
     >
       <Header

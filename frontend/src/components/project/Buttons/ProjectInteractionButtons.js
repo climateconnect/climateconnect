@@ -58,7 +58,7 @@ export default function ProjectInteractionButtons({
         <Toolbar className={classes.containerButtonsActionBar} variant="dense">
           {!hasAdminPermissions && (
             <ContactCreatorButton
-              projectAdmin={projectAdmin}
+              creator={projectAdmin}
               handleClickContact={handleClickContact}
               screenSize={screenSize}
             />
@@ -95,7 +95,7 @@ export default function ProjectInteractionButtons({
           contactProjectCreatorButtonRef?.current && (
             <ContactCreatorButton
               className={classes.largeScreenButton}
-              projectAdmin={projectAdmin}
+              creator={projectAdmin}
               handleClickContact={handleClickContact}
               isUserLiking={isUserLiking}
               handleToggleLikeProject={handleToggleLikeProject}

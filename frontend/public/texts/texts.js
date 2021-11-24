@@ -2,6 +2,7 @@ import getAboutTexts from "./about_texts";
 import account_texts from "./account_texts.json";
 import activate_email from "./activate_email.json";
 import chat_texts from "./chat_texts.json";
+import getClimatematchTexts from "./climatematch_texts";
 import getCommunicationTexts from "./communication_texts";
 import cookie_texts from "./cookie_texts.json";
 import getDashboardTexts from "./dashboard_texts";
@@ -35,6 +36,8 @@ export default function getTexts({
   project,
   url_slug,
   user,
+  climateMatchQuestion,
+  creator,
 }) {
   // These are the multiple text files for various translations. They're
   // split up to reduce the amount of work required to download
@@ -43,6 +46,7 @@ export default function getTexts({
     account: account_texts,
     activate_email: activate_email,
     chat: chat_texts,
+    climatematch: getClimatematchTexts({ location: location, question: climateMatchQuestion }),
     cookie: cookie_texts,
     communication: getCommunicationTexts(),
     dashboard: getDashboardTexts({ user: user, location: location }),
@@ -61,7 +65,13 @@ export default function getTexts({
     notification: getNotificationTexts({ idea: idea, project: project }),
     organization: getOrganizationTexts({ organization: organization, locale: locale }),
     profile: getProfileTexts({ profile: profile, locale: locale }),
-    project: getProjectTexts({ project: project, user: user, url_slug: url_slug, locale: locale }),
+    project: getProjectTexts({
+      project: project,
+      user: user,
+      url_slug: url_slug,
+      locale: locale,
+      creator: creator,
+    }),
     settings: settings_texts,
     tutorial: getTutorialTexts({ hubName: hubName, classes: classes, locale: locale }),
   };

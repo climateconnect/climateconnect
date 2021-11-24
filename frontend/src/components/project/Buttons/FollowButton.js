@@ -1,6 +1,6 @@
 import { Button, CircularProgress, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Person } from "@material-ui/icons";
+import PersonIcon from "@material-ui/icons/Person";
 import React from "react";
 
 const useStyles = makeStyles((theme) => ({
@@ -49,7 +49,7 @@ export default function FollowButton({
         {...bindFollow}
         onClick={handleToggleFollowProject}
         variant="contained"
-        startIcon={<Person />}
+        startIcon={<PersonIcon />}
         color={isUserFollowing ? "secondary" : "primary"}
         disabled={followingChangePending}
         className={classes.followingButton}
@@ -80,7 +80,7 @@ export default function FollowButton({
         <Button
           onClick={handleToggleFollowProject}
           variant="contained"
-          startIcon={<Person />}
+          startIcon={<PersonIcon />}
           color={isUserFollowing ? "secondary" : "primary"}
           disabled={followingChangePending}
           className={classes.followingButton}

@@ -97,6 +97,7 @@ export default function HubContent({
   isLocationHub,
   location,
   hubName,
+  hubUrl,
 }) {
   const { locale, user } = useContext(UserContext);
   const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user });
@@ -132,13 +133,15 @@ export default function HubContent({
             <div className={`${user && classes.dashboardAndStatboxWrapper}`}>
               <div>
                 {user ? (
-                  <Dashboard location={location} headline={headline} />
+                  <Dashboard location={location} headline={headline} hubUrl={hubUrl} />
                 ) : (
                   <HubHeadlineContainer
                     subHeadline={subHeadline}
                     headline={headline}
                     hubName={hubName}
                     headlineClassName={classes.h1}
+                    isLocationHub={isLocationHub}
+                    hubUrl={hubUrl}
                   />
                 )}
                 <BottomContent
@@ -164,6 +167,8 @@ export default function HubContent({
               headline={headline}
               hubName={hubName}
               headlineClassName={classes.h1}
+              isLocationHub={isLocationHub}
+              hubUrl={hubUrl}
             />
             <BottomContent
               hubQuickInfoRef={hubQuickInfoRef}

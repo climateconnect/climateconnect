@@ -68,6 +68,7 @@ urls = [
     ),
     path('availability/', common_views.ListAvailabilitiesView.as_view(), name='list-availabilities-api'),
     path('skills/', common_views.ListSkillsView.as_view(), name='list-skills-api'),
+    path('parentskills/', common_views.ListParentSkillsView.as_view(), name='list-parent-skills-api'),
     path('roles/', role_views.ListRolesView.as_view(), name='list-roles-api'),
     path(
         'api/feedback/',
@@ -94,7 +95,9 @@ urls = [
     path('api/', include('hubs.urls')),
     path('api/', include('location.urls')),
     # Idea views
-    path('api/', include('ideas.urls'))
+    path('api/', include('ideas.urls')),
+    # Climate match APIs
+    path('api/', include('climate_match.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns = urls
