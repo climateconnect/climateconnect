@@ -3,10 +3,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Router from "next/router";
 import React, { useContext, useEffect, useRef } from "react";
+import { useLongPress } from "use-long-press";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
+import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import ElementOnScreen from "../hooks/ElementOnScreen";
@@ -18,9 +20,6 @@ import ProjectCommentsContent from "./ProjectCommentsContent";
 import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
 import ProjectTeamContent from "./ProjectTeamContent";
-import { useLongPress } from "use-long-press";
-import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
-import ElementSpaceToTop from "../hooks/ElementSpaceToTop";
 
 const useStyles = makeStyles((theme) => ({
   root: {

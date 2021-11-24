@@ -28,8 +28,7 @@ const LoadingSpinner = ({
   className,
   color,
   noMarginTop,
-  message,
-  messageVariant,
+  message
 }) => {
   const classes = useStyles({ color: color, noMarginTop: noMarginTop });
 
