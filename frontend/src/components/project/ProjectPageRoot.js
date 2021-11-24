@@ -421,17 +421,17 @@ export default function ProjectPageRoot({
           </Tabs>
         </div>
         {!screenSize.belowSmall && (
-            <SocialMediaShareButton
-              containerClassName={classes.shareButtonContainer}
-              toggleShowSocials={toggleShowSocials}
-              showSocials={showSocials}
-              texts={texts}
-              project={project}
-              locale={locale}
-              projectAdmin={projectAdmin}
-              createShareRecord={createShareRecord}
-              screenSize={screenSize}
-            />
+          <SocialMediaShareButton
+            containerClassName={classes.shareButtonContainer}
+            toggleShowSocials={toggleShowSocials}
+            showSocials={showSocials}
+            texts={texts}
+            project={project}
+            locale={locale}
+            projectAdmin={projectAdmin}
+            createShareRecord={createShareRecord}
+            screenSize={screenSize}
+          />
         )}
       </Container>
 
