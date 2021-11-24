@@ -48,9 +48,10 @@ export default function SocialMediaShareButton({
   const handleClick = () => {
     //navigator.share (Web Share API) is only available with https
     if (navigator.share) {
-      navigator.share({
-        title: title,
-        url: projectLink,
+      navigator
+        .share({
+          title: title,
+          url: projectLink,
         })
         .then(() => {
           createShareRecord(SHARE_OPTIONS.native_share_dialog_of_device);
