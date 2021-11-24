@@ -89,7 +89,7 @@ export default function OrganizationPreview({ organization }) {
               <Tooltip title="Members in organization">
                 <GroupSharp className={classes.icon} color="primary" />
               </Tooltip>
-              <Typography>{organization.organization_size}</Typography>
+              <Typography>{organization.members_count}</Typography>
             </span>
           </Box>
           <Box>
@@ -97,7 +97,7 @@ export default function OrganizationPreview({ organization }) {
               <Tooltip title="Number of hubs">
                 <AssignmentSharp className={classes.icon} color="primary" />
               </Tooltip>
-              <Typography>{organization.hubs_count}</Typography>
+              <Typography>{organization.projects_count}</Typography>
             </span>
           </Box>
         </CardActions>
