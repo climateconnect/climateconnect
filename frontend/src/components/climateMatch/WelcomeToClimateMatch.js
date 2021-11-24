@@ -10,13 +10,14 @@ import ClimateMatchButton from "./ClimateMatchButton";
 import ClimateMatchHeadline from "./ClimateMatchHeadline";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  root: props => ({
     position: "relative",
     paddingBottom: theme.spacing(4),
     [theme.breakpoints.down("xs")]: {
       paddingBottom: theme.spacing(2),
     },
-  },
+    visibility: props.isLoading && "hidden"    
+  }),
   nonImageContent: {
     paddingTop: theme.spacing(4),
     maxWidth: 1050,
@@ -93,13 +94,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function WelcomeToClimateMatch({ goToNextStep, location, hasDoneClimateMatch }) {
+export default function WelcomeToClimateMatch({ goToNextStep, location, hasDoneClimateMatch, isLoading }) {
   const bottomRef = useRef(null);
   const unfixButtonBar = ElementOnScreen({
     el: bottomRef.current,
     minSpaceFromBottom: 55,
   });
-  const classes = useStyles({ unfixButtonBar: unfixButtonBar });
+  const classes = useStyles({ unfixButtonBar: unfixButtonBar, isLoading: isLoading });
   const { locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
 

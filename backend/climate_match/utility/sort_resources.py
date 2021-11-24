@@ -27,6 +27,7 @@ WITH hub_location_ids AS (
 projects AS (
     SELECT distinct OP.*, HLI.* FROM organization_project OP
     JOIN hub_location_ids HLI ON OP.loc_id = HLI.location_id
+    WHERE is_draft = false
 ),
 orgs AS (
     SELECT distinct O.*, HLI.*

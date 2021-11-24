@@ -12,6 +12,19 @@ import ClimateMatchQuestion from "./ClimateMatchQuestion";
 import WelcomeToClimateMatch from "./WelcomeToClimateMatch";
 
 const useStyles = makeStyles((theme) => ({
+  loadingOverlay: {
+    background: theme.palette.primary.main,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: theme.spacing(4),
+    zIndex: 10,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  },
   root: {
     background: theme.palette.primary.main,
     marginTop: 0,
@@ -25,18 +38,6 @@ const useStyles = makeStyles((theme) => ({
     ["@media (max-width: 760px"]: {
       maxHeight: "calc(100vh - 98px)",
     },
-  },
-  loadingOverlay: {
-    background: theme.palette.primary.main,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: theme.spacing(4),
-    zIndex: 10,
-    display: "flex",
-    alignItems: "center",
   },
 }));
 

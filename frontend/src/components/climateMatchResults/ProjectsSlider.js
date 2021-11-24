@@ -85,7 +85,7 @@ const CarouselItem = ({ project }) => {
         {isSmallOrMediumScreen ? (
           <ProjectPreview project={project} className={classes.projectCard} />
         ) : (
-          <ClimateMatchSuggestionInfo suggestion={{ ...project, ressource_type: "project" }} />
+          <ClimateMatchSuggestionInfo suggestion={{ ...project, ressource_type: "project" }} isInSlider />
         )}
       </div>
     </Link>
