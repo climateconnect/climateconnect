@@ -295,10 +295,11 @@ function LargeScreenOverview({
             />
             {!hasAdminPermissions && (
               <ContactCreatorButton
-                projectAdmin={projectAdmin}
+                creator={projectAdmin}
                 contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
                 handleClickContact={handleClickContact}
-                screenSize={screenSize}
+                tiny={screenSize.belowTiny}
+                small={screenSize.belowSmall && !screenSize.belowTiny}
               />
             )}
           </div>

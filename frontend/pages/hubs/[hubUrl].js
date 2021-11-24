@@ -192,7 +192,7 @@ export default function Hub({
     setTabsWhereFiltersWereApplied(tabs);
   };
 
-  const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
+  const handleApplyNewFilters = async ({ type, newFilters, closeFilters, nonFilterParams }) => {
     return await applyNewFilters({
       type: type,
       filters: filters,
@@ -206,6 +206,7 @@ export default function Hub({
       tabsWhereFiltersWereApplied: tabsWhereFiltersWereApplied,
       handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
       hubUrl: hubUrl,
+      idea: nonFilterParams.idea,
     });
   };
 
@@ -228,7 +229,7 @@ export default function Hub({
       )}
       <WideLayout title={headline} fixedHeader headerBackground="#FFF">
         <div className={classes.contentUnderHeader}>
-          <NavigationSubHeader hubName={name} allHubs={allHubs} />
+          <NavigationSubHeader hubName={name} allHubs={allHubs} isLocationHub={isLocationHub} />
           {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
           <HubHeaderImage
             image={getImageUrl(image)}
@@ -252,6 +253,7 @@ export default function Hub({
                 <HubDescription hub={hubUrl} texts={texts} />
               )
             }
+            hubUrl={hubUrl}
             subHeadline={subHeadline}
             hubProjectsButtonRef={hubProjectsButtonRef}
             isLocationHub={isLocationHub}

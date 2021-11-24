@@ -1,6 +1,7 @@
 import { ButtonBase, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import UnfoldMoreIcon from "@material-ui/icons/UnfoldMore";
+import React from "react";
 import Posts from "../communication/Posts";
 
 const useStyles = makeStyles((theme) => ({

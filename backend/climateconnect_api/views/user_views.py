@@ -35,7 +35,7 @@ from location.models import Location
 from location.utility import get_location, get_location_with_range
 from organization.models.members import OrganizationMember, ProjectMember
 from organization.serializers.organization import \
-    OrganizationsFromProjectMember
+    OrganizationsFromOrganizationMember
 from organization.serializers.project import ProjectFromProjectMemberSerializer
 from rest_framework import status
 from rest_framework.exceptions import NotFound, ValidationError
@@ -274,7 +274,7 @@ class ListMemberOrganizationsView(ListAPIView):
     filter_backends = [SearchFilter]
     search_fields = ['parent_organization__url_slug']
     pagination_class = MembersPagination
-    serializer_class = OrganizationsFromProjectMember
+    serializer_class = OrganizationsFromOrganizationMember
 
     def get_queryset(self):
         return OrganizationMember.objects.filter(

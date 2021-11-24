@@ -1,5 +1,8 @@
 import { makeStyles, Typography } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
+import getTexts from "../../../public/texts/texts";
+import OpenClimateMatchButton from "../climateMatch/OpenClimateMatchButton";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -11,6 +14,9 @@ const useStyles = makeStyles((theme) => ({
     border: theme.borders.thick,
     [theme.breakpoints.up("lg")]: {
       marginTop: theme.spacing(-13),
+    },
+    ["@media(max-width:1100px)"]: {
+      maxWidth: 550,
     },
   },
   headlineContainer: {
@@ -43,10 +49,26 @@ const useStyles = makeStyles((theme) => ({
   highlighted: {
     color: theme.palette.yellow.main,
   },
+  climateMatchButtonContainer: {
+    display: "flex",
+    justifyContent: "right",
+    marginTop: theme.spacing(1),
+    [theme.breakpoints.down("sm")]: {
+      display: "none",
+    },
+  },
 }));
 
-export default function HubHeadlineContainer({ subHeadline, headline, hubName }) {
+export default function HubHeadlineContainer({
+  subHeadline,
+  headline,
+  hubName,
+  isLocationHub,
+  hubUrl,
+}) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "climatematch", locale: locale });
 
   const getColoredHeadlineObject = () => {
     return headline.split(" ").reduce((arr, word, index) => {
@@ -81,6 +103,11 @@ export default function HubHeadlineContainer({ subHeadline, headline, hubName })
         <Typography component="h2" className={classes.subHeadline}>
           {subHeadline}
         </Typography>
+        {isLocationHub && (
+          <div className={classes.climateMatchButtonContainer}>
+            <OpenClimateMatchButton hubUrl={hubUrl} text={texts.get_active_now_with_climatematch} />
+          </div>
+        )}
       </div>
     </div>
   );
