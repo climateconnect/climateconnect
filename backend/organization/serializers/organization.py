@@ -147,12 +147,10 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_members_count(self, obj):
-        query = OrganizationMember.objects.filter(organization=obj.id).count()
-        return query
+        return OrganizationMember.objects.filter(organization=obj.id).count()
 
     def get_projects_count(self, obj):
-        query = ProjectParents.objects.filter(parent_organization__id=obj.id, project__is_draft=False).count()
-        return query
+        return ProjectParents.objects.filter(parent_organization__id=obj.id, project__is_draft=False).count()
 
 class OrganizationMemberSerializer(serializers.ModelSerializer):
     class Meta:
