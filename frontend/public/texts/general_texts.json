@@ -495,7 +495,7 @@
     "en": "Replicate",
     "de": "Verbreite"
   },
-  "join": {
+  "join_invitation": {
     "en": "Join",
     "de": "Mach mit bei"
   },
@@ -706,5 +706,9 @@
   "get_active": {
     "en": "Act now",
     "de": "Engagieren"
+  },
+  "more": {
+    "en": "More",
+    "de": "Mehr"
   }
 }

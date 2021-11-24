@@ -141,6 +141,8 @@ For local development, use the following for `.env`:
   ENVIRONMENT="development"
 ```
 
+Note: This is for people who are using newer version of node (v17.0.1) or have new apple M1 devices. Before running `yarn dev`, please run this command `export NODE_OPTIONS=--openssl-legacy-provider`. You can save this in your `~/.zshrc` file as well.
+
 And finally `yarn dev` to spin up the Next.js app! Check out our [frontend (FE) code style guidelines wiki](https://github.com/climateconnect/climateconnect/wiki/Frontend-Code-Style-Guide) to follow codebase best practices and contribute to a healthy and maintainable codebase.
 
 #### Testing
