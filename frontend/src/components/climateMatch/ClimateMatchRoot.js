@@ -14,7 +14,7 @@ import WelcomeToClimateMatch from "./WelcomeToClimateMatch";
 const useStyles = makeStyles((theme) => ({
   root: {
     background: theme.palette.primary.main,
-    marginTop: theme.spacing(-2),
+    marginTop: 0,
     color: "white",
     borderRadius: theme.spacing(4),
     fontFamily: "flood-std, sans-serif",

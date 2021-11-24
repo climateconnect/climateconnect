@@ -161,7 +161,7 @@ export default function ClimateMatchResult({ suggestion, pos }) {
           </div>
         </div>
       </Link>
-      {suggestion.ressource_type === "organization" && suggestion?.projects?.length > 0 && false && (
+      {suggestion.ressource_type === "organization" && suggestion?.projects?.length > 0 && (
         <Box className={classes.orgProjectsContainer}>
           <div className={classes.orgProjectsInnerContainer}>
             <Typography className={classes.projects_by_text}>
@@ -191,10 +191,10 @@ const parseCreator = (suggestion, texts) => {
   if (suggestion.ressource_type === "project") {
     const pc = suggestion.project_creator;
     return {
-      name: `${pc.user.first_name} ${pc.user.last_name}`,
-      thumbnail_image: pc.user.thumbnail_image,
+      name: `${pc.user?.first_name} ${pc.user?.last_name}`,
+      thumbnail_image: pc.user?.thumbnail_image,
       role: pc.role_in_project,
-      first_name: pc.user.first_name,
+      first_name: pc.user?.first_name,
       ...pc.user,
     };
   }
