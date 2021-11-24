@@ -33,7 +33,7 @@ class UserResourcesMatchView(APIView):
 			except UserProfile.DoesNotExist:
 				return Response({
 					'message': 'Profile not found'
-				}, status=status.status.HTTP_404_NOT_FOUND)
+				}, status=status.HTTP_404_NOT_FOUND)
 		elif 'climatematch_token' not in request.query_params:
 			return Response({'message': 'You seem to not be logged in or not have not done the ClimateMatch before'}, status=status.HTTP_400_BAD_REQUEST)
 		

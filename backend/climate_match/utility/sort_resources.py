@@ -22,19 +22,18 @@ def sort_user_resource_preferences(
 WITH hub_location_ids AS (
     SELECT location_id
     FROM hubs_hub_location
-    WHERE hub_id={hub_id}
+    WHERE hub_id= {hub_id}
 ),
 projects AS (
-    SELECT * FROM organization_project
-    JOIN hub_location_ids
-    ON organization_project.loc_id = hub_location_ids.location_id
+    SELECT distinct OP.*, HLI.* FROM organization_project OP
+    JOIN hub_location_ids HLI ON OP.loc_id = HLI.location_id
 ),
 orgs AS (
-    SELECT O.*, HLI.*
+    SELECT distinct O.*, HLI.*
     FROM organization_organization O
     JOIN hub_location_ids HLI ON O.location_id = HLI.location_id
-    JOIN organization_organizationtagging OTG ON OTG.organization_id = O.id
-    JOIN organization_organizationtags OTags ON OTags.id = OTG.organization_tag_id
+    left JOIN organization_organizationtagging OTG ON OTG.organization_id = O.id
+    left JOIN organization_organizationtags OTags ON OTags.id = OTG.organization_tag_id
     WHERE Otags.show_in_climatematch = true
 ),
 ideas AS (
@@ -79,11 +78,10 @@ get_user_resource_preference AS (
     join django_content_type dct on dct.id = cma.resource_type_id
     where dct.model = 'hub' and cmu.{personalized_filter}
 ), get_user_reference_table_relevancy_score_by_skills AS (
-    SELECT reference_table.table_name, reference_table.id as resource_id, SUM(gusp.weight) as skill_weight
-    FROM get_user_skill_preference as gusp
-    JOIN (
+    SELECT reference_table.table_name, reference_table.id as resource_id, SUM(coalesce (gusp.weight, 0)) as skill_weight
+    FROM (
         (
-            SELECT op.id,
+            SELECT distinct op.id,
             CASE WHEN cs.parent_skill_id IS NULL
             THEN cs.id
             ELSE cs.parent_skill_id END as skill_id,
@@ -91,10 +89,9 @@ get_user_resource_preference AS (
             FROM projects op
             LEFT JOIN organization_project_skills ops on ops.project_id  = op.id
             LEFT JOIN climateconnect_skill cs on cs.id = ops.skill_id
-            WHERE cs.id IS NOT NULL
         )
         union (
-            SELECT oo.id,
+            SELECT distinct oo.id,
             CASE WHEN cs.parent_skill_id IS NULL
             THEN cs.id
             ELSE cs.parent_skill_id END as skill_id,
@@ -104,14 +101,13 @@ get_user_resource_preference AS (
             LEFT JOIN projects op on op.id = opp.project_id
             LEFT JOIN organization_project_skills ops on ops.project_id = op.id
             LEFT JOIN climateconnect_skill cs on cs.id = ops.skill_id
-            WHERE cs.id IS NOT NULL
         )
-    ) AS reference_table on reference_table.skill_id = gusp.reference_id
+    ) AS reference_table
+    left join get_user_skill_preference as gusp on reference_table.skill_id = gusp.reference_id
     GROUP BY 1, 2
 ), get_user_reference_table_relevancy_score_by_hubs as (
-    select reference_table.table_name, reference_table.id as resource_id, sum(guhp.weight) as hub_weight
-    from get_user_hub_preference as guhp
-    join (
+    select reference_table.table_name, reference_table.id as resource_id, sum(coalesce (guhp.weight, 0)) as hub_weight
+    from (
         (
             select op.id, hh.id as hub_id, 'project' as table_name
             from hubs_hub hh
@@ -122,16 +118,17 @@ get_user_resource_preference AS (
                 or  opt.project_tag_id  = optags.parent_tag_id
             join projects op on op.id = opt.project_id
         ) union (
-            select oo.id, hh.id as hub_id, 'organization' as table_name
-            from hubs_hub hh
-            join organization_organization_hubs ooh on ooh.hub_id = hh.id
-            join orgs oo on oo.id = ooh.organization_id
+            select distinct oo.id, hh.id as hub_id, 'organization' as table_name
+            from orgs oo
+            left join organization_organization_hubs ooh on ooh.organization_id = oo.id
+            left join hubs_hub hh on hh.id = ooh.hub_id
         ) union (
-            select ii.id, hh.id as hub_id, 'idea' as table_name
+            select distinct ii.id, hh.id as hub_id, 'idea' as table_name
             from ideas ii
             join hubs_hub hh on hh.id = ii.hub_id
         )
-    ) as reference_table on reference_table.hub_id = guhp.reference_id
+    ) as reference_table 
+    left join get_user_hub_preference as guhp on reference_table.hub_id = guhp.reference_id
     group by 1, 2
 ), get_user_reference_relevancy_score as (
     select (
