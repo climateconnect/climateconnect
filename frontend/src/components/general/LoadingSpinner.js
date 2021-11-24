@@ -23,13 +23,7 @@ const useStyles = makeStyles((theme) => ({
  * for search and filtering use cases. Uses a global loading context
  * to determine if the spinnner should be rendered.
  */
-const LoadingSpinner = ({
-  isLoading = false,
-  className,
-  color,
-  noMarginTop,
-  message
-}) => {
+const LoadingSpinner = ({ isLoading = false, className, color, noMarginTop, message }) => {
   const classes = useStyles({ color: color, noMarginTop: noMarginTop });
 
   // A short-circuit isLoading prop will bypass the loading context.
