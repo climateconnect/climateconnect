@@ -20,7 +20,7 @@ import ProjectOverview from "./ProjectOverview";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { useLongPress } from "use-long-press";
 import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
-import SocialMediaShareButton from "./Buttons/SocialMediaShareButton";
+import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {

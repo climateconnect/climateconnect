@@ -1,5 +1,5 @@
 import LinkIcon from "@material-ui/icons/Link";
-import GenericDialog from "./GenericDialog";
+import GenericDialog from "../dialogs/GenericDialog";
 import React from "react";
 import { Button, InputAdornment, makeStyles, TextField } from "@material-ui/core";
 import {

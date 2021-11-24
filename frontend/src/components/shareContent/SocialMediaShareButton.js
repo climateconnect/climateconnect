@@ -1,7 +1,7 @@
 import { IconButton, makeStyles } from "@material-ui/core";
 import React from "react";
 import ShareIcon from "@material-ui/icons/Share";
-import SocialMediaShareDialog from "../../dialogs/SocialMediaShareDialog";
+import SocialMediaShareDialog from "./SocialMediaShareDialog";
 
 const useStyles = makeStyles((theme) => ({
   button: {

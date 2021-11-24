@@ -15,7 +15,7 @@ import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "./Buttons/FollowButton";
 import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
 import LikeButton from "./Buttons/LikeButton";
-import SocialMediaShareButton from "./Buttons/SocialMediaShareButton";
+import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
