@@ -74,11 +74,7 @@ export default function OrganizationsSharedBox({ organizations, isLoading }) {
           <>{texts.find_a_climate_action_organization_and_get_involved_additional_text}</>
         )}
       </Typography>
-      <OrganizationPreviewsFixed
-        organizations={organizations}
-        showOrganizationType
-        isLoading={isLoading}
-      />
+      <OrganizationPreviewsFixed organizations={organizations} isLoading={isLoading} />
       <div className={classes.showProjectsButtonContainer}>
         <Button color="inherit" href={getLocalePrefix(locale) + "/browse#organizations"}>
           <span className={classes.showProjectsText}>{texts.explore_all_organizations}</span>
