@@ -100,6 +100,7 @@ export default function ProjectInteractionButtons({
               isUserLiking={isUserLiking}
               handleToggleLikeProject={handleToggleLikeProject}
               screenSize={screenSize}
+              explanationBackground={"#fff"}
             />
           )}
       </Container>
