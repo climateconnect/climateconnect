@@ -25,6 +25,7 @@ export default function HubsDropDown({
 }) {
   const classes = useStyles();
   const buttonRef = useRef(null);
+  const popperRef = useRef(null);
 
   const toggleButtonProps = {};
   if (!isNarrowScreen) {
@@ -32,14 +33,14 @@ export default function HubsDropDown({
     toggleButtonProps.onMouseLeave = onClose;
   }
 
-  const handleBlur = () => {
-    if (isNarrowScreen) {
+  const handleBlur = (e) => {
+    if (isNarrowScreen && !popperRef?.current.contains(e.relatedTarget)) {
       onClose();
     }
   };
 
   return (
-    <span onBlur={handleBlur}>
+    <span onBlur={handleBlur} id={`dropdown-${label.toLowerCase()}`}>
       <Button
         {...toggleButtonProps}
         onClick={onToggleOpen}
@@ -59,6 +60,7 @@ export default function HubsDropDown({
         }))}
         handleClose={onClose}
         open={open}
+        popperRef={popperRef}
       />
     </span>
   );

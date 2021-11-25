@@ -1,4 +1,7 @@
+from climateconnect_api.models.role import Role
+from climateconnect_api.models.user import UserProfile
 from hubs.serializers.hub import HubStubSerializer
+from organization.models.project import Project, ProjectParents
 from organization.serializers.translation import OrganizationTranslationSerializer
 from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
@@ -36,6 +39,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     about = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
     hubs = serializers.SerializerMethodField()
+    creator = serializers.SerializerMethodField()
 
     class Meta:
         model = Organization
@@ -43,7 +47,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             'background_image', 'parent_organization', 'location',
             'short_description', 'organ', 'school', 'website', 
             'language', 'about', 'organization_size',
-            'hubs'
+            'hubs', 'creator'
         )
 
     def get_name(self, obj):
@@ -59,21 +63,35 @@ class OrganizationSerializer(serializers.ModelSerializer):
     def get_parent_organization(self, obj):
         serializer = OrganizationStubSerializer(obj.parent_organization)
         return serializer.data
-    
+
     def get_location(self, obj):
-        if obj.location == None:
+        if obj.location is None:
             return None
         return obj.location.name
 
     def get_language(self, obj):
-        return obj.language.language_code
+        if obj.language:
+            return obj.language.language_code
 
     def get_about(self, obj):
         return get_organization_about_section(obj, get_language())
-    
+
     def get_hubs(self, obj):
         serializer = HubStubSerializer(obj.hubs, many=True)
         return serializer.data
+
+    def get_creator(self, obj):
+        try:
+            creator = OrganizationMember.objects.get(
+                organization=obj.id,
+                role__role_type=Role.ALL_TYPE
+            )
+            creator_profile = UserProfile.objects.get(user_id=creator.user_id)
+            creator_data = (UserProfileStubSerializer(creator_profile)).data
+            creator_data['role'] = creator.role_in_organization
+            return creator_data
+        except (OrganizationMember.DoesNotExist, UserProfile.DoesNotExist):
+            print("No creator!")
 
 
 class EditOrganizationSerializer(OrganizationSerializer):
@@ -174,7 +192,7 @@ class UserOrganizationSerializer(serializers.ModelSerializer):
         ).data
 
 
-class OrganizationsFromProjectMember(serializers.ModelSerializer):
+class OrganizationsFromOrganizationMember(serializers.ModelSerializer):
     organization = serializers.SerializerMethodField()
     class Meta: 
         model = OrganizationMember

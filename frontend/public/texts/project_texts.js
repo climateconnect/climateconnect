@@ -2,7 +2,7 @@ import { Link } from "@material-ui/core";
 import React from "react";
 import { getLocalePrefix } from "../lib/apiOperations";
 
-export default function getProjectTexts({ project, user, url_slug, locale }) {
+export default function getProjectTexts({ project, user, url_slug, locale, creator }) {
   return {
     please_log_in_to_edit_project: {
       en: "Please Log In to Edit a project.",
@@ -728,8 +728,20 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Responsible Organization",
       de: "Verantwortliche Organisation",
     },
-    responsible_person: {
+    responsible_person_project: {
       en: "Project Creator",
+      de: "Verantwortliche*r",
+    },
+    responsible_person_idea: {
+      en: "Idea Creator",
+      de: "Ideenersteller*in",
+    },
+    responsible_person_org: {
+      en: "Reponsible for organization",
+      de: "Verantwortliche*r",
+    },
+    responsible_person_generic: {
+      en: "Responsible",
       de: "Verantwortliche*r",
     },
     collaborating_organizations: {
@@ -888,6 +900,14 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
       en: "Internal Server Error",
       de: "Interner Serverfehler",
     },
+    number_of_likes: {
+      en: "Number of likes",
+      de: "Anzahl der Likes",
+    },
+    number_of_comments: {
+      en: "Number of comments",
+      de: "Anzahl an Kommentaren",
+    },
     error_when_publishing_project: {
       en: (
         <>
@@ -926,6 +946,18 @@ export default function getProjectTexts({ project, user, url_slug, locale }) {
     this_is_the_link_to_the_project: {
       en: 'This is the link to "' + project?.name + '" on Climate Connect: ',
       de: 'Das ist der Link zu "' + project?.name + '" auf Climate Connect: ',
+    },
+    contact_creator_to_know_more_about_project: {
+      en: `Contact ${creator?.first_name} if you want to chat about this project.`,
+      de: `Kontaktiere ${creator?.first_name}, um über das Projekt zu reden.`,
+    },
+    contact_creator_to_know_more_about_organization: {
+      en: `Contact ${creator?.first_name} if you want to chat about this organization.`,
+      de: `Kontaktiere ${creator?.first_name}, um über diese Organisation zu reden.`,
+    },
+    contact_creator_to_know_more_about_idea: {
+      en: `Contact ${creator?.first_name} if you want to chat about this project.`,
+      de: `Kontaktiere ${creator?.first_name}, um über diese Organisation zu reden.`,
     },
   };
 }

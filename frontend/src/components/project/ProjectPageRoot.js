@@ -3,10 +3,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Router from "next/router";
 import React, { useContext, useEffect, useRef } from "react";
+import { useLongPress } from "use-long-press";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
+import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import ElementOnScreen from "../hooks/ElementOnScreen";
@@ -18,8 +20,6 @@ import ProjectCommentsContent from "./ProjectCommentsContent";
 import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
 import ProjectTeamContent from "./ProjectTeamContent";
-import { useLongPress } from "use-long-press";
-import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 
 const useStyles = makeStyles((theme) => ({
@@ -375,6 +375,7 @@ export default function ProjectPageRoot({
       });
   };
 
+  const latestParentComment = [project.comments[0]];
   return (
     <div className={classes.root}>
       <ProjectOverview
@@ -442,6 +443,11 @@ export default function ProjectPageRoot({
             leaveProject={requestLeaveProject}
             projectDescriptionRef={projectDescriptionRef}
             collaborationSectionRef={collaborationSectionRef}
+            discussionTabLabel={discussionTabLabel()}
+            latestParentComment={latestParentComment}
+            handleTabChange={handleTabChange}
+            typesByTabValue={typesByTabValue}
+            projectTabsRef={projectTabsRef}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
