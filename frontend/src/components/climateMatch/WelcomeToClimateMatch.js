@@ -10,13 +10,13 @@ import ClimateMatchButton from "./ClimateMatchButton";
 import ClimateMatchHeadline from "./ClimateMatchHeadline";
 
 const useStyles = makeStyles((theme) => ({
-  root: props => ({
+  root: (props) => ({
     position: "relative",
     paddingBottom: theme.spacing(4),
     [theme.breakpoints.down("xs")]: {
       paddingBottom: theme.spacing(2),
     },
-    visibility: props.isLoading && "hidden"    
+    visibility: props.isLoading && "hidden",
   }),
   nonImageContent: {
     paddingTop: theme.spacing(4),
@@ -94,7 +94,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function WelcomeToClimateMatch({ goToNextStep, location, hasDoneClimateMatch, isLoading }) {
+export default function WelcomeToClimateMatch({
+  goToNextStep,
+  location,
+  hasDoneClimateMatch,
+  isLoading,
+}) {
   const bottomRef = useRef(null);
   const unfixButtonBar = ElementOnScreen({
     el: bottomRef.current,

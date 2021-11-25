@@ -15,7 +15,7 @@ export default function getClimatematchTexts({ location, question }) {
     },
     calculating_your_results: {
       en: "Calculating your results...",
-      de: "Wir berechnen deine Ergebnisse..."
+      de: "Wir berechnen deine Ergebnisse...",
     },
     start: {
       en: "Start",
