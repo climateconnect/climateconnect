@@ -61,6 +61,8 @@ export default function ProjectInteractionButtons({
               creator={projectAdmin}
               handleClickContact={handleClickContact}
               screenSize={screenSize}
+              tiny={screenSize.belowTiny}
+              small={screenSize.belowSmall && !screenSize.belowTiny}
             />
           )}
           <FollowButton
@@ -99,7 +101,6 @@ export default function ProjectInteractionButtons({
               handleClickContact={handleClickContact}
               isUserLiking={isUserLiking}
               handleToggleLikeProject={handleToggleLikeProject}
-              screenSize={screenSize}
               explanationBackground={"#fff"}
             />
           )}
