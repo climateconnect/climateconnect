@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models.fields import DurationField
+from django.core.validators import FileExtensionValidator
 
 
 def badge_image_path(instance, filename):
@@ -23,10 +24,11 @@ class Badge(models.Model):
         blank=True
     )
 
-    image = models.ImageField(
+    image = models.FileField(
         help_text="Points to the image of the badge",
-        verbose_name="Profile Image",
+        verbose_name="Badge Image",
         upload_to=badge_image_path,
+        validators=[FileExtensionValidator(['svg'])],
         null=True,
         blank=True
     )
