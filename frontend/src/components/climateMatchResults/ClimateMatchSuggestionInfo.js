@@ -112,6 +112,10 @@ const useStyles = makeStyles((theme) => ({
       justifyContent: "center",
     },
   },
+  centerImageContainer: {
+    display: "flex",
+    alignItems: "center"
+  }
 }));
 
 export default function ClimateMatchSuggestionInfo({
@@ -129,8 +133,8 @@ export default function ClimateMatchSuggestionInfo({
   return (
     <div className={classes.wrapper}>
       <div className={`${className} ${classes.root}`}>
-        <div>
-          {!isNarrowScreen && <ClimateMatchResultImage suggestion={suggestion} />}
+        <div className={isInSlider && classes.centerImageContainer}>
+          {!isNarrowScreen && <ClimateMatchResultImage suggestion={suggestion}/>}
           {!isNarrowScreen &&
             suggestionInfoUnderImage &&
             suggestion.ressource_type === "organization" && (

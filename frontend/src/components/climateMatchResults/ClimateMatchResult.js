@@ -67,6 +67,9 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("lg")]: {
       height: 250,
     },
+    [theme.breakpoints.down("md")]: {
+      height: 270
+    },
     [theme.breakpoints.down("sm")]: {
       height: 360,
     },
@@ -98,8 +101,8 @@ const useStyles = makeStyles((theme) => ({
   },
   orgProjectsInnerContainer: {
     width: 1200,
-    [theme.breakpoints.down("lg")]: {
-      width: 900,
+    ["@media(max-width:1500px)"]: {
+      width: 1000,
     },
     [theme.breakpoints.down("md")]: {
       width: 920,
