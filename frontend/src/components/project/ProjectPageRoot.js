@@ -9,6 +9,7 @@ import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
+import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import ElementOnScreen from "../hooks/ElementOnScreen";
@@ -213,11 +214,14 @@ export default function ProjectPageRoot({
     setConfirmDialogOpen({ ...confirmDialogOpen, leave: false });
   };
 
+  const { showFeedbackMessage } = useContext(FeedbackContext);
+
   const handleToggleFollowProject = () => {
     if (!token)
-      setMessage({
+      showFeedbackMessage({
         message: <span>{texts.please_log_in_to_follow_a_project}</span>,
-        messageType: "error",
+        error: true,
+        promptLogIn: true,
       });
     else if (isUserFollowing) setConfirmDialogOpen({ ...confirmDialogOpen, follow: true });
     else toggleFollowProject();
@@ -235,9 +239,8 @@ export default function ProjectPageRoot({
       .then(function (response) {
         handleFollow(response.data.following, true, false);
         updateFollowers();
-        setMessage({
+        showFeedbackMessage({
           message: response.data.message,
-          messageType: "success",
         });
       })
       .catch(function (error) {
@@ -248,9 +251,10 @@ export default function ProjectPageRoot({
 
   const handleToggleLikeProject = () => {
     if (!token)
-      setMessage({
+      showFeedbackMessage({
         message: <span>{texts.please_log_in_to_like_a_project}</span>,
-        messageType: "error",
+        error: true,
+        promptLogIn: true,
       });
     else if (isUserLiking) setConfirmDialogOpen({ ...confirmDialogOpen, like: true });
     else toggleLikeProject();
@@ -268,9 +272,8 @@ export default function ProjectPageRoot({
       .then(function (response) {
         handleLike(response.data.liking, true, false);
         updateLikes();
-        setMessage({
+        showFeedbackMessage({
           message: response.data.message,
-          messageType: "success",
         });
       })
       .catch(function (error) {

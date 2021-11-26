@@ -90,7 +90,7 @@ function CommentInput({
   };
 
   const avatarProps = {
-    src: getImageUrl(user.image),
+    src: getImageUrl(user?.image),
   };
 
   if (user)
