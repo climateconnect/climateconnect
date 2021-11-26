@@ -1,6 +1,6 @@
 import { IconButton, makeStyles } from "@material-ui/core";
-import React from "react";
 import ShareIcon from "@material-ui/icons/Share";
+import React from "react";
 import SocialMediaShareDialog from "./SocialMediaShareDialog";
 
 const useStyles = makeStyles((theme) => ({
@@ -43,7 +43,11 @@ export default function SocialMediaShareButton({
   };
   const BASE_URL = process.env.BASE_URL ? process.env.BASE_URL : "https://climateconnect.earth";
   const projectLink = BASE_URL + "/" + locale + "/projects/" + project.url_slug;
-  const title = texts.climate_protection_project_by + projectAdmin.name + ": " + project.name;
+  const title =
+    texts.climate_protection_project_by +
+    (project?.creator.name ? project?.creator.name : projectAdmin.name) +
+    ": " +
+    project.name;
 
   const handleClick = () => {
     //navigator.share (Web Share API) is only available with https
@@ -73,11 +77,12 @@ export default function SocialMediaShareButton({
       <SocialMediaShareDialog
         open={showSocials}
         onClose={toggleShowSocials}
-        texts={texts}
+        project={project}
         createShareRecord={createShareRecord}
         screenSize={screenSize}
         SHARE_OPTIONS={SHARE_OPTIONS}
         projectLink={projectLink}
+        projectAdmin={projectAdmin}
         title={title}
       />
     </>
