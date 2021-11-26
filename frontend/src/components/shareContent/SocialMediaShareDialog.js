@@ -1,23 +1,25 @@
-import LinkIcon from "@material-ui/icons/Link";
-import GenericDialog from "../dialogs/GenericDialog";
-import React from "react";
 import { Button, InputAdornment, makeStyles, TextField } from "@material-ui/core";
+import LinkIcon from "@material-ui/icons/Link";
+import React, { useContext } from "react";
 import {
-  EmailShareButton,
-  FacebookShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-  LinkedinShareButton,
-  RedditShareButton,
-  TelegramShareButton,
   EmailIcon,
+  EmailShareButton,
   FacebookIcon,
-  TwitterIcon,
-  WhatsappIcon,
+  FacebookShareButton,
   LinkedinIcon,
+  LinkedinShareButton,
   RedditIcon,
+  RedditShareButton,
   TelegramIcon,
+  TelegramShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton
 } from "react-share";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+import GenericDialog from "../dialogs/GenericDialog";
 
 const useStyles = makeStyles((theme) => ({
   shareButtonsContainer: {
@@ -34,14 +36,23 @@ const useStyles = makeStyles((theme) => ({
 export default function SocialMediaShareDialog({
   open,
   onClose,
-  texts,
+  project,
   createShareRecord,
   screenSize,
+  projectAdmin,
   SHARE_OPTIONS,
   projectLink,
   title,
 }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({
+    locale: locale,
+    page: "project",
+    title: title,
+    project: project,
+    creator: projectAdmin,
+  });
 
   const handleClose = () => {
     onClose(false);
@@ -49,7 +60,8 @@ export default function SocialMediaShareDialog({
 
   const facebookHashtag = "#BelieveInTogether";
   const twitterHastags = ["BelieveInTogether"];
-  const mailBody = texts.this_is_the_link_to_the_project;
+  const mailBody = texts.share_project_email_body;
+
   const handleClick = (sharedVia) => {
     createShareRecord(sharedVia);
     navigator.clipboard.writeText(projectLink);
@@ -89,12 +101,14 @@ export default function SocialMediaShareDialog({
         >
           <WhatsappIcon size={50} round={true} />
         </WhatsappShareButton>
-        <LinkedinShareButton
-          beforeOnClick={() => createShareRecord(SHARE_OPTIONS.linkedin)}
-          url={projectLink}
-        >
-          <LinkedinIcon size={50} round={true} />
-        </LinkedinShareButton>
+        {false && (
+          <LinkedinShareButton
+            beforeOnClick={() => createShareRecord(SHARE_OPTIONS.linkedin)}
+            url={projectLink}
+          >
+            <LinkedinIcon size={50} round={true} />
+          </LinkedinShareButton>
+        )}
         <RedditShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.reddit)}
           url={projectLink}

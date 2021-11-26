@@ -940,12 +940,26 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Link",
     },
     climate_protection_project_by: {
-      en: "Climate Protection Project by ",
-      de: "Klimaschutzprojekt von  ",
+      en: "Climate project by ",
+      de: "Klimaschutzprojekt von ",
     },
-    this_is_the_link_to_the_project: {
-      en: 'This is the link to "' + project?.name + '" on Climate Connect: ',
-      de: 'Das ist der Link zu "' + project?.name + '" auf Climate Connect: ',
+    share_project_email_body: {
+      en: `Hey,
+      I found this awesome climate project: "${project?.name}"${
+        project?.creator &&
+        " created by " + (project.creator?.name ? project.creator?.name : creator?.name)
+      }. 
+      You should check it out here: ${process.env.BASE_URL}${getLocalePrefix(locale)}/projects/${
+        project?.url_slug
+      }`,
+      de: `Hey,
+      Ich habe gerade dieses spannende Klimaschutzprojekt gefunden: "${project?.name}"${
+        project?.creator &&
+        ", erstellt von " + (project.creator?.name ? project.creator?.name : creator?.name)
+      }. 
+      Schau's dir doch mal an: ${process.env.BASE_URL}${getLocalePrefix(locale)}/projects/${
+        project?.url_slug
+      }`,
     },
     contact_creator_to_know_more_about_project: {
       en: `Contact ${creator?.first_name} if you want to chat about this project.`,
