@@ -133,30 +133,12 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Du hast das Projekt erfolgreich verlassen.",
     },
     please_log_in_to_follow_a_project: {
-      en: (
-        <>
-          Please <Link href={getLocalePrefix(locale) + "/signin"}>log in</Link> to follow a project.
-        </>
-      ),
-      de: (
-        <>
-          Bitte <Link href={getLocalePrefix(locale) + "/signin"}>logge dich ein</Link>, um einem
-          Projekt zu folgen.
-        </>
-      ),
+      en: "Please log in to follow a project.",
+      de: "Bitte logge dich ein, um einem Projekt zu folgen.",
     },
     please_log_in_to_like_a_project: {
-      en: (
-        <>
-          Please <Link href={getLocalePrefix(locale) + "/signin"}>log in</Link> to like a project.
-        </>
-      ),
-      de: (
-        <>
-          Bitte <Link href={getLocalePrefix(locale) + "/signin"}>logge dich ein</Link>, um ein
-          Projekt zu liken.
-        </>
-      ),
+      en: "Please log in to like a project.",
+      de: "Bitte logge dich ein, um ein Projekt zu liken.",
     },
     you_cant_leave_a_project_as_the_creator: {
       en: `You can't leave a project as the Super Admin. Please give the Super Admin role to another team member by clicking "Manage Members" in the team tab`,
@@ -922,6 +904,44 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
           <br /> Bitte wende dich an contact@climateconnect.earth.
         </>
       ),
+    },
+    tell_others_about_this_project: {
+      en: "Tell others about this project!",
+      de: "Erzähle anderen von diesem Projekt!",
+    },
+    copy_link: {
+      en: "Copy link",
+      de: "Link kopieren",
+    },
+    copy: {
+      en: "Copy",
+      de: "Kopieren",
+    },
+    link: {
+      en: "Link",
+      de: "Link",
+    },
+    climate_protection_project_by: {
+      en: "Climate project by ",
+      de: "Klimaschutzprojekt von ",
+    },
+    share_project_email_body: {
+      en: `Hey,
+      I found this awesome climate project: "${project?.name}"${
+        project?.creator &&
+        " created by " + (project.creator?.name ? project.creator?.name : creator?.name)
+      }. 
+      You should check it out here: ${process.env.BASE_URL}${getLocalePrefix(locale)}/projects/${
+        project?.url_slug
+      }`,
+      de: `Hey,
+      Ich habe gerade dieses spannende Klimaschutzprojekt gefunden: "${project?.name}"${
+        project?.creator &&
+        ", erstellt von " + (project.creator?.name ? project.creator?.name : creator?.name)
+      }. 
+      Schau's dir doch mal an: ${process.env.BASE_URL}${getLocalePrefix(locale)}/projects/${
+        project?.url_slug
+      }`,
     },
     contact_creator_to_know_more_about_project: {
       en: `Contact ${creator?.first_name} if you want to chat about this project.`,

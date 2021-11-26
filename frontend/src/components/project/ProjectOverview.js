@@ -10,6 +10,7 @@ import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
+import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "./Buttons/FollowButton";
@@ -48,9 +49,19 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
   goBackButtonContainer: {
+    position: "absolute",
     marginLeft: theme.spacing(1),
     marginTop: theme.spacing(1),
+  },
+  shareButtonContainer: {
     position: "absolute",
+    right: 0,
+    bottom: 0,
+    marginRight: theme.spacing(1),
+    marginBottom: theme.spacing(1.6),
+  },
+  imageContainer: {
+    position: "relative",
   },
 }));
 
@@ -92,6 +103,9 @@ export default function ProjectOverview({
   toggleShowLikes,
   numberOfLikes,
   numberOfFollowers,
+  toggleShowSocials,
+  showSocials,
+  createShareRecord,
 }) {
   const classes = useStyles();
 
@@ -105,6 +119,10 @@ export default function ProjectOverview({
           texts={texts}
           screenSize={screenSize}
           locale={locale}
+          toggleShowSocials={toggleShowSocials}
+          showSocials={showSocials}
+          projectAdmin={projectAdmin}
+          createShareRecord={createShareRecord}
         />
       ) : (
         <LargeScreenOverview
@@ -150,23 +168,45 @@ export default function ProjectOverview({
   );
 }
 
-function SmallScreenOverview({ project, texts, screenSize, locale }) {
+function SmallScreenOverview({
+  project,
+  texts,
+  screenSize,
+  locale,
+  toggleShowSocials,
+  showSocials,
+  projectAdmin,
+  createShareRecord,
+}) {
   const classes = useStyles();
   return (
     <>
-      {screenSize.belowTiny && (
-        <GoBackFromProjectPageButton
-          containerClassName={classes.goBackButtonContainer}
-          texts={texts}
-          tinyScreen={screenSize.belowTiny}
+      <div className={classes.imageContainer}>
+        {screenSize.belowTiny && (
+          <GoBackFromProjectPageButton
+            containerClassName={classes.goBackButtonContainer}
+            texts={texts}
+            tinyScreen={screenSize.belowTiny}
+            locale={locale}
+          />
+        )}
+        <SocialMediaShareButton
+          containerClassName={classes.shareButtonContainer}
+          toggleShowSocials={toggleShowSocials}
+          showSocials={showSocials}
+          project={project}
           locale={locale}
+          texts={texts}
+          projectAdmin={projectAdmin}
+          createShareRecord={createShareRecord}
+          screenSize={screenSize}
         />
-      )}
-      <img
-        className={classes.fullWidthImage}
-        src={getImageUrl(project.image)}
-        alt={texts.project_image_of_project + " " + project.name}
-      />
+        <img
+          className={classes.fullWidthImage}
+          src={getImageUrl(project.image)}
+          alt={texts.project_image_of_project + " " + project.name}
+        />
+      </div>
       <div className={classes.blockProjectInfo}>
         <Typography component="h1" variant="h3" className={classes.smallScreenHeader}>
           {project.name}
@@ -298,8 +338,6 @@ function LargeScreenOverview({
                 creator={projectAdmin}
                 contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
                 handleClickContact={handleClickContact}
-                tiny={screenSize.belowTiny}
-                small={screenSize.belowSmall && !screenSize.belowTiny}
               />
             )}
           </div>

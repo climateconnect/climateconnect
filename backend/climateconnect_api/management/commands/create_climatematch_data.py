@@ -13,7 +13,7 @@ from climateconnect_api.models.language import Language
 
 
 class Command(BaseCommand):
-    help = "Create new languages that we will support"
+    help = "Create data for the ClimateMatch"
 
     def handle(self, *args: Any, **options: Any) -> None:
         questions = [

@@ -95,7 +95,7 @@ export default function ClimateMatchResultsRoot() {
         climatematch_token: climatematch_token,
         page: page,
         texts: texts,
-        locale: locale
+        locale: locale,
       });
       setPage(page + 1);
       setFromHub(result.hub);
@@ -122,7 +122,7 @@ export default function ClimateMatchResultsRoot() {
         climatematch_token: climatematch_token,
         page: page,
         texts: texts,
-        locale: locale
+        locale: locale,
       });
       setPage(page + 1);
       setSuggestions({
@@ -199,7 +199,7 @@ const getSuggestions = async ({ token, page, climatematch_token, locale }) => {
     const args = {
       method: "get",
       url: `/api/climatematch_results/?range_start=${page * 10}&range_end=${(page + 1) * 10}`,
-      locale: locale
+      locale: locale,
     };
     if (token) {
       args.token = token;

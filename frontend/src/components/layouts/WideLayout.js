@@ -52,6 +52,7 @@ export default function WideLayout({
   landingPage,
   headerBackground,
   subHeader,
+  image,
   useFloodStdFont,
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
@@ -79,6 +80,7 @@ export default function WideLayout({
       description={description}
       useFloodStdFont={useFloodStdFont}
       theme={theme}
+      image={image}
     >
       <Header
         isStaticPage={isStaticPage}

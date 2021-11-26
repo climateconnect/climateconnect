@@ -23,7 +23,7 @@ from organization.models import (Organization, OrganizationTagging,
                                  ProjectCollaborators, ProjectComment,
                                  ProjectFollower, ProjectMember,
                                  ProjectParents, ProjectStatus, ProjectTagging,
-                                 ProjectTags, ProjectLike)
+                                 ProjectTags, ProjectLike, ProjectsShared)
 from organization.models.translations import ProjectTranslation
 from organization.pagination import (MembersPagination,
                                      ProjectCommentPagination,
@@ -938,3 +938,19 @@ class LeaveProject(RetrieveUpdateAPIView):
             # Send E to dev
             # send to dev logs E= traceback.format_exc()
             return Response(data={'message': f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class SetProjectsSharedView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request, url_slug):
+        if 'shared_via' not in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            raise NotFound(detail="Project not found.", code=status.HTTP_404_NOT_FOUND)
+
+        if (request.user.is_authenticated):
+            ProjectsShared.objects.create(user=request.user, project=project, shared_via=request.data['shared_via'])
+        else: 
+            ProjectsShared.objects.create(project=project, shared_via=request.data['shared_via'])
+        return Response(status=status.HTTP_201_CREATED)

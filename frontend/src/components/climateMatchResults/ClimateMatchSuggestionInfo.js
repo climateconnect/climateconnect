@@ -114,8 +114,8 @@ const useStyles = makeStyles((theme) => ({
   },
   centerImageContainer: {
     display: "flex",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 }));
 
 export default function ClimateMatchSuggestionInfo({
@@ -125,7 +125,7 @@ export default function ClimateMatchSuggestionInfo({
   creator,
   handleClickContact,
   background,
-  isInSlider
+  isInSlider,
 }) {
   const classes = useStyles({ displayContactButton: displayContactButton });
   const suggestionInfoUnderImage = isInSlider || useMediaQuery("(max-width:1525px)");
@@ -134,7 +134,7 @@ export default function ClimateMatchSuggestionInfo({
     <div className={classes.wrapper}>
       <div className={`${className} ${classes.root}`}>
         <div className={isInSlider && classes.centerImageContainer}>
-          {!isNarrowScreen && <ClimateMatchResultImage suggestion={suggestion}/>}
+          {!isNarrowScreen && <ClimateMatchResultImage suggestion={suggestion} />}
           {!isNarrowScreen &&
             suggestionInfoUnderImage &&
             suggestion.ressource_type === "organization" && (
