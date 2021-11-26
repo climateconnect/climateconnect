@@ -86,7 +86,10 @@ export default function FollowButton({
         className={classes.followingButton}
       >
         <div className={classes.buttonLabel}>
-          <CircularProgress size={20} className={`${classes.fabProgress} ${!followingChangePending && classes.hidden}`}/>
+          <CircularProgress
+            size={20}
+            className={`${classes.fabProgress} ${!followingChangePending && classes.hidden}`}
+          />
           <div className={classes.buttonText}>
             {isUserFollowing ? texts.following : texts.follow}
             {!followingChangePending && numberOfFollowers > 0 ? " • " + numberOfFollowers : ""}
@@ -105,7 +108,10 @@ export default function FollowButton({
         className={classes.followingButton}
       >
         <div className={classes.buttonLabel}>
-          <CircularProgress size={20} className={`${classes.fabProgress} ${!followingChangePending && classes.hidden}`} />
+          <CircularProgress
+            size={20}
+            className={`${classes.fabProgress} ${!followingChangePending && classes.hidden}`}
+          />
           <div className={classes.buttonText}>
             {isUserFollowing ? texts.following : texts.follow}
             {!followingChangePending && numberOfFollowers > 0 ? " • " + numberOfFollowers : ""}
@@ -127,7 +133,10 @@ export default function FollowButton({
           className={classes.followingButton}
         >
           <div className={classes.buttonLabel}>
-            <CircularProgress size={20} className={`${classes.fabProgress} ${!followingChangePending && classes.hidden}`} />
+            <CircularProgress
+              size={20}
+              className={`${classes.fabProgress} ${!followingChangePending && classes.hidden}`}
+            />
             <div className={classes.buttonText}>
               {isUserFollowing ? texts.following : texts.follow}
             </div>

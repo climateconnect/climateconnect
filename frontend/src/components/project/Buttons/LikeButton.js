@@ -144,7 +144,10 @@ export default function LikeButton({
           className={classes.largeLikeButton}
         >
           <div className={classes.buttonLabel}>
-            <CircularProgress size={20} className={`${classes.fabProgress} ${!likingChangePending && classes.hidden}`} />
+            <CircularProgress
+              size={20}
+              className={`${classes.fabProgress} ${!likingChangePending && classes.hidden}`}
+            />
             <div className={classes.buttonText}>{isUserLiking ? texts.liked : texts.like}</div>
           </div>
         </Button>

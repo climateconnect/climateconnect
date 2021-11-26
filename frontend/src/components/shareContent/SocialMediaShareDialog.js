@@ -15,7 +15,7 @@ import {
   TwitterIcon,
   TwitterShareButton,
   WhatsappIcon,
-  WhatsappShareButton
+  WhatsappShareButton,
 } from "react-share";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
