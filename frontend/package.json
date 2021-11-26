@@ -64,6 +64,7 @@
     "react-mentions": "^4.3.0",
     "react-minimal-pie-chart": "^8.1.0",
     "react-multi-carousel": "^2.5.5",
+    "react-share": "^4.4.0",
     "react-text-loop": "^2.3.0",
     "react-timeago": "^4.4.0",
     "react-truncate": "^2.4.0",

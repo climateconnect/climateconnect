@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class DonationGoal(models.Model):
     name = models.CharField(
@@ -52,6 +53,15 @@ class DonationGoal(models.Model):
         )
 
 class Donation(models.Model):
+    user = models.ForeignKey(
+        User,
+        related_name="donation_user",
+        verbose_name="User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    
     donor_name = models.CharField(
         help_text="Donor name",
         verbose_name="Donor Name",
@@ -74,6 +84,13 @@ class Donation(models.Model):
     date_first_received = models.DateTimeField(
         help_text="Date and time when the donation was first received",
         verbose_name="Date first received"
+    )
+
+    date_cancelled = models.DateTimeField(
+        help_text="Date and time when the donation was cancelled (only for recurring donations)",
+        verbose_name="Date cancelled",
+        null=True,
+        blank=True
     )
 
     created_at = models.DateTimeField(

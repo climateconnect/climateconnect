@@ -495,7 +495,7 @@
     "en": "Replicate",
     "de": "Verbreite"
   },
-  "join": {
+  "join_invitation": {
     "en": "Join",
     "de": "Mach mit bei"
   },
@@ -694,5 +694,21 @@
   "orgs": {
     "en": "Orgs",
     "de": "Orgs"
+  },
+  "forward": {
+    "en": "Forward",
+    "de": "Weiter"
+  },
+  "new": {
+    "en": "new",
+    "de": "Neu"
+  },
+  "get_active": {
+    "en": "Act now",
+    "de": "Engagieren"
+  },
+  "more": {
+    "en": "More",
+    "de": "Mehr"
   }
 }

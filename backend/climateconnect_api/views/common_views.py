@@ -26,6 +26,13 @@ class ListSkillsView(ListAPIView):
     def get_queryset(self):
         return Skill.objects.all()
 
+class ListParentSkillsView(ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = SkillSerializer
+    pagination_class = SkillsPagination
+
+    def get_queryset(self):
+        return Skill.objects.filter(parent_skill=None)
 class ReceiveFeedback(APIView):
     permission_classes = (AllowAny,)
 

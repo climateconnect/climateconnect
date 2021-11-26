@@ -3,14 +3,22 @@ import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
 import React, { useContext } from "react";
 import Linkify from "react-linkify";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
 import MiniHubPreviews from "../hub/MiniHubPreviews";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
+import ProfileBadge from "../profile/ProfileBadge";
 import DetailledDescription from "./DetailledDescription";
 
 const useStyles = makeStyles((theme) => ({
+  avatarContainer: {
+    [theme.breakpoints.up("sm")]: {
+      marginRight: theme.spacing(5),
+      marginLeft: theme.spacing(5),
+    },
+  },
   avatar: {
     height: theme.spacing(20),
     width: theme.spacing(20),
@@ -22,10 +30,6 @@ const useStyles = makeStyles((theme) => ({
     "& img": {
       objectFit: "contain",
       backgroundColor: "white",
-    },
-    [theme.breakpoints.up("sm")]: {
-      marginRight: theme.spacing(5),
-      marginLeft: theme.spacing(5),
     },
   },
   avatarWithInfo: {
@@ -220,6 +224,15 @@ export default function AccountPage({
   });
   const location = locationKeys.length > 0 ? account.info[locationKeys[0]] : null;
   const locationAdditionalText = location?.additionalText ? location.additionalText : "";
+
+  const avatarProps = {
+    alt: account.name,
+    component: "div",
+    size: "large",
+    src: account.image,
+    className: classes.avatar,
+  };
+
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div
@@ -245,13 +258,18 @@ export default function AccountPage({
           </Button>
         )}
         <Container className={classes.avatarWithInfo}>
-          <Avatar
-            alt={account.name}
-            component="div"
-            size="large"
-            src={account.image}
-            className={classes.avatar}
-          />
+          <div className={classes.avatarContainer}>
+            {account.badges?.length > 0 ? (
+              <ProfileBadge
+                name={account.badges[0].name}
+                image={getImageUrl(account.badges[0].image)}
+              >
+                <Avatar {...avatarProps} />
+              </ProfileBadge>
+            ) : (
+              <Avatar {...avatarProps} />
+            )}
+          </div>
           <Typography variant="h5" className={classes.name}>
             {account.name}
           </Typography>

@@ -79,7 +79,7 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter }) {
     setTabsWhereFiltersWereApplied(tabs);
   };
 
-  const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
+  const handleApplyNewFilters = async ({ type, newFilters, closeFilters }) => {
     return await applyNewFilters({
       type: type,
       filters: filters,

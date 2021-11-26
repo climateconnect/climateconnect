@@ -15,6 +15,10 @@
     "en": "Press",
     "de": "Presse"
   },
+  "join": {
+    "en": "Join",
+    "de": "Mitmachen"
+  },
   "notifications": {
     "en": "Notifications",
     "de": "Benachrichtigungen"
@@ -74,5 +78,9 @@
   "all_projects": {
     "en": "All Projects",
     "de": "Alle Projekte"
+  },
+  "jobs": {
+    "en": "Jobs",
+    "de": "Jobs"
   }
 }

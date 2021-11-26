@@ -42,6 +42,7 @@ import theme from "../../themes/theme";
 import Notification from "../communication/notifications/Notification";
 import NotificationsBox from "../communication/notifications/NotificationsBox";
 import UserContext from "../context/UserContext";
+import ProfileBadge from "../profile/ProfileBadge";
 import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 
@@ -113,6 +114,9 @@ const useStyles = makeStyles((theme) => {
       [theme.breakpoints.down("md")]: {
         maxWidth: "calc(100% - 150px)",
       },
+      [theme.breakpoints.down("sm")]: {
+        maxWidth: "calc(100% - 35px)",
+      },
       justifyContent: "space-around",
     },
     menuLink: (props) => ({
@@ -176,6 +180,9 @@ const useStyles = makeStyles((theme) => {
       fontSize: 20,
       marginRight: theme.spacing(0.25),
     },
+    moreButtonMobile: {
+      color: "white",
+    },
   };
 });
 
@@ -184,6 +191,7 @@ const getLinks = (path_to_redirect, texts) => [
     href: "/browse",
     text: texts.browse,
     iconForDrawer: HomeIcon,
+    showJustIconUnderSm: HomeIcon,
   },
   {
     href: "/about",
@@ -198,6 +206,7 @@ const getLinks = (path_to_redirect, texts) => [
     iconForDrawer: FavoriteBorderIcon,
     isOutlinedInHeader: true,
     icon: FavoriteBorderIcon,
+    hideDesktopIconUnderSm: true,
     vanillaIfLoggedOut: true,
     hideOnStaticPages: true,
   },
@@ -255,6 +264,10 @@ const getStaticPageLinks = (texts) => [
   {
     href: "/faq",
     text: texts.faq,
+  },
+  {
+    href: "/join",
+    text: texts.join,
   },
   {
     href: "/press",
@@ -389,16 +402,24 @@ export default function Header({
 function StaticPageLinks() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
 
   const texts = getTexts({ page: "navigation", locale: locale });
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
   const localePrefix = getLocalePrefix(locale);
 
+  const getLinksToShow = () => {
+    if (isNarrowScreen) {
+      return STATIC_PAGE_LINKS.slice(0, 2);
+    } else {
+      return STATIC_PAGE_LINKS;
+    }
+  };
   return (
     <div className={classes.staticPageLinksWrapper}>
       <Container className={classes.staticPageLinksContainer}>
         <div className={classes.staticPageLinks}>
-          {STATIC_PAGE_LINKS.map((link, index) => {
+          {getLinksToShow().map((link, index) => {
             return (
               <Link
                 href={localePrefix + link.href}
@@ -411,6 +432,18 @@ function StaticPageLinks() {
               </Link>
             );
           })}
+          {isNarrowScreen && (
+            <DropDownButton
+              options={STATIC_PAGE_LINKS}
+              buttonProps={{
+                classes: {
+                  root: classes.moreButtonMobile,
+                },
+              }}
+            >
+              {texts.more}
+            </DropDownButton>
+          )}
         </div>
       </Container>
     </div>
@@ -432,6 +465,7 @@ function NormalScreenLinks({
   isStaticPage,
 }) {
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
+  const isSmallMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
   return (
@@ -502,9 +536,15 @@ function NormalScreenLinks({
                   <DropDownButton options={STATIC_PAGE_LINKS} buttonProps={{ ...buttonProps }}>
                     {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
                   </DropDownButton>
+                ) : link?.showJustIconUnderSm && isSmallMediumScreen ? (
+                  <IconButton {...buttonProps} className={classes.link}>
+                    <link.showJustIconUnderSm />
+                  </IconButton>
                 ) : (
                   <Button color="primary" {...buttonProps}>
-                    {link.icon && <link.icon className={classes.normalScreenIcon} />}
+                    {link.icon && !(link.hideDesktopIconUnderSm && isSmallMediumScreen) && (
+                      <link.icon className={classes.normalScreenIcon} />
+                    )}
                     {isMediumScreen && link.mediumScreenText ? link.mediumScreenText : link.text}
                   </Button>
                 )}
@@ -655,15 +695,27 @@ function NarrowScreenLinks({
             {loggedInUser &&
               getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts }).map((link, index) => {
                 const Icon = link.iconForDrawer;
+                const avatarProps = {
+                  className: classes.loggedInAvatarMobile,
+                  src: getImageUrl(loggedInUser.image),
+                  alt: loggedInUser.name,
+                };
                 if (link.avatar)
                   return (
-                    <Link href={localePrefix + link.href} key={index}>
-                      <Avatar
-                        className={classes.loggedInAvatarMobile}
-                        src={getImageUrl(loggedInUser.image)}
-                        alt={loggedInUser.name}
-                      />
-                    </Link>
+                    <>
+                      {loggedInUser.badges?.length > 0 ? (
+                        <ProfileBadge
+                          name={loggedInUser.badges[0].name}
+                          image={getImageUrl(loggedInUser.badges[0].image)}
+                          size="small"
+                          className={classes.badge}
+                        >
+                          <Avatar {...avatarProps} />
+                        </ProfileBadge>
+                      ) : (
+                        <Avatar {...avatarProps} />
+                      )}
+                    </>
                   );
                 else if (link.isLogoutButton)
                   return (
@@ -706,6 +758,12 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
     setMenuOpen(false);
   };
 
+  const avatarProps = {
+    className: classes.loggedInAvatar,
+    src: getImageUrl(loggedInUser.image),
+    alt: loggedInUser.name,
+  };
+
   return (
     <ClickAwayListener onClickAway={handleCloseMenu}>
       <Box className={classes.loggedInRoot}>
@@ -717,11 +775,18 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
           style={{ backgroundColor: "transparent" }}
           ref={anchorRef}
         >
-          <Avatar
-            className={classes.loggedInAvatar}
-            src={getImageUrl(loggedInUser.image)}
-            alt={loggedInUser.name}
-          />
+          {loggedInUser.badges?.length > 0 ? (
+            <ProfileBadge
+              name={loggedInUser.badges[0].name}
+              image={getImageUrl(loggedInUser.badges[0].image)}
+              size="small"
+              className={classes.badge}
+            >
+              <Avatar {...avatarProps} />
+            </ProfileBadge>
+          ) : (
+            <Avatar {...avatarProps} />
+          )}
           <ArrowDropDownIcon />
         </Button>
         <Popper

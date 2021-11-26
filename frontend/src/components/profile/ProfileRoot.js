@@ -178,7 +178,7 @@ export default function ProfileRoot({
           </Button>
         </h2>
         {organizations && organizations.length > 0 ? (
-          <OrganizationPreviews organizations={organizations} showOrganizationType />
+          <OrganizationPreviews organizations={organizations} />
         ) : (
           <Typography>
             {(isOwnAccount ? texts.you_are : texts.user_name_is) +

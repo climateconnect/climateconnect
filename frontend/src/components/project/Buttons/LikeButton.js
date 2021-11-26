@@ -1,7 +1,7 @@
 import { Button, CircularProgress, IconButton, Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
-import LikeIcon from "./LikeIcon";
+import ButtonIcon from "./ButtonIcon";
 
 const useStyles = makeStyles((theme) => ({
   largeScreenButtonContainer: {
@@ -16,6 +16,10 @@ const useStyles = makeStyles((theme) => ({
   largeLikeButton: {
     height: 40,
     maxWidth: 120,
+    "&:disabled": {
+      color: "white",
+      background: theme.palette.secondary.main,
+    },
   },
   likeNumber: {
     fontWeight: 700,
@@ -47,6 +51,27 @@ const useStyles = makeStyles((theme) => ({
       background: "none",
     },
   },
+  fabProgress: {
+    color: "white",
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginTop: "auto",
+    marginBottom: "auto",
+  },
+  buttonLabel: {
+    position: "relative",
+  },
+  buttonText: (props) => ({
+    visibility: props.likingChangePending ? "hidden" : "visible",
+  }),
+  hidden: {
+    visibility: "hidden",
+  },
 }));
 
 export default function LikeButton({
@@ -60,7 +85,7 @@ export default function LikeButton({
   numberOfLikes,
   bindLike,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ likingChangePending: likingChangePending });
 
   if (screenSize.belowSmall) {
     return (
@@ -74,7 +99,7 @@ export default function LikeButton({
           color={isUserLiking ? "secondary" : "primary"}
           disabled={likingChangePending}
         >
-          <LikeIcon size={30} color={isUserLiking ? "earth" : "primary"} />
+          <ButtonIcon icon="like" size={40} color={isUserLiking ? "earth" : "primary"} />
         </IconButton>
         {numberOfLikes > 0 && (
           <Typography className={classes.likeNumberMobile}>• {numberOfLikes}</Typography>
@@ -90,7 +115,7 @@ export default function LikeButton({
           disabled={likingChangePending}
           className={classes.mediumScreenIconButton}
         >
-          <LikeIcon size={30} color={isUserLiking ? "earth" : "primary"} />
+          <ButtonIcon icon="like" size={40} color={isUserLiking ? "earth" : "primary"} />
         </IconButton>
         {numberOfLikes > 0 && (
           <Link
@@ -113,13 +138,18 @@ export default function LikeButton({
         <Button
           onClick={handleToggleLikeProject}
           variant="contained"
-          startIcon={<LikeIcon size={20} color={isUserLiking ? "earth" : "white"} />}
+          startIcon={<ButtonIcon icon="like" size={26} color={isUserLiking ? "earth" : "white"} />}
           color={isUserLiking ? "secondary" : "primary"}
           disabled={likingChangePending}
           className={classes.largeLikeButton}
         >
-          {likingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
-          {isUserLiking ? texts.liked : texts.like}
+          <div className={classes.buttonLabel}>
+            <CircularProgress
+              size={20}
+              className={`${classes.fabProgress} ${!likingChangePending && classes.hidden}`}
+            />
+            <div className={classes.buttonText}>{isUserLiking ? texts.liked : texts.like}</div>
+          </div>
         </Button>
         {numberOfLikes > 0 && (
           <Link

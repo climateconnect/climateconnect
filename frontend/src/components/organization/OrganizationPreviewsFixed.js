@@ -49,11 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function OrganizationPreviewsFixed({
-  organizations,
-  showOrganizationType,
-  isLoading,
-}) {
+export default function OrganizationPreviewsFixed({ organizations, isLoading }) {
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -68,10 +64,7 @@ export default function OrganizationPreviewsFixed({
                   className={`${classes.organization} ${index === 0 && classes.first}`}
                   key={organization.url_slug}
                 >
-                  <OrganizationPreview
-                    organization={organization}
-                    showOrganizationType={showOrganizationType}
-                  />
+                  <OrganizationPreview organization={organization} />
                 </span>
               );
             })}

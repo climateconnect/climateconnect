@@ -17,6 +17,7 @@ const useStyles = makeStyles(() => ({
     top: "auto",
     bottom: props.visibleFooterHeight,
     boxShadow: "-3px -3px 6px #00000029",
+    zIndex: "auto",
   }),
   containerButtonsActionBar: {
     display: "flex",
@@ -58,9 +59,11 @@ export default function ProjectInteractionButtons({
         <Toolbar className={classes.containerButtonsActionBar} variant="dense">
           {!hasAdminPermissions && (
             <ContactCreatorButton
-              projectAdmin={projectAdmin}
+              creator={projectAdmin}
               handleClickContact={handleClickContact}
               screenSize={screenSize}
+              tiny={screenSize.belowTiny}
+              small={screenSize.belowSmall && !screenSize.belowTiny}
             />
           )}
           <FollowButton
@@ -95,11 +98,11 @@ export default function ProjectInteractionButtons({
           contactProjectCreatorButtonRef?.current && (
             <ContactCreatorButton
               className={classes.largeScreenButton}
-              projectAdmin={projectAdmin}
+              creator={projectAdmin}
               handleClickContact={handleClickContact}
               isUserLiking={isUserLiking}
               handleToggleLikeProject={handleToggleLikeProject}
-              screenSize={screenSize}
+              explanationBackground={"#fff"}
             />
           )}
       </Container>
