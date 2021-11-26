@@ -14,13 +14,13 @@ import ConfirmDialog from "../dialogs/ConfirmDialog";
 import ElementOnScreen from "../hooks/ElementOnScreen";
 import ElementSpaceToRight from "../hooks/ElementSpaceToRight";
 import VisibleFooterHeight from "../hooks/VisibleFooterHeight";
+import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import Tutorial from "../tutorial/Tutorial";
 import ProjectInteractionButtons from "./Buttons/ProjectInteractionButtons";
 import ProjectCommentsContent from "./ProjectCommentsContent";
 import ProjectContent from "./ProjectContent";
 import ProjectOverview from "./ProjectOverview";
 import ProjectTeamContent from "./ProjectTeamContent";
-import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -426,9 +426,9 @@ export default function ProjectPageRoot({
             containerClassName={classes.shareButtonContainer}
             toggleShowSocials={toggleShowSocials}
             showSocials={showSocials}
-            texts={texts}
             project={project}
             locale={locale}
+            texts={texts}
             projectAdmin={projectAdmin}
             createShareRecord={createShareRecord}
             screenSize={screenSize}

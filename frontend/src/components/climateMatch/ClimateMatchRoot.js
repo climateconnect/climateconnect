@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 10,
     display: "flex",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   root: {
     background: theme.palette.primary.main,

@@ -10,12 +10,12 @@ import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
+import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "./Buttons/FollowButton";
 import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
 import LikeButton from "./Buttons/LikeButton";
-import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -194,9 +194,9 @@ function SmallScreenOverview({
           containerClassName={classes.shareButtonContainer}
           toggleShowSocials={toggleShowSocials}
           showSocials={showSocials}
-          texts={texts}
           project={project}
           locale={locale}
+          texts={texts}
           projectAdmin={projectAdmin}
           createShareRecord={createShareRecord}
           screenSize={screenSize}
