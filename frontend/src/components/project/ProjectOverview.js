@@ -338,8 +338,6 @@ function LargeScreenOverview({
                 creator={projectAdmin}
                 contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
                 handleClickContact={handleClickContact}
-                tiny={screenSize.belowTiny}
-                small={screenSize.belowSmall && !screenSize.belowTiny}
               />
             )}
           </div>
