@@ -12,6 +12,7 @@ import ProjectPageRoot from "../../src/components/project/ProjectPageRoot";
 import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
 import { getAllHubs } from "../../public/lib/hubOperations.js";
 import { useMediaQuery } from "@material-ui/core";
+import { getImageUrl } from "../../public/lib/imageOperations";
 
 const parseComments = (comments) => {
   return comments
@@ -134,6 +135,7 @@ export default function ProjectPage({
           <HubsSubHeader hubs={hubs} subHeaderRef={hubsSubHeaderRef} onlyShowDropDown={true} />
         )
       }
+      image={getImageUrl(project.image)}
     >
       {project ? (
         <ProjectPageRoot

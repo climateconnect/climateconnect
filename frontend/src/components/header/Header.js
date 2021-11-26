@@ -42,6 +42,7 @@ import theme from "../../themes/theme";
 import Notification from "../communication/notifications/Notification";
 import NotificationsBox from "../communication/notifications/NotificationsBox";
 import UserContext from "../context/UserContext";
+import ProfileBadge from "../profile/ProfileBadge";
 import DropDownButton from "./DropDownButton";
 import LanguageSelect from "./LanguageSelect";
 
@@ -694,15 +695,27 @@ function NarrowScreenLinks({
             {loggedInUser &&
               getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts }).map((link, index) => {
                 const Icon = link.iconForDrawer;
+                const avatarProps = {
+                  className: classes.loggedInAvatarMobile,
+                  src: getImageUrl(loggedInUser.image),
+                  alt: loggedInUser.name,
+                };
                 if (link.avatar)
                   return (
-                    <Link href={localePrefix + link.href} key={index}>
-                      <Avatar
-                        className={classes.loggedInAvatarMobile}
-                        src={getImageUrl(loggedInUser.image)}
-                        alt={loggedInUser.name}
-                      />
-                    </Link>
+                    <>
+                      {loggedInUser.badges?.length > 0 ? (
+                        <ProfileBadge
+                          name={loggedInUser.badges[0].name}
+                          image={getImageUrl(loggedInUser.badges[0].image)}
+                          size="small"
+                          className={classes.badge}
+                        >
+                          <Avatar {...avatarProps} />
+                        </ProfileBadge>
+                      ) : (
+                        <Avatar {...avatarProps} />
+                      )}
+                    </>
                   );
                 else if (link.isLogoutButton)
                   return (
@@ -745,6 +758,12 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
     setMenuOpen(false);
   };
 
+  const avatarProps = {
+    className: classes.loggedInAvatar,
+    src: getImageUrl(loggedInUser.image),
+    alt: loggedInUser.name,
+  };
+
   return (
     <ClickAwayListener onClickAway={handleCloseMenu}>
       <Box className={classes.loggedInRoot}>
@@ -756,11 +775,18 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
           style={{ backgroundColor: "transparent" }}
           ref={anchorRef}
         >
-          <Avatar
-            className={classes.loggedInAvatar}
-            src={getImageUrl(loggedInUser.image)}
-            alt={loggedInUser.name}
-          />
+          {loggedInUser.badges?.length > 0 ? (
+            <ProfileBadge
+              name={loggedInUser.badges[0].name}
+              image={getImageUrl(loggedInUser.badges[0].image)}
+              size="small"
+              className={classes.badge}
+            >
+              <Avatar {...avatarProps} />
+            </ProfileBadge>
+          ) : (
+            <Avatar {...avatarProps} />
+          )}
           <ArrowDropDownIcon />
         </Button>
         <Popper

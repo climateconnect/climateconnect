@@ -9,6 +9,7 @@ import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
+import ProfileBadge from "../profile/ProfileBadge";
 import DateDisplay from "./../general/DateDisplay";
 import CommentInput from "./CommentInput";
 import MessageContent from "./MessageContent";
@@ -37,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
   metadata: {
     display: "flex",
+    alignItems: "center",
   },
   message: {
     lineHeight: 1.2,
@@ -59,6 +61,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     cursor: "pointer",
+  },
+  inlineBadge: {
+    marginRight: theme.spacing(0.5),
   },
 }));
 
@@ -99,6 +104,12 @@ export default function Post({
   };
 
   const handleClick = (element) => noLink && element.preventDefault();
+  const avatarProps = {
+    src: post.author_user.image
+      ? getImageUrl(post.author_user.image)
+      : getImageUrl(post.author_user.thumbnail_image),
+    className: classes.avatar,
+  };
 
   return (
     <div className={className}>
@@ -113,14 +124,7 @@ export default function Post({
             target="_blank"
             onClick={handleClick}
           >
-            <Avatar
-              src={
-                post.author_user.image
-                  ? getImageUrl(post.author_user.image)
-                  : getImageUrl(post.author_user.thumbnail_image)
-              }
-              className={classes.avatar}
-            />
+            <Avatar {...avatarProps} />
           </Link>
           <span className={classes.messageWithMetaData}>
             <div className={classes.metadata}>
@@ -134,6 +138,15 @@ export default function Post({
                   {post.author_user.first_name + " " + post.author_user.last_name}
                 </Typography>
               </Link>
+              {user?.badges?.length > 0 && (
+                <ProfileBadge
+                  contentOnly
+                  name={post.author_user.badges[0].name}
+                  image={getImageUrl(post.author_user.badges[0].image)}
+                  size="medium"
+                  className={classes.inlineBadge}
+                />
+              )}
               <Typography variant="body2" className={classes.postDate}>
                 {post.unconfirmed && (
                   <Tooltip title={texts.sending_message + "..."}>

@@ -14,6 +14,7 @@ import ConfirmDialog from "../dialogs/ConfirmDialog";
 import ElementOnScreen from "../hooks/ElementOnScreen";
 import ElementSpaceToRight from "../hooks/ElementSpaceToRight";
 import VisibleFooterHeight from "../hooks/VisibleFooterHeight";
+import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import Tutorial from "../tutorial/Tutorial";
 import ProjectInteractionButtons from "./Buttons/ProjectInteractionButtons";
 import ProjectCommentsContent from "./ProjectCommentsContent";
@@ -27,11 +28,12 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.grey[800],
     position: "relative",
   },
-  tabsWrapper: {
-    borderBottom: `1px solid ${theme.palette.grey[500]}`,
-  },
-  noPadding: {
+  tabsContainerWithoutPadding: {
     padding: 0,
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderBottom: `1px solid ${theme.palette.grey[500]}`,
   },
   tabContent: {
     padding: theme.spacing(2),
@@ -49,6 +51,9 @@ const useStyles = makeStyles((theme) => ({
   },
   projectInteractionButtonContainer: {
     position: "relative",
+  },
+  shareButtonContainer: {
+    paddingRight: theme.spacing(4),
   },
 }));
 
@@ -298,6 +303,11 @@ export default function ProjectPageRoot({
     await refreshNotifications();
   };
 
+  const [showSocials, setShowSocials] = React.useState(false);
+  const toggleShowSocials = (value) => {
+    setShowSocials(value);
+  };
+
   const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
   const [followers, setFollowers] = React.useState([]);
   const [showFollowers, setShowFollowers] = React.useState(false);
@@ -343,6 +353,28 @@ export default function ProjectPageRoot({
   const bindFollow = useLongPress(() => {
     toggleShowFollowers();
   });
+
+  const [projectLinkShared, setProjectLinkShared] = React.useState(false);
+  const createShareRecord = (sharedVia) => {
+    if (sharedVia === 8 && projectLinkShared) return; //only create a share-record for the link once per session
+    apiRequest({
+      method: "post",
+      url: "/api/projects/" + project.url_slug + "/set_shared_project/",
+      payload: { shared_via: sharedVia },
+      token: token,
+      locale: locale,
+    })
+      .then(() => {
+        if (sharedVia === 8) {
+          setProjectLinkShared(true);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error && error.reponse) console.log(error.response);
+      });
+  };
+
   const latestParentComment = [project.comments[0]];
   return (
     <div className={classes.root}>
@@ -371,10 +403,13 @@ export default function ProjectPageRoot({
         initiallyCaughtLikes={initiallyCaughtLikes}
         numberOfLikes={numberOfLikes}
         numberOfFollowers={numberOfFollowers}
+        toggleShowSocials={toggleShowSocials}
+        showSocials={showSocials}
+        createShareRecord={createShareRecord}
       />
 
-      <Container className={classes.noPadding}>
-        <div className={classes.tabsWrapper} ref={projectTabsRef}>
+      <Container className={classes.tabsContainerWithoutPadding}>
+        <div ref={projectTabsRef}>
           <Tabs
             variant={screenSize.belowSmall ? "fullWidth" : "standard"}
             value={tabValue}
@@ -386,6 +421,19 @@ export default function ProjectPageRoot({
             <Tab label={discussionTabLabel()} className={classes.tab} />
           </Tabs>
         </div>
+        {!screenSize.belowSmall && (
+          <SocialMediaShareButton
+            containerClassName={classes.shareButtonContainer}
+            toggleShowSocials={toggleShowSocials}
+            showSocials={showSocials}
+            project={project}
+            locale={locale}
+            texts={texts}
+            projectAdmin={projectAdmin}
+            createShareRecord={createShareRecord}
+            screenSize={screenSize}
+          />
+        )}
       </Container>
 
       <Container className={classes.tabContent} ref={tabContentRef}>
