@@ -60,8 +60,8 @@ const useStyles = makeStyles((theme) => {
       marginRight: theme.spacing(0.5),
     },
     badge: {
-      bottom: "10%"
-    }
+      bottom: "10%",
+    },
   };
 });
 
@@ -73,8 +73,8 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
     alt: profile.name,
     size: "large",
     src: getImageUrl(profile.thumbnail_image),
-    className: classes.avatar
-  }
+    className: classes.avatar,
+  };
   return (
     <div className={classes.avatarWithInfo}>
       <Link
@@ -87,15 +87,11 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
             className={classes.badge}
             image={getImageUrl(profile.badges[0].image)}
           >
-            <Avatar
-              {...avatarProps}
-            />
+            <Avatar {...avatarProps} />
           </ProfileBadge>
         ) : (
-          <Avatar
-            {...avatarProps}
-          />
-        )}        
+          <Avatar {...avatarProps} />
+        )}
         <Typography variant="h6" className={classes.name}>
           {profile.first_name + " " + profile.last_name}
         </Typography>

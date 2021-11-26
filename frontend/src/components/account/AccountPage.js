@@ -224,15 +224,15 @@ export default function AccountPage({
   });
   const location = locationKeys.length > 0 ? account.info[locationKeys[0]] : null;
   const locationAdditionalText = location?.additionalText ? location.additionalText : "";
-  
+
   const avatarProps = {
     alt: account.name,
     component: "div",
     size: "large",
     src: account.image,
-    className: classes.avatar
-  }
-  
+    className: classes.avatar,
+  };
+
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div
@@ -264,16 +264,12 @@ export default function AccountPage({
                 name={account.badges[0].name}
                 image={getImageUrl(account.badges[0].image)}
               >
-                <Avatar
-                  {...avatarProps}
-                />
+                <Avatar {...avatarProps} />
               </ProfileBadge>
             ) : (
-              <Avatar
-                {...avatarProps}
-              />
+              <Avatar {...avatarProps} />
             )}
-          </div>      
+          </div>
           <Typography variant="h5" className={classes.name}>
             {account.name}
           </Typography>

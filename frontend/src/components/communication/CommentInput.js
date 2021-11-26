@@ -90,8 +90,8 @@ function CommentInput({
   };
 
   const avatarProps = {
-    src: getImageUrl(user.image)
-  }
+    src: getImageUrl(user.image),
+  };
 
   if (user)
     return (
@@ -104,14 +104,10 @@ function CommentInput({
                 image={getImageUrl(user.badges[0].image)}
                 size="small"
               >
-                <Avatar
-                  {...avatarProps}
-                />
+                <Avatar {...avatarProps} />
               </ProfileBadge>
-            ): (
-              <Avatar
-                {...avatarProps}
-              />
+            ) : (
+              <Avatar {...avatarProps} />
             )}
             <InputWithMentions
               autoFocus

@@ -34,11 +34,11 @@ const useStyles = makeStyles((theme) => ({
   },
   username: {
     fontWeight: "bold",
-    marginRight: theme.spacing(0.5)
+    marginRight: theme.spacing(0.5),
   },
   metadata: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
   },
   message: {
     lineHeight: 1.2,
@@ -63,8 +63,8 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
   },
   inlineBadge: {
-    marginRight: theme.spacing(0.5)
-  }
+    marginRight: theme.spacing(0.5),
+  },
 }));
 
 export default function Post({
@@ -106,10 +106,10 @@ export default function Post({
   const handleClick = (element) => noLink && element.preventDefault();
   const avatarProps = {
     src: post.author_user.image
-        ? getImageUrl(post.author_user.image)
-        : getImageUrl(post.author_user.thumbnail_image),
-    className: classes.avatar
-  }
+      ? getImageUrl(post.author_user.image)
+      : getImageUrl(post.author_user.thumbnail_image),
+    className: classes.avatar,
+  };
 
   return (
     <div className={className}>
@@ -124,9 +124,7 @@ export default function Post({
             target="_blank"
             onClick={handleClick}
           >
-            <Avatar
-              {...avatarProps}
-            />       
+            <Avatar {...avatarProps} />
           </Link>
           <span className={classes.messageWithMetaData}>
             <div className={classes.metadata}>
@@ -141,8 +139,8 @@ export default function Post({
                 </Typography>
               </Link>
               {user?.badges?.length > 0 && (
-                <ProfileBadge 
-                  contentOnly 
+                <ProfileBadge
+                  contentOnly
                   name={post.author_user.badges[0].name}
                   image={getImageUrl(post.author_user.badges[0].image)}
                   size="medium"

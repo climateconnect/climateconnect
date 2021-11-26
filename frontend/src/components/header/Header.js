@@ -17,7 +17,7 @@ import {
   Paper,
   Popper,
   SwipeableDrawer,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -698,8 +698,8 @@ function NarrowScreenLinks({
                 const avatarProps = {
                   className: classes.loggedInAvatarMobile,
                   src: getImageUrl(loggedInUser.image),
-                  alt: loggedInUser.name
-                }
+                  alt: loggedInUser.name,
+                };
                 if (link.avatar)
                   return (
                     <>
@@ -710,14 +710,10 @@ function NarrowScreenLinks({
                           size="small"
                           className={classes.badge}
                         >
-                          <Avatar
-                            {...avatarProps}
-                          />
+                          <Avatar {...avatarProps} />
                         </ProfileBadge>
                       ) : (
-                        <Avatar
-                          {...avatarProps}
-                        />
+                        <Avatar {...avatarProps} />
                       )}
                     </>
                   );
@@ -765,8 +761,8 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
   const avatarProps = {
     className: classes.loggedInAvatar,
     src: getImageUrl(loggedInUser.image),
-    alt: loggedInUser.name
-  }
+    alt: loggedInUser.name,
+  };
 
   return (
     <ClickAwayListener onClickAway={handleCloseMenu}>
@@ -779,21 +775,17 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
           style={{ backgroundColor: "transparent" }}
           ref={anchorRef}
         >
-         {loggedInUser.badges?.length > 0 ? (
+          {loggedInUser.badges?.length > 0 ? (
             <ProfileBadge
               name={loggedInUser.badges[0].name}
               image={getImageUrl(loggedInUser.badges[0].image)}
               size="small"
               className={classes.badge}
             >
-              <Avatar
-                {...avatarProps}
-              />
+              <Avatar {...avatarProps} />
             </ProfileBadge>
           ) : (
-            <Avatar
-              {...avatarProps}
-            />
+            <Avatar {...avatarProps} />
           )}
           <ArrowDropDownIcon />
         </Button>

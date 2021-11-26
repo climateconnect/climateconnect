@@ -42,8 +42,8 @@ const useStyles = makeStyles((theme) => {
       alignItems: "center",
     },
     badge: {
-      bottom: "20%"
-    }
+      bottom: "20%",
+    },
   };
 });
 
@@ -89,28 +89,24 @@ function Content({ profile, avatarClassName, size }) {
     src: getImageUrl(profile.thumbnail_image),
     className: `${size === "small" && classes.smallAvatar} ${
       size === "medium" && classes.mediumAvatar
-    } ${avatarClassName}`
-  }
-  
+    } ${avatarClassName}`,
+  };
+
   return (
     <span className={classes.contentWrapper}>
       <div className={classes.avatarWrapper}>
-      {profile.badges?.length > 0 ? (
-        <ProfileBadge
-          name={profile.badges[0].name}
-          image={getImageUrl(profile.badges[0].image)}
-          size={size === "medium" ? "small" : "medium"}
-          className={size === "medium" && classes.badge}
-        >
-          <Avatar
-            {...avatarProps}
-          />
-        </ProfileBadge>
-      ) : (
-        <Avatar
-          {...avatarProps}
-        />
-      )}
+        {profile.badges?.length > 0 ? (
+          <ProfileBadge
+            name={profile.badges[0].name}
+            image={getImageUrl(profile.badges[0].image)}
+            size={size === "medium" ? "small" : "medium"}
+            className={size === "medium" && classes.badge}
+          >
+            <Avatar {...avatarProps} />
+          </ProfileBadge>
+        ) : (
+          <Avatar {...avatarProps} />
+        )}
       </div>
       <Typography
         color="inherit"
