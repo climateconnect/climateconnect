@@ -47,8 +47,8 @@ export default function SocialMediaShareDialog({
     onClose(false);
   };
 
-  const facebookHashtag = "#believeintogether";
-  const twitterHastags = ["believeintogether"];
+  const facebookHashtag = "#BelieveInTogether";
+  const twitterHastags = ["BelieveInTogether"];
   const mailBody = texts.this_is_the_link_to_the_project;
   const handleClick = (sharedVia) => {
     createShareRecord(sharedVia);
