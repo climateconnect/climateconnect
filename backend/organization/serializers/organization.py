@@ -13,6 +13,7 @@ from organization.models import Organization, OrganizationMember, OrganizationTr
 from organization.serializers.tags import OrganizationTaggingSerializer
 from organization.utility.organization import (
     get_organization_name, get_organization_short_description, get_organization_about_section)
+from organization.models.project import ProjectParents
 
 class OrganizationStubSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
@@ -138,10 +139,14 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
     types = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
+    projects_count = serializers.SerializerMethodField()
+    members_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Organization
         fields = (
-            'id', 'name', 'url_slug', 'thumbnail_image', 'location', 'types', 'short_description'
+            'id', 'name', 'url_slug', 'thumbnail_image', 'location', 'types', 'short_description', 'members_count',
+            'projects_count'
         )
     
     def get_name(self, obj):
@@ -159,6 +164,11 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
         serializer = OrganizationTaggingSerializer(obj.tag_organization, many=True)
         return serializer.data
 
+    def get_members_count(self, obj):
+        return OrganizationMember.objects.filter(organization=obj.id).count()
+
+    def get_projects_count(self, obj):
+        return ProjectParents.objects.filter(parent_organization__id=obj.id, project__is_draft=False).count()
 
 class OrganizationMemberSerializer(serializers.ModelSerializer):
     class Meta:
