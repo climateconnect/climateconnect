@@ -6,6 +6,7 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import LoginNudge from "../general/LoginNudge";
+import ProfileBadge from "../profile/ProfileBadge";
 import InputWithMentions from "./InputWithMentions";
 
 const useStyles = makeStyles((theme) => {
@@ -88,12 +89,26 @@ function CommentInput({
     if (event.key === "Enter" && event.ctrlKey) handleSendComment(event, curComment);
   };
 
+  const avatarProps = {
+    src: getImageUrl(user.image),
+  };
+
   if (user)
     return (
       <div>
         <form onSubmit={onSendComment}>
           <div className={classes.flexBox}>
-            <Avatar src={getImageUrl(user.image)} />
+            {user.badges?.length > 0 ? (
+              <ProfileBadge
+                name={user?.badges[0].name}
+                image={getImageUrl(user.badges[0].image)}
+                size="small"
+              >
+                <Avatar {...avatarProps} />
+              </ProfileBadge>
+            ) : (
+              <Avatar {...avatarProps} />
+            )}
             <InputWithMentions
               autoFocus
               multiline

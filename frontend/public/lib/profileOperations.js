@@ -9,6 +9,7 @@ export function parseProfile(profile, detailledSkills, keepOldProps) {
   }
   user = {
     ...user,
+    badges: profile.badges,
     url_slug: profile.url_slug,
     name: profile.first_name + " " + profile.last_name,
     first_name: profile.first_name,
