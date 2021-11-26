@@ -5,6 +5,7 @@ import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
+import ProfileBadge from "./ProfileBadge";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -40,6 +41,9 @@ const useStyles = makeStyles((theme) => {
       display: "inline-flex",
       alignItems: "center",
     },
+    badge: {
+      bottom: "20%"
+    }
   };
 });
 
@@ -80,15 +84,33 @@ export default function MiniProfilePreview({
 
 function Content({ profile, avatarClassName, size }) {
   const classes = useStyles();
+
+  const avatarProps = {
+    src: getImageUrl(profile.thumbnail_image),
+    className: `${size === "small" && classes.smallAvatar} ${
+      size === "medium" && classes.mediumAvatar
+    } ${avatarClassName}`
+  }
+  
   return (
     <span className={classes.contentWrapper}>
       <div className={classes.avatarWrapper}>
+      {profile.badges?.length > 0 ? (
+        <ProfileBadge
+          name={profile.badges[0].name}
+          image={getImageUrl(profile.badges[0].image)}
+          size={size === "medium" ? "small" : "medium"}
+          className={size === "medium" && classes.badge}
+        >
+          <Avatar
+            {...avatarProps}
+          />
+        </ProfileBadge>
+      ) : (
         <Avatar
-          src={getImageUrl(profile.thumbnail_image)}
-          className={`${size === "small" && classes.smallAvatar} ${
-            size === "medium" && classes.mediumAvatar
-          } ${avatarClassName}`}
+          {...avatarProps}
         />
+      )}
       </div>
       <Typography
         color="inherit"

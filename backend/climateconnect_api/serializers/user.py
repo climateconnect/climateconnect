@@ -1,9 +1,11 @@
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.user import UserProfileTranslation
+from climateconnect_api.serializers.badge import DonorBadgeSerializer
 from climateconnect_api.serializers.common import (AvailabilitySerializer,
                                                    SkillSerializer)
 from climateconnect_api.serializers.translation import \
     UserProfileTranslationSerializer
+from climateconnect_api.utility.badges import get_badges
 from climateconnect_api.utility.user import get_user_profile_biography
 from django.conf import settings
 from django.utils.translation import get_language
@@ -19,6 +21,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
     availability = AvailabilitySerializer()
     skills = SkillSerializer(many=True)
+    badges = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -26,7 +29,8 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name',
             'url_slug', 'image', 'background_image',
             'location', 'biography', 'is_profile_verified',
-            'availability', 'skills', 'has_logged_in', 'website'
+            'availability', 'skills', 'has_logged_in', 'website',
+            'badges'
         )
 
     def get_id(self, obj):
@@ -46,6 +50,14 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
             return None
         return obj.location.name
 
+    def get_badges(self, obj):
+        badges = get_badges(obj)
+        if len(badges) > 0:
+            serializer = DonorBadgeSerializer(badges, many=True)
+            return serializer.data
+        else:
+            return None
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
@@ -56,6 +68,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True)
     language = serializers.SerializerMethodField()
     biography = serializers.SerializerMethodField()
+    badges = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -64,7 +77,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'url_slug', 'image', 'background_image',
             'biography', 'is_profile_verified',
             'availability', 'skills', 'website', 'location',
-            'language'
+            'language', 'badges'
         )
 
     def get_id(self, obj):
@@ -86,6 +99,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_biography(self, obj):
         return get_user_profile_biography(obj, get_language())
+
+    def get_badges(self, obj):
+        badges = get_badges(obj)
+        if len(badges) > 0:
+            serializer = DonorBadgeSerializer(badges, many=True)
+            return serializer.data
+        else:
+            return None
 
 
 class EditUserProfileSerializer(UserProfileSerializer):
@@ -126,13 +147,14 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
     last_name = serializers.SerializerMethodField()
     id = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
+    badges = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
         fields = (
             'id', 'first_name', 'last_name',
             'url_slug', 'image', 'background_image',
-            'location', 'website'
+            'location', 'website', 'badges'
         )
 
     def get_id(self, obj):
@@ -145,9 +167,17 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
         return obj.user.last_name
 
     def get_location(self, obj):
-        if obj.location == None:
+        if obj.location is None:
             return None
         return obj.location.name
+
+    def get_badges(self, obj):
+        badges = get_badges(obj)
+        if len(badges) > 0:
+            serializer = DonorBadgeSerializer(badges, many=True)
+            return serializer.data
+        else:
+            return None
 
 
 class UserProfileStubSerializer(serializers.ModelSerializer):
@@ -155,12 +185,14 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
+    badges = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
         fields = (
             'id', 'first_name', 'last_name',
-            'url_slug', 'thumbnail_image', 'location'
+            'url_slug', 'thumbnail_image', 'location',
+            'badges'
         )
 
     def get_id(self, obj):
@@ -176,6 +208,14 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
         if obj.location == None:
             return None
         return obj.location.name
+
+    def get_badges(self, obj):
+        badges = get_badges(obj)
+        if len(badges) > 0:
+            serializer = DonorBadgeSerializer(badges, many=True)
+            return serializer.data
+        else:
+            return None
 
 
 class UserAccountSettingsSerializer(serializers.ModelSerializer):

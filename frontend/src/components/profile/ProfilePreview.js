@@ -5,6 +5,7 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import ProfileBadge from "./ProfileBadge";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -58,6 +59,9 @@ const useStyles = makeStyles((theme) => {
     icon: {
       marginRight: theme.spacing(0.5),
     },
+    badge: {
+      bottom: "10%"
+    }
   };
 });
 
@@ -65,18 +69,33 @@ export default function ProfilePreview({ profile, allowMessage, showAdditionalIn
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale });
+  const avatarProps = {
+    alt: profile.name,
+    size: "large",
+    src: getImageUrl(profile.thumbnail_image),
+    className: classes.avatar
+  }
   return (
     <div className={classes.avatarWithInfo}>
       <Link
         href={getLocalePrefix(locale) + "/profiles/" + profile.url_slug}
         className={classes.disableHover}
       >
-        <Avatar
-          alt={profile.name}
-          size="large"
-          src={getImageUrl(profile.thumbnail_image)}
-          className={classes.avatar}
-        />
+        {profile.badges?.length > 0 ? (
+          <ProfileBadge
+            name={profile.badges[0].name}
+            className={classes.badge}
+            image={getImageUrl(profile.badges[0].image)}
+          >
+            <Avatar
+              {...avatarProps}
+            />
+          </ProfileBadge>
+        ) : (
+          <Avatar
+            {...avatarProps}
+          />
+        )}        
         <Typography variant="h6" className={classes.name}>
           {profile.first_name + " " + profile.last_name}
         </Typography>
