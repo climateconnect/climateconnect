@@ -2,21 +2,12 @@
 //The other part comes from webflow pages that our design team built
 //The skeleton for this page was built using this tutorial: https://dev.to/kennedyrose/integrating-webflow-and-next-js-39kk
 
-import parseHtml from "html-react-parser";
-import Head from "next/head";
 import React from "react";
-import WideLayout from "../src/components/layouts/WideLayout";
+import WebflowPage from "../src/components/webflow/WebflowPage";
 import { retrievePage } from "../src/utils/webflow";
 
 export default function Press({ bodyContent, headContent }) {
-  return (
-    <>
-      <Head>{parseHtml(headContent)}</Head>
-      <WideLayout title="Press" hideHeadline isStaticPage noSpaceBottom>
-        <div dangerouslySetInnerHTML={{ __html: bodyContent }} />
-      </WideLayout>
-    </>
-  );
+  return <WebflowPage bodyContent={bodyContent} headContent={headContent} pageKey="press" />;
 }
 
 export async function getStaticProps(ctx) {

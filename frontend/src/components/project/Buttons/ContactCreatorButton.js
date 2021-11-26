@@ -12,13 +12,13 @@ const useStyles = makeStyles({
     position: "relative",
     height: 40,
     width: 200,
+    zIndex: 1,
   },
   smallAvatar: {
     height: theme.spacing(3),
     width: theme.spacing(3),
   },
   slideInCard: {
-    width: 200,
     display: "flex",
     justifyContent: "center",
     backgroundColor: "#F8F8F8",
@@ -44,24 +44,41 @@ const useStyles = makeStyles({
       background: theme.palette.primary.main,
     },
   },
-  helperText: {
+  helperText: (props) => ({
     position: "absolute",
     fontSize: 13,
     textAlign: "center",
     cursor: "pointer",
+    background: props.explanationBackground ? props.explanationBackground : "auto",
+  }),
+  detailledInfoMaxWidth: {
+    width: 200,
+  },
+  largeButton: {
+    display: "flex",
+    flexDirection: "column",
+    width: 300,
+  },
+  avatar: {
+    height: 50,
+    width: 50,
   },
 });
 export default function ContactCreatorButton({
   className,
-  projectAdmin,
+  creator,
   contactProjectCreatorButtonRef,
   handleClickContact,
-  screenSize,
+  tiny,
+  small,
   isFixed,
+  large,
+  contentType,
+  explanationBackground,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ explanationBackground: explanationBackground });
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "project", locale: locale });
+  const texts = getTexts({ page: "project", locale: locale, creator: creator });
   const [hoveringButton, setHoveringButton] = useState(false);
 
   const handleMouseEnter = () => {
@@ -71,12 +88,18 @@ export default function ContactCreatorButton({
     setHoveringButton(false);
   };
 
-  const creatorImageURL = getImageUrl(projectAdmin?.thumbnail_image);
-  const creatorName = projectAdmin?.name;
-  const creatorsRoleInProject = projectAdmin?.role ? projectAdmin?.role : texts.responsible_person;
+  const creatorImageURL = getImageUrl(creator?.thumbnail_image);
+  const creatorName = creator?.name;
+  const creatorsRoleInProject = creator?.role
+    ? creator?.role
+    : contentType === "idea"
+    ? texts.responsible_person_idea
+    : contentType === "organization"
+    ? texts.responsible_person_org
+    : texts.responsible_person_project;
   const buttonText = texts.contact;
 
-  if (screenSize.belowSmall && !screenSize.belowTiny) {
+  if (small) {
     return (
       <Button
         variant="contained"
@@ -84,15 +107,34 @@ export default function ContactCreatorButton({
         startIcon={<SendIcon />}
         endIcon={<Avatar src={creatorImageURL} className={classes.smallAvatar} />}
         onClick={handleClickContact}
+        className={className}
       >
         {buttonText}
       </Button>
     );
-  } else if (screenSize.belowTiny) {
+  } else if (tiny) {
     return (
-      <Button variant="contained" color="primary" onClick={handleClickContact}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleClickContact}
+        className={className}
+      >
         {buttonText}
       </Button>
+    );
+  } else if (large) {
+    return (
+      <div className={`${classes.largeButton} ${className}`} onClick={handleClickContact}>
+        <DetailledContactCreatorInfo
+          creatorName={creatorName}
+          creatorImageURL={creatorImageURL}
+          creatorsRoleInProject={creatorsRoleInProject}
+        />
+        <Button variant="contained" color="primary">
+          {buttonText}
+        </Button>
+      </div>
     );
   } else {
     return (
@@ -104,18 +146,12 @@ export default function ContactCreatorButton({
       >
         <div className={classes.buttonWithCollapseContainer}>
           <Collapse in={hoveringButton} timeout={550}>
-            <Card className={classes.slideInCard} variant="outlined">
-              <CardHeader
-                classes={{
-                  root: classes.slideInRoot,
-                  subheader: classes.slideInSubheader,
-                  title: classes.slideInTitle,
-                }}
-                avatar={<Avatar src={creatorImageURL} />}
-                title={creatorName}
-                subheader={creatorsRoleInProject}
-              />
-            </Card>
+            <DetailledContactCreatorInfo
+              className={classes.detailledInfoMaxWidth}
+              creatorName={creatorName}
+              creatorImageURL={creatorImageURL}
+              creatorsRoleInProject={creatorsRoleInProject}
+            />
           </Collapse>
           <Button
             className={classes.contactButton}
@@ -130,7 +166,11 @@ export default function ContactCreatorButton({
           {!isFixed && (
             <Fade in={hoveringButton}>
               <Typography className={classes.helperText}>
-                Contact {projectAdmin?.first_name} if you want to chat about this project.
+                {
+                  texts[
+                    `contact_creator_to_know_more_about_${contentType ? contentType : "project"}`
+                  ]
+                }
               </Typography>
             </Fade>
           )}
@@ -139,3 +179,22 @@ export default function ContactCreatorButton({
     );
   }
 }
+
+const DetailledContactCreatorInfo = ({ creatorName, creatorImageURL, creatorsRoleInProject }) => {
+  const classes = useStyles();
+
+  return (
+    <Card className={classes.slideInCard} variant="outlined">
+      <CardHeader
+        classes={{
+          root: classes.slideInRoot,
+          subheader: classes.slideInSubheader,
+          title: classes.slideInTitle,
+        }}
+        avatar={<Avatar src={creatorImageURL} className={classes.avatar} />}
+        title={creatorName}
+        subheader={creatorsRoleInProject}
+      />
+    </Card>
+  );
+};

@@ -76,6 +76,7 @@ export default function BrowseContent({
   handleUpdateFilterValues,
   initialLocationFilter,
   resetTabsWhereFiltersWereApplied,
+  hubUrl,
 }) {
   const initialState = {
     items: {
@@ -385,7 +386,12 @@ export default function BrowseContent({
 
     handleSetErrorMessage("");
     setIsFiltering(true);
-    const res = await applyNewFilters(type, newFilters, closeFilters);
+    const res = await applyNewFilters({
+      type: type,
+      newFilters: newFilters,
+      closeFilters: closeFilters,
+      nonFilterParams: nonFilterParams,
+    });
     if (res?.closeFilters) {
       if (isMobileScreen) setFiltersExpandedOnMobile(false);
       else setFiltersExpanded(false);
@@ -417,7 +423,11 @@ export default function BrowseContent({
       locale: locale,
       nonFilterParams: nonFilterParams,
     });
-    const res = await applyNewFilters(type, newFilters, false);
+    const res = await applyNewFilters({
+      type: type,
+      newFilters: newFilters,
+      closeFilters: false,
+    });
     setIsFiltering(false);
     if (newUrl !== window?.location?.href) {
       window.history.pushState({}, "", newUrl);
@@ -528,6 +538,7 @@ export default function BrowseContent({
               parentHandlesGridItems
               projects={state.items.projects}
               firstProjectCardRef={firstProjectCardRef}
+              hubUrl={hubUrl}
             />
           </TabContentWrapper>
           <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>
@@ -536,7 +547,6 @@ export default function BrowseContent({
               loadFunc={() => handleLoadMoreData("organizations")}
               organizations={state.items.organizations}
               parentHandlesGridItems
-              showOrganizationType
             />
           </TabContentWrapper>
           {!hideMembers && (

@@ -168,6 +168,7 @@ export async function applyNewFilters({
   tabsWhereFiltersWereApplied,
   handleSetTabsWhereFiltersWereApplied,
   hubUrl,
+  idea,
 }) {
   // Don't fetch data again if the exact same filters were already applied in this tab
   if (
@@ -224,6 +225,9 @@ export async function applyNewFilters({
       urlEnding: newUrlEnding,
       locale: locale,
     };
+    if (idea) {
+      payload.idea = idea;
+    }
     if (hubUrl) {
       payload.hubUrl = hubUrl;
     }

@@ -59,6 +59,8 @@ export default function LayoutWrapper({
   noFeedbackButton,
   noSpaceForFooter,
   description,
+  image,
+  useFloodStdFont,
 }) {
   const [snackbarProps, setSnackbarProps] = useState({
     open: false,
@@ -138,12 +140,16 @@ export default function LayoutWrapper({
           href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700,800"
           rel="stylesheet"
         />
+        {useFloodStdFont && <link rel="stylesheet" href="https://use.typekit.net/hoy3dgi.css" />}
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
         />
-        <meta property="og:image" content="https://climateconnect.earth/images/landing_image.jpg" />
-        <meta property="og:title" content={texts.default_title} />
+        <meta
+          property="og:image"
+          content={image ? image : "https://climateconnect.earth/images/landing_image_small.jpg"}
+        />
+        <meta property="og:title" content={title ? title : texts.default_title} />
         <meta property="og:type" content="website" />
 
         <meta name="description" content={description ? description : defaultDescription} />
