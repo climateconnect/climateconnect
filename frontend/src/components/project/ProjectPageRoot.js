@@ -224,12 +224,11 @@ export default function ProjectPageRoot({
   };
 
   const toggleFollowProject = () => {
-    const new_value = !isUserFollowing;
-    handleFollow(new_value, false, true);
+    handleFollow(isUserFollowing, false, true);
     apiRequest({
       method: "post",
       url: "/api/projects/" + project.url_slug + "/set_follow/",
-      payload: { following: new_value },
+      payload: { following: !isUserFollowing },
       token: token,
       locale: locale,
     })
@@ -258,12 +257,11 @@ export default function ProjectPageRoot({
   };
 
   const toggleLikeProject = () => {
-    const new_value = !isUserLiking;
-    handleLike(new_value, false, true);
+    handleLike(isUserLiking, false, true);
     apiRequest({
       method: "post",
       url: "/api/projects/" + project.url_slug + "/set_like/",
-      payload: { liking: new_value },
+      payload: { liking: !isUserLiking },
       token: token,
       locale: locale,
     })
