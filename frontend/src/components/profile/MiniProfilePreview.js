@@ -99,7 +99,7 @@ function Content({ profile, avatarClassName, size }) {
           <ProfileBadge
             name={profile.badges[0].name}
             image={getImageUrl(profile.badges[0].image)}
-            size={size === "medium" ? "small" : "medium"}
+            size={["medium", "small"].includes(size) ? "small" : "medium"}
             className={size === "medium" && classes.badge}
           >
             <Avatar {...avatarProps} />
