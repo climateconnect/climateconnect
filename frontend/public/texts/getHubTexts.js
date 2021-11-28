@@ -120,6 +120,14 @@ export default function getHubTexts({ hubName }) {
       en: "Add Hubs (sectors) in which your organization is active",
       de: "Füge Hubs (Sektoren) hinzu, in denen deine Organisation aktiv ist",
     },
+    please_create_an_account_or_log_in_to_contact_the_ambassador: {
+      en: "Please sign up to get in contact with others.",
+      de: "Bitte melde dich an, um Menschen zu kontaktieren.",
+    },
+    contact_ambassador: {
+      en: "Contact Local Ambassador",
+      de: "Lokalen Ambassador Kontaktieren",
+    },
   };
 
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };

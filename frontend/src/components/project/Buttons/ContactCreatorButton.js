@@ -6,6 +6,7 @@ import { getImageUrl } from "../../../../public/lib/imageOperations";
 import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
+import ContactCreatorButtonInfo from "../../communication/contactcrator/ContactCreatorButtonInfo";
 
 const useStyles = makeStyles({
   root: {
@@ -126,7 +127,7 @@ export default function ContactCreatorButton({
   } else if (large) {
     return (
       <div className={`${classes.largeButton} ${className}`} onClick={handleClickContact}>
-        <DetailledContactCreatorInfo
+        <ContactCreatorButtonInfo
           creatorName={creatorName}
           creatorImageURL={creatorImageURL}
           creatorsRoleInProject={creatorsRoleInProject}
@@ -146,7 +147,7 @@ export default function ContactCreatorButton({
       >
         <div className={classes.buttonWithCollapseContainer}>
           <Collapse in={hoveringButton} timeout={550}>
-            <DetailledContactCreatorInfo
+            <ContactCreatorButtonInfo
               className={classes.detailledInfoMaxWidth}
               creatorName={creatorName}
               creatorImageURL={creatorImageURL}
@@ -179,22 +180,3 @@ export default function ContactCreatorButton({
     );
   }
 }
-
-const DetailledContactCreatorInfo = ({ creatorName, creatorImageURL, creatorsRoleInProject }) => {
-  const classes = useStyles();
-
-  return (
-    <Card className={classes.slideInCard} variant="outlined">
-      <CardHeader
-        classes={{
-          root: classes.slideInRoot,
-          subheader: classes.slideInSubheader,
-          title: classes.slideInTitle,
-        }}
-        avatar={<Avatar src={creatorImageURL} className={classes.avatar} />}
-        title={creatorName}
-        subheader={creatorsRoleInProject}
-      />
-    </Card>
-  );
-};

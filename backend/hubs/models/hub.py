@@ -1,11 +1,11 @@
 from climateconnect_api.models.language import Language
 from location.models import Location
+from django.contrib.auth.models import User
 from organization.models.tags import ProjectTags
 from django.db import models
 
 def hub_image_path(instance, filename):
     return "hubs/{}/{}".format(instance.id, filename)
-
 
 class HubStat(models.Model):
     name = models.CharField(
@@ -204,3 +204,45 @@ class Hub(models.Model):
         ordering = ['-importance']
     def __str__(self):
         return "%s" % (self.name)
+
+
+class LocalAmbassador(models.Model):
+    title = models.CharField(
+        help_text="Ambassador title",
+        verbose_name="Ambassador title",
+        max_length=1024,
+        null=True,
+        blank=True
+    )
+    title_de = models.CharField(
+        help_text="Short description",
+        verbose_name="Short description",
+        max_length=1024,
+        null=True,
+        blank=True
+    )
+    user = models.ForeignKey(
+        User,
+        help_text="Points to user who is ambassador of the hub",
+        verbose_name="User",
+        related_name="ambassador_user",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
+    )
+    hub = models.ForeignKey(
+        Hub,
+        help_text="Points to hub the user is ambassador of",
+        verbose_name="Hub",
+        related_name="ambassador_hub",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
+    )
+
+    class Meta:
+        app_label = "hubs"
+        verbose_name = "Local Ambassador"
+        verbose_name_plural = "Local Ambassadors"
+    def __str__(self):
+        return "%s" % (self.title)
