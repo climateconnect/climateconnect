@@ -99,7 +99,7 @@ export default function HubContent({
   location,
   hubName,
   hubUrl,
-  localAmbassador
+  localAmbassador,
 }) {
   const { locale, user } = useContext(UserContext);
   const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user });
@@ -214,7 +214,7 @@ const BottomContent = ({
   expanded,
   handleClickExpand,
   isLocationHub,
-  localAmbassador
+  localAmbassador,
 }) => {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
