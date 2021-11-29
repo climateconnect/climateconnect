@@ -2,7 +2,8 @@ import logging
 import re
 import traceback
 
-from climateconnect_api.models import Availability, Role, Skill, UserProfile
+from climateconnect_api.models import (Availability, Role, Skill, UserProfile,
+                                       ContentShares)
 from climateconnect_api.models.language import Language
 from climateconnect_api.utility.translation import (edit_translation,
                                                     edit_translations,
@@ -23,7 +24,7 @@ from organization.models import (Organization, OrganizationTagging,
                                  ProjectCollaborators, ProjectComment,
                                  ProjectFollower, ProjectMember,
                                  ProjectParents, ProjectStatus, ProjectTagging,
-                                 ProjectTags, ProjectLike, ProjectsShared)
+                                 ProjectTags, ProjectLike)
 from organization.models.translations import ProjectTranslation
 from organization.pagination import (MembersPagination,
                                      ProjectCommentPagination,
@@ -950,7 +951,7 @@ class SetProjectsSharedView(APIView):
             raise NotFound(detail="Project not found.", code=status.HTTP_404_NOT_FOUND)
 
         if (request.user.is_authenticated):
-            ProjectsShared.objects.create(user=request.user, project=project, shared_via=request.data['shared_via'])
+            ContentShares.objects.create(user=request.user, project=project, shared_via=request.data['shared_via'])
         else: 
-            ProjectsShared.objects.create(project=project, shared_via=request.data['shared_via'])
+            ContentShares.objects.create(project=project, shared_via=request.data['shared_via'])
         return Response(status=status.HTTP_201_CREATED)
