@@ -39,9 +39,10 @@ export default function SocialMediaShareDialog({
   tinyScreen,
   SHARE_OPTIONS,
   projectLink,
-  title,
+  messageTitle,
   mailBody,
   texts,
+  dialogTitle,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -59,12 +60,12 @@ export default function SocialMediaShareDialog({
   };
 
   return (
-    <GenericDialog onClose={handleClose} open={open} title={texts.tell_others_about_this_project}>
+    <GenericDialog onClose={handleClose} open={open} title={dialogTitle}>
       <div className={classes.shareButtonsContainer}>
         <EmailShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.e_mail)}
           url={projectLink}
-          subject={title}
+          subject={messageTitle}
           body={mailBody}
         >
           <EmailIcon size={50} round={true} />
@@ -72,7 +73,7 @@ export default function SocialMediaShareDialog({
         <FacebookShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.facebook)}
           url={projectLink}
-          quote={title}
+          quote={messageTitle}
           hashtag={facebookHashtag}
         >
           <FacebookIcon size={50} round={true} />
@@ -80,7 +81,7 @@ export default function SocialMediaShareDialog({
         <TwitterShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.twitter)}
           url={projectLink}
-          title={title}
+          title={messageTitle}
           hashtags={twitterHastags}
         >
           <TwitterIcon size={50} round={true} />
@@ -88,7 +89,7 @@ export default function SocialMediaShareDialog({
         <WhatsappShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.whatsapp)}
           url={projectLink}
-          title={title}
+          title={messageTitle}
         >
           <WhatsappIcon size={50} round={true} />
         </WhatsappShareButton>
@@ -103,14 +104,14 @@ export default function SocialMediaShareDialog({
         <RedditShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.reddit)}
           url={projectLink}
-          title={title}
+          title={messageTitle}
         >
           <RedditIcon size={50} round={true} />
         </RedditShareButton>
         <TelegramShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.telegram)}
           url={projectLink}
-          title={title}
+          title={messageTitle}
         >
           <TelegramIcon size={50} round={true} />
         </TelegramShareButton>

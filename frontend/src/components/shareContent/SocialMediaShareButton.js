@@ -24,10 +24,11 @@ export default function SocialMediaShareButton({
   apiEndpoint,
   locale,
   token,
-  title,
+  messageTitle,
   tinyScreen,
   mailBody,
   texts,
+  dialogTitle,
 }) {
   const classes = useStyles();
 
@@ -79,7 +80,7 @@ export default function SocialMediaShareButton({
     if (navigator.share) {
       navigator
         .share({
-          title: title,
+          title: messageTitle,
           url: contentLink,
         })
         .then(() => {
@@ -108,9 +109,10 @@ export default function SocialMediaShareButton({
         SHARE_OPTIONS={SHARE_OPTIONS}
         projectLink={contentLink}
         projectAdmin={contentAdmin}
-        title={title}
+        messageTitle={messageTitle}
         mailBody={mailBody}
         texts={texts}
+        dialogTitle={dialogTitle}
       />
     </>
   );

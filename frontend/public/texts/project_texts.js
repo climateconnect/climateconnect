@@ -909,18 +909,6 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Tell others about this project!",
       de: "Erzähle anderen von diesem Projekt!",
     },
-    copy_link: {
-      en: "Copy link",
-      de: "Link kopieren",
-    },
-    copy: {
-      en: "Copy",
-      de: "Kopieren",
-    },
-    link: {
-      en: "Link",
-      de: "Link",
-    },
     climate_protection_project_by: {
       en: "Climate project by ",
       de: "Klimaschutzprojekt von ",

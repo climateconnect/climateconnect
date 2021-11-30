@@ -360,8 +360,9 @@ export default function ProjectPageRoot({
   const apiEndpointShareButton = "/api/projects/" + project.url_slug + "/set_shared_project/";
   const projectAdminName = project?.creator.name ? project?.creator.name : projectAdmin.name;
   const projectLinkPath = "/" + locale + "/projects/" + project.url_slug;
-  const titleShareButton = texts.climate_protection_project_by + projectAdminName + ": " + project.name;
+  const messageTitleShareButton = texts.climate_protection_project_by + projectAdminName + ": " + project.name;
   const mailBodyShareButton = texts.share_project_email_body;
+  const dialogTitleShareButton = texts.tell_others_about_this_project;
 
   const latestParentComment = [project.comments[0]];
   return (
@@ -394,8 +395,9 @@ export default function ProjectPageRoot({
         projectLinkPath={projectLinkPath}
         apiEndpointShareButton={apiEndpointShareButton}
         token={token}
-        titleShareButton={titleShareButton}
+        messageTitleShareButton={messageTitleShareButton}
         mailBodyShareButton={mailBodyShareButton}
+        dialogTitleShareButton={dialogTitleShareButton}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -420,10 +422,11 @@ export default function ProjectPageRoot({
             apiEndpoint={apiEndpointShareButton}
             locale={locale}
             token={token}
-            title={titleShareButton}
+            messageTitle={messageTitleShareButton}
             tinyScreen={screenSize.belowTiny}
             mailBody={mailBodyShareButton}
             texts={texts}
+            dialogTitle={dialogTitleShareButton}
           />
         )}
       </Container>

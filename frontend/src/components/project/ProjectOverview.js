@@ -106,8 +106,9 @@ export default function ProjectOverview({
   projectLinkPath,
   apiEndpointShareButton,
   token,
-  titleShareButton,
+  messageTitleShareButton,
   mailBodyShareButton,
+  dialogTitleShareButton,
 }) {
   const classes = useStyles();
 
@@ -125,8 +126,9 @@ export default function ProjectOverview({
           projectLinkPath={projectLinkPath}
           apiEndpointShareButton={apiEndpointShareButton}
           token={token}
-          titleShareButton={titleShareButton}
+          messageTitleShareButton={messageTitleShareButton}
           mailBodyShareButton={mailBodyShareButton}
+          dialogTitleShareButton={dialogTitleShareButton}
         />
       ) : (
         <LargeScreenOverview
@@ -181,8 +183,9 @@ function SmallScreenOverview({
   projectLinkPath,
   apiEndpointShareButton,
   token,
-  titleShareButton,
+  messageTitleShareButton,
   mailBodyShareButton,
+  dialogTitleShareButton,
 }) {
   const classes = useStyles();
   return (
@@ -204,10 +207,11 @@ function SmallScreenOverview({
           apiEndpoint={apiEndpointShareButton}
           locale={locale}
           token={token}
-          title={titleShareButton}
+          messageTitle={messageTitleShareButton}
           tinyScreen={screenSize.belowTiny}
           mailBody={mailBodyShareButton}
           texts={texts}
+          dialogTitle={dialogTitleShareButton}
         />
         <img
           className={classes.fullWidthImage}

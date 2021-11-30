@@ -710,5 +710,17 @@
   "more": {
     "en": "More",
     "de": "Mehr"
+  },
+  "copy_link": {
+    "en": "Copy link",
+    "de": "Link kopieren"
+  },
+  "copy": {
+    "en": "Copy",
+    "de": "Kopieren"
+  },
+  "link": {
+    "en": "Link",
+    "de": "Link"
   }
 }
