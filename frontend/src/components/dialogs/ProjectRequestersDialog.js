@@ -64,68 +64,6 @@ export default function ProjectRequestersDialog({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
 
-  // See https://github.com/climateconnect/climateconnect/issues/672
-  /**
-   * This is to send a request to the backend, to approve
-   * the membership request into the organizations_membershiprequests
-   * table. The API expects 2 dynamic parameters: the current project
-   * URL slug, and the ID of the original request, which is generated
-   * and returned to the client during the initial request.
-   */
-  async function handleApproveRequest() {
-    const cookies = new Cookies();
-    const token = cookies.get("token");
-
-    // debugger;
-
-    console.log("test");
-    console.log(requesters);
-
-    const response = await apiRequest({
-      method: "post",
-      // TODO(piper): fix with correct request ID to ensure
-      // that it maps to the correct member to be removed. This is
-      // TODO(piper): ?
-      url: `/api/projects/${project.url_slug}/request_membership/approve/6`,
-      // url: `/api/projects/${project.url_slug}/request_membership/approve/6`,
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-    });
-
-    if (!resp?.data?.results) {
-      // TODO: error appropriately here
-    } else {
-      console.log("Approved!");
-    }
-  }
-
-  // See https://github.com/climateconnect/climateconnect/issues/672
-  async function handleRejectRequest() {
-    const cookies = new Cookies();
-    const token = cookies.get("token");
-
-    // http://127.0.0.1:8000/api/projects/Anotherproject6/request_membership/reject/6
-    // 404s
-
-    const response = await apiRequest({
-      method: "post",
-      // TODO(piper): fix with correct request ID
-      // 'projects/<str:project_slug>/request_membership/<str:request_action>/<str:request_id>/',
-      url: `/api/projects/${project.url_slug}/request_membership/reject/2/`,
-      // url: `/api/projects/${project.url_slug}/request_membership/reject/6`,
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-    });
-
-    if (!resp?.data?.results) {
-      // TODO: error appropriately here
-    } else {
-      console.log("Denied request.");
-    }
-  }
-
   const handleClose = () => {
     onClose();
   };
@@ -155,9 +93,8 @@ export default function ProjectRequestersDialog({
         requesters && requesters.length > 0 ? (
           <ProjectRequesters
             locale={locale}
-            onApproveRequest={handleApproveRequest}
             onClose={onClose}
-            onDenyRequest={handleRejectRequest}
+            project={project}
             requesters={requesters}
             texts={texts}
           />
@@ -169,14 +106,7 @@ export default function ProjectRequestersDialog({
   );
 }
 
-const ProjectRequesters = ({
-  locale,
-  onApproveRequest,
-  onClose,
-  onDenyRequest,
-  requesters,
-  texts,
-}) => {
+const ProjectRequesters = ({ locale, requesters, project }) => {
   const classes = useStyles();
 
   return (
@@ -187,51 +117,113 @@ const ProjectRequesters = ({
           {requesters.map((requester, index) => {
             return (
               <TableRow key={index} className={classes.requester}>
-                <TableCell>
-                  <Link
-                    className={classes.user}
-                    href={getLocalePrefix(locale) + "/profiles/" + requester.user_profile.url_slug}
-                  >
-                    <Avatar
-                      className={classes.avatar}
-                      src={getImageUrl(requester.user_profile.image)}
-                      alt={
-                        requester.user_profile.first_name + " " + requester.user_profile.last_name
-                      }
-                    />
-                    <Typography component="span" color="secondary" className={classes.username}>
-                      {requester.user_profile.first_name + " " + requester.user_profile.last_name}
-                    </Typography>
-                  </Link>
-                </TableCell>
-
-                <TableCell>
-                  <Tooltip title="Approve">
-                    <IconButton
-                      aria-label="approve project request"
-                      color="primary"
-                      disableRipple
-                      onClick={onApproveRequest}
-                    >
-                      <CheckIcon />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Deny">
-                    <IconButton
-                      aria-label="deny project request"
-                      disableRipple
-                      onClick={onDenyRequest}
-                    >
-                      <BlockIcon />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
+                <Requester
+                  project={project}
+                  locale={locale}
+                  requester={requester}
+                  requestId={requester.requestId}
+                />
               </TableRow>
             );
           })}
         </TableBody>
       </Table>
+    </>
+  );
+};
+
+/**
+ * Separate cohesive component that encapsulates
+ * all the requester state and functionality together.
+ */
+const Requester = ({ requester, requestId, locale, project }) => {
+  const classes = useStyles();
+
+  /**
+   * This is to send a request to the backend, to approve
+   * the membership request into the organizations_membershiprequests
+   * table. The API expects 2 dynamic parameters: the current project
+   * URL slug, and the ID of the original request, which is generated
+   * and returned to the client during the initial request.
+   *
+   * See https://github.com/climateconnect/climateconnect/issues/672
+   */
+  async function handleApproveRequest() {
+    const cookies = new Cookies();
+    console.log(evt.target.parentElement.parentElement);
+    const token = cookies.get("token");
+
+    const response = await apiRequest({
+      method: "post",
+      url: `/api/projects/${project.url_slug}/request_membership/approve/${requestId}/`,
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    });
+
+    if (!resp?.data?.results) {
+      // TODO: error appropriately here
+    } else {
+      console.log("Approved!");
+    }
+  }
+
+  // See https://github.com/climateconnect/climateconnect/issues/672
+  async function handleRejectRequest() {
+    const cookies = new Cookies();
+    const token = cookies.get("token");
+
+    const response = await apiRequest({
+      method: "post",
+      url: `/api/projects/${project.url_slug}/request_membership/reject/${requestId}/`,
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    });
+
+    if (!resp?.data?.results) {
+      // TODO: error appropriately here
+    } else {
+      console.log("Denied request.");
+    }
+  }
+
+  return (
+    <>
+      <TableCell>
+        <Link
+          className={classes.user}
+          href={getLocalePrefix(locale) + "/profiles/" + requester.user.url_slug}
+        >
+          <Avatar
+            className={classes.avatar}
+            src={getImageUrl(requester.user.image)}
+            alt={requester.user.first_name + " " + requester.user.last_name}
+          />
+          <Typography component="span" color="secondary" className={classes.username}>
+            {requester.user.first_name + " " + requester.user.last_name}
+          </Typography>
+        </Link>
+      </TableCell>
+
+      <TableCell>
+        <Tooltip title="Approve">
+          <IconButton
+            aria-label="approve project request"
+            color="primary"
+            disableRipple
+            onClick={handleApproveRequest}
+          >
+            <CheckIcon />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title="Deny">
+          <IconButton aria-label="deny project request" disableRipple onClick={handleRejectRequest}>
+            <BlockIcon />
+          </IconButton>
+        </Tooltip>
+      </TableCell>
     </>
   );
 };
