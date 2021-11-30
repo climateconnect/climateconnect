@@ -21,13 +21,13 @@ export default function getDonateTexts({ classes, goal }) {
     },
     why_donate: {
       en: "Why donate?",
-      de: "Warum spenden sinnvoll ist?",
+      de: "Warum Spenden sinnvoll ist?",
     },
     why_donate_text: {
       en: `Great that you want to support us!
       We believe that the possibility to connect and get active in the climate movement should be free and include everyone.
       With a donation you enable us to stay independent. Our full-time team is working hard every day to multiply the impact of climate actors around the globe.`,
-      de: `Gut, dass du uns unterstützen möchtest! 
+      de: `Schön, dass du uns unterstützen möchtest! 
 	    Wir glauben, dass die Möglichkeit, sich in der Klimabewegung zu vernetzen und aktiv zu werden, kostenlos sein und jeden einschließen sollte.
       Mit einer Spende ermöglichst du uns, unabhängig zu bleiben. Unser hauptamtliches Team arbeitet jeden Tag hart daran, die Wirkung von Klimaakteuren rund um den Globus zu vervielfachen.`,
     },
@@ -270,5 +270,45 @@ export default function getDonateTexts({ classes, goal }) {
       en: `raised out of ${goal}€ goal`,
       de: `von ${goal}€ Ziel gesammelt`,
     },
+    donor_forest: {
+      en: "Donor Forest",
+      de: "Spendenwald",
+    },
+    watch_the_forest_grow: {
+      en: "The Digital Forest of Climate Connect Supporters",
+      de: "Der digitale Wald der Climate Connect Unterstützer*innen",
+    },
+    forest_explainer_headline: {
+      en: "Plant Your Own Tree",
+      de: "Pflanze deinen Baum",
+    },
+    forest_explainer_text: {
+      en: "Donate today to support climate action and become part of the forest",
+      de: "Spende noch heute, um das Klima zu schützen und Teil des Waldes zu werden",
+    },
+    how_it_works: {
+      en: "How it works",
+      de: "Wie es funktioniert",
+    },
+    forest_explainer_dialog_title: {
+      en: "The Donor Forest",
+      de: "Der Spendenwald",
+    },
+    donor_forest_dialog_explainer_text: {
+      en: `When you start donating to Climate Connect you get a digital sapling as a reward. 
+      If you donate monthly or yearly your tree keeps growing.
+      Your tree is displayed in the donor forest and next to your account on the platform.`,
+      de: `Wenn du an Climate Connect spendest, bekommst du einen digitalen Setzling.
+      Wenn du monatlich oder jährlich spendest, wächst dein Baum immer weiter. Dein Baum wird im 
+      Spendenwald und immer neben deinem Profilbild auf der Plattform angezeigt.`,
+    },
+    donor_forest_dialog_call_to_action_text: {
+      en: "Donate now to start growing your tree!",
+      de: "Spende jetzt und lass deinen Baum wachsen!",
+    },
+    has_been_a_supporter_for: {
+      en: "has been a supporter for",
+      de: "unterstützt seit"
+    }
   };
 }

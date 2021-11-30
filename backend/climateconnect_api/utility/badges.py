@@ -9,7 +9,6 @@ def get_badges(user_profile):
     if donations.exists():
         today = datetime.datetime.now()
         d = get_highest_impact_donation(donations)
-        print(d)
         if d:
             time_donated = today - d.date_first_received.replace(tzinfo=None)
             badge = DonorBadge.objects.filter(
@@ -27,7 +26,7 @@ def get_highest_impact_donation(donations):
     today = datetime.date.today()
     one_month_ago = today - datetime.timedelta(days=30)
     active_recurring_donations = donations.filter(
-        is_recurring=True
+        is_recurring=True, donation_amount__gte=5
     ).exclude(
         date_cancelled__lte=one_month_ago
     ).order_by(
@@ -41,7 +40,7 @@ def get_highest_impact_donation(donations):
 
 
 def get_badge_name(badge: Badge, language_code: str):
-    lang_translation_attr = "name_{}_translation".format(language_code)
+    lang_translation_attr = "name_{}".format(language_code)
     if hasattr(badge, lang_translation_attr):
         translation = getattr(badge, lang_translation_attr)
         if language_code != "en" and translation is not None:

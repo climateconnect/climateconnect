@@ -115,6 +115,7 @@ export async function getServerSideProps(ctx) {
 export default function Donate({ goal_name, goal_amount, current_amount }) {
   const classes = useStyles();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const [overlayOpen, setOverlayOpen] = React.useState(false);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "donate", locale: locale });
@@ -139,6 +140,8 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
         <TopSection
           headline={texts.donate_infinitive}
           subHeader={texts.support_growing_a_global_network_of_climate_actors}
+          fixedHeight={!isNarrowScreen}
+          noMarginBottom
         />
         <div className={classes.topImageContainer}>
           <Container className={classes.imageTextContainer}>

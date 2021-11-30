@@ -1,11 +1,12 @@
 from climateconnect_api.models import UserProfile
+from climateconnect_api.models.donation import Donation
 from climateconnect_api.models.user import UserProfileTranslation
 from climateconnect_api.serializers.badge import DonorBadgeSerializer
 from climateconnect_api.serializers.common import (AvailabilitySerializer,
                                                    SkillSerializer)
 from climateconnect_api.serializers.translation import \
     UserProfileTranslationSerializer
-from climateconnect_api.utility.badges import get_badges
+from climateconnect_api.utility.badges import get_badges, get_highest_impact_donation
 from climateconnect_api.utility.user import get_user_profile_biography
 from django.conf import settings
 from django.utils.translation import get_language
@@ -217,6 +218,21 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
         else:
             return None
 
+
+class DonorProfileSerializer(UserProfileStubSerializer):
+    started_donating = serializers.SerializerMethodField()
+
+    class Meta(UserProfileSerializer.Meta):
+        fields = UserProfileStubSerializer.Meta.fields + \
+            ('started_donating',)
+
+    def get_started_donating(self, obj):
+        donations = Donation.objects.filter(user=obj.user)
+        if donations.exists():
+            d = get_highest_impact_donation(donations)
+            if d.is_recurring:
+                return d.date_first_received
+        return None
 
 class UserAccountSettingsSerializer(serializers.ModelSerializer):
     email = serializers.SerializerMethodField()
