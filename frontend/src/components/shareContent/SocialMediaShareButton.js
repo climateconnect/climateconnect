@@ -26,6 +26,8 @@ export default function SocialMediaShareButton({
   token,
   title,
   tinyScreen,
+  mailBody,
+  texts,
 }) {
   const classes = useStyles();
 
@@ -107,6 +109,8 @@ export default function SocialMediaShareButton({
         projectLink={contentLink}
         projectAdmin={contentAdmin}
         title={title}
+        mailBody={mailBody}
+        texts={texts}
       />
     </>
   );

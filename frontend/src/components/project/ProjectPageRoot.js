@@ -8,6 +8,7 @@ import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
+import getTexts from "../../../public/texts/texts";
 import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
 import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
@@ -68,7 +69,6 @@ export default function ProjectPageRoot({
   setCurComments,
   followingChangePending,
   likingChangePending,
-  texts,
   projectAdmin,
   numberOfLikes,
   numberOfFollowers,
@@ -81,6 +81,13 @@ export default function ProjectPageRoot({
 
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+
+  const texts = getTexts({
+    locale: locale,
+    page: "project",
+    project: project,
+    creator: projectAdmin,
+  });
 
   const screenSize = {
     belowTiny: useMediaQuery((theme) => theme.breakpoints.down("xs")),
@@ -354,6 +361,7 @@ export default function ProjectPageRoot({
   const projectAdminName = project?.creator.name ? project?.creator.name : projectAdmin.name;
   const projectLinkPath = "/" + locale + "/projects/" + project.url_slug;
   const titleShareButton = texts.climate_protection_project_by + projectAdminName + ": " + project.name;
+  const mailBodyShareButton = texts.share_project_email_body;
 
   const latestParentComment = [project.comments[0]];
   return (
@@ -387,6 +395,7 @@ export default function ProjectPageRoot({
         apiEndpointShareButton={apiEndpointShareButton}
         token={token}
         titleShareButton={titleShareButton}
+        mailBodyShareButton={mailBodyShareButton}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -413,6 +422,8 @@ export default function ProjectPageRoot({
             token={token}
             title={titleShareButton}
             tinyScreen={screenSize.belowTiny}
+            mailBody={mailBodyShareButton}
+            texts={texts}
           />
         )}
       </Container>

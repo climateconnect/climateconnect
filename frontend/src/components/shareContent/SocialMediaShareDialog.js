@@ -17,7 +17,6 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
-import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
 
@@ -36,23 +35,16 @@ const useStyles = makeStyles((theme) => ({
 export default function SocialMediaShareDialog({
   open,
   onClose,
-  project,
   createShareRecord,
   tinyScreen,
-  projectAdmin,
   SHARE_OPTIONS,
   projectLink,
   title,
+  mailBody,
+  texts,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({
-    locale: locale,
-    page: "project",
-    title: title,
-    project: project,
-    creator: projectAdmin,
-  });
 
   const handleClose = () => {
     onClose(false);
@@ -60,7 +52,6 @@ export default function SocialMediaShareDialog({
 
   const facebookHashtag = "#BelieveInTogether";
   const twitterHastags = ["BelieveInTogether"];
-  const mailBody = texts.share_project_email_body;
 
   const handleClick = (sharedVia) => {
     createShareRecord(sharedVia);
