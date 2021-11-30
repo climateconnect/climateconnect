@@ -199,9 +199,20 @@ export default function ProjectContent({
   }, []);
 
   async function viewOpenProjectRequests() {
+    // Returns an array of objects with an ID (request ID) and
+    // associated user profile.
     const membershipRequests = await getMembershipRequests(project.url_slug);
-    console.log(membershipRequests);
-    setRequesters(membershipRequests);
+
+    // Now transform to a shape of objects where a specific request ID is
+    // alongside a suer profile
+    const userRequests = membershipRequests.map((r) => {
+      let user = {};
+      user.requestId = r.id;
+      user.user = r.user_profile;
+      return user;
+    });
+
+    setRequesters(userRequests);
     setShowRequesters(!showRequesters);
   }
 
