@@ -233,4 +233,10 @@ class ApproveDenyProjectMemberRequest(BasePermission):
 
         project = Project.objects.filter(url_slug=str(view.kwargs.get('project_slug'))).first()
 
-        return ProjectMember.objects.filter(project=project,user=request.user,role__role_type__in=[Role.ALL_TYPE]).exists()
+        # TODO(Piper): this seems to be throwing an error:
+        #
+        #     raise TypeError('Cannot cast AnonymousUser to int. Are you trying to use it in place of User?')
+        # TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
+        #
+        # When calling from the post() in ManageJoinProject
+        return ProjectMember.objects.filter(project=project, user=request.user, role__role_type__in=[Role.ALL_TYPE]).exists()
