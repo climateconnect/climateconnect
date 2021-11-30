@@ -38,7 +38,7 @@ export default function SocialMediaShareDialog({
   onClose,
   project,
   createShareRecord,
-  screenSize,
+  tinyScreen,
   projectAdmin,
   SHARE_OPTIONS,
   projectLink,
@@ -138,7 +138,7 @@ export default function SocialMediaShareDialog({
           endAdornment: (
             <InputAdornment position="end">
               <Button onClick={() => handleClick(SHARE_OPTIONS.link)}>
-                {screenSize.belowTiny ? texts.copy : texts.copy_link}
+                {tinyScreen ? texts.copy : texts.copy_link}
               </Button>
             </InputAdornment>
           ),

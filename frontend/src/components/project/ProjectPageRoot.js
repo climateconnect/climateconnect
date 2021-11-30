@@ -304,11 +304,6 @@ export default function ProjectPageRoot({
     await refreshNotifications();
   };
 
-  const [showSocials, setShowSocials] = React.useState(false);
-  const toggleShowSocials = (value) => {
-    setShowSocials(value);
-  };
-
   const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
   const [followers, setFollowers] = React.useState([]);
   const [showFollowers, setShowFollowers] = React.useState(false);
@@ -355,26 +350,10 @@ export default function ProjectPageRoot({
     toggleShowFollowers();
   });
 
-  const [projectLinkShared, setProjectLinkShared] = React.useState(false);
-  const createShareRecord = (sharedVia) => {
-    if (sharedVia === 8 && projectLinkShared) return; //only create a share-record for the link once per session
-    apiRequest({
-      method: "post",
-      url: "/api/projects/" + project.url_slug + "/set_shared_project/",
-      payload: { shared_via: sharedVia },
-      token: token,
-      locale: locale,
-    })
-      .then(() => {
-        if (sharedVia === 8) {
-          setProjectLinkShared(true);
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-        if (error && error.reponse) console.log(error.response);
-      });
-  };
+  const apiEndpointShareButton = "/api/projects/" + project.url_slug + "/set_shared_project/";
+  const projectAdminName = project?.creator.name ? project?.creator.name : projectAdmin.name;
+  const projectLinkPath = "/" + locale + "/projects/" + project.url_slug;
+  const titleShareButton = texts.climate_protection_project_by + projectAdminName + ": " + project.name;
 
   const latestParentComment = [project.comments[0]];
   return (
@@ -404,9 +383,10 @@ export default function ProjectPageRoot({
         initiallyCaughtLikes={initiallyCaughtLikes}
         numberOfLikes={numberOfLikes}
         numberOfFollowers={numberOfFollowers}
-        toggleShowSocials={toggleShowSocials}
-        showSocials={showSocials}
-        createShareRecord={createShareRecord}
+        projectLinkPath={projectLinkPath}
+        apiEndpointShareButton={apiEndpointShareButton}
+        token={token}
+        titleShareButton={titleShareButton}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -425,14 +405,14 @@ export default function ProjectPageRoot({
         {!screenSize.belowSmall && (
           <SocialMediaShareButton
             containerClassName={classes.shareButtonContainer}
-            toggleShowSocials={toggleShowSocials}
-            showSocials={showSocials}
-            project={project}
+            content={project}
+            contentAdmin={projectAdmin}
+            contentLinkPath={projectLinkPath}
+            apiEndpoint={apiEndpointShareButton}
             locale={locale}
-            texts={texts}
-            projectAdmin={projectAdmin}
-            createShareRecord={createShareRecord}
-            screenSize={screenSize}
+            token={token}
+            title={titleShareButton}
+            tinyScreen={screenSize.belowTiny}
           />
         )}
       </Container>

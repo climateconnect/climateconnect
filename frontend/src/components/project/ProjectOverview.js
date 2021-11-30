@@ -103,9 +103,10 @@ export default function ProjectOverview({
   toggleShowLikes,
   numberOfLikes,
   numberOfFollowers,
-  toggleShowSocials,
-  showSocials,
-  createShareRecord,
+  projectLinkPath,
+  apiEndpointShareButton,
+  token,
+  titleShareButton,
 }) {
   const classes = useStyles();
 
@@ -119,10 +120,11 @@ export default function ProjectOverview({
           texts={texts}
           screenSize={screenSize}
           locale={locale}
-          toggleShowSocials={toggleShowSocials}
-          showSocials={showSocials}
           projectAdmin={projectAdmin}
-          createShareRecord={createShareRecord}
+          projectLinkPath={projectLinkPath}
+          apiEndpointShareButton={apiEndpointShareButton}
+          token={token}
+          titleShareButton={titleShareButton}
         />
       ) : (
         <LargeScreenOverview
@@ -173,10 +175,11 @@ function SmallScreenOverview({
   texts,
   screenSize,
   locale,
-  toggleShowSocials,
-  showSocials,
   projectAdmin,
-  createShareRecord,
+  projectLinkPath,
+  apiEndpointShareButton,
+  token,
+  titleShareButton,
 }) {
   const classes = useStyles();
   return (
@@ -192,14 +195,14 @@ function SmallScreenOverview({
         )}
         <SocialMediaShareButton
           containerClassName={classes.shareButtonContainer}
-          toggleShowSocials={toggleShowSocials}
-          showSocials={showSocials}
-          project={project}
+          content={project}
+          contentAdmin={projectAdmin}
+          contentLinkPath={projectLinkPath}
+          apiEndpoint={apiEndpointShareButton}
           locale={locale}
-          texts={texts}
-          projectAdmin={projectAdmin}
-          createShareRecord={createShareRecord}
-          screenSize={screenSize}
+          token={token}
+          title={titleShareButton}
+          tinyScreen={screenSize.belowTiny}
         />
         <img
           className={classes.fullWidthImage}
