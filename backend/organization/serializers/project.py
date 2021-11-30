@@ -1,3 +1,4 @@
+from organization.models.members import MembershipRequests
 from climateconnect_api.models import UserProfile
 from climateconnect_api.serializers.common import (AvailabilitySerializer,
                                                    SkillSerializer)
@@ -324,6 +325,26 @@ class ProjectFollowerSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectFollower
         fields = ('user_profile', 'created_at')
+
+    def get_user_profile(self, obj):
+        user_profile = UserProfile.objects.get(user=obj.user)
+        serializer = UserProfileStubSerializer(user_profile)
+        return serializer.data
+
+
+class ProjectRequesterSerializer(serializers.ModelSerializer):
+    """Serializer class required to return the request ID
+    to the client, so that it can be sent appropariately
+    alongside the approve/deny actions for project requesters.
+    """
+    user_profile = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MembershipRequests
+
+        # locally defined variables take precedence
+        # over what's defined on the model
+        fields = ('user_profile', 'id')
 
     def get_user_profile(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user)

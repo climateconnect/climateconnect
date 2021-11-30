@@ -84,7 +84,6 @@ class MembershipRequestsManager(object):
                     if kwargs['project'].id != self.membership_request.target_project.id:
                         self.validation_failed = True
                         self.errors.append("Inconsistent Project and Request")
-
         return
 
     def create_membership_request(self,**kwargs):
@@ -105,11 +104,7 @@ class MembershipRequestsManager(object):
         return request_id
 
 
-
-
-    def approve_request(self,**kwargs):
-
-
+    def approve_request(self, **kwargs):
         self.membership_request.request_status = RequestStatus.APPROVED.value
         self.membership_request.approved_at = timezone.now()
 
@@ -124,7 +119,6 @@ class MembershipRequestsManager(object):
                         ,availability=self.user_availability
                     )
         elif self.membership_target == MembershipTarget.ORGANIZATION:
-
             add_organization_member(
                 organization=self.organization
                 ,user=self.user
@@ -132,15 +126,11 @@ class MembershipRequestsManager(object):
                 ,role_in_organization=None
             )
 
-
-
-
         self.membership_request.save()
-
 
         return 0
 
-    def reject_request(self,**kwargs):
+    def reject_request(self, **kwargs):
         self.membership_request.request_status = RequestStatus.REJECTED.value
         self.membership_request.rejected_at = timezone.now()
         self.membership_request.save()
