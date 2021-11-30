@@ -1,19 +1,22 @@
 from climateconnect_api.models.role import Role
 from climateconnect_api.models.user import UserProfile
-from hubs.serializers.hub import HubStubSerializer
-from organization.models.project import Project, ProjectParents
-from organization.serializers.translation import OrganizationTranslationSerializer
 from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.conf import settings
 from django.utils.translation import get_language
+from hubs.serializers.hub import HubStubSerializer
 from rest_framework import serializers
 
-from organization.models import Organization, OrganizationMember, OrganizationTranslation
+from organization.models import (Organization, OrganizationMember,
+                                 OrganizationTranslation)
+from organization.models.project import Project, ProjectParents
 from organization.serializers.tags import OrganizationTaggingSerializer
+from organization.serializers.translation import \
+    OrganizationTranslationSerializer
 from organization.utility.organization import (
-    get_organization_name, get_organization_short_description, get_organization_about_section)
-from organization.models.project import ProjectParents
+    get_organization_about_section, get_organization_name,
+    get_organization_short_description)
+
 
 class OrganizationStubSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
