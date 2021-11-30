@@ -17,7 +17,7 @@ import {
   Paper,
   Popper,
   SwipeableDrawer,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -185,8 +185,8 @@ const useStyles = makeStyles((theme) => {
     },
     mobileAvatarContainer: {
       display: "flex",
-      justifyContent: "center"
-    }
+      justifyContent: "center",
+    },
   };
 });
 

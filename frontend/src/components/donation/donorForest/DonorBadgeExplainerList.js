@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     gridRowGap: 5,
     [theme.breakpoints.down("xs")]: {
       gridTemplateColumns: "repeat(1, 1fr)",
-    }
+    },
   },
 }));
 

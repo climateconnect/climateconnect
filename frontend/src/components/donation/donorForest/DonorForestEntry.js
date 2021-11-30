@@ -34,9 +34,9 @@ export default function DonorForestEntry({ donor }) {
   const timeSinceFirstDonation = now - new Date(donor.started_donating);
   return (
     <Tooltip
-      title={`${donor.first_name} ${
-        donor.last_name
-      } ${texts.has_been_a_supporter_for} ${durationFromMiliseconds(timeSinceFirstDonation, texts)}`}
+      title={`${donor.first_name} ${donor.last_name} ${
+        texts.has_been_a_supporter_for
+      } ${durationFromMiliseconds(timeSinceFirstDonation, texts)}`}
     >
       <div>
         <div className={classes.treeImageContainer}>

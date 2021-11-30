@@ -11,16 +11,16 @@ const useStyles = makeStyles((theme) => ({
   transition: {
     height: 100,
     [theme.breakpoints.down("xs")]: {
-      height: 40
-    }
+      height: 40,
+    },
   },
   mountainsContainer: {
     display: "flex",
     alignItems: "flex-end",
     position: "relative",
     [theme.breakpoints.down("xs")]: {
-      justifyContent: "center"
-    }
+      justifyContent: "center",
+    },
   },
   mountains: {
     background: "url('/images/mountains.svg')",
@@ -31,8 +31,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundRepeat: "no-repeat",
     backgroundPosition: "bottom",
     [theme.breakpoints.down("xs")]: {
-      display: "none"
-    }
+      display: "none",
+    },
   },
   explainer: {
     marginBottom: theme.spacing(6),
@@ -44,8 +44,8 @@ const useStyles = makeStyles((theme) => ({
     width: 45,
     height: 30,
     [theme.breakpoints.down("xs")]: {
-      display: "none"
-    }
+      display: "none",
+    },
   },
   smallCloud2: {
     position: "absolute",
@@ -55,11 +55,11 @@ const useStyles = makeStyles((theme) => ({
     height: 26,
     [theme.breakpoints.down("sm")]: {
       left: 50,
-      top: 50
+      top: 50,
     },
     [theme.breakpoints.down("xs")]: {
-      display: "none"
-    }
+      display: "none",
+    },
   },
   smallCloud3: {
     position: "absolute",
@@ -68,8 +68,8 @@ const useStyles = makeStyles((theme) => ({
     width: 39,
     height: 26,
     [theme.breakpoints.down("xs")]: {
-      display: "none"
-    }
+      display: "none",
+    },
   },
   smallCloud4: {
     position: "absolute",

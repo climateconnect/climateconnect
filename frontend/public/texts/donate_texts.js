@@ -308,7 +308,7 @@ export default function getDonateTexts({ classes, goal }) {
     },
     has_been_a_supporter_for: {
       en: "has been a supporter for",
-      de: "unterstützt seit"
-    }
+      de: "unterstützt seit",
+    },
   };
 }

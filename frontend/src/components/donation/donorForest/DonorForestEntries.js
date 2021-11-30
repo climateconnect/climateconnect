@@ -13,17 +13,18 @@ const useStyles = makeStyles((theme) => ({
     "& div": {
       gridColumn: "span 2",
       [theme.breakpoints.down("sm")]: {
-        gridColumn: "span 3"
-      }
+        gridColumn: "span 3",
+      },
     },
     "& div:nth-child(12n+7), div:nth-child(12n+11)": {
       [theme.breakpoints.up("md")]: {
         gridColumn: "span 3",
-      }
-    }, "& div:nth-child(7n+5), & div:nth-child(7n+6), div:nth-child(7n+7)": {
+      },
+    },
+    "& div:nth-child(7n+5), & div:nth-child(7n+6), div:nth-child(7n+7)": {
       [theme.breakpoints.down("sm")]: {
         gridColumn: "span 4",
-      }
+      },
     },
     paddingBottom: theme.spacing(10),
   },
