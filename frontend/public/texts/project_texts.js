@@ -931,17 +931,13 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
         project?.creator &&
         " created by " + (project.creator?.name ? project.creator?.name : creator?.name)
       }. 
-      You should check it out here: ${process.env.BASE_URL}${getLocalePrefix(locale)}/projects/${
-        project?.url_slug
-      }`,
+      You should check it out here: `,
       de: `Hey,
       Ich habe gerade dieses spannende Klimaschutzprojekt gefunden: "${project?.name}"${
         project?.creator &&
         ", erstellt von " + (project.creator?.name ? project.creator?.name : creator?.name)
       }. 
-      Schau's dir doch mal an: ${process.env.BASE_URL}${getLocalePrefix(locale)}/projects/${
-        project?.url_slug
-      }`,
+      Schau's dir doch mal an: `,
     },
     contact_creator_to_know_more_about_project: {
       en: `Contact ${creator?.first_name} if you want to chat about this project.`,
