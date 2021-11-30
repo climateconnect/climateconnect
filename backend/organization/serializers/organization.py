@@ -141,6 +141,7 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     projects_count = serializers.SerializerMethodField()
     members_count = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
 
     class Meta:
         model = Organization
