@@ -17,7 +17,7 @@ import {
   Paper,
   Popper,
   SwipeableDrawer,
-  Typography,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -183,6 +183,10 @@ const useStyles = makeStyles((theme) => {
     moreButtonMobile: {
       color: "white",
     },
+    mobileAvatarContainer: {
+      display: "flex",
+      justifyContent: "center"
+    }
   };
 });
 
@@ -702,12 +706,12 @@ function NarrowScreenLinks({
                 };
                 if (link.avatar)
                   return (
-                    <>
+                    <div className={classes.mobileAvatarContainer}>
                       {loggedInUser.badges?.length > 0 ? (
                         <ProfileBadge
                           name={loggedInUser.badges[0].name}
                           image={getImageUrl(loggedInUser.badges[0].image)}
-                          size="small"
+                          size="medium"
                           className={classes.badge}
                         >
                           <Avatar {...avatarProps} />
@@ -715,7 +719,7 @@ function NarrowScreenLinks({
                       ) : (
                         <Avatar {...avatarProps} />
                       )}
-                    </>
+                    </div>
                   );
                 else if (link.isLogoutButton)
                   return (
