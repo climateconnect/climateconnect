@@ -253,7 +253,7 @@ MyApp.getInitialProps = async (ctx) => {
   const [user, notifications, donationGoal, pageProps] = await Promise.all([
     getLoggedInUser(token),
     getNotifications(token),
-    getDonationGoalData(ctx?.router?.locale),
+    null,//getDonationGoalData(ctx?.router?.locale),
     //Call getInitialProps of children
     {},
   ]);
