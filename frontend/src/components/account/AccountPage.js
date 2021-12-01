@@ -263,8 +263,8 @@ export default function AccountPage({
         }}
       >
         {isOrganization && (
-          <div className={classes.shareButtonContainer}>
             <SocialMediaShareButton
+              containerClassName={classes.shareButtonContainer}
               contentLinkPath={"/" + locale + "/organizations/" + account.url_slug}
               apiEndpoint={"/api/organizations/" + account.url_slug + "/set_shared_organization/"}
               locale={locale}
@@ -276,7 +276,6 @@ export default function AccountPage({
               dialogTitle={organizationTexts.tell_others_about_this_organization}
               switchColors={true}
             />
-          </div>
         )}
       </div>
       <Container className={classes.infoContainer}>
