@@ -264,20 +264,20 @@ export default function AccountPage({
         }}
       >
         {isOrganization && (
-            <SocialMediaShareButton
-              containerClassName={classes.shareButtonContainer}
-              contentLinkPath={"/" + locale + "/organizations/" + account.url_slug}
-              apiEndpoint={"/api/organizations/" + account.url_slug + "/set_shared_organization/"}
-              locale={locale}
-              token={token}
-              messageTitle={organizationTexts.climate_protection_organization + account.name}
-              tinyScreen={isTinyScreen}
-              smallScreen={isSmallScreen}
-              mailBody={organizationTexts.share_organization_email_body}
-              texts={texts}
-              dialogTitle={organizationTexts.tell_others_about_this_organization}
-              switchColors={true}
-            />
+          <SocialMediaShareButton
+            containerClassName={classes.shareButtonContainer}
+            contentLinkPath={"/" + locale + "/organizations/" + account.url_slug}
+            apiEndpoint={"/api/organizations/" + account.url_slug + "/set_shared_organization/"}
+            locale={locale}
+            token={token}
+            messageTitle={organizationTexts.climate_protection_organization + account.name}
+            tinyScreen={isTinyScreen}
+            smallScreen={isSmallScreen}
+            mailBody={organizationTexts.share_organization_email_body}
+            texts={texts}
+            dialogTitle={organizationTexts.tell_others_about_this_organization}
+            switchColors={true}
+          />
         )}
       </div>
       <Container className={classes.infoContainer}>
