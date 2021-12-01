@@ -26,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Layout({
   title,
   hideHeadline,
-  noSpacingBottom,
   children,
   message,
   messageType,
@@ -47,7 +46,7 @@ export default function Layout({
   }, []);
   return (
     <LayoutWrapper theme={theme} title={title}>
-      <Header noSpacingBottom={noSpacingBottom} isStaticPage={isStaticPage} />
+      <Header noSpacingBottom isStaticPage={isStaticPage} />
       {<DonationCampaignInformation />}
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />

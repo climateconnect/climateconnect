@@ -17,26 +17,24 @@ import theme from "../src/themes/theme";
 
 export default function MyApp({
   Component,
-  pageProps,
-  user,
-  notifications,
-  pathName,
+  pageProps={},
 }) {
-  const [gaInitialized, setGaInitialized] = useState(false);
-  const [isLoading, setLoading] = useState(false);
-
+  const router = useRouter();
   // Cookies
   const cookies = new Cookies();
   const token = cookies.get("token");
+  const [gaInitialized, setGaInitialized] = useState(false);
+  console.log(router.pathname)
+  const [isLoading, setLoading] = useState(true);
+  
   const [acceptedStatistics, setAcceptedStatistics] = useState(cookies.get("acceptedStatistics"));
   const [acceptedNecessary, setAcceptedNecessary] = useState(cookies.get("acceptedNecessary"));
-  const [donationGoal, setDonationGoal] = useState({})
   const updateCookies = () => {
     setAcceptedStatistics(cookies.get("acceptedStatistics"));
     setAcceptedNecessary(cookies.get("acceptedNecessary"));
-  };
-
-  const router = useRouter();
+  };  
+  
+  const pathName = router.pathname + router.search ?? ""
   const { locale, locales } = router;
   if (
     acceptedStatistics &&
@@ -63,8 +61,9 @@ export default function MyApp({
   // into individual state updates for
   // user, and notifications
   const [state, setState] = useState({
-    user: user,
-    notifications: notifications,
+    user: {},
+    notifications: [],
+    donationGoal: null
   });
 
   const [webSocketClient, setWebSocketClient] = useState(null);
@@ -122,15 +121,36 @@ export default function MyApp({
     });
   };
 
-  useEffect(async () => {
-    if (user) {
-      const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
+  useEffect(async () => {      
+    // Remove the server-side injected CSS.
+    const jssStyles = document.querySelector("#jss-server-side");
+    if (jssStyles) {
+      jssStyles.parentElement.removeChild(jssStyles);
+    }
+    const [fetchedDonationGoal, fetchedUser, fetchedNotifications] = await Promise.all([
+      getDonationGoalData(locale),
+      getLoggedInUser(token),
+      getNotifications(token)
+    ]);
+
+    setState({
+      ...state,
+      user: fetchedUser,
+      notifications: fetchedNotifications,
+      donationGoal: fetchedDonationGoal
+    })
+    setLoading(false)
+  }, []);
+
+  useEffect(() => {
+    if (state.user) {
+      const notificationsToSetRead = getNotificationsToSetRead(state.notifications, pageProps);
       const client = WebSocketService("/ws/chat/");
 
       setState({
         ...state,
-        user: user,
-        notifications: notifications.filter((n) => !notificationsToSetRead.includes(n)),
+        user: state.user,
+        notifications: state.notifications?.filter((n) => !notificationsToSetRead.includes(n)),
       });
 
       setWebSocketClient(client);
@@ -142,15 +162,7 @@ export default function MyApp({
       // Try to connect to the WebSocket
       connect(client);
     }
-
-    // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector("#jss-server-side");
-    if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
-    }
-
-    setDonationGoal(await getDonationGoalData(locale))
-  }, []);
+  }, [state.user])
 
   const connect = (initialClient) => {
     const client = initialClient ? initialClient : WebSocketService("/ws/chat/");
@@ -217,13 +229,13 @@ export default function MyApp({
     ReactGA: ReactGA,
     updateCookies: updateCookies,
     socketConnectionState: socketConnectionState,
-    donationGoal: donationGoal,
+    donationGoal: state.donationGoal,
     acceptedNecessary: acceptedNecessary,
     locale: locale,
     locales: locales,
-    isLoading,
-    startLoading,
-    stopLoading,
+    isLoading: isLoading,
+    startLoading: startLoading,
+    stopLoading: stopLoading,
   };
 
   return (
@@ -241,6 +253,7 @@ export default function MyApp({
 
 MyApp.getInitialProps = async (ctx) => {
   const { token } = NextCookies(ctx.ctx);
+  console.log("getting initial props")
   if (ctx.router.route === "/" && token) {
     console.log("redirecting!!!")
     ctx.ctx.res.writeHead(302, {
@@ -249,32 +262,11 @@ MyApp.getInitialProps = async (ctx) => {
     });
     ctx.ctx.res.end();
     return;
-  } else {
-    console.log("donation campaign running...")
-    console.log(process.env.DONATION_CAMPAIGN_RUNNING)
-
-    const [user, notifications] = await Promise.all([
-      getLoggedInUser(token),
-      getNotifications(token)
-    ]);
-    const pageProps = {}
-    const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
-    console.log(pathName)
-    console.log("finished getInitialProps")
-    console.log({
-      pageProps: pageProps,
-      user: user,
-      notifications: notifications ? notifications : [],
-      pathName: pathName
-    })
-    return {
-      pageProps: pageProps,
-      user: user,
-      notifications: notifications ? notifications : [],
-      pathName: pathName,
-    };
   }
-};
+  return {
+    props: {}
+  }
+}
 
 const getNotificationsToSetRead = (notifications, pageProps) => {
   let notifications_to_set_unread = [];
