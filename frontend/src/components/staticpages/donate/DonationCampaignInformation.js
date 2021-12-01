@@ -115,6 +115,8 @@ export default function DonationCampaignInformation() {
   console.log("donationGoal")
   console.log(donationGoal)
 
+  if(!donationGoal)
+    return <></>
   return (
     <>
       {open && (

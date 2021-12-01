@@ -21,7 +21,6 @@ export default function MyApp({
   user,
   notifications,
   pathName,
-  donationGoal,
 }) {
   const [gaInitialized, setGaInitialized] = useState(false);
   const [isLoading, setLoading] = useState(false);
@@ -31,6 +30,7 @@ export default function MyApp({
   const token = cookies.get("token");
   const [acceptedStatistics, setAcceptedStatistics] = useState(cookies.get("acceptedStatistics"));
   const [acceptedNecessary, setAcceptedNecessary] = useState(cookies.get("acceptedNecessary"));
+  const [donationGoal, setDonationGoal] = useState({})
   const updateCookies = () => {
     setAcceptedStatistics(cookies.get("acceptedStatistics"));
     setAcceptedNecessary(cookies.get("acceptedNecessary"));
@@ -122,7 +122,7 @@ export default function MyApp({
     });
   };
 
-  useEffect(() => {
+  useEffect(async () => {
     if (user) {
       const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
       const client = WebSocketService("/ws/chat/");
@@ -148,6 +148,8 @@ export default function MyApp({
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
+
+    setDonationGoal(await getDonationGoalData(locale))
   }, []);
 
   const connect = (initialClient) => {
@@ -251,14 +253,11 @@ MyApp.getInitialProps = async (ctx) => {
     console.log("donation campaign running...")
     console.log(process.env.DONATION_CAMPAIGN_RUNNING)
 
-    const [user, notifications, donationGoal] = await Promise.all([
+    const [user, notifications] = await Promise.all([
       getLoggedInUser(token),
-      getNotifications(token),
-      getDonationGoalData(),
+      getNotifications(token)
     ]);
     const pageProps = {}
-    console.log("retrieved donationGoal")
-    console.log(donationGoal)
     const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
     console.log(pathName)
     console.log("finished getInitialProps")
@@ -266,15 +265,13 @@ MyApp.getInitialProps = async (ctx) => {
       pageProps: pageProps,
       user: user,
       notifications: notifications ? notifications : [],
-      pathName: pathName,
-      donationGoal: donationGoal,
+      pathName: pathName
     })
     return {
       pageProps: pageProps,
       user: user,
       notifications: notifications ? notifications : [],
       pathName: pathName,
-      donationGoal: donationGoal,
     };
   }
 };
