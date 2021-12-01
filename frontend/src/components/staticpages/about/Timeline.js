@@ -132,7 +132,7 @@ const getTimelineData = (isMediumScreen, texts) => [
     content: texts.beta_launch_text,
   },
   {
-    date: texts.summer + " 2021",
+    date: texts.winter + " 2021/22",
     headline: texts.leaving_beta,
     content: texts.leaving_beta_text,
   },

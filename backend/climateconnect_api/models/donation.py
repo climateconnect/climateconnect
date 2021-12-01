@@ -112,6 +112,10 @@ class Donation(models.Model):
         ordering = ["-id"]
     
     def __str__(self):
-        return "Donation from : %s" % (
-            self.date_first_received
+        return "%s %s from %s (%s%s)" % (
+            "One time donation: " if not self.is_recurring else "Regular donation: ",
+            str(self.donation_amount)+"€",
+            self.user.first_name + " " + self.user.last_name,            
+            self.date_first_received,
+            ", cancelled " + str(self.date_cancelled) if self.date_cancelled else ""
         )
