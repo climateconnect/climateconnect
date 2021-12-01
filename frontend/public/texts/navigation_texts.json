@@ -82,5 +82,9 @@
   "jobs": {
     "en": "Jobs",
     "de": "Jobs"
+  },
+  "donorforest": {
+    "en": "Donor Forest",
+    "de": "Spendenwald"
   }
 }
