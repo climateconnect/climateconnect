@@ -96,8 +96,6 @@ const useStyles = makeStyles((theme) => ({
 export default function DonationCampaignInformation() {
   const classes = useStyles();
   const cookies = new Cookies();
-  const expiry = daysInFuture(3);
-  const cookieProps = getCookieProps(expiry);
   const [open, setOpen] = React.useState(!cookies.get("hideDonationCampaign"));
   const [expanded, setExpanded] = React.useState(false);
   const { donationGoal, locale } = useContext(UserContext);
@@ -105,6 +103,8 @@ export default function DonationCampaignInformation() {
   const texts = getTexts({page: "donate", locale: locale, classes: classes})
 
   const handleClose = () => {
+    const expiry = daysInFuture(3);
+    const cookieProps = getCookieProps(expiry);
     cookies.set("hideDonationCampaign", true, cookieProps);
     setOpen(false);
   };
