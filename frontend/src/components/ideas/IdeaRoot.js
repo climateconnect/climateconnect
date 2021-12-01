@@ -146,6 +146,7 @@ export default function IdeaRoot({
   );
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isTinyScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const handleIdeaClose = (e) => {
     onIdeaClose(e);
@@ -400,6 +401,7 @@ export default function IdeaRoot({
                     texts.climate_protection_idea_from + ideaCreatorName + ": " + idea.name
                   }
                   tinyScreen={isTinyScreen}
+                  smallScreen={isSmallScreen}
                   mailBody={texts.share_idea_email_body}
                   texts={texts}
                   dialogTitle={texts.tell_others_about_this_idea}

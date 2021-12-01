@@ -129,6 +129,7 @@ export default function AccountPage({
   isOrganization,
   editText,
   isTinyScreen,
+  isSmallScreen,
 }) {
   const classes = useStyles({ isOwnAccount: isOwnAccount });
   const { locale } = useContext(UserContext);
@@ -271,6 +272,7 @@ export default function AccountPage({
               token={token}
               messageTitle={organizationTexts.climate_protection_organization + account.name}
               tinyScreen={isTinyScreen}
+              smallScreen={isSmallScreen}
               mailBody={organizationTexts.share_organization_email_body}
               texts={texts}
               dialogTitle={organizationTexts.tell_others_about_this_organization}

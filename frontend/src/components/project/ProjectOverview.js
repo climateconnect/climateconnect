@@ -205,6 +205,7 @@ function SmallScreenOverview({
           token={token}
           messageTitle={messageTitleShareButton}
           tinyScreen={screenSize.belowTiny}
+          smallScreen={screenSize.belowSmall}
           mailBody={mailBodyShareButton}
           texts={texts}
           dialogTitle={dialogTitleShareButton}

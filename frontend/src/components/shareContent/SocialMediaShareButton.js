@@ -24,6 +24,7 @@ export default function SocialMediaShareButton({
   token,
   messageTitle,
   tinyScreen,
+  smallScreen,
   mailBody,
   texts,
   dialogTitle,
@@ -76,7 +77,7 @@ export default function SocialMediaShareButton({
 
   const handleClick = () => {
     //navigator.share (Web Share API) is only available with https
-    if (navigator.share) {
+    if (navigator.share && smallScreen) {
       navigator
         .share({
           title: messageTitle,
