@@ -255,15 +255,20 @@ MyApp.getInitialProps = async (ctx) => {
     getNotifications(token),
     getDonationGoalData(ctx?.router?.locale),
     //Call getInitialProps of children
-    ctx.Component && ctx.Component.getInitialProps
-      ? ctx.Component.getInitialProps({ ...ctx.ctx, locale: ctx.router.locale })
-      : {},
+    {},
   ]);
   console.log("retrieved donationGoal")
   console.log(donationGoal)
   const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
   console.log(pathName)
   console.log("finished getInitialProps")
+  console.log({
+    pageProps: pageProps,
+    user: user,
+    notifications: notifications ? notifications : [],
+    pathName: pathName,
+    donationGoal: donationGoal,
+  })
   return {
     pageProps: pageProps,
     user: user,
