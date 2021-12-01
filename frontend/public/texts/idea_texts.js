@@ -4,7 +4,7 @@ import { SHORT_DESCRIPTION_MAX_LENGTH } from "../../src/components/ideas/createI
 
 const ONE_WEEK_IN_MINISECONDS = 1000 * 60 * 60 * 24 * 7;
 
-export default function getIdeaTexts({ idea }) {
+export default function getIdeaTexts({ idea, creator }) {
   const olderThanOneWeek = new Date() - new Date(idea?.created_at) > ONE_WEEK_IN_MINISECONDS;
 
   return {
@@ -198,6 +198,28 @@ export default function getIdeaTexts({ idea }) {
     idea_has_been_created: {
       en: "Congratulations, your idea has been created!",
       de: "Herzlichen Glückwunsch, deine Idee wurde erstellt!",
+    },
+    tell_others_about_this_idea: {
+      en: "Tell others about this idea!",
+      de: "Erzähle anderen von dieser Idee!",
+    },
+    climate_protection_idea_from: {
+      en: "Climate protection idea from ",
+      de: "Idee zum Klimaschutz von ",
+    },
+    share_idea_email_body: {
+      en: `Hey,
+      I found this awesome idea for climate protection: "${idea?.name}"${
+        creator &&
+        " created by " + creator
+      }. 
+      You should check it out here: `,
+      de: `Hey,
+      Ich habe gerade diese spannende Idee zum Klimaschutz gefunden: "${idea?.name}"${
+        creator &&
+        ", erstellt von " + creator
+      }. 
+      Schau's dir doch mal an: `,
     },
   };
 }

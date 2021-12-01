@@ -8,7 +8,7 @@ from django.utils.translation import get_language
 from django.db.models import Case, Value, When
 from django.db.models.query import QuerySet
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 # Climate connect imports
-from climateconnect_api.models import Language, Role
+from climateconnect_api.models import Language, Role, ContentShares
 from climateconnect_api.utility.translation import get_translations
 from climateconnect_main.utility.general import get_image_from_data_url
 from chat_messages.models.message import MessageParticipants, Participant
@@ -218,3 +218,19 @@ class GetHaveIJoinedIdeaView(APIView):
                 return Response({'has_joined': False}, status=status.HTTP_200_OK)
         except MessageParticipants.DoesNotExist:
             return Response({'message': 'Group chat not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class SetIdeaSharedView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request, url_slug):
+        if 'shared_via' not in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            idea = Idea.objects.get(url_slug=url_slug)
+        except Idea.DoesNotExist:
+            raise NotFound(detail='Idea not found.', code=status.HTTP_404_NOT_FOUND)
+
+        if (request.user.is_authenticated):
+            ContentShares.objects.create(user=request.user, idea=idea, shared_via=request.data['shared_via'])
+        else: 
+            ContentShares.objects.create(idea=idea, shared_via=request.data['shared_via'])
+        return Response(status=status.HTTP_201_CREATED)
