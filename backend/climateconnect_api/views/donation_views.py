@@ -5,7 +5,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from climateconnect_api.serializers.user import DonorProfileSerializer, UserProfileStubSerializer
-import datetime
+import pytz
+from datetime import datetime
 
 from climateconnect_api.models import DonationGoal, Donation
 from climateconnect_api.serializers.donation import DonationGoalSerializer
@@ -14,7 +15,7 @@ class GetDonationGoalProgress(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        now = datetime.datetime.now()
+        now = datetime.utcnow().replace(tzinfo=pytz.utc)
         try:
             goal = DonationGoal.objects.get(start_date__lte=now, end_date__gte=now)
         except DonationGoal.DoesNotExist:
