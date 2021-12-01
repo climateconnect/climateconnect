@@ -55,8 +55,8 @@ export default function SocialMediaShareButton({
       .catch(function (error) {
         console.log(error);
         if (error && error.reponse) console.log(error.response);
-      }); 
-  }  
+      });
+  };
 
   //Assignment of the numbers has to match with ContentShares.SHARE_OPTIONS in the backend
   const SHARE_OPTIONS = {

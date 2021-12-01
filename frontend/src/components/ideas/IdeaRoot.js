@@ -293,7 +293,9 @@ export default function IdeaRoot({
     setHasJoinedIdea(newHasJoinedIdeaObject);
   };
 
-  const ideaCreatorName = idea.user ? idea.user.first_name + " " + idea.user.last_name : idea.organization.name;
+  const ideaCreatorName = idea.user
+    ? idea.user.first_name + " " + idea.user.last_name
+    : idea.organization.name;
 
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "idea", locale: locale, idea: idea, creator: ideaCreatorName });
@@ -396,7 +398,9 @@ export default function IdeaRoot({
                   apiEndpoint={"/api/ideas/" + idea.url_slug + "/set_shared_idea/"}
                   locale={locale}
                   token={token}
-                  messageTitle={texts.climate_protection_idea_from + ideaCreatorName + ": " + idea.name}
+                  messageTitle={
+                    texts.climate_protection_idea_from + ideaCreatorName + ": " + idea.name
+                  }
                   tinyScreen={isTinyScreen}
                   mailBody={texts.share_idea_email_body}
                   texts={texts}
