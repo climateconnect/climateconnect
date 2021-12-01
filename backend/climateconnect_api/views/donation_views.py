@@ -31,7 +31,8 @@ class GetDonorsWithBadges(ListAPIView):
         donors_with_relevant_donations = Donation.objects.filter(
             is_recurring=True,
             donation_amount__gte=5,
-            date_cancelled=None
+            date_cancelled=None,
+            user__isnull=False
         ).order_by().values('user').distinct()
         relevant_user_profiles = []
         for donor in donors_with_relevant_donations:

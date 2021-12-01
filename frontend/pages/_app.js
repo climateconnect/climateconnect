@@ -247,11 +247,13 @@ MyApp.getInitialProps = async (ctx) => {
     ctx.ctx.res.end();
     return;
   }
+  console.log("donation campaign running...")
+  console.log(process.env.DONATION_CAMPAIGN_RUNNING)
 
   const [user, notifications, donationGoal, pageProps] = await Promise.all([
     getLoggedInUser(token),
     getNotifications(token),
-    process.env.DONATION_CAMPAIGN_RUNNING === "true" ? getDonationGoalData(ctx.router.locale) : null,
+    (process.env.DONATION_CAMPAIGN_RUNNING === "true") ? getDonationGoalData(ctx?.router?.locale) : null,
     //Call getInitialProps of children
     ctx.Component && ctx.Component.getInitialProps
       ? ctx.Component.getInitialProps({ ...ctx.ctx, locale: ctx.router.locale })
@@ -367,6 +369,7 @@ async function getDonationGoalData(locale) {
       url: "/api/donation_goal_progress/",
       locale: locale
     });
+    console.log(resp)
     return {
       goal_name: resp.data.name,
       goal_start: resp.data.start_date,
