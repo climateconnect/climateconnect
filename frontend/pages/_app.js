@@ -240,42 +240,43 @@ export default function MyApp({
 MyApp.getInitialProps = async (ctx) => {
   const { token } = NextCookies(ctx.ctx);
   if (ctx.router.route === "/" && token) {
+    console.log("redirecting!!!")
     ctx.ctx.res.writeHead(302, {
       Location: getLocalePrefix(ctx.router.locale) + "/browse",
       "Content-Type": "text/html; charset=utf-8",
     });
     ctx.ctx.res.end();
     return;
-  }
-  console.log("donation campaign running...")
-  console.log(process.env.DONATION_CAMPAIGN_RUNNING)
+  } else {
+    console.log("donation campaign running...")
+    console.log(process.env.DONATION_CAMPAIGN_RUNNING)
 
-  const [user, notifications, donationGoal, pageProps] = await Promise.all([
-    getLoggedInUser(token),
-    getNotifications(token),
-    getDonationGoalData(),
-    //Call getInitialProps of children
-    {},
-  ]);
-  console.log("retrieved donationGoal")
-  console.log(donationGoal)
-  const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
-  console.log(pathName)
-  console.log("finished getInitialProps")
-  console.log({
-    pageProps: pageProps,
-    user: user,
-    notifications: notifications ? notifications : [],
-    pathName: pathName,
-    donationGoal: donationGoal,
-  })
-  return {
-    pageProps: pageProps,
-    user: user,
-    notifications: notifications ? notifications : [],
-    pathName: pathName,
-    donationGoal: donationGoal,
-  };
+    const [user, notifications, donationGoal] = await Promise.all([
+      getLoggedInUser(token),
+      getNotifications(token),
+      getDonationGoalData(),
+    ]);
+    const pageProps = {}
+    console.log("retrieved donationGoal")
+    console.log(donationGoal)
+    const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
+    console.log(pathName)
+    console.log("finished getInitialProps")
+    console.log({
+      pageProps: pageProps,
+      user: user,
+      notifications: notifications ? notifications : [],
+      pathName: pathName,
+      donationGoal: donationGoal,
+    })
+    return {
+      pageProps: pageProps,
+      user: user,
+      notifications: notifications ? notifications : [],
+      pathName: pathName,
+      donationGoal: donationGoal,
+    };
+  }
 };
 
 const getNotificationsToSetRead = (notifications, pageProps) => {
@@ -386,6 +387,7 @@ async function getDonationGoalData() {
     console.log(ret)
     return ret;
   } catch (err) {
+    console.log("ERROR")
     if (err.response && err.response.data) {
       console.log(err.response.data);
     } else console.log(err);
