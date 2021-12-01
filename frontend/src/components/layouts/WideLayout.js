@@ -120,7 +120,7 @@ export default function WideLayout({
             </Alert>
           )}
           {subHeader && subHeader}
-          {!fixedHeader && process.env.DONATION_CAMPAIGN_RUNNING === "true" && !landingPage && (
+          {!fixedHeader && !landingPage && (
             <Collapse in={showDonationBanner}>
               <DonationCampaignInformation />
             </Collapse>
