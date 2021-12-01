@@ -38,7 +38,8 @@ module.exports = {
       },
       {
         source: '/klimakuechen-erlangen',
-        destination: '/de/projects/Gro%C3%9Fk%C3%BCchenregionalvernetzen-Speisepl%C3%A4neklimafreundlichgestalten244?hubPage=erlangen'
+        destination: '/de/projects/Gro%C3%9Fk%C3%BCchenregionalvernetzen-Speisepl%C3%A4neklimafreundlichgestalten244?hubPage=erlangen',
+        permanent: true,
       }
     ]
   },
