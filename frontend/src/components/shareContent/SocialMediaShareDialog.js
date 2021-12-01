@@ -1,6 +1,6 @@
 import { Button, InputAdornment, makeStyles, TextField } from "@material-ui/core";
 import LinkIcon from "@material-ui/icons/Link";
-import React, { useContext } from "react";
+import React from "react";
 import {
   EmailIcon,
   EmailShareButton,
@@ -17,7 +17,6 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
-import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
 
 const useStyles = makeStyles((theme) => ({
@@ -45,7 +44,6 @@ export default function SocialMediaShareDialog({
   dialogTitle,
 }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext);
 
   const handleClose = () => {
     onClose(false);
