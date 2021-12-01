@@ -18,6 +18,7 @@ from rest_framework.views import APIView
 # Climate connect imports
 from climateconnect_api.models import Language, Role, ContentShares
 from climateconnect_api.utility.translation import get_translations
+from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
 from chat_messages.models.message import MessageParticipants, Participant
 from chat_messages.utility.chat_setup import create_private_or_group_chat
@@ -222,15 +223,9 @@ class GetHaveIJoinedIdeaView(APIView):
 class SetIdeaSharedView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, url_slug):
-        if 'shared_via' not in request.data:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
             idea = Idea.objects.get(url_slug=url_slug)
         except Idea.DoesNotExist:
             raise NotFound(detail='Idea not found.', code=status.HTTP_404_NOT_FOUND)
-
-        if (request.user.is_authenticated):
-            ContentShares.objects.create(user=request.user, idea=idea, shared_via=request.data['shared_via'])
-        else: 
-            ContentShares.objects.create(idea=idea, shared_via=request.data['shared_via'])
+        save_content_shared(request, idea)
         return Response(status=status.HTTP_201_CREATED)

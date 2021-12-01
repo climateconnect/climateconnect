@@ -8,6 +8,7 @@ from climateconnect_api.models.language import Language
 from climateconnect_api.utility.translation import (edit_translation,
                                                     edit_translations,
                                                     translate_text)
+from climateconnect_api.utility.content_shares import save_content_shared                                                 
 from climateconnect_main.utility.general import get_image_from_data_url
 from dateutil.parser import parse
 from django.contrib.auth.models import User
@@ -943,15 +944,9 @@ class LeaveProject(RetrieveUpdateAPIView):
 class SetProjectSharedView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, url_slug):
-        if 'shared_via' not in request.data:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
-            raise NotFound(detail="Project not found.", code=status.HTTP_404_NOT_FOUND)
-
-        if (request.user.is_authenticated):
-            ContentShares.objects.create(user=request.user, project=project, shared_via=request.data['shared_via'])
-        else: 
-            ContentShares.objects.create(project=project, shared_via=request.data['shared_via'])
+            raise NotFound(detail='Project not found.', code=status.HTTP_404_NOT_FOUND)
+        save_content_shared(request, project)
         return Response(status=status.HTTP_201_CREATED)

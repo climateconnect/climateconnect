@@ -8,6 +8,7 @@ from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.utility.translation import (edit_translations,
                                                     get_translations,
                                                     translate_text)
+from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
 # Django imports
 from django.contrib.auth.models import User
@@ -557,15 +558,9 @@ class ListOrganizationsForSitemap(ListAPIView):
 class SetOrganisationSharedView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, url_slug):
-        if 'shared_via' not in request.data:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
             organization = Organization.objects.get(url_slug=url_slug)
         except Organization.DoesNotExist:
             raise NotFound(detail="Organization not found.", code=status.HTTP_404_NOT_FOUND)
-
-        if (request.user.is_authenticated):
-            ContentShares.objects.create(user=request.user, organization=organization, shared_via=request.data['shared_via'])
-        else: 
-            ContentShares.objects.create(organization=organization, shared_via=request.data['shared_via'])
-        return Response(status=status.HTTP_201_CREATED)  
+        save_content_shared(request, organization)
+        return Response(status=status.HTTP_201_CREATED)
