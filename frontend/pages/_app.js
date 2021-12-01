@@ -253,13 +253,17 @@ MyApp.getInitialProps = async (ctx) => {
   const [user, notifications, donationGoal, pageProps] = await Promise.all([
     getLoggedInUser(token),
     getNotifications(token),
-    (process.env.DONATION_CAMPAIGN_RUNNING === "true") ? getDonationGoalData(ctx?.router?.locale) : null,
+    getDonationGoalData(ctx?.router?.locale),
     //Call getInitialProps of children
     ctx.Component && ctx.Component.getInitialProps
       ? ctx.Component.getInitialProps({ ...ctx.ctx, locale: ctx.router.locale })
       : {},
   ]);
+  console.log("retrieved donationGoal")
+  console.log(donationGoal)
   const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
+  console.log(pathName)
+  console.log("finished getInitialProps")
   return {
     pageProps: pageProps,
     user: user,
@@ -369,14 +373,15 @@ async function getDonationGoalData(locale) {
       url: "/api/donation_goal_progress/",
       locale: locale
     });
-    console.log(resp)
-    return {
-      goal_name: resp.data.name,
-      goal_start: resp.data.start_date,
-      goal_end: resp.data.end_date,
-      goal_amount: resp.data.amount,
-      current_amount: resp.data.current_amount,
-    };
+    const ret = {
+      goal_name: resp?.data?.name,
+      goal_start: resp?.data?.start_date,
+      goal_end: resp?.data?.end_date,
+      goal_amount: resp?.data?.amount,
+      current_amount: resp?.data?.current_amount,
+    }
+    console.log(ret)
+    return ret;
   } catch (err) {
     if (err.response && err.response.data) {
       console.log(err.response.data);
