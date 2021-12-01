@@ -112,6 +112,8 @@ export default function DonationCampaignInformation() {
   const handleToggleExpanded = () => {
     setExpanded(!expanded);
   };
+  console.log("donationGoal")
+  console.log(donationGoal)
 
   return (
     <>
@@ -128,7 +130,7 @@ export default function DonationCampaignInformation() {
                   ? texts.donation_campaign_headline_short
                   : texts.donation_campaign_headline_long}
               </Typography>
-              {/*!expanded && (
+              {!expanded && donationGoal && (
                 <DonationGoal
                   current={donationGoal?.current_amount}
                   goal={donationGoal?.goal_amount}
@@ -138,19 +140,21 @@ export default function DonationCampaignInformation() {
                   barOnly
                   small
                 />
-              )*/}
+              )}
             </div>
           </div>
           <Collapse in={expanded}>
             <Container className={classes.expandableContent}>
-              <DonationGoal
-                current={donationGoal?.current_amount}
-                goal={donationGoal?.goal_amount}
-                name={donationGoal?.goal_name}
-                embedded
-                className={classes.donationGoal}
-                barColor={theme.palette.primary.light}
-              />
+              {donationGoal && (
+                <DonationGoal
+                  current={donationGoal?.current_amount}
+                  goal={donationGoal?.goal_amount}
+                  name={donationGoal?.goal_name}
+                  embedded
+                  className={classes.donationGoal}
+                  barColor={theme.palette.primary.light}
+                />
+              )}              
               {isNarrowScreen && (
                 <Button
                   href={getLocalePrefix(locale) + "/donate"}
