@@ -128,25 +128,25 @@ export default function DonationCampaignInformation() {
                   ? texts.donation_campaign_headline_short
                   : texts.donation_campaign_headline_long}
               </Typography>
-              {!expanded && (
+              {/*!expanded && (
                 <DonationGoal
-                  current={donationGoal.current_amount}
-                  goal={donationGoal.goal_amount}
-                  name={donationGoal.goal_name}
+                  current={donationGoal?.current_amount}
+                  goal={donationGoal?.goal_amount}
+                  name={donationGoal?.goal_name}
                   embedded
                   barColor={theme.palette.primary.light}
                   barOnly
                   small
                 />
-              )}
+              )*/}
             </div>
           </div>
           <Collapse in={expanded}>
             <Container className={classes.expandableContent}>
               <DonationGoal
-                current={donationGoal.current_amount}
-                goal={donationGoal.goal_amount}
-                name={donationGoal.goal_name}
+                current={donationGoal?.current_amount}
+                goal={donationGoal?.goal_amount}
+                name={donationGoal?.goal_name}
                 embedded
                 className={classes.donationGoal}
                 barColor={theme.palette.primary.light}
