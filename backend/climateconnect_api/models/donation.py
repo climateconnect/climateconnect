@@ -8,6 +8,14 @@ class DonationGoal(models.Model):
         max_length=512
     )
 
+    name_de_translation = models.CharField(
+        help_text="German translation of the goal name",
+        verbose_name="Goal name (DE)",
+        max_length=512,
+        null=True,
+        blank=True
+    )
+
     description = models.CharField(
         help_text="The description of the goal",
         verbose_name="Goal description",

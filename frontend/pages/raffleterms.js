@@ -1,5 +1,5 @@
-import Layout from "../src/components/layouts/layout";
 import React from "react";
+import Layout from "../src/components/layouts/layout";
 
 export default function Terms() {
   return (
@@ -12,7 +12,7 @@ export default function Terms() {
       </p>
       <h3>Procedure of the raffle</h3>
       <p>
-        The duration of the raffle is from 01.12.2020 to 31.12.2020. Within this period, donors have
+        The duration of the raffle is from 01.12.2021 to 31.12.2020. Within this period, donors have
         the opportunity to participate in the raffle.
       </p>
       <h3>Participation</h3>
@@ -49,7 +49,7 @@ export default function Terms() {
         participation in the competition.
       </p>
       <h3>Winning, notification and communication of the prize</h3>
-      <p>The following prize is awarded:</p>
+      <p>The following prizes are awarded:</p>
       <p>Co2 compensation by the company Ecologi Action Limited (ecologi.com)</p>
       <p>
         The winners will be determined after the closing date in a random draw among all
@@ -124,7 +124,7 @@ export default function Terms() {
       <p />
       <h3>Ablauf des Gewinnspiels</h3>
       <p>
-        Die Dauer des Gewinnspiels erstreckt sich vom 01.12.2020 bis zum 31.12.2020. Innerhalb
+        Die Dauer des Gewinnspiels erstreckt sich vom 01.12.2021 bis zum 31.12.2021. Innerhalb
         dieses Zeitraums erhalten Spender die M&ouml;glichkeit, am Gewinnspiel teilzunehmen.
       </p>
       <p />
@@ -166,7 +166,7 @@ export default function Terms() {
       </p>
       <p />
       <h3>Gewinn, Benachrichtigung und &Uuml;bermittlung des Gewinns</h3>
-      <p>Folgender Preis wird vergeben:</p>
+      <p>Folgende Preise werden vergeben:</p>
       <p>
         Co2 Kompensation durch die Firma <strong>Ecologi Action Limited </strong>(ecologi.com)
       </p>
