@@ -5,15 +5,15 @@ import { apiRequest } from "../../../public/lib/apiOperations";
 import SocialMediaShareDialog from "./SocialMediaShareDialog";
 
 const useStyles = makeStyles((theme) => ({
-  button: {
-    color: "white",
+  button: (props) => ({
+    color: props.switchColors ? theme.palette.primary.main : "white",
     width: 35,
     height: 35,
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: props.switchColors ? "white" : theme.palette.primary.main,
     "&:hover": {
-      backgroundColor: theme.palette.primary.main,
+      backgroundColor: props.switchColors ? "white" : theme.palette.primary.main,
     },
-  },
+  }),
 }));
 
 export default function SocialMediaShareButton({
@@ -27,8 +27,9 @@ export default function SocialMediaShareButton({
   mailBody,
   texts,
   dialogTitle,
+  switchColors,
 }) {
-  const classes = useStyles();
+  const classes = useStyles({ switchColors: switchColors });
 
   const [showSocials, setShowSocials] = React.useState(false);
   const toggleShowSocials = (value) => {

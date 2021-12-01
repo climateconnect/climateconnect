@@ -1,4 +1,4 @@
-import { Button, Container, Divider, Typography } from "@material-ui/core";
+import { Button, Container, Divider, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -18,6 +18,7 @@ import PageNotFound from "../../src/components/general/PageNotFound";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProfilePreviews from "../../src/components/profile/ProfilePreviews";
 import ProjectPreviews from "../../src/components/project/ProjectPreviews";
+import theme from "../../src/themes/theme";
 import getOrganizationInfoMetadata from "./../../public/data/organization_info_metadata.js";
 import UserContext from "./../../src/components/context/UserContext";
 
@@ -170,6 +171,8 @@ function OrganizationLayout({
     );
 
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
+
+  const isTinyScreen = useMediaQuery(theme.breakpoints.down("xs"));
   return (
     <AccountPage
       account={organization}
@@ -178,7 +181,9 @@ function OrganizationLayout({
       type="organization"
       infoMetadata={infoMetadata}
       isOwnAccount={canEdit}
+      isOrganization={true}
       editText={texts.edit_organization}
+      isTinyScreen={isTinyScreen}
     >
       {!user && (
         <LoginNudge
