@@ -8,6 +8,7 @@ import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, getRolesOptions } from "../../public/lib/apiOperations";
+import { getImageUrl } from "../../public/lib/imageOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 import { parseOrganization } from "../../public/lib/organizationOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -93,6 +94,7 @@ export default function OrganizationPage({
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
       description={organization.name + " | " + organization.info.short_description}
+      image={getImageUrl(organization.image)}
     >
       {organization ? (
         <OrganizationLayout
