@@ -253,7 +253,7 @@ MyApp.getInitialProps = async (ctx) => {
   const [user, notifications, donationGoal, pageProps] = await Promise.all([
     getLoggedInUser(token),
     getNotifications(token),
-    getDonationGoalData(ctx?.router?.locale),
+    getDonationGoalData(),
     //Call getInitialProps of children
     {},
   ]);
@@ -370,13 +370,11 @@ async function getNotifications(token) {
   }
 }
 
-async function getDonationGoalData(locale) {
-  console.log(locale)
+async function getDonationGoalData() {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/donation_goal_progress/",
-      locale: locale
+      url: "/api/donation_goal_progress/"
     });
     const ret = {
       goal_name: resp?.data?.name,
