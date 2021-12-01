@@ -217,7 +217,7 @@ export default function getIdeaTexts({ idea, creator }) {
       Ich habe gerade diese spannende Idee zum Klimaschutz gefunden: "${idea?.name}"${
         creator && ", erstellt von " + creator
       }. 
-      Schau's dir doch mal an: `,
+      Schau sie dir doch mal an: `,
     },
   };
 }

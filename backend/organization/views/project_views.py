@@ -940,7 +940,7 @@ class LeaveProject(RetrieveUpdateAPIView):
             # send to dev logs E= traceback.format_exc()
             return Response(data={'message': f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class SetProjectsSharedView(APIView):
+class SetProjectSharedView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, url_slug):
         if 'shared_via' not in request.data:
