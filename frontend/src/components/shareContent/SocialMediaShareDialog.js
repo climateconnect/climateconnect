@@ -37,7 +37,7 @@ export default function SocialMediaShareDialog({
   createShareRecord,
   tinyScreen,
   SHARE_OPTIONS,
-  projectLink,
+  contentLink,
   messageTitle,
   mailBody,
   texts,
@@ -54,7 +54,7 @@ export default function SocialMediaShareDialog({
 
   const handleClick = (sharedVia) => {
     createShareRecord(sharedVia);
-    navigator.clipboard.writeText(projectLink);
+    navigator.clipboard.writeText(contentLink);
   };
 
   return (
@@ -62,7 +62,7 @@ export default function SocialMediaShareDialog({
       <div className={classes.shareButtonsContainer}>
         <EmailShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.e_mail)}
-          url={projectLink}
+          url={contentLink}
           subject={messageTitle}
           body={mailBody}
         >
@@ -70,7 +70,7 @@ export default function SocialMediaShareDialog({
         </EmailShareButton>
         <FacebookShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.facebook)}
-          url={projectLink}
+          url={contentLink}
           quote={messageTitle}
           hashtag={facebookHashtag}
         >
@@ -78,7 +78,7 @@ export default function SocialMediaShareDialog({
         </FacebookShareButton>
         <TwitterShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.twitter)}
-          url={projectLink}
+          url={contentLink}
           title={messageTitle}
           hashtags={twitterHastags}
         >
@@ -86,7 +86,7 @@ export default function SocialMediaShareDialog({
         </TwitterShareButton>
         <WhatsappShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.whatsapp)}
-          url={projectLink}
+          url={contentLink}
           title={messageTitle}
         >
           <WhatsappIcon size={50} round={true} />
@@ -94,21 +94,21 @@ export default function SocialMediaShareDialog({
         {false && (
           <LinkedinShareButton
             beforeOnClick={() => createShareRecord(SHARE_OPTIONS.linkedin)}
-            url={projectLink}
+            url={contentLink}
           >
             <LinkedinIcon size={50} round={true} />
           </LinkedinShareButton>
         )}
         <RedditShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.reddit)}
-          url={projectLink}
+          url={contentLink}
           title={messageTitle}
         >
           <RedditIcon size={50} round={true} />
         </RedditShareButton>
         <TelegramShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.telegram)}
-          url={projectLink}
+          url={contentLink}
           title={messageTitle}
         >
           <TelegramIcon size={50} round={true} />
@@ -117,7 +117,7 @@ export default function SocialMediaShareDialog({
       <TextField
         fullWidth
         label={texts.link}
-        defaultValue={projectLink}
+        defaultValue={contentLink}
         InputProps={{
           readOnly: true,
           startAdornment: (

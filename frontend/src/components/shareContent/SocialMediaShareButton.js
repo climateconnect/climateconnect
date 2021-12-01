@@ -18,8 +18,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SocialMediaShareButton({
   containerClassName,
-  content,
-  contentAdmin,
   contentLinkPath,
   apiEndpoint,
   locale,
@@ -103,12 +101,10 @@ export default function SocialMediaShareButton({
       <SocialMediaShareDialog
         open={showSocials}
         onClose={toggleShowSocials}
-        project={content}
         createShareRecord={createShareRecord}
         tinyScreen={tinyScreen}
         SHARE_OPTIONS={SHARE_OPTIONS}
-        projectLink={contentLink}
-        projectAdmin={contentAdmin}
+        contentLink={contentLink}
         messageTitle={messageTitle}
         mailBody={mailBody}
         texts={texts}

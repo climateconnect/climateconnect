@@ -122,7 +122,6 @@ export default function ProjectOverview({
           texts={texts}
           screenSize={screenSize}
           locale={locale}
-          projectAdmin={projectAdmin}
           projectLinkPath={projectLinkPath}
           apiEndpointShareButton={apiEndpointShareButton}
           token={token}
@@ -179,7 +178,6 @@ function SmallScreenOverview({
   texts,
   screenSize,
   locale,
-  projectAdmin,
   projectLinkPath,
   apiEndpointShareButton,
   token,
@@ -201,8 +199,6 @@ function SmallScreenOverview({
         )}
         <SocialMediaShareButton
           containerClassName={classes.shareButtonContainer}
-          content={project}
-          contentAdmin={projectAdmin}
           contentLinkPath={projectLinkPath}
           apiEndpoint={apiEndpointShareButton}
           locale={locale}

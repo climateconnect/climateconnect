@@ -392,8 +392,6 @@ export default function IdeaRoot({
                   </Button>
                 )}
                 <SocialMediaShareButton
-                  content={idea}
-                  contentAdmin={idea.user ? idea.user : idea.organization}
                   contentLinkPath={"/" + locale + "/hubs/achern?idea=" + idea.url_slug + "#ideas"}
                   apiEndpoint={"/api/ideas/" + idea.url_slug + "/set_shared_idea/"}
                   locale={locale}

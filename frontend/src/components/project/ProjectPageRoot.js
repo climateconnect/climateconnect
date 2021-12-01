@@ -417,8 +417,6 @@ export default function ProjectPageRoot({
         {!screenSize.belowSmall && (
           <SocialMediaShareButton
             containerClassName={classes.shareButtonContainer}
-            content={project}
-            contentAdmin={projectAdmin}
             contentLinkPath={projectLinkPath}
             apiEndpoint={apiEndpointShareButton}
             locale={locale}
