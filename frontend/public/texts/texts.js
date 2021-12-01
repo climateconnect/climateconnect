@@ -50,7 +50,7 @@ export default function getTexts({
     cookie: cookie_texts,
     communication: getCommunicationTexts(),
     dashboard: getDashboardTexts({ user: user, location: location }),
-    donate: getDonateTexts({ classes: classes, goal: goal }),
+    donate: getDonateTexts({ classes: classes, goal: goal, locale: locale }),
     faq: getFaqTexts({ classes: classes, locale: locale }),
     filter_and_search: getFilterAndSearchTexts({
       filterType: filterType,

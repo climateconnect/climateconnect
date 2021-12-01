@@ -263,7 +263,7 @@ export default function getDonateTexts({ classes, goal }) {
     },
     donate_now: {
       en: "Donate now",
-      de: "Spende jetzt",
+      de: "Jetzt Spenden",
     },
     //example: 50€ raised of of 1000€ goal
     raised_out_of_goal: {
@@ -310,5 +310,36 @@ export default function getDonateTexts({ classes, goal }) {
       en: "has been a supporter for",
       de: "unterstützt seit",
     },
+    donation_campaign_headline_short: {
+      en: "Win the compensation of your footprint",
+      de: "Gewinne ein Jahr klimapositives Leben"
+    },
+    donation_campaign_headline_long: {
+      en: `Win the compensation of your 2021 CO2-footprint by donating to Climate Connect during
+      December`,
+      de: `Gewinne ein Jahr klimapositives Leben, indem du im Dezember an Climate Connect spendest`
+    },
+    you_can_find_the_terms_to_the_raffle_here: {
+      en: "You can find the terms of the raffle " ,
+      de: "Die Teilnahmebedingungen der Verlosung findest du "
+    },
+    here: {
+      en: "here",
+      de: "hier"
+    },
+    donation_campaing_info_text_first_sentence: {
+      en: `Your donation will help to scale effective climate solutions, support us in growing
+      a global network of climate actors and allow Climate Connect to stay free and
+      independent.`,
+      de: `Deine Spende hilft, effektive Klimaschutzprojekte anzustoßen und zu skalieren und hilft uns,
+      frei und unabhängig zu bleiben.`
+    },
+    raffle_announcement: {
+      en: `In our December raffle everybody who donates to Climate Connect in the
+      month of December has a chance to win prizes like the compensation of their year's
+      CO2-footprint kindly sponsored by `,
+      de: `Alle, die im Dezember spenden, können tolle Preise gewinnen, z.B. ein Jahr 
+      klimapositiv Leben, gesponsort von `
+    }
   };
 }
