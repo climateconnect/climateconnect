@@ -254,6 +254,7 @@ export default function MyApp({
 MyApp.getInitialProps = async (ctx) => {
   const { token } = NextCookies(ctx.ctx);
   console.log("getting initial props")
+  console.log(ctx.router.route)
   if (ctx.router.route === "/" && token) {
     console.log("redirecting!!!")
     ctx.ctx.res.writeHead(302, {
