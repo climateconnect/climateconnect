@@ -1,6 +1,5 @@
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { ThemeProvider } from "@material-ui/core/styles";
-import NextCookies from "next-cookies";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import ReactGA from "react-ga";
@@ -247,16 +246,6 @@ export default function MyApp({
       </ThemeProvider>
     </>
   );
-}
-
-MyApp.getInitialProps = async (ctx) => {
-  const { token } = NextCookies(ctx.ctx);
-  console.log(token)
-  console.log("getting initial props")
-  console.log(ctx.router.route)
-  return {
-    props: {}
-  }
 }
 
 const getNotificationsToSetRead = (notifications, pageProps) => {
