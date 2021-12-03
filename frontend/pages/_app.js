@@ -7,7 +7,7 @@ import ReactGA from "react-ga";
 // Add global styles
 import "react-multi-carousel/lib/styles.css";
 import Cookies from "universal-cookie";
-import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
+import { apiRequest } from "../public/lib/apiOperations";
 import { getCookieProps } from "../public/lib/cookieOperations";
 import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
@@ -24,7 +24,6 @@ export default function MyApp({
   const cookies = new Cookies();
   const token = cookies.get("token");
   const [gaInitialized, setGaInitialized] = useState(false);
-  console.log(router.pathname)
   const [isLoading, setLoading] = useState(true);
   
   const [acceptedStatistics, setAcceptedStatistics] = useState(cookies.get("acceptedStatistics"));
@@ -33,8 +32,7 @@ export default function MyApp({
     setAcceptedStatistics(cookies.get("acceptedStatistics"));
     setAcceptedNecessary(cookies.get("acceptedNecessary"));
   };  
-  
-  const pathName = router.pathname + router.search ?? ""
+  const pathName = router.pathname + (router.search ?? "")
   const { locale, locales } = router;
   if (
     acceptedStatistics &&
@@ -256,15 +254,6 @@ MyApp.getInitialProps = async (ctx) => {
   console.log(token)
   console.log("getting initial props")
   console.log(ctx.router.route)
-  if (ctx.router.route === "/" && token) {
-    console.log("redirecting!!!")
-    ctx.ctx.res.writeHead(302, {
-      Location: getLocalePrefix(ctx.router.locale) + "/browse",
-      "Content-Type": "text/html; charset=utf-8",
-    });
-    ctx.ctx.res.end();
-    return;
-  }
   return {
     props: {}
   }
