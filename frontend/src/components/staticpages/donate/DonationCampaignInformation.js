@@ -6,7 +6,7 @@ import {
   Link,
   makeStyles,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     paddingBottom: 0,
     position: "relative",
-    borderTop: `1px solid ${theme.palette.primary.extraLight}`
+    borderTop: `1px solid ${theme.palette.primary.extraLight}`,
   },
   text: {
     fontWeight: 600,
@@ -82,14 +82,14 @@ const useStyles = makeStyles((theme) => ({
   },
   topLineContainer: {
     display: "flex",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   textAndBarContainer: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-around",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 }));
 
 //If we want to reuse this, this has to be translated!
@@ -102,7 +102,7 @@ export default function DonationCampaignInformation() {
   const [expanded, setExpanded] = React.useState(false);
   const { donationGoal, locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
-  const texts = getTexts({page: "donate", locale: locale, classes: classes})
+  const texts = getTexts({ page: "donate", locale: locale, classes: classes });
 
   const handleClose = () => {
     cookies.set("hideDonationCampaign", true, cookieProps);
@@ -123,7 +123,7 @@ export default function DonationCampaignInformation() {
           <div className={classes.topLineContainer}>
             <img src="/icons/christmas-icon.svg" className={classes.christmasIcon} />
             <div className={classes.textAndBarContainer}>
-              <Typography className={classes.text}>            
+              <Typography className={classes.text}>
                 {isNarrowScreen
                   ? texts.donation_campaign_headline_short
                   : texts.donation_campaign_headline_long}

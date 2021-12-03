@@ -151,7 +151,10 @@ export default function ClimateMatchResult({ suggestion, pos }) {
               background={pos % 2 === 0 ? "#f5f5f5" : "#fff"}
             />
             {!displayContactButtonBelow && (
-              <div className={classes.contactCreatorButtonContainer} onClick={(e) => e.preventDefault()}>
+              <div
+                className={classes.contactCreatorButtonContainer}
+                onClick={(e) => e.preventDefault()}
+              >
                 <ContactCreatorButton
                   large
                   creator={creator}
