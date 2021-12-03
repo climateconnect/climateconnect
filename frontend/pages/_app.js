@@ -31,7 +31,7 @@ export default function MyApp({
     setAcceptedStatistics(cookies.get("acceptedStatistics"));
     setAcceptedNecessary(cookies.get("acceptedNecessary"));
   };  
-  const pathName = router.pathname + (router.search ?? "")
+  const pathName = router.asPath
   const { locale, locales } = router;
   if (
     acceptedStatistics &&
@@ -58,7 +58,7 @@ export default function MyApp({
   // into individual state updates for
   // user, and notifications
   const [state, setState] = useState({
-    user: {},
+    user: token ? {} : null,
     notifications: [],
     donationGoal: null
   });
