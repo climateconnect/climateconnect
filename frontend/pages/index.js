@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
 export async function getServerSideProps(ctx) {
   const { token } = NextCookies(ctx)
   console.log("getting serverside props")
-  if (ctx.router.route === "/" && token) {
+  if (ctx.resolvedUrl === "/" && token) {
     console.log("redirecting!!!")
     ctx.res.writeHead(302, {
       Location: getLocalePrefix(ctx.locale) + "/browse",
@@ -83,6 +83,11 @@ export async function getServerSideProps(ctx) {
     });
     ctx.res.end();
     return;
+  }
+  return {
+    props: {
+      
+    }
   }
 }
 
