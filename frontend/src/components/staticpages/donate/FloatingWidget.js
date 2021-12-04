@@ -1,9 +1,9 @@
-import React from "react";
 import { Container, makeStyles } from "@material-ui/core";
-import ElementOnScreen from "../../hooks/ElementOnScreen";
+import React from "react";
 import BottomOfPage from "../../hooks/BottomOfPage";
-import DonationGoal from "./DonationGoal";
+import ElementOnScreen from "../../hooks/ElementOnScreen";
 import ElementSpaceToTop from "../../hooks/ElementSpaceToTop";
+import DonationGoal from "./DonationGoal";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -70,6 +70,7 @@ export default function FloatingWidget({ goal_name, current_amount, goal_amount 
             current={current_amount}
             goal={goal_amount}
             className={classes.donationGoal}
+            isInWidget
           />
         )}
         <iframe

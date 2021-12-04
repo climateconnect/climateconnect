@@ -2,11 +2,11 @@ import LocationOnIcon from "@material-ui/icons/LocationOn";
 import { apiRequest } from "./apiOperations";
 import { parseOptions } from "./selectOptionsOperations";
 
-export async function getSkillsOptions(locale) {
+export async function getSkillsOptions(locale, parentSkillsOnly) {
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/skills/",
+      url: parentSkillsOnly ? "/parentskills/" : "/skills/",
       locale: locale,
     });
     if (resp.data.results.length === 0) return null;

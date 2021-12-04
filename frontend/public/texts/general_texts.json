@@ -495,7 +495,7 @@
     "en": "Replicate",
     "de": "Verbreite"
   },
-  "join": {
+  "join_invitation": {
     "en": "Join",
     "de": "Mach mit bei"
   },
@@ -617,7 +617,7 @@
   },
   "you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up": {
     "en": "You will have an opportunity to create/add an organization once signed up.",
-    "de": "Du hast die Möglichkeit, eine Organisation zu erstellen/hinzufügen, sobald du dich angemeldet hast."
+    "de": "Du hast die Möglichkeit, eine Organisation zu erstellen/hinzuzufügen, sobald du dich angemeldet hast."
   },
   "edit_profile": {
     "en": "Edit Profile",
@@ -694,5 +694,45 @@
   "orgs": {
     "en": "Orgs",
     "de": "Orgs"
+  },
+  "forward": {
+    "en": "Forward",
+    "de": "Weiter"
+  },
+  "new": {
+    "en": "new",
+    "de": "Neu"
+  },
+  "get_active": {
+    "en": "Act now",
+    "de": "Engagieren"
+  },
+  "more": {
+    "en": "More",
+    "de": "Mehr"
+  },
+  "year": {
+    "en": "year",
+    "de": "Jahr"
+  },
+  "years": {
+    "en": "years",
+    "de": "Jahre"
+  },
+  "month": {
+    "en": "month",
+    "de": "Monat"
+  },
+  "months": {
+    "en": "months",
+    "de": "Monate"
+  },
+  "day": {
+    "en": "day",
+    "de": "Tag"
+  },
+  "days": {
+    "en": "days",
+    "de": "Tage"
   }
 }

@@ -35,6 +35,7 @@ export default function TabContentWrapper({
   state,
   children,
   hubName,
+  nonFilterParams,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -63,6 +64,7 @@ export default function TabContentWrapper({
           })}
           unexpandFilters={isMobileScreen ? unexpandFiltersOnMobile : unexpandFilters}
           initialLocationFilter={initialLocationFilter}
+          nonFilterParams={nonFilterParams}
         />
       )}
 
@@ -74,7 +76,7 @@ export default function TabContentWrapper({
       */}
       {isFiltering ? (
         <LoadingSpinner />
-      ) : state?.items && state?.items[type]?.length ? (
+      ) : (state?.items && state?.items[type]?.length) || type == "ideas" ? (
         <>{children}</>
       ) : (
         <NoItemsFound type={type} hubName={hubName} />

@@ -1,0 +1,50 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: climateconnect-frontend
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: 'slot2'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Set up Node.js version
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+
+    - name: npm install, build, and test
+      run: |
+        cd frontend
+        yarn --production
+        yarn build
+      env:
+        API_URL: ${{ secrets.API_URL }}
+        BASE_URL: ${{ secrets.BASE_URL }}
+        ENVIRONMENT: 'production'
+        SOCKET_URL: ${{ secrets.SOCKET_URL }}
+        API_HOST: ${{ secrets.API_HOST }} 
+        GOOGLE_ANALYTICS_CODE: ${{ secrets.GOOGLE_ANALYTICS_CODE }}
+        BASE_URL_HOST: ${{ secrets.BASE_URL_HOST }}
+        LATEST_NEWSLETTER_LINK: ${{ secrets.LATEST_NEWSLETTER_LINK }}
+        DONATION_CAMPAIGN_RUNNING: ${{ secrets.DONATION_CAMPAIGN_RUNNING }}
+        LETS_ENCRYPT_FILE_CONTENT: ${{ secrets.LETS_ENCRYPT_FILE_CONTENT }}
+
+    - name: 'Deploy to Azure Web App'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'climateconnect-frontend'
+        slot-name: 'slot2'
+        publish-profile: ${{ secrets.AZURE_FRONTEND_PUBLISH_PROFILE }}
+        package: .

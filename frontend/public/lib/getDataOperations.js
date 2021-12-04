@@ -2,10 +2,13 @@ import { apiRequest } from "./apiOperations";
 import { membersWithAdditionalInfo } from "./getOptions";
 import { parseData } from "./parsingOperations";
 
-export async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale }) {
+export async function getDataFromServer({ type, page, token, urlEnding, hubUrl, locale, idea }) {
   let url = `/api/${type}/?page=${page}`;
   if (hubUrl) {
     url += `&hub=${hubUrl}`;
+  }
+  if (idea) {
+    url += `&idea=${idea}`;
   }
 
   // Handle query params as well

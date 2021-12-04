@@ -17,3 +17,7 @@ from climateconnect_api.models.donation import (
 )
 
 from climateconnect_api.models.language import Language
+
+from climateconnect_api.models.badge import (
+    Badge, DonorBadge
+)

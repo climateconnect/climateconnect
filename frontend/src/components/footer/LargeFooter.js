@@ -207,6 +207,15 @@ const SiteLinks = ({ texts, locale }) => {
           <FooterLink href={getLocalePrefix(locale) + "/faq"}>{texts.faq}</FooterLink>
           <FooterLink href={getLocalePrefix(locale) + "/donate"}>{texts.donate}</FooterLink>
           <FooterLink href={getLocalePrefix(locale) + "/about"}>{texts.about}</FooterLink>
+          <FooterLink
+            href={
+              locale === "de"
+                ? "https://climate-connect.workwise.io/jobsuche"
+                : getLocalePrefix(locale) + "/join"
+            }
+          >
+            {texts.jobs}
+          </FooterLink>
         </div>
       </div>
 

@@ -108,13 +108,15 @@ class IdeaSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
     url_slug = serializers.SerializerMethodField()
+    hub_shared_in = serializers.SerializerMethodField()
+    hub = serializers.SerializerMethodField()
 
     class Meta:
         model = Idea
         fields = (
             'id', 'name', 'hub_image', 'image', 'short_description',
             'supported_by_users', 'thumbnail_image',
-            'user', 'url_slug'
+            'user', 'url_slug', 'hub_shared_in', 'hub'
         )
 
     def get_name(self, obj):
@@ -126,7 +128,7 @@ class IdeaSerializer(serializers.ModelSerializer):
     def get_hub_image(self, obj):
         if obj.hub and obj.hub.icon:
             return obj.hub.icon
-        
+
         return None
 
     def get_user(self, obj):
@@ -136,7 +138,7 @@ class IdeaSerializer(serializers.ModelSerializer):
             'last_name': obj.user.last_name,
             'image': None if not thumbnail_image else thumbnail_image
         }
-    
+
     def get_supported_by_users(self, obj):
         return {
             'total': obj.supported_idea.count(),
@@ -147,3 +149,15 @@ class IdeaSerializer(serializers.ModelSerializer):
 
     def get_url_slug(self, obj):
         return obj.url_slug
+
+    def get_hub_shared_in(self, obj):
+        if obj.hub_shared_in:
+            return HubStubSerializer(obj.hub_shared_in).data
+
+        return None
+
+    def get_hub(self, obj):
+        if obj.hub:
+            return HubStubSerializer(obj.hub).data
+
+        return None

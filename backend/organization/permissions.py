@@ -3,7 +3,6 @@ from organization.models import (Organization, OrganizationMember, Project, Proj
 from climateconnect_api.models import Role
 
 
-
 class OrganizationProjectCreationPermission(BasePermission):
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
@@ -17,6 +16,7 @@ class OrganizationProjectCreationPermission(BasePermission):
             return True
 
         return False
+
 
 class ProjectReadWritePermission(BasePermission):
     def has_permission(self, request, view):
@@ -40,6 +40,7 @@ class ProjectReadWritePermission(BasePermission):
 
         return False
 
+
 class ReadSensibleProjectDataPermission(BasePermission):
     def has_permission(self, request, view):
         try:
@@ -50,6 +51,7 @@ class ReadSensibleProjectDataPermission(BasePermission):
         if ProjectMember.objects.filter(user=request.user, role__role_type=Role.ALL_TYPE, project=project).exists():
             return True
         return False
+
 
 class OrganizationReadWritePermission(BasePermission):
     def has_permission(self, request, view):
@@ -72,6 +74,7 @@ class OrganizationReadWritePermission(BasePermission):
             return True
 
         return False
+
 
 class OrganizationMemberReadWritePermission(BasePermission):
     def has_permission(self, request, view):
@@ -98,6 +101,7 @@ class OrganizationMemberReadWritePermission(BasePermission):
 
         return False
 
+
 class ProjectMemberReadWritePermission(BasePermission):
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
@@ -123,6 +127,7 @@ class ProjectMemberReadWritePermission(BasePermission):
             if requesting_member[0].role.role_type > member_to_update[0].role.role_type:
                 return True
         return False
+
 
 class AddOrganizationMemberPermission(BasePermission):
     def has_permission(self, request, view):
@@ -153,6 +158,7 @@ class AddOrganizationMemberPermission(BasePermission):
                     return False
         return True
 
+
 class AddProjectMemberPermission(BasePermission):
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
@@ -182,6 +188,7 @@ class AddProjectMemberPermission(BasePermission):
                     return False
         return True
 
+
 class ChangeOrganizationCreatorPermission(BasePermission):
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
@@ -203,6 +210,7 @@ class ChangeOrganizationCreatorPermission(BasePermission):
             return True
 
         return False
+
 
 class ChangeProjectCreatorPermission(BasePermission):
     def has_permission(self, request, view):

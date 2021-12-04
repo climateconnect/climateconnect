@@ -21,7 +21,7 @@ class ListNotificationsView(ListAPIView):
             user=self.request.user, read_at=None
         ).values_list('notification')
         notifications = Notification.objects.filter(
-            id__in = user_notifications
+            id__in=user_notifications
         )
         if notifications.exists():
             return notifications

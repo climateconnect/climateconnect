@@ -1,3 +1,4 @@
+from organization.utility.notification import create_comment_mention_notification, get_mentions
 from typing import Optional
 
 from django.contrib.auth.models import User
@@ -60,11 +61,31 @@ class IdeaCommentsView(APIView):
             idea=idea,
             parent_comment=parent_comment
         )
-
+        mentioned_users = get_mentions(
+            text=idea_comment.content,
+            url_slugs_only=True
+        )
+        if len(mentioned_users) > 0:
+            create_comment_mention_notification(
+                entity_type="idea",
+                entity=idea,
+                comment=idea_comment,
+                sender=request.user
+            )
         if idea_comment.parent_comment:
-            create_idea_comment_reply_notification(idea, idea_comment, request.user)
+            create_idea_comment_reply_notification(
+                idea=idea,
+                comment=idea_comment,
+                sender=request.user,
+                user_url_slugs_to_ignore=mentioned_users
+            )
         else:
-            create_idea_comment_notification(idea, idea_comment, request.user)
+            create_idea_comment_notification(
+                idea=idea,
+                comment=idea_comment,
+                sender=request.user,
+                user_url_slugs_to_ignore=mentioned_users
+            )
         serializer = IdeaCommentSerializer(idea_comment)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 

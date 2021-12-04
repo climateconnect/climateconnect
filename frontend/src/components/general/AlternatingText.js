@@ -41,7 +41,7 @@ export default function AlternatingText({ classes, mobile }) {
       </div>
       <div className={classes.titleTextFirstLine}>
         <Typography component="h1" variant="h5" color="primary" className={classes.titleText}>
-          {mobile ? texts.join : texts.collaborate_with}
+          {mobile ? texts.join_invitation : texts.collaborate_with}
         </Typography>
         {texts.climate_projects_with}
       </div>

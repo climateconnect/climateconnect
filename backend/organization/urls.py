@@ -106,8 +106,16 @@ urlpatterns = [
         project_views.SetFollowView.as_view(), name='set-follow-view'
     ),
     path(
+        'projects/<str:url_slug>/set_like/',
+        project_views.SetLikeView.as_view(), name='set-like-view'
+    ),
+    path(
         'projects/<str:url_slug>/am_i_following/',
         project_views.IsUserFollowing.as_view(), name='am-i-following-view'
+    ),
+    path(
+        'projects/<str:url_slug>/am_i_liking/',
+        project_views.IsUserLiking.as_view(), name='am-i-liking-view'
     ),
     path(
         'projects/<str:url_slug>/comment/',
@@ -120,6 +128,10 @@ urlpatterns = [
     path(
         'projects/<str:url_slug>/followers/',
         project_views.ListProjectFollowersView.as_view(), name='list-followers-view'
+    ),
+    path(
+        'projects/<str:url_slug>/likes/',
+        project_views.ListProjectLikesView.as_view(), name='list-likes-view'
     ),
     path(
         'projecttags/', project_views.ListProjectTags.as_view(), 
@@ -143,5 +155,9 @@ urlpatterns = [
         'projects/<str:url_slug>/leave/',
         project_views.LeaveProject.as_view(),
         name='leave-project'
-    )
+    ),
+    path(
+        'projects/<str:url_slug>/set_shared_project/',
+        project_views.SetProjectsSharedView.as_view(), name="set-shared-projects-view"
+    ),
 ]

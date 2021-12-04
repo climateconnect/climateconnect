@@ -35,9 +35,9 @@ export default function ImprintEnglish() {
         <br />
         Entry in: Handelsregister
         <br />
-        Register Number: HRB 18097
+        Register Number: HRB 10578
         <br />
-        Register Court: Amtsgericht Fürth
+        Register Court: Amtsgericht Bamberg
         <br />
         <br />
         <h2>Disclaimer</h2>

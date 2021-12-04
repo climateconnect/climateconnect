@@ -1,10 +1,15 @@
+from django.utils.translation import get_language
+from organization.utility.donationgoal import get_donationgoal_name
 from rest_framework import serializers
 from climateconnect_api.models import DonationGoal, Donation
 from django.db.models import Sum
 import datetime
 
+
 class DonationGoalSerializer(serializers.ModelSerializer):
     current_amount = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+
     class Meta:
         model = DonationGoal
         fields = ('name', 'start_date', 'end_date', 'amount', 'current_amount')
@@ -31,3 +36,6 @@ class DonationGoalSerializer(serializers.ModelSerializer):
             total_recurring = recurring_donations['donation_amount__sum']
         
         return total_one_time + total_recurring
+    
+    def get_name(self, obj):
+        return get_donationgoal_name(obj, get_language())
