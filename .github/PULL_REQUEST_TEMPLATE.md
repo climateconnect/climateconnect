@@ -2,8 +2,8 @@
 <!-- Aim to reference the GitHub issue number here (e.g. "#XXX") improve discoverability. -->
 _Include summary of the change and list any required dependencies or downstream impact._
 
-## Test Plan
-Please include a test plan of new feature, how you verify changes and include relevant test configuration details for the reviewer(s).
+## Test plan
+_Include relevant test configuration details for the reviewer(s), and steps to test and verify new feature._
 
 ## Before landing
 
