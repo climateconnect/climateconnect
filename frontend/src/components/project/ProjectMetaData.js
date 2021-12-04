@@ -1,12 +1,13 @@
 import { Box, Collapse, Container, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import ExploreIcon from "@material-ui/icons/Explore";
 import PlaceIcon from "@material-ui/icons/Place";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
+import LocationDisplay from "./LocationDisplay";
+import ProjectCategoriesDisplay from "./ProjectCategoriesDisplay";
 
 const useStyles = makeStyles((theme) => ({
   creatorImage: {
@@ -19,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: -2,
     marginTop: 2,
     marginRight: theme.spacing(0.5),
+    fontSize: "default",
   },
   status: {
     marginTop: theme.spacing(1),
@@ -80,14 +82,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }) 
   );
 }
 
-const WithDescription = ({
-  className,
-  project_parent,
-  hovering,
-  project,
-  main_project_tag,
-  texts,
-}) => {
+const WithDescription = ({ className, project_parent, hovering, project, main_project_tag }) => {
   const classes = useStyles();
   return (
     <Box className={className}>
@@ -109,21 +104,33 @@ const WithDescription = ({
           />
         )}
         <Box>
-          <Tooltip title={texts.location}>
-            <PlaceIcon className={classes.cardIcon} />
-          </Tooltip>
-          <Typography className={classes.metadataText}>{project.location}</Typography>
+          <LocationDisplay
+            textClassName={classes.metadataText}
+            iconClassName={classes.cardIconFlex}
+            location={project.location}
+          />
           {/* Defer to MUI's best guess on height calculation for timeout: https://material-ui.com/api/collapse/ */}
           <Collapse in={hovering} timeout="auto">
             <Typography className={classes.shortDescription}>
               {project.short_description}
             </Typography>
           </Collapse>
-          {!hovering && <Categories main_project_tag={main_project_tag} texts={texts} />}
+          {!hovering && (
+            <ProjectCategoriesDisplay
+              main_project_tag={main_project_tag}
+              projectTagClassName={classes.metadataText}
+              iconClassName={classes.cardIcon}
+            />
+          )}
         </Box>
       </Container>
       {hovering && (
-        <Categories main_project_tag={main_project_tag} hovering={hovering} texts={texts} />
+        <ProjectCategoriesDisplay
+          main_project_tag={main_project_tag}
+          hovering={hovering}
+          projectTagClassName={classes.metadataText}
+          iconClassName={classes.cardIcon}
+        />
       )}
     </Box>
   );
@@ -155,23 +162,13 @@ const WithOutDescription = ({ className, project_parent, project, main_project_t
             <PlaceIcon className={classes.cardIcon} />
           </Tooltip>
           <Typography className={classes.metadataText}>{project.location}</Typography>
-          <Categories main_project_tag={main_project_tag} texts={texts} />
+          <ProjectCategoriesDisplay
+            main_project_tag={main_project_tag}
+            projectTagClassName={classes.metadataText}
+            iconClassName={classes.cardIcon}
+          />
         </Box>
       </Container>
     </Box>
-  );
-};
-
-const Categories = ({ main_project_tag, hovering, texts }) => {
-  const classes = useStyles({ hovering: hovering });
-  return (
-    <div className={classes.categories}>
-      <Tooltip title={texts.categories}>
-        <ExploreIcon className={classes.cardIcon} />
-      </Tooltip>{" "}
-      <Typography className={`${classes.categoryText} ${classes.metadataText}`}>
-        {main_project_tag}
-      </Typography>
-    </div>
   );
 };

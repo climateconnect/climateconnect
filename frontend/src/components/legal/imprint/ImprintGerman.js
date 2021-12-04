@@ -14,9 +14,9 @@ export default function ImprintGerman() {
           91301 Forchheim
         </p>
         <p>
-          Handelsregister: HRB 18097
+          Handelsregister: HRB 10578
           <br />
-          Registergericht: Amtsgericht Fürth
+          Registergericht: Amtsgericht Bamberg
         </p>
         <p>
           <strong>Vertreten durch:</strong>

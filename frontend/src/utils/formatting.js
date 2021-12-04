@@ -117,10 +117,6 @@ const yearAndDayFormatter = (
   if (locale === "de" && suffix === "from now") {
     return `in ${value} ${unit}`;
   }
-  console.log(unit);
-  console.log(value);
-  console.log(suffix);
-  console.log("returning the fallback");
   return `${value} ${unit} ${suffix}`;
 };
 

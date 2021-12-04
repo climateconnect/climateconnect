@@ -16,7 +16,7 @@ import { nullifyUndefinedValues } from "../public/lib/profileOperations";
 import BrowseContent from "../src/components/browse/BrowseContent";
 import UserContext from "../src/components/context/UserContext";
 import TopOfPage from "../src/components/hooks/TopOfPage";
-import HubsSubHeader from "../src/components/indexPage/HubsSubHeader";
+import HubsSubHeader from "../src/components/indexPage/hubsSubHeader/HubsSubHeader";
 import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
 import WideLayout from "../src/components/layouts/WideLayout";
 
@@ -79,7 +79,7 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter }) {
     setTabsWhereFiltersWereApplied(tabs);
   };
 
-  const handleApplyNewFilters = async (type, newFilters, closeFilters) => {
+  const handleApplyNewFilters = async ({ type, newFilters, closeFilters }) => {
     return await applyNewFilters({
       type: type,
       filters: filters,

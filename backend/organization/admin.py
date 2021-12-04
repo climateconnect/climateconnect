@@ -6,14 +6,15 @@ from organization.models import (
     PostComment, ProjectComment, ProjectMember, OrganizationMember,
     ProjectParents, ProjectStatus, ProjectCollaborators, ProjectFollower,
     OrganizationFieldTagging, ProjectTranslation, OrganizationTranslation,
-    PostTranslation, CommentTranslation
+    PostTranslation, CommentTranslation, ProjectLike, ProjectsShared
 )
 
 pass_through_models = (
     OrganizationTags, OrganizationTagging, ProjectTags,
     ProjectTagging, Post, Comment, PostComment, ProjectComment, 
     ProjectStatus, ProjectCollaborators, ProjectFollower,
-    OrganizationFieldTagging, PostTranslation, CommentTranslation
+    OrganizationFieldTagging, PostTranslation, CommentTranslation,
+    ProjectLike, ProjectsShared
 )
 
 for model in pass_through_models:

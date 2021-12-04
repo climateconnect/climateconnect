@@ -97,7 +97,6 @@ export default function ProjectFollowersDialog({
 
 const ProjectFollowers = ({ followers, texts, locale }) => {
   const classes = useStyles();
-  console.log(followers);
   return (
     <>
       <Divider />
