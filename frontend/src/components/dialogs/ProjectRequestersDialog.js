@@ -150,8 +150,9 @@ const Requester = ({ requester, requestId, locale, project }) => {
    */
   async function handleApproveRequest() {
     const cookies = new Cookies();
-    console.log(evt.target.parentElement.parentElement);
     const token = cookies.get("token");
+
+    console.log(token);
 
     const response = await apiRequest({
       method: "post",
@@ -172,13 +173,11 @@ const Requester = ({ requester, requestId, locale, project }) => {
   async function handleRejectRequest() {
     const cookies = new Cookies();
     const token = cookies.get("token");
-
+    console.log(token);
     const response = await apiRequest({
       method: "post",
       url: `/api/projects/${project.url_slug}/request_membership/reject/${requestId}/`,
-      headers: {
-        Authorization: `Token ${token}`,
-      },
+      token: token,
     });
 
     if (!resp?.data?.results) {

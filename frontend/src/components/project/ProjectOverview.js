@@ -18,6 +18,7 @@ import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
 
 // Relative imports
+import RequestMembershipButton from "./RequestMembershipButton";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
@@ -192,7 +193,7 @@ export default function ProjectOverview({
 
   // TODO: fix, can't request to join a project you're already a member of!
   useEffect(() => {
-    if (requestedToJoinProject) {
+    if (!requestedToJoinProject) {
       try {
         handleSendProjectJoinRequest();
       } catch (error) {
@@ -249,7 +250,10 @@ export default function ProjectOverview({
  * Button to request membership for a project. Updates text
  * based on whether the user has requested membership or not already.
  */
-const RequestMembershipButton = ({ requestedToJoin, handleSendProjectJoinRequest }) => {
+const RequestMembershipButtonWrapper = ({ requestedToJoin, handleSendProjectJoinRequest }) => {
+  // TODO(Piper): determine availabiilty approach
+  // return <RequestMembershipButton />;
+
   return requestedToJoin ? (
     <Button disabled variant="contained" color="primary" onClick={handleSendProjectJoinRequest}>
       Already requested
@@ -322,7 +326,7 @@ function SmallScreenOverview({
             of the project, then we don't want to show the membership request button. */}
             {!hasAdminPermissions && (
               <Box marginRight={2}>
-                <RequestMembershipButton
+                <RequestMembershipButtonWrapper
                   handleSendProjectJoinRequest={handleSendProjectJoinRequest}
                   requestedToJoin={requestedToJoinProject}
                 />
@@ -421,7 +425,7 @@ function LargeScreenOverview({
             of the project, then we don't want to show the membership request button. */}
             {!hasAdminPermissions && (
               <Box marginRight={3}>
-                <RequestMembershipButton
+                <RequestMembershipButtonWrapper
                   handleSendProjectJoinRequest={handleSendProjectJoinRequest}
                   requestedToJoin={requestedToJoinProject}
                 />

@@ -80,6 +80,7 @@ class MembershipRequestsManager(object):
                 self.user = self.membership_request.user
                 self.user_availability = self.membership_request.availability
                 self.project = self.membership_request.target_project
+
                 if 'project' in kwargs:
                     if kwargs['project'].id != self.membership_request.target_project.id:
                         self.validation_failed = True

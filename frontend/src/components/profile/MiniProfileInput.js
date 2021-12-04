@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import React, { useContext, useEffect } from "react";
+
 import ROLE_TYPES from "../../../public/data/role_types";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -189,6 +190,7 @@ export default function MiniProfileInput({
           />
         </>
       )}
+      {/* TODO(piper): take this availability time and build the interface for project request membership */}
       {!hideHoursPerWeek && (
         <>
           <Typography className={classes.fieldLabel} color="primary">

@@ -4,17 +4,21 @@ from organization.serializers.project import ProjectRequesterSerializer
 
 from climateconnect_api.models import Availability, Role, Skill, UserProfile
 from climateconnect_api.models.language import Language
+from climateconnect_api.permissions import UserPermission
 from climateconnect_api.utility.translation import (edit_translation,
                                                     edit_translations,
                                                     translate_text)
 from climateconnect_main.utility.general import get_image_from_data_url
+
 from dateutil.parser import parse
+
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.db import transaction
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
+
 from hubs.models.hub import Hub
 from location.models import Location
 from location.utility import get_location, get_location_with_range
@@ -893,10 +897,15 @@ class ManageJoinProject(RetrieveUpdateAPIView):
     """
     A view that enables a user to request to join a project
     """
+    # permission_classes = [UserPermission, ApproveDenyProjectMemberRequest]
     permission_classes = [ApproveDenyProjectMemberRequest]
+
+    # permission_classes = [UserPermission]
+    # ApproveDenyProjectMemberRequest
     lookup_field = 'project_slug'
 
-    def post(self, request, project_slug, request_action,request_id):
+    def post(self, request, project_slug, request_action, request_id):
+
         try:
             project = Project.objects.filter(url_slug=project_slug).first()
         except:
@@ -916,6 +925,7 @@ class ManageJoinProject(RetrieveUpdateAPIView):
                 request_manager.approve_request()
                 create_project_join_request_approval_notification(requester=request.user,project=project)
             elif request_action == 'reject':
+                print('Within here...')
                 request_manager.reject_request()
             else:
                 raise NotImplementedError(f"membership request action <{request_action}> is not implemented ")

@@ -231,6 +231,15 @@ class ApproveDenyProjectMemberRequest(BasePermission):
         if request.method in SAFE_METHODS:
             return True
 
+        # print(request.user.username)
+        # print(request.user)
+
+        # Detect for AnonymousUser
+        if not request.user.is_authenticated:
+            # print('User is not authenticated')
+            # print('Testing')
+            return True
+
         project = Project.objects.filter(url_slug=str(view.kwargs.get('project_slug'))).first()
 
         # TODO(Piper): this seems to be throwing an error:
@@ -239,4 +248,30 @@ class ApproveDenyProjectMemberRequest(BasePermission):
         # TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
         #
         # When calling from the post() in ManageJoinProject
-        return ProjectMember.objects.filter(project=project, user=request.user, role__role_type__in=[Role.ALL_TYPE]).exists()
+
+        print(ProjectMember.objects)
+        # print(request.user)
+        print(request)
+        print(project)
+        # print(dir(request.user))
+
+        # print(request.user.is_authenticated)
+
+
+
+        # TODO: request.user is Anonymous
+        permission_exists = False
+        # try:
+        permission_exists = ProjectMember.objects.filter(
+            project=project,
+            # TODO: this is AnonymousUser
+            user=request.user,
+            role__role_type__in=[Role.ALL_TYPE]).exists()
+
+        # except TypeError:
+        #     print('doh')
+        #     print(TypeError)
+
+        print(permission_exists)
+
+        return permission_exists
