@@ -1,6 +1,6 @@
 ## Description
 <!-- Aim to reference the GitHub issue number here (e.g. "#XXX") improve discoverability. -->
-Include summary of the change and list any required dependencies or downstream impacts
+_Include summary of the change and list any required dependencies or downstream impact._
 
 ## Test Plan
 Please include a test plan of new feature, how you verify changes and include relevant test configuration details for the reviewer(s).
