@@ -261,8 +261,8 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: "Menschen",
     },
     climate_protection_organization: {
-      en: "Climate protection organization: ",
-      de: "Klimaschutzorganisation: ",
+      en: "Interesting climate organization: ",
+      de: "Interessante Klimaschutzorganisation: ",
     },
     tell_others_about_this_organization: {
       en: "Tell others about this organization!",
