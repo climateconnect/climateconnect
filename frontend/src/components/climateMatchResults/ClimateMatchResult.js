@@ -141,7 +141,7 @@ export default function ClimateMatchResult({ suggestion, pos }) {
       >
         <div className={classes.resultContainer}>
           <ClimateMatchResultFirstLine pos={pos} suggestion={suggestion} />
-          <div className={classes.contentContainer} onClick={(e) => e.preventDefault()}>
+          <div className={classes.contentContainer}>
             <ClimateMatchSuggestionInfo
               className={classes.contentContainerLeftSide}
               suggestion={suggestion}
@@ -151,7 +151,10 @@ export default function ClimateMatchResult({ suggestion, pos }) {
               background={pos % 2 === 0 ? "#f5f5f5" : "#fff"}
             />
             {!displayContactButtonBelow && (
-              <div className={classes.contactCreatorButtonContainer}>
+              <div
+                className={classes.contactCreatorButtonContainer}
+                onClick={(e) => e.preventDefault()}
+              >
                 <ContactCreatorButton
                   large
                   creator={creator}
