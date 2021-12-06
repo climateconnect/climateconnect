@@ -8,6 +8,14 @@ class DonationGoal(models.Model):
         max_length=512
     )
 
+    name_de_translation = models.CharField(
+        help_text="German translation of the goal name",
+        verbose_name="Goal name (DE)",
+        max_length=512,
+        null=True,
+        blank=True
+    )
+
     description = models.CharField(
         help_text="The description of the goal",
         verbose_name="Goal description",
@@ -112,6 +120,10 @@ class Donation(models.Model):
         ordering = ["-id"]
     
     def __str__(self):
-        return "Donation from : %s" % (
-            self.date_first_received
+        return "%s %s from %s (%s%s)" % (
+            "One time donation: " if not self.is_recurring else "Regular donation: ",
+            str(self.donation_amount)+"€",
+            '' if not self.user else self.user.first_name + " " + self.user.last_name,            
+            self.date_first_received,
+            ", cancelled " + str(self.date_cancelled) if self.date_cancelled else ""
         )

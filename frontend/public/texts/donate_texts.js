@@ -21,13 +21,13 @@ export default function getDonateTexts({ classes, goal }) {
     },
     why_donate: {
       en: "Why donate?",
-      de: "Warum spenden sinnvoll ist?",
+      de: "Warum Spenden sinnvoll ist?",
     },
     why_donate_text: {
       en: `Great that you want to support us!
       We believe that the possibility to connect and get active in the climate movement should be free and include everyone.
       With a donation you enable us to stay independent. Our full-time team is working hard every day to multiply the impact of climate actors around the globe.`,
-      de: `Gut, dass du uns unterstützen möchtest! 
+      de: `Schön, dass du uns unterstützen möchtest! 
 	    Wir glauben, dass die Möglichkeit, sich in der Klimabewegung zu vernetzen und aktiv zu werden, kostenlos sein und jeden einschließen sollte.
       Mit einer Spende ermöglichst du uns, unabhängig zu bleiben. Unser hauptamtliches Team arbeitet jeden Tag hart daran, die Wirkung von Klimaakteuren rund um den Globus zu vervielfachen.`,
     },
@@ -263,12 +263,83 @@ export default function getDonateTexts({ classes, goal }) {
     },
     donate_now: {
       en: "Donate now",
-      de: "Spende jetzt",
+      de: "Jetzt Spenden",
     },
     //example: 50€ raised of of 1000€ goal
     raised_out_of_goal: {
       en: `raised out of ${goal}€ goal`,
       de: `von ${goal}€ Ziel gesammelt`,
+    },
+    donor_forest: {
+      en: "Donor Forest",
+      de: "Spendenwald",
+    },
+    watch_the_forest_grow: {
+      en: "The Digital Forest of Climate Connect Supporters",
+      de: "Der digitale Wald der Climate Connect Unterstützer*innen",
+    },
+    forest_explainer_headline: {
+      en: "Plant Your Own Tree",
+      de: "Pflanze deinen Baum",
+    },
+    forest_explainer_text: {
+      en: "Donate today to support climate action and become part of the forest",
+      de: "Spende noch heute, um das Klima zu schützen und Teil des Waldes zu werden",
+    },
+    how_it_works: {
+      en: "How it works",
+      de: "Wie es funktioniert",
+    },
+    forest_explainer_dialog_title: {
+      en: "The Donor Forest",
+      de: "Der Spendenwald",
+    },
+    donor_forest_dialog_explainer_text: {
+      en: `When you start donating to Climate Connect you get a digital sapling as a reward. 
+      If you donate monthly or yearly your tree keeps growing.
+      Your tree is displayed in the donor forest and next to your account on the platform.`,
+      de: `Wenn du an Climate Connect spendest, bekommst du einen digitalen Setzling.
+      Wenn du monatlich oder jährlich spendest, wächst dein Baum immer weiter. Dein Baum wird im 
+      Spendenwald und immer neben deinem Profilbild auf der Plattform angezeigt.`,
+    },
+    donor_forest_dialog_call_to_action_text: {
+      en: "Donate now to start growing your tree!",
+      de: "Spende jetzt und lass deinen Baum wachsen!",
+    },
+    has_been_a_supporter_for: {
+      en: "has been a supporter for",
+      de: "unterstützt seit",
+    },
+    donation_campaign_headline_short: {
+      en: "Win the compensation of your footprint",
+      de: "Gewinne ein Jahr klimapositives Leben",
+    },
+    donation_campaign_headline_long: {
+      en: `Win the compensation of your 2021 CO2-footprint by donating to Climate Connect during
+      December`,
+      de: `Gewinne ein Jahr klimapositives Leben, indem du im Dezember an Climate Connect spendest`,
+    },
+    you_can_find_the_terms_to_the_raffle_here: {
+      en: "You can find the terms of the raffle ",
+      de: "Die Teilnahmebedingungen der Verlosung findest du ",
+    },
+    here: {
+      en: "here",
+      de: "hier",
+    },
+    donation_campaing_info_text_first_sentence: {
+      en: `Your donation will help to scale effective climate solutions, support us in growing
+      a global network of climate actors and allow Climate Connect to stay free and
+      independent.`,
+      de: `Deine Spende hilft, effektive Klimaschutzprojekte anzustoßen und zu skalieren und hilft uns,
+      frei und unabhängig zu bleiben.`,
+    },
+    raffle_announcement: {
+      en: `In our December raffle everybody who donates to Climate Connect in the
+      month of December has a chance to win prizes like the compensation of their year's
+      CO2-footprint kindly sponsored by `,
+      de: `Alle, die im Dezember spenden, können tolle Preise gewinnen, z.B. ein Jahr 
+      klimapositiv Leben, gesponsort von `,
     },
   };
 }

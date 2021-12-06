@@ -29,19 +29,21 @@ class UserResourcesMatchView(APIView):
 		is_logged_in = request.user.is_authenticated
 		if is_logged_in:
 			try:
-				user_profile = UserProfile.objects.get(user=request.user)
+				# TODO: fix this assignment or remove this try block
+				pass
+				# user_profile = UserProfile.objects.get(user=request.user)
 			except UserProfile.DoesNotExist:
 				return Response({
 					'message': 'Profile not found'
 				}, status=status.HTTP_404_NOT_FOUND)
 		elif 'climatematch_token' not in request.query_params:
 			return Response({'message': 'You seem to not be logged in or not have not done the ClimateMatch before'}, status=status.HTTP_400_BAD_REQUEST)
-		
+
 		# Get offset number from frontend to return range of data instead of returning the entire list
-		# This range start from 0 to 
+		# This range start from 0 to
 		if 'range_start' not in request.query_params or 'range_end' not in request.query_params:
 			return Response({'message': 'Missing parameters'}, status=status.HTTP_400_BAD_REQUEST)
-		
+
 		range_start = int(request.query_params.get('range_start'))
 		range_end = int(request.query_params.get('range_end'))
 		LOGGER_PREFIX = 'ResourceNotFound'
@@ -53,7 +55,7 @@ class UserResourcesMatchView(APIView):
 			uqa = UserQuestionAnswer.objects.filter(user=request.user)
 		else:
 			uqa = UserQuestionAnswer.objects.filter(token=climatematch_token)
-		
+
 		if uqa.exists() and uqa[0].hub:
 			hub = uqa[0].hub
 		else:

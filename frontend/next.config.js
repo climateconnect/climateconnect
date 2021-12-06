@@ -24,4 +24,24 @@ module.exports = {
   exportPathMap: async function (defaultPathMap) {
     return defaultPathMap;
   },
+  async redirects() {
+    return [
+      {
+        source: "/spenden",
+        destination: "/de/donate",
+        permanent: true,
+      },
+      {
+        source: "/spendenwald",
+        destination: "/de/donorforest",
+        permanent: true,
+      },
+      {
+        source: "/klimakuechen-erlangen",
+        destination:
+          "/de/projects/Gro%C3%9Fk%C3%BCchenregionalvernetzen-Speisepl%C3%A4neklimafreundlichgestalten244?hubPage=erlangen",
+        permanent: true,
+      },
+    ];
+  },
 };

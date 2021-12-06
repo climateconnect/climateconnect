@@ -15,6 +15,7 @@ import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getCookieProps } from "../../../../public/lib/cookieOperations";
+import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
 import DonationGoal from "./DonationGoal";
@@ -28,11 +29,12 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     paddingBottom: 0,
     position: "relative",
+    borderTop: `1px solid ${theme.palette.primary.extraLight}`,
   },
   text: {
     fontWeight: 600,
     paddingRight: theme.spacing(4),
-    paddingLeft: theme.spacing(6),
+    paddingLeft: theme.spacing(4),
     position: "relative",
     display: "inline-block",
   },
@@ -50,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   donationGoal: {
-    marginBottom: theme.spacing(4),
+    marginBottom: theme.spacing(3),
   },
   link: {
     color: "white",
@@ -77,8 +79,16 @@ const useStyles = makeStyles((theme) => ({
   },
   christmasIcon: {
     height: 50,
-    position: "absolute",
-    left: 5,
+  },
+  topLineContainer: {
+    display: "flex",
+    justifyContent: "center",
+  },
+  textAndBarContainer: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-around",
+    alignItems: "center",
   },
 }));
 
@@ -86,14 +96,15 @@ const useStyles = makeStyles((theme) => ({
 export default function DonationCampaignInformation() {
   const classes = useStyles();
   const cookies = new Cookies();
-  const expiry = daysInFuture(3);
-  const cookieProps = getCookieProps(expiry);
   const [open, setOpen] = React.useState(!cookies.get("hideDonationCampaign"));
   const [expanded, setExpanded] = React.useState(false);
   const { donationGoal, locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const texts = getTexts({ page: "donate", locale: locale, classes: classes });
 
   const handleClose = () => {
+    const expiry = daysInFuture(3);
+    const cookieProps = getCookieProps(expiry);
     cookies.set("hideDonationCampaign", true, cookieProps);
     setOpen(false);
   };
@@ -101,7 +112,10 @@ export default function DonationCampaignInformation() {
   const handleToggleExpanded = () => {
     setExpanded(!expanded);
   };
+  console.log("donationGoal");
+  console.log(donationGoal);
 
+  if (!donationGoal) return <></>;
   return (
     <>
       {open && (
@@ -109,38 +123,51 @@ export default function DonationCampaignInformation() {
           <IconButton className={classes.closeButton} onClick={handleClose}>
             <CloseIcon />
           </IconButton>
-          <Typography className={classes.text}>
+          <div className={classes.topLineContainer}>
             <img src="/icons/christmas-icon.svg" className={classes.christmasIcon} />
-            {isNarrowScreen
-              ? `Win the compensation of your footprint`
-              : `Win the compensation of your 2020 CO2-footprint by donating to Climate Connect during
-              December`}
-          </Typography>
+            <div className={classes.textAndBarContainer}>
+              <Typography className={classes.text}>
+                {isNarrowScreen
+                  ? texts.donation_campaign_headline_short
+                  : texts.donation_campaign_headline_long}
+              </Typography>
+              {!expanded && donationGoal && (
+                <DonationGoal
+                  current={donationGoal?.current_amount}
+                  goal={donationGoal?.goal_amount}
+                  name={donationGoal?.goal_name}
+                  embedded
+                  barColor={theme.palette.primary.light}
+                  barOnly
+                  small
+                />
+              )}
+            </div>
+          </div>
           <Collapse in={expanded}>
             <Container className={classes.expandableContent}>
-              <DonationGoal
-                current={donationGoal.current_amount}
-                goal={donationGoal.goal_amount}
-                name={donationGoal.goal_name}
-                embedded
-                className={classes.donationGoal}
-                barColor={theme.palette.primary.light}
-              />
+              {donationGoal && (
+                <DonationGoal
+                  current={donationGoal?.current_amount}
+                  goal={donationGoal?.goal_amount}
+                  name={donationGoal?.goal_name}
+                  embedded
+                  className={classes.donationGoal}
+                  barColor={theme.palette.primary.light}
+                />
+              )}
               {isNarrowScreen && (
                 <Button
                   href={getLocalePrefix(locale) + "/donate"}
                   variant="contained"
                   className={classes.donateButton}
                 >
-                  Donate now
+                  {texts.donate_now}
                 </Button>
               )}
               <Typography className={classes.textBlock}>
-                Your donation will help to scale effective climate solutions, support us in growing
-                a global network of climate actors and allow Climate Connect to stay free and
-                independent. In our December raffle everybody who donates to Climate Connect in the
-                month of December has a chance to win the compensation of their {"year's"}{" "}
-                CO2-footprint kindly sponsored by{" "}
+                {texts.donation_campaing_info_text_first_sentence}
+                {texts.raffle_announcement}
                 <Link
                   underline="always"
                   className={classes.link}
@@ -153,15 +180,15 @@ export default function DonationCampaignInformation() {
                 !
               </Typography>
               <Typography>
-                You can find the terms of the raffle{" "}
+                {texts.you_can_find_the_terms_to_the_raffle_here}
                 <Link
                   underline="always"
-                  className={classes.link}
                   href={getLocalePrefix(locale) + "/raffleterms"}
                   target="_blank"
                   rel="noreferrer"
+                  className={classes.link}
                 >
-                  here
+                  {texts.here}
                 </Link>
               </Typography>
               {!isNarrowScreen && (
@@ -170,7 +197,7 @@ export default function DonationCampaignInformation() {
                   variant="contained"
                   className={classes.donateButton}
                 >
-                  Donate now
+                  {texts.donate_now}
                 </Button>
               )}
             </Container>
@@ -178,11 +205,11 @@ export default function DonationCampaignInformation() {
           <Button className={classes.showMoreButton} onClick={handleToggleExpanded}>
             {expanded ? (
               <>
-                <ExpandLessIcon /> Show less
+                <ExpandLessIcon /> {texts.show_less}
               </>
             ) : (
               <>
-                <ExpandMoreIcon /> Show more
+                <ExpandMoreIcon /> {texts.show_more}
               </>
             )}
           </Button>

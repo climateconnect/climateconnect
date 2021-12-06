@@ -722,5 +722,29 @@
   "link": {
     "en": "Link",
     "de": "Link"
+  },
+  "year": {
+    "en": "year",
+    "de": "Jahr"
+  },
+  "years": {
+    "en": "years",
+    "de": "Jahre"
+  },
+  "month": {
+    "en": "month",
+    "de": "Monat"
+  },
+  "months": {
+    "en": "months",
+    "de": "Monate"
+  },
+  "day": {
+    "en": "day",
+    "de": "Tag"
+  },
+  "days": {
+    "en": "days",
+    "de": "Tage"
   }
 }

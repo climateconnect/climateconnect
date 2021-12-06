@@ -183,6 +183,10 @@ const useStyles = makeStyles((theme) => {
     moreButtonMobile: {
       color: "white",
     },
+    mobileAvatarContainer: {
+      display: "flex",
+      justifyContent: "center",
+    },
   };
 });
 
@@ -273,6 +277,10 @@ const getStaticPageLinks = (texts) => [
     href: "/press",
     text: texts.press,
   },
+  {
+    href: "/donorforest",
+    text: texts.donorforest,
+  },
 ];
 
 const getLoggedInLinks = ({ loggedInUser, texts }) => {
@@ -332,6 +340,7 @@ export default function Header({
     background: background,
   });
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
+  console.log(user);
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = React.useState(false);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
@@ -402,7 +411,7 @@ export default function Header({
 function StaticPageLinks() {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const texts = getTexts({ page: "navigation", locale: locale });
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts);
@@ -464,6 +473,7 @@ function NormalScreenLinks({
   localePrefix,
   isStaticPage,
 }) {
+  console.log(loggedInUser);
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const isSmallMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -702,12 +712,12 @@ function NarrowScreenLinks({
                 };
                 if (link.avatar)
                   return (
-                    <>
+                    <div className={classes.mobileAvatarContainer}>
                       {loggedInUser.badges?.length > 0 ? (
                         <ProfileBadge
                           name={loggedInUser.badges[0].name}
                           image={getImageUrl(loggedInUser.badges[0].image)}
-                          size="small"
+                          size="medium"
                           className={classes.badge}
                         >
                           <Avatar {...avatarProps} />
@@ -715,7 +725,7 @@ function NarrowScreenLinks({
                       ) : (
                         <Avatar {...avatarProps} />
                       )}
-                    </>
+                    </div>
                   );
                 else if (link.isLogoutButton)
                   return (
