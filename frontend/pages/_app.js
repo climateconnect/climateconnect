@@ -341,7 +341,6 @@ async function getNotifications(token) {
 }
 
 async function getDonationGoalData(locale) {
-  console.log(locale);
   try {
     const resp = await apiRequest({
       method: "get",
