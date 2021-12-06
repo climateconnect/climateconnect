@@ -111,13 +111,16 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
   },
-  shareButtonContainer: {
+  shareButtonContainer: (props) => ({
     position: "absolute",
     right: "0%",
     bottom: "0%",
     marginRight: theme.spacing(2),
     marginBottom: theme.spacing(2),
-  },
+    [theme.breakpoints.down("xs")]: {
+      marginBottom: props.isOwnAccount? theme.spacing(4) : theme.spacing(2),
+    },
+  }),
 }));
 
 export default function AccountPage({
