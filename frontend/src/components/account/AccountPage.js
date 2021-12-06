@@ -118,7 +118,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
     marginBottom: theme.spacing(2),
     [theme.breakpoints.down("xs")]: {
-      marginBottom: props.isOwnAccount? theme.spacing(4) : theme.spacing(2),
+      marginBottom: props.isOwnAccount ? theme.spacing(4) : theme.spacing(2),
     },
   }),
 }));

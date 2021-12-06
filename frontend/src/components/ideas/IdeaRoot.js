@@ -3,7 +3,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
+import { apiRequest } from "../../../public/lib/apiOperations";
 import { getIdeaBorderColor } from "../../../public/lib/ideaOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -397,9 +397,7 @@ export default function IdeaRoot({
                   apiEndpoint={`/api/ideas/${idea.url_slug}/set_shared_idea/`}
                   locale={locale}
                   token={token}
-                  messageTitle={
-                    `${texts.climate_protection_idea_from}${ideaCreatorName}: ${idea.name}`
-                  }
+                  messageTitle={`${texts.climate_protection_idea_from}${ideaCreatorName}: ${idea.name}`}
                   tinyScreen={isTinyScreen}
                   smallScreen={isSmallScreen}
                   mailBody={texts.share_idea_email_body}
