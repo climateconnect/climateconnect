@@ -112,11 +112,10 @@ export default function DonationCampaignInformation() {
   const handleToggleExpanded = () => {
     setExpanded(!expanded);
   };
-  console.log("donationGoal")
-  console.log(donationGoal)
+  console.log("donationGoal");
+  console.log(donationGoal);
 
-  if(!donationGoal)
-    return <></>
+  if (!donationGoal) return <></>;
   return (
     <>
       {open && (
@@ -156,7 +155,7 @@ export default function DonationCampaignInformation() {
                   className={classes.donationGoal}
                   barColor={theme.palette.primary.light}
                 />
-              )}              
+              )}
               {isNarrowScreen && (
                 <Button
                   href={getLocalePrefix(locale) + "/donate"}

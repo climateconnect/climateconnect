@@ -14,24 +14,21 @@ import theme from "../src/themes/theme";
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
-export default function MyApp({
-  Component,
-  pageProps={},
-}) {
+export default function MyApp({ Component, pageProps = {} }) {
   const router = useRouter();
   // Cookies
   const cookies = new Cookies();
   const token = cookies.get("token");
   const [gaInitialized, setGaInitialized] = useState(false);
   const [isLoading, setLoading] = useState(true);
-  
+
   const [acceptedStatistics, setAcceptedStatistics] = useState(cookies.get("acceptedStatistics"));
   const [acceptedNecessary, setAcceptedNecessary] = useState(cookies.get("acceptedNecessary"));
   const updateCookies = () => {
     setAcceptedStatistics(cookies.get("acceptedStatistics"));
     setAcceptedNecessary(cookies.get("acceptedNecessary"));
-  };  
-  const pathName = router.asPath
+  };
+  const pathName = router.asPath;
   const { locale, locales } = router;
   if (
     acceptedStatistics &&
@@ -60,7 +57,7 @@ export default function MyApp({
   const [state, setState] = useState({
     user: token ? {} : null,
     notifications: [],
-    donationGoal: null
+    donationGoal: null,
   });
 
   const [webSocketClient, setWebSocketClient] = useState(null);
@@ -118,7 +115,7 @@ export default function MyApp({
     });
   };
 
-  useEffect(async () => {      
+  useEffect(async () => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
@@ -127,16 +124,16 @@ export default function MyApp({
     const [fetchedDonationGoal, fetchedUser, fetchedNotifications] = await Promise.all([
       getDonationGoalData(locale),
       getLoggedInUser(token),
-      getNotifications(token)
+      getNotifications(token),
     ]);
 
     setState({
       ...state,
       user: fetchedUser,
       notifications: fetchedNotifications,
-      donationGoal: fetchedDonationGoal
-    })
-    setLoading(false)
+      donationGoal: fetchedDonationGoal,
+    });
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -159,7 +156,7 @@ export default function MyApp({
       // Try to connect to the WebSocket
       connect(client);
     }
-  }, [state.user])
+  }, [state.user]);
 
   const connect = (initialClient) => {
     const client = initialClient ? initialClient : WebSocketService("/ws/chat/");
@@ -356,11 +353,11 @@ async function getDonationGoalData(locale) {
       goal_end: resp?.data?.end_date,
       goal_amount: resp?.data?.amount,
       current_amount: resp?.data?.current_amount,
-    }
-    console.log(ret)
+    };
+    console.log(ret);
     return ret;
   } catch (err) {
-    console.log("ERROR")
+    console.log("ERROR");
     if (err.response && err.response.data) {
       console.log(err.response.data);
     } else console.log(err);
