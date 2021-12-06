@@ -181,10 +181,13 @@ export default function MyApp({
       //
       // Revisit this code after the most recent state testing from
       // https://github.com/climateconnect/climateconnect/pull/709
-      setSocketConnectionState("closed");
+      if (socketConnectionState !== "closed") {
+        setSocketConnectionState("closed");
+      }
+
       if (process.env.SOCKET_URL) {
         setTimeout(function () {
-          connect();
+          connect(client);
         }, 1000);
       }
     };
