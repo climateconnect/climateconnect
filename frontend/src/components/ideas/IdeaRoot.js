@@ -3,7 +3,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest } from "../../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getIdeaBorderColor } from "../../../public/lib/ideaOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -393,7 +393,7 @@ export default function IdeaRoot({
                   </Button>
                 )}
                 <SocialMediaShareButton
-                  contentLinkPath={"/" + locale + "/hubs/achern?idea=" + idea.url_slug + "#ideas"}
+                  contentLinkPath={getLocalePrefix(locale) + "/hubs/achern?idea=" + idea.url_slug + "#ideas"}
                   apiEndpoint={"/api/ideas/" + idea.url_slug + "/set_shared_idea/"}
                   locale={locale}
                   token={token}

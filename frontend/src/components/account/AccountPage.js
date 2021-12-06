@@ -13,6 +13,7 @@ import ProfileBadge from "../profile/ProfileBadge";
 import DetailledDescription from "./DetailledDescription";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import Cookies from "universal-cookie";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -266,7 +267,7 @@ export default function AccountPage({
         {isOrganization && (
           <SocialMediaShareButton
             containerClassName={classes.shareButtonContainer}
-            contentLinkPath={"/" + locale + "/organizations/" + account.url_slug}
+            contentLinkPath={getLocalePrefix(locale) + "/organizations/" + account.url_slug}
             apiEndpoint={"/api/organizations/" + account.url_slug + "/set_shared_organization/"}
             locale={locale}
             token={token}

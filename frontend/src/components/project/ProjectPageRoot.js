@@ -5,7 +5,7 @@ import Router from "next/router";
 import React, { useContext, useEffect, useRef } from "react";
 import { useLongPress } from "use-long-press";
 import ROLE_TYPES from "../../../public/data/role_types";
-import { apiRequest, redirect } from "../../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import getTexts from "../../../public/texts/texts";
@@ -359,7 +359,7 @@ export default function ProjectPageRoot({
 
   const apiEndpointShareButton = "/api/projects/" + project.url_slug + "/set_shared_project/";
   const projectAdminName = project?.creator.name ? project?.creator.name : projectAdmin.name;
-  const projectLinkPath = "/" + locale + "/projects/" + project.url_slug;
+  const projectLinkPath = getLocalePrefix(locale) + "/projects/" + project.url_slug;
   const messageTitleShareButton =
     texts.climate_protection_project_by + projectAdminName + ": " + project.name;
   const mailBodyShareButton = texts.share_project_email_body;
