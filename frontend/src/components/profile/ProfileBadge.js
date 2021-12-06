@@ -47,33 +47,25 @@ export default function ProfileBadge({ className, name, image, children, size, c
 }
 
 const BadgeContent = ({ name, image, size, className, withLink }) => {
-  const { locale } = useContext(UserContext)
+  const { locale } = useContext(UserContext);
   return (
     <Tooltip title={name}>
       {withLink ? (
         <Link href={`${getLocalePrefix(locale)}/donorforest`} target="_blank">
-          <Content 
-            image={image}
-            size={size}
-            className={className}
-          />
+          <Content image={image} size={size} className={className} />
         </Link>
-      ): (
-        <Content 
-          image={image}
-          size={size}
-          className={className}
-        />
+      ) : (
+        <Content image={image} size={size} className={className} />
       )}
     </Tooltip>
   );
 };
 
-const Content = ({image, size, className}) => {
+const Content = ({ image, size, className }) => {
   const classes = useStyles({ image: image, size: size });
   return (
     <div className={`${classes.badgeContainer} ${className}`}>
       <div className={classes.badgeContent} />
     </div>
-  )
-}
+  );
+};

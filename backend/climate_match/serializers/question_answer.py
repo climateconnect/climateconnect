@@ -41,7 +41,6 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
 
     def get_answers(self, obj: Question) -> List:
         answers = []
-        user_language_code = get_language()
         resource_mapping = [
             {
                 'resource_type': 'hub', 'filter': {'hub_type': Hub.SECTOR_HUB_TYPE}
@@ -50,11 +49,10 @@ class QuestionAnswerSerializer(serializers.ModelSerializer):
                 'resource_type': 'skill', 'filter': {'parent_skill': None}
             }
         ]
+
         if obj.answer_type.model == 'answer':
             predefined_answers = obj.answer_question.all()
             return AnswerSerializer(predefined_answers, many=True).data
-            for answer in obj.answer_question.all():
-                answers.append({'text': answer.text, 'id': answer.id})
         else:
             for resource in resource_mapping:
                 if obj.answer_type.model == resource['resource_type']:
@@ -109,7 +107,7 @@ class UserQuestionAnswerSerializer(serializers.ModelSerializer):
                 'id': resource.id, 'name': resource.name, 'weight': answer.weight
             })
         return answers
-    
+
     def get_answer_type(self, obj: UserQuestionAnswer) -> str:
         return obj.question.answer_type.model
 
