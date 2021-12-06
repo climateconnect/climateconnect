@@ -1,13 +1,12 @@
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { ThemeProvider } from "@material-ui/core/styles";
-import NextCookies from "next-cookies";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import ReactGA from "react-ga";
 // Add global styles
 import "react-multi-carousel/lib/styles.css";
 import Cookies from "universal-cookie";
-import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
+import { apiRequest } from "../public/lib/apiOperations";
 import { getCookieProps } from "../public/lib/cookieOperations";
 import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
@@ -17,26 +16,22 @@ import theme from "../src/themes/theme";
 
 export default function MyApp({
   Component,
-  pageProps,
-  user,
-  notifications,
-  pathName,
-  donationGoal,
+  pageProps={},
 }) {
-  const [gaInitialized, setGaInitialized] = useState(false);
-  const [isLoading, setLoading] = useState(false);
-
+  const router = useRouter();
   // Cookies
   const cookies = new Cookies();
   const token = cookies.get("token");
+  const [gaInitialized, setGaInitialized] = useState(false);
+  const [isLoading, setLoading] = useState(true);
+  
   const [acceptedStatistics, setAcceptedStatistics] = useState(cookies.get("acceptedStatistics"));
   const [acceptedNecessary, setAcceptedNecessary] = useState(cookies.get("acceptedNecessary"));
   const updateCookies = () => {
     setAcceptedStatistics(cookies.get("acceptedStatistics"));
     setAcceptedNecessary(cookies.get("acceptedNecessary"));
-  };
-
-  const router = useRouter();
+  };  
+  const pathName = router.asPath
   const { locale, locales } = router;
   if (
     acceptedStatistics &&
@@ -63,8 +58,9 @@ export default function MyApp({
   // into individual state updates for
   // user, and notifications
   const [state, setState] = useState({
-    user: user,
-    notifications: notifications,
+    user: token ? {} : null,
+    notifications: [],
+    donationGoal: null
   });
 
   const [webSocketClient, setWebSocketClient] = useState(null);
@@ -122,15 +118,36 @@ export default function MyApp({
     });
   };
 
+  useEffect(async () => {      
+    // Remove the server-side injected CSS.
+    const jssStyles = document.querySelector("#jss-server-side");
+    if (jssStyles) {
+      jssStyles.parentElement.removeChild(jssStyles);
+    }
+    const [fetchedDonationGoal, fetchedUser, fetchedNotifications] = await Promise.all([
+      getDonationGoalData(locale),
+      getLoggedInUser(token),
+      getNotifications(token)
+    ]);
+
+    setState({
+      ...state,
+      user: fetchedUser,
+      notifications: fetchedNotifications,
+      donationGoal: fetchedDonationGoal
+    })
+    setLoading(false)
+  }, []);
+
   useEffect(() => {
-    if (user) {
-      const notificationsToSetRead = getNotificationsToSetRead(notifications, pageProps);
+    if (state.user) {
+      const notificationsToSetRead = getNotificationsToSetRead(state.notifications, pageProps);
       const client = WebSocketService("/ws/chat/");
 
       setState({
         ...state,
-        user: user,
-        notifications: notifications.filter((n) => !notificationsToSetRead.includes(n)),
+        user: state.user,
+        notifications: state.notifications?.filter((n) => !notificationsToSetRead.includes(n)),
       });
 
       setWebSocketClient(client);
@@ -142,13 +159,7 @@ export default function MyApp({
       // Try to connect to the WebSocket
       connect(client);
     }
-
-    // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector("#jss-server-side");
-    if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
-    }
-  }, []);
+  }, [state.user])
 
   const connect = (initialClient) => {
     const client = initialClient ? initialClient : WebSocketService("/ws/chat/");
@@ -170,10 +181,13 @@ export default function MyApp({
       //
       // Revisit this code after the most recent state testing from
       // https://github.com/climateconnect/climateconnect/pull/709
-      setSocketConnectionState("closed");
+      if (socketConnectionState !== "closed") {
+        setSocketConnectionState("closed");
+      }
+
       if (process.env.SOCKET_URL) {
         setTimeout(function () {
-          connect();
+          connect(client);
         }, 1000);
       }
     };
@@ -215,13 +229,13 @@ export default function MyApp({
     ReactGA: ReactGA,
     updateCookies: updateCookies,
     socketConnectionState: socketConnectionState,
-    donationGoal: donationGoal,
+    donationGoal: state.donationGoal,
     acceptedNecessary: acceptedNecessary,
     locale: locale,
     locales: locales,
-    isLoading,
-    startLoading,
-    stopLoading,
+    isLoading: isLoading,
+    startLoading: startLoading,
+    stopLoading: stopLoading,
   };
 
   return (
@@ -236,37 +250,6 @@ export default function MyApp({
     </>
   );
 }
-
-MyApp.getInitialProps = async (ctx) => {
-  const { token } = NextCookies(ctx.ctx);
-  if (ctx.router.route === "/" && token) {
-    ctx.ctx.res.writeHead(302, {
-      Location: getLocalePrefix(ctx.router.locale) + "/browse",
-      "Content-Type": "text/html; charset=utf-8",
-    });
-    ctx.ctx.res.end();
-    return;
-  }
-
-  const [user, notifications, donationGoal, pageProps] = await Promise.all([
-    getLoggedInUser(token),
-    getNotifications(token),
-    process.env.DONATION_CAMPAIGN_RUNNING === "true" ? getDonationGoalData(ctx.ctx.locale) : null,
-    //Call getInitialProps of children
-    ctx.Component && ctx.Component.getInitialProps
-      ? ctx.Component.getInitialProps({ ...ctx.ctx, locale: ctx.router.locale })
-      : {},
-  ]);
-  const pathName = ctx.ctx.asPath.substr(1, ctx.ctx.asPath.length);
-
-  return {
-    pageProps: pageProps,
-    user: user,
-    notifications: notifications ? notifications : [],
-    pathName: pathName,
-    donationGoal: donationGoal,
-  };
-};
 
 const getNotificationsToSetRead = (notifications, pageProps) => {
   let notifications_to_set_unread = [];
@@ -367,14 +350,17 @@ async function getDonationGoalData(locale) {
       url: "/api/donation_goal_progress/",
       locale: locale,
     });
-    return {
-      goal_name: resp.data.name,
-      goal_start: resp.data.start_date,
-      goal_end: resp.data.end_date,
-      goal_amount: resp.data.amount,
-      current_amount: resp.data.current_amount,
-    };
+    const ret = {
+      goal_name: resp?.data?.name,
+      goal_start: resp?.data?.start_date,
+      goal_end: resp?.data?.end_date,
+      goal_amount: resp?.data?.amount,
+      current_amount: resp?.data?.current_amount,
+    }
+    console.log(ret)
+    return ret;
   } catch (err) {
+    console.log("ERROR")
     if (err.response && err.response.data) {
       console.log(err.response.data);
     } else console.log(err);

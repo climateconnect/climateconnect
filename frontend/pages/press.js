@@ -10,7 +10,7 @@ export default function Press({ bodyContent, headContent }) {
   return <WebflowPage bodyContent={bodyContent} headContent={headContent} pageKey="press" />;
 }
 
-export async function getStaticProps(ctx) {
+export async function getServerSideProps(ctx) {
   const WEBFLOW_URLS = {
     de: "https://climateconnect.webflow.io/presse",
     en: "https://climateconnect.webflow.io/press-en",

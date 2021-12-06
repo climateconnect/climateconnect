@@ -10,7 +10,7 @@ export default function Join({ bodyContent, headContent }) {
   return <WebflowPage bodyContent={bodyContent} headContent={headContent} pageKey="join" />;
 }
 
-export async function getStaticProps(ctx) {
+export async function getServerSideProps(ctx) {
   const WEBFLOW_URLS = {
     de: "https://climateconnect.webflow.io/join-de",
     en: "https://climateconnect.webflow.io/join-en",

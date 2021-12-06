@@ -123,7 +123,7 @@ class Donation(models.Model):
         return "%s %s from %s (%s%s)" % (
             "One time donation: " if not self.is_recurring else "Regular donation: ",
             str(self.donation_amount)+"€",
-            self.user.first_name + " " + self.user.last_name,            
+            '' if not self.user else self.user.first_name + " " + self.user.last_name,            
             self.date_first_received,
             ", cancelled " + str(self.date_cancelled) if self.date_cancelled else ""
         )

@@ -9,7 +9,7 @@ import {
   getOrganizationTagsOptions,
   getProjectTagsOptions,
   getSkillsOptions,
-  getStatusOptions,
+  getStatusOptions
 } from "../../public/lib/getOptions";
 import { getAllHubs } from "../../public/lib/hubOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
@@ -230,7 +230,7 @@ export default function Hub({
       <WideLayout title={headline} fixedHeader headerBackground="#FFF">
         <div className={classes.contentUnderHeader}>
           <NavigationSubHeader hubName={name} allHubs={allHubs} isLocationHub={isLocationHub} />
-          {process.env.DONATION_CAMPAIGN_RUNNING === "true" && <DonationCampaignInformation />}
+          {<DonationCampaignInformation />}
           <HubHeaderImage
             image={getImageUrl(image)}
             source={image_attribution}

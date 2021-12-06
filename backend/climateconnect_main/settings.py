@@ -112,7 +112,8 @@ CORS_ORIGIN_WHITELIST = [
     "https://www.cc-test-domain.com",
     "https://cc-test-domain.com",
     "http://cc-test-domain.com",
-    "https://test-climateconnect-frontend.azurewebsites.net"
+    "https://test-climateconnect-frontend.azurewebsites.net",
+    "https://climateconnect-frontend-slot2.azurewebsites.net"
 ]
 APPEND_SLASH = False
 
