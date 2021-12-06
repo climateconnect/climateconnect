@@ -357,11 +357,11 @@ export default function ProjectPageRoot({
     toggleShowFollowers();
   });
 
-  const apiEndpointShareButton = "/api/projects/" + project.url_slug + "/set_shared_project/";
+  const apiEndpointShareButton = `/api/projects/${project.url_slug}/set_shared_project/`;
   const projectAdminName = project?.creator.name ? project?.creator.name : projectAdmin.name;
-  const projectLinkPath = getLocalePrefix(locale) + "/projects/" + project.url_slug;
+  const projectLinkPath = `${getLocalePrefix(locale)}/projects/${project.url_slug}`;
   const messageTitleShareButton =
-    `texts.climate_protection_project_by ${projectAdminName}: ${project.name}`
+    `${texts.climate_protection_project_by}${projectAdminName}: ${project.name}`;
   const mailBodyShareButton = texts.share_project_email_body;
   const dialogTitleShareButton = texts.tell_others_about_this_project;
 

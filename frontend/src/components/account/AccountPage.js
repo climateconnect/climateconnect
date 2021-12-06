@@ -267,11 +267,11 @@ export default function AccountPage({
         {isOrganization && (
           <SocialMediaShareButton
             containerClassName={classes.shareButtonContainer}
-            contentLinkPath={getLocalePrefix(locale) + "/organizations/" + account.url_slug}
-            apiEndpoint={"/api/organizations/" + account.url_slug + "/set_shared_organization/"}
+            contentLinkPath={`${getLocalePrefix(locale)}/organizations/${account.url_slug}`}
+            apiEndpoint={`/api/organizations/${account.url_slug}/set_shared_organization/`}
             locale={locale}
             token={token}
-            messageTitle={organizationTexts.climate_protection_organization + account.name}
+            messageTitle={`${organizationTexts.climate_protection_organization}${account.name}`}
             tinyScreen={isTinyScreen}
             smallScreen={isSmallScreen}
             mailBody={organizationTexts.share_organization_email_body}

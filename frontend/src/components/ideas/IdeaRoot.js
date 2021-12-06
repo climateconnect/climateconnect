@@ -393,12 +393,12 @@ export default function IdeaRoot({
                   </Button>
                 )}
                 <SocialMediaShareButton
-                  contentLinkPath={getLocalePrefix(locale) + "/hubs/achern?idea=" + idea.url_slug + "#ideas"}
-                  apiEndpoint={"/api/ideas/" + idea.url_slug + "/set_shared_idea/"}
+                  contentLinkPath={`${window.location.pathname}?idea=${idea.url_slug}${window.location.hash}`}
+                  apiEndpoint={`/api/ideas/${idea.url_slug}/set_shared_idea/`}
                   locale={locale}
                   token={token}
                   messageTitle={
-                    texts.climate_protection_idea_from + ideaCreatorName + ": " + idea.name
+                    `${texts.climate_protection_idea_from}${ideaCreatorName}: ${idea.name}`
                   }
                   tinyScreen={isTinyScreen}
                   smallScreen={isSmallScreen}
