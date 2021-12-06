@@ -49,8 +49,17 @@ export default function Signin() {
   useEffect(function () {
     if (!initialized) {
       const params = getParams(window.location.href);
-      if (params.redirect)
-        setRedirectUrl(getLocalePrefix(locale) + "/" + decodeURIComponent(params.redirect));
+      if (params.redirect) {
+        let redirectUrl = getLocalePrefix(locale);
+        const decodedRedirect = decodeURIComponent(params.redirect);
+
+        if (!decodedRedirect.startsWith("/")) {
+          redirectUrl += "/";
+        }
+
+        redirectUrl += decodedRedirect;
+        setRedirectUrl(redirectUrl);
+      }
       setInitialized(true);
       //TODO: remove router
     }
