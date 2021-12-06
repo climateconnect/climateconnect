@@ -10,13 +10,13 @@ def save_content_shared(request, sharedObject):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     if request.user.is_authenticated:
-        user2 = request.user
+        user = request.user
     else:
-        user2 = None
+        user = None
 
     if isinstance(sharedObject, Project):
-        ContentShares.objects.create(user=user2, project=sharedObject, shared_via=request.data['shared_via'])
+        ContentShares.objects.create(user=user, project=sharedObject, shared_via=request.data['shared_via'])
     elif isinstance(sharedObject, Organization):
-        ContentShares.objects.create(user=user2, organization=sharedObject, shared_via=request.data['shared_via'])
+        ContentShares.objects.create(user=user, organization=sharedObject, shared_via=request.data['shared_via'])
     elif isinstance(sharedObject, Idea):
-        ContentShares.objects.create(user=user2, idea=sharedObject, shared_via=request.data['shared_via'])
+        ContentShares.objects.create(user=user, idea=sharedObject, shared_via=request.data['shared_via'])
