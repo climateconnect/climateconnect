@@ -6,7 +6,7 @@ import {
   Link,
   makeStyles,
   Typography,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(4),
     position: "relative",
     display: "inline-block",
+    color: "white"
   },
   showMoreButton: {
     color: "white",
@@ -60,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
   textBlock: {
     marginBottom: theme.spacing(1),
     fontWeight: 600,
+    color: "white",
     [theme.breakpoints.down("xs")]: {
       textAlign: "left",
     },
@@ -90,6 +92,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
     alignItems: "center",
   },
+  white: {
+    color: "white"
+  }
 }));
 
 //If we want to reuse this, this has to be translated!
@@ -179,7 +184,7 @@ export default function DonationCampaignInformation() {
                 </Link>
                 !
               </Typography>
-              <Typography>
+              <Typography className={classes.white}>
                 {texts.you_can_find_the_terms_to_the_raffle_here}
                 <Link
                   underline="always"
