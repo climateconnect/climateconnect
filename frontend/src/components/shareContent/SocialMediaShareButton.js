@@ -39,7 +39,7 @@ export default function SocialMediaShareButton({
 
   const [linkShared, setLinkShared] = React.useState(false);
   const createShareRecord = (sharedVia) => {
-    if (sharedVia === 8 && linkShared) return; //only create a share-record for the link once per session
+    if (sharedVia === SHARE_OPTIONS.link && linkShared) return; //only create a share-record for the link once per session
     apiRequest({
       method: "post",
       url: apiEndpoint,
@@ -48,7 +48,7 @@ export default function SocialMediaShareButton({
       locale: locale,
     })
       .then(() => {
-        if (sharedVia === 8) {
+        if (sharedVia === SHARE_OPTIONS.link) {
           setLinkShared(true);
         }
       })
