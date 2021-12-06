@@ -268,7 +268,7 @@ const parseChats = (chats, user, texts) =>
     ? chats.map((chat) => ({
         ...chat,
         chatting_partner:
-          chat.participants.length === 2 && chat.participants.filter((p) => p.id != user.id)[0],
+          chat.participants.length === 2 && chat.participants.filter((p) => p.id != user?.id)[0],
         unread_count: chat.unread_count,
         content: chat.last_message ? chat.last_message.content : texts.chat_has_been_created,
       }))
