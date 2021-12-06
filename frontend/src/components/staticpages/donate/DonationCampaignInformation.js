@@ -96,8 +96,6 @@ const useStyles = makeStyles((theme) => ({
 export default function DonationCampaignInformation() {
   const classes = useStyles();
   const cookies = new Cookies();
-  const expiry = daysInFuture(3);
-  const cookieProps = getCookieProps(expiry);
   const [open, setOpen] = React.useState(!cookies.get("hideDonationCampaign"));
   const [expanded, setExpanded] = React.useState(false);
   const { donationGoal, locale } = useContext(UserContext);
@@ -105,6 +103,8 @@ export default function DonationCampaignInformation() {
   const texts = getTexts({page: "donate", locale: locale, classes: classes})
 
   const handleClose = () => {
+    const expiry = daysInFuture(3);
+    const cookieProps = getCookieProps(expiry);
     cookies.set("hideDonationCampaign", true, cookieProps);
     setOpen(false);
   };
@@ -112,7 +112,11 @@ export default function DonationCampaignInformation() {
   const handleToggleExpanded = () => {
     setExpanded(!expanded);
   };
+  console.log("donationGoal")
+  console.log(donationGoal)
 
+  if(!donationGoal)
+    return <></>
   return (
     <>
       {open && (
@@ -128,11 +132,11 @@ export default function DonationCampaignInformation() {
                   ? texts.donation_campaign_headline_short
                   : texts.donation_campaign_headline_long}
               </Typography>
-              {!expanded && (
+              {!expanded && donationGoal && (
                 <DonationGoal
-                  current={donationGoal.current_amount}
-                  goal={donationGoal.goal_amount}
-                  name={donationGoal.goal_name}
+                  current={donationGoal?.current_amount}
+                  goal={donationGoal?.goal_amount}
+                  name={donationGoal?.goal_name}
                   embedded
                   barColor={theme.palette.primary.light}
                   barOnly
@@ -143,14 +147,16 @@ export default function DonationCampaignInformation() {
           </div>
           <Collapse in={expanded}>
             <Container className={classes.expandableContent}>
-              <DonationGoal
-                current={donationGoal.current_amount}
-                goal={donationGoal.goal_amount}
-                name={donationGoal.goal_name}
-                embedded
-                className={classes.donationGoal}
-                barColor={theme.palette.primary.light}
-              />
+              {donationGoal && (
+                <DonationGoal
+                  current={donationGoal?.current_amount}
+                  goal={donationGoal?.goal_amount}
+                  name={donationGoal?.goal_name}
+                  embedded
+                  className={classes.donationGoal}
+                  barColor={theme.palette.primary.light}
+                />
+              )}              
               {isNarrowScreen && (
                 <Button
                   href={getLocalePrefix(locale) + "/donate"}

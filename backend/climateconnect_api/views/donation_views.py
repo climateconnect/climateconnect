@@ -5,7 +5,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from climateconnect_api.serializers.user import DonorProfileSerializer, UserProfileStubSerializer
-import datetime
+import pytz
+from datetime import datetime
 
 from climateconnect_api.models import DonationGoal, Donation
 from climateconnect_api.serializers.donation import DonationGoalSerializer
@@ -14,7 +15,7 @@ class GetDonationGoalProgress(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        now = datetime.datetime.now()
+        now = datetime.utcnow().replace(tzinfo=pytz.utc)
         try:
             goal = DonationGoal.objects.get(start_date__lte=now, end_date__gte=now)
         except DonationGoal.DoesNotExist:
@@ -31,7 +32,8 @@ class GetDonorsWithBadges(ListAPIView):
         donors_with_relevant_donations = Donation.objects.filter(
             is_recurring=True,
             donation_amount__gte=5,
-            date_cancelled=None
+            date_cancelled=None,
+            user__isnull=False
         ).order_by().values('user').distinct()
         relevant_user_profiles = []
         for donor in donors_with_relevant_donations:
