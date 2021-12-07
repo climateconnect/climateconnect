@@ -98,10 +98,10 @@ function CommentInput({
       <div>
         <form onSubmit={onSendComment}>
           <div className={classes.flexBox}>
-            {user.badges?.length > 0 ? (
+            {user?.badges?.length > 0 ? (
               <ProfileBadge
                 name={user?.badges[0].name}
-                image={getImageUrl(user.badges[0].image)}
+                image={getImageUrl(user?.badges[0].image)}
                 size="small"
               >
                 <Avatar {...avatarProps} />
