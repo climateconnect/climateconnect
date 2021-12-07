@@ -7,7 +7,8 @@ import Router from "next/router";
 import UserContext from "../context/UserContext";
 import getTexts from "../../../public/texts/texts";
 import Cookies from "universal-cookie";
-import ContactCreatorButtonInfo from "../communication/contactcrator/ContactCreatorButtonInfo";
+import ContactCreatorButtonInfo from "../communication/contactcreator/ContactCreatorButtonInfo";
+import SendIcon from "@material-ui/icons/Send";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -15,6 +16,16 @@ const useStyles = makeStyles(() => ({
     position: "fixed",
     bottom: 0,
     right: "200px",
+
+    "& > div": {
+      display: "none",
+    },
+
+    "&:hover": {
+      "& > div": {
+        display: "flex",
+      },
+    },
   },
 }));
 
@@ -48,7 +59,7 @@ export default function ContactAmbassadorButton({ localAmbassador }) {
             creatorImageURL={localAmbassador.user?.image}
             creatorsRoleInProject={localAmbassador.title_de}
           />
-          <Button variant="contained" color="primary">
+          <Button variant="contained" color="primary" startIcon={<SendIcon />}>
             {texts.contact_ambassador}
           </Button>
         </div>

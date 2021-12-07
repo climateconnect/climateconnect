@@ -6,7 +6,7 @@ import { getImageUrl } from "../../../../public/lib/imageOperations";
 import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
-import ContactCreatorButtonInfo from "../../communication/contactcrator/ContactCreatorButtonInfo";
+import ContactCreatorButtonInfo from "../../communication/contactcreator/ContactCreatorButtonInfo";
 
 const useStyles = makeStyles({
   root: {
