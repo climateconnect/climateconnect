@@ -138,7 +138,7 @@ export default function Post({
                   {post.author_user.first_name + " " + post.author_user.last_name}
                 </Typography>
               </Link>
-              {user?.badges?.length > 0 && (
+              {post.author_user.badges?.length > 0 && (
                 <ProfileBadge
                   contentOnly
                   name={post.author_user.badges[0].name}
