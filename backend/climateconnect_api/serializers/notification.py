@@ -1,6 +1,4 @@
 from organization.utility.email import linkify_mentions
-from ideas.models.ideas import Idea
-from ideas.models.comment import IdeaComment
 from ideas.serializers.comment import IdeaCommentSerializer
 from rest_framework import serializers
 from chat_messages.models.message import Message, MessageParticipants
@@ -8,9 +6,9 @@ from climateconnect_api.models import UserProfile
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 
 from climateconnect_api.models import (
-    Notification, UserNotification
+    Notification
 )
-from chat_messages.serializers.message import MessageParticipantSerializer, MessageSerializer
+from chat_messages.serializers.message import MessageSerializer
 from organization.serializers.content import ProjectCommentSerializer
 
 class NotificationSerializer(serializers.ModelSerializer):
@@ -48,7 +46,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             'idea_supporter',
             'idea_supporter_chat'
         )
-    
+
     def get_last_message(self, obj):
         message_participant = obj.chat
         if obj.chat:
@@ -57,7 +55,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             return serializer.data
         else:
             return None
-    
+
     def get_chat_uuid(self, obj):
         if obj.chat:
             return obj.chat.chat_uuid
@@ -70,14 +68,14 @@ class NotificationSerializer(serializers.ModelSerializer):
         else:
             return None
 
-    def get_project_comment(self, obj): 
+    def get_project_comment(self, obj):
         if obj.project_comment:
             serializer = ProjectCommentSerializer(obj.project_comment)
             comment = serializer.data
             comment["content"] = linkify_mentions(comment["content"])
             return comment
 
-    def get_project_comment_parent(self, obj): 
+    def get_project_comment_parent(self, obj):
         if obj.project_comment:
             serializer = ProjectCommentSerializer(obj.project_comment.parent_comment)
             comment = serializer.data
@@ -99,7 +97,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             return {
                 "name": obj.project_like.project.name,
                 "url_slug": obj.project_like.project.url_slug
-            }    
+            }
 
     def get_project_follower(self, obj):
         if obj.project_follower:
@@ -115,7 +113,7 @@ class NotificationSerializer(serializers.ModelSerializer):
                 user=obj.project_like.user
             )
             serializer = UserProfileStubSerializer(liking_user)
-            return serializer.data         
+            return serializer.data
 
     def get_idea(self, obj):
         if obj.idea_comment:

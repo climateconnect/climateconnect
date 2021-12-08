@@ -6,17 +6,18 @@ from ideas.models import Idea, IdeaSupporter
 from ideas.utility.idea import get_idea_name, get_idea_short_description
 from organization.serializers.organization import OrganizationStubSerializer
 from rest_framework import serializers
-import urllib.parse
 
 
 class IdeaSupportedMinimalSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
+
     class Meta:
         model = IdeaSupporter
         fields = ['name']
-    
+
     def get_name(self, obj):
         return f'{obj.user.first_name} {obj.user.last_name}'
+
 
 class IdeaFromIdeaSupporterSerializer(serializers.ModelSerializer):
     idea = serializers.SerializerMethodField()
@@ -28,6 +29,7 @@ class IdeaFromIdeaSupporterSerializer(serializers.ModelSerializer):
     def get_idea(self, obj):
         serializer = IdeaMinimalSerializer(obj.idea)
         return serializer.data
+
 
 class IdeaMinimalSerializer(serializers.ModelSerializer):
     hub = serializers.SerializerMethodField()
@@ -47,54 +49,50 @@ class IdeaMinimalSerializer(serializers.ModelSerializer):
             'thumbnail_image', 'hub', 'rating', 'image', 'user',
             'location', 'created_at', 'organization', 'hub_shared_in'
         ]
-    
+
     def get_name(self, obj):
         return get_idea_name(obj, get_language())
-    
+
     def get_short_description(self, obj):
         return get_idea_short_description(obj, get_language())
 
     def get_hub(self, obj):
         if obj.hub:
             return HubStubSerializer(obj.hub).data
-        
         return None
 
     def get_hub_shared_in(self, obj):
         if obj.hub:
             return HubStubSerializer(obj.hub_shared_in).data
-        
         return None
-    
+
     def get_rating(self, obj):
         total_average = 0
         number_of_ratings = obj.rating_idea.count()
         if number_of_ratings > 0:
             total_average = sum(
                 idea_rating.rating for idea_rating in obj.rating_idea.all()
-            ) //  obj.rating_idea.count()
+            ) // obj.rating_idea.count()
 
         return {
             'number_of_ratings': number_of_ratings,
             'rating_score': total_average
         }
-    
+
     def get_user(self, obj):
         if obj.user and obj.user.user_profile:
             return UserProfileStubSerializer(obj.user.user_profile).data
-        
+
         return None
-    
+
     def get_location(self, obj):
         if obj.location:
             return obj.location.name
-        
         return None
 
     def get_organization(self, obj):
         if obj.organization:
             return OrganizationStubSerializer(obj.organization).data
-        
         return None
 
     def get_url_slug(self, obj):
@@ -121,7 +119,7 @@ class IdeaSerializer(serializers.ModelSerializer):
 
     def get_name(self, obj):
         return get_idea_name(obj, get_language())
-    
+
     def get_short_description(self, obj):
         return get_idea_short_description(obj, get_language())
 
