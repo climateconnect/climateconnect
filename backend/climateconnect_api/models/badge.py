@@ -39,6 +39,13 @@ class Badge(models.Model):
         verbose_name="Created at"
     )
 
+    instantly_awarded_over_amount = models.PositiveIntegerField(
+        help_text="You instantly get this badge if you've donated more than this amount in your current streak",
+        verbose_name="Instantly awarded over amount",
+        null=True,
+        blank=True
+    )
+
     updated_at = models.DateTimeField(
         help_text="Time when comment was updated",
         verbose_name="Updated at",
