@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundRepeat: "no-repeat",
     backgroundPositionY: "center",
     backgroundPositionX: "center",
-    backgroundSize: props.size === "small" ? 9 : props.size === "medium" ? 15 : 30,
+    backgroundSize: props.size === "small" ? 11 : props.size === "medium" ? 15 : 48,
   }),
 }));
 

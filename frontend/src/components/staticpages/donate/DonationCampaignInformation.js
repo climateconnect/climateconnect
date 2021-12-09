@@ -172,6 +172,8 @@ export default function DonationCampaignInformation() {
               )}
               <Typography className={classes.textBlock}>
                 {texts.donation_campaing_info_text_first_sentence}
+                <br />
+                <br />
                 {texts.raffle_announcement}
                 <Link
                   underline="always"
