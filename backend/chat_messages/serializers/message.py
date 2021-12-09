@@ -64,14 +64,17 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
     def get_unread_count(self, obj):
         user = self.context.get('request', None).user
         unread_receivers = MessageReceiver.objects.filter(receiver=user, read_at=None).values('message')
-        unread_messages = Message.objects.filter(id__in=[(obj['message']) for obj in unread_receivers], message_participant=obj).count()
+        unread_messages = Message.objects.filter(
+            id__in=[(obj['message']) for obj in unread_receivers], 
+            message_participant=obj
+        ).count()
         return unread_messages
-    
+
     def get_user(self, obj):
         user = self.context.get('request', None).user
         user_profile = UserProfile.objects.filter(user=user)[0]
         return UserProfileStubSerializer(user_profile).data
-        
+
     def get_related_idea(self, obj):
         if obj.related_idea:
             try:
@@ -81,6 +84,7 @@ class MessageParticipantSerializer(serializers.ModelSerializer):
                 return None
         else:
             return None
+
 
 class ParticipantSerializer(serializers.ModelSerializer):
     user_profile = serializers.SerializerMethodField()

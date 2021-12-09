@@ -6,7 +6,7 @@ from climateconnect_api.serializers.common import (AvailabilitySerializer,
                                                    SkillSerializer)
 from climateconnect_api.serializers.translation import \
     UserProfileTranslationSerializer
-from climateconnect_api.utility.badges import get_badges, get_highest_impact_donation
+from climateconnect_api.utility.badges import get_badges, get_oldest_relevant_donation
 from climateconnect_api.utility.user import get_user_profile_biography
 from django.conf import settings
 from django.utils.translation import get_language
@@ -47,7 +47,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
         return obj.user.last_name
 
     def get_location(self, obj):
-        if obj.location == None:
+        if obj.location is None:
             return None
         return obj.location.name
 
@@ -229,7 +229,7 @@ class DonorProfileSerializer(UserProfileStubSerializer):
     def get_started_donating(self, obj):
         donations = Donation.objects.filter(user=obj.user)
         if donations.exists():
-            d = get_highest_impact_donation(donations)
+            d = get_oldest_relevant_donation(donations)
             if d.is_recurring:
                 return d.date_first_received
         return None

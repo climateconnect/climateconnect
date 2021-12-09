@@ -1,6 +1,7 @@
 import { List, ListItem, ListItemIcon, makeStyles, Typography } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
 import { getImageUrl } from "../../../../public/lib/imageOperations";
+import UserContext from "../../context/UserContext";
 import ProfileBadge from "../../profile/ProfileBadge";
 
 const useStyles = makeStyles((theme) => ({
@@ -21,6 +22,9 @@ const useStyles = makeStyles((theme) => ({
       gridTemplateColumns: "repeat(1, 1fr)",
     },
   },
+  badgeExplainerText: {
+    fontSize: 15.5
+  }
 }));
 
 export default function DonorBadgeExplainerList({ possibleBadges }) {
@@ -38,12 +42,20 @@ export default function DonorBadgeExplainerList({ possibleBadges }) {
 
 const DonorBadgeListEntry = ({ badge }) => {
   const classes = useStyles();
+  const { locale } = useContext(UserContext)
+
+  const badgeText ={
+    en: `Donate ${badge.min_days_donated} days 
+    ${(badge.instantly_awarded_over_amount > 5) ? `(Instant with >${badge.instantly_awarded_over_amount}€)` : ""}`,
+    de: `Spende ${badge.min_days_donated} Tage
+    ${(badge.instantly_awarded_over_amount > 5) ? `(Direkt bei >${badge.instantly_awarded_over_amount}€)` : ""}`
+  }
   return (
     <ListItem className={classes.listItem}>
       <ListItemIcon className={classes.listItemIcon}>
         <ProfileBadge contentOnly image={getImageUrl(badge.image)} name={badge.name} />
       </ListItemIcon>
-      <Typography>{badge.name}</Typography>
+      <Typography className={classes.badgeExplainerText}>{badgeText[locale]}</Typography>
     </ListItem>
   );
 };
