@@ -54,6 +54,7 @@ export default function WideLayout({
   subHeader,
   image,
   useFloodStdFont,
+  rootClassName,
 }) {
   const classes = useStyles({ noSpaceBottom: noSpaceBottom, isStaticPage: isStaticPage });
   const [alertOpen, setAlertOpen] = React.useState(true);
@@ -97,7 +98,7 @@ export default function WideLayout({
       {isLoading ? (
         <LoadingContainer headerHeight={113} footerHeight={80} />
       ) : (
-        <Container maxWidth={false} component="main" className={classes.main}>
+        <Container maxWidth={false} component="main" className={`${classes.main} ${rootClassName}`}>
           {(message || initialMessage) && alertOpen && (
             <Alert
               className={`

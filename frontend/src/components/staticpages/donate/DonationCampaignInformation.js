@@ -6,7 +6,7 @@ import {
   Link,
   makeStyles,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(4),
     position: "relative",
     display: "inline-block",
-    color: "white"
+    color: "white",
   },
   showMoreButton: {
     color: "white",
@@ -93,8 +93,8 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   white: {
-    color: "white"
-  }
+    color: "white",
+  },
 }));
 
 //If we want to reuse this, this has to be translated!
@@ -117,8 +117,6 @@ export default function DonationCampaignInformation() {
   const handleToggleExpanded = () => {
     setExpanded(!expanded);
   };
-  console.log("donationGoal");
-  console.log(donationGoal);
 
   if (!donationGoal) return <></>;
   return (
