@@ -8,7 +8,7 @@ import UserContext from "../../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   treeImageContainer: (props) => ({
-    width: 70,
+    width: props.width,
     backgroundImage: `url('${props.image}')`,
     backgroundRepeat: "no-repeat",
     backgroundPosition: "bottom",
@@ -25,9 +25,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const getWidthFromStep = (step) => {
+  const widths = {
+    "1": "65px",
+    "2": "70px",
+    "3": "75px",
+    "4": "80px",
+    "5": "95px",
+    "6": "100px"
+  }
+  if(widths[step])
+    return widths[step]
+  return "65px"
+}
+
 export default function DonorForestEntry({ donor }) {
   const badge = donor.badges[0];
-  const classes = useStyles({ image: getImageUrl(badge.image) });
+  const width = getWidthFromStep(badge.step ? badge.step : 1)
+  const classes = useStyles({ image: getImageUrl(badge.image), width: width });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "donate", locale: locale });
   const now = new Date();

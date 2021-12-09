@@ -16,6 +16,13 @@ class Badge(models.Model):
         blank=True
     )
 
+    step = models.PositiveSmallIntegerField(
+        help_text="Which step on the way to the best badge is this? This will determine the size in the donor's forest",
+        verbose_name="Step",
+        null=True,
+        blank=True
+    )
+
     name_de = models.CharField(
         help_text="The name of the badge in german",
         verbose_name="Name DE",
