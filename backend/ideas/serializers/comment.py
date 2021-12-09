@@ -9,10 +9,9 @@ logger = logging.getLogger(__name__)
 
 class IdeaCommentSerializer(CommentSerializer):
     idea = serializers.SerializerMethodField()
-    
+
     class Meta(CommentSerializer.Meta):
         fields = CommentSerializer.Meta.fields + ('idea',)
-    
+
     def get_idea(self, obj):
         return IdeaMinimalSerializer(obj.idea).data
- 

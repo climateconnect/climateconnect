@@ -481,7 +481,6 @@ function NormalScreenLinks({
   localePrefix,
   isStaticPage,
 }) {
-  console.log(loggedInUser);
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const isSmallMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
