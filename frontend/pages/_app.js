@@ -354,7 +354,6 @@ async function getDonationGoalData(locale) {
       goal_amount: resp?.data?.amount,
       current_amount: resp?.data?.current_amount,
     };
-    console.log(ret);
     return ret;
   } catch (err) {
     console.log("ERROR");

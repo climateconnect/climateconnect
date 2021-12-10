@@ -348,7 +348,6 @@ export default function Header({
     background: background,
   });
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
-  console.log(user);
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = React.useState(false);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
