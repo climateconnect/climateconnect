@@ -955,5 +955,17 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: `Contact ${creator?.first_name} if you want to chat about this project.`,
       de: `Kontaktiere ${creator?.first_name}, um über diese Organisation zu reden.`,
     },
+    created_lower_case: {
+      en: "created",
+      de: "erstellt",
+    },
+    updated: {
+      en: "updated",
+      de: "bearbeitet",
+    },
+    event_date: {
+      en: "event date",
+      de: "Eventdatum",
+    },
   };
 }
