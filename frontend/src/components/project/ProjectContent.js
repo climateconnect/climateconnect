@@ -13,10 +13,10 @@ import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
-import Posts from "./../communication/Posts.js";
 import DateDisplay from "./../general/DateDisplay";
 import ProjectStatus from "./ProjectStatus";
 import DiscussionPreview from "./DiscussionPreview";
+import ProgressPosts from "./ProgressPosts";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -134,6 +134,15 @@ const useStyles = makeStyles((theme) => ({
   },
   finishedDate: {
     marginTop: theme.spacing(0.5),
+  },
+  progressPostsHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  newPostButton: {
+    marginTop: theme.spacing(1),
+    whiteSpace: "nowrap",
   },
 }));
 
@@ -315,17 +324,25 @@ export default function ProjectContent({
         )}
       </div>
       <div className={classes.contentBlock}>
-        <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
-          {texts.progress}
-        </Typography>
-        <Typography variant="body2" fontStyle="italic" fontWeight="bold">
-          {texts.follow_the_project_to_be_notified_when_they_make_an_update_post}
-        </Typography>
+        <div className={classes.progressPostsHeader}>
+          <div>
+            <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
+              {texts.progress}
+            </Typography>
+            <Typography variant="body2" fontStyle="italic" fontWeight="bold">
+              {texts.follow_the_project_to_be_notified_when_they_make_an_update_post}
+            </Typography>
+          </div>
+          <Button className={classes.newPostButton} variant="contained" color="primary">
+            {texts.new_update}
+          </Button>
+        </div>
         {project.timeline_posts && project.timeline_posts.length > 0 && (
           <div className={classes.progressContent}>
-            <Posts
-              posts={project.timeline_posts.sort((a, b) => new Date(b.date) - new Date(a.date))}
-              type="progresspost"
+            <ProgressPosts
+              posts={project.timeline_posts}
+              locale={locale}
+              texts={texts}
             />
           </div>
         )}
