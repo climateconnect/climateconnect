@@ -139,7 +139,12 @@ export default function ProjectPage({
     >
       {project ? (
         <ProjectPageRoot
-          project={{ ...project, team: members, timeline_posts: posts, comments: curComments }}
+          project={{
+            ...project,
+            team: members,
+            timeline_posts: posts.reverse().map((obj) => ({ ...obj, currentlyEdited: false })),
+            comments: curComments,
+          }}
           token={token}
           setMessage={setMessage}
           isUserFollowing={isUserFollowing}

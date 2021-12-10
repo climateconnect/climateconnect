@@ -166,6 +166,24 @@ export default function ProjectContent({
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
       : null;
+
+  const timelinePosts = project.timeline_posts;
+  const emptyPost = {
+    currentlyEdited: true,
+  };
+  const [userIsEditingPost, setUserIsEditingPost] = React.useState(false);
+  const [disableEditingButton, setDisableEditingButton] = React.useState(false);
+  const handleNewPost = () => {
+    setUserIsEditingPost(true);
+    setDisableEditingButton(true);
+    timelinePosts.splice(0, 0, emptyPost);
+  };
+  const abortNewPost = () => {
+    setUserIsEditingPost(true);
+    setDisableEditingButton(false);
+    timelinePosts.shift();
+  };
+
   return (
     <div>
       <div className={classes.contentBlock}>
@@ -333,13 +351,24 @@ export default function ProjectContent({
               {texts.follow_the_project_to_be_notified_when_they_make_an_update_post}
             </Typography>
           </div>
-          <Button className={classes.newPostButton} variant="contained" color="primary">
+          <Button
+            className={classes.newPostButton}
+            variant="contained"
+            color="primary"
+            onClick={handleNewPost}
+            disabled={disableEditingButton}
+          >
             {texts.new_update}
           </Button>
         </div>
         {project.timeline_posts && project.timeline_posts.length > 0 && (
           <div className={classes.progressContent}>
-            <ProgressPosts posts={project.timeline_posts} locale={locale} texts={texts} />
+            <ProgressPosts
+              posts={timelinePosts}
+              locale={locale}
+              texts={texts}
+              abortNewPost={abortNewPost}
+            />
           </div>
         )}
       </div>

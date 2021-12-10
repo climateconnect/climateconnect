@@ -2,7 +2,7 @@ import React from "react";
 import StepsTrackerVertical from "../general/StepsTrackerVertical";
 import ProgressPost from "./ProgressPost";
 
-export default function ProgressPosts({ posts, locale, texts }) {
+export default function ProgressPosts({ posts, locale, texts, abortNewPost }) {
   return (
     <>
       {posts.map((element, index) => (
@@ -10,7 +10,14 @@ export default function ProgressPosts({ posts, locale, texts }) {
           key={index}
           index={index}
           lastIndex={posts.length - 1}
-          content={<ProgressPost post={element} locale={locale} texts={texts} />}
+          content={
+            <ProgressPost
+              post={element}
+              locale={locale}
+              texts={texts}
+              abortNewPost={abortNewPost}
+            />
+          }
         />
       ))}
     </>

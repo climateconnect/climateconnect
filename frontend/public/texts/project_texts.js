@@ -971,5 +971,25 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "New update",
       de: "Update erstellen",
     },
+    title: {
+      en: "Title",
+      de: "Titel",
+    },
+    add_your_title_here: {
+      en: "Add your title here.",
+      de: "Füge deinen Titel hier hinzu.",
+    },
+    text: {
+      en: "Text",
+      de: "Text",
+    },
+    add_your_text_here: {
+      en: "Add your text here.",
+      de: "Füge deinen Text hier hinzu.",
+    },
+    event_date_upper_case: {
+      en: "Event Date",
+      de: "Eventdatum",
+    },
   };
 }
