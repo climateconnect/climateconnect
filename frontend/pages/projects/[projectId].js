@@ -225,8 +225,9 @@ async function getPostsByProject(projectUrl, token, locale) {
       token: token,
       locale: locale,
     });
-    if (resp.data.length === 0) return null;
-    else {
+    if (resp.data.length === 0) {
+      return null;
+    } else {
       return resp.data.results;
     }
   } catch (err) {

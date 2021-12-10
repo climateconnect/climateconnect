@@ -55,20 +55,30 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ProgressPost({ post, locale, texts }) {
-
   const classes = useStyles();
-  
-  const DateParser = ({date, locale}) => {
-    return new Intl.DateTimeFormat(locale).format(date)
+
+  const DateParser = ({ date, locale }) => {
+    return new Intl.DateTimeFormat(locale).format(date);
   };
   return (
     <Card className={classes.card} raised="true">
       <div className={classes.header}>
         <div className={classes.headerLeft}>
-          
-          {post.created_at && <Typography>{DateParser(post.created_at, locale)} ({texts.created_lower_case})</Typography>}
-          {post.updated_at && <Typography>{DateParser(post.updated_at, locale)} ({texts.updated})</Typography>}
-          {post.event_date && <Typography>{DateParser(post.event_date, locale)} ({texts.event_date})</Typography>}
+          {post.created_at && (
+            <Typography>
+              {DateParser(post.created_at, locale)} ({texts.created_lower_case})
+            </Typography>
+          )}
+          {post.updated_at && (
+            <Typography>
+              {DateParser(post.updated_at, locale)} ({texts.updated})
+            </Typography>
+          )}
+          {post.event_date && (
+            <Typography>
+              {DateParser(post.event_date, locale)} ({texts.event_date})
+            </Typography>
+          )}
 
           <Typography variant="h5" color="primary">
             {post.title}

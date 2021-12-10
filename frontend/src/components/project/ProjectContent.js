@@ -339,11 +339,7 @@ export default function ProjectContent({
         </div>
         {project.timeline_posts && project.timeline_posts.length > 0 && (
           <div className={classes.progressContent}>
-            <ProgressPosts
-              posts={project.timeline_posts}
-              locale={locale}
-              texts={texts}
-            />
+            <ProgressPosts posts={project.timeline_posts} locale={locale} texts={texts} />
           </div>
         )}
       </div>
