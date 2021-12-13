@@ -215,7 +215,7 @@ export default function AccountPage({
                 </div>
               </div>
             );
-          } else if (value && !["detailled_description", "location"].includes(i.type)) {
+          } else if (value && !["detailled_description", "location", "checkbox"].includes(i.type)) {
             return (
               <div key={index}>
                 <div className={classes.subtitle}>{i.name}:</div>
