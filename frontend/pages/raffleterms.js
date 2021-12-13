@@ -52,18 +52,33 @@ export default function Terms() {
       <p>The following prizes are awarded to four different winners:</p>
       <ul>
         <li>Co2 compensation by the company Ecologi Action Limited (ecologi.com)</li>
-        <li>The adoption of a coral through{" "}
-          <a href="https://www.coralguardian.org/en/adopt-a-coral/" target_="_blank" rel="noreferrer">
+        <li>
+          The adoption of a coral through{" "}
+          <a
+            href="https://www.coralguardian.org/en/adopt-a-coral/"
+            target_="_blank"
+            rel="noreferrer"
+          >
             Coral Guardian
           </a>
         </li>
-        <li>The book{" "}
-          <a href="https://www.workman.com/products/how-to-be-a-conscious-eater/paperback" target="_blank" rel="noreferrer">
+        <li>
+          The book{" "}
+          <a
+            href="https://www.workman.com/products/how-to-be-a-conscious-eater/paperback"
+            target="_blank"
+            rel="noreferrer"
+          >
             &quot;How to Be a Conscious Eater&quot; by Sophie Egan
           </a>
         </li>
-        <li>The book{" "}
-          <a href="https://www.goodreads.com/book/show/45893908-wear-repair-repurpose" target="_blank" rel="noreferrer">
+        <li>
+          The book{" "}
+          <a
+            href="https://www.goodreads.com/book/show/45893908-wear-repair-repurpose"
+            target="_blank"
+            rel="noreferrer"
+          >
             &quot;Wear, Repair, Repurpose&quot; by Lily Fulop
           </a>
         </li>
@@ -186,18 +201,33 @@ export default function Terms() {
       <p>Folgende Preise werden vergeben:</p>
       <ul>
         <li>CO2-Kompensation durch die Firma Ecologi Action Limited (ecologi.com)</li>
-        <li>Die Adoption einer Koralle durch{" "}
-          <a href="https://www.coralguardian.org/en/adopt-a-coral/" target_="_blank" rel="noreferrer">
+        <li>
+          Die Adoption einer Koralle durch{" "}
+          <a
+            href="https://www.coralguardian.org/en/adopt-a-coral/"
+            target_="_blank"
+            rel="noreferrer"
+          >
             Coral Guardian
           </a>
         </li>
-        <li>Das Buch{" "}
-          <a href="https://www.workman.com/products/how-to-be-a-conscious-eater/paperback" target="_blank" rel="noreferrer">
+        <li>
+          Das Buch{" "}
+          <a
+            href="https://www.workman.com/products/how-to-be-a-conscious-eater/paperback"
+            target="_blank"
+            rel="noreferrer"
+          >
             &quot;How to Be a Conscious Eater&quot; von Sophie Egan
           </a>
         </li>
-        <li>Das Buch{" "}
-          <a href="https://www.goodreads.com/book/show/45893908-wear-repair-repurpose" target="_blank" rel="noreferrer">
+        <li>
+          Das Buch{" "}
+          <a
+            href="https://www.goodreads.com/book/show/45893908-wear-repair-repurpose"
+            target="_blank"
+            rel="noreferrer"
+          >
             &quot;Wear, Repair, Repurpose&quot; von Lily Fulop
           </a>
         </li>
