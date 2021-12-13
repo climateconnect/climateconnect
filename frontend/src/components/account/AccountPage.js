@@ -3,6 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
 import React, { useContext } from "react";
 import Linkify from "react-linkify";
+import Cookies from "universal-cookie";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
@@ -10,10 +12,8 @@ import UserContext from "../context/UserContext";
 import MiniHubPreviews from "../hub/MiniHubPreviews";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import ProfileBadge from "../profile/ProfileBadge";
-import DetailledDescription from "./DetailledDescription";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
-import Cookies from "universal-cookie";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import DetailledDescription from "./DetailledDescription";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -121,6 +121,16 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: props.isOwnAccount ? theme.spacing(4) : theme.spacing(2),
     },
   }),
+  subOrgContainer: {
+    display: "flex",
+    alignItems: "center",
+  },
+  isSubOrgText: {
+    marginRight: theme.spacing(1),
+  },
+  miniOrgPreview: {
+    display: "flex",
+  },
 }));
 
 export default function AccountPage({
@@ -170,9 +180,15 @@ export default function AccountPage({
           if (key === "parent_organization") {
             if (value.name)
               return (
-                <div key={index} className={classes.subtitle}>
-                  {account.name} {texts.is_a_suborganization_of}{" "}
-                  <MiniOrganizationPreview organization={value} size="small" />
+                <div key={index} className={`${classes.subtitle} ${classes.subOrgContainer}`}>
+                  <Typography className={classes.isSubOrgText}>
+                    {account.name} {texts.is_a_suborganization_of}{" "}
+                  </Typography>
+                  <MiniOrganizationPreview
+                    className={classes.miniOrgPreview}
+                    organization={value}
+                    size="small"
+                  />
                 </div>
               );
           } else if (i.type === "array" && i?.value?.length > 0) {
