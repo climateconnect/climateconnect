@@ -1,7 +1,7 @@
 from django.urls import path
 
 from ideas.views.idea_views import (
-    CreateIdeaView, GetHaveIJoinedIdeaView, IdeasBoardView, IdeaView, JoinIdeaChatView
+    CreateIdeaView, GetHaveIJoinedIdeaView, IdeasBoardView, IdeaView, JoinIdeaChatView, SetIdeaSharedView,
 )
 from ideas.views.comment_views import (
     IdeaCommentsView,
@@ -33,5 +33,6 @@ urlpatterns = [
         name='get-my-idea-rating-view'
     ),
     path('ideas/<str:url_slug>/join_chat/', JoinIdeaChatView.as_view(), name="join-idea-chat-view"),
-    path('ideas/<str:url_slug>/have_i_joined/', GetHaveIJoinedIdeaView.as_view(), name="have-i-joined-idea-view")
+    path('ideas/<str:url_slug>/have_i_joined/', GetHaveIJoinedIdeaView.as_view(), name="have-i-joined-idea-view"),
+    path('ideas/<str:url_slug>/set_shared_idea/', SetIdeaSharedView.as_view(), name="set-shared-idea-view"),
 ]

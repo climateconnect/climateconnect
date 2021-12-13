@@ -103,9 +103,12 @@ export default function ProjectOverview({
   toggleShowLikes,
   numberOfLikes,
   numberOfFollowers,
-  toggleShowSocials,
-  showSocials,
-  createShareRecord,
+  projectLinkPath,
+  apiEndpointShareButton,
+  token,
+  messageTitleShareButton,
+  mailBodyShareButton,
+  dialogTitleShareButton,
 }) {
   const classes = useStyles();
 
@@ -119,10 +122,12 @@ export default function ProjectOverview({
           texts={texts}
           screenSize={screenSize}
           locale={locale}
-          toggleShowSocials={toggleShowSocials}
-          showSocials={showSocials}
-          projectAdmin={projectAdmin}
-          createShareRecord={createShareRecord}
+          projectLinkPath={projectLinkPath}
+          apiEndpointShareButton={apiEndpointShareButton}
+          token={token}
+          messageTitleShareButton={messageTitleShareButton}
+          mailBodyShareButton={mailBodyShareButton}
+          dialogTitleShareButton={dialogTitleShareButton}
         />
       ) : (
         <LargeScreenOverview
@@ -173,10 +178,12 @@ function SmallScreenOverview({
   texts,
   screenSize,
   locale,
-  toggleShowSocials,
-  showSocials,
-  projectAdmin,
-  createShareRecord,
+  projectLinkPath,
+  apiEndpointShareButton,
+  token,
+  messageTitleShareButton,
+  mailBodyShareButton,
+  dialogTitleShareButton,
 }) {
   const classes = useStyles();
   return (
@@ -192,14 +199,16 @@ function SmallScreenOverview({
         )}
         <SocialMediaShareButton
           containerClassName={classes.shareButtonContainer}
-          toggleShowSocials={toggleShowSocials}
-          showSocials={showSocials}
-          project={project}
+          contentLinkPath={projectLinkPath}
+          apiEndpoint={apiEndpointShareButton}
           locale={locale}
+          token={token}
+          messageTitle={messageTitleShareButton}
+          tinyScreen={screenSize.belowTiny}
+          smallScreen={screenSize.belowSmall}
+          mailBody={mailBodyShareButton}
           texts={texts}
-          projectAdmin={projectAdmin}
-          createShareRecord={createShareRecord}
-          screenSize={screenSize}
+          dialogTitle={dialogTitleShareButton}
         />
         <img
           className={classes.fullWidthImage}

@@ -5,9 +5,10 @@ import Router from "next/router";
 import React, { useContext, useEffect, useRef } from "react";
 import { useLongPress } from "use-long-press";
 import ROLE_TYPES from "../../../public/data/role_types";
-import { apiRequest, redirect } from "../../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
+import getTexts from "../../../public/texts/texts";
 import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
 import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
@@ -68,7 +69,6 @@ export default function ProjectPageRoot({
   setCurComments,
   followingChangePending,
   likingChangePending,
-  texts,
   projectAdmin,
   numberOfLikes,
   numberOfFollowers,
@@ -81,6 +81,13 @@ export default function ProjectPageRoot({
 
   const classes = useStyles();
   const { locale } = useContext(UserContext);
+
+  const texts = getTexts({
+    locale: locale,
+    page: "project",
+    project: project,
+    creator: projectAdmin,
+  });
 
   const screenSize = {
     belowTiny: useMediaQuery((theme) => theme.breakpoints.down("xs")),
@@ -304,11 +311,6 @@ export default function ProjectPageRoot({
     await refreshNotifications();
   };
 
-  const [showSocials, setShowSocials] = React.useState(false);
-  const toggleShowSocials = (value) => {
-    setShowSocials(value);
-  };
-
   const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = React.useState(false);
   const [followers, setFollowers] = React.useState([]);
   const [showFollowers, setShowFollowers] = React.useState(false);
@@ -355,26 +357,12 @@ export default function ProjectPageRoot({
     toggleShowFollowers();
   });
 
-  const [projectLinkShared, setProjectLinkShared] = React.useState(false);
-  const createShareRecord = (sharedVia) => {
-    if (sharedVia === 8 && projectLinkShared) return; //only create a share-record for the link once per session
-    apiRequest({
-      method: "post",
-      url: "/api/projects/" + project.url_slug + "/set_shared_project/",
-      payload: { shared_via: sharedVia },
-      token: token,
-      locale: locale,
-    })
-      .then(() => {
-        if (sharedVia === 8) {
-          setProjectLinkShared(true);
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-        if (error && error.reponse) console.log(error.response);
-      });
-  };
+  const apiEndpointShareButton = `/api/projects/${project.url_slug}/set_shared_project/`;
+  const projectAdminName = project?.creator.name ? project?.creator.name : projectAdmin.name;
+  const projectLinkPath = `${getLocalePrefix(locale)}/projects/${project.url_slug}`;
+  const messageTitleShareButton = `${texts.climate_protection_project_by}${projectAdminName}: ${project.name}`;
+  const mailBodyShareButton = texts.share_project_email_body;
+  const dialogTitleShareButton = texts.tell_others_about_this_project;
 
   const latestParentComment = [project.comments[0]];
   return (
@@ -404,9 +392,12 @@ export default function ProjectPageRoot({
         initiallyCaughtLikes={initiallyCaughtLikes}
         numberOfLikes={numberOfLikes}
         numberOfFollowers={numberOfFollowers}
-        toggleShowSocials={toggleShowSocials}
-        showSocials={showSocials}
-        createShareRecord={createShareRecord}
+        projectLinkPath={projectLinkPath}
+        apiEndpointShareButton={apiEndpointShareButton}
+        token={token}
+        messageTitleShareButton={messageTitleShareButton}
+        mailBodyShareButton={mailBodyShareButton}
+        dialogTitleShareButton={dialogTitleShareButton}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -425,14 +416,16 @@ export default function ProjectPageRoot({
         {!screenSize.belowSmall && (
           <SocialMediaShareButton
             containerClassName={classes.shareButtonContainer}
-            toggleShowSocials={toggleShowSocials}
-            showSocials={showSocials}
-            project={project}
+            contentLinkPath={projectLinkPath}
+            apiEndpoint={apiEndpointShareButton}
             locale={locale}
+            token={token}
+            messageTitle={messageTitleShareButton}
+            tinyScreen={screenSize.belowTiny}
+            smallScreen={screenSize.belowSmall}
+            mailBody={mailBodyShareButton}
             texts={texts}
-            projectAdmin={projectAdmin}
-            createShareRecord={createShareRecord}
-            screenSize={screenSize}
+            dialogTitle={dialogTitleShareButton}
           />
         )}
       </Container>

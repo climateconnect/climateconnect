@@ -14,6 +14,7 @@ import DateDisplay from "../general/DateDisplay";
 import LoadingSpinner from "../general/LoadingSpinner";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
+import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import EditIdeaRoot from "./editIdea/EditIdeaRoot";
 import IdeaCommentsSection from "./IdeaCommentsSection";
 import IdeaHubIcon from "./IdeaHubIcon";
@@ -145,6 +146,8 @@ export default function IdeaRoot({
   );
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTinyScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const handleIdeaClose = (e) => {
     onIdeaClose(e);
   };
@@ -291,8 +294,12 @@ export default function IdeaRoot({
     setHasJoinedIdea(newHasJoinedIdeaObject);
   };
 
+  const ideaCreatorName = idea.user
+    ? idea.user.first_name + " " + idea.user.last_name
+    : idea.organization.name;
+
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "idea", locale: locale, idea: idea });
+  const texts = getTexts({ page: "idea", locale: locale, idea: idea, creator: ideaCreatorName });
   return (
     <Card variant="outlined" className={classes.root}>
       {loading ? (
@@ -385,6 +392,18 @@ export default function IdeaRoot({
                     {isMediumScreen ? texts.edit : texts.edit_idea}
                   </Button>
                 )}
+                <SocialMediaShareButton
+                  contentLinkPath={`${window.location.pathname}?idea=${idea.url_slug}${window.location.hash}`}
+                  apiEndpoint={`/api/ideas/${idea.url_slug}/set_shared_idea/`}
+                  locale={locale}
+                  token={token}
+                  messageTitle={`${texts.climate_protection_idea_from}${ideaCreatorName}: ${idea.name}`}
+                  tinyScreen={isTinyScreen}
+                  smallScreen={isSmallScreen}
+                  mailBody={texts.share_idea_email_body}
+                  texts={texts}
+                  dialogTitle={texts.tell_others_about_this_idea}
+                />
               </div>
             </div>
           </div>

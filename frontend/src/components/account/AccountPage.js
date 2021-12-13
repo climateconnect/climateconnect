@@ -11,6 +11,9 @@ import MiniHubPreviews from "../hub/MiniHubPreviews";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import ProfileBadge from "../profile/ProfileBadge";
 import DetailledDescription from "./DetailledDescription";
+import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
+import Cookies from "universal-cookie";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
@@ -108,6 +111,16 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
   },
+  shareButtonContainer: (props) => ({
+    position: "absolute",
+    right: "0%",
+    bottom: "0%",
+    marginRight: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    [theme.breakpoints.down("xs")]: {
+      marginBottom: props.isOwnAccount ? theme.spacing(4) : theme.spacing(2),
+    },
+  }),
 }));
 
 export default function AccountPage({
@@ -117,11 +130,18 @@ export default function AccountPage({
   infoMetadata,
   children,
   isOwnAccount,
+  isOrganization,
   editText,
+  isTinyScreen,
+  isSmallScreen,
 }) {
   const classes = useStyles({ isOwnAccount: isOwnAccount });
   const { locale } = useContext(UserContext);
+  const token = new Cookies().get("token");
   const texts = getTexts({ page: "profile", locale: locale });
+  const organizationTexts = isOrganization
+    ? getTexts({ page: "organization", organization: account })
+    : "Not an organization";
   const componentDecorator = (href, text, key) => (
     <Link
       color="primary"
@@ -244,8 +264,26 @@ export default function AccountPage({
           backgroundPosition: "center",
           width: "100%",
           height: 305,
+          position: "relative",
         }}
-      />
+      >
+        {isOrganization && (
+          <SocialMediaShareButton
+            containerClassName={classes.shareButtonContainer}
+            contentLinkPath={`${getLocalePrefix(locale)}/organizations/${account.url_slug}`}
+            apiEndpoint={`/api/organizations/${account.url_slug}/set_shared_organization/`}
+            locale={locale}
+            token={token}
+            messageTitle={`${organizationTexts.climate_protection_organization}${account.name}`}
+            tinyScreen={isTinyScreen}
+            smallScreen={isSmallScreen}
+            mailBody={organizationTexts.share_organization_email_body}
+            texts={texts}
+            dialogTitle={organizationTexts.tell_others_about_this_organization}
+            switchColors={true}
+          />
+        )}
+      </div>
       <Container className={classes.infoContainer}>
         {isOwnAccount && (
           <Button
