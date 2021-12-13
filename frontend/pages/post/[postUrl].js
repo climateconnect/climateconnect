@@ -7,11 +7,11 @@ import React from "react";
 import WebflowPage from "../../src/components/webflow/WebflowPage";
 import { retrievePage } from "../../src/utils/webflow";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   root: {
     position: "relative",
   },
-}));
+});
 
 export default function Blog({ bodyContent, headContent }) {
   const classes = useStyles();
