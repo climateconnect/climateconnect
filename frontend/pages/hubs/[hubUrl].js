@@ -206,7 +206,7 @@ export default function Hub({
       tabsWhereFiltersWereApplied: tabsWhereFiltersWereApplied,
       handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
       hubUrl: hubUrl,
-      idea: nonFilterParams.idea,
+      idea: nonFilterParams?.idea,
     });
   };
 
