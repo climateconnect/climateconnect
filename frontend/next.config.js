@@ -44,8 +44,7 @@ module.exports = {
       },
       {
         source: "/blog/weihnachten",
-        destination:
-          "/post/es-ist-weihnachtszeit-auf-climate-connect",
+        destination: "/post/es-ist-weihnachtszeit-auf-climate-connect",
         permanent: true,
       },
     ];
