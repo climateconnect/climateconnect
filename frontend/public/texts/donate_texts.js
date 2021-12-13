@@ -296,9 +296,11 @@ export default function getDonateTexts({ classes, goal }) {
     },
     donor_forest_dialog_explainer_text: {
       en: `When you start donating to Climate Connect you get a digital sapling as a reward. 
-      If you donate monthly or yearly your tree keeps growing.
+      If you donate monthly or yearly your tree keeps growing. Your donation amount determines
+      the initial size of your sapling.
       Your tree is displayed in the donor forest and next to your account on the platform.`,
-      de: `Wenn du an Climate Connect spendest, bekommst du einen digitalen Setzling.
+      de: `Wenn du an Climate Connect spendest, bekommst du einen digitalen Setzling. Mit welchem
+      Setzling du startest, hängt von der Höhe deiner Spende ab.
       Wenn du monatlich oder jährlich spendest, wächst dein Baum immer weiter. Dein Baum wird im 
       Spendenwald und immer neben deinem Profilbild auf der Plattform angezeigt.`,
     },
@@ -311,13 +313,12 @@ export default function getDonateTexts({ classes, goal }) {
       de: "unterstützt seit",
     },
     donation_campaign_headline_short: {
-      en: "Win the compensation of your footprint",
-      de: "Gewinne ein Jahr klimapositives Leben",
+      en: "Your donations is tripled",
+      de: "Deine Spende wird verdreifacht",
     },
     donation_campaign_headline_long: {
-      en: `Win the compensation of your 2021 CO2-footprint by donating to Climate Connect during
-      December`,
-      de: `Gewinne ein Jahr klimapositives Leben, indem du im Dezember an Climate Connect spendest`,
+      en: `All donations in December will be tripled until we reach our goal`,
+      de: `Alle Spenden im Dezember werden verdreifacht bis wir unser Ziel erreichen`,
     },
     you_can_find_the_terms_to_the_raffle_here: {
       en: "You can find the terms of the raffle ",
@@ -328,11 +329,12 @@ export default function getDonateTexts({ classes, goal }) {
       de: "hier",
     },
     donation_campaing_info_text_first_sentence: {
-      en: `Your donation will help to scale effective climate solutions, support us in growing
+      en: `Climate Connect is funded by your donations. Help scale up effective climate action, support us in growing
       a global network of climate actors and allow Climate Connect to stay free and
-      independent.`,
-      de: `Deine Spende hilft, effektive Klimaschutzprojekte anzustoßen und zu skalieren und hilft uns,
-      frei und unabhängig zu bleiben.`,
+      independent. A big donor agreed to triple all donations in December until we reach our goal (they will donate a maximum of 10,000€) `,
+      de: `Climate Connect ist spendenfinanziert. Hilf uns, effektive Klimaschutzprojekte zu ermöglichen, ein globales
+      Netzwerk von Klimaschützer*innen aufzubauen und dabei, Climate Connect kostenlos und unabhängig zu halten.
+      Ein Großspender verdreifacht im Dezember alle Spenden, bis wir unser Ziel erreichen.`,
     },
     raffle_announcement: {
       en: `In our December raffle everybody who donates to Climate Connect in the

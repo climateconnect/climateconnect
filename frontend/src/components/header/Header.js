@@ -270,8 +270,16 @@ const getStaticPageLinks = (texts) => [
     text: texts.faq,
   },
   {
+    href: "/team",
+    text: texts.team,
+  },
+  {
     href: "/join",
     text: texts.join,
+  },
+  {
+    href: "/blog",
+    text: texts.blog,
   },
   {
     href: "/press",
@@ -473,7 +481,6 @@ function NormalScreenLinks({
   localePrefix,
   isStaticPage,
 }) {
-  console.log(loggedInUser);
   const classes = useStyles({ fixedHeader: fixedHeader, transparentHeader: transparentHeader });
   const isSmallMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -713,10 +720,10 @@ function NarrowScreenLinks({
                 if (link.avatar)
                   return (
                     <div className={classes.mobileAvatarContainer}>
-                      {loggedInUser.badges?.length > 0 ? (
+                      {loggedInUser?.badges?.length > 0 ? (
                         <ProfileBadge
-                          name={loggedInUser.badges[0].name}
-                          image={getImageUrl(loggedInUser.badges[0].image)}
+                          name={loggedInUser?.badges[0].name}
+                          image={getImageUrl(loggedInUser?.badges[0].image)}
                           size="medium"
                           className={classes.badge}
                         >
@@ -785,10 +792,10 @@ const LoggedInNormalScreen = ({ loggedInUser, handleLogout, fixedHeader, texts, 
           style={{ backgroundColor: "transparent" }}
           ref={anchorRef}
         >
-          {loggedInUser.badges?.length > 0 ? (
+          {loggedInUser?.badges?.length > 0 ? (
             <ProfileBadge
-              name={loggedInUser.badges[0].name}
-              image={getImageUrl(loggedInUser.badges[0].image)}
+              name={loggedInUser?.badges[0].name}
+              image={getImageUrl(loggedInUser?.badges[0].image)}
               size="small"
               className={classes.badge}
             >

@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(4),
     position: "relative",
     display: "inline-block",
+    color: "white",
   },
   showMoreButton: {
     color: "white",
@@ -60,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
   textBlock: {
     marginBottom: theme.spacing(1),
     fontWeight: 600,
+    color: "white",
     [theme.breakpoints.down("xs")]: {
       textAlign: "left",
     },
@@ -90,6 +92,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
     alignItems: "center",
   },
+  white: {
+    color: "white",
+  },
 }));
 
 //If we want to reuse this, this has to be translated!
@@ -112,8 +117,6 @@ export default function DonationCampaignInformation() {
   const handleToggleExpanded = () => {
     setExpanded(!expanded);
   };
-  console.log("donationGoal");
-  console.log(donationGoal);
 
   if (!donationGoal) return <></>;
   return (
@@ -167,6 +170,8 @@ export default function DonationCampaignInformation() {
               )}
               <Typography className={classes.textBlock}>
                 {texts.donation_campaing_info_text_first_sentence}
+                <br />
+                <br />
                 {texts.raffle_announcement}
                 <Link
                   underline="always"
@@ -179,7 +184,7 @@ export default function DonationCampaignInformation() {
                 </Link>
                 !
               </Typography>
-              <Typography>
+              <Typography className={classes.white}>
                 {texts.you_can_find_the_terms_to_the_raffle_here}
                 <Link
                   underline="always"

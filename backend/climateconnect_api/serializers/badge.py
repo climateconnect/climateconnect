@@ -10,7 +10,11 @@ class DonorBadgeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DonorBadge
-        fields = ('name', 'image', 'created_at', 'min_days_donated')
+        fields = (
+            'name', 'image', 'created_at', 
+            'min_days_donated', 'step',
+            'instantly_awarded_over_amount'
+        )
 
     def get_name(self, obj):
         return get_badge_name(obj, get_language())

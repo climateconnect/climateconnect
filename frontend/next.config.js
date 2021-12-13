@@ -42,6 +42,12 @@ module.exports = {
           "/de/projects/Gro%C3%9Fk%C3%BCchenregionalvernetzen-Speisepl%C3%A4neklimafreundlichgestalten244?hubPage=erlangen",
         permanent: true,
       },
+      {
+        source: "/blog/weihnachten",
+        destination:
+          "/post/es-ist-weihnachtszeit-auf-climate-connect",
+        permanent: true,
+      },
     ];
   },
 };

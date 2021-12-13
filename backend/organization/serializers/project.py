@@ -8,13 +8,13 @@ from django.conf import settings
 from django.utils.translation import get_language
 from location.models import Location
 from location.serializers import LocationStubSerializer
-from organization.models.content import ProjectComment
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
 from organization.models import (Project, ProjectCollaborators,
-                                 ProjectFollower, ProjectMember,
-                                 ProjectParents, ProjectLike)
+                                 ProjectFollower, ProjectLike, ProjectMember,
+                                 ProjectParents)
+from organization.models.content import ProjectComment
 from organization.models.translations import ProjectTranslation
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.status import ProjectStatusSerializer
@@ -203,7 +203,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_location(self, obj):
-        if obj.loc == None:
+        if obj.loc is None:
             return None
         return obj.loc.name
 
@@ -240,8 +240,19 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         return get_project_short_description(obj, get_language())
 
     def get_project_parents(self, obj):
-        serializer = ProjectParentsSerializer(obj.project_parent, many=True)
-        return serializer.data
+        parent = obj.project_parent.first()
+        if parent is None:
+            return []
+        if parent.parent_organization:
+            return [{
+                'parent_user': None,
+                'parent_organization': (OrganizationStubSerializer(parent.parent_organization)).data
+            }]
+        else:
+            return [{
+                'parent_user': (UserProfileStubSerializer(parent.parent_user.user_profile)).data,
+                'parent_organization': None
+            }]
 
     def get_tags(self, obj):
         serializer = ProjectTaggingSerializer(obj.tag_project, many=True)
