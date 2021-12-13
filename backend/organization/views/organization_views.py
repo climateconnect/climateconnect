@@ -1,13 +1,14 @@
 import logging
 
 # Backend app imports
-from climateconnect_api.models import Role, UserProfile
+from climateconnect_api.models import Role, UserProfile, ContentShares
 from climateconnect_api.models.language import Language
 from climateconnect_api.pagination import MembersPagination
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.utility.translation import (edit_translations,
                                                     get_translations,
                                                     translate_text)
+from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
 # Django imports
 from django.contrib.auth.models import User
@@ -552,3 +553,14 @@ class ListOrganizationsForSitemap(ListAPIView):
 
     def get_queryset(self):
         return Organization.objects.all()
+
+
+class SetOrganisationSharedView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request, url_slug):
+        try:
+            organization = Organization.objects.get(url_slug=url_slug)
+        except Organization.DoesNotExist:
+            raise NotFound(detail="Organization not found.", code=status.HTTP_404_NOT_FOUND)
+        save_content_shared(request, organization)
+        return Response(status=status.HTTP_201_CREATED)
