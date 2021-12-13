@@ -158,7 +158,7 @@ export default function ProjectContent({
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
       : null;
-  const MaxDisplayedDescriptionLength = (description) => {
+  const CalculateMaxDisplayedDescriptionLength = (description) => {
     const words = description.split(" ");
     const youtubeLink = words.find((el) => youtubeRegex().test(el));
     if (youtubeLink) {
@@ -174,6 +174,7 @@ export default function ProjectContent({
       return MAX_DISPLAYED_DESCRIPTION_LENGTH;
     }
   };
+  const maxDisplayedDescriptionLength = CalculateMaxDisplayedDescriptionLength(project.description);
   return (
     <div>
       <div className={classes.contentBlock}>
@@ -280,11 +281,11 @@ export default function ProjectContent({
         <Typography component="div">
           {project.description ? (
             showFullDescription ||
-            project.description.length <= MaxDisplayedDescriptionLength(project.description) ? (
+            project.description.length <= maxDisplayedDescriptionLength ? (
               <MessageContent content={project.description} renderYoutubeVideos={1} />
             ) : (
               <MessageContent
-                content={project.description.substr(0, MaxDisplayedDescriptionLength(project.description)) + "..."}
+                content={project.description.substr(0, maxDisplayedDescriptionLength) + "..."}
                 renderYoutubeVideos={1}
               />
             )
@@ -294,7 +295,7 @@ export default function ProjectContent({
             </Typography>
           )}
         </Typography>
-        {project.description && project.description.length > MaxDisplayedDescriptionLength(project.description) && (
+        {project.description && project.description.length > maxDisplayedDescriptionLength && (
           <Button className={classes.expandButton} onClick={handleToggleFullDescriptionClick}>
             {showFullDescription ? (
               <div>
