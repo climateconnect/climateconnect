@@ -210,12 +210,12 @@ export default function getIdeaTexts({ idea, creator }) {
     share_idea_email_body: {
       en: `Hey,
       I found this awesome idea for climate protection: "${idea?.name}"${
-        creator && ` created by ` + creator
+        creator && ` created by ${creator}`
       }. 
       You should check it out here: `,
       de: `Hey,
       Ich habe gerade diese spannende Idee zum Klimaschutz gefunden: "${idea?.name}"${
-        creator && `, erstellt von ` + creator
+        creator && ` erstellt von ${creator}`
       }. 
       Schau sie dir doch mal an: `,
     },
