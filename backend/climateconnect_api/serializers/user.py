@@ -230,8 +230,7 @@ class DonorProfileSerializer(UserProfileStubSerializer):
         donations = Donation.objects.filter(user=obj.user)
         if donations.exists():
             d = get_oldest_relevant_donation(donations)
-            if d.is_recurring:
-                return d.date_first_received
+            return d.date_first_received
         return None
 
 class UserAccountSettingsSerializer(serializers.ModelSerializer):

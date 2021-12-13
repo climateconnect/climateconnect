@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from climateconnect_api.serializers.user import DonorProfileSerializer, UserProfileStubSerializer
 import pytz
-from datetime import datetime
+import datetime
+from django.db.models import Q
 
 from climateconnect_api.models import DonationGoal, Donation
 from climateconnect_api.serializers.donation import DonationGoalSerializer
@@ -15,7 +16,7 @@ class GetDonationGoalProgress(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        now = datetime.utcnow().replace(tzinfo=pytz.utc)
+        now = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
         try:
             goal = DonationGoal.objects.get(start_date__lte=now, end_date__gte=now)
         except DonationGoal.DoesNotExist:
@@ -29,8 +30,10 @@ class GetDonorsWithBadges(ListAPIView):
     serializer_class = DonorProfileSerializer
 
     def get_queryset(self):
+        today = datetime.date.today()
+        one_month_ago = today - datetime.timedelta(days=30)
         donors_with_relevant_donations = Donation.objects.filter(
-            is_recurring=True,
+            Q(Q(is_recurring=True) | Q(date_first_received__gte=one_month_ago)),
             donation_amount__gte=5,
             date_cancelled=None,
             user__isnull=False
