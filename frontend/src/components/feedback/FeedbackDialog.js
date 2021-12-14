@@ -29,7 +29,7 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
   const [email, setEmail] = React.useState("");
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
-  const handleClose = () => {    
+  const handleClose = () => {
     onClose();
     setElement("");
   };
