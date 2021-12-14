@@ -174,7 +174,7 @@ export default function ProjectContent({
       return MAX_DISPLAYED_DESCRIPTION_LENGTH;
     }
   };
-  const maxDisplayedDescriptionLength = CalculateMaxDisplayedDescriptionLength(project.description);
+  const maxDisplayedDescriptionLength = project.description ? CalculateMaxDisplayedDescriptionLength(project.description) : null;
   return (
     <div>
       <div className={classes.contentBlock}>
