@@ -5,18 +5,17 @@ import React, { useContext } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
 
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import DetailledDescription from "./DetailledDescription";
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
-import UserContext from "../context/UserContext";
 import MiniHubPreviews from "../hub/MiniHubPreviews";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import ProfileBadge from "../profile/ProfileBadge";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
-import DetailledDescription from "./DetailledDescription";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   avatarContainer: {
