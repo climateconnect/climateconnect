@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => {
     locationNameBox: {
       maxWidth: "220px",
       overflow: "hidden",
+      textOverflow: "ellipsis",
     },
     shortenedSummary: {
       overflow: "hidden",
