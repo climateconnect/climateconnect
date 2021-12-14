@@ -8,6 +8,8 @@ from climateconnect_api.utility.email_setup import (
     send_new_email_verification,
     unregister_newsletter_contact,
 )
+
+from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -119,7 +121,7 @@ class ChangeEmailView(APIView):
     def post(self, request):
         if "uuid" not in request.data:
             return Response(
-                {"message": ("Required parameters are missing.")},
+                {"message": _("Required parameters are missing.")},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -131,9 +133,7 @@ class ChangeEmailView(APIView):
         except User.DoesNotExist:
             return Response(
                 {
-                    "message": (
-                        "User profile not found. Contact contact@climateconnect.earth if you repeatedly experience problems."
-                    )
+                    "message": _("User profile not found.") + " " +  _("Contact contact@climateconnect.earth if you repeatedly experience problems.")
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -145,14 +145,12 @@ class ChangeEmailView(APIView):
         else:
             return Response(
                 {
-                    "message": (
-                        "No pending E-Mail change. This link may already have been used."
-                    )
+                    "message": _("No pending E-Mail change. This link may already have been used.")
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         return Response(
-            {"message": ("Your E-Mail address is now ") + user_profile.user.email},
+            {"message": _("Your E-Mail address is now ") + user_profile.user.email},
             status=status.HTTP_200_OK,
         )
