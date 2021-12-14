@@ -14,7 +14,6 @@ import MiniHubPreviews from "../hub/MiniHubPreviews";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import ProfileBadge from "../profile/ProfileBadge";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
-import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
