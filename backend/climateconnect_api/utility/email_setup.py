@@ -24,7 +24,7 @@ def get_template_id(template_key, lang_code):
 def check_send_email_notification(user):
     three_hours_ago = datetime.now() - timedelta(hours=3)
     recent_email_notification = EmailNotification.objects.filter(
-        user=user, 
+        user=user,
         created_at__gte=three_hours_ago
     )
     return not recent_email_notification.exists()
@@ -125,7 +125,7 @@ def get_reset_password_url(verification_key, lang_url):
 def send_user_verification_email(user, verification_key):
     lang_url = get_user_lang_url(get_user_lang_code(user))
     url = get_user_verification_url(verification_key, lang_url)
-    
+
     subjects_by_language = {
         "en": "Welcome to Climate Connect! Verify your email address",
         "de": "Willkommen bei Climate Connect! Verifiziere deine Email-Adresse!"
@@ -136,9 +136,9 @@ def send_user_verification_email(user, verification_key):
         "url": url
     }
     send_email(
-        user=user, 
-        variables=variables, 
-        template_key="EMAIL_VERIFICATION_TEMPLATE_ID", 
+        user=user,
+        variables=variables,
+        template_key="EMAIL_VERIFICATION_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="",
         notification=None
@@ -147,7 +147,7 @@ def send_user_verification_email(user, verification_key):
 def send_new_email_verification(user, new_email, verification_key):
     lang_url = get_user_lang_url(get_user_lang_code(user))
     url = get_new_email_verification_url(verification_key, lang_url)
-    
+
     subjects_by_language = {
         "en": "Verify your new email address",
         "de": "Bestätige deine neue Email Adresse"
@@ -159,9 +159,9 @@ def send_new_email_verification(user, new_email, verification_key):
         "NewMail": new_email
     }
     send_email(
-        user=user, 
-        variables=variables, 
-        template_key="NEW_EMAIL_VERIFICATION_TEMPLATE_ID", 
+        user=user,
+        variables=variables,
+        template_key="NEW_EMAIL_VERIFICATION_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="",
         notification=None
@@ -170,7 +170,7 @@ def send_new_email_verification(user, new_email, verification_key):
 def send_password_link(user, password_reset_key):
     lang_url = get_user_lang_url(get_user_lang_code(user))
     url = get_reset_password_url(password_reset_key, lang_url)
-    
+
     subjects_by_language = {
         "en": "Reset your Climate Connect password",
         "de": "Setze deine Climate Connect Passwort zurück"
@@ -181,9 +181,9 @@ def send_password_link(user, password_reset_key):
         "url": url
     }
     send_email(
-        user=user, 
-        variables=variables, 
-        template_key="RESET_PASSWORD_TEMPLATE_ID", 
+        user=user,
+        variables=variables,
+        template_key="RESET_PASSWORD_TEMPLATE_ID",
         subjects_by_language=subjects_by_language,
         should_send_email_setting="",
         notification=None
@@ -215,8 +215,9 @@ def send_feedback_email(email, message, send_response):
         ]
     }
     print(data)
+
     try:
-        mail = mailjet_send_api.send.create(data=data)
+        mailjet_send_api.send.create(data=data)
     except Exception as ex:
         print("%s: Error sending email: %s" % (
             send_user_verification_email.__name__, ex
