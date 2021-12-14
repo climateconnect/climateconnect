@@ -4,6 +4,7 @@ import PlaceIcon from "@material-ui/icons/Place";
 import React, { useContext } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
+
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -15,7 +16,6 @@ import ProfileBadge from "../profile/ProfileBadge";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import DetailledDescription from "./DetailledDescription";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
-import Cookies from "universal-cookie";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => ({
