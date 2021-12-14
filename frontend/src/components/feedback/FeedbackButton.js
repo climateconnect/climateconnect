@@ -38,7 +38,7 @@ export default function FeedbackButton({ justLink, children }) {
   const [open, setOpen] = React.useState(false);
   const cookies = new Cookies();
   const { locale } = useContext(UserContext);
-  const { showFeedbackMessage } = useContext(FeedbackContext) 
+  const { showFeedbackMessage } = useContext(FeedbackContext);
   const texts = getTexts({ page: "communication", locale: locale });
 
   const submitFeedback = async (data) => {
@@ -53,7 +53,7 @@ export default function FeedbackButton({ justLink, children }) {
       });
       showFeedbackMessage({
         message: response.data,
-      })
+      });
     } catch (e) {
       console.log(e);
       console.log(e.response);
