@@ -7,7 +7,6 @@ from climateconnect_api.utility.email_setup import (
     register_newsletter_contact, send_new_email_verification,
     unregister_newsletter_contact)
 from django.contrib.auth.models import User
-from django.utils.translation import gettext as _
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
