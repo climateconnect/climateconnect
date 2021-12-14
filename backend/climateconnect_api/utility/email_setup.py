@@ -190,7 +190,6 @@ def send_password_link(user, password_reset_key):
     )
 
 def send_feedback_email(email, message, send_response):
-
     data = {
         'Messages': [
             {
@@ -208,20 +207,20 @@ def send_feedback_email(email, message, send_response):
                 "TemplateLanguage": True,
                 "Subject": "Climate Connect User Feedback",
                 "Variables": {
-                    "text": message,
-                    "sendReply": send_response,
-                    "email": email
+                    "text": str(message),
+                    "sendReply": str(send_response),
+                    "email": str(email if email else "")
                 }
             }
-	    ]
+        ]
     }
+    print(data)
     try:
         mail = mailjet_send_api.send.create(data=data)
     except Exception as ex:
-        logger.error("%s: Error sending email: %s" % (
+        print("%s: Error sending email: %s" % (
             send_user_verification_email.__name__, ex
         ))
-        logger.error(mail)
 
 def register_newsletter_contact(email_address):
     old_contact = mailjet_api.contact.get(email_address)

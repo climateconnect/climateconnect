@@ -918,13 +918,13 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       I found this awesome climate project: "${project?.name}"${
         project?.creator &&
         ` created by ${project.creator?.name ? project.creator?.name : creator?.name}`
-      }. 
+      }.
       You should check it out here: `,
       de: `Hey,
       Ich habe gerade dieses spannende Klimaschutzprojekt gefunden: "${project?.name}"${
         project?.creator &&
-        `, erstellt von ${(project.creator?.name ? project.creator?.name : creator?.name)}`
-      }. 
+        `, erstellt von ${project.creator?.name ? project.creator?.name : creator?.name}`
+      }.
       Schau's dir doch mal an: `,
     },
     contact_creator_to_know_more_about_project: {

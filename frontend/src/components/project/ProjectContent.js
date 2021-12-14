@@ -17,6 +17,7 @@ import Posts from "./../communication/Posts.js";
 import DateDisplay from "./../general/DateDisplay";
 import ProjectStatus from "./ProjectStatus";
 import DiscussionPreview from "./DiscussionPreview";
+import youtubeRegex from "youtube-regex";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -157,6 +158,23 @@ export default function ProjectContent({
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
       : null;
+  const CalculateMaxDisplayedDescriptionLength = (description) => {
+    const words = description.split(" ");
+    const youtubeLink = words.find((el) => youtubeRegex().test(el));
+    if (youtubeLink) {
+      const firstIndex = description.indexOf(youtubeLink);
+      const lastIndex = firstIndex + youtubeLink.length - 1;
+      const maxLength =
+        firstIndex <= MAX_DISPLAYED_DESCRIPTION_LENGTH &&
+        lastIndex > MAX_DISPLAYED_DESCRIPTION_LENGTH
+          ? lastIndex
+          : MAX_DISPLAYED_DESCRIPTION_LENGTH;
+      return maxLength;
+    } else {
+      return MAX_DISPLAYED_DESCRIPTION_LENGTH;
+    }
+  };
+  const maxDisplayedDescriptionLength = CalculateMaxDisplayedDescriptionLength(project.description);
   return (
     <div>
       <div className={classes.contentBlock}>
@@ -262,12 +280,11 @@ export default function ProjectContent({
         </Typography>
         <Typography component="div">
           {project.description ? (
-            showFullDescription ||
-            project.description.length <= MAX_DISPLAYED_DESCRIPTION_LENGTH ? (
+            showFullDescription || project.description.length <= maxDisplayedDescriptionLength ? (
               <MessageContent content={project.description} renderYoutubeVideos={1} />
             ) : (
               <MessageContent
-                content={project.description.substr(0, MAX_DISPLAYED_DESCRIPTION_LENGTH) + "..."}
+                content={project.description.substr(0, maxDisplayedDescriptionLength) + "..."}
                 renderYoutubeVideos={1}
               />
             )
@@ -277,7 +294,7 @@ export default function ProjectContent({
             </Typography>
           )}
         </Typography>
-        {project.description && project.description.length > MAX_DISPLAYED_DESCRIPTION_LENGTH && (
+        {project.description && project.description.length > maxDisplayedDescriptionLength && (
           <Button className={classes.expandButton} onClick={handleToggleFullDescriptionClick}>
             {showFullDescription ? (
               <div>

@@ -23,8 +23,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   badgeExplainerText: {
-    fontSize: 15.5
-  }
+    fontSize: 15.5,
+  },
 }));
 
 export default function DonorBadgeExplainerList({ possibleBadges }) {
@@ -42,14 +42,22 @@ export default function DonorBadgeExplainerList({ possibleBadges }) {
 
 const DonorBadgeListEntry = ({ badge }) => {
   const classes = useStyles();
-  const { locale } = useContext(UserContext)
+  const { locale } = useContext(UserContext);
 
-  const badgeText ={
+  const badgeText = {
     en: `Donate ${badge.min_days_donated} days 
-    ${(badge.instantly_awarded_over_amount > 5) ? `(Instant with >${badge.instantly_awarded_over_amount}€)` : ""}`,
+    ${
+      badge.instantly_awarded_over_amount > 5
+        ? `(Instant with >${badge.instantly_awarded_over_amount}€)`
+        : ""
+    }`,
     de: `Spende ${badge.min_days_donated} Tage
-    ${(badge.instantly_awarded_over_amount > 5) ? `(Direkt bei >${badge.instantly_awarded_over_amount}€)` : ""}`
-  }
+    ${
+      badge.instantly_awarded_over_amount > 5
+        ? `(Direkt bei >${badge.instantly_awarded_over_amount}€)`
+        : ""
+    }`,
+  };
   return (
     <ListItem className={classes.listItem}>
       <ListItemIcon className={classes.listItemIcon}>
