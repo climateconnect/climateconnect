@@ -299,3 +299,11 @@ LOGGING = {
         }
     }
 }
+
+# Setting up cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': env('REDIS_URL')
+    }
+}
