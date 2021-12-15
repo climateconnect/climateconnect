@@ -152,7 +152,7 @@ class ListMemberProfilesView(ListAPIView):
     search_fields = ['name']
     serializer_class = UserProfileStubSerializer
 
-    @method_decorator(cache_page(60*60))
+    @method_decorator(cache_page(settings.DEFAULT_CACHE_TIMEOUT))
     def dispatch(self, *args, **kwargs):
         return super(ListMemberProfilesView, self).dispatch(*args, **kwargs)
 

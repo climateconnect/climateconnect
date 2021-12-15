@@ -307,3 +307,5 @@ CACHES = {
         'LOCATION': env('REDIS_URL')
     }
 }
+
+DEFAULT_CACHE_TIMEOUT = 2 * 24 * 3600
