@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
   },
   buttonsContainer: {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(2),
     display: "flex",
     justifyContent: "flex-end",
   },
@@ -103,6 +103,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textPlaceholder: {
     visibility: "hidden",
+    fontSize: 17.5,
   },
 }));
 
