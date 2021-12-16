@@ -36,7 +36,7 @@ def set_read(messages, user, is_private_message):
             user_notification.read_at = datetime.now()
             user_notification.save()
         except UserNotification.DoesNotExist:
-            print("there is no user notification for "+user.first_name)
+            logger.error("there is no user notification for "+user.first_name)
 
 
 def create_private_or_group_chat(
