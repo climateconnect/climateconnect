@@ -12,7 +12,6 @@ def get_badges(user_profile):
         today = datetime.datetime.today()
         time_donated = time_donated = today - d.date_first_received.replace(tzinfo=None)
         if d:
-            print(d.date_first_received)
             highest_donations_in_streak = all_donations.filter(
                 date_first_received__gte=d.date_first_received
             ).order_by(
