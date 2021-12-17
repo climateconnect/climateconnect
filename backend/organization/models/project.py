@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from organization.models import (Organization,)
 from climateconnect_api.models import (Skill,)
 from climateconnect_api.models.language import Language
-
+from climateconnect_main.utility.general import convert_image_to_webp
 
 def project_image_path(instance, filename):
     return "projects/{}/{}".format(instance.id, filename)
@@ -179,6 +179,19 @@ class Project(models.Model):
         null=True, blank=True,
         on_delete=models.SET_NULL
     )
+    
+    def save(self,*args,**kwargs):
+        super().save(*args,**kwargs)
+        self.post_processing()
+        
+    def post_processing(self):
+        try:
+            convert_image_to_webp(source=self.image.path)
+            convert_image_to_webp(source=self.thumbnail_image.path)
+            
+        except:
+            pass
+            #log errros. Make sure that saving process does not fail because of post processing
 
     class Meta:
         app_label = "organization"
