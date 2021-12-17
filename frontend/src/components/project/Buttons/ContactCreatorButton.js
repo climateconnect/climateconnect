@@ -79,6 +79,7 @@ export default function ContactCreatorButton({
   withStartIcon,
   withAvatar,
   customWidth,
+  withCard,
 }) {
   const classes = useStyles({ explanationBackground: explanationBackground, customWidth: customWidth });
   const { locale } = useContext(UserContext);
@@ -103,20 +104,7 @@ export default function ContactCreatorButton({
     : texts.responsible_person_project;
   const buttonText = texts.contact;
 
-  if (small || tiny) {
-    return (
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={withStartIcon ? <SendIcon /> : null}
-        endIcon={withAvatar ? <Avatar src={creatorImageURL} className={classes.smallAvatar} /> : null}
-        onClick={handleClickContact}
-        className={className}
-      >
-        {buttonText}
-      </Button>
-    );
-  } else if (large) {
+  if (large) {
     return (
       <div className={`${classes.largeButton} ${className}`} onClick={handleClickContact}>
         <DetailledContactCreatorInfo
@@ -132,25 +120,26 @@ export default function ContactCreatorButton({
   } else {
     return (
       <div
-        className={`${classes.root} ${className}`}
+        className={withCard ? `${classes.root} ${className}` : null}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleClickContact}
       >
-        <div className={classes.buttonWithCollapseContainer}>
+        <div className={withCard ? classes.buttonWithCollapseContainer : null}>
+          {withCard && (
           <Collapse in={hoveringButton} timeout={550}>
             <DetailledContactCreatorInfo
               creatorName={creatorName}
               creatorImageURL={creatorImageURL}
               creatorsRoleInProject={creatorsRoleInProject}
             />
-          </Collapse>
+          </Collapse>)}
           <Button
-            className={classes.contactButton}
+            className={withCard ? classes.contactButton : className}
             variant="contained"
             color="primary"
-            startIcon={<SendIcon />}
-            endIcon={<Avatar src={creatorImageURL} className={classes.smallAvatar} />}
+            startIcon={withStartIcon ? <SendIcon /> : null}
+            endIcon={withAvatar ? <Avatar src={creatorImageURL} className={classes.smallAvatar} /> : null}
             ref={contactProjectCreatorButtonRef}
           >
             {buttonText}

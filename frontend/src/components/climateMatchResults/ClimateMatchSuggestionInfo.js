@@ -176,6 +176,7 @@ export default function ClimateMatchSuggestionInfo({
             withStartIcon={!isNarrowScreen}
             withAvatar={!isNarrowScreen}
             customWidth={isSmallScreen ? 220 : 300}
+            withCard={true}
           />
         )}
       </div>

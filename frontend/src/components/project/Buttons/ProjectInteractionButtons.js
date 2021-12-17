@@ -106,6 +106,9 @@ export default function ProjectInteractionButtons({
               handleToggleLikeProject={handleToggleLikeProject}
               explanationBackground={"#fff"}
               customWidth={220}
+              withCard={true}
+              withStartIcon={true}
+              withAvatar={true}
             />
           )}
       </Container>

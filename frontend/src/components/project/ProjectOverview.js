@@ -348,6 +348,9 @@ function LargeScreenOverview({
                 contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
                 handleClickContact={handleClickContact}
                 customWidth={200}
+                withCard={true}
+                withStartIcon={true}
+                withAvatar={true}
               />
             )}
           </div>
