@@ -64,6 +64,8 @@ export default function ProjectInteractionButtons({
               screenSize={screenSize}
               tiny={screenSize.belowTiny}
               small={screenSize.belowSmall && !screenSize.belowTiny}
+              withStartIcon={!screenSize.belowTiny}
+              withAvatar={!screenSize.belowTiny}
             />
           )}
           <FollowButton

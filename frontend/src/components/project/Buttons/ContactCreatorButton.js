@@ -75,6 +75,8 @@ export default function ContactCreatorButton({
   large,
   contentType,
   explanationBackground,
+  withStartIcon,
+  withAvatar,
 }) {
   const classes = useStyles({ explanationBackground: explanationBackground });
   const { locale } = useContext(UserContext);
@@ -99,24 +101,13 @@ export default function ContactCreatorButton({
     : texts.responsible_person_project;
   const buttonText = texts.contact;
 
-  if (small) {
+  if (small || tiny) {
     return (
       <Button
         variant="contained"
         color="primary"
-        startIcon={<SendIcon />}
-        endIcon={<Avatar src={creatorImageURL} className={classes.smallAvatar} />}
-        onClick={handleClickContact}
-        className={className}
-      >
-        {buttonText}
-      </Button>
-    );
-  } else if (tiny) {
-    return (
-      <Button
-        variant="contained"
-        color="primary"
+        startIcon={withStartIcon ? <SendIcon /> : null}
+        endIcon={withAvatar ? <Avatar src={creatorImageURL} className={classes.smallAvatar} /> : null}
         onClick={handleClickContact}
         className={className}
       >
