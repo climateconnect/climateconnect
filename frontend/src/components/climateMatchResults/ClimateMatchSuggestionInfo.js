@@ -129,7 +129,6 @@ export default function ClimateMatchSuggestionInfo({
 }) {
   const classes = useStyles({ displayContactButton: displayContactButton });
   const suggestionInfoUnderImage = isInSlider || useMediaQuery("(max-width:1525px)");
-  const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
   return (
     <div className={classes.wrapper}>
@@ -175,8 +174,9 @@ export default function ClimateMatchSuggestionInfo({
             large={isNarrowScreen}
             withStartIcon={!isNarrowScreen}
             withAvatar={!isNarrowScreen}
-            customWidth={isSmallScreen ? 220 : 300}
+            customWidth={!isNarrowScreen ? 220 : 300}
             withCard={true}
+            collapsable={!isNarrowScreen}
           />
         )}
       </div>
