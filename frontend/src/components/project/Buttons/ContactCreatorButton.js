@@ -80,8 +80,12 @@ export default function ContactCreatorButton({
   withAvatar,
   customWidth,
   withCard,
+  collapsable,
 }) {
-  const classes = useStyles({ explanationBackground: explanationBackground, customWidth: customWidth });
+  const classes = useStyles({
+    explanationBackground: explanationBackground,
+    customWidth: customWidth,
+  });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, creator: creator });
   const [hoveringButton, setHoveringButton] = useState(false);
@@ -126,20 +130,30 @@ export default function ContactCreatorButton({
         onClick={handleClickContact}
       >
         <div className={withCard ? classes.buttonWithCollapseContainer : null}>
-          {withCard && (
-          <Collapse in={hoveringButton} timeout={550}>
-            <DetailledContactCreatorInfo
-              creatorName={creatorName}
-              creatorImageURL={creatorImageURL}
-              creatorsRoleInProject={creatorsRoleInProject}
-            />
-          </Collapse>)}
+          {withCard &&
+            (collapsable ? (
+              <Collapse in={hoveringButton} timeout={550}>
+                <DetailledContactCreatorInfo
+                  creatorName={creatorName}
+                  creatorImageURL={creatorImageURL}
+                  creatorsRoleInProject={creatorsRoleInProject}
+                />
+              </Collapse>
+            ) : (
+              <DetailledContactCreatorInfo
+                creatorName={creatorName}
+                creatorImageURL={creatorImageURL}
+                creatorsRoleInProject={creatorsRoleInProject}
+              />
+            ))}
           <Button
             className={withCard ? classes.contactButton : className}
             variant="contained"
             color="primary"
             startIcon={withStartIcon ? <SendIcon /> : null}
-            endIcon={withAvatar ? <Avatar src={creatorImageURL} className={classes.smallAvatar} /> : null}
+            endIcon={
+              withAvatar ? <Avatar src={creatorImageURL} className={classes.smallAvatar} /> : null
+            }
             ref={contactProjectCreatorButtonRef}
           >
             {buttonText}

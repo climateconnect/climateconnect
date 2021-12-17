@@ -351,6 +351,7 @@ function LargeScreenOverview({
                 withCard={true}
                 withStartIcon={true}
                 withAvatar={true}
+                collapsable={true}
               />
             )}
           </div>

@@ -109,6 +109,7 @@ export default function ProjectInteractionButtons({
               withCard={true}
               withStartIcon={true}
               withAvatar={true}
+              collapsable={true}
             />
           )}
       </Container>
