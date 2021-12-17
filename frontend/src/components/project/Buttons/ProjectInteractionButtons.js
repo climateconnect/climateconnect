@@ -101,7 +101,7 @@ export default function ProjectInteractionButtons({
               handleClickContact={handleClickContact}
               explanationBackground={"#fff"}
               customWidth={220}
-              withCard={true}
+              withInfoCard={true}
               withStartIcon={true}
               withAvatar={true}
               collapsable={true}

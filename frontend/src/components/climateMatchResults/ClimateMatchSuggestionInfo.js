@@ -174,7 +174,7 @@ export default function ClimateMatchSuggestionInfo({
             withStartIcon={!isNarrowScreen}
             withAvatar={!isNarrowScreen}
             customWidth={!isNarrowScreen ? 220 : 300}
-            withCard={true}
+            withInfoCard={true}
             collapsable={!isNarrowScreen}
           />
         )}

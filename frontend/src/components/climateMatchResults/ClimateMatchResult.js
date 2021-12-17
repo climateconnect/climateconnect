@@ -162,7 +162,7 @@ export default function ClimateMatchResult({ suggestion, pos }) {
                   className={classes.contactCreatorButton}
                   contentType={suggestion.ressource_type}
                   customWidth={300}
-                  withCard={true}
+                  withInfoCard={true}
                 />
               </div>
             )}

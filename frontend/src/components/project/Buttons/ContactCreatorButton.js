@@ -68,7 +68,7 @@ export default function ContactCreatorButton({
   withStartIcon,
   withAvatar,
   customWidth,
-  withCard,
+  withInfoCard,
   collapsable,
 }) {
   const classes = useStyles({
@@ -100,13 +100,13 @@ export default function ContactCreatorButton({
 
   return (
     <div
-      className={withCard ? `${classes.root} ${className}` : null}
+      className={withInfoCard ? `${classes.root} ${className}` : null}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClickContact}
     >
       <div className={collapsable ? classes.collapsableContainer : classes.nonCollapsableContainer}>
-        {withCard &&
+        {withInfoCard &&
           (collapsable ? (
             <Collapse in={hoveringButton} timeout={550}>
               <DetailledContactCreatorInfo
@@ -123,7 +123,7 @@ export default function ContactCreatorButton({
             />
           ))}
         <Button
-          className={withCard ? classes.contactButton : className}
+          className={withInfoCard ? classes.contactButton : className}
           variant="contained"
           color="primary"
           startIcon={withStartIcon ? <SendIcon /> : null}
