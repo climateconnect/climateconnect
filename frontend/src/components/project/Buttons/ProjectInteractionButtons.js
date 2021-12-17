@@ -105,6 +105,7 @@ export default function ProjectInteractionButtons({
               isUserLiking={isUserLiking}
               handleToggleLikeProject={handleToggleLikeProject}
               explanationBackground={"#fff"}
+              customWidth={220}
             />
           )}
       </Container>

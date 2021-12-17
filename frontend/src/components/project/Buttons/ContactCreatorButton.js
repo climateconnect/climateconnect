@@ -8,22 +8,23 @@ import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
 
 const useStyles = makeStyles({
-  root: {
+  root: (props) => ({
     position: "relative",
     height: 40,
-    width: 200,
+    width: props.customWidth ? props.customWidth : "auto",
     zIndex: 1,
-  },
+  }),
   smallAvatar: {
     height: theme.spacing(3),
     width: theme.spacing(3),
   },
-  slideInCard: {
+  slideInCard: (props) => ({
     display: "flex",
     justifyContent: "center",
     backgroundColor: "#F8F8F8",
     cursor: "pointer",
-  },
+    width: props.customWidth ? props.customWidth : "auto",
+  }),
   slideInRoot: {
     textAlign: "left",
   },
@@ -33,17 +34,20 @@ const useStyles = makeStyles({
   slideInTitle: {
     fontWeight: "bold",
   },
-  buttonWithCollapseContainer: {
+  buttonWithCollapseContainer: (props) => ({
+    width: props.customWidth ? props.customWidth : "auto",
     position: "absolute",
     bottom: 0,
     right: 0,
-  },
-  contactButton: {
-    width: 200,
+  }),
+  contactButton: (props) => ({
+    display: "flex",
+    flexDirection: "column",
+    width: props.customWidth ? props.customWidth : "auto",
     "&:hover": {
       background: theme.palette.primary.main,
     },
-  },
+  }),
   helperText: (props) => ({
     position: "absolute",
     fontSize: 13,
@@ -51,14 +55,11 @@ const useStyles = makeStyles({
     cursor: "pointer",
     background: props.explanationBackground ? props.explanationBackground : "auto",
   }),
-  detailledInfoMaxWidth: {
-    width: 200,
-  },
-  largeButton: {
+  largeButton: (props) => ({
     display: "flex",
     flexDirection: "column",
-    width: 300,
-  },
+    width: props.customWidth ? props.customWidth : "auto",
+  }),
   avatar: {
     height: 50,
     width: 50,
@@ -77,8 +78,9 @@ export default function ContactCreatorButton({
   explanationBackground,
   withStartIcon,
   withAvatar,
+  customWidth,
 }) {
-  const classes = useStyles({ explanationBackground: explanationBackground });
+  const classes = useStyles({ explanationBackground: explanationBackground, customWidth: customWidth });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, creator: creator });
   const [hoveringButton, setHoveringButton] = useState(false);
@@ -138,7 +140,6 @@ export default function ContactCreatorButton({
         <div className={classes.buttonWithCollapseContainer}>
           <Collapse in={hoveringButton} timeout={550}>
             <DetailledContactCreatorInfo
-              className={classes.detailledInfoMaxWidth}
               creatorName={creatorName}
               creatorImageURL={creatorImageURL}
               creatorsRoleInProject={creatorsRoleInProject}

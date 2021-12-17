@@ -347,6 +347,7 @@ function LargeScreenOverview({
                 creator={projectAdmin}
                 contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
                 handleClickContact={handleClickContact}
+                customWidth={200}
               />
             )}
           </div>
