@@ -152,7 +152,7 @@ export default function AccountPage({
   const token = new Cookies().get("token");
   const texts = getTexts({ page: "profile", locale: locale });
   const organizationTexts = isOrganization
-    ? getTexts({ page: "organization", organization: account })
+    ? getTexts({ page: "organization", organization: account, locale: locale })
     : "Not an organization";
   const componentDecorator = (href, text, key) => (
     <Link
