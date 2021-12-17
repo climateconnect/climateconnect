@@ -1,15 +1,17 @@
 # python standard lib
 import base64
 import io
+from os import path
 import secrets
 
 from django.core.files.base import ContentFile
 # django and pillow lib
 from PIL import Image
+import pathlib
 
 
 #source: https://dev.to/ageumatheus/creating-image-from-dataurl-base64-with-pyhton-django-454g
-def get_image_from_data_url( data_url, resize=False, base_width=500 ):
+def get_image_from_data_url( data_url, resize=False, base_width=500):
     # getting the file format and the necessary dataURl for the file
     _format, _dataurl       = data_url.split(';base64,')
     # file name and extension
@@ -54,3 +56,23 @@ def get_allowed_hosts(ALLOWED_HOSTS_ENV):
             if not host in allowed_hosts:
                 allowed_hosts.append(host)
     return allowed_hosts
+
+
+def convert_image_to_webp(source):
+    """Convert image to WebP.
+
+    Args:
+        source (pathlib.Path): Path to source image
+
+    Returns:
+        pathlib.Path: path to new image
+    """
+    source = pathlib.Path(source)
+    
+    destination = source.with_suffix(".webp")
+
+    image = Image.open(source)  # Open image
+    image.save(destination, format="webp")  # Convert image to webp
+
+
+    return destination
