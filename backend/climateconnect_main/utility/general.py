@@ -1,7 +1,6 @@
 # python standard lib
 import base64
 import io
-from os import path
 import secrets
 
 from django.core.files.base import ContentFile
