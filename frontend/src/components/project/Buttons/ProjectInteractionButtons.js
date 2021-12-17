@@ -61,9 +61,6 @@ export default function ProjectInteractionButtons({
             <ContactCreatorButton
               creator={projectAdmin}
               handleClickContact={handleClickContact}
-              screenSize={screenSize}
-              tiny={screenSize.belowTiny}
-              small={screenSize.belowSmall && !screenSize.belowTiny}
               withStartIcon={!screenSize.belowTiny}
               withAvatar={!screenSize.belowTiny}
             />
@@ -102,8 +99,6 @@ export default function ProjectInteractionButtons({
               className={classes.largeScreenButton}
               creator={projectAdmin}
               handleClickContact={handleClickContact}
-              isUserLiking={isUserLiking}
-              handleToggleLikeProject={handleToggleLikeProject}
               explanationBackground={"#fff"}
               customWidth={220}
               withCard={true}

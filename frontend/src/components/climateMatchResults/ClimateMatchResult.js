@@ -157,7 +157,6 @@ export default function ClimateMatchResult({ suggestion, pos }) {
                 onClick={(e) => e.preventDefault()}
               >
                 <ContactCreatorButton
-                  large
                   creator={creator}
                   handleClickContact={handleClickContact}
                   className={classes.contactCreatorButton}
