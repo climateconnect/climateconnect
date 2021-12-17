@@ -2,7 +2,15 @@ const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVI
 import imageCompression from "browser-image-compression";
 
 export function getImageUrl(url) {
+
+  var IsWebPCompatibleBrowser = false;
   if (!url) return;
+
+
+  if (IsWebPCompatibleBrowser===true) {
+    url = url.replace('.jpeg','.webp')
+  }
+  console.log(url);
   if (DEVELOPMENT && !url.includes("http:") && !url.includes("https:")) {
     return process.env.API_URL + url;
   } else {
