@@ -1,4 +1,4 @@
-import { Button, Container, Divider, Typography } from "@material-ui/core";
+import { Button, Container, Divider, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
@@ -8,6 +8,7 @@ import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, getRolesOptions } from "../../public/lib/apiOperations";
+import { getImageUrl } from "../../public/lib/imageOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 import { parseOrganization } from "../../public/lib/organizationOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
@@ -18,6 +19,7 @@ import PageNotFound from "../../src/components/general/PageNotFound";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import ProfilePreviews from "../../src/components/profile/ProfilePreviews";
 import ProjectPreviews from "../../src/components/project/ProjectPreviews";
+import theme from "../../src/themes/theme";
 import getOrganizationInfoMetadata from "./../../public/data/organization_info_metadata.js";
 import UserContext from "./../../src/components/context/UserContext";
 
@@ -92,6 +94,7 @@ export default function OrganizationPage({
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
       description={organization.name + " | " + organization.info.short_description}
+      image={getImageUrl(organization.image)}
     >
       {organization ? (
         <OrganizationLayout
@@ -170,6 +173,9 @@ function OrganizationLayout({
     );
 
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
+
+  const isTinyScreen = useMediaQuery(theme.breakpoints.down("xs"));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <AccountPage
       account={organization}
@@ -178,7 +184,10 @@ function OrganizationLayout({
       type="organization"
       infoMetadata={infoMetadata}
       isOwnAccount={canEdit}
+      isOrganization={true}
       editText={texts.edit_organization}
+      isTinyScreen={isTinyScreen}
+      isSmallScreen={isSmallScreen}
     >
       {!user && (
         <LoginNudge

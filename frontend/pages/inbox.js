@@ -92,7 +92,7 @@ export default function Inbox({ chatData, next }) {
   const [errorMessage, setErrorMessage] = React.useState("");
   const [groupName, setGroupName] = React.useState("");
   const [chatsState, setChatsState] = React.useState({
-    chats: parseChats(chatData, user, texts),
+    chats: parseChats(chatData, texts),
     next: next,
   });
 
@@ -263,12 +263,12 @@ export default function Inbox({ chatData, next }) {
   );
 }
 
-const parseChats = (chats, user, texts) =>
+const parseChats = (chats, texts) =>
   chats
     ? chats.map((chat) => ({
         ...chat,
         chatting_partner:
-          chat.participants.length === 2 && chat.participants.filter((p) => p.id != user.id)[0],
+          chat.participants.length === 2 && chat.participants.find((p) => p.id !== chat.user.id),
         unread_count: chat.unread_count,
         content: chat.last_message ? chat.last_message.content : texts.chat_has_been_created,
       }))

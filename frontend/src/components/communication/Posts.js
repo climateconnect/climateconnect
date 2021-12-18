@@ -1,3 +1,4 @@
+import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -49,8 +50,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-//@type: possible values are "openingpost", "reply", "progresspost"
-export default function Posts({ posts, type, maxLines, user, onSendComment, onDeletePost }) {
+//@type: possible values are "openingpost", "reply", "progresspost", "preview"
+export default function Posts({
+  posts,
+  type,
+  maxLines,
+  user,
+  onSendComment,
+  onDeletePost,
+  infoTextSize,
+  truncate,
+  noLink,
+}) {
   const classes = useStyles();
   const classNames = {
     reply: classes.indent,
@@ -72,6 +83,9 @@ export default function Posts({ posts, type, maxLines, user, onSendComment, onDe
             user={user}
             onSendComment={onSendComment}
             onDeletePost={onDeletePost}
+            infoTextSize={infoTextSize}
+            truncate={truncate}
+            noLink={noLink}
           />
         ))}
     </div>

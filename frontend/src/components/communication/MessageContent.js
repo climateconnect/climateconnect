@@ -1,9 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Linkify from "react-linkify";
+import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import PropTypes from "prop-types";
+import React, { useContext } from "react";
+import Linkify from "react-linkify";
 import YouTube from "react-youtube";
 import youtubeRegex from "youtube-regex";
+import { getFragmentsWithMentions } from "../../utils/mentions_markdown";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles({
   link: {
@@ -16,6 +19,7 @@ const useStyles = makeStyles({
 
 export default function MessageContent({ content, renderYoutubeVideos }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
   //workaround to get target="_blank" because setting 'properties' on the Linkify component doesn't work
   const componentDecorator = (href, text, key) => (
     <a href={href} className={classes.link} key={key} target="_blank" rel="noopener noreferrer">
@@ -75,12 +79,19 @@ export default function MessageContent({ content, renderYoutubeVideos }) {
 
   return (
     <Linkify componentDecorator={componentDecorator}>
-      {content.split("\n").map((i, index) => {
-        if (!i.length) return <br key={index} />;
+      {content.split("\n").map((content, index) => {
+        if (!content.length) return <br key={index} />;
         if (youtubeVideoLines && youtubeVideoLines.find((l) => l.index === index)) {
           return <div key={index}>{youtubeVideoLines.find((l) => l.index === index).content}</div>;
         }
-        return <div key={index}>{i ? i : " "}</div>;
+        const fragments = getFragmentsWithMentions(content, true, locale);
+        return (
+          <div key={index}>
+            <Typography display="inline" style={{ alignSelf: "flex-start" }}>
+              {fragments}
+            </Typography>
+          </div>
+        );
       })}
     </Linkify>
   );

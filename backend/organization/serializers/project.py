@@ -1,5 +1,6 @@
 from organization.models.members import MembershipRequests
 from climateconnect_api.models import UserProfile
+from climateconnect_api.models.role import Role
 from climateconnect_api.serializers.common import (AvailabilitySerializer,
                                                    SkillSerializer)
 from climateconnect_api.serializers.role import RoleSerializer
@@ -12,8 +13,9 @@ from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
 from organization.models import (Project, ProjectCollaborators,
-                                 ProjectFollower, ProjectMember,
+                                 ProjectFollower, ProjectLike, ProjectMember,
                                  ProjectParents)
+from organization.models.content import ProjectComment
 from organization.models.translations import ProjectTranslation
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.status import ProjectStatusSerializer
@@ -37,6 +39,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
+    number_of_likes = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     loc = serializers.SerializerMethodField()
     helpful_connections = serializers.SerializerMethodField()
@@ -54,7 +57,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             'skills', 'helpful_connections',
             'project_parents', 'tags',
             'created_at', 'collaborating_organizations', 'is_draft',
-            'website', 'number_of_followers', 'language'
+            'website', 'number_of_followers', 'number_of_likes',
+            'language'
         )
         read_only_fields = ['url_slug']
 
@@ -86,6 +90,9 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_number_of_followers(self, obj):
         return obj.project_following.count()
+
+    def get_number_of_likes(self, obj):
+        return obj.project_liked.count()
 
     def get_loc(self, obj):
         if obj.loc == None:
@@ -197,7 +204,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_location(self, obj):
-        if obj.loc == None:
+        if obj.loc is None:
             return None
         return obj.loc.name
 
@@ -214,7 +221,8 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
-    print(get_language())
+    number_of_comments = serializers.SerializerMethodField()
+    number_of_likes = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -222,7 +230,8 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             'id', 'name', 'url_slug',
             'image', 'location', 'status',
             'project_parents', 'tags',
-            'is_draft', 'short_description'
+            'is_draft', 'short_description',
+            'number_of_comments', 'number_of_likes'
         )
 
     def get_name(self, obj):
@@ -232,8 +241,19 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         return get_project_short_description(obj, get_language())
 
     def get_project_parents(self, obj):
-        serializer = ProjectParentsSerializer(obj.project_parent, many=True)
-        return serializer.data
+        parent = obj.project_parent.first()
+        if parent is None:
+            return []
+        if parent.parent_organization:
+            return [{
+                'parent_user': None,
+                'parent_organization': (OrganizationStubSerializer(parent.parent_organization)).data
+            }]
+        else:
+            return [{
+                'parent_user': (UserProfileStubSerializer(parent.parent_user.user_profile)).data,
+                'parent_organization': None
+            }]
 
     def get_tags(self, obj):
         serializer = ProjectTaggingSerializer(obj.tag_project, many=True)
@@ -256,6 +276,20 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         serializer = ProjectStatusSerializer(obj.status, many=False)
         return serializer.data['name']
 
+    def get_number_of_comments(self, obj):
+        return ProjectComment.objects.filter(project=obj).count()
+
+    def get_number_of_likes(self, obj):
+        return ProjectLike.objects.filter(project=obj).count()
+
+class ProjectSuggestionSerializer(ProjectStubSerializer):
+    project_creator = serializers.SerializerMethodField()
+    class Meta(ProjectStubSerializer.Meta):
+        fields = ProjectStubSerializer.Meta.fields + ('project_creator',)
+
+    def get_project_creator(self, obj):
+        member = ProjectMember.objects.filter(project=obj, role__role_type=Role.ALL_TYPE).first()
+        return (ProjectMemberSerializer(member)).data
 
 class ProjectMemberSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -334,7 +368,7 @@ class ProjectFollowerSerializer(serializers.ModelSerializer):
 
 class ProjectRequesterSerializer(serializers.ModelSerializer):
     """Serializer class required to return the request ID
-    to the client, so that it can be sent appropariately
+    to the client, so that it can be sent appropriately
     alongside the approve/deny actions for project requesters.
     """
     user_profile = serializers.SerializerMethodField()
@@ -345,6 +379,11 @@ class ProjectRequesterSerializer(serializers.ModelSerializer):
         # locally defined variables take precedence
         # over what's defined on the model
         fields = ('user_profile', 'id')
+class ProjectLikeSerializer(serializers.ModelSerializer):
+    user_profile = serializers.SerializerMethodField()
+    class Meta:
+        model = ProjectLike
+        fields = ('user_profile', 'created_at')
 
     def get_user_profile(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user)

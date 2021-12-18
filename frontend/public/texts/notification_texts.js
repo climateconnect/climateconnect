@@ -1,4 +1,4 @@
-export default function getNotificationTexts({ idea }) {
+export default function getNotificationTexts({ idea, project }) {
   return {
     message_from: {
       en: "Message from",
@@ -26,6 +26,10 @@ export default function getNotificationTexts({ idea }) {
       en: "now follows your project",
       de: "folgt jetzt deinem Projekt",
     },
+    liked_your_project: {
+      en: `liked your project "${project?.name}"`,
+      de: `hat dein Projekt "${project?.name}" geliked`,
+    },
     go_to_inbox: {
       en: "Go to Inbox",
       de: "Zum Posteingang",
@@ -37,6 +41,10 @@ export default function getNotificationTexts({ idea }) {
     send_a_Message_to_welcome_them_in_the_group_chat: {
       en: "Send a message in the chat to welcome them!",
       de: "Schreibe eine Willkommensnachricht in den Chat!",
+    },
+    mentioned_you_in_comment_about_project: {
+      en: `has mentioned you in a comment`,
+      de: `hat dich in einem Kommentar erwähnt`,
     },
   };
 }

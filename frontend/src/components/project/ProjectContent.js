@@ -5,11 +5,13 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import humanizeDuration from "humanize-duration";
 import React, { useState, useEffect, useContext } from "react";
 import TimeAgo from "react-timeago";
+import youtubeRegex from "youtube-regex";
 
 // Relative imports
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
 import DateDisplay from "./../general/DateDisplay";
+import DiscussionPreview from "./DiscussionPreview";
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
@@ -170,9 +172,15 @@ async function getMembershipRequests(url_slug) {
 
 export default function ProjectContent({
   collaborationSectionRef,
+  collaborationSectionRef,
+  discussionTabLabel,
+  handleTabChange,
+  latestParentComment,
   leaveProject,
   project,
   projectDescriptionRef,
+  projectTabsRef,
+  typesByTabValue,
 }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -215,6 +223,26 @@ export default function ProjectContent({
     setRequesters(userRequests);
     setShowRequesters(!showRequesters);
   }
+
+  const CalculateMaxDisplayedDescriptionLength = (description) => {
+    const words = description.split(" ");
+    const youtubeLink = words.find((el) => youtubeRegex().test(el));
+    if (youtubeLink) {
+      const firstIndex = description.indexOf(youtubeLink);
+      const lastIndex = firstIndex + youtubeLink.length - 1;
+      const maxLength =
+        firstIndex <= MAX_DISPLAYED_DESCRIPTION_LENGTH &&
+        lastIndex > MAX_DISPLAYED_DESCRIPTION_LENGTH
+          ? lastIndex
+          : MAX_DISPLAYED_DESCRIPTION_LENGTH;
+      return maxLength;
+    } else {
+      return MAX_DISPLAYED_DESCRIPTION_LENGTH;
+    }
+  };
+  const maxDisplayedDescriptionLength = project.description
+    ? CalculateMaxDisplayedDescriptionLength(project.description)
+    : null;
 
   return (
     <>
@@ -341,12 +369,11 @@ export default function ProjectContent({
         </Typography>
         <Typography component="div">
           {project.description ? (
-            showFullDescription ||
-            project.description.length <= MAX_DISPLAYED_DESCRIPTION_LENGTH ? (
+            showFullDescription || project.description.length <= maxDisplayedDescriptionLength ? (
               <MessageContent content={project.description} renderYoutubeVideos={1} />
             ) : (
               <MessageContent
-                content={project.description.substr(0, MAX_DISPLAYED_DESCRIPTION_LENGTH) + "..."}
+                content={project.description.substr(0, maxDisplayedDescriptionLength) + "..."}
                 renderYoutubeVideos={1}
               />
             )
@@ -356,7 +383,7 @@ export default function ProjectContent({
             </Typography>
           )}
         </Typography>
-        {project.description && project.description.length > MAX_DISPLAYED_DESCRIPTION_LENGTH && (
+        {project.description && project.description.length > maxDisplayedDescriptionLength && (
           <Button className={classes.expandButton} onClick={handleToggleFullDescriptionClick}>
             {showFullDescription ? (
               <div>
@@ -370,6 +397,17 @@ export default function ProjectContent({
           </Button>
         )}
       </div>
+      {latestParentComment[0] && (
+        <DiscussionPreview
+          latestParentComment={latestParentComment}
+          discussionTabLabel={discussionTabLabel}
+          locale={locale}
+          project={project}
+          handleTabChange={handleTabChange}
+          typesByTabValue={typesByTabValue}
+          projectTabsRef={projectTabsRef}
+        />
+      )}
       <div className={classes.contentBlock} ref={collaborationSectionRef}>
         <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
           {texts.collaboration}

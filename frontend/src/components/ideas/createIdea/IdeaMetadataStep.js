@@ -114,6 +114,7 @@ export default function IdeaMetadataStep({
         label={texts.choose_a_category}
         options={allHubs}
         controlled
+        required
         onChange={(e) =>
           handleValueChange(
             allHubs.find((h) => h.name === e.target.value),

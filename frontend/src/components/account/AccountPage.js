@@ -3,14 +3,26 @@ import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
 import React, { useContext } from "react";
 import Linkify from "react-linkify";
+import Cookies from "universal-cookie";
+
+import { getImageUrl } from "../../../public/lib/imageOperations";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import DetailledDescription from "./DetailledDescription";
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
-import UserContext from "../context/UserContext";
 import MiniHubPreviews from "../hub/MiniHubPreviews";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
-import DetailledDescription from "./DetailledDescription";
+import ProfileBadge from "../profile/ProfileBadge";
+import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
+  avatarContainer: {
+    [theme.breakpoints.up("sm")]: {
+      marginRight: theme.spacing(5),
+      marginLeft: theme.spacing(5),
+    },
+  },
   avatar: {
     height: theme.spacing(20),
     width: theme.spacing(20),
@@ -22,10 +34,6 @@ const useStyles = makeStyles((theme) => ({
     "& img": {
       objectFit: "contain",
       backgroundColor: "white",
-    },
-    [theme.breakpoints.up("sm")]: {
-      marginRight: theme.spacing(5),
-      marginLeft: theme.spacing(5),
     },
   },
   avatarWithInfo: {
@@ -104,6 +112,27 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
   },
+  shareButtonContainer: (props) => ({
+    position: "absolute",
+    right: "0%",
+    bottom: "0%",
+    marginRight: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    [theme.breakpoints.down("xs")]: {
+      marginBottom: props.isOwnAccount ? theme.spacing(4) : theme.spacing(2),
+    },
+  }),
+
+  subOrgContainer: {
+    display: "flex",
+    alignItems: "center",
+  },
+  isSubOrgText: {
+    marginRight: theme.spacing(1),
+  },
+  miniOrgPreview: {
+    display: "flex",
+  },
 }));
 
 export default function AccountPage({
@@ -113,11 +142,18 @@ export default function AccountPage({
   infoMetadata,
   children,
   isOwnAccount,
+  isOrganization,
   editText,
+  isTinyScreen,
+  isSmallScreen,
 }) {
   const classes = useStyles({ isOwnAccount: isOwnAccount });
   const { locale } = useContext(UserContext);
+  const token = new Cookies().get("token");
   const texts = getTexts({ page: "profile", locale: locale });
+  const organizationTexts = isOrganization
+    ? getTexts({ page: "organization", organization: account })
+    : "Not an organization";
   const componentDecorator = (href, text, key) => (
     <Link
       color="primary"
@@ -146,9 +182,15 @@ export default function AccountPage({
           if (key === "parent_organization") {
             if (value.name)
               return (
-                <div key={index} className={classes.subtitle}>
-                  {account.name} {texts.is_a_suborganization_of}{" "}
-                  <MiniOrganizationPreview organization={value} size="small" />
+                <div key={index} className={`${classes.subtitle} ${classes.subOrgContainer}`}>
+                  <Typography className={classes.isSubOrgText}>
+                    {account.name} {texts.is_a_suborganization_of}{" "}
+                  </Typography>
+                  <MiniOrganizationPreview
+                    className={classes.miniOrgPreview}
+                    organization={value}
+                    size="small"
+                  />
                 </div>
               );
           } else if (i.type === "array" && i?.value?.length > 0) {
@@ -191,7 +233,7 @@ export default function AccountPage({
                 </div>
               </div>
             );
-          } else if (value && !["detailled_description", "location"].includes(i.type)) {
+          } else if (value && !["detailled_description", "location", "checkbox"].includes(i.type)) {
             return (
               <div key={index}>
                 <div className={classes.subtitle}>{i.name}:</div>
@@ -220,6 +262,15 @@ export default function AccountPage({
   });
   const location = locationKeys.length > 0 ? account.info[locationKeys[0]] : null;
   const locationAdditionalText = location?.additionalText ? location.additionalText : "";
+
+  const avatarProps = {
+    alt: account.name,
+    component: "div",
+    size: "large",
+    src: account.image,
+    className: classes.avatar,
+  };
+
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div
@@ -231,8 +282,26 @@ export default function AccountPage({
           backgroundPosition: "center",
           width: "100%",
           height: 305,
+          position: "relative",
         }}
-      />
+      >
+        {isOrganization && (
+          <SocialMediaShareButton
+            containerClassName={classes.shareButtonContainer}
+            contentLinkPath={`${getLocalePrefix(locale)}/organizations/${account.url_slug}`}
+            apiEndpoint={`/api/organizations/${account.url_slug}/set_shared_organization/`}
+            locale={locale}
+            token={token}
+            messageTitle={`${organizationTexts.climate_protection_organization}${account.name}`}
+            tinyScreen={isTinyScreen}
+            smallScreen={isSmallScreen}
+            mailBody={organizationTexts.share_organization_email_body}
+            texts={texts}
+            dialogTitle={organizationTexts.tell_others_about_this_organization}
+            switchColors={true}
+          />
+        )}
+      </div>
       <Container className={classes.infoContainer}>
         {isOwnAccount && (
           <Button
@@ -245,13 +314,18 @@ export default function AccountPage({
           </Button>
         )}
         <Container className={classes.avatarWithInfo}>
-          <Avatar
-            alt={account.name}
-            component="div"
-            size="large"
-            src={account.image}
-            className={classes.avatar}
-          />
+          <div className={classes.avatarContainer}>
+            {account.badges?.length > 0 ? (
+              <ProfileBadge
+                name={account.badges[0].name}
+                image={getImageUrl(account.badges[0].image)}
+              >
+                <Avatar {...avatarProps} />
+              </ProfileBadge>
+            ) : (
+              <Avatar {...avatarProps} />
+            )}
+          </div>
           <Typography variant="h5" className={classes.name}>
             {account.name}
           </Typography>

@@ -18,6 +18,7 @@ import React, { useContext, useRef, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
+import OpenClimateMatchButton from "../climateMatch/OpenClimateMatchButton";
 import UserContext from "../context/UserContext";
 import UserImage from "./UserImage";
 
@@ -97,7 +98,6 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       justifyContent: "space-around",
     },
-
     cityHubOption: {
       width: "100%",
     },
@@ -182,7 +182,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
   );
 };
 
-export default function Dashboard({ className, headline, location }) {
+export default function Dashboard({ className, headline, location, hubUrl }) {
   const classes = useStyles();
 
   const { user, locale } = useContext(UserContext);
@@ -282,7 +282,7 @@ export default function Dashboard({ className, headline, location }) {
                   },
                 ]}
               />
-
+              <OpenClimateMatchButton hubUrl={hubUrl} />
               {/* TODO: restore Climate Match icon and link once CM is live  */}
               {/* <Button type="submit">Climate Match</Button> */}
             </>

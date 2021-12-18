@@ -6,19 +6,19 @@ from organization.utility import MembershipTarget, RequestStatus
 
 class ProjectMember(models.Model):
     user = models.ForeignKey(
-        User, related_name="project_member",
+        User, related_name="project_member_user",
         help_text="Points to user table", verbose_name="User",
         on_delete=models.CASCADE
     )
 
     project = models.ForeignKey(
-        Project, related_name="project_member",
+        Project, related_name="project_member_project",
         help_text="Points to project table", verbose_name="Project",
         on_delete=models.CASCADE
     )
 
     role = models.ForeignKey(
-        Role, related_name="project_role",
+        Role, related_name="project_member_role",
         verbose_name="Role(permissions)", help_text="Points to user role",
         on_delete=models.PROTECT
     )

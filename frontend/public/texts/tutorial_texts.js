@@ -36,7 +36,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     },
     no_but_i_would_like_to: {
       en: "No, but I'd like to",
-      de: "Nein, aber ich würde gerne",
+      de: "Nein, aber ich möchte",
     },
     tutorial_welcome_to_the_browse_page: {
       en: "Welcome to the browse page",

@@ -6,17 +6,26 @@ from climateconnect_api.models.faq import (FaqSection, FaqQuestion)
 from climateconnect_api.models.notification import (Notification, UserNotification, EmailNotification)
 from climateconnect_api.models.donation import Donation, DonationGoal
 from climateconnect_api.models.language import Language
+from climateconnect_api.models.badge import (Badge, DonorBadge)
+from climateconnect_api.models.content_shares import ContentShares
 
 
 pass_through_models = (
-    UserProfile, Availability, Role, 
+    Availability, Role,
     Feedback, FaqSection, FaqQuestion,
     Notification, UserNotification, EmailNotification,
-    Donation, DonationGoal
+    Donation, DonationGoal, Badge, DonorBadge, ContentShares
 )
 
 for model in pass_through_models:
     admin.site.register(model, admin.ModelAdmin)
+
+
+class UserProfileAdmin(admin.ModelAdmin):
+    search_fields = ('name',)
+
+
+admin.site.register(UserProfile, UserProfileAdmin)
 
 
 class SkillAdmin(admin.ModelAdmin):

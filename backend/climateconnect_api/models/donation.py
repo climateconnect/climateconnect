@@ -1,10 +1,19 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class DonationGoal(models.Model):
     name = models.CharField(
         help_text="Goal name, e.g. 'December goal'",
         verbose_name="Goal name",
         max_length=512
+    )
+
+    name_de_translation = models.CharField(
+        help_text="German translation of the goal name",
+        verbose_name="Goal name (DE)",
+        max_length=512,
+        null=True,
+        blank=True
     )
 
     description = models.CharField(
@@ -52,6 +61,15 @@ class DonationGoal(models.Model):
         )
 
 class Donation(models.Model):
+    user = models.ForeignKey(
+        User,
+        related_name="donation_user",
+        verbose_name="User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    
     donor_name = models.CharField(
         help_text="Donor name",
         verbose_name="Donor Name",
@@ -76,6 +94,13 @@ class Donation(models.Model):
         verbose_name="Date first received"
     )
 
+    date_cancelled = models.DateTimeField(
+        help_text="Date and time when the donation was cancelled (only for recurring donations)",
+        verbose_name="Date cancelled",
+        null=True,
+        blank=True
+    )
+
     created_at = models.DateTimeField(
         help_text="Time when donation was created",
         verbose_name="Created At",
@@ -95,6 +120,10 @@ class Donation(models.Model):
         ordering = ["-id"]
     
     def __str__(self):
-        return "Donation from : %s" % (
-            self.date_first_received
+        return "%s %s from %s (%s%s)" % (
+            "One time donation: " if not self.is_recurring else "Regular donation: ",
+            str(self.donation_amount)+"€",
+            '' if not self.user else self.user.first_name + " " + self.user.last_name,            
+            self.date_first_received,
+            ", cancelled " + str(self.date_cancelled) if self.date_cancelled else ""
         )

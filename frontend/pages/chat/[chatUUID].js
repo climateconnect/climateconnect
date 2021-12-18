@@ -1,7 +1,6 @@
 import NextCookies from "next-cookies";
 import React, { useContext, useEffect } from "react";
 import Cookies from "universal-cookie";
-
 import { apiRequest, redirect, sendToLogin } from "../../public/lib/apiOperations";
 import { getMessageFromServer } from "../../public/lib/messagingOperations";
 import getTexts from "../../public/texts/texts";
@@ -79,16 +78,23 @@ export default function Chat({
   useEffect(() => {
     if (chatSocket) {
       chatSocket.onmessage = async (rawData) => {
-        const data = JSON.parse(rawData.data);
-        if (data.chat_uuid === chatUUID) {
-          const message = await getMessageFromServer(data.message_id, token, locale);
-          setState({
-            ...state,
-            messages: [
-              ...state.messages.filter((m) => !(m.content === message.content && m.unconfirmed)),
-              message,
-            ],
-          });
+        if (rawData) {
+          const data = JSON.parse(rawData.data);
+          if (data.chat_uuid === chatUUID) {
+            const message = await getMessageFromServer(data.message_id, token, locale);
+            setState((state) => {
+              return {
+                ...state,
+                messages: [
+                  ...state.messages.filter(
+                    (m) =>
+                      !((m.content === message.content && m.unconfirmed) || m.id === message.id)
+                  ),
+                  message,
+                ],
+              };
+            });
+          }
         }
       };
     } else console.log("now there is no chat socket");
