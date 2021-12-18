@@ -1,4 +1,5 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 
 const useStyles = makeStyles((theme) => ({
@@ -35,7 +36,7 @@ export default function Value({ iconSrc, icon, text }) {
         {icon ? (
           <icon.src className={classes.icon} />
         ) : (
-          <img src={iconSrc} className={classes.icon} />
+          <img src={iconSrc} className={classes.icon} loading="lazy" />
         )}
       </div>
       <Typography component="h2" className={classes.text}>

@@ -1,4 +1,5 @@
-import { Link, makeStyles, MenuItem, MenuList, Paper, Popper } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Link, MenuItem, MenuList, Paper, Popper } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";

@@ -1,4 +1,5 @@
-import { Chip, Container, makeStyles, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Chip, Container, useMediaQuery } from "@material-ui/core";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import climateMatchStyles from "../../../public/styles/climateMatchStyles";

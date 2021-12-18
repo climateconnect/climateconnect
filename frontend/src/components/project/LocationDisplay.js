@@ -1,4 +1,5 @@
-import { makeStyles, Tooltip, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Tooltip, Typography } from "@material-ui/core";
 import PlaceIcon from "@material-ui/icons/Place";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";

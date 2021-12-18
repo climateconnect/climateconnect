@@ -1,4 +1,4 @@
-import { createMuiTheme } from "@material-ui/core";
+import { createMuiTheme } from "@material-ui/core/styles";
 import theme from "./theme";
 
 const hubTheme = createMuiTheme({

@@ -1,4 +1,6 @@
-import { Link, makeStyles, ThemeProvider, Typography, useMediaQuery } from "@material-ui/core";
+import { Link, Typography, useMediaQuery } from "@material-ui/core";
+import { ThemeProvider } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import Chart from "react-google-charts";
 import getTexts from "../../../../public/texts/texts";

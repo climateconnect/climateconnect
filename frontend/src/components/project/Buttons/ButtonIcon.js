@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 
 const useStyles = makeStyles(() => ({
@@ -12,21 +12,23 @@ export default function ButtonIcon({ icon, color, size }) {
 
   if (icon === "like") {
     if (color === "white") {
-      return <img className={classes.icon} src={"/images/like-white.svg"} />;
+      return <img className={classes.icon} src={"/images/like-white.svg"} loading="lazy" />;
     }
     if (color === "earth") {
-      return <img className={classes.icon} src={"/images/like-planet-earth.svg"} />;
+      return <img className={classes.icon} src={"/images/like-planet-earth.svg"} loading="lazy" />;
     }
     if (color === "primary") {
-      return <img className={classes.icon} src={"/images/like-primary.svg"} />;
+      return <img className={classes.icon} src={"/images/like-primary.svg"} loading="lazy" />;
     }
   }
   if (icon === "follow") {
     if (color === "white") {
-      return <img className={classes.icon} src={"/images/follow-white.svg"} />;
+      return <img className={classes.icon} src={"/images/follow-white.svg"} loading="lazy" />;
     }
     if (color === "earth") {
-      return <img className={classes.icon} src={"/images/follow-planet-earth.svg"} />;
+      return (
+        <img className={classes.icon} src={"/images/follow-planet-earth.svg"} loading="lazy" />
+      );
     }
   }
 }

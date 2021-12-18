@@ -1,6 +1,6 @@
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
@@ -23,11 +23,16 @@ export default function LoadingContainer({ headerHeight, footerHeight }) {
     subtractedHeight: (headerHeight + footerHeight).toString(),
   });
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "general", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "general", locale: locale }), [locale]);
   return (
     <div className={classes.spinnerContainer}>
       <div>
-        <img className={classes.spinner} src="/images/logo.svg" alt="Climate Connect logo" />
+        <img
+          className={classes.spinner}
+          src="/images/logo.svg"
+          alt="Climate Connect logo"
+          loading="lazy"
+        />
       </div>
       <Typography component="div">{texts.loading_and_waiting}</Typography>
     </div>

@@ -1,10 +1,5 @@
-import {
-  Container,
-  LinearProgress,
-  makeStyles,
-  Typography,
-  useMediaQuery,
-} from "@material-ui/core";
+import { Container, LinearProgress, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";

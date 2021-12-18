@@ -1,5 +1,5 @@
 import NextCookies from "next-cookies";
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useMemo, useRef } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest } from "../../public/lib/apiOperations";
@@ -75,7 +75,10 @@ export default function ProjectPage({
   const [numberOfLikes, setNumberOfLikes] = React.useState(project.number_of_likes);
   const [numberOfFollowers, setNumberOfFollowers] = React.useState(project.number_of_followers);
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "project", locale: locale, project: project });
+  const texts = useMemo(() => getTexts({ page: "project", locale: locale, project: project }), [
+    locale,
+    project,
+  ]);
 
   const handleFollow = (userFollows, updateCount, pending) => {
     setIsUserFollowing(userFollows);

@@ -1,6 +1,7 @@
-import { Container, makeStyles, Typography } from "@material-ui/core";
+import { Container, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { makeStyles } from "@material-ui/core/styles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LightBigButton from "./LightBigButton";

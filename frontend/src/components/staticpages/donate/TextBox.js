@@ -1,4 +1,5 @@
-import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Container, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import theme from "../../../themes/theme";
 import IconWrapper from "./IconWrapper";
@@ -32,7 +33,7 @@ export default function TextBox({
       {!isNarrowScreen && <IconWrapper src={icon} />}
       <div>
         <Typography component="h1" className={headlineClass}>
-          {isNarrowScreen && <img src={icon} className={classes.icon} />}
+          {isNarrowScreen && <img src={icon} className={classes.icon} loading="lazy" />}
           {headline}
         </Typography>
         {children}

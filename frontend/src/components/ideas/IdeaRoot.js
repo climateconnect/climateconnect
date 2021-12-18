@@ -1,4 +1,5 @@
-import { Button, Card, makeStyles, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, Card, Tooltip, Typography, useMediaQuery } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import React, { useContext, useEffect, useState } from "react";
@@ -329,7 +330,11 @@ export default function IdeaRoot({
               </div>
               <div className={classes.imageAndShortDescriptionWrapper}>
                 {idea.thumbnail_image && (
-                  <img src={getImageUrl(idea.thumbnail_image)} className={classes.ideaImage} />
+                  <img
+                    src={getImageUrl(idea.thumbnail_image)}
+                    className={classes.ideaImage}
+                    loading="lazy"
+                  />
                 )}
                 <Typography variant="body1">{idea.short_description}</Typography>
               </div>

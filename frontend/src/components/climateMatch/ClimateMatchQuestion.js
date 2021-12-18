@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import OptionalQuestionTypeBody from "./OptionalQuestionTypeBody";

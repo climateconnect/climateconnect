@@ -1,5 +1,6 @@
 import React from "react";
-import { makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   infoLinkBox: (props) => ({
@@ -48,7 +49,7 @@ export default function InfoLinkBox({
   const classes = useStyles({ centerContent: centerContent });
   return (
     <div className={`${classes.infoLinkBox} ${className}`}>
-      <img src={iconSrc} className={classes.icon} alt={iconAlt} />
+      <img src={iconSrc} className={classes.icon} alt={iconAlt} loading="lazy" />
       <div>
         <Typography color="primary" component="h2" className={classes.headline}>
           {headline}

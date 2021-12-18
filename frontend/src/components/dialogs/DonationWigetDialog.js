@@ -1,6 +1,6 @@
 import React from "react";
 import GenericDialog from "./GenericDialog";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(() => ({
   widget: {

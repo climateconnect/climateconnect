@@ -1,4 +1,5 @@
-import { Link, makeStyles, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Link, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import Carousel from "react-multi-carousel";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";

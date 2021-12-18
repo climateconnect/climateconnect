@@ -1,6 +1,6 @@
 import { Container, Typography, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -118,7 +118,7 @@ export default function Donate({ goal_name, goal_amount, current_amount }) {
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const [overlayOpen, setOverlayOpen] = React.useState(false);
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "donate", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "donate", locale: locale }), [locale]);
   return (
     <WideLayout title={texts.your_donation_counts} isStaticPage noSpaceBottom noFeedbackButton>
       <div className={classes.root}>

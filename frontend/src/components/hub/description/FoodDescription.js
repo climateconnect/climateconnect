@@ -1,4 +1,6 @@
-import { Link, makeStyles, ThemeProvider, Typography } from "@material-ui/core";
+import { Link, Typography } from "@material-ui/core";
+import { ThemeProvider } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import getTexts from "../../../../public/texts/texts";
 import hubTheme from "../../../themes/hubTheme";
@@ -129,7 +131,7 @@ export default function FoodDescription() {
         </Typography>
         <Typography className={classes.textContent}>
           <div>
-            <img src="/images/foodwaste.jpg" alt={texts.foodwaste_chart_alt} />
+            <img src="/images/foodwaste.jpg" alt={texts.foodwaste_chart_alt} loading="lazy" />
           </div>
           {texts.food_waste_text}
         </Typography>

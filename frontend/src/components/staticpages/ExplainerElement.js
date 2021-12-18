@@ -1,5 +1,6 @@
 import React from "react";
-import { Typography, makeStyles } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   explainerElementWrapper: (props) => ({
@@ -23,7 +24,7 @@ export default function ExplainerElement({ icon, text, children, alt, horizontal
   return (
     <div className={classes.explainerElementWrapper}>
       {children}
-      <img src={icon} className={classes.explainerIcon} alt={alt} />
+      <img src={icon} className={classes.explainerIcon} alt={alt} loading="lazy" />
       <Typography>{text}</Typography>
     </div>
   );

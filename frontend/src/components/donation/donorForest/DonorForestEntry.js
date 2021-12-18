@@ -1,4 +1,5 @@
-import { Avatar, Link, makeStyles, Tooltip } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Avatar, Link, Tooltip } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { durationFromMiliseconds } from "../../../../public/lib/dateOperations";
@@ -54,7 +55,7 @@ export default function DonorForestEntry({ donor }) {
     >
       <div>
         <div className={classes.treeImageContainer}>
-          <img className={classes.treeImage} src={getImageUrl(badge.image)} />
+          <img className={classes.treeImage} src={getImageUrl(badge.image)} loading="lazy" />
         </div>
         <Link href={`${getLocalePrefix(locale)}/profiles/${donor.url_slug}`} target="_blank">
           <Avatar

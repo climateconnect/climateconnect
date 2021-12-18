@@ -1,5 +1,5 @@
 import NextCookies from "next-cookies";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
@@ -23,7 +23,7 @@ export default function Settings({ settings }) {
   const [message, setMessage] = React.useState("");
   const [currentSettings, setCurrentSettings] = React.useState(settings);
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "settings", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "settings", locale: locale }), [locale]);
   if (user)
     return (
       <Layout title={texts.settings} message={message} noSpacingBottom>

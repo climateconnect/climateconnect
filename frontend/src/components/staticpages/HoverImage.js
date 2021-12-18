@@ -1,5 +1,6 @@
 import React from "react";
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 const useStyles = makeStyles((theme) => ({
@@ -65,7 +66,7 @@ export default function HoverImage({ src, text, className, background }) {
     <div className={className}>
       <div className={classes.wrapper}>
         <div className={classes.imageContainer} id="hover-image-container">
-          <img src={src} className={classes.image} />
+          <img src={src} className={classes.image} loading="lazy" />
         </div>
         <div className={classes.backgroundDiv}>
           <div className={classes.textDivInnerWrapper}>

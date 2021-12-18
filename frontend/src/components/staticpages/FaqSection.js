@@ -1,4 +1,5 @@
-import { Button, Container, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, Container, Typography } from "@material-ui/core";
 import ContactSupportOutlinedIcon from "@material-ui/icons/ContactSupportOutlined";
 import ExpandLessOutlinedIcon from "@material-ui/icons/ExpandLessOutlined";
 import ExpandMoreOutlinedIcon from "@material-ui/icons/ExpandMoreOutlined";

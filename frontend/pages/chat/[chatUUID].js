@@ -1,5 +1,5 @@
 import NextCookies from "next-cookies";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, redirect, sendToLogin } from "../../public/lib/apiOperations";
 import { getMessageFromServer } from "../../public/lib/messagingOperations";
@@ -12,7 +12,7 @@ import FixedHeightLayout from "../../src/components/layouts/FixedHeightLayout";
 
 export async function getServerSideProps(ctx) {
   const { token } = NextCookies(ctx);
-  const texts = getTexts({ page: "chat", locale: ctx.locale });
+  const texts = useMemo(() => getTexts({ page: "chat", locale: ctx.locale }), [ctx.locale]);
   if (ctx.req && !token) {
     const message = texts.login_required;
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
@@ -67,7 +67,7 @@ export default function Chat({
   });
   const [errorMessage, setErrorMessage] = React.useState("");
   const [dialogOpen, setDialogOpen] = React.useState(false);
-  const texts = getTexts({ page: "chat", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "chat", locale: locale }), [locale]);
   const handleChatWindowClose = (e) => {
     if (state.messages.filter((m) => m.unconfirmed).length > 0) {
       e.preventDefault();

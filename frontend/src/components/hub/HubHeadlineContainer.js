@@ -1,4 +1,5 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import OpenClimateMatchButton from "../climateMatch/OpenClimateMatchButton";

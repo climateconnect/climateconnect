@@ -1,5 +1,6 @@
-import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
-import React, { useContext } from "react";
+import { Container, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext, useMemo } from "react";
 import { getAllHubs } from "../public/lib/hubOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -52,7 +53,7 @@ export default function Hubs({ hubs }) {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "hub", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "hub", locale: locale }), [locale]);
   return (
     <WideLayout largeFooter noSpaceBottom title={texts.climate_action_hubs}>
       <NavigationSubHeader allHubs={hubs} />

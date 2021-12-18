@@ -1,4 +1,5 @@
-import { makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Typography, useMediaQuery } from "@material-ui/core";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ModeCommentIcon from "@material-ui/icons/ModeComment";
 import React, { useContext } from "react";

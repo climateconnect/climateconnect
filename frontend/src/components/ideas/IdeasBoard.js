@@ -1,4 +1,5 @@
-import { makeStyles, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { useMediaQuery } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { getCommentsObjectAfterAddingComments } from "../../../public/lib/communicationOperations";
 import { getInfoMetadataByType } from "../../../public/lib/parsingOperations";

@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   iconContainer: {
@@ -20,7 +20,7 @@ export default function IconWrapper({ src }) {
   return (
     <div className={classes.leftWrapper}>
       <div className={classes.iconContainer}>
-        <img className={classes.icon} src={src} />
+        <img className={classes.icon} src={src} loading="lazy" />
       </div>
     </div>
   );

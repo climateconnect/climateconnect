@@ -1,7 +1,7 @@
 import { Link, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import NextCookies from "next-cookies";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 export async function getServerSideProps(ctx) {
   const { token } = NextCookies(ctx);
-  const texts = getTexts({ page: "project", locale: ctx.locale });
+  const texts = useMemo(() => getTexts({ page: "project", locale: ctx.locale }), [ctx.locale]);
   if (ctx.req && !token) {
     const message = texts.please_log_in_to_edit_project;
     return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);

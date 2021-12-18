@@ -1,4 +1,5 @@
-import { Button, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, Typography } from "@material-ui/core";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import React, { useContext } from "react";

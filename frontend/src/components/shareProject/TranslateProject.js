@@ -1,4 +1,5 @@
-import { Button, Container, makeStyles, TextField, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, Container, TextField, Typography } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getProjectTexts from "../../../public/texts/project_texts";

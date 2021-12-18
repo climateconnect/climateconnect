@@ -1,5 +1,6 @@
 import React from "react";
-import { makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Typography } from "@material-ui/core";
 import theme from "../../themes/theme";
 import { PieChart } from "react-minimal-pie-chart";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";

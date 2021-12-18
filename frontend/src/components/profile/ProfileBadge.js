@@ -1,4 +1,5 @@
-import { Badge, Link, makeStyles, Tooltip } from "@material-ui/core";
+import { Badge, Link, Tooltip } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";

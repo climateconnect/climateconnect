@@ -1,5 +1,6 @@
-import { Button, makeStyles, Typography } from "@material-ui/core";
-import React, { useContext } from "react";
+import { Button, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext, useMemo } from "react";
 import Carousel from "react-multi-carousel";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -158,8 +159,8 @@ const responsive = {
 export default function MainHeadingContainerMobile() {
   const classes = useStyles();
   const { locale, user } = useContext(UserContext);
-  const texts = getTexts({ page: "general", locale: locale });
-  const carouselContent = getCarouselContent(texts);
+  const texts = useMemo(() => getTexts({ page: "general", locale: locale }), [locale]);
+  const carouselContent = useMemo(() => getCarouselContent(texts), [texts]);
 
   return (
     <div className={classes.outerContainer}>

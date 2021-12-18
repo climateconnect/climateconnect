@@ -1,4 +1,5 @@
-import { Button, Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Button, Container, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import React, { useContext } from "react";
@@ -137,7 +138,7 @@ const Element = ({ headline, text, link, img, linkText, mobile }) => {
     <div className={classes.elementRoot}>
       <div className={classes.imageBackground}>
         <div className={classes.imageWrapper}>
-          <img src={img} className={classes.image} />
+          <img src={img} className={classes.image} loading="lazy" />
         </div>
       </div>
       <div className={classes.textSection}>

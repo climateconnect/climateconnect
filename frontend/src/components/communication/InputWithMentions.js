@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext, useRef } from "react";
 import { Mention, MentionsInput } from "react-mentions";
 import { apiRequest } from "../../../public/lib/apiOperations";

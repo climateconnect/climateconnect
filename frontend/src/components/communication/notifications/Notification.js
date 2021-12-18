@@ -1,4 +1,5 @@
-import { Link, ListItemIcon, ListItemText, MenuItem, withStyles } from "@material-ui/core";
+import { Link, ListItemIcon, ListItemText, MenuItem } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
 import { makeStyles } from "@material-ui/core/styles";
 import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
 import GroupIcon from "@material-ui/icons/Group";

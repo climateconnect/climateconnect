@@ -10,7 +10,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import Link from "next/link";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SettingsPage({ settings, setSettings, token, setMessage }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "settings", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "settings", locale: locale }), [locale]);
 
   const possibleEmailPreferences = [
     {

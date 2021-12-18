@@ -4,7 +4,7 @@ import AddIcon from "@material-ui/icons/Add";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import NextCookies from "next-cookies";
 import Router from "next/router";
-import React from "react";
+import React, { useMemo } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
@@ -14,6 +14,7 @@ import LoadingContainer from "../src/components/general/LoadingContainer";
 import WideLayout from "../src/components/layouts/WideLayout";
 import MiniProfilePreview from "../src/components/profile/MiniProfilePreview";
 import AutoCompleteSearchBar from "../src/components/search/AutoCompleteSearchBar";
+import log from "eslint-plugin-react/lib/util/log";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -69,7 +70,7 @@ const useStyles = makeStyles((theme) => {
 export async function getServerSideProps(ctx) {
   const { token } = NextCookies(ctx);
   if (ctx.req && !token) {
-    const texts = getTexts({ page: "chat", locale: ctx.locale });
+    const texts = useMemo(() => getTexts({ page: "chat", locale: ctx.locale }), [locale]);
     const message = texts.you_have_to_log_in_to_see_your_inbox;
     return sendToLogin(ctx, message);
   }
@@ -86,7 +87,7 @@ export default function Inbox({ chatData, next }) {
   const token = new Cookies().get("token");
   const classes = useStyles();
   const { user, locale } = React.useContext(UserContext);
-  const texts = getTexts({ page: "chat", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "chat", locale: locale }), [locale]);
   const [userSearchEnabled, setUserSearchEnabled] = React.useState(false);
   const [newChatMembers, setNewChatMembers] = React.useState([]);
   const [errorMessage, setErrorMessage] = React.useState("");

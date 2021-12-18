@@ -1,4 +1,5 @@
-import { Card, CardMedia, Link, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Card, CardMedia, Link, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";

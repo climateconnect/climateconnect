@@ -1,4 +1,5 @@
-import { Button, makeStyles, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, useMediaQuery } from "@material-ui/core";
 import LanguageIcon from "@material-ui/icons/Language";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";

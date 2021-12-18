@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import getFilters from "../../../public/data/possibleFilters";
 import UserContext from "../context/UserContext";

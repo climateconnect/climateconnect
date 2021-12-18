@@ -1,4 +1,5 @@
-import { IconButton, makeStyles } from "@material-ui/core";
+import { IconButton } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import ShareIcon from "@material-ui/icons/Share";
 import React from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";

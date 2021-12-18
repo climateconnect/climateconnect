@@ -1,4 +1,5 @@
-import { MenuItem, withStyles } from "@material-ui/core";
+import { MenuItem } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
 const StyledMenuItem = withStyles(() => ({
   root: {
     color: "primary",

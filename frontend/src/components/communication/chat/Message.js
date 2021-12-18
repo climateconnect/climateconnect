@@ -1,6 +1,6 @@
 import { CircularProgress, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getDateTime } from "../../../../public/lib/dateOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Message({ message, classes, isPrivateChat }) {
   const ownClasses = useStyles();
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "chat", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "chat", locale: locale }), [locale]);
   const received = message.sender.url_slug !== user.url_slug;
   const sent_date = getDateTime(message.sent_at);
 

@@ -1,4 +1,5 @@
-import { Button, Container, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, Container, Typography } from "@material-ui/core";
 import Router from "next/router";
 import React, { useEffect, useRef } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";

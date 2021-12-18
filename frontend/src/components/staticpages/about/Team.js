@@ -1,4 +1,5 @@
-import { Container, makeStyles, Typography } from "@material-ui/core";
+import { Container, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
@@ -67,7 +68,12 @@ export default function Team({ headlineClass, className }) {
       <div className={classes.contentWrapper}>
         <div className={classes.imageContainer}>
           <div className={classes.imageWrapper}>
-            <img src="/images/team.jpg" alt={texts.our_team_image_text} className={classes.image} />
+            <img
+              src="/images/team.jpg"
+              alt={texts.our_team_image_text}
+              className={classes.image}
+              loading="lazy"
+            />
           </div>
         </div>
         <div className={classes.textContainer}>

@@ -1,5 +1,5 @@
 import NextCookies from "next-cookies";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../public/lib/apiOperations";
 import getTexts from "../../public/texts/texts";
@@ -33,7 +33,10 @@ export default function ProfilePage({ profile, projects, organizations, ideas })
   const token = new Cookies().get("token");
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getProfileInfoMetadata(locale);
-  const texts = getTexts({ page: "profile", locale: locale, profile: profile });
+  const texts = useMemo(() => getTexts({ page: "profile", locale: locale, profile: profile }), [
+    locale,
+    profile,
+  ]);
   return (
     <WideLayout
       title={profile ? texts.persons_profile : texts.not_found}

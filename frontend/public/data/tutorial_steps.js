@@ -1,6 +1,7 @@
-import { Button, CircularProgress, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, CircularProgress } from "@material-ui/core";
 import Router from "next/router";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import Cookies from "universal-cookie";
 import UserContext from "../../src/components/context/UserContext";
 import { getLocalePrefix } from "../lib/apiOperations";
@@ -50,7 +51,10 @@ export default function get_steps({
   const token = cookies.get("token");
   const [loading, setLoading] = React.useState(false);
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "tutorial", locale: locale, hubName: hubName, classes: classes });
+  const texts = useMemo(
+    () => getTexts({ page: "tutorial", locale: locale, hubName: hubName, classes: classes }),
+    [locale, hubName, classes]
+  );
 
   const handleConnectBtn = async (e) => {
     e.preventDefault();
@@ -283,7 +287,11 @@ export default function get_steps({
               <CircularProgress size={24} className={classes.buttonProgress} />
             ) : (
               <>
-                <img src="../images/thomas_profile_image.jpg" className={classes.thomasImage} />
+                <img
+                  src="../images/thomas_profile_image.jpg"
+                  className={classes.thomasImage}
+                  loading="lazy"
+                />
                 {texts.message_thomas}
               </>
             )}

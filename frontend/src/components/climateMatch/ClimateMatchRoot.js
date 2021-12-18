@@ -1,6 +1,7 @@
-import { Container, makeStyles } from "@material-ui/core";
+import { Container } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import Router from "next/router";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { getCookieProps } from "../../../public/lib/cookieOperations";
@@ -51,7 +52,7 @@ const getInitialUserAnswerArray = (questions) => {
 
 export default function ClimateMatchRoot() {
   const { locale, user } = useContext(UserContext);
-  const texts = getTexts({ page: "climatematch", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "climatematch", locale: locale }), [locale]);
   const [step, setStep] = useState(0);
   const classes = useStyles({ step: step });
   const [totalQuestions, setTotalQuestions] = useState(0);

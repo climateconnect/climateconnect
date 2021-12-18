@@ -1,11 +1,5 @@
-import {
-  Avatar,
-  Link,
-  ListItemAvatar,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-} from "@material-ui/core";
+import { Avatar, Link, ListItemAvatar, ListItemIcon, ListItemText } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../../public/lib/imageOperations";

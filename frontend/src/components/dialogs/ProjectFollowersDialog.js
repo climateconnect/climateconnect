@@ -5,13 +5,13 @@ import {
   Divider,
   LinearProgress,
   Link,
-  makeStyles,
   Table,
   TableBody,
   TableCell,
   TableRow,
   Typography,
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import ReactTimeago from "react-timeago";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";

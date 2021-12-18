@@ -1,4 +1,5 @@
-import { List, ListItem, ListItemIcon, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { List, ListItem, ListItemIcon, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import { getImageUrl } from "../../../../public/lib/imageOperations";
 import UserContext from "../../context/UserContext";

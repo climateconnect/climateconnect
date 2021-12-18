@@ -1,4 +1,5 @@
-import { makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import getPitchElements from "../../../public/data/pitch_elements.js";
 import getTexts from "../../../public/texts/texts";
@@ -256,7 +257,7 @@ const PitchElement = ({ image, headline, text, alternate, children }) => {
       </div>
       {alternate && (
         <div className={classes.pitchElementImageContainer}>
-          <img src={image} className={classes.pitchElementImage} />
+          <img src={image} className={classes.pitchElementImage} loading="lazy" />
         </div>
       )}
     </div>

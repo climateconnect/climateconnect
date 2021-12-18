@@ -1,6 +1,6 @@
 import { Button, CircularProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
@@ -43,7 +43,7 @@ export default function BottomNavigation({
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "project", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "project", locale: locale }), [locale]);
 
   const onClickCancelDialogOpen = () => {
     setOpen(true);

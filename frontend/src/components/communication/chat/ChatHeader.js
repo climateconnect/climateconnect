@@ -1,4 +1,5 @@
-import { IconButton, Link, makeStyles, Tooltip } from "@material-ui/core";
+import { IconButton, Link, Tooltip } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";

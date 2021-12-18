@@ -4,7 +4,7 @@ import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import NextCookies from "next-cookies";
 import Router from "next/router";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, getRolesOptions } from "../../public/lib/apiOperations";
@@ -89,7 +89,10 @@ export default function OrganizationPage({
 }) {
   const { user, locale } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization);
-  const texts = getTexts({ page: "organization", locale: locale, organization: organization });
+  const texts = useMemo(
+    () => getTexts({ page: "organization", locale: locale, organization: organization }),
+    [locale, organization]
+  );
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}

@@ -1,4 +1,5 @@
-import { makeStyles, Tooltip } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Tooltip } from "@material-ui/core";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 
@@ -14,7 +15,11 @@ export default function IdeaHubIcon({ idea, className }) {
   const classes = useStyles();
   return (
     <Tooltip title={idea.hub.name}>
-      <img src={getImageUrl(idea.hub.icon)} className={`${classes.hubIcon} ${className}`} />
+      <img
+        src={getImageUrl(idea.hub.icon)}
+        className={`${classes.hubIcon} ${className}`}
+        loading="lazy"
+      />
     </Tooltip>
   );
 }

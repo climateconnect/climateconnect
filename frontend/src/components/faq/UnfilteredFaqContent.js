@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Tabs, Tab, Divider, makeStyles } from "@material-ui/core";
+import { Tabs, Tab, Divider } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 import FaqQuestionElement from "./FaqQuestionElement";
 

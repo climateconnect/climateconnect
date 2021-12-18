@@ -1,6 +1,6 @@
 import { Button, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -39,7 +39,7 @@ export default function FeedbackButton({ justLink, children }) {
   const cookies = new Cookies();
   const { locale } = useContext(UserContext);
   const { showFeedbackMessage } = useContext(FeedbackContext);
-  const texts = getTexts({ page: "communication", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "communication", locale: locale }), [locale]);
 
   const submitFeedback = async (data) => {
     const token = cookies.get("token");

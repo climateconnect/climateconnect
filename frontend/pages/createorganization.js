@@ -1,7 +1,8 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import NextCookies from "next-cookies";
 import Router from "next/router";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useMemo, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../public/data/role_types";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
@@ -78,7 +79,7 @@ export default function CreateOrganization({ tagOptions, rolesOptions, allHubs }
     types: [],
   });
   const { user, locale, locales } = useContext(UserContext);
-  const texts = getTexts({ page: "organization", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "organization", locale: locale }), [locales]);
   const steps = ["basicorganizationinfo", "detailledorganizationinfo", "checktranslations"];
   const [curStep, setCurStep] = React.useState(steps[0]);
   const locationInputRef = useRef(null);

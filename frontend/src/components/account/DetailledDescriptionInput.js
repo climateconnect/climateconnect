@@ -1,4 +1,5 @@
-import { IconButton, makeStyles, TextField, Tooltip, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { IconButton, TextField, Tooltip, Typography } from "@material-ui/core";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import React from "react";
 

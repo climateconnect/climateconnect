@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import NextCookies from "next-cookies";
 import React, { useContext } from "react";
 import { apiRequest } from "../public/lib/apiOperations";

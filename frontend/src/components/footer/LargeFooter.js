@@ -1,4 +1,5 @@
-import { Button, Container, Link, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, Container, Link, Typography } from "@material-ui/core";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import GitHubIcon from "@material-ui/icons/GitHub";
@@ -164,7 +165,12 @@ const MadeWithLoveForEarth = (texts) => {
   return (
     <div className={classes.madeWith}>
       Made with <FavoriteIcon className={classes.heart} /> for{" "}
-      <img className={classes.earth} src="/images/earth.svg" alt={texts.picture_of_our_earth} />
+      <img
+        className={classes.earth}
+        src="/images/earth.svg"
+        alt={texts.picture_of_our_earth}
+        loading="lazy"
+      />
     </div>
   );
 };

@@ -1,4 +1,5 @@
-import { Button, Fade, makeStyles, Tooltip, useMediaQuery } from "@material-ui/core";
+import { Button, Fade, Tooltip, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext, useEffect, useRef } from "react";
 import Cookies from "universal-cookie";
 import get_steps from "../../../public/data/tutorial_steps";

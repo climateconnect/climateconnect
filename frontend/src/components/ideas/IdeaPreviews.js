@@ -1,4 +1,5 @@
-import { Grid, makeStyles } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import NoItemsFound from "../browse/NoItemsFound";

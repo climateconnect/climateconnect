@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 
 const useStyles = makeStyles(() => ({
@@ -11,9 +11,15 @@ export default function LikeButtonIcon({ color, size }) {
   const classes = useStyles({ size });
 
   if (color === "white")
-    return <img className={classes.heartIcon} src={"/images/planet-earth-white.svg"} />;
+    return (
+      <img className={classes.heartIcon} src={"/images/planet-earth-white.svg"} loading="lazy" />
+    );
   if (color === "earth")
-    return <img className={classes.heartIcon} src={"/images/planet-earth-heart.svg"} />;
+    return (
+      <img className={classes.heartIcon} src={"/images/planet-earth-heart.svg"} loading="lazy" />
+    );
   if (color === "primary")
-    return <img className={classes.heartIcon} src={"/images/planet-earth-primary.svg"} />;
+    return (
+      <img className={classes.heartIcon} src={"/images/planet-earth-primary.svg"} loading="lazy" />
+    );
 }

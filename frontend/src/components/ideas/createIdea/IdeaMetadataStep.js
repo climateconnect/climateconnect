@@ -1,4 +1,5 @@
-import { Button, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, Typography, useMediaQuery } from "@material-ui/core";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import React, { useContext } from "react";
 import { parseLocation } from "../../../../public/lib/locationOperations";

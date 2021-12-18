@@ -1,4 +1,5 @@
-import { Button, IconButton, makeStyles } from "@material-ui/core";
+import { Button, IconButton } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import { useRouter } from "next/router";

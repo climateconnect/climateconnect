@@ -1,4 +1,5 @@
-import { Container, makeStyles, Typography } from "@material-ui/core";
+import { Container, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import GroupWorkOutlinedIcon from "@material-ui/icons/GroupWorkOutlined";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import React, { useContext } from "react";
@@ -112,7 +113,11 @@ export default function Values({ headlineClass }) {
             <Value iconSrc="/icons/independent-icon.svg" text={texts.independent} />
           </div>
           <div className={classes.bigCloudContainer}>
-            <img src="/images/about-values-cloud.svg" className={classes.bigCloudImg} />
+            <img
+              src="/images/about-values-cloud.svg"
+              className={classes.bigCloudImg}
+              loading="lazy"
+            />
           </div>
         </div>
       </Container>

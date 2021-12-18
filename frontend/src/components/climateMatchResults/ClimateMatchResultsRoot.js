@@ -1,4 +1,5 @@
-import { Button, Container, makeStyles, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, Container, useMediaQuery } from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import SettingsBackupRestoreIcon from "@material-ui/icons/SettingsBackupRestore";
 import Router from "next/router";

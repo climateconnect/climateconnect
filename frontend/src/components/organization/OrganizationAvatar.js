@@ -1,4 +1,5 @@
-import { Avatar, Chip, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Avatar, Chip, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 

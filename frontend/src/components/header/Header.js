@@ -34,7 +34,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import SettingsIcon from "@material-ui/icons/Settings";
 import noop from "lodash/noop";
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -348,7 +348,7 @@ export default function Header({
     background: background,
   });
   const { user, signOut, notifications, pathName, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "navigation", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "navigation", locale: locale }), [locale]);
   const [anchorEl, setAnchorEl] = React.useState(false);
   const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
   const isMediumScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
@@ -377,7 +377,12 @@ export default function Header({
     >
       <Container className={classes.container}>
         <Link href={localePrefix + "/"}>
-          <img src={logo} alt={texts.climate_connect_logo} className={classes.logo} />
+          <img
+            src={logo}
+            alt={texts.climate_connect_logo}
+            className={classes.logo}
+            loading="lazy"
+          />
         </Link>
         {isNarrowScreen ? (
           <NarrowScreenLinks

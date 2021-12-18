@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import OrganizationAvatar from "../organization/OrganizationAvatar";
@@ -20,7 +20,7 @@ export default function ClimateMatchResultImage({ suggestion, className }) {
         <OrganizationAvatar organization={suggestion} inlineVersionOnMobile />
       ) : (
         ["project", "idea"].includes(suggestion.ressource_type) && (
-          <img src={imageUrl} className={classes.projectOrIdeaImage} />
+          <img src={imageUrl} className={classes.projectOrIdeaImage} loading="lazy" />
         )
       )}
     </div>

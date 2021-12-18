@@ -1,7 +1,8 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import parseHtml from "html-react-parser";
 import Head from "next/head";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useMemo, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../public/lib/apiOperations";
 import { applyNewFilters, getInitialFilters } from "../../public/lib/filterOperations";
@@ -131,7 +132,10 @@ export default function Hub({
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "hub", locale: locale, hubName: name });
+  const texts = useMemo(() => getTexts({ page: "hub", locale: locale, hubName: name }), [
+    locale,
+    name,
+  ]);
   const token = new Cookies().get("token");
 
   // Initialize filters. We use one set of filters for all tabs (projects, organizations, members)

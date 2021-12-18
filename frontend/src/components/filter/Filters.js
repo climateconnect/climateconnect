@@ -1,6 +1,6 @@
 import { Button, TextField, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import getRadiusFilterOptions from "../../../public/data/radiusFilterOptions";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -94,7 +94,7 @@ export default function Filters({
   setSelectedItems,
 }) {
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "filter_and_search", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "filter_and_search", locale: locale }), [locale]);
   const classes = useStyles({
     justifyContent: justifyContent ? justifyContent : "space-around",
     filterElementMargin: justifyContent && justifyContent != "space-around" ? 1 : 0,

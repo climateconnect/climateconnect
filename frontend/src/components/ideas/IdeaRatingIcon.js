@@ -1,4 +1,5 @@
-import { makeStyles, Tooltip } from "@material-ui/core";
+import { Tooltip } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";

@@ -1,7 +1,7 @@
 import { Avatar, Button, Chip, Container, Link, Tooltip, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlaceIcon from "@material-ui/icons/Place";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import Linkify from "react-linkify";
 import Cookies from "universal-cookie";
 
@@ -150,10 +150,14 @@ export default function AccountPage({
   const classes = useStyles({ isOwnAccount: isOwnAccount });
   const { locale } = useContext(UserContext);
   const token = new Cookies().get("token");
-  const texts = getTexts({ page: "profile", locale: locale });
-  const organizationTexts = isOrganization
-    ? getTexts({ page: "organization", organization: account })
-    : "Not an organization";
+  const texts = useMemo(() => getTexts({ page: "profile", locale: locale }), [locale]);
+  const organizationTexts = useMemo(
+    () =>
+      isOrganization
+        ? getTexts({ page: "organization", organization: account })
+        : "Not an organization",
+    [isOrganization, account]
+  );
   const componentDecorator = (href, text, key) => (
     <Link
       color="primary"

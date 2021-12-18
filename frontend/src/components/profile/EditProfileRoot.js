@@ -1,4 +1,5 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import Router from "next/router";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";

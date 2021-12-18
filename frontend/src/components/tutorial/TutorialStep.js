@@ -1,4 +1,5 @@
-import { Button, makeStyles, Popper, Typography } from "@material-ui/core";
+import { Button, Popper, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";

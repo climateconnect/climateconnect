@@ -14,7 +14,7 @@ import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useMemo, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
@@ -186,7 +186,10 @@ export default function Dashboard({ className, headline, location, hubUrl }) {
   const classes = useStyles();
 
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "dashboard", locale: locale, user: user, location: location });
+  const texts = useMemo(
+    () => getTexts({ page: "dashboard", locale: locale, user: user, location: location }),
+    [locale, user, location]
+  );
 
   return (
     <div className={`${classes.welcomeBanner} ${className}`}>

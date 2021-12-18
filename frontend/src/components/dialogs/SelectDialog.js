@@ -1,7 +1,7 @@
 import { Button, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import SelectField from "./../general/SelectField";
@@ -42,7 +42,7 @@ export default function SelectDialog({
   const [element, setElement] = React.useState(null);
   const [additionalInfo, setAdditionalInfo] = React.useState({});
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "general", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "general", locale: locale }), [locale]);
 
   const handleClose = () => {
     onClose();

@@ -1,4 +1,5 @@
-import { Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Container, Typography, useMediaQuery } from "@material-ui/core";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
@@ -78,7 +79,12 @@ export default function OurTeamBox({ h1ClassName }) {
         {texts.our_team}
       </Typography>
       <div className={classes.content}>
-        <img src="/images/team.jpg" className={classes.teamImage} alt={texts.our_team_image_text} />
+        <img
+          src="/images/team.jpg"
+          className={classes.teamImage}
+          alt={texts.our_team_image_text}
+          loading="lazy"
+        />
         <div className={classes.infoLinkBoxes}>
           <InfoLinkBox
             iconSrc="/icons/group-icon.svg"

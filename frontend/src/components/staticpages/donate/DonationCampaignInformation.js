@@ -4,10 +4,10 @@ import {
   Container,
   IconButton,
   Link,
-  makeStyles,
   Typography,
   useMediaQuery,
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -127,7 +127,7 @@ export default function DonationCampaignInformation() {
             <CloseIcon />
           </IconButton>
           <div className={classes.topLineContainer}>
-            <img src="/icons/christmas-icon.svg" className={classes.christmasIcon} />
+            <img src="/icons/christmas-icon.svg" className={classes.christmasIcon} loading="lazy" />
             <div className={classes.textAndBarContainer}>
               <Typography className={classes.text}>
                 {isNarrowScreen

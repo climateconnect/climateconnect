@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
 import { redirectOnLogin } from "../public/lib/profileOperations";
@@ -9,7 +9,7 @@ import Form from "./../src/components/general/Form";
 
 export default function Signin() {
   const { user, signIn, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "profile", locale: locale }), [locale]);
 
   const fields = [
     {

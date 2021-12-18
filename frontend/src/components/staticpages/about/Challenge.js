@@ -1,4 +1,5 @@
-import { Collapse, Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { Collapse, Container, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import React, { useContext } from "react";

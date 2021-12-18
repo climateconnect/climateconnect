@@ -1,4 +1,5 @@
-import { Menu, withStyles } from "@material-ui/core";
+import { Menu } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
 import React from "react";
 
 const StyledMenu = withStyles({

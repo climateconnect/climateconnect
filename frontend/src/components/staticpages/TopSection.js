@@ -1,5 +1,6 @@
-import { Container, makeStyles, Typography } from "@material-ui/core";
+import { Container, Typography } from "@material-ui/core";
 import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import SmallCloud from "./SmallCloud";
 
 const useStyles = makeStyles((theme) => ({
@@ -83,7 +84,7 @@ export default function TopSection({ headline, subHeader, fixedHeight, noMarginB
   return (
     <div className={classes.root}>
       <div className={classes.imageContainer}>
-        <img src="/images/static_page_header.svg" className={classes.image} />
+        <img src="/images/static_page_header.svg" className={classes.image} loading="lazy" />
       </div>
       <Container className={classes.contentContainer}>
         <div className={classes.headersContainer}>

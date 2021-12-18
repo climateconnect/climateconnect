@@ -1,4 +1,5 @@
-import { Card, IconButton, Link, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Card, IconButton, Link, Typography } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -113,7 +114,9 @@ export default function MiniHubPreview({
             />
           ) : (
             <Typography color="secondary" className={classes.hubName}>
-              {hub.icon && <img src={getImageUrl(hub.icon)} className={classes.hubIcon} />}
+              {hub.icon && (
+                <img src={getImageUrl(hub.icon)} className={classes.hubIcon} loading="lazy" />
+              )}
               {hub?.name}
             </Typography>
           )}

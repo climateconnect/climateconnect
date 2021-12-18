@@ -1,6 +1,6 @@
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -27,7 +27,7 @@ export default function ProjectPreviews({
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "project", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "project", locale: locale }), [locale]);
   const toProjectPreviews = (projects) =>
     projects.map((p) => (
       <GridItem

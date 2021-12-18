@@ -1,5 +1,6 @@
 import React from "react";
-import { makeStyles, Typography, Container } from "@material-ui/core";
+import { Typography, Container } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import FormatQuoteIcon from "@material-ui/icons/FormatQuote";
 
 const useStyles = makeStyles((theme) => ({

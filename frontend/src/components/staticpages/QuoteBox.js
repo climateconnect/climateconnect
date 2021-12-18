@@ -1,5 +1,6 @@
 import React from "react";
-import { makeStyles, Container } from "@material-ui/core";
+import { Container } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import Quote from "./Quote";
 
 const useStyles = makeStyles((theme) => ({

@@ -1,4 +1,5 @@
-import { Card, CardMedia, Link, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Card, CardMedia, Link, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import React, { useContext, useState } from "react";

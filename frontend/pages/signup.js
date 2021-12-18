@@ -1,5 +1,5 @@
 import Router from "next/router";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../public/lib/apiOperations";
 import { getParams } from "../public/lib/generalOperations";
@@ -34,7 +34,7 @@ export default function Signup() {
   });
   const cookies = new Cookies();
   const { user, locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "profile", locale: locale }), [locale]);
   //Information about the completion state of the tutorial
   const tutorialCookie = cookies.get("finishedTutorialSteps");
   const isClimateActorCookie = cookies.get("tutorialVariables");

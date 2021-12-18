@@ -1,4 +1,5 @@
-import { Button, Container, makeStyles, Typography, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, Container, Typography, useMediaQuery } from "@material-ui/core";
 import RestoreIcon from "@material-ui/icons/Restore";
 import React, { useContext, useRef } from "react";
 import { capitalizeFirstLetter } from "../../../public/lib/parsingOperations";
@@ -136,9 +137,13 @@ export default function WelcomeToClimateMatch({
       </Container>
       <div className={classes.imageContainer} ref={bottomRef}>
         <div className={classes.questionsGraphicContainer}>
-          <img src="/images/questions_pana.svg" className={classes.questionsGraphic} />
+          <img
+            src="/images/questions_pana.svg"
+            className={classes.questionsGraphic}
+            loading="lazy"
+          />
         </div>
-        <img src="/images/erlangen_climatematch.jpg" className={classes.image} />
+        <img src="/images/erlangen_climatematch.jpg" className={classes.image} loading="lazy" />
       </div>
       <Container className={`${classes.buttonBar} ${!unfixButtonBar && classes.fixedOnMobile}`}>
         <div className={classes.buttonBarLeft}>

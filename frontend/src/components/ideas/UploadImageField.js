@@ -1,4 +1,5 @@
-import { Button, makeStyles, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, useMediaQuery } from "@material-ui/core";
 import React, { useContext, useRef, useState } from "react";
 import {
   getCompressedJPG,

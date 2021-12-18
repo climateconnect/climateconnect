@@ -1,4 +1,5 @@
-import { Button, IconButton, makeStyles } from "@material-ui/core";
+import { Button, IconButton } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import React, { useContext } from "react";
 import { redirect } from "../../../public/lib/apiOperations";

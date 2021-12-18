@@ -1,4 +1,5 @@
-import { Button, makeStyles, TextField, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, TextField, Typography } from "@material-ui/core";
 import React, { useContext, useState } from "react";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
