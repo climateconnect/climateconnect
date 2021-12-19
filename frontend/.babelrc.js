@@ -1,4 +1,4 @@
-const plugins = ["lodash", "material-ui"];
+const plugins = ["lodash"];
 
 module.exports = {
   plugins,
