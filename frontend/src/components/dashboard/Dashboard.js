@@ -15,6 +15,7 @@ import AssignmentIcon from "@material-ui/icons/Assignment";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import Cookies from "universal-cookie";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
@@ -23,7 +24,6 @@ import UserContext from "../context/UserContext";
 import UserImage from "./UserImage";
 import CreateIdeaDialog from "../ideas/createIdea/CreateIdeaDialog";
 import { getUserOrganizations } from "../../../public/lib/organizationOperations";
-import Cookies from "universal-cookie";
 
 const useStyles = makeStyles((theme) => {
   return {
