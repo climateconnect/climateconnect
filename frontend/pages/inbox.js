@@ -71,7 +71,7 @@ export async function getServerSideProps(ctx) {
   if (ctx.req && !token) {
     const texts = getTexts({ page: "chat", locale: ctx.locale });
     const message = texts.you_have_to_log_in_to_see_your_inbox;
-    return sendToLogin(ctx, message);
+    return sendToLogin(ctx, message, ctx.locale, ctx.resolvedUrl);
   }
   const chatData = await getChatsOfLoggedInUser(token, null, ctx.locale);
   return {
