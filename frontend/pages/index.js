@@ -78,12 +78,12 @@ export async function getServerSideProps(ctx) {
   console.log("getting serverside props");
   if (ctx.resolvedUrl === "/" && token) {
     console.log("redirecting!!!");
-    ctx.res.writeHead(302, {
-      Location: getLocalePrefix(ctx.locale) + "/browse",
-      "Content-Type": "text/html; charset=utf-8",
-    });
-    ctx.res.end();
-    return;
+    return {
+      redirect: {
+        permanent: false,
+        destination: `${getLocalePrefix(ctx.locale)}/browse`
+      }
+    }
   }
   return {
     props: {},
