@@ -244,7 +244,7 @@ export default function Chat({
           : title
       }
     >
-      {chat_id ? (
+      {user && chat_id ? (
         <MessagingLayout
           chatting_partner={chatting_partner}
           messages={state.messages}

@@ -68,7 +68,8 @@ export default function MessagingLayout({
   const [alertMessage, setAlertMessage] = useState({});
   const [showAlertMessage, setShowAlertMessage] = useState(false);
   const [showSendHelper, setShowSendHelper] = useState(false);
-  const user_role = participants.filter((p) => p.id === user?.id)[0].role;
+  const userParticipant = participants.find((p) => p.id === user?.id)
+  const user_role = userParticipant && userParticipant.role;
   //TODO show user when socket has closed
   const onSendMessage = (event) => {
     sendMessage(curMessage);
@@ -76,8 +77,8 @@ export default function MessagingLayout({
     if (event) event.preventDefault();
   };
   const canEditMembers =
-    user_role.role_type === ROLE_TYPES.all_type ||
-    user_role.role_type === ROLE_TYPES.read_write_type;
+    user_role?.role_type === ROLE_TYPES.all_type ||
+    user_role?.role_type === ROLE_TYPES.read_write_type;
 
   const handleMessageKeydown = (event) => {
     if (event.key === "Enter")

@@ -154,7 +154,7 @@ export default function AccountPage({
   const organizationTexts = useMemo(
     () =>
       isOrganization
-        ? getTexts({ page: "organization", organization: account })
+        ? getTexts({ page: "organization", organization: account, locale: locale })
         : "Not an organization",
     [isOrganization, account]
   );
