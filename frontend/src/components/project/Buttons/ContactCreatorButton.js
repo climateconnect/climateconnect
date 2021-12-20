@@ -37,14 +37,13 @@ const useStyles = makeStyles({
     bottom: 0,
     right: 0,
   },
-  applyCustomWidth: (props) => ({
-    width: props.customWidth ? props.customWidth : 220,
-  }),
-  contactButton: (props) => ({
+  applyCustomWidth: {
+    width: "100%",
+  },
+  contactButton: {
     height: 40,
-    width: props.customWidth ? props.customWidth : 220,
-
-  }),
+    width: "100%",
+  },
   helperText: (props) => ({
     position: "absolute",
     fontSize: 13,
