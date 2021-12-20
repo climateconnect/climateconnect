@@ -32,13 +32,12 @@ const useStyles = makeStyles({
   slideInTitle: {
     fontWeight: "bold",
   },
-  collapsableContainer: (props) => ({
-    width: props.customWidth ? props.customWidth : "auto",
+  collapsableContainer: {
     position: "absolute",
     bottom: 0,
     right: 0,
-  }),
-  nonCollapsableContainer: (props) => ({
+  },
+  applyCustomWidth: (props) => ({
     width: props.customWidth ? props.customWidth : "auto",
   }),
   contactButton: (props) => ({
@@ -104,7 +103,7 @@ export default function ContactCreatorButton({
       onMouseLeave={handleMouseLeave}
       onClick={handleClickContact}
     >
-      <div className={collapsable ? classes.collapsableContainer : classes.nonCollapsableContainer}>
+      <div className={collapsable ? `${classes.collapsableContainer} ${classes.applyCustomWidth}` : classes.applyCustomWidth}>
         {withInfoCard &&
           (collapsable ? (
             <Collapse in={hoveringButton} timeout={550}>
