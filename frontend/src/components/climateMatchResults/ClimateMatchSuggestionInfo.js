@@ -172,7 +172,7 @@ export default function ClimateMatchSuggestionInfo({
             explanationBackground={background}
             className={classes.contactCreatorButton}
             withIcons={!isNarrowScreen}
-            customWidth={!isNarrowScreen ? 220 : 300}
+            customCardWidth={!isNarrowScreen ? 220 : 300}
             withInfoCard={true}
             collapsable={!isNarrowScreen}
           />

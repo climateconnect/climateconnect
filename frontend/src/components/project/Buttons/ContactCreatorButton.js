@@ -10,7 +10,7 @@ import UserContext from "../../context/UserContext";
 const useStyles = makeStyles({
   root: (props) => ({
     position: "relative",
-    width: props.customWidth ? props.customWidth : 220,
+    width: props.customCardWidth ? props.customCardWidth : 220,
     zIndex: 1,
   }),
   smallAvatar: {
@@ -37,7 +37,7 @@ const useStyles = makeStyles({
     bottom: 0,
     right: 0,
   },
-  applyCustomWidth: {
+  applyCustomCardWidth: {
     width: "100%",
   },
   contactButton: {
@@ -64,13 +64,13 @@ export default function ContactCreatorButton({
   contentType,
   explanationBackground,
   withIcons,
-  customWidth,
+  customCardWidth,
   withInfoCard,
   collapsable,
 }) {
   const classes = useStyles({
     explanationBackground: explanationBackground,
-    customWidth: customWidth,
+    customCardWidth: customCardWidth,
     collapsable: collapsable,
   });
   const { locale } = useContext(UserContext);
@@ -102,7 +102,7 @@ export default function ContactCreatorButton({
       onMouseLeave={handleMouseLeave}
       onClick={handleClickContact}
     >
-      <div className={collapsable ? `${classes.collapsableContainer} ${classes.applyCustomWidth}` : classes.applyCustomWidth}>
+      <div className={collapsable ? `${classes.collapsableContainer} ${classes.applyCustomCardWidth}` : classes.applyCustomCardWidth}>
         {withInfoCard &&
           (collapsable ? (
             <Collapse in={hoveringButton} timeout={550}>

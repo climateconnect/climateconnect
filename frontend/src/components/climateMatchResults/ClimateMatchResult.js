@@ -161,7 +161,7 @@ export default function ClimateMatchResult({ suggestion, pos }) {
                   handleClickContact={handleClickContact}
                   className={classes.contactCreatorButton}
                   contentType={suggestion.ressource_type}
-                  customWidth={300}
+                  customCardWidth={300}
                   withInfoCard={true}
                 />
               </div>
