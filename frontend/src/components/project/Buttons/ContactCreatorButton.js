@@ -102,7 +102,13 @@ export default function ContactCreatorButton({
       onMouseLeave={handleMouseLeave}
       onClick={handleClickContact}
     >
-      <div className={collapsable ? `${classes.collapsableContainer} ${classes.applyCustomCardWidth}` : classes.applyCustomCardWidth}>
+      <div
+        className={
+          collapsable
+            ? `${classes.collapsableContainer} ${classes.applyCustomCardWidth}`
+            : classes.applyCustomCardWidth
+        }
+      >
         {withInfoCard &&
           (collapsable ? (
             <Collapse in={hoveringButton} timeout={550}>
