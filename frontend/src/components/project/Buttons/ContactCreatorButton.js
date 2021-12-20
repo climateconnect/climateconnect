@@ -10,7 +10,7 @@ import UserContext from "../../context/UserContext";
 const useStyles = makeStyles({
   root: (props) => ({
     position: "relative",
-    width: props.customWidth ? props.customWidth : "auto",
+    width: props.customWidth ? props.customWidth : 220,
     zIndex: 1,
   }),
   smallAvatar: {
@@ -38,11 +38,11 @@ const useStyles = makeStyles({
     right: 0,
   },
   applyCustomWidth: (props) => ({
-    width: props.customWidth ? props.customWidth : "auto",
+    width: props.customWidth ? props.customWidth : 220,
   }),
   contactButton: (props) => ({
     height: 40,
-    width: props.customWidth ? props.customWidth : "auto",
+    width: props.customWidth ? props.customWidth : 220,
 
   }),
   helperText: (props) => ({
