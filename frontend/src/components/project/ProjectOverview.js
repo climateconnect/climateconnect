@@ -349,8 +349,7 @@ function LargeScreenOverview({
                 handleClickContact={handleClickContact}
                 customWidth={200}
                 withInfoCard={true}
-                withStartIcon={true}
-                withAvatar={true}
+                withIcons={true}
                 collapsable={true}
               />
             )}

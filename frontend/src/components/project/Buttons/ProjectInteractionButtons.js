@@ -61,8 +61,7 @@ export default function ProjectInteractionButtons({
             <ContactCreatorButton
               creator={projectAdmin}
               handleClickContact={handleClickContact}
-              withStartIcon={!screenSize.belowTiny}
-              withAvatar={!screenSize.belowTiny}
+              withIcons={!screenSize.belowTiny}
             />
           )}
           <FollowButton
@@ -102,8 +101,7 @@ export default function ProjectInteractionButtons({
               explanationBackground={"#fff"}
               customWidth={220}
               withInfoCard={true}
-              withStartIcon={true}
-              withAvatar={true}
+              withIcons={true}
               collapsable={true}
             />
           )}

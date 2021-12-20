@@ -65,8 +65,7 @@ export default function ContactCreatorButton({
   handleClickContact,
   contentType,
   explanationBackground,
-  withStartIcon,
-  withAvatar,
+  withIcons,
   customWidth,
   withInfoCard,
   collapsable,
@@ -126,9 +125,9 @@ export default function ContactCreatorButton({
           className={withInfoCard ? classes.contactButton : className}
           variant="contained"
           color="primary"
-          startIcon={withStartIcon ? <SendIcon /> : null}
+          startIcon={withIcons ? <SendIcon /> : null}
           endIcon={
-            withAvatar ? <Avatar src={creatorImageURL} className={classes.smallAvatar} /> : null
+            withIcons ? <Avatar src={creatorImageURL} className={classes.smallAvatar} /> : null
           }
           ref={contactProjectCreatorButtonRef}
         >
