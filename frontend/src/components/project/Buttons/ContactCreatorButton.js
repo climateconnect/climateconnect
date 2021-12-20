@@ -103,11 +103,9 @@ export default function ContactCreatorButton({
       onClick={handleClickContact}
     >
       <div
-        className={
-          collapsable
-            ? `${classes.collapsableContainer} ${classes.applyCustomCardWidth}`
-            : classes.applyCustomCardWidth
-        }
+        className={`${collapsable ? classes.collapsableContainer : ""} ${
+          classes.applyCustomCardWidth
+        }`}
       >
         {withInfoCard &&
           (collapsable ? (
