@@ -206,7 +206,7 @@ export default function Dashboard({ allHubs, hubData, className, headline, locat
       const userOrgsFromServer = await getUserOrganizations(token, locale);
       setUserOrganizations(userOrgsFromServer || []);
     }
-  });
+  }, []);
 
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "dashboard", locale: locale, user: user, location: location });
