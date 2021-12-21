@@ -347,7 +347,7 @@ function LargeScreenOverview({
                 creator={projectAdmin}
                 contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
                 handleClickContact={handleClickContact}
-                customCardWidth={200}
+                customCardWidth={220}
                 withInfoCard={true}
                 withIcons={true}
                 collapsable={true}
