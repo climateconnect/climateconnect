@@ -143,6 +143,8 @@ or a directory with
 make format directory
 ```
 
+More configuration for Black can be found in the `pyproject.toml` file.
+
 ### Frontend
 
 1. `cd frontend`
