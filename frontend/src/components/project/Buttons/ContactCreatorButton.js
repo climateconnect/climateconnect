@@ -25,12 +25,23 @@ const useStyles = makeStyles({
   },
   slideInRoot: {
     textAlign: "left",
+    maxWidth: "100%",
+  },
+  textContainer: {
+    // theme.spacing(2): the right margin of the card's avatar (mui default)
+    // 50px: the width of the card's avatar (see class 'avatar')
+    maxWidth: `calc(100% - (${theme.spacing(2)}px + 50px))`,
   },
   slideInSubheader: {
     color: "black",
   },
   slideInTitle: {
     fontWeight: "bold",
+  },
+  preventTextOverflow: {
+    maxWidth: "100%",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
   collapsableContainer: {
     position: "absolute",
@@ -155,8 +166,9 @@ const DetailledContactCreatorInfo = ({ creatorName, creatorImageURL, creatorsRol
       <CardHeader
         classes={{
           root: classes.slideInRoot,
-          subheader: classes.slideInSubheader,
-          title: classes.slideInTitle,
+          content: classes.textContainer,
+          subheader: `${classes.slideInSubheader} ${classes.preventTextOverflow}`,
+          title: `${classes.slideInTitle} ${classes.preventTextOverflow}`,
         }}
         avatar={<Avatar src={creatorImageURL} className={classes.avatar} />}
         title={creatorName}
