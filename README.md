@@ -111,18 +111,36 @@ python manage.py createsuperuser
 
 to re-create a super user to be used in the Django admin panel.
 
-#### Testing
+#### Testing and Code Health
 
-If you want to run the test suite, use:
+For unit tests, to run the test suite use:
 
 ```sh
 python manage.py test
 ```
 
-Run a specific test file or test class:
+Or a specific test file or test class:
 
 ```sh
 python manage.py test <file_path> or <file_path + class_name>
+```
+
+For linting, we use [flake8](https://flake8.pycqa.org/en/latest/). Lint with
+
+```sh
+make lint
+```
+
+For formatting, we use [Black](https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html). Format a specific file with
+
+```sh
+make format path_to_file
+```
+
+or a directory with
+
+```sh
+make format directory
 ```
 
 ### Frontend
@@ -145,22 +163,27 @@ Note: This is for people who are using newer version of node (v17.0.1) or have n
 
 And finally `yarn dev` to spin up the Next.js app! Check out our [frontend (FE) code style guidelines wiki](https://github.com/climateconnect/climateconnect/wiki/Frontend-Code-Style-Guide) to follow codebase best practices and contribute to a healthy and maintainable codebase.
 
-#### Testing
+#### Testing and Code Health
 
-We use Jest as our testing framework write to tests for FE code. Write
-test files with `.test.js` and execute them directly with
+For unit tests, we use Jest. Write test files with `.test.js` and execute them directly with
 
 ```sh
 yarn jest path/to/testfile.test.js
 ```
 
-See npm scripts in `package.json`.
-
-We use `eslint` for linting. Watch files to fix lint issues with
+For linting, we use `eslint`. Watch files to fix lint issues with
 
 ```sh
 yarn lint:watch
 ```
+
+For formatting, we use `prettier`. Format with
+
+```sh
+yarn format
+```
+
+_See npm scripts in `package.json` for more._
 
 ## Deploy
 
