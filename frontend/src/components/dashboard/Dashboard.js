@@ -255,7 +255,7 @@ export default function Dashboard({ allHubs, hubData, className, headline, locat
                   {
                     name: texts.create_idea,
                     // url_slug: `${getLocalePrefix(locale)}/${item.url_slug}/`,
-                    url_slug: "#ideas",
+                    url_slug: "#",
                     onClick: () => setCreateIdeaOpen(true),
                   },
                   {

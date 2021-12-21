@@ -118,18 +118,19 @@ export default function CreateIdeaDialog({
         locale: locale,
       });
       const url_slug = response.data;
+
       //TODO: link idea!
       resetTabsWhereFiltersWereApplied();
       redirect(
-        `/hubs/${hubData.url_slug}`,
+        window.location.pathname,
         {
           message: texts.idea_has_been_created,
           idea: url_slug,
         },
         window.location.hash
       );
+
       setWaitingForCreation(false);
-      window.location.reload(false);
     } catch (e) {
       console.log("there has been an error :,(");
       setWaitingForCreation(false);
