@@ -18,18 +18,18 @@ docker:
 	$(info -- Running Docker in background (detached mode) --)
 	$(info )
 
-# Note: this should be updated to match our CI GitHub action that lints too. See
+all: docker start
+
+# Note: this should be in sync with out CI GitHub action that lints too. See
 # those files under .github/workflows
 lint:
 	flake8 backend --count --select=E9,F6,F7,F8 --show-source --statistics
 
-all: docker start
+format:
+	black
 
 
-#
 # Database migrations and test data creation:
-#
-
 migrate:
 	python3 manage.py migrate
 
