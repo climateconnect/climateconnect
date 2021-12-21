@@ -11,5 +11,6 @@ _Include relevant test configuration details for the reviewer(s), and steps to t
 ## Before landing
 
 1. PR has meaningful title
-1. `yarn lint` passes
-1. `yarn format` passes
+1. `yarn lint` passes (frontend)
+1. `yarn format` passes (frontend)
+1. `make format` passes (backend)
