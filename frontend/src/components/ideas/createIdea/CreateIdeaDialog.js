@@ -121,7 +121,7 @@ export default function CreateIdeaDialog({
       //TODO: link idea!
       resetTabsWhereFiltersWereApplied();
       redirect(
-        window.location.pathname,
+        `/hubs/${hubData.url_slug}`,
         {
           message: texts.idea_has_been_created,
           idea: url_slug,
@@ -129,6 +129,7 @@ export default function CreateIdeaDialog({
         window.location.hash
       );
       setWaitingForCreation(false);
+      window.location.reload(false);
     } catch (e) {
       console.log("there has been an error :,(");
       setWaitingForCreation(false);
