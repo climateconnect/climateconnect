@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     margin: `${theme.spacing(4)}px 0`,
   },
-  alert: props => ({
+  alert: (props) => ({
     width: "100%",
     zIndex: 100,
     marginTop: !props.donationCampaignRunning && theme.spacing(-2),
@@ -32,7 +32,7 @@ export default function Layout({
   isLoading,
   isStaticPage,
 }) {
-  const classes = useStyles({donationCampaignRunning: process.env.DONATION_CAMPAIGN_RUNNING});
+  const classes = useStyles({ donationCampaignRunning: process.env.DONATION_CAMPAIGN_RUNNING });
   const [hideAlertMessage, setHideAlertMessage] = React.useState(false);
   const [initialMessageType, setInitialMessageType] = React.useState(null);
   const [initialMessage, setInitialMessage] = React.useState("");
