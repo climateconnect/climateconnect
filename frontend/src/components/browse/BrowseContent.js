@@ -128,8 +128,8 @@ export default function BrowseContent({
   const [hash, setHash] = useState(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
-  const isNarrowScreen = useMemo(() => useMediaQuery((theme) => theme.breakpoints.down("sm")), []);
-  const isMobileScreen = useMemo(() => useMediaQuery((theme) => theme.breakpoints.down("xs")), []);
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const isMobileScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
 
   // Always default to filters being expanded
   const [filtersExpanded, setFiltersExpanded] = useState(true);
