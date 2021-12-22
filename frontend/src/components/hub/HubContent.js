@@ -98,6 +98,8 @@ export default function HubContent({
   isLocationHub,
   location,
   hubName,
+  allHubs,
+  hubData,
   hubUrl,
 }) {
   const { locale, user } = useContext(UserContext);
@@ -134,7 +136,13 @@ export default function HubContent({
             <div className={`${user && classes.dashboardAndStatboxWrapper}`}>
               <div>
                 {user ? (
-                  <Dashboard location={location} headline={headline} hubUrl={hubUrl} />
+                  <Dashboard
+                    allHubs={allHubs}
+                    hubData={hubData}
+                    location={location}
+                    headline={headline}
+                    hubUrl={hubUrl}
+                  />
                 ) : (
                   <HubHeadlineContainer
                     subHeadline={subHeadline}
