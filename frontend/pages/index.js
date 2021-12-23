@@ -80,9 +80,9 @@ export async function getServerSideProps(ctx) {
     return {
       redirect: {
         permanent: false,
-        destination: `${getLocalePrefix(ctx.locale)}/browse`
-      }
-    }
+        destination: `${getLocalePrefix(ctx.locale)}/browse`,
+      },
+    };
   }
   return {
     props: {},

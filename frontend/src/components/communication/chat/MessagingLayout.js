@@ -68,7 +68,7 @@ export default function MessagingLayout({
   const [alertMessage, setAlertMessage] = useState({});
   const [showAlertMessage, setShowAlertMessage] = useState(false);
   const [showSendHelper, setShowSendHelper] = useState(false);
-  const userParticipant = participants.find((p) => p.id === user?.id)
+  const userParticipant = participants.find((p) => p.id === user?.id);
   const user_role = userParticipant && userParticipant.role;
   //TODO show user when socket has closed
   const onSendMessage = (event) => {
