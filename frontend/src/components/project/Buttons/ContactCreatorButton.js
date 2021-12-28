@@ -9,6 +9,7 @@ import UserContext from "../../context/UserContext";
 
 const useStyles = makeStyles({
   root: (props) => ({
+    height: props.collapsable ? 40 : "auto",
     position: "relative",
     width: props.customCardWidth ? props.customCardWidth : 220,
     zIndex: 1,
