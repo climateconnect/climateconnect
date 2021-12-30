@@ -11,6 +11,7 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import TutorialStep from "./TutorialStep";
+import { TYPES_BY_TAB_VALUE } from "../browse/BrowseContent";
 
 const useStyles = makeStyles((theme) => ({
   openTutorialButton: {
@@ -111,8 +112,9 @@ export default function Tutorial({
   );
 
   const handleSetStep = (nextStep) => {
-    if (tutorialSteps[nextStep]?.tabOfRef && tutorialSteps[nextStep]?.tabOfRef !== window.location.hash) {
-      handleTabChange(null, 0);
+    const tabLocationHash = tutorialSteps[nextStep]?.tabOfRef;
+    if (tabLocationHash && tabLocationHash !== window.location.hash) {
+      handleTabChange(null, TYPES_BY_TAB_VALUE.indexOf(tabLocationHash.replace("#", "")));
       setTimeout(() => {
         setStep(nextStep);
       }, 50);
