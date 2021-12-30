@@ -59,7 +59,10 @@ export default function get_steps({
     if (chat && chat.chat_uuid) Router.push("/chat/" + chat.chat_uuid + "/");
     else setLoading(false);
   };
-
+  
+  // pointsAt:  Reference of an element
+  // tabOfRef:  Needed if the referenced element is on a tab
+  //            It contains the tab's location hash and is used to make sure the tab is opened
   return [
     {
       step: 0,
@@ -137,6 +140,7 @@ export default function get_steps({
       headline: texts.the_project_cards,
       pages: ["/browse", "/hubs/"],
       pointsAt: projectCardRef,
+      tabOfRef: "#projects",
       texts: {
         isActivist: {
           true: <span>{texts.the_project_cards_text_for_answer_true}</span>,

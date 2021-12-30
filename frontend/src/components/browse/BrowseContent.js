@@ -590,6 +590,7 @@ export default function BrowseContent({
         }}
         hubName={hubName}
         nextStepTriggeredBy={nextStepTriggeredBy}
+        handleTabChange={handleTabChange}
       />
     </LoadingContext.Provider>
   );
