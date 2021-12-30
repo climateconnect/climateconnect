@@ -347,6 +347,10 @@ function LargeScreenOverview({
                 creator={projectAdmin}
                 contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
                 handleClickContact={handleClickContact}
+                customCardWidth={220}
+                withInfoCard={true}
+                withIcons={true}
+                collapsable={true}
               />
             )}
           </div>
