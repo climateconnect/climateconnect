@@ -11,7 +11,6 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import TutorialStep from "./TutorialStep";
-import { TYPES_BY_TAB_VALUE } from "../browse/BrowseContent";
 
 const useStyles = makeStyles((theme) => ({
   openTutorialButton: {
@@ -40,6 +39,7 @@ export default function Tutorial({
   nextStepTriggeredBy,
   hubName,
   handleTabChange,
+  typesByTabValue,
 }) {
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const classes = useStyles();
@@ -114,7 +114,7 @@ export default function Tutorial({
   const handleSetStep = (nextStep) => {
     const tabLocationHash = tutorialSteps[nextStep]?.tabOfRef;
     if (tabLocationHash && tabLocationHash !== window.location.hash) {
-      handleTabChange(null, TYPES_BY_TAB_VALUE.indexOf(tabLocationHash.replace("#", "")));
+      handleTabChange(null, typesByTabValue.indexOf(tabLocationHash.replace("#", "")));
       setTimeout(() => {
         setStep(nextStep);
       }, 50);

@@ -51,8 +51,6 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const TYPES_BY_TAB_VALUE = ["projects", "organizations", "members", "ideas"];
-
 export default function BrowseContent({
   initialMembers,
   initialOrganizations,
@@ -111,11 +109,11 @@ export default function BrowseContent({
 
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
-  if (hideMembers && TYPES_BY_TAB_VALUE.indexOf("members") !== -1) {
-    TYPES_BY_TAB_VALUE.splice(TYPES_BY_TAB_VALUE.indexOf("members"), 1);
-    }
-  if (!showIdeas && TYPES_BY_TAB_VALUE.indexOf("ideas") !== -1) {
-    TYPES_BY_TAB_VALUE.splice(TYPES_BY_TAB_VALUE.indexOf("ideas"), 1);
+  const TYPES_BY_TAB_VALUE = hideMembers
+    ? ["projects", "organizations"]
+    : ["projects", "organizations", "members"];
+  if (showIdeas) {
+    TYPES_BY_TAB_VALUE.push("ideas");
   }
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
@@ -593,8 +591,8 @@ export default function BrowseContent({
         hubName={hubName}
         nextStepTriggeredBy={nextStepTriggeredBy}
         handleTabChange={handleTabChange}
+        typesByTabValue={TYPES_BY_TAB_VALUE}
       />
     </LoadingContext.Provider>
   );
 }
-export {TYPES_BY_TAB_VALUE};
