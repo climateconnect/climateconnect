@@ -120,7 +120,7 @@ export default function Tutorial({
       }, 50);
     } else {
       setStep(nextStep);
-    }  
+    }
   };
 
   const onClickSkip = () => {
@@ -185,7 +185,9 @@ export default function Tutorial({
       sameSite: "lax",
     });
     setTutorialVariables(curTutorialVariables);
-    handleSetStep(getTutorialStepFromCookie(tutorialSteps, getNewCookieValue("forward", step), user));
+    handleSetStep(
+      getTutorialStepFromCookie(tutorialSteps, getNewCookieValue("forward", step), user)
+    );
   };
 
   if (!isNarrowScreen) {
