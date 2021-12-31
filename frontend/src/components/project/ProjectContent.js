@@ -172,7 +172,6 @@ async function getMembershipRequests(url_slug) {
 
 export default function ProjectContent({
   collaborationSectionRef,
-  collaborationSectionRef,
   discussionTabLabel,
   handleTabChange,
   latestParentComment,
