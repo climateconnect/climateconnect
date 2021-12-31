@@ -219,7 +219,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     filter_and_find_tutorial_text_for_answer_false: {
       en: `Click on the "Filter" button to filter the projects, for example by location or category.`,
       de: `Klicke auf die Schaltfläche "Filter", um die Projekte zu filtern, z. B. nach Ort oder
-      Kategorie. Wähle aus, wonach du filtern möchtest und klicke auf "Anwenden", um die Ergebnisse zu sehen!`,
+      Kategorie.`,
     },
     tabs_tutorial_headline: {
       en: "Tabs",
