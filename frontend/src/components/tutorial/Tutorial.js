@@ -35,10 +35,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Tutorial({
   fixedPosition,
-  pointerRefs,
-  nextStepTriggeredBy,
   hubName,
   handleTabChange,
+  nextStepTriggeredBy,
+  pointerRefs,
   typesByTabValue,
 }) {
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
