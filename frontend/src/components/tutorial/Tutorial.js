@@ -115,6 +115,7 @@ export default function Tutorial({
     const tabLocationHash = tutorialSteps[nextStep]?.tabOfRef;
     if (tabLocationHash && tabLocationHash !== window.location.hash) {
       handleTabChange(null, typesByTabValue.indexOf(tabLocationHash.replace("#", "")));
+      //The timeout is needed to make sure the tab change is done before updating the step.
       setTimeout(() => {
         setStep(nextStep);
       }, 50);
