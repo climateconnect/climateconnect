@@ -34,7 +34,7 @@ from organization.models import (Organization, OrganizationTagging,
                                  ProjectParents, ProjectStatus, ProjectTagging,
                                  ProjectTags)
 
-from organization.models.members import (MembershipRequests, ProjectTags, ProjectLike)
+from organization.models.members import (MembershipRequests, ProjectLike)
 from organization.models.translations import ProjectTranslation
 
 from organization.pagination import (MembersPagination,
