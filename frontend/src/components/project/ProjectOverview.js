@@ -17,24 +17,22 @@ import React, { useContext, useEffect, useState } from "react";
 import Router from "next/router";
 
 // Relative imports
-import RequestMembershipButton from "./RequestMembershipButton";
-import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
+import { getImageUrl } from "./../../../public/lib/imageOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
-import React from "react";
-import Linkify from "react-linkify";
-import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
+import ContactCreatorButton from "./Buttons/ContactCreatorButton";
+import FollowButton from "./Buttons/FollowButton";
 import getTexts from "../../../public/texts/texts";
+import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
+import LikeButton from "./Buttons/LikeButton";
 import MessageContent from "../communication/MessageContent";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
+import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
+import RequestMembershipButton from "./RequestMembershipButton";
+import ROLE_TYPES from "../../../public/data/role_types";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
-import { getImageUrl } from "./../../../public/lib/imageOperations";
-import ContactCreatorButton from "./Buttons/ContactCreatorButton";
-import FollowButton from "./Buttons/FollowButton";
-import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
-import LikeButton from "./Buttons/LikeButton";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
