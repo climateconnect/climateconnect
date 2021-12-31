@@ -32,13 +32,9 @@ from organization.models import (Organization, OrganizationTagging,
                                  ProjectCollaborators, ProjectComment,
                                  ProjectFollower, ProjectMember,
                                  ProjectParents, ProjectStatus, ProjectTagging,
-<<<<<<< HEAD
                                  ProjectTags)
 
-from organization.models.members import MembershipRequests
-=======
-                                 ProjectTags, ProjectLike)
->>>>>>> master
+from organization.models.members import (MembershipRequests, ProjectTags, ProjectLike)
 from organization.models.translations import ProjectTranslation
 
 from organization.pagination import (MembersPagination,
@@ -68,13 +64,12 @@ from organization.utility.notification import (
     create_project_comment_notification,
     create_project_comment_reply_notification,
     create_project_follower_notification,
-<<<<<<< HEAD
+    create_project_join_request_approval_notification,
     create_project_join_request_notification,
-    create_project_join_request_approval_notification)
-=======
     create_project_like_notification,
-    get_mentions)
->>>>>>> master
+    get_mentions
+    )
+
 from organization.utility.organization import check_organization
 from organization.utility.project import (create_new_project,
                                           get_project_translations,
@@ -268,7 +263,6 @@ class CreateProjectView(APIView):
         except ValueError:
             translations_failed = True
 
-<<<<<<< HEAD
 
         # If we still don't have a translations object, then skip this
         if not translations_object:
@@ -280,11 +274,9 @@ class CreateProjectView(APIView):
             source_language = Language.objects.get(language_code=translations_object['source_language'])
             translations = translations_object['translations']
 
-=======
         source_language = Language.objects.get(
             language_code=translations_object['source_language'])
         translations = translations_object['translations']
->>>>>>> master
         project = create_new_project(request.data, source_language)
 
         if not translations_failed:
@@ -292,12 +284,7 @@ class CreateProjectView(APIView):
                 if not language == source_language.language_code:
                     texts = translations[language]
                     try:
-<<<<<<< HEAD
                         language_object = Language.objects.get(language_code=language)
-=======
-                        language_object = Language.objects.get(
-                            language_code=language)
->>>>>>> master
                         translation = ProjectTranslation.objects.create(
                             project=project,
                             language=language_object,
@@ -377,12 +364,8 @@ class CreateProjectView(APIView):
                     project=project, user=user, role=user_role,
                     availability=user_availability, role_in_project=member['role_in_project']
                 )
-<<<<<<< HEAD
-                logger.info("Project member created for user {}".format(user.id))
-=======
                 logger.info(
                     "Project member created for user {}".format(user.id))
->>>>>>> master
 
         return Response({
             'message': 'Project {} successfully created'.format(project.name),
@@ -933,7 +916,6 @@ class ListProjectFollowersView(ListAPIView):
         followers = ProjectFollower.objects.filter(project=project[0])
         return followers
 
-<<<<<<< HEAD
 class ListProjectRequestersView(ListAPIView):
     """This is the endpoint view to return a list of users
     who have requested membership for a specific project, including their request IDs."""
@@ -946,11 +928,9 @@ class ListProjectRequestersView(ListAPIView):
             return None
 
         return membership_requests
-=======
 class ListProjectLikesView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ProjectLikeSerializer
->>>>>>> master
 
     def get_queryset(self):
         try:
@@ -979,22 +959,14 @@ class LeaveProject(RetrieveUpdateAPIView):
                 project=project, is_active=True).count()
 
             if project_member_record.role.name == 'Creator':
-<<<<<<< HEAD
-                if active_members_in_project > 1 :
-                    return Response(data={'message':f'A new creator needs to be assigned first'}, status=status.HTTP_400_BAD_REQUEST)
-=======
                 if active_members_in_project > 1:
                     return Response(data={'message': f'A new creator needs to be assigned first'}, status=status.HTTP_400_BAD_REQUEST)
->>>>>>> master
-                elif active_members_in_project == 1:
+
+                if active_members_in_project == 1:
                     # deactivate project
                     project.is_active = False
                     updatable_records.append(project)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> master
             project_member_record.is_active = False
             updatable_records.append(project_member_record)
             for updatable_record in updatable_records:
@@ -1002,7 +974,6 @@ class LeaveProject(RetrieveUpdateAPIView):
             return Response(data={'message': f'Left project {url_slug} successfully'}, status=status.HTTP_200_OK)
 
         except ProjectMember.DoesNotExist:
-<<<<<<< HEAD
             return Response(data={'message':f'User and/or Project not found '}, status=status.HTTP_404_NOT_FOUND)
 
         except ProjectMember.MultipleObjectsReturned:
@@ -1130,20 +1101,20 @@ class ManageJoinProject(RetrieveUpdateAPIView):
         membership_requests = MembershipRequests.objects.all()
         return membership_requests
 
+    # TODO(piper): Fix this (WIP - 12/31/21)
     # def get_queryset(self):
     #     project = Project.objects.get(url_slug=str(self.kwargs['url_slug']))
     #     return ProjectMember.objects.filter(id=int(self.kwargs['pk']), project=project)
-=======
-            return Response(data={'message': f'User and/or Project not found '}, status=status.HTTP_404_NOT_FOUND)
+            # return Response(data={'message': f'User and/or Project not found '}, status=status.HTTP_404_NOT_FOUND)
 
-        except ProjectMember.MultipleObjectsReturned:
-            # Multiple records for the same user/ project id. Duplicate records.
-            # TODO: Implement a signal to send dev a message
-            return Response(data={'message': f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        except:
-            # Send E to dev
-            # send to dev logs E= traceback.format_exc()
-            return Response(data={'message': f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # except ProjectMember.MultipleObjectsReturned:
+        #     # Multiple records for the same user/ project id. Duplicate records.
+        #     # TODO: Implement a signal to send dev a message
+        #     return Response(data={'message': f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # except:
+        #     # Send E to dev
+        #     # send to dev logs E= traceback.format_exc()
+        #     return Response(data={'message': f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class SetProjectSharedView(APIView):
     permission_classes = [AllowAny]
@@ -1154,4 +1125,3 @@ class SetProjectSharedView(APIView):
             raise NotFound(detail='Project not found.', code=status.HTTP_404_NOT_FOUND)
         save_content_shared(request, project)
         return Response(status=status.HTTP_201_CREATED)
->>>>>>> master
