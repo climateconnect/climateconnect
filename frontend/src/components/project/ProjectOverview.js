@@ -33,6 +33,7 @@ import projectOverviewStyles from "../../../public/styles/projectOverviewStyles"
 import RequestMembershipButton from "./RequestMembershipButton";
 import ROLE_TYPES from "../../../public/data/role_types";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   ...projectOverviewStyles(theme),
@@ -98,65 +99,46 @@ const componentDecorator = (href, text, key) => (
 );
 
 export default function ProjectOverview({
-  project,
-  screenSize,
+  apiEndpointShareButton,
+  contactProjectCreatorButtonRef,
+  dialogTitleShareButton,
+  followers,
+  followingChangePending,
+  handleClickContact,
   handleToggleFollowProject,
   handleToggleLikeProject,
-  isUserFollowing,
-  isUserLiking,
-  followingChangePending,
-  likingChangePending,
-  contactProjectCreatorButtonRef,
-  projectAdmin,
-  handleClickContact,
-  toggleShowFollowers,
   hasAdminPermissions,
-  user,
-  followers,
-  likes,
-  locale,
-  showFollowers,
-  showLikes,
   initiallyCaughtFollowers,
   initiallyCaughtLikes,
-  toggleShowLikes,
-  numberOfLikes,
-  numberOfFollowers,
-  projectLinkPath,
-  apiEndpointShareButton,
-  token,
-  messageTitleShareButton,
+  isUserFollowing,
+  isUserLiking,
+  likes,
+  likingChangePending,
+  locale,
   mailBodyShareButton,
-  dialogTitleShareButton,
+  messageTitleShareButton,
+  numberOfFollowers,
+  numberOfLikes,
+  project,
+  projectAdmin,
+  projectLinkPath,
+  screenSize,
+  showFollowers,
+  showLikes,
+  toggleShowFollowers,
+  toggleShowLikes,
+  token,
+  user,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
-  const {
-    locale,
-    notifications,
-    pathName,
-    refreshNotifications,
-    setNotificationsRead,
-    user,
-  } = useContext(UserContext);
+  const { notifications, pathName, refreshNotifications, setNotificationsRead } = useContext(
+    UserContext
+  );
 
   const [requestedToJoinProject, setRequestedToJoinProject] = useState(false);
 
   const texts = getTexts({ page: "project", locale: locale, project: project });
-  const token = cookies.get("token");
-
-  const handleClickContact = async (event) => {
-    event.preventDefault();
-    const creator = project.team.filter((m) => m.permission === ROLE_TYPES.all_type)[0];
-    if (!user) {
-      return redirect("/signin", {
-        redirect: window.location.pathname + window.location.search,
-        errorMessage: texts.please_create_an_account_or_log_in_to_contact_a_projects_organizer,
-      });
-    }
-    const chat = await startPrivateChat(creator, token, locale);
-    Router.push("/chat/" + chat.chat_uuid + "/");
-  };
 
   /**
    * Calls backend, sending a request to join this project based
@@ -199,26 +181,10 @@ export default function ProjectOverview({
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
       : null;
-  const hasAdminPermissions =
-    user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission);
 
-  const [initiallyCaughtFollowers, setInitiallyCaughtFollowers] = useState(false);
-  const [followers, setFollowers] = useState([]);
-
-  const [showFollowers, setShowFollowers] = useState(false);
-  const toggleShowFollowers = async () => {
-    setShowFollowers(!showFollowers);
-    if (!initiallyCaughtFollowers) {
-      const retrievedFollowers = await getFollowers(project, token, locale);
-      const notification_to_set_read = notifications.filter(
-        (n) => n.notification_type === 4 && n.project.url_slug === project.url_slug
-      );
-      await setNotificationsRead(token, notification_to_set_read, locale);
-      await refreshNotifications();
-      setFollowers(retrievedFollowers);
-      setInitiallyCaughtFollowers(true);
-    }
-  };
+  // TODO(Piper): confirm this drop, and others that've moved into ProjectPageRoot
+  // are desired before landing
+  // const [followers, setFollowers] = useState([]);
 
   const [gotParams, setGotParams] = useState(false);
   useEffect(() => {
@@ -228,8 +194,6 @@ export default function ProjectOverview({
       setGotParams(true);
     }
   });
-
-  const texts = getTexts({ page: "project", locale: locale, project: project });
 
   // TODO: fix, can't request to join a project you're already a member of!
   useEffect(() => {
@@ -578,56 +542,3 @@ function LargeScreenOverview({
     </>
   );
 }
-
-function FollowButton({
-  project,
-  isUserFollowing,
-  handleToggleFollowProject,
-  hasAdminPermissions,
-  toggleShowFollowers,
-  followingChangePending,
-  texts,
-}) {
-  const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
-  return (
-    <span className={classes.followButtonContainer}>
-      <Button
-        onClick={handleToggleFollowProject}
-        color={isUserFollowing ? "secondary" : "primary"}
-        disabled={followingChangePending}
-        className={classes.followingButton}
-      >
-        {followingChangePending && <CircularProgress size={13} className={classes.fabProgress} />}
-        {isUserFollowing ? texts.following : texts.follow}
-      </Button>
-      {project.number_of_followers > 0 && (
-        <Link
-          color="secondary"
-          underline="always"
-          className={classes.followersLink}
-          onClick={toggleShowFollowers}
-        >
-          <Typography className={classes.followersText}>
-            <span className={classes.followerNumber}>{project.number_of_followers} </span>
-            {project.number_of_followers > 1 ? texts.followers : texts.follower}
-          </Typography>
-        </Link>
-      )}
-    </span>
-  );
-}
-
-const getFollowers = async (project, token, locale) => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/projects/" + project.url_slug + "/followers/",
-      token: token,
-      locale: locale,
-    });
-    return resp.data.results;
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-  }
-};
