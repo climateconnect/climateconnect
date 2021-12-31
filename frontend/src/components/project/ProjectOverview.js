@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import {
   Box,
   Button,
@@ -8,18 +7,14 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core";
-=======
-import { Container, Link, Tooltip, Typography } from "@material-ui/core";
->>>>>>> master
 import { makeStyles } from "@material-ui/core/styles";
+import Cookies from "universal-cookie";
 import ExploreIcon from "@material-ui/icons/Explore";
 import LanguageIcon from "@material-ui/icons/Language";
-import PlaceIcon from "@material-ui/icons/Place";
-<<<<<<< HEAD
-import Router from "next/router";
-import React, { useContext, useEffect, useState } from "react";
 import Linkify from "react-linkify";
-import Cookies from "universal-cookie";
+import PlaceIcon from "@material-ui/icons/Place";
+import React, { useContext, useEffect, useState } from "react";
+import Router from "next/router";
 
 // Relative imports
 import RequestMembershipButton from "./RequestMembershipButton";
@@ -27,10 +22,8 @@ import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, redirect } from "../../../public/lib/apiOperations";
 import { getParams } from "../../../public/lib/generalOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
-=======
 import React from "react";
 import Linkify from "react-linkify";
->>>>>>> master
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
@@ -62,13 +55,10 @@ const useStyles = makeStyles((theme) => ({
   },
   linkContainer: {
     display: "flex",
-<<<<<<< HEAD
     marginTop: theme.spacing(3),
     justifyContent: "flex-start",
-=======
     cursor: "pointer",
     marginRight: theme.spacing(1),
->>>>>>> master
   },
   linkIcon: {
     marginRight: theme.spacing(1),
@@ -142,7 +132,6 @@ export default function ProjectOverview({
   dialogTitleShareButton,
 }) {
   const classes = useStyles();
-<<<<<<< HEAD
   const cookies = new Cookies();
   const {
     locale,
@@ -241,10 +230,8 @@ export default function ProjectOverview({
       setGotParams(true);
     }
   });
-=======
 
   const texts = getTexts({ page: "project", locale: locale, project: project });
->>>>>>> master
 
   // TODO: fix, can't request to join a project you're already a member of!
   useEffect(() => {
@@ -261,7 +248,6 @@ export default function ProjectOverview({
     <Container className={classes.projectOverview}>
       {screenSize.belowSmall ? (
         <SmallScreenOverview
-<<<<<<< HEAD
           contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
           followingChangePending={followingChangePending}
           handleClickContact={handleClickContact}
@@ -276,47 +262,33 @@ export default function ProjectOverview({
         />
       ) : (
         <LargeScreenOverview
-          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
-          followingChangePending={followingChangePending}
-=======
-          project={project}
-          texts={texts}
-          screenSize={screenSize}
-          locale={locale}
-          projectLinkPath={projectLinkPath}
           apiEndpointShareButton={apiEndpointShareButton}
-          token={token}
-          messageTitleShareButton={messageTitleShareButton}
-          mailBodyShareButton={mailBodyShareButton}
+          contactProjectCreatorButtonRef={contactProjectCreatorButtonRef}
           dialogTitleShareButton={dialogTitleShareButton}
-        />
-      ) : (
-        <LargeScreenOverview
-          project={project}
+          followingChangePending={followingChangePending}
+          handleClickContact={handleClickContact}
+          handleSendProjectJoinRequest={handleSendProjectJoinRequest}
           handleToggleFollowProject={handleToggleFollowProject}
           handleToggleLikeProject={handleToggleLikeProject}
-          isUserFollowing={isUserFollowing}
-          isUserLiking={isUserLiking}
->>>>>>> master
-          handleClickContact={handleClickContact}
-          handleToggleFollowProject={handleToggleFollowProject}
-          handleSendProjectJoinRequest={handleSendProjectJoinRequest}
           hasAdminPermissions={hasAdminPermissions}
           isUserFollowing={isUserFollowing}
-          project={project}
-          requestedToJoinProject={requestedToJoinProject}
-          texts={texts}
-<<<<<<< HEAD
-          toggleShowFollowers={toggleShowFollowers}
-=======
-          projectAdmin={projectAdmin}
+          isUserLiking={isUserLiking}
           likes={likes}
-          toggleShowLikes={toggleShowLikes}
           likingChangePending={likingChangePending}
-          screenSize={screenSize}
-          numberOfLikes={numberOfLikes}
+          locale={locale}
+          mailBodyShareButton={mailBodyShareButton}
+          messageTitleShareButton={messageTitleShareButton}
           numberOfFollowers={numberOfFollowers}
->>>>>>> master
+          numberOfLikes={numberOfLikes}
+          project={project}
+          projectAdmin={projectAdmin}
+          projectLinkPath={projectLinkPath}
+          requestedToJoinProject={requestedToJoinProject}
+          screenSize={screenSize}
+          texts={texts}
+          toggleShowFollowers={toggleShowFollowers}
+          toggleShowLikes={toggleShowLikes}
+          token={token}
         />
       )}
       <ProjectFollowersDialog
@@ -361,30 +333,25 @@ const RequestMembershipButtonWrapper = ({ requestedToJoin, handleSendProjectJoin
 };
 
 function SmallScreenOverview({
-<<<<<<< HEAD
+  apiEndpointShareButton,
   contactProjectCreatorButtonRef,
+  dialogTitleShareButton,
   followingChangePending,
   handleClickContact,
   handleSendProjectJoinRequest,
   handleToggleFollowProject,
   hasAdminPermissions,
   isUserFollowing,
+  locale,
+  mailBodyShareButton,
+  messageTitleShareButton,
   project,
+  projectLinkPath,
   requestedToJoinProject,
+  screenSize,
   texts,
   toggleShowFollowers,
-=======
-  project,
-  texts,
-  screenSize,
-  locale,
-  projectLinkPath,
-  apiEndpointShareButton,
   token,
-  messageTitleShareButton,
-  mailBodyShareButton,
-  dialogTitleShareButton,
->>>>>>> master
 }) {
   const classes = useStyles();
 
@@ -450,7 +417,6 @@ function SmallScreenOverview({
             {project.tags.join(", ")}
           </Typography>
         </div>
-<<<<<<< HEAD
         <div className={classes.infoBottomBar}>
           {/* Add more vertical separation on mobile views between the tabs and the upper section. */}
           <Box marginBottom={3} display="flex">
@@ -488,48 +454,35 @@ function SmallScreenOverview({
             )}
           </Box>
         </div>
-=======
->>>>>>> master
       </div>
     </>
   );
 }
 
 function LargeScreenOverview({
-<<<<<<< HEAD
   contactProjectCreatorButtonRef,
   followingChangePending,
-=======
-  project,
-  handleToggleFollowProject,
-  handleToggleLikeProject,
-  isUserFollowing,
-  isUserLiking,
->>>>>>> master
   handleClickContact,
   handleSendProjectJoinRequest,
   handleToggleFollowProject,
+  handleToggleLikeProject,
   hasAdminPermissions,
   isUserFollowing,
-  project,
-  requestedToJoinProject,
-  texts,
-<<<<<<< HEAD
-  toggleShowFollowers,
-}) {
-  const classes = useStyles();
-
-=======
-  projectAdmin,
+  isUserLiking,
   likes,
-  toggleShowLikes,
   likingChangePending,
-  screenSize,
-  numberOfLikes,
   numberOfFollowers,
+  numberOfLikes,
+  project,
+  projectAdmin,
+  requestedToJoinProject,
+  screenSize,
+  texts,
+  toggleShowFollowers,
+  toggleShowLikes,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
->>>>>>> master
+
   return (
     <>
       <Typography component="h1" variant="h4" className={classes.largeScreenHeader}>
@@ -575,7 +528,6 @@ function LargeScreenOverview({
             </Typography>
           </div>
           <div className={classes.infoBottomBar}>
-<<<<<<< HEAD
             {/* If the user is an admin on the project, or is already part
             of the project, then we don't want to show the membership request button. */}
             {!hasAdminPermissions && (
@@ -587,7 +539,6 @@ function LargeScreenOverview({
               </Box>
             )}
 
-=======
             <LikeButton
               texts={texts}
               isUserLiking={isUserLiking}
@@ -600,20 +551,16 @@ function LargeScreenOverview({
               hasAdminPermissions={hasAdminPermissions}
               numberOfLikes={numberOfLikes}
             />
->>>>>>> master
             <FollowButton
               followingChangePending={followingChangePending}
               handleToggleFollowProject={handleToggleFollowProject}
               hasAdminPermissions={hasAdminPermissions}
               isUserFollowing={isUserFollowing}
-              project={project}
-              texts={texts}
-<<<<<<< HEAD
-              toggleShowFollowers={toggleShowFollowers}
-=======
-              screenSize={screenSize}
               numberOfFollowers={numberOfFollowers}
->>>>>>> master
+              project={project}
+              screenSize={screenSize}
+              texts={texts}
+              toggleShowFollowers={toggleShowFollowers}
             />
 
             {!hasAdminPermissions && (
@@ -633,7 +580,6 @@ function LargeScreenOverview({
     </>
   );
 }
-<<<<<<< HEAD
 
 function FollowButton({
   project,
@@ -687,5 +633,3 @@ const getFollowers = async (project, token, locale) => {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
   }
 };
-=======
->>>>>>> master
