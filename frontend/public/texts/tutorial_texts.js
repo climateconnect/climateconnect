@@ -63,7 +63,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     tutorial_welcome_to_the_browse_page_text_for_answer_false: {
       en: `No worries, here is the right place to start off! On this page you can browse through
       all climate projects created by Climate Connect members.`,
-      de: `Keine Sorge, hier ist der richtige Ort, um anzufangen! Auf dieser Seite findest du 
+      de: `Keine Sorge, hier ist der richtige Ort, um anzufangen! Auf dieser Seite findest du
       alle Klimaprojekte, die von Climate Connect Mitgliedern erstellt wurden.`,
     },
     welcome_to_the_hub_page: {
@@ -177,7 +177,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     the_project_cards_text_for_answer_true: {
       en: `Find interesting climate projects to collaborate with or get inspired by! Hover over a
       project card to see a short summary of what the project is about.`,
-      de: `Finde interessante Projekte, um mitzumachen, zusammenarbeiten oder sich von ihnen inspirieren zu lassen. 
+      de: `Finde interessante Projekte, um mitzumachen, zusammenarbeiten oder sich von ihnen inspirieren zu lassen.
 	    Bewege den Mauszeiger über eine Vorschaukarte, um eine kurze Zusammenfassung des Projekts zu erhalten.`,
     },
     the_project_cards_text_for_answer_soon: {
@@ -191,8 +191,8 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
       en: `Find interesting climate projects to join or maybe even get inspired to do something
       similar at your location! Hover over a card to see a short summary of what the project
       is about.`,
-      de: `Finde interessante Projekte zum Mitmachen oder lass dich inspirieren, etwas 
-      Ähnliches in deiner Umgebung anzufangen! Bewege den Mauszeiger über eine Karte, um 
+      de: `Finde interessante Projekte zum Mitmachen oder lass dich inspirieren, etwas
+      Ähnliches in deiner Umgebung anzufangen! Bewege den Mauszeiger über eine Karte, um
       eine kurze Übersicht über das Projekts zu erhalten.`,
     },
     filter_and_find_tutorial_headline: {
@@ -201,25 +201,23 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     },
     filter_and_find_tutorial_text: {
       en: `Click on the "Filter" button to filter the projects, for example by location or
-      category. Choose what you want to filter by and click "Apply" to see the results!`,
+      category.`,
       de: `Klicke auf die Schaltfläche "Filter", um die Projekte zu filtern, z. B. nach Ort oder
       Kategorie. Wählen aus, wonach du filtern möchtest und klicke auf "Anwenden", um die Ergebnisse zu sehen!`,
     },
     filter_and_find_tutorial_text_for_answer_true: {
       en: `Click on the "Filter" button to filter the projects, for example by location or
-      category. Choose what you want to filter by and click "Apply" to see the results!`,
+      category.`,
       de: `Klicke auf die Schaltfläche "Filter", um die Projekte zu filtern, z. B. nach Ort oder
       Kategorie. Wähle aus, wonach du filtern möchtest und klicke auf "Anwenden", um die Ergebnisse zu sehen!`,
     },
     filter_and_find_tutorial_text_for_answer_soon: {
-      en: `Click on the "Filter" button to filter the projects, for example by location, category or the skills they are looking for. 
-      Choose what you want to filter by and click "Apply" to see the results!`,
+      en: `Click on the "Filter" button to filter the projects, for example by location, category or the skills they are looking for.`,
       de: `Klicke auf die Schaltfläche "Filter", um die Projekte zu filtern, z. B. nach Ort,
       Kategorie oder gesuchten Fähigkeiten. Wähle aus, wonach du filtern möchtest und klicke auf "Anwenden", um die Ergebnisse zu sehen!`,
     },
     filter_and_find_tutorial_text_for_answer_false: {
-      en: `Click on the "Filter" button to filter the projects, for example by location or category. 
-      Choose what you want to filter by and click "Apply" to see the results!`,
+      en: `Click on the "Filter" button to filter the projects, for example by location or category.`,
       de: `Klicke auf die Schaltfläche "Filter", um die Projekte zu filtern, z. B. nach Ort oder
       Kategorie. Wähle aus, wonach du filtern möchtest und klicke auf "Anwenden", um die Ergebnisse zu sehen!`,
     },
@@ -228,9 +226,9 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
       de: "Tabs",
     },
     tabs_tutorial_text: {
-      en: `Click on another tab to see all active organizations or members of Climate Connect. 
+      en: `Click on another tab to see all active organizations or members of Climate Connect.
       These are the faces behind the projects and the climate actors we strive to empower.`,
-      de: `Klicke auf ein anderes Tab, um alle aktiven Organisationen oder Nutzer von Climate Connect zu sehen. 
+      de: `Klicke auf ein anderes Tab, um alle aktiven Organisationen oder Nutzer von Climate Connect zu sehen.
       Dies sind die Gesichter hinter den Projekten und die Klimaschützer, die wir stärken möchten.`,
     },
     hubs_tutorial_headline: {
@@ -247,9 +245,9 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
       de: "Kurze Infos",
     },
     quick_bits_tutorial_text: {
-      en: `Every hub page provides a summary as well as detailed information about the impact of each sector. 
+      en: `Every hub page provides a summary as well as detailed information about the impact of each sector.
       Additional statistics help you to put each sector into perspective.`,
-      de: `Jede Hub-Seite bietet sowohl eine Zusammenfassung als auch detaillierte Informationen über die Auswirkungen der einzelnen Bereiche. 
+      de: `Jede Hub-Seite bietet sowohl eine Zusammenfassung als auch detaillierte Informationen über die Auswirkungen der einzelnen Bereiche.
       Zusätzliche Statistiken helfen dir, jeden Bereich besser zu verstehen.`,
     },
     want_to_get_involved_in_this_sector_headline: {
@@ -258,7 +256,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
     },
     want_to_get_involved_in_this_sector_text: {
       en: `By clicking on "Show projects" you directly get to the projects from this sector that have been shared by Climate Connect users.`,
-      de: `Wenn du auf "Projekte anzeigen" klickst, gelangst du direkt zu den Projekten aus diesem Bereich, 
+      de: `Wenn du auf "Projekte anzeigen" klickst, gelangst du direkt zu den Projekten aus diesem Bereich,
       die von Climate Connect Nutzern geteilt wurden.`,
     },
     click_a_project_headline: {
@@ -274,9 +272,9 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
       de: "Willkommen auf der Projektseite!",
     },
     welcome_to_the_project_page_text: {
-      en: `In the top section you can find a short summary (<280 characters) and the most important information about the project. 
+      en: `In the top section you can find a short summary (<280 characters) and the most important information about the project.
       If the first impression is interesting, you can dive deeper.`,
-      de: `Im oberen Bereich findest du eine kurze Zusammenfassung (<280 Zeichen) und die wichtigsten Informationen zum Projekt. 
+      de: `Im oberen Bereich findest du eine kurze Zusammenfassung (<280 Zeichen) und die wichtigsten Informationen zum Projekt.
       Wenn es dich interessiert, kannst du mehr darüber erfahren.`,
     },
     detailled_info_about_project_headline: {
@@ -284,7 +282,7 @@ export default function getTutorialTexts({ hubName, classes, locale }) {
       de: "Detailliertere Informationen über das Projekt",
     },
     detailled_info_about_project_text: {
-      en: `Here you can find more detailled information about the project, some projects even include a video. 
+      en: `Here you can find more detailled information about the project, some projects even include a video.
       If you have a question or think something is missing you can get in contact with the creator. (more on that later)`,
       de: `Hier findest du detailliertere Infos über das Projekte. Einige Projekte haben sogar ein Video hinzugefügt.
       Wenn du eine Frage oder Anregung zum Projekt hast, kannst du die/den Ersteller*in direkt kontaktieren (Mehr dazu gleich)`,
