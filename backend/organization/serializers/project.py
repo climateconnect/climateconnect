@@ -379,6 +379,13 @@ class ProjectRequesterSerializer(serializers.ModelSerializer):
         # locally defined variables take precedence
         # over what's defined on the model
         fields = ('user_profile', 'id')
+
+    # TODO(Piper): just added 1/1/22
+    def get_user_profile(self, obj):
+        user_profile = UserProfile.objects.get(user=obj.user)
+        serializer = UserProfileStubSerializer(user_profile)
+        return serializer.data
+
 class ProjectLikeSerializer(serializers.ModelSerializer):
     user_profile = serializers.SerializerMethodField()
     class Meta:
