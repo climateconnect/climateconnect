@@ -320,7 +320,7 @@ function SmallScreenOverview({
   return (
     <>
       <div className={classes.imageContainer}>
-        {screenSize.belowTiny && (
+        {screenSize?.belowTiny && (
           <GoBackFromProjectPageButton
             containerClassName={classes.goBackButtonContainer}
             texts={texts}
