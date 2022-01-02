@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "analyze-bundle": "ANALYZE=true yarn build",
     "build-storybook": "build-storybook",
     "build": "next build",
     "deploy": "yarn build && yarn export",
