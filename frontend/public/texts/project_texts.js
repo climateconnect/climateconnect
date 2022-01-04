@@ -909,18 +909,6 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Tell others about this project!",
       de: "Erzähle anderen von diesem Projekt!",
     },
-    copy_link: {
-      en: "Copy link",
-      de: "Link kopieren",
-    },
-    copy: {
-      en: "Copy",
-      de: "Kopieren",
-    },
-    link: {
-      en: "Link",
-      de: "Link",
-    },
     climate_protection_project_by: {
       en: "Climate project by ",
       de: "Klimaschutzprojekt von ",
@@ -929,19 +917,15 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: `Hey,
       I found this awesome climate project: "${project?.name}"${
         project?.creator &&
-        " created by " + (project.creator?.name ? project.creator?.name : creator?.name)
-      }. 
-      You should check it out here: ${process.env.BASE_URL}${getLocalePrefix(locale)}/projects/${
-        project?.url_slug
-      }`,
+        ` created by ${project.creator?.name ? project.creator?.name : creator?.name}`
+      }.
+      You should check it out here: `,
       de: `Hey,
       Ich habe gerade dieses spannende Klimaschutzprojekt gefunden: "${project?.name}"${
         project?.creator &&
-        ", erstellt von " + (project.creator?.name ? project.creator?.name : creator?.name)
-      }. 
-      Schau's dir doch mal an: ${process.env.BASE_URL}${getLocalePrefix(locale)}/projects/${
-        project?.url_slug
-      }`,
+        `, erstellt von ${project.creator?.name ? project.creator?.name : creator?.name}`
+      }.
+      Schau's dir doch mal an: `,
     },
     contact_creator_to_know_more_about_project: {
       en: `Contact ${creator?.first_name} if you want to chat about this project.`,

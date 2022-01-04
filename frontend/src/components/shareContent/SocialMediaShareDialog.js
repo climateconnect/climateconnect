@@ -1,6 +1,6 @@
 import { Button, InputAdornment, makeStyles, TextField } from "@material-ui/core";
 import LinkIcon from "@material-ui/icons/Link";
-import React, { useContext } from "react";
+import React from "react";
 import {
   EmailIcon,
   EmailShareButton,
@@ -17,8 +17,6 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
-import getTexts from "../../../public/texts/texts";
-import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
 
 const useStyles = makeStyles((theme) => ({
@@ -36,23 +34,16 @@ const useStyles = makeStyles((theme) => ({
 export default function SocialMediaShareDialog({
   open,
   onClose,
-  project,
   createShareRecord,
-  screenSize,
-  projectAdmin,
+  tinyScreen,
   SHARE_OPTIONS,
-  projectLink,
-  title,
+  contentLink,
+  messageTitle,
+  mailBody,
+  texts,
+  dialogTitle,
 }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext);
-  const texts = getTexts({
-    locale: locale,
-    page: "project",
-    title: title,
-    project: project,
-    creator: projectAdmin,
-  });
 
   const handleClose = () => {
     onClose(false);
@@ -60,66 +51,65 @@ export default function SocialMediaShareDialog({
 
   const facebookHashtag = "#BelieveInTogether";
   const twitterHastags = ["BelieveInTogether"];
-  const mailBody = texts.share_project_email_body;
 
   const handleClick = (sharedVia) => {
     createShareRecord(sharedVia);
-    navigator.clipboard.writeText(projectLink);
+    navigator.clipboard.writeText(contentLink);
   };
 
   return (
-    <GenericDialog onClose={handleClose} open={open} title={texts.tell_others_about_this_project}>
+    <GenericDialog onClose={handleClose} open={open} title={dialogTitle}>
       <div className={classes.shareButtonsContainer}>
         <EmailShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.e_mail)}
-          url={projectLink}
-          subject={title}
+          url={contentLink}
+          subject={messageTitle}
           body={mailBody}
         >
           <EmailIcon size={50} round={true} />
         </EmailShareButton>
         <FacebookShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.facebook)}
-          url={projectLink}
-          quote={title}
+          url={contentLink}
+          quote={messageTitle}
           hashtag={facebookHashtag}
         >
           <FacebookIcon size={50} round={true} />
         </FacebookShareButton>
         <TwitterShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.twitter)}
-          url={projectLink}
-          title={title}
+          url={contentLink}
+          title={messageTitle}
           hashtags={twitterHastags}
         >
           <TwitterIcon size={50} round={true} />
         </TwitterShareButton>
         <WhatsappShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.whatsapp)}
-          url={projectLink}
-          title={title}
+          url={contentLink}
+          title={messageTitle}
         >
           <WhatsappIcon size={50} round={true} />
         </WhatsappShareButton>
         {false && (
           <LinkedinShareButton
             beforeOnClick={() => createShareRecord(SHARE_OPTIONS.linkedin)}
-            url={projectLink}
+            url={contentLink}
           >
             <LinkedinIcon size={50} round={true} />
           </LinkedinShareButton>
         )}
         <RedditShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.reddit)}
-          url={projectLink}
-          title={title}
+          url={contentLink}
+          title={messageTitle}
         >
           <RedditIcon size={50} round={true} />
         </RedditShareButton>
         <TelegramShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.telegram)}
-          url={projectLink}
-          title={title}
+          url={contentLink}
+          title={messageTitle}
         >
           <TelegramIcon size={50} round={true} />
         </TelegramShareButton>
@@ -127,7 +117,7 @@ export default function SocialMediaShareDialog({
       <TextField
         fullWidth
         label={texts.link}
-        defaultValue={projectLink}
+        defaultValue={contentLink}
         InputProps={{
           readOnly: true,
           startAdornment: (
@@ -138,7 +128,7 @@ export default function SocialMediaShareDialog({
           endAdornment: (
             <InputAdornment position="end">
               <Button onClick={() => handleClick(SHARE_OPTIONS.link)}>
-                {screenSize.belowTiny ? texts.copy : texts.copy_link}
+                {tinyScreen ? texts.copy : texts.copy_link}
               </Button>
             </InputAdornment>
           ),

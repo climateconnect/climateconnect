@@ -1,0 +1,74 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-14 08:48+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: climateconnect_api/views/common_views.py:44
+#: climateconnect_api/views/settings_views.py:96
+#: climateconnect_api/views/user_views.py:381
+msgid "Required parameters are missing."
+msgstr "Es fehlen benötigte Parameter."
+
+#: climateconnect_api/views/common_views.py:55
+#: climateconnect_api/views/common_views.py:65
+msgid ""
+"Feedback successfully submitted. We will get back to you within 24 hours."
+msgstr "Feedback erfolgreich eingereicht. Wir melden uns bei dir!"
+
+#: climateconnect_api/views/common_views.py:72
+msgid "Feedback successfully submitted."
+msgstr "Feedback erhalten!"
+
+#: climateconnect_api/views/settings_views.py:105
+#: climateconnect_api/views/user_views.py:390
+msgid "User profile not found."
+msgstr "Nutzer*innenprofil nicht gefunden."
+
+#: climateconnect_api/views/settings_views.py:107
+#: climateconnect_api/views/user_views.py:392
+msgid ""
+"Contact contact@climateconnect.earth if you repeatedly experience problems."
+msgstr ""
+"Kontaktiere contact@climateconnect.earth, wenn du wiederholt Probleme haben "
+"solltest."
+
+#: climateconnect_api/views/settings_views.py:116
+msgid "No pending E-Mail change. This link may already have been used."
+msgstr ""
+"Keine E-Mail Änderung angefragt. Vielleicht wurde dieser Link schon "
+"verwendet?"
+
+#: climateconnect_api/views/settings_views.py:118
+msgid "Your E-Mail address is now "
+msgstr "Deine E-Mail Adresse ist jetzt "
+
+#: climateconnect_api/views/user_views.py:398
+msgid ""
+"Account already verified. Please contact us if you are having trouble "
+"signing in."
+msgstr ""
+"Konto bereits verifiziert. Bitte kontaktiere uns, wenn du Probleme beim "
+"einloggen hast."
+
+#: climateconnect_api/views/user_views.py:403
+msgid "Your profile is successfully verified"
+msgstr "Dein Profil wurde erfolgreich verifiziert"
+
+#: climateconnect_api/views/user_views.py:405
+msgid "Permission Denied"
+msgstr "Zugriff abgelehnt"

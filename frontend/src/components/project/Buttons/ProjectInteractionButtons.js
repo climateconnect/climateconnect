@@ -61,9 +61,7 @@ export default function ProjectInteractionButtons({
             <ContactCreatorButton
               creator={projectAdmin}
               handleClickContact={handleClickContact}
-              screenSize={screenSize}
-              tiny={screenSize.belowTiny}
-              small={screenSize.belowSmall && !screenSize.belowTiny}
+              withIcons={!screenSize.belowTiny}
             />
           )}
           <FollowButton
@@ -100,9 +98,11 @@ export default function ProjectInteractionButtons({
               className={classes.largeScreenButton}
               creator={projectAdmin}
               handleClickContact={handleClickContact}
-              isUserLiking={isUserLiking}
-              handleToggleLikeProject={handleToggleLikeProject}
               explanationBackground={"#fff"}
+              customCardWidth={220}
+              withInfoCard={true}
+              withIcons={true}
+              collapsable={true}
             />
           )}
       </Container>

@@ -87,6 +87,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     display: "flex",
     justifyContent: "flex-end",
+    alignItems: "flex-start",
   },
   orgProjectsContainer: {
     marginTop: theme.spacing(2),
@@ -156,11 +157,12 @@ export default function ClimateMatchResult({ suggestion, pos }) {
                 onClick={(e) => e.preventDefault()}
               >
                 <ContactCreatorButton
-                  large
                   creator={creator}
                   handleClickContact={handleClickContact}
                   className={classes.contactCreatorButton}
                   contentType={suggestion.ressource_type}
+                  customCardWidth={300}
+                  withInfoCard={true}
                 />
               </div>
             )}

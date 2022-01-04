@@ -60,6 +60,9 @@ export default function get_steps({
     else setLoading(false);
   };
 
+  // pointsAt:  Reference of an element
+  // tabOfRef:  Needed if the referenced element is on a tab
+  //            It contains the tab's location hash and is used to make sure the tab is opened
   return [
     {
       step: 0,
@@ -137,6 +140,7 @@ export default function get_steps({
       headline: texts.the_project_cards,
       pages: ["/browse", "/hubs/"],
       pointsAt: projectCardRef,
+      tabOfRef: "#projects",
       texts: {
         isActivist: {
           true: <span>{texts.the_project_cards_text_for_answer_true}</span>,
@@ -198,6 +202,7 @@ export default function get_steps({
       headline: texts.click_a_project_headline,
       pages: ["/hubs/"],
       pointsAt: projectCardRef,
+      tabOfRef: "#projects",
       text: <span>{texts.click_a_project_text}</span>,
       placement: "top",
     },
@@ -213,6 +218,7 @@ export default function get_steps({
       headline: texts.detailled_info_about_project_headline,
       pages: ["/projects/"],
       pointsAt: projectDescriptionRef,
+      tabOfRef: "#project",
       text: <span>{texts.detailled_info_about_project_text}</span>,
       placement: "top-start",
     },
@@ -221,6 +227,7 @@ export default function get_steps({
       headline: texts.collaboration_tutorial_headline,
       pages: ["/projects/"],
       pointsAt: collaborationSectionRef,
+      tabOfRef: "#project",
       text: <span>{texts.collaboration_tutorial_text}</span>,
       placement: "top-start",
     },

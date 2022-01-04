@@ -7,13 +7,14 @@ from climateconnect_api.models.notification import (Notification, UserNotificati
 from climateconnect_api.models.donation import Donation, DonationGoal
 from climateconnect_api.models.language import Language
 from climateconnect_api.models.badge import (Badge, DonorBadge)
+from climateconnect_api.models.content_shares import ContentShares
 
 
 pass_through_models = (
     Availability, Role,
     Feedback, FaqSection, FaqQuestion,
     Notification, UserNotification, EmailNotification,
-    Donation, DonationGoal, Badge, DonorBadge
+    Donation, DonationGoal, Badge, DonorBadge, ContentShares
 )
 
 for model in pass_through_models:

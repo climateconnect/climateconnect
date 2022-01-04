@@ -26,15 +26,17 @@ def set_read(messages, user, is_private_message):
     # Here we are assuming that all messages passed to this function are from the same chat
     message_notifications = Notification.objects.filter(chat=messages[0].message_participant)
     if message_notifications.exists():
-        unread_user_notifications = UserNotification.objects.filter(
-            notification__in=message_notifications,
-            read_at=None,
-            user=user
-        )
-        if unread_user_notifications.exists():
-            user_notification = unread_user_notifications[0]
+        try:
+            unread_user_notification = UserNotification.objects.get(
+                notification__in=message_notifications,
+                read_at=None,
+                user=user
+            )
+            user_notification = unread_user_notification
             user_notification.read_at = datetime.now()
             user_notification.save()
+        except UserNotification.DoesNotExist:
+            logger.error("there is no user notification for "+user.first_name)
 
 
 def create_private_or_group_chat(

@@ -8,6 +8,13 @@ const useStyles = makeStyles((theme) => {
     header: {
       fontWeight: "bold",
       margin: "5px",
+      maxWidth: "220px",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      display: "inline-block",
+    },
+    headerWrapper: {
+      justifyContent: "center",
     },
     media: {
       height: 80,
@@ -52,7 +59,7 @@ export default function OrganizationPreviewHeader({ organization }) {
           ))}
         </Box>
       )}
-      <Box>
+      <Box className={classes.headerWrapper}>
         <Typography variant="h6" component="h2" className={classes.header}>
           {organization.name}
         </Typography>

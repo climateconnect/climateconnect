@@ -206,7 +206,7 @@ export default function Hub({
       tabsWhereFiltersWereApplied: tabsWhereFiltersWereApplied,
       handleSetTabsWhereFiltersWereApplied: handleSetTabsWhereFiltersWereApplied,
       hubUrl: hubUrl,
-      idea: nonFilterParams.idea,
+      idea: nonFilterParams?.idea,
     });
   };
 
@@ -227,7 +227,7 @@ export default function Hub({
       {hubDescription && hubDescription.headContent && (
         <Head>{parseHtml(hubDescription.headContent)}</Head>
       )}
-      <WideLayout title={headline} fixedHeader headerBackground="#FFF">
+      <WideLayout title={headline} fixedHeader headerBackground="#FFF" image={getImageUrl(image)}>
         <div className={classes.contentUnderHeader}>
           <NavigationSubHeader hubName={name} allHubs={allHubs} isLocationHub={isLocationHub} />
           {<DonationCampaignInformation />}
@@ -258,6 +258,8 @@ export default function Hub({
             hubProjectsButtonRef={hubProjectsButtonRef}
             isLocationHub={isLocationHub}
             location={hubLocation}
+            allHubs={sectorHubs}
+            hubData={hubData}
             hubName={name}
           />
           <div className={classes.contentRefContainer}>

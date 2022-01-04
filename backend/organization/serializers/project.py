@@ -8,14 +8,13 @@ from django.conf import settings
 from django.utils.translation import get_language
 from location.models import Location
 from location.serializers import LocationStubSerializer
-from organization.models.content import ProjectComment
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
 from organization.models import (Project, ProjectCollaborators,
-                                 ProjectFollower, ProjectMember,
-                                 ProjectParents, ProjectLike,
-                                 ProjectsShared)
+                                 ProjectFollower, ProjectLike, ProjectMember,
+                                 ProjectParents)
+from organization.models.content import ProjectComment
 from organization.models.translations import ProjectTranslation
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.status import ProjectStatusSerializer
@@ -370,19 +369,6 @@ class ProjectLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectLike
         fields = ('user_profile', 'created_at')
-
-    def get_user_profile(self, obj):
-        user_profile = UserProfile.objects.get(user=obj.user)
-        serializer = UserProfileStubSerializer(user_profile)
-        return serializer.data
-
-
-class ProjectsSharedSerializer(serializers.ModelSerializer):
-    user_profile = serializers.SerializerMethodField()
-
-    class Meta:
-        model = ProjectsShared
-        fields = ('user_profile', 'created_at', 'shared_via')
 
     def get_user_profile(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user)

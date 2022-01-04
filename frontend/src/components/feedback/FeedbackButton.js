@@ -1,10 +1,10 @@
 import { Button, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Alert from "@material-ui/lab/Alert";
 import React, { useContext } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
+import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import FeedbackDialog from "./FeedbackDialog";
 
@@ -37,8 +37,8 @@ export default function FeedbackButton({ justLink, children }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const cookies = new Cookies();
-  const [message, setMessage] = React.useState("");
   const { locale } = useContext(UserContext);
+  const { showFeedbackMessage } = useContext(FeedbackContext);
   const texts = getTexts({ page: "communication", locale: locale });
 
   const submitFeedback = async (data) => {
@@ -51,7 +51,9 @@ export default function FeedbackButton({ justLink, children }) {
         token: token,
         locale: locale,
       });
-      setMessage(response.data);
+      showFeedbackMessage({
+        message: response.data,
+      });
     } catch (e) {
       console.log(e);
       console.log(e.response);
@@ -69,11 +71,6 @@ export default function FeedbackButton({ justLink, children }) {
 
   return (
     <>
-      {message && (
-        <Alert severity="success" className={classes.alert} onClose={() => setMessage("")}>
-          {message}
-        </Alert>
-      )}
       {justLink ? (
         <Link underline="none" onClick={handleOpenDialog} className={classes.link}>
           {children}
