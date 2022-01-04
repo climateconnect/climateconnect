@@ -53,6 +53,7 @@ class Messages extends React.Component {
     this.myRef = React.createRef();
     this.state = {
       isLoading: true,
+      scrollComponentHeight: 0,
     };
   }
 
@@ -62,14 +63,31 @@ class Messages extends React.Component {
     messageContainer.scrollComponent.scrollTop = messageContainer.scrollComponent.scrollHeight;
     this.setState({
       isLoading: false,
+      scrollComponentHeight: messageContainer.scrollComponent.clientHeight,
     });
   }
 
-  //scroll down when a new message is rendered
+  //scroll down when ...
+  // -  the scrollbar was at the bottom and the clientHeight changes
+  //    (because the user types a message)
+  // -  a new message is rendered
   componentDidUpdate(prevProps) {
+    const messageContainer = this.myRef.current.scrollComponent;
+    if (this.state.scrollComponentHeight !== messageContainer.clientHeight) {
+      if (
+        messageContainer.scrollTop ===
+        messageContainer.scrollHeight - this.state.scrollComponentHeight
+      ) {
+        messageContainer.scrollTop =
+          messageContainer.scrollTop +
+          (this.state.scrollComponentHeight - messageContainer.clientHeight);
+      }
+      this.setState({
+        scrollComponentHeight: messageContainer.clientHeight,
+      });
+    }
     if (prevProps.messages != this.props.messages) {
-      const messageContainer = this.myRef.current;
-      messageContainer.scrollComponent.scrollTop = messageContainer.scrollComponent.scrollHeight;
+      messageContainer.scrollTop = messageContainer.scrollHeight;
     }
   }
 
