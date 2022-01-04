@@ -68,8 +68,7 @@ class Messages extends React.Component {
   }
 
   //scroll down when ...
-  // -  the scrollbar was at the bottom and the clientHeight changes
-  //    (because the user types a message)
+  // -  the clientHeight changes (because the user types a message) and the scrollbar was at the bottom
   // -  a new message is rendered
   componentDidUpdate(prevProps) {
     const messageContainer = this.myRef.current.scrollComponent;
