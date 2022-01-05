@@ -94,7 +94,7 @@ export default function ProgressPost({ post, locale, texts, abortNewPost, token,
       const resp = await apiRequest({
         method: "post",
         url: "/api/projects/" + project.url_slug + "/create_post/",
-        payload: { title: postTitle, content: postContent, event_date: eventDate ?  eventDate : ""},
+        payload: { title: postTitle, content: postContent, event_date: eventDate ?  eventDate : null},
         token: token,
         locale: locale,
       }).then(abortNewPost());
@@ -163,18 +163,18 @@ export default function ProgressPost({ post, locale, texts, abortNewPost, token,
           <div className={classes.headerLeft}>
             {post.created_at && (
               <Typography>
-                {DateParser(post.created_at, locale)} ({texts.created_lower_case})
-              </Typography>
-            )}
-            {post.updated_at && (
-              <Typography>
-                {DateParser(post.updated_at, locale)} ({texts.updated})
-              </Typography>
-            )}
-            {post.event_date && (
-              <Typography>
-                {DateParser(post.event_date, locale)} ({texts.event_date})
-              </Typography>
+              {DateParser(post.created_at, locale)} ({texts.created_lower_case})
+            </Typography>
+          )}
+          {post.updated_at && (
+            <Typography>
+              {DateParser(post.updated_at, locale)} ({texts.updated})
+            </Typography>
+          )}
+          {post.event_date && (
+            <Typography>
+              {DateParser(post.event_date, locale)} ({texts.event_date})
+            </Typography>
             )}
 
             <Typography variant="h5" color="primary">

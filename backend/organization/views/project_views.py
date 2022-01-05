@@ -519,11 +519,7 @@ class CreateProjectPostView(APIView):
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
             raise NotFound(detail='Project not found.', code=status.HTTP_404_NOT_FOUND)
-        if 'event_date' in request.data :
-            event_date = request.data['event_date']
-        else :
-            event_date = None    
-        Post.objects.create(project=project, author_user=request.user, title=request.data['title'] ,content=request.data['content'], event_date=event_date)
+        Post.objects.create(project=project, author_user=request.user, title=request.data['title'] ,content=request.data['content'], event_date=request.data['event_date'])
         return Response({
             'message': 'Post successfully created.',
         }, status=status.HTTP_201_CREATED)
