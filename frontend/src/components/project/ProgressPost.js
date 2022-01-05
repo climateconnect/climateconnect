@@ -1,5 +1,5 @@
 import { Button, Card, IconButton, makeStyles, TextField, Typography } from "@material-ui/core";
-import React from "react";
+import React, { useState } from "react";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ButtonIcon from "./Buttons/ButtonIcon";
 
@@ -72,6 +72,22 @@ export default function ProgressPost({ post, locale, texts, abortNewPost }) {
     return new Intl.DateTimeFormat(locale).format(date);
   };
 
+  const [eventDate, setEventDate] = useState("");
+  const [postTitle, setPostTitle] = useState("");
+  const [postContent, setPostContent] = useState("");
+
+  const onEventDateChange = (e) => {
+    setEventDate(e.target.value);
+  };
+
+  const onTitleChange = (e) => {
+    setPostTitle(e.target.value);
+  };
+
+  const onContentChange = (e) => {
+    setPostContent(e.target.value);
+  };
+
   //Interface for editing
   if (post.currentlyEdited) {
     return (
@@ -79,7 +95,8 @@ export default function ProgressPost({ post, locale, texts, abortNewPost }) {
         <div className={classes.containerTop}>
           <TextField
             className={classes.textField}
-            value={post.title}
+            value={postTitle}
+            onChange={onTitleChange}
             variant="outlined"
             InputProps={{
               disableUnderline: true,
@@ -92,6 +109,8 @@ export default function ProgressPost({ post, locale, texts, abortNewPost }) {
             className={classes.dateField}
             label={texts.event_date_upper_case}
             type="date"
+            value={eventDate}
+            onChange={onEventDateChange}
             InputLabelProps={{
               shrink: true,
             }}
@@ -100,6 +119,8 @@ export default function ProgressPost({ post, locale, texts, abortNewPost }) {
         <TextField
           className={classes.textField}
           multiline
+          value={postContent}
+          onChange={onContentChange}
           rows={20}
           fullWidth={true}
           variant="outlined"
