@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProgressPost({ post, locale, texts, closeNewPost, token, project }) {
+export default function ProgressPost({ post, locale, texts, closeNewPost, token, project, refreshCurrentPosts }) {
   const classes = useStyles();
 
   const [eventDate, setEventDate] = useState("");
@@ -95,7 +95,11 @@ export default function ProgressPost({ post, locale, texts, closeNewPost, token,
         payload: { title: postTitle, content: postContent, event_date: eventDate ?  eventDate : null},
         token: token,
         locale: locale,
-      }).then(closeNewPost());
+      }).then(() => {
+        closeNewPost();
+        refreshCurrentPosts({ title: postTitle, content: postContent, event_date: eventDate ?  eventDate : null});
+
+      });
       return resp.data.results;
     } catch (err) {
       console.log(err);

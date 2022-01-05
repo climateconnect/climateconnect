@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import StepsTrackerVertical from "../general/StepsTrackerVertical";
 import ProgressPost from "./ProgressPost";
 
 export default function ProgressPosts({ posts, locale, texts, closeNewPost, token, project }) {
+  const [currentPosts, setCurrentPosts] = useState(posts);
+  const refreshCurrentPosts = (newPost) => {
+    setCurrentPosts(currentPosts.unshift(newPost));
+  }
   return (
     <>
       {posts.map((element, index) => (
@@ -18,6 +22,7 @@ export default function ProgressPosts({ posts, locale, texts, closeNewPost, toke
               closeNewPost={closeNewPost}
               token={token}
               project={project}
+              refreshCurrentPosts={refreshCurrentPosts}
             />
           }
         />
