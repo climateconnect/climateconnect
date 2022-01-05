@@ -507,6 +507,26 @@ class ListProjectPostsView(ListAPIView):
             project__url_slug=self.kwargs['url_slug'],
         ).order_by('id')
 
+class CreateProjectPostView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, url_slug):
+        if 'title' not in request.data or 'content' not in request.data :
+            return Response({
+                'message': 'Missing required parameters'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            raise NotFound(detail='Project not found.', code=status.HTTP_404_NOT_FOUND)
+        if 'event_date' in request.data :
+            event_date = request.data['event_date']
+        else :
+            event_date = None    
+        Post.objects.create(project=project, author_user=request.user, title=request.data['title'] ,content=request.data['content'], event_date=event_date)
+        return Response({
+            'message': 'Post successfully created.',
+        }, status=status.HTTP_201_CREATED)
 
 class ListProjectCommentsView(ListAPIView):
     permission_classes = [AllowAny]
