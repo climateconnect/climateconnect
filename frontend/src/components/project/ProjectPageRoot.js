@@ -442,6 +442,7 @@ export default function ProjectPageRoot({
             handleTabChange={handleTabChange}
             typesByTabValue={typesByTabValue}
             projectTabsRef={projectTabsRef}
+            token={token}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>

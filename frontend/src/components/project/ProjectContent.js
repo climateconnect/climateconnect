@@ -157,6 +157,7 @@ export default function ProjectContent({
   handleTabChange,
   typesByTabValue,
   projectTabsRef,
+  token,
 }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -385,8 +386,10 @@ export default function ProjectContent({
             <ProgressPosts
               posts={timelinePosts}
               locale={locale}
+              token={token}
               texts={texts}
               abortNewPost={abortNewPost}
+              project={project}
             />
           </div>
         )}

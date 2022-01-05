@@ -2,6 +2,7 @@ import { Button, Card, IconButton, makeStyles, TextField, Typography } from "@ma
 import React, { useState } from "react";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ButtonIcon from "./Buttons/ButtonIcon";
+import { apiRequest } from "../../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -66,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProgressPost({ post, locale, texts, abortNewPost }) {
+export default function ProgressPost({ post, locale, texts, abortNewPost, token, project }) {
   const classes = useStyles();
   const DateParser = ({ date, locale }) => {
     return new Intl.DateTimeFormat(locale).format(date);
@@ -86,6 +87,22 @@ export default function ProgressPost({ post, locale, texts, abortNewPost }) {
 
   const onContentChange = (e) => {
     setPostContent(e.target.value);
+  };
+
+  const createPost = async () => {
+    try {
+      const resp = await apiRequest({
+        method: "post",
+        url: "/api/projects/" + project.url_slug + "/create_post/",
+        payload: { title: postTitle, content: postContent, event_date: eventDate ?  eventDate : ""},
+        token: token,
+        locale: locale,
+      }).then(abortNewPost());
+      return resp.data.results;
+    } catch (err) {
+      console.log(err);
+      if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    }
   };
 
   //Interface for editing
@@ -132,7 +149,8 @@ export default function ProgressPost({ post, locale, texts, abortNewPost }) {
         />
 
         <div className={classes.editingButtonsContainer}>
-          <Button>{texts.save}</Button> <Button onClick={abortNewPost}>{texts.cancel}</Button>
+          <Button onClick={createPost}>{texts.save}</Button>
+          <Button onClick={abortNewPost}>{texts.cancel}</Button>
         </div>
       </Card>
     );
