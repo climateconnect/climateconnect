@@ -142,7 +142,7 @@ export default function ProjectPage({
           project={{
             ...project,
             team: members,
-            timeline_posts: posts.reverse().map((obj) => ({ ...obj, currentlyEdited: false })),
+            timeline_posts: posts.map((obj) => ({ ...obj, currentlyEdited: false })),
             comments: curComments,
           }}
           token={token}
@@ -233,7 +233,7 @@ async function getPostsByProject(projectUrl, token, locale) {
     if (resp.data.length === 0) {
       return null;
     } else {
-      return resp.data.results;
+      return resp.data.results.reverse();
     }
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
