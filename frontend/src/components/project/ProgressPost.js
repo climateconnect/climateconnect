@@ -68,7 +68,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProgressPost({ post, locale, texts, closeNewPost, token, project, refreshCurrentPosts }) {
+export default function ProgressPost({
+  post,
+  locale,
+  texts,
+  closeNewPost,
+  token,
+  project,
+  refreshCurrentPosts,
+}) {
   const classes = useStyles();
 
   const [eventDate, setEventDate] = useState("");
@@ -92,13 +100,20 @@ export default function ProgressPost({ post, locale, texts, closeNewPost, token,
       const resp = await apiRequest({
         method: "post",
         url: "/api/projects/" + project.url_slug + "/create_post/",
-        payload: { title: postTitle, content: postContent, event_date: eventDate ?  eventDate : null},
+        payload: {
+          title: postTitle,
+          content: postContent,
+          event_date: eventDate ? eventDate : null,
+        },
         token: token,
         locale: locale,
       }).then(() => {
         closeNewPost();
-        refreshCurrentPosts({ title: postTitle, content: postContent, event_date: eventDate ?  eventDate : null});
-
+        refreshCurrentPosts({
+          title: postTitle,
+          content: postContent,
+          event_date: eventDate ? eventDate : null,
+        });
       });
       return resp.data.results;
     } catch (err) {
@@ -165,7 +180,8 @@ export default function ProgressPost({ post, locale, texts, closeNewPost, token,
           <div className={classes.headerLeft}>
             {post.created_at && (
               <Typography>
-                {<DateDisplay date={new Date(post.created_at)} woTimeAgo />} ({texts.created_lower_case})
+                {<DateDisplay date={new Date(post.created_at)} woTimeAgo />} (
+                {texts.created_lower_case})
               </Typography>
             )}
             {post.updated_at && (

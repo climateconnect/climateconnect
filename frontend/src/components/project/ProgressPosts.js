@@ -6,7 +6,7 @@ export default function ProgressPosts({ posts, locale, texts, closeNewPost, toke
   const [currentPosts, setCurrentPosts] = useState(posts);
   const refreshCurrentPosts = (newPost) => {
     setCurrentPosts(currentPosts.unshift(newPost));
-  }
+  };
   return (
     <>
       {posts.map((element, index) => (
