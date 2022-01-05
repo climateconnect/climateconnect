@@ -180,7 +180,7 @@ export default function ProjectContent({
     setDisableEditingButton(true);
     timelinePosts.splice(0, 0, emptyPost);
   };
-  const abortNewPost = () => {
+  const closeNewPost = () => {
     setUserIsEditingPost(true);
     setDisableEditingButton(false);
     timelinePosts.shift();
@@ -388,7 +388,7 @@ export default function ProjectContent({
               locale={locale}
               token={token}
               texts={texts}
-              abortNewPost={abortNewPost}
+              closeNewPost={closeNewPost}
               project={project}
             />
           </div>

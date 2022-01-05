@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProgressPost({ post, locale, texts, abortNewPost, token, project }) {
+export default function ProgressPost({ post, locale, texts, closeNewPost, token, project }) {
   const classes = useStyles();
 
   const [eventDate, setEventDate] = useState("");
@@ -95,7 +95,7 @@ export default function ProgressPost({ post, locale, texts, abortNewPost, token,
         payload: { title: postTitle, content: postContent, event_date: eventDate ?  eventDate : null},
         token: token,
         locale: locale,
-      }).then(abortNewPost());
+      }).then(closeNewPost());
       return resp.data.results;
     } catch (err) {
       console.log(err);
@@ -148,7 +148,7 @@ export default function ProgressPost({ post, locale, texts, abortNewPost, token,
 
         <div className={classes.editingButtonsContainer}>
           <Button onClick={createPost}>{texts.save}</Button>
-          <Button onClick={abortNewPost}>{texts.cancel}</Button>
+          <Button onClick={closeNewPost}>{texts.cancel}</Button>
         </div>
       </Card>
     );
