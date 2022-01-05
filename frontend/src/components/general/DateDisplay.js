@@ -21,7 +21,7 @@ const shorten = (strings, languageCode) => {
   }, {});
 };
 
-export default function DateDisplay({ date, className, short }) {
+export default function DateDisplay({ date, className, short, woTimeAgo }) {
   const { locale } = useContext(UserContext);
   const formatters = {
     de: short ? shorten(germanStrings, "de") : germanStrings,
@@ -31,7 +31,7 @@ export default function DateDisplay({ date, className, short }) {
   const olderThanOneWeek = new Date() - date > ONE_WEEK_IN_MINISECONDS;
   return (
     <span className={className ? className : {}}>
-      {olderThanOneWeek ? (
+      {olderThanOneWeek || woTimeAgo ? (
         new Intl.DateTimeFormat(locale).format(date)
       ) : (
         <TimeAgo date={date} formatter={formatter} />

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ButtonIcon from "./Buttons/ButtonIcon";
 import { apiRequest } from "../../../public/lib/apiOperations";
+import DateDisplay from "../general/DateDisplay";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -69,9 +70,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProgressPost({ post, locale, texts, abortNewPost, token, project }) {
   const classes = useStyles();
-  const DateParser = ({ date, locale }) => {
-    return new Intl.DateTimeFormat(locale).format(date);
-  };
 
   const [eventDate, setEventDate] = useState("");
   const [postTitle, setPostTitle] = useState("");
@@ -163,18 +161,18 @@ export default function ProgressPost({ post, locale, texts, abortNewPost, token,
           <div className={classes.headerLeft}>
             {post.created_at && (
               <Typography>
-              {DateParser(post.created_at, locale)} ({texts.created_lower_case})
-            </Typography>
-          )}
-          {post.updated_at && (
-            <Typography>
-              {DateParser(post.updated_at, locale)} ({texts.updated})
-            </Typography>
-          )}
-          {post.event_date && (
-            <Typography>
-              {DateParser(post.event_date, locale)} ({texts.event_date})
-            </Typography>
+                {<DateDisplay date={new Date(post.created_at)} woTimeAgo />} ({texts.created_lower_case})
+              </Typography>
+            )}
+            {post.updated_at && (
+              <Typography>
+                {<DateDisplay date={new Date(post.updated_at)} woTimeAgo />} ({texts.updated})
+              </Typography>
+            )}
+            {post.event_date && (
+              <Typography>
+                {<DateDisplay date={new Date(post.event_date)} woTimeAgo />} ({texts.event_date})
+              </Typography>
             )}
 
             <Typography variant="h5" color="primary">
