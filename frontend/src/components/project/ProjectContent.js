@@ -173,15 +173,15 @@ export default function ProjectContent({
   const emptyPost = {
     currentlyEdited: true,
   };
-  const [userIsEditingPost, setUserIsEditingPost] = React.useState(false);
+  //const [userIsEditingPost, setUserIsEditingPost] = React.useState(false);
   const [disableEditingButton, setDisableEditingButton] = React.useState(false);
   const handleNewPost = () => {
-    setUserIsEditingPost(true);
+    //setUserIsEditingPost(true);
     setDisableEditingButton(true);
     timelinePosts.splice(0, 0, emptyPost);
   };
   const closeNewPost = () => {
-    setUserIsEditingPost(true);
+    //setUserIsEditingPost(true);
     setDisableEditingButton(false);
     timelinePosts.shift();
   };
