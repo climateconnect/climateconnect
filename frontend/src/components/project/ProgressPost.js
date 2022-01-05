@@ -82,6 +82,7 @@ export default function ProgressPost({
   const [eventDate, setEventDate] = useState("");
   const [postTitle, setPostTitle] = useState("");
   const [postContent, setPostContent] = useState("");
+  const today = new Intl.DateTimeFormat(locale).format(new Date);
 
   const onEventDateChange = (e) => {
     setEventDate(e.target.value);
@@ -113,6 +114,7 @@ export default function ProgressPost({
           title: postTitle,
           content: postContent,
           event_date: eventDate ? eventDate : null,
+          created_at: today,
         });
       });
       return resp.data.results;
