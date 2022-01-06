@@ -84,6 +84,12 @@ export default function ProgressPost({
   const [postContent, setPostContent] = useState("");
   const today = new Intl.DateTimeFormat(locale).format(new Date);
 
+  const resetStates = () => {
+    setEventDate("");
+    setPostTitle("");
+    setPostContent("");
+  };
+
   const onEventDateChange = (e) => {
     setEventDate(e.target.value);
   };
@@ -116,6 +122,7 @@ export default function ProgressPost({
           event_date: eventDate ? eventDate : null,
           created_at: today,
         });
+        resetStates();
       });
       return resp.data.results;
     } catch (err) {
