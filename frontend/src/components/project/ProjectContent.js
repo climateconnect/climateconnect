@@ -169,7 +169,12 @@ export default function ProjectContent({
       ? project.team.find((m) => m.id === user.id).permission
       : null;
 
-  const timelinePosts = project.timeline_posts;
+  const [currentPosts, setCurrentPosts] = React.useState(project.timeline_posts);
+  //To-Do: Find out why currentPosts can't be used instead of timelinePosts
+  const timelinePosts = project.timeline_posts; 
+  const refreshCurrentPosts = (newPost) => {
+    setCurrentPosts(timelinePosts.unshift(newPost));
+  };
   const emptyPost = {
     currentlyEdited: true,
   };
@@ -178,12 +183,12 @@ export default function ProjectContent({
   const handleNewPost = () => {
     //setUserIsEditingPost(true);
     setDisableEditingButton(true);
-    timelinePosts.splice(0, 0, emptyPost);
+    setCurrentPosts(timelinePosts.unshift(emptyPost));
   };
   const closeNewPost = () => {
     //setUserIsEditingPost(true);
     setDisableEditingButton(false);
-    timelinePosts.shift();
+    setCurrentPosts(timelinePosts.shift());
   };
 
   const CalculateMaxDisplayedDescriptionLength = (description) => {
@@ -390,6 +395,7 @@ export default function ProjectContent({
               texts={texts}
               closeNewPost={closeNewPost}
               project={project}
+              refreshCurrentPosts={refreshCurrentPosts}
             />
           </div>
         )}
