@@ -171,7 +171,7 @@ export default function ProjectContent({
 
   const [currentPosts, setCurrentPosts] = React.useState(project.timeline_posts);
   //To-Do: Find out why currentPosts can't be used instead of timelinePosts
-  const timelinePosts = project.timeline_posts; 
+  const timelinePosts = project.timeline_posts;
   const refreshCurrentPosts = (newPost) => {
     setCurrentPosts(timelinePosts.unshift(newPost));
   };
