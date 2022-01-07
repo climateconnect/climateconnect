@@ -4,7 +4,6 @@ from django.utils.translation import get_language
 from hubs.utility.hub import get_hub_attribute, get_hub_stat_attribute
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
-from hubs.models import Hub, HubStat
 from hubs.models import Hub, HubStat, LocalAmbassador
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from climateconnect_api.models import UserProfile
