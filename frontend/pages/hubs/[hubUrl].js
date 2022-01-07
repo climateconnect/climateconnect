@@ -93,6 +93,7 @@ export async function getServerSideProps(ctx) {
       stats: hubData.stats,
       statBoxTitle: hubData.stat_box_title,
       image_attribution: hubData.image_attribution,
+      localAmbassador: hubData.local_ambassador,
       hubLocation: hubData.location?.length > 0 ? hubData.location[0] : null,
       filterChoices: {
         project_categories: project_categories,
@@ -120,6 +121,7 @@ export default function Hub({
   statBoxTitle,
   stats,
   subHeadline,
+  localAmbassador,
   initialLocationFilter,
   filterChoices,
   sectorHubs,
@@ -242,6 +244,7 @@ export default function Hub({
           <HubContent
             hubQuickInfoRef={hubQuickInfoRef}
             headline={headline}
+            localAmbassador={localAmbassador}
             quickInfo={quickInfo}
             statBoxTitle={statBoxTitle}
             stats={stats}

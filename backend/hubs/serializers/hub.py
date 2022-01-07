@@ -5,7 +5,10 @@ from hubs.utility.hub import get_hub_attribute, get_hub_stat_attribute
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 from hubs.models import Hub, HubStat
-
+from hubs.models import Hub, HubStat, LocalAmbassador
+from climateconnect_api.serializers.user import UserProfileStubSerializer
+from climateconnect_api.models import UserProfile
+import json
 
 class HubSerializer(serializers.ModelSerializer):
     stats = serializers.SerializerMethodField()
@@ -18,6 +21,7 @@ class HubSerializer(serializers.ModelSerializer):
     quick_info = serializers.SerializerMethodField()
     stat_box_title = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
+    local_ambassador = serializers.SerializerMethodField()
 
     class Meta:
         model = Hub
@@ -33,7 +37,8 @@ class HubSerializer(serializers.ModelSerializer):
             "image_attribution",
             'hub_type',
             'location',
-            'url_slug'
+            'url_slug',
+            'local_ambassador'
         )
     
     def get_stats(self, obj):
@@ -67,6 +72,35 @@ class HubSerializer(serializers.ModelSerializer):
         if obj.location:
             return LocationSerializer(obj.location.all(), many=True).data
         return None
+
+    def get_local_ambassador(self, obj):
+            localAmbassador = LocalAmbassador.objects.filter(hub_id=obj.id)
+            if localAmbassador.exists():
+                return LocalAmbassadorSerializer(localAmbassador[0]).data
+            return None
+
+class LocalAmbassadorSerializer(serializers.ModelSerializer):
+    title = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
+    title_de = serializers.SerializerMethodField()
+    class Meta:
+        model = LocalAmbassador
+        fields = (
+            "title",
+            "user",
+            "title_de"
+        )
+
+    def get_title(self, obj):
+        return obj.title
+
+    def get_title_de(self, obj):
+        return obj.title_de
+
+    def get_user(self, obj):
+        user = UserProfile.objects.filter(id=obj.user.id)
+        if user.exists():
+            return UserProfileStubSerializer(user[0]).data
 
 class HubStubSerializer(serializers.ModelSerializer):
     hub_type = serializers.SerializerMethodField()
