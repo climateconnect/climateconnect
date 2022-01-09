@@ -1,4 +1,13 @@
-import { Button, Card, IconButton, makeStyles, Menu, MenuItem, TextField, Typography } from "@material-ui/core";
+import {
+  Button,
+  Card,
+  IconButton,
+  makeStyles,
+  Menu,
+  MenuItem,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import React, { useState } from "react";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ButtonIcon from "../Buttons/ButtonIcon";
@@ -90,14 +99,10 @@ export default function ProgressPost({ post, texts }) {
           <IconButton className={classes.menuButton} onClick={handleMenuClick}>
             <MoreVertIcon />
           </IconButton>
-          <Menu
-            open={open}
-            anchorEl={anchorEl}
-            keepMounted
-            onClose={handleMenuClose}>
-                <MenuItem>{texts.edit}</MenuItem>
-                <MenuItem>{texts.delete}</MenuItem>
-            </Menu>
+          <Menu open={open} anchorEl={anchorEl} keepMounted onClose={handleMenuClose}>
+            <MenuItem>{texts.edit}</MenuItem>
+            <MenuItem>{texts.delete}</MenuItem>
+          </Menu>
         </div>
       </div>
       <TextField

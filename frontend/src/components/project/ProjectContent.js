@@ -174,7 +174,7 @@ export default function ProjectContent({
   const [disableEditingButton, setDisableEditingButton] = React.useState(false);
   const refreshCurrentPosts = (newPost) => {
     setDisableEditingButton(false);
-    setCurrentPosts([newPost, ...currentPosts.filter((f) => f.currentlyEdited !== true)])
+    setCurrentPosts([newPost, ...currentPosts.filter((f) => f.currentlyEdited !== true)]);
   };
   const handleNewPost = () => {
     //setUserIsEditingPost(true);
