@@ -170,25 +170,24 @@ export default function ProjectContent({
       : null;
 
   const [currentPosts, setCurrentPosts] = React.useState(project.timeline_posts);
-  //To-Do: Find out why currentPosts can't be used instead of timelinePosts
-  const timelinePosts = project.timeline_posts;
-  const refreshCurrentPosts = (newPost) => {
-    setCurrentPosts(timelinePosts.unshift(newPost));
-  };
-  const emptyPost = {
-    currentlyEdited: true,
-  };
   //const [userIsEditingPost, setUserIsEditingPost] = React.useState(false);
   const [disableEditingButton, setDisableEditingButton] = React.useState(false);
+  const refreshCurrentPosts = (newPost) => {
+    setDisableEditingButton(false);
+    setCurrentPosts([newPost, ...currentPosts.filter((f) => f.currentlyEdited !== true)])
+  };
   const handleNewPost = () => {
     //setUserIsEditingPost(true);
     setDisableEditingButton(true);
-    setCurrentPosts(timelinePosts.unshift(emptyPost));
+    const emptyPost = {
+      currentlyEdited: true,
+    };
+    setCurrentPosts([emptyPost, ...currentPosts]);
   };
   const closeNewPost = () => {
     //setUserIsEditingPost(true);
     setDisableEditingButton(false);
-    setCurrentPosts(timelinePosts.shift());
+    setCurrentPosts([...currentPosts.filter((f) => f.currentlyEdited !== true)]);
   };
 
   const CalculateMaxDisplayedDescriptionLength = (description) => {
@@ -389,7 +388,7 @@ export default function ProjectContent({
         {project.timeline_posts && project.timeline_posts.length > 0 && (
           <div className={classes.progressContent}>
             <ProgressPosts
-              posts={timelinePosts}
+              posts={currentPosts}
               locale={locale}
               token={token}
               texts={texts}

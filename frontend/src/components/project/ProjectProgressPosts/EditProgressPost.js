@@ -67,7 +67,6 @@ export default function ProgressPost({
         token: token,
         locale: locale,
       }).then(() => {
-        closeNewPost();
         refreshCurrentPosts({
           title: postTitle,
           content: postContent,
