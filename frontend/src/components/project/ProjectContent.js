@@ -16,7 +16,7 @@ import MiniProfilePreview from "../profile/MiniProfilePreview";
 import DateDisplay from "./../general/DateDisplay";
 import ProjectStatus from "./ProjectStatus";
 import DiscussionPreview from "./DiscussionPreview";
-import ProgressPosts from "./ProgressPosts";
+import ProgressPosts from "./ProjectProgressPosts/ProgressPosts";
 import youtubeRegex from "youtube-regex";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
