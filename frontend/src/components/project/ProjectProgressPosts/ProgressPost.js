@@ -1,5 +1,5 @@
-import { Button, Card, IconButton, makeStyles, TextField, Typography } from "@material-ui/core";
-import React from "react";
+import { Button, Card, IconButton, makeStyles, Menu, MenuItem, TextField, Typography } from "@material-ui/core";
+import React, { useState } from "react";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ButtonIcon from "../Buttons/ButtonIcon";
 import DateDisplay from "../../general/DateDisplay";
@@ -41,6 +41,15 @@ const useStyles = makeStyles((theme) => ({
 export default function ProgressPost({ post, texts }) {
   const classes = useStyles();
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <Card className={classes.card} raised="true">
       <div className={classes.header}>
@@ -78,9 +87,17 @@ export default function ProgressPost({ post, texts }) {
             Like • 12
           </Button>
 
-          <IconButton className={classes.menuButton}>
+          <IconButton className={classes.menuButton} onClick={handleMenuClick}>
             <MoreVertIcon />
           </IconButton>
+          <Menu
+            open={open}
+            anchorEl={anchorEl}
+            keepMounted
+            onClose={handleMenuClose}>
+                <MenuItem>{texts.edit}</MenuItem>
+                <MenuItem>{texts.delete}</MenuItem>
+            </Menu>
         </div>
       </div>
       <TextField

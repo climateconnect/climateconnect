@@ -975,5 +975,13 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Event Date",
       de: "Eventdatum",
     },
+    edit: {
+      en: "Edit",
+      de: "Bearbeiten",
+    },
+    delete: {
+      en: "Delete",
+      de: "Löschen",
+    },
   };
 }
