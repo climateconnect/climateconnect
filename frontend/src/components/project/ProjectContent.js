@@ -175,14 +175,14 @@ export default function ProjectContent({
     setUserIsEditingPost(bool);
   };
   const [disableEditingButton, setDisableEditingButton] = React.useState(false);
-  const refreshCurrentPosts = ({id: id, title: title, content: content, eventDate: eventDate}) => {
-    const updatedPost = currentPosts.find((p) => p.id === id);
-    updatedPost.title = title;
-    updatedPost.content = content;
-    updatedPost.event_date = eventDate;
+  const refreshCurrentPosts = (post) => {
     setDisableEditingButton(false);
     displayEditingInterface(false);
-    setCurrentPosts([...currentPosts.filter((f) => f.id > id), updatedPost, ...currentPosts.filter((f) => f.id < id)])
+    setCurrentPosts([
+      ...currentPosts.filter((f) => f.id > post.id),
+      post,
+      ...currentPosts.filter((f) => f.id < post.id),
+    ]);
   };
   const handleNewPost = () => {
     displayEditingInterface(true);

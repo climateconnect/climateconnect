@@ -55,32 +55,30 @@ export default function ProgressPost({
     setPostContent(e.target.value);
   };
 
+  const createData = {
+    title: postTitle,
+    content: postContent,
+    event_date: eventDate ? eventDate : null,
+  };
+  const refreshData = {
+    ...createData,
+    created_at: post.created_at ? post.created_at : today,
+    updated_at: post.currentlyUpdated ? today : post.updated_at ? post.updated_at : null,
+  };
   const createPost = async () => {
-    try {
-      const resp = await apiRequest({
-        method: "post",
-        url: "/api/projects/" + project.url_slug + "/create_post/",
-        payload: {
-          title: postTitle,
-          content: postContent,
-          event_date: eventDate ? eventDate : null,
-        },
-        token: token,
-        locale: locale,
-      }).then(() => {
-        refreshCurrentPosts({
-          id: post.id,
-          title: postTitle,
-          content: postContent,
-          event_date: eventDate ? eventDate : null,
-          created_at: today,
-        });
+    await apiRequest({
+      method: "post",
+      url: "/api/projects/" + project.url_slug + "/create_post/",
+      payload: createData,
+      token: token,
+      locale: locale,
+    }).then((response) => {
+      console.log(response.data.id);
+      refreshCurrentPosts({
+        id: response.data.id,
+        ...refreshData,
       });
-      return resp.data.results;
-    } catch (err) {
-      console.log(err);
-      if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    }
+    });
   };
 
   const handleCancel = () => {
