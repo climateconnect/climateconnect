@@ -12,7 +12,7 @@ SECRET_KEY=<Django secret-key e.g. output of $ openssl rand -base64 32>
 ALLOWED_HOSTS=<hosts allowed. eg: http://localhost:8000>
 ENVIRONMENT=<Environment you are in, eg: development or production>
 
-MEDIA_ROOT=<absolute path to climateconnect/backend/media, e.g. "/home/user/climateconnect_end/climateconnect/backend/media">
+MEDIA_ROOT=<absolute path to climateconnect/backend/media, e.g. "/home/user/climateconnect_env/climateconnect/backend/media">
 DEBUG=<Set to True, locally>
 AUTO_VERIFY=<Set to True, locally>
 LOCATION_SERVICE_BASE_URL=<Url of location geocoding API>
