@@ -9,26 +9,27 @@ def get_badges(user_profile):
     badges = []
     if all_donations.exists():
         d = get_oldest_relevant_donation(all_donations)
-        today = datetime.datetime.today()
-        time_donated = time_donated = today - d.date_first_received.replace(tzinfo=None)
         if d:
-            highest_donations_in_streak = all_donations.filter(
-                date_first_received__gte=d.date_first_received
-            ).order_by(
-                'donation_amount'
-            )
-            highest_donation_in_streak = highest_donations_in_streak[0]
-            badge = DonorBadge.objects.filter(
-                (
-                    Q(regular_donor_minimum_duration__lte=time_donated)
-                    |
-                    Q(instantly_awarded_over_amount__lte=highest_donation_in_streak.donation_amount)
-                ),
-                is_active=True
-            ).order_by(
-                "-regular_donor_minimum_duration"
-            )[0]
-            badges.append(badge)
+            today = datetime.datetime.today()
+            time_donated = time_donated = today - d.date_first_received.replace(tzinfo=None)
+            if d:
+                highest_donations_in_streak = all_donations.filter(
+                    date_first_received__gte=d.date_first_received
+                ).order_by(
+                    'donation_amount'
+                )
+                highest_donation_in_streak = highest_donations_in_streak[0]
+                badge = DonorBadge.objects.filter(
+                    (
+                        Q(regular_donor_minimum_duration__lte=time_donated)
+                        |
+                        Q(instantly_awarded_over_amount__lte=highest_donation_in_streak.donation_amount)
+                    ),
+                    is_active=True
+                ).order_by(
+                    "-regular_donor_minimum_duration"
+                )[0]
+                badges.append(badge)
 
     return badges
 
