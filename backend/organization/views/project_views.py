@@ -519,10 +519,8 @@ class CreateProjectPostView(APIView):
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
             raise NotFound(detail='Project not found.', code=status.HTTP_404_NOT_FOUND)
-        Post.objects.create(project=project, author_user=request.user, title=request.data['title'] ,content=request.data['content'], event_date=request.data['event_date'])
-        return Response({
-            'message': 'Post successfully created.',
-        }, status=status.HTTP_201_CREATED)
+        post = Post.objects.create(project=project, author_user=request.user, title=request.data['title'] ,content=request.data['content'], event_date=request.data['event_date'])
+        return Response({'id': post.id}, status=status.HTTP_201_CREATED)
 
 class ListProjectCommentsView(ListAPIView):
     permission_classes = [AllowAny]
