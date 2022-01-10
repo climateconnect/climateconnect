@@ -193,10 +193,10 @@ export default function ProjectContent({
     };
     setCurrentPosts([emptyPost, ...currentPosts]);
   };
-  const closeNewPost = () => {
+  const closeEditingInterface = (deleteUnsaved) => {
     displayEditingInterface(false);
     setDisableEditingButton(false);
-    setCurrentPosts([...currentPosts.filter((f) => f.currentlyEdited !== true)]);
+    deleteUnsaved && setCurrentPosts([...currentPosts.filter((f) => f.currentlyEdited !== true)]);
   };
 
   const CalculateMaxDisplayedDescriptionLength = (description) => {
@@ -401,7 +401,7 @@ export default function ProjectContent({
               locale={locale}
               token={token}
               texts={texts}
-              closeNewPost={closeNewPost}
+              closeEditingInterface={closeEditingInterface}
               project={project}
               refreshCurrentPosts={refreshCurrentPosts}
               displayEditingInterface={displayEditingInterface}

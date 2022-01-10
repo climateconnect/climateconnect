@@ -30,11 +30,10 @@ export default function ProgressPost({
   post,
   locale,
   texts,
-  closeNewPost,
+  closeEditingInterface,
   token,
   project,
   refreshCurrentPosts,
-  displayEditingInterface,
 }) {
   const classes = useStyles();
 
@@ -73,7 +72,6 @@ export default function ProgressPost({
       token: token,
       locale: locale,
     }).then((response) => {
-      console.log(response.data.id);
       refreshCurrentPosts({
         id: response.data.id,
         ...refreshData,
@@ -83,22 +81,20 @@ export default function ProgressPost({
 
   const handleCancel = () => {
     if (post.currentlyEdited) {
-      closeNewPost();
-    } else if (post.currentlyUpdated) {
+      closeEditingInterface(true);
+    } else {
       post.currentlyUpdated = false;
-      displayEditingInterface(false);
+      closeEditingInterface(false);
     }
   };
 
   const handleSave = () => {
     if (post.currentlyEdited) {
-      createPost();
       post.currentlyEdited = false;
-      displayEditingInterface(false);
-    } else if (post.currentlyUpdated) {
-      //updatePost();
+      createPost();
+    } else {
       post.currentlyUpdated = false;
-      displayEditingInterface(false);
+      //updatePost();
     }
   };
 

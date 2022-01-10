@@ -7,7 +7,7 @@ export default function ProgressPosts({
   posts,
   locale,
   texts,
-  closeNewPost,
+  closeEditingInterface,
   token,
   project,
   refreshCurrentPosts,
@@ -26,11 +26,10 @@ export default function ProgressPosts({
                 post={element}
                 locale={locale}
                 texts={texts}
-                closeNewPost={closeNewPost}
+                closeEditingInterface={closeEditingInterface}
                 token={token}
                 project={project}
                 refreshCurrentPosts={refreshCurrentPosts}
-                displayEditingInterface={displayEditingInterface}
               />
             ) : (
               <ProgressPost
