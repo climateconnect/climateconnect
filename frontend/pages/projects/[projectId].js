@@ -142,7 +142,11 @@ export default function ProjectPage({
           project={{
             ...project,
             team: members,
-            timeline_posts: posts.map((obj) => ({ ...obj, currentlyEdited: false })),
+            timeline_posts: posts.map((obj) => ({
+              ...obj,
+              currentlyEdited: false,
+              currentlyUpdated: false,
+            })),
             comments: curComments,
           }}
           token={token}

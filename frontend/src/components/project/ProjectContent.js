@@ -170,22 +170,31 @@ export default function ProjectContent({
       : null;
 
   const [currentPosts, setCurrentPosts] = React.useState(project.timeline_posts);
-  //const [userIsEditingPost, setUserIsEditingPost] = React.useState(false);
+  const [userIsEditingPost, setUserIsEditingPost] = React.useState(false);
+  const displayEditingInterface = (bool) => {
+    setUserIsEditingPost(bool);
+  };
   const [disableEditingButton, setDisableEditingButton] = React.useState(false);
-  const refreshCurrentPosts = (newPost) => {
+  const refreshCurrentPosts = ({id: id, title: title, content: content, eventDate: eventDate}) => {
+    const updatedPost = currentPosts.find((p) => p.id === id);
+    updatedPost.title = title;
+    updatedPost.content = content;
+    updatedPost.event_date = eventDate;
     setDisableEditingButton(false);
-    setCurrentPosts([newPost, ...currentPosts.filter((f) => f.currentlyEdited !== true)]);
+    displayEditingInterface(false);
+    setCurrentPosts([...currentPosts.filter((f) => f.id > id), updatedPost, ...currentPosts.filter((f) => f.id < id)])
   };
   const handleNewPost = () => {
-    //setUserIsEditingPost(true);
+    displayEditingInterface(true);
     setDisableEditingButton(true);
     const emptyPost = {
+      id: currentPosts[0].id+1,
       currentlyEdited: true,
     };
     setCurrentPosts([emptyPost, ...currentPosts]);
   };
   const closeNewPost = () => {
-    //setUserIsEditingPost(true);
+    displayEditingInterface(false);
     setDisableEditingButton(false);
     setCurrentPosts([...currentPosts.filter((f) => f.currentlyEdited !== true)]);
   };
@@ -395,6 +404,7 @@ export default function ProjectContent({
               closeNewPost={closeNewPost}
               project={project}
               refreshCurrentPosts={refreshCurrentPosts}
+              displayEditingInterface={displayEditingInterface}
             />
           </div>
         )}

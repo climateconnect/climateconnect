@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProgressPost({ post, texts }) {
+export default function ProgressPost({ post, texts, displayEditingInterface }) {
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -59,6 +59,10 @@ export default function ProgressPost({ post, texts }) {
     setAnchorEl(null);
   };
 
+  const handleEdit = () => {
+    post.currentlyUpdated = true;
+    displayEditingInterface(true);
+  };
   return (
     <Card className={classes.card} raised="true">
       <div className={classes.header}>
@@ -100,7 +104,7 @@ export default function ProgressPost({ post, texts }) {
             <MoreVertIcon />
           </IconButton>
           <Menu open={open} anchorEl={anchorEl} keepMounted onClose={handleMenuClose}>
-            <MenuItem>{texts.edit}</MenuItem>
+            <MenuItem onClick={handleEdit}>{texts.edit}</MenuItem>
             <MenuItem>{texts.delete}</MenuItem>
           </Menu>
         </div>

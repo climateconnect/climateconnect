@@ -34,12 +34,13 @@ export default function ProgressPost({
   token,
   project,
   refreshCurrentPosts,
+  displayEditingInterface,
 }) {
   const classes = useStyles();
 
-  const [eventDate, setEventDate] = useState("");
-  const [postTitle, setPostTitle] = useState("");
-  const [postContent, setPostContent] = useState("");
+  const [eventDate, setEventDate] = useState(post.event_date ? post.event_date : "");
+  const [postTitle, setPostTitle] = useState(post.title ? post.title : "");
+  const [postContent, setPostContent] = useState(post.content ? post.content : "");
   const today = new Intl.DateTimeFormat(locale).format(new Date());
 
   const onEventDateChange = (e) => {
@@ -68,6 +69,7 @@ export default function ProgressPost({
         locale: locale,
       }).then(() => {
         refreshCurrentPosts({
+          id: post.id,
           title: postTitle,
           content: postContent,
           event_date: eventDate ? eventDate : null,
@@ -81,54 +83,72 @@ export default function ProgressPost({
     }
   };
 
-  //Interface for editing
-  if (post.currentlyEdited) {
-    return (
-      <Card className={classes.card} raised="true">
-        <div className={classes.containerTop}>
-          <TextField
-            className={classes.textField}
-            value={postTitle}
-            onChange={onTitleChange}
-            variant="outlined"
-            InputProps={{
-              disableUnderline: true,
-            }}
-            label={texts.title}
-            helperText={texts.add_your_title_here}
-            fullWidth={true}
-          />
-          <TextField
-            className={classes.dateField}
-            label={texts.event_date_upper_case}
-            type="date"
-            value={eventDate}
-            onChange={onEventDateChange}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </div>
+  const handleCancel = () => {
+    if (post.currentlyEdited) {
+      closeNewPost();
+    } else if (post.currentlyUpdated) {
+      post.currentlyUpdated = false;
+      displayEditingInterface(false);
+    }
+  };
+
+  const handleSave = () => {
+    if (post.currentlyEdited) {
+      createPost();
+      post.currentlyEdited = false;
+      displayEditingInterface(false);
+    } else if (post.currentlyUpdated) {
+      //updatePost();
+      post.currentlyUpdated = false;
+      displayEditingInterface(false);
+    }
+  };
+
+  return (
+    <Card className={classes.card} raised="true">
+      <div className={classes.containerTop}>
         <TextField
           className={classes.textField}
-          multiline
-          value={postContent}
-          onChange={onContentChange}
-          rows={20}
-          fullWidth={true}
+          value={postTitle}
+          onChange={onTitleChange}
           variant="outlined"
           InputProps={{
             disableUnderline: true,
           }}
-          helperText={post.currentlyEdited ? texts.add_your_text_here : ""}
-          label={post.currentlyEdited ? texts.text : ""}
+          label={texts.title}
+          helperText={texts.add_your_title_here}
+          fullWidth={true}
         />
+        <TextField
+          className={classes.dateField}
+          label={texts.event_date_upper_case}
+          type="date"
+          value={eventDate}
+          onChange={onEventDateChange}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+      </div>
+      <TextField
+        className={classes.textField}
+        multiline
+        value={postContent}
+        onChange={onContentChange}
+        rows={20}
+        fullWidth={true}
+        variant="outlined"
+        InputProps={{
+          disableUnderline: true,
+        }}
+        helperText={post.currentlyEdited ? texts.add_your_text_here : ""}
+        label={post.currentlyEdited ? texts.text : ""}
+      />
 
-        <div className={classes.editingButtonsContainer}>
-          <Button onClick={createPost}>{texts.save}</Button>
-          <Button onClick={closeNewPost}>{texts.cancel}</Button>
-        </div>
-      </Card>
-    );
-  }
+      <div className={classes.editingButtonsContainer}>
+        <Button onClick={handleSave}>{texts.save}</Button>
+        <Button onClick={handleCancel}>{texts.cancel}</Button>
+      </div>
+    </Card>
+  );
 }

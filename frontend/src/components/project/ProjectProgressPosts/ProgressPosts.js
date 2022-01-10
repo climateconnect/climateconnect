@@ -11,6 +11,7 @@ export default function ProgressPosts({
   token,
   project,
   refreshCurrentPosts,
+  displayEditingInterface,
 }) {
   return (
     <>
@@ -20,7 +21,7 @@ export default function ProgressPosts({
           index={index}
           lastIndex={posts.length - 1}
           content={
-            element.currentlyEdited ? (
+            element.currentlyEdited || element.currentlyUpdated ? (
               <EditProgressPost
                 post={element}
                 locale={locale}
@@ -29,9 +30,14 @@ export default function ProgressPosts({
                 token={token}
                 project={project}
                 refreshCurrentPosts={refreshCurrentPosts}
+                displayEditingInterface={displayEditingInterface}
               />
             ) : (
-              <ProgressPost post={element} texts={texts} />
+              <ProgressPost
+                post={element}
+                texts={texts}
+                displayEditingInterface={displayEditingInterface}
+              />
             )
           }
         />
