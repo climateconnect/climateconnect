@@ -365,7 +365,7 @@ export default function Header({
     if (isMediumScreen) {
       return transparentHeader ? "/images/logo_white_no_text.svg" : "/images/logo_no_text.svg";
     }
-    return transparentHeader ? "/images/logo_white.svg" : "/images/logo.png";
+    return transparentHeader ? "/images/logo_white.png" : "/images/logo.png";
   };
 
   const logo = getLogo();
