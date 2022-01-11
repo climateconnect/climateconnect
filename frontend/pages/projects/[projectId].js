@@ -237,7 +237,7 @@ async function getPostsByProject(projectUrl, token, locale) {
     if (resp.data.length === 0) {
       return null;
     } else {
-      return resp.data.results.reverse();
+      return resp.data.results;
     }
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);

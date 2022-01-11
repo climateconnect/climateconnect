@@ -505,7 +505,7 @@ class ListProjectPostsView(ListAPIView):
     def get_queryset(self):
         return Post.objects.filter(
             project__url_slug=self.kwargs['url_slug'],
-        ).order_by('id')
+        ).order_by('-id')
 
 class CreateProjectPostView(APIView):
     permission_classes = [IsAuthenticated]
