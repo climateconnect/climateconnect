@@ -78,8 +78,12 @@ urlpatterns = [
         project_views.ListProjectPostsView.as_view(), name="project-posts-api"
     ),
     path(
-        'projects/<str:url_slug>/cud_post/',
-        project_views.ProjectPostAPIView.as_view(), name="cud-project-post"
+        'projects/<str:url_slug>/create_update_post/',
+        project_views.ProjectPostAPIView.as_view(), name="create-or-update-project-post"
+    ),
+    path(
+        'projects/<str:url_slug>/delete_post/<int:post_id>/',
+        project_views.ProjectPostAPIView.as_view(), name="delete-project-post"
     ),
     path(
         'projects/<str:url_slug>/comments/',

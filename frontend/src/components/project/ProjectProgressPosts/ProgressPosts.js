@@ -35,7 +35,10 @@ export default function ProgressPosts({
               <ProgressPost
                 post={element}
                 texts={texts}
+                token={token}
+                project={project}
                 displayEditingInterface={displayEditingInterface}
+                refreshCurrentPosts={refreshCurrentPosts}
               />
             )
           }

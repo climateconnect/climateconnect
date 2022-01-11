@@ -12,6 +12,7 @@ import React, { useState } from "react";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ButtonIcon from "../Buttons/ButtonIcon";
 import DateDisplay from "../../general/DateDisplay";
+import { apiRequest } from "../../../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -47,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProgressPost({ post, texts, displayEditingInterface }) {
+export default function ProgressPost({ post, texts, displayEditingInterface, token, refreshCurrentPosts, project }) {
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -62,6 +63,18 @@ export default function ProgressPost({ post, texts, displayEditingInterface }) {
   const handleEdit = () => {
     post.currentlyUpdated = true;
     displayEditingInterface(true);
+  };
+  const handleDelete = async () => {
+    await apiRequest({
+      method: "delete",
+      url: "/api/projects/" + project.url_slug + "/delete_post/" + post.id + "/",
+      token: token,
+    }).then(() => {
+      refreshCurrentPosts({
+        deletePost: true,
+        id: post.id,
+      });
+    });
   };
   return (
     <Card className={classes.card} raised="true">
@@ -105,7 +118,7 @@ export default function ProgressPost({ post, texts, displayEditingInterface }) {
           </IconButton>
           <Menu open={open} anchorEl={anchorEl} keepMounted onClose={handleMenuClose}>
             <MenuItem onClick={handleEdit}>{texts.edit}</MenuItem>
-            <MenuItem>{texts.delete}</MenuItem>
+            <MenuItem onClick={handleDelete}>{texts.delete}</MenuItem>
           </Menu>
         </div>
       </div>

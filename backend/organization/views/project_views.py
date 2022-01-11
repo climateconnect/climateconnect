@@ -537,6 +537,14 @@ class ProjectPostAPIView(APIView):
         post.save()
         return Response(status=status.HTTP_200_OK)
 
+    def delete(self, request, url_slug, post_id):
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            raise NotFound(detail='Post not found.', code=status.HTTP_404_NOT_FOUND)
+        post.delete()
+        return Response(status=status.HTTP_200_OK)
+
 class ListProjectCommentsView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]

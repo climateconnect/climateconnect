@@ -68,7 +68,7 @@ export default function ProgressPost({
   const handleSave = async () => {
     await apiRequest({
       method: post.currentlyEdited ? "post" : "patch",
-      url: "/api/projects/" + project.url_slug + "/cud_post/",
+      url: "/api/projects/" + project.url_slug + "/create_update_post/",
       payload: post.currentlyEdited ? createData : updateData,
       token: token,
       locale: locale,

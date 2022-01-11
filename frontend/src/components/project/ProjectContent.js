@@ -176,6 +176,13 @@ export default function ProjectContent({
   };
   const [disableEditingButton, setDisableEditingButton] = React.useState(false);
   const refreshCurrentPosts = (post) => {
+    if (post.deletePost) {
+      setCurrentPosts([
+        ...currentPosts.filter((f) => f.id > post.id),
+        ...currentPosts.filter((f) => f.id < post.id),
+      ]);
+      return
+    }
     setDisableEditingButton(false);
     displayEditingInterface(false);
     setCurrentPosts([
