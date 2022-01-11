@@ -181,7 +181,7 @@ export default function ProjectContent({
         ...currentPosts.filter((f) => f.id > post.id),
         ...currentPosts.filter((f) => f.id < post.id),
       ]);
-      return
+      return;
     }
     setDisableEditingButton(false);
     displayEditingInterface(false);
@@ -195,7 +195,7 @@ export default function ProjectContent({
     displayEditingInterface(true);
     setDisableEditingButton(true);
     const emptyPost = {
-      id: currentPosts[0].id+1,
+      id: currentPosts[0].id + 1,
       currentlyEdited: true,
     };
     setCurrentPosts([emptyPost, ...currentPosts]);
@@ -392,17 +392,17 @@ export default function ProjectContent({
             </Typography>
           </div>
           {user_permission &&
-                [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission) && (
-            <Button
-              className={classes.newPostButton}
-              variant="contained"
-              color="primary"
-              onClick={handleNewPost}
-              disabled={disableEditingButton}
-            >
-              {texts.new_update}
-            </Button>
-          )}
+            [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission) && (
+              <Button
+                className={classes.newPostButton}
+                variant="contained"
+                color="primary"
+                onClick={handleNewPost}
+                disabled={disableEditingButton}
+              >
+                {texts.new_update}
+              </Button>
+            )}
         </div>
         {project.timeline_posts && project.timeline_posts.length > 0 && (
           <div className={classes.progressContent}>

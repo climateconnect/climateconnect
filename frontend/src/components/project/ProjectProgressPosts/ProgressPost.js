@@ -122,17 +122,17 @@ export default function ProgressPost({
             Like • 12
           </Button>
           {userPermission &&
-                [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(userPermission) && (
-            <>
-              <IconButton className={classes.menuButton} onClick={handleMenuClick}>
-                <MoreVertIcon />
-              </IconButton>
-              <Menu open={open} anchorEl={anchorEl} keepMounted onClose={handleMenuClose}>
-                <MenuItem onClick={handleEdit}>{texts.edit}</MenuItem>
-                <MenuItem onClick={handleDelete}>{texts.delete}</MenuItem>
-              </Menu>
-            </>
-          )}
+            [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(userPermission) && (
+              <>
+                <IconButton className={classes.menuButton} onClick={handleMenuClick}>
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu open={open} anchorEl={anchorEl} keepMounted onClose={handleMenuClose}>
+                  <MenuItem onClick={handleEdit}>{texts.edit}</MenuItem>
+                  <MenuItem onClick={handleDelete}>{texts.delete}</MenuItem>
+                </Menu>
+              </>
+            )}
         </div>
       </div>
       <TextField

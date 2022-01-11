@@ -73,7 +73,7 @@ export default function ProgressPost({
       token: token,
       locale: locale,
     }).then((response) => {
-      post.currentlyEdited ? post.currentlyEdited = false : post.currentlyUpdated = false;
+      post.currentlyEdited ? (post.currentlyEdited = false) : (post.currentlyUpdated = false);
       refreshCurrentPosts({
         id: post.currentlyEdited ? response.data.id : post.id,
         ...refreshData,
