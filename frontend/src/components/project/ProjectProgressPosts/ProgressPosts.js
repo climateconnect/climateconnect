@@ -12,6 +12,7 @@ export default function ProgressPosts({
   project,
   refreshCurrentPosts,
   displayEditingInterface,
+  userPermission,
 }) {
   return (
     <>
@@ -39,6 +40,7 @@ export default function ProgressPosts({
                 project={project}
                 displayEditingInterface={displayEditingInterface}
                 refreshCurrentPosts={refreshCurrentPosts}
+                userPermission={userPermission}
               />
             )
           }

@@ -391,15 +391,18 @@ export default function ProjectContent({
               {texts.follow_the_project_to_be_notified_when_they_make_an_update_post}
             </Typography>
           </div>
-          <Button
-            className={classes.newPostButton}
-            variant="contained"
-            color="primary"
-            onClick={handleNewPost}
-            disabled={disableEditingButton}
-          >
-            {texts.new_update}
-          </Button>
+          {user_permission &&
+                [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission) && (
+            <Button
+              className={classes.newPostButton}
+              variant="contained"
+              color="primary"
+              onClick={handleNewPost}
+              disabled={disableEditingButton}
+            >
+              {texts.new_update}
+            </Button>
+          )}
         </div>
         {project.timeline_posts && project.timeline_posts.length > 0 && (
           <div className={classes.progressContent}>
@@ -412,6 +415,7 @@ export default function ProjectContent({
               project={project}
               refreshCurrentPosts={refreshCurrentPosts}
               displayEditingInterface={displayEditingInterface}
+              userPermission={user_permission}
             />
           </div>
         )}

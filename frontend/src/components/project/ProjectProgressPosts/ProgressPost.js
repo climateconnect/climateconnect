@@ -13,6 +13,7 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ButtonIcon from "../Buttons/ButtonIcon";
 import DateDisplay from "../../general/DateDisplay";
 import { apiRequest } from "../../../../public/lib/apiOperations";
+import ROLE_TYPES from "../../../../public/data/role_types";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -48,7 +49,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProgressPost({ post, texts, displayEditingInterface, token, refreshCurrentPosts, project }) {
+export default function ProgressPost({
+  post,
+  texts,
+  displayEditingInterface,
+  token,
+  refreshCurrentPosts,
+  project,
+  userPermission,
+}) {
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -112,14 +121,18 @@ export default function ProgressPost({ post, texts, displayEditingInterface, tok
           >
             Like • 12
           </Button>
-
-          <IconButton className={classes.menuButton} onClick={handleMenuClick}>
-            <MoreVertIcon />
-          </IconButton>
-          <Menu open={open} anchorEl={anchorEl} keepMounted onClose={handleMenuClose}>
-            <MenuItem onClick={handleEdit}>{texts.edit}</MenuItem>
-            <MenuItem onClick={handleDelete}>{texts.delete}</MenuItem>
-          </Menu>
+          {userPermission &&
+                [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(userPermission) && (
+            <>
+              <IconButton className={classes.menuButton} onClick={handleMenuClick}>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu open={open} anchorEl={anchorEl} keepMounted onClose={handleMenuClose}>
+                <MenuItem onClick={handleEdit}>{texts.edit}</MenuItem>
+                <MenuItem onClick={handleDelete}>{texts.delete}</MenuItem>
+              </Menu>
+            </>
+          )}
         </div>
       </div>
       <TextField
