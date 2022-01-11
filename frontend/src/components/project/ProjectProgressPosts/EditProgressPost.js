@@ -59,21 +59,23 @@ export default function ProgressPost({
     content: postContent,
     event_date: eventDate ? eventDate : null,
   };
+  const updateData = { id: post.id, ...createData };
   const refreshData = {
     ...createData,
     created_at: post.created_at ? post.created_at : today,
     updated_at: post.currentlyUpdated ? today : post.updated_at ? post.updated_at : null,
   };
-  const createPost = async () => {
+  const handleSave = async () => {
     await apiRequest({
-      method: "post",
-      url: "/api/projects/" + project.url_slug + "/create_post/",
-      payload: createData,
+      method: post.currentlyEdited ? "post" : "patch",
+      url: "/api/projects/" + project.url_slug + "/cud_post/",
+      payload: post.currentlyEdited ? createData : updateData,
       token: token,
       locale: locale,
     }).then((response) => {
+      post.currentlyEdited ? post.currentlyEdited = false : post.currentlyUpdated = false;
       refreshCurrentPosts({
-        id: response.data.id,
+        id: post.currentlyEdited ? response.data.id : post.id,
         ...refreshData,
       });
     });
@@ -85,16 +87,6 @@ export default function ProgressPost({
     } else {
       post.currentlyUpdated = false;
       closeEditingInterface(false);
-    }
-  };
-
-  const handleSave = () => {
-    if (post.currentlyEdited) {
-      post.currentlyEdited = false;
-      createPost();
-    } else {
-      post.currentlyUpdated = false;
-      //updatePost();
     }
   };
 
