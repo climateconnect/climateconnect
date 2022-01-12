@@ -1,14 +1,8 @@
-import { Button, Card, makeStyles, TextField } from "@material-ui/core";
+import { Button, makeStyles, TextField } from "@material-ui/core";
 import React, { useState } from "react";
 import { apiRequest } from "../../../../public/lib/apiOperations";
 
 const useStyles = makeStyles((theme) => ({
-  card: {
-    background: "#F2F2F2",
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    paddingTop: theme.spacing(1),
-  },
   textField: {
     marginBottom: theme.spacing(2),
   },
@@ -91,7 +85,7 @@ export default function ProgressPost({
   };
 
   return (
-    <Card className={classes.card} raised="true">
+    <>
       <div className={classes.containerTop}>
         <TextField
           className={classes.textField}
@@ -135,6 +129,6 @@ export default function ProgressPost({
         <Button onClick={handleSave}>{texts.save}</Button>
         <Button onClick={handleCancel}>{texts.cancel}</Button>
       </div>
-    </Card>
+    </>
   );
 }

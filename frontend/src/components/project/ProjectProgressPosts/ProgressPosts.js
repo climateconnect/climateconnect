@@ -3,6 +3,17 @@ import EditProgressPost from "./EditProgressPost";
 import StepsTrackerVertical from "../../general/StepsTrackerVertical";
 import ProgressPost from "./ProgressPost";
 
+import { Card, makeStyles } from "@material-ui/core";
+
+const useStyles = makeStyles((theme) => ({
+  card: {
+    background: "#F2F2F2",
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+  },
+}));
+
 export default function ProgressPosts({
   posts,
   locale,
@@ -51,25 +62,30 @@ function StepContent({
   userPermission,
   element,
 }) {
-  return element.currentlyEdited || element.currentlyUpdated ? (
-    <EditProgressPost
-      post={element}
-      locale={locale}
-      texts={texts}
-      closeEditingInterface={closeEditingInterface}
-      token={token}
-      project={project}
-      refreshCurrentPosts={refreshCurrentPosts}
-    />
-  ) : (
-    <ProgressPost
-      post={element}
-      texts={texts}
-      token={token}
-      project={project}
-      displayEditingInterface={displayEditingInterface}
-      refreshCurrentPosts={refreshCurrentPosts}
-      userPermission={userPermission}
-    />
+  const classes = useStyles();
+  return (
+    <Card className={classes.card} raised="true">
+      {element.currentlyEdited || element.currentlyUpdated ? (
+        <EditProgressPost
+          post={element}
+          locale={locale}
+          texts={texts}
+          closeEditingInterface={closeEditingInterface}
+          token={token}
+          project={project}
+          refreshCurrentPosts={refreshCurrentPosts}
+        />
+      ) : (
+        <ProgressPost
+          post={element}
+          texts={texts}
+          token={token}
+          project={project}
+          displayEditingInterface={displayEditingInterface}
+          refreshCurrentPosts={refreshCurrentPosts}
+          userPermission={userPermission}
+        />
+      )}
+    </Card>
   );
 }

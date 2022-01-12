@@ -16,12 +16,6 @@ import { apiRequest } from "../../../../public/lib/apiOperations";
 import ROLE_TYPES from "../../../../public/data/role_types";
 
 const useStyles = makeStyles((theme) => ({
-  card: {
-    background: "#F2F2F2",
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    paddingTop: theme.spacing(1),
-  },
   header: {
     display: "flex",
     justifyContent: "space-between",
@@ -86,7 +80,7 @@ export default function ProgressPost({
     });
   };
   return (
-    <Card className={classes.card} raised="true">
+    <>
       <div className={classes.header}>
         <div className={classes.headerLeft}>
           {post.created_at && (
@@ -145,6 +139,6 @@ export default function ProgressPost({
           disableUnderline: true,
         }}
       />
-    </Card>
+    </>
   );
 }
