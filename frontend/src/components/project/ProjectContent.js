@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import humanizeDuration from "humanize-duration";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import TimeAgo from "react-timeago";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -169,19 +169,19 @@ export default function ProjectContent({
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
-  const [showFullDescription, setShowFullDescription] = React.useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
   const user_permission =
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
       : null;
 
-  const [currentPosts, setCurrentPosts] = React.useState(project.timeline_posts);
-  const [userIsEditingPost, setUserIsEditingPost] = React.useState(false);
+  const [currentPosts, setCurrentPosts] = useState(project.timeline_posts);
+  const [userIsEditingPost, setUserIsEditingPost] = useState(false);
   const displayEditingInterface = (bool) => {
     setUserIsEditingPost(bool);
   };
-  const [disableEditingButton, setDisableEditingButton] = React.useState(false);
+  const [disableEditingButton, setDisableEditingButton] = useState(false);
   const refreshCurrentPosts = (post) => {
     if (post.deletePost) {
       setCurrentPosts([
