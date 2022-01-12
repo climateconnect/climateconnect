@@ -443,6 +443,13 @@ export default function ProjectPageRoot({
             typesByTabValue={typesByTabValue}
             projectTabsRef={projectTabsRef}
             token={token}
+            texts={texts}
+            isUserFollowing={isUserFollowing}
+            handleToggleFollowProject={handleToggleFollowProject}
+            hasAdminPermissions={hasAdminPermissions}
+            toggleShowFollowers={toggleShowFollowers}
+            followingChangePending={followingChangePending}
+            numberOfFollowers={numberOfFollowers}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>

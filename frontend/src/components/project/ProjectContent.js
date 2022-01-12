@@ -9,6 +9,7 @@ import ROLE_TYPES from "../../../public/data/role_types";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
+import FollowButton from "./Buttons/FollowButton";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
@@ -158,6 +159,12 @@ export default function ProjectContent({
   typesByTabValue,
   projectTabsRef,
   token,
+  isUserFollowing,
+  handleToggleFollowProject,
+  hasAdminPermissions,
+  toggleShowFollowers,
+  followingChangePending,
+  numberOfFollowers,
 }) {
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -391,7 +398,7 @@ export default function ProjectContent({
               {texts.follow_the_project_to_be_notified_when_they_make_an_update_post}
             </Typography>
           </div>
-          {user_permission &&
+          {user_permission ? (
             [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission) && (
               <Button
                 className={classes.newPostButton}
@@ -402,7 +409,17 @@ export default function ProjectContent({
               >
                 {texts.new_update}
               </Button>
-            )}
+            )
+          ) : (
+            <FollowButton 
+              texts={texts}
+              isUserFollowing={isUserFollowing}
+              handleToggleFollowProject={handleToggleFollowProject}
+              hasAdminPermissions={hasAdminPermissions}
+              toggleShowFollowers={toggleShowFollowers}
+              followingChangePending={followingChangePending}
+              numberOfFollowers={numberOfFollowers} />
+          )}
         </div>
         {project.timeline_posts && project.timeline_posts.length > 0 && (
           <div className={classes.progressContent}>
