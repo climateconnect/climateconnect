@@ -22,30 +22,54 @@ export default function ProgressPosts({
           index={index}
           lastIndex={posts.length - 1}
           content={
-            element.currentlyEdited || element.currentlyUpdated ? (
-              <EditProgressPost
-                post={element}
-                locale={locale}
-                texts={texts}
-                closeEditingInterface={closeEditingInterface}
-                token={token}
-                project={project}
-                refreshCurrentPosts={refreshCurrentPosts}
-              />
-            ) : (
-              <ProgressPost
-                post={element}
-                texts={texts}
-                token={token}
-                project={project}
-                displayEditingInterface={displayEditingInterface}
-                refreshCurrentPosts={refreshCurrentPosts}
-                userPermission={userPermission}
-              />
-            )
+            <StepContent
+              element={element}
+              locale={locale}
+              texts={texts}
+              closeEditingInterface={closeEditingInterface}
+              token={token}
+              project={project}
+              refreshCurrentPosts={refreshCurrentPosts}
+              displayEditingInterface={displayEditingInterface}
+              userPermission={userPermission}
+            />
           }
         />
       ))}
     </>
+  );
+}
+
+function StepContent({
+  locale,
+  texts,
+  closeEditingInterface,
+  token,
+  project,
+  refreshCurrentPosts,
+  displayEditingInterface,
+  userPermission,
+  element,
+}) {
+  return element.currentlyEdited || element.currentlyUpdated ? (
+    <EditProgressPost
+      post={element}
+      locale={locale}
+      texts={texts}
+      closeEditingInterface={closeEditingInterface}
+      token={token}
+      project={project}
+      refreshCurrentPosts={refreshCurrentPosts}
+    />
+  ) : (
+    <ProgressPost
+      post={element}
+      texts={texts}
+      token={token}
+      project={project}
+      displayEditingInterface={displayEditingInterface}
+      refreshCurrentPosts={refreshCurrentPosts}
+      userPermission={userPermission}
+    />
   );
 }
