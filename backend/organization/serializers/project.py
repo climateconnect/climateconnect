@@ -12,7 +12,7 @@ from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
 from organization.models import (Project, ProjectCollaborators,
-                                 ProjectFollower, ProjectLike, ProjectMember,
+                                 ProjectFollower, Like, ProjectMember,
                                  ProjectParents)
 from organization.models.content import ProjectComment
 from organization.models.translations import ProjectTranslation
@@ -279,7 +279,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         return ProjectComment.objects.filter(project=obj).count()
 
     def get_number_of_likes(self, obj):
-        return ProjectLike.objects.filter(project=obj).count()
+        return Like.objects.filter(project=obj).count()
 
 class ProjectSuggestionSerializer(ProjectStubSerializer):
     project_creator = serializers.SerializerMethodField()
@@ -367,7 +367,7 @@ class ProjectFollowerSerializer(serializers.ModelSerializer):
 class ProjectLikeSerializer(serializers.ModelSerializer):
     user_profile = serializers.SerializerMethodField()
     class Meta:
-        model = ProjectLike
+        model = Like
         fields = ('user_profile', 'created_at')
 
     def get_user_profile(self, obj):

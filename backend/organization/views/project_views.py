@@ -25,7 +25,7 @@ from organization.models import (Organization, OrganizationTagging,
                                  ProjectCollaborators, ProjectComment,
                                  ProjectFollower, ProjectMember,
                                  ProjectParents, ProjectStatus, ProjectTagging,
-                                 ProjectTags, ProjectLike)
+                                 ProjectTags, Like)
 from organization.models.translations import ProjectTranslation
 from organization.pagination import (MembersPagination,
                                      ProjectCommentPagination,
@@ -777,10 +777,10 @@ class SetLikeView(APIView):
             raise NotFound(detail="Project not found.", code=status.HTTP_404_NOT_FOUND)
 
         if request.data['liking'] == True:
-            if ProjectLike.objects.filter(user=request.user, project=project).exists():
+            if Like.objects.filter(user=request.user, project=project).exists():
                 raise ValidationError("You've already liked this project.")
             else:
-                project_like = ProjectLike.objects.create(user=request.user, project=project)
+                project_like = Like.objects.create(user=request.user, project=project)
                 create_project_like_notification(project_like)
                 return Response({
                     'message': 'You have liked this project.',
@@ -788,8 +788,8 @@ class SetLikeView(APIView):
                 }, status=status.HTTP_201_CREATED)
         if request.data['liking'] == False:
             try:
-                liking_user_object = ProjectLike.objects.get(user=request.user, project=project)
-            except ProjectLike.DoesNotExist:
+                liking_user_object = Like.objects.get(user=request.user, project=project)
+            except Like.DoesNotExist:
                 raise NotFound(
                     detail="You haven't been liking this project.", code=status.HTTP_404_NOT_FOUND)
             liking_user_object.delete()
@@ -820,7 +820,7 @@ class IsUserLiking(APIView):
             project = Project.objects.get(url_slug=url_slug)
         except Project.DoesNotExist:
             raise NotFound(detail="Project not found:"+url_slug, code=status.HTTP_404_NOT_FOUND)
-        is_liking = ProjectLike.objects.filter(
+        is_liking = Like.objects.filter(
             user=request.user, project=project).exists()
         return Response({'is_liking': is_liking}, status=status.HTTP_200_OK) 
 
@@ -933,7 +933,7 @@ class ListProjectLikesView(ListAPIView):
             return None
             
         
-        likes = ProjectLike.objects.filter(project=project)
+        likes = Like.objects.filter(project=project)
         return likes        
 
 class LeaveProject(RetrieveUpdateAPIView):

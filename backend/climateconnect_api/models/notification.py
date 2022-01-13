@@ -5,7 +5,7 @@ from ideas.models.comment import IdeaComment
 from ideas.models.support import IdeaSupporter
 from organization.models.content import Post, PostComment, ProjectComment
 from organization.models.followers import ProjectFollower
-from organization.models.likes import ProjectLike
+from organization.models.likes import Like
 from organization.models.project import Project
 
 
@@ -89,7 +89,7 @@ class Notification(models.Model):
     )
 
     project_like = models.ForeignKey(
-        ProjectLike, related_name="notification_project_like",
+        Like, related_name="notification_project_like",
         verbose_name="Project Like", on_delete=models.CASCADE,
         null=True, blank=True
     )

@@ -2,7 +2,7 @@ from django.db import models
 from organization.models.project import Project
 from django.contrib.auth.models import User
 
-class ProjectLike(models.Model):
+class Like(models.Model):
     project = models.ForeignKey(
         Project,
         related_name="project_liked",

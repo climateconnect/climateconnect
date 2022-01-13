@@ -18,7 +18,7 @@ from organization.models.status import ProjectStatus
 
 from organization.models.followers import ProjectFollower
 
-from organization.models.likes import ProjectLike
+from organization.models.likes import Like
 
 from organization.models.translations import (
     ProjectTranslation, OrganizationTranslation,
