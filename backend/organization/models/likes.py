@@ -1,5 +1,6 @@
 from django.db import models
 from organization.models.project import Project
+from organization.models.content import Post
 from django.contrib.auth.models import User
 
 class Like(models.Model):
@@ -8,7 +9,19 @@ class Like(models.Model):
         related_name="project_liked",
         verbose_name="Project",
         help_text="Points to a project",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
+    post = models.ForeignKey(
+        Post,
+        related_name="post_liked",
+        verbose_name="Post",
+        help_text="Points to a post",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
     )
 
     user = models.ForeignKey(
@@ -33,8 +46,8 @@ class Like(models.Model):
 
     class Meta:
         app_label = "organization"
-        verbose_name = "Project Like"
-        verbose_name_plural = "Project Likes"
+        verbose_name = "Like"
+        verbose_name_plural = "Likes"
         ordering = ["-id"]
 
     def __str__(self):
