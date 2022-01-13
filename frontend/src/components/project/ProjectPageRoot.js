@@ -532,6 +532,8 @@ export default function ProjectPageRoot({
           contactProjectCreatorButtonRef: contactProjectCreatorButtonRef,
           projectTabsRef: projectTabsRef,
         }}
+        typesByTabValue={typesByTabValue}
+        handleTabChange={handleTabChange}
       />
     </div>
   );
