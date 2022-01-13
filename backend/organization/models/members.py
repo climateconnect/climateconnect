@@ -183,4 +183,5 @@ class MembershipRequests(models.Model):
 
     class Meta:
         unique_together = ('user', 'target_project')
+        verbose_name = 'Member Requests'
 

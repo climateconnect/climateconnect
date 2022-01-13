@@ -30,6 +30,11 @@ class MembershipRequestsManager(object):
         self.duplicate_request = False
 
         self.errors = list()
+
+
+        # print(f"membership target: {kwargs['membership_target']}")
+        print(kwargs)
+
         if 'membership_request_id' not in kwargs.keys(): #new request
             user = kwargs['user']
             membership_target = kwargs['membership_target']
@@ -42,7 +47,8 @@ class MembershipRequestsManager(object):
                 self.organization = kwargs['organization']
                 self.project = None
             else:
-                self.validation_failed=True
+                print("failing 1")
+                self.validation_failed = True
                 self.errors.append(NotImplementedError(f"{membership_target} is not implemented!"))
             self.user = user
             self.user_availability = user_availability
@@ -56,16 +62,19 @@ class MembershipRequestsManager(object):
                                           ,target_organization_id=self.organization).count()
 
             if n > 0:
+                print("failing 2")
                 self.validation_failed = True
                 self.errors.append("Request Already Exists")
                 self.duplicate_request = True
 
         else: #id of request is supplied
+            print("membership_request_id passed!")
             self.membership_request = MembershipRequests.objects.filter(id=int(kwargs['membership_request_id']))
             ## check if user is already part of a project
 
 
-            if self.membership_request.count()!=1 :
+            if self.membership_request.count() != 1 :
+                print("no request with this id")
                 self.corrupt_membership_request_id = True
                 self.validation_failed = True
                 self.errors.append(f"More than a record or not a single record was found in membership requests for request id {int(kwargs['membership_request_id'])}")
@@ -73,6 +82,7 @@ class MembershipRequestsManager(object):
                 self.membership_request = self.membership_request.first()
                 user_in_project = is_part_of_project(user=self.membership_request.user,project=self.membership_request.target_project)
                 if user_in_project:
+                    print("user alrdy in project")
                     self.validation_failed = True
                     self.errors.append("User is already a member of the project")
                 self.corrupt_membership_request_id = False

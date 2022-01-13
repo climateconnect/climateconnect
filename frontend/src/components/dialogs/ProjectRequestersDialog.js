@@ -162,7 +162,7 @@ const Requester = ({ requester, requestId, locale, project }) => {
       },
     });
 
-    if (!resp?.data?.results) {
+    if (!response?.data?.results) {
       // TODO: error appropriately here
     } else {
       console.log("Approved!");
@@ -174,13 +174,14 @@ const Requester = ({ requester, requestId, locale, project }) => {
     const cookies = new Cookies();
     const token = cookies.get("token");
     console.log(token);
+
     const response = await apiRequest({
       method: "post",
       url: `/api/projects/${project.url_slug}/request_membership/reject/${requestId}/`,
       token: token,
     });
 
-    if (!resp?.data?.results) {
+    if (!response?.data?.results) {
       // TODO: error appropriately here
     } else {
       console.log("Denied request.");

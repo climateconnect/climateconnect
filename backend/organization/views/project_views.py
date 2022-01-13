@@ -923,9 +923,15 @@ class ListProjectRequestersView(ListAPIView):
     serializer_class = ProjectRequesterSerializer
 
     def get_queryset(self):
-        membership_requests = MembershipRequests.objects.all()
-        if not membership_requests:
-            return None
+        try:
+            project = Project.objects.get(url_slug=self.kwargs['url_slug'])
+        except Project.DoesNotExist:
+            return Response(data={'message': f'Project does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Only show requests that are open
+        membership_requests = MembershipRequests.objects.filter(
+            target_project=project, rejected_at=None, approved_at=None
+        )
 
         return membership_requests
 class ListProjectLikesView(ListAPIView):
@@ -1066,11 +1072,13 @@ class ManageJoinProject(RetrieveUpdateAPIView):
                             }, status=status.HTTP_404_NOT_FOUND)
 
         try:
-            request_manager = MembershipRequestsManager(membership_request_id = request_id, project=project)
+            request_manager = MembershipRequestsManager(membership_request_id=request_id, project=project, membership_target=MembershipTarget.PROJECT)
             if request_manager.corrupt_membership_request_id:
                 return Response({'message': 'Request Does Not Exist'}, status=status.HTTP_404_NOT_FOUND)
-            elif request_manager.validation_failed:
+
+            if request_manager.validation_failed:
                 #request_manager.errors
+                print('TEST')
                 return Response({f"message': 'Operation Failed. Errors: {' | '.join(request_manager.errors)}"}, status=status.HTTP_400_BAD_REQUEST)
 
             if request_action == 'approve':

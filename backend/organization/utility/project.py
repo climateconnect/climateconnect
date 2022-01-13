@@ -174,4 +174,4 @@ def is_part_of_project(user,project):
     :param project: project to be checked
     :type project: ProjectMember
     """
-    return ProjectMember.objects.filter(project=project, user=user).count() == 0
+    return ProjectMember.objects.filter(project=project, user=user).count() > 0
