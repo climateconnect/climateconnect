@@ -1,6 +1,8 @@
 import { Button, makeStyles, TextField } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { apiRequest } from "../../../../public/lib/apiOperations";
+import getTexts from "../../../../public/texts/texts";
+import UserContext from "../../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   textField: {
@@ -22,14 +24,15 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProgressPost({
   post,
-  locale,
-  texts,
   closeEditingInterface,
   token,
   project,
   refreshCurrentPosts,
 }) {
   const classes = useStyles();
+
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
 
   const [eventDate, setEventDate] = useState(post.event_date ? post.event_date : "");
   const [postTitle, setPostTitle] = useState(post.title ? post.title : "");

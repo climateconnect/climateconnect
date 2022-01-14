@@ -425,9 +425,7 @@ export default function ProjectContent({
           <div className={classes.progressContent}>
             <ProgressPosts
               posts={currentPosts}
-              locale={locale}
               token={token}
-              texts={texts}
               closeEditingInterface={closeEditingInterface}
               project={project}
               refreshCurrentPosts={refreshCurrentPosts}

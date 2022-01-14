@@ -16,8 +16,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProgressPosts({
   posts,
-  locale,
-  texts,
   closeEditingInterface,
   token,
   project,
@@ -35,8 +33,6 @@ export default function ProgressPosts({
           content={
             <StepContent
               element={element}
-              locale={locale}
-              texts={texts}
               closeEditingInterface={closeEditingInterface}
               token={token}
               project={project}
@@ -52,8 +48,6 @@ export default function ProgressPosts({
 }
 
 function StepContent({
-  locale,
-  texts,
   closeEditingInterface,
   token,
   project,
@@ -68,8 +62,6 @@ function StepContent({
       {element.currentlyEdited || element.currentlyUpdated ? (
         <EditProgressPost
           post={element}
-          locale={locale}
-          texts={texts}
           closeEditingInterface={closeEditingInterface}
           token={token}
           project={project}
@@ -78,7 +70,6 @@ function StepContent({
       ) : (
         <ProgressPost
           post={element}
-          texts={texts}
           token={token}
           project={project}
           displayEditingInterface={displayEditingInterface}

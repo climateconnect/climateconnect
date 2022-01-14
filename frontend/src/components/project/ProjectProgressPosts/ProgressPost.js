@@ -8,12 +8,14 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ButtonIcon from "../Buttons/ButtonIcon";
 import DateDisplay from "../../general/DateDisplay";
 import { apiRequest } from "../../../../public/lib/apiOperations";
 import ROLE_TYPES from "../../../../public/data/role_types";
+import UserContext from "../../context/UserContext";
+import getTexts from "../../../../public/texts/texts";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -45,7 +47,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProgressPost({
   post,
-  texts,
   displayEditingInterface,
   token,
   refreshCurrentPosts,
@@ -53,6 +54,9 @@ export default function ProgressPost({
   userPermission,
 }) {
   const classes = useStyles();
+
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale, project: project });
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
