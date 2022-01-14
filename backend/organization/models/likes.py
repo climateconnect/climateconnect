@@ -51,4 +51,10 @@ class Like(models.Model):
         ordering = ["-id"]
 
     def __str__(self):
-        return "%s liked %s " % (self.user, self.project.name)
+        if self.project is not None:
+            name = self.project.name
+            obj_type = "project"
+        if self.post is not None:    
+            name = self.post.title
+            obj_type = "post"
+        return "%s liked %s '%s' " % (self.user, obj_type, name)
