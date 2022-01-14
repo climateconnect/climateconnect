@@ -60,29 +60,29 @@ export default function ProgressPost({
   const refreshData = {
     ...createData,
     created_at: post.created_at ? post.created_at : today,
-    updated_at: post.currentlyUpdated ? today : post.updated_at ? post.updated_at : null,
+    updated_at: post.currentlyUpdating ? today : post.updated_at ? post.updated_at : null,
   };
   const handleSave = async () => {
     await apiRequest({
-      method: post.currentlyEdited ? "post" : "patch",
+      method: post.currentlyCreating ? "post" : "patch",
       url: "/api/projects/" + project.url_slug + "/create_update_post/",
-      payload: post.currentlyEdited ? createData : updateData,
+      payload: post.currentlyCreating ? createData : updateData,
       token: token,
       locale: locale,
     }).then((response) => {
-      post.currentlyEdited ? (post.currentlyEdited = false) : (post.currentlyUpdated = false);
+      post.currentlyCreating ? (post.currentlyCreating = false) : (post.currentlyUpdating = false);
       refreshCurrentPosts({
-        id: post.currentlyEdited ? response.data.id : post.id,
+        id: post.currentlyCreating ? response.data.id : post.id,
         ...refreshData,
       });
     });
   };
 
   const handleCancel = () => {
-    if (post.currentlyEdited) {
+    if (post.currentlyCreating) {
       closeEditingInterface(true);
     } else {
-      post.currentlyUpdated = false;
+      post.currentlyUpdating = false;
       closeEditingInterface(false);
     }
   };
@@ -124,8 +124,8 @@ export default function ProgressPost({
         InputProps={{
           disableUnderline: true,
         }}
-        helperText={post.currentlyEdited ? texts.add_your_text_here : ""}
-        label={post.currentlyEdited ? texts.text : ""}
+        helperText={post.currentlyCreating ? texts.add_your_text_here : ""}
+        label={post.currentlyCreating ? texts.text : ""}
       />
 
       <div className={classes.editingButtonsContainer}>

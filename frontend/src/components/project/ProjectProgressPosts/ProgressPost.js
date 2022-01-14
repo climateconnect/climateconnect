@@ -68,7 +68,7 @@ export default function ProgressPost({
   };
 
   const handleEdit = () => {
-    post.currentlyUpdated = true;
+    post.currentlyUpdating = true;
     displayEditingInterface(true);
   };
   const handleDelete = async () => {

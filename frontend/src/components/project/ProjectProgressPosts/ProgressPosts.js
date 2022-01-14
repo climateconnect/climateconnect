@@ -25,14 +25,14 @@ export default function ProgressPosts({
 }) {
   return (
     <>
-      {posts.map((element, index) => (
+      {posts.map((post, index) => (
         <StepsTrackerVertical
           key={index}
           index={index}
           lastIndex={posts.length - 1}
           content={
             <StepContent
-              element={element}
+              post={post}
               closeEditingInterface={closeEditingInterface}
               token={token}
               project={project}
@@ -54,14 +54,14 @@ function StepContent({
   refreshCurrentPosts,
   displayEditingInterface,
   userPermission,
-  element,
+  post,
 }) {
   const classes = useStyles();
   return (
     <Card className={classes.card} raised="true">
-      {element.currentlyEdited || element.currentlyUpdated ? (
+      {post.currentlyCreating || post.currentlyUpdating ? (
         <EditProgressPost
-          post={element}
+          post={post}
           closeEditingInterface={closeEditingInterface}
           token={token}
           project={project}
@@ -69,7 +69,7 @@ function StepContent({
         />
       ) : (
         <ProgressPost
-          post={element}
+          post={post}
           token={token}
           project={project}
           displayEditingInterface={displayEditingInterface}

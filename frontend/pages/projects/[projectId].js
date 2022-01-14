@@ -144,8 +144,8 @@ export default function ProjectPage({
             team: members,
             timeline_posts: posts.map((obj) => ({
               ...obj,
-              currentlyEdited: false,
-              currentlyUpdated: false,
+              currentlyCreating: false,
+              currentlyUpdating: false,
             })),
             comments: curComments,
           }}

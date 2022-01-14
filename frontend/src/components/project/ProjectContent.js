@@ -203,14 +203,14 @@ export default function ProjectContent({
     setDisableEditingButton(true);
     const emptyPost = {
       id: currentPosts[0].id + 1,
-      currentlyEdited: true,
+      currentlyCreating: true,
     };
     setCurrentPosts([emptyPost, ...currentPosts]);
   };
   const closeEditingInterface = (deleteUnsaved) => {
     displayEditingInterface(false);
     setDisableEditingButton(false);
-    deleteUnsaved && setCurrentPosts([...currentPosts.filter((f) => f.currentlyEdited !== true)]);
+    deleteUnsaved && setCurrentPosts([...currentPosts.filter((f) => f.currentlyCreating !== true)]);
   };
 
   const CalculateMaxDisplayedDescriptionLength = (description) => {
