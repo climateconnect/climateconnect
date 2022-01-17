@@ -148,7 +148,7 @@ export default function ProjectPage({
           followingChangePending={followingChangePending}
           likingChangePending={likingChangePending}
           texts={texts}
-          projectAdmin={members.find((m) => m.permission === ROLE_TYPES.all_type)}
+          projectAdmin={members?.find((m) => m.permission === ROLE_TYPES.all_type)}
           isUserLiking={isUserLiking}
           numberOfLikes={numberOfLikes}
           numberOfFollowers={numberOfFollowers}
