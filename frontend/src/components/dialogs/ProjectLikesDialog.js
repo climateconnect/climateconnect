@@ -43,23 +43,30 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
 }));
-export default function ProjectLikesDialog({ open, onClose, project, likes, loading, user, url }) {
+export default function LikesDialog({
+  open,
+  onClose,
+  likes,
+  loading,
+  url,
+  pleaseLogInText,
+  titleText,
+  noLikesYetText,
+}) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext);
+  const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const handleClose = () => {
     onClose();
   };
   return (
-    <GenericDialog onClose={handleClose} open={open} title={texts.likes_of + " " + project.name}>
+    <GenericDialog onClose={handleClose} open={open} title={titleText}>
       <div>
         {loading ? (
           <LinearProgress />
         ) : !user ? (
           <>
-            <Typography>
-              {texts.please_log_in + " " + texts.to_see_this_projects_likes + "!"}
-            </Typography>
+            <Typography>{pleaseLogInText}</Typography>
             <Container className={classes.loginButtonContainer}>
               <Button
                 className={classes.loginButton}
@@ -72,15 +79,15 @@ export default function ProjectLikesDialog({ open, onClose, project, likes, load
             </Container>
           </>
         ) : likes && likes.length > 0 ? (
-          <ProjectLikes likes={likes} texts={texts} locale={locale} />
+          <Likes likes={likes} texts={texts} locale={locale} />
         ) : (
-          <Typography>{texts.this_project_does_not_have_any_likes_yet}</Typography>
+          <Typography>{noLikesYetText}</Typography>
         )}
       </div>
     </GenericDialog>
   );
 }
-const ProjectLikes = ({ likes, texts, locale }) => {
+const Likes = ({ likes, texts, locale }) => {
   const classes = useStyles();
   return (
     <>

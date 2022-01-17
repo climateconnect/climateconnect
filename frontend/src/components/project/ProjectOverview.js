@@ -9,7 +9,7 @@ import projectOverviewStyles from "../../../public/styles/projectOverviewStyles"
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
-import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
+import LikesDialog from "../dialogs/ProjectLikesDialog";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
@@ -160,14 +160,15 @@ export default function ProjectOverview({
         user={user}
         url={"projects/" + project.url_slug + "?show_followers=true"}
       />
-      <ProjectLikesDialog
+      <LikesDialog
         open={showLikes}
         loading={!initiallyCaughtLikes}
         likes={likes}
-        project={project}
         onClose={toggleShowLikes}
-        user={user}
         url={"projects/" + project.url_slug + "?show_likes=true"}
+        pleaseLogInText={`${texts.please_log_in} ${texts.to_see_this_projects_likes}!`}
+        titleText={`${texts.likes_of} ${project.name}`}
+        noLikesYetText={texts.this_project_does_not_have_any_likes_yet}
       />
     </Container>
   );
