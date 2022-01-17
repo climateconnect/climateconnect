@@ -147,8 +147,9 @@ export default function ProjectOverview({
   const handleSendProjectJoinRequest = async (event) => {
     // Get the actual project name from the URL, removing any query params
     // and projects/ prefix. For example,
-    // "projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
-    const projectName = pathName?.split("/")[1].split("?")[0];
+    // "/projects/Anotherproject6?projectId=Anotherproject6" -> "Anotherproject6"
+    // TODO(Piper): verify this split
+    const projectName = pathName?.split("/")[2].split("?")[0];
 
     const cookies = new Cookies();
     const token = cookies.get("token");
@@ -158,7 +159,7 @@ export default function ProjectOverview({
         method: "post",
         url: `/api/projects/${projectName}/request_membership/${user.url_slug}/`,
         payload: {
-          message: "Would like to join cothe project!",
+          message: "Would like to join the project!",
           // TODO: fix user_availability
           user_availability: "4",
         },
@@ -283,14 +284,19 @@ const RequestMembershipButtonWrapper = ({ requestedToJoin, handleSendProjectJoin
   // TODO(Piper): determine availabiilty approach
   // return <RequestMembershipButton />;
 
+  const classes = useStyles();
+
   return requestedToJoin ? (
     <Button disabled variant="contained" color="primary" onClick={handleSendProjectJoinRequest}>
       Already requested
     </Button>
   ) : (
-    <Button variant="contained" color="primary" onClick={handleSendProjectJoinRequest}>
-      Request to Join +
-    </Button>
+    <span className={classes.largeScreenButtonContainer}>
+      {/* TODO: loiok at LikeButton, and replace with icon button styling perhaps */}
+      <Button variant="contained" color="primary" onClick={handleSendProjectJoinRequest}>
+        Join +
+      </Button>
+    </span>
   );
 };
 
@@ -493,12 +499,10 @@ function LargeScreenOverview({
             {/* If the user is an admin on the project, or is already part
             of the project, then we don't want to show the membership request button. */}
             {!hasAdminPermissions && (
-              <Box marginRight={3}>
-                <RequestMembershipButtonWrapper
-                  handleSendProjectJoinRequest={handleSendProjectJoinRequest}
-                  requestedToJoin={requestedToJoinProject}
-                />
-              </Box>
+              <RequestMembershipButtonWrapper
+                handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+                requestedToJoin={requestedToJoinProject}
+              />
             )}
 
             <LikeButton

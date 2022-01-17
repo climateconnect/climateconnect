@@ -16,7 +16,7 @@ import {
 } from "@material-ui/core";
 import BlockIcon from "@material-ui/icons/Block";
 import CheckIcon from "@material-ui/icons/Check";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 
 // Relative imports
@@ -95,7 +95,7 @@ export default function ProjectRequestersDialog({
             locale={locale}
             onClose={onClose}
             project={project}
-            requesters={requesters}
+            initialRequesters={requesters}
             texts={texts}
           />
         ) : (
@@ -106,8 +106,29 @@ export default function ProjectRequestersDialog({
   );
 }
 
-const ProjectRequesters = ({ locale, requesters, project }) => {
+const ProjectRequesters = ({ locale, initialRequesters, project }) => {
   const classes = useStyles();
+
+  const [requesters, setRequesters] = useState(initialRequesters);
+
+  /**
+   * After any update is made to approve
+   * or reject, we call the backend to update the
+   * current list.
+   */
+  async function handleUpdateRequesters() {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/projects/${project.url_slug}/requesters/`,
+    });
+
+    if (!resp?.data?.results) {
+      // TODO: error appropriately here
+    }
+
+    const newRequesters = resp.data.results;
+    setRequesters(newRequesters);
+  }
 
   return (
     <>
@@ -122,6 +143,7 @@ const ProjectRequesters = ({ locale, requesters, project }) => {
                   locale={locale}
                   requester={requester}
                   requestId={requester.requestId}
+                  handleUpdateRequesters={handleUpdateRequesters}
                 />
               </TableRow>
             );
@@ -136,7 +158,15 @@ const ProjectRequesters = ({ locale, requesters, project }) => {
  * Separate cohesive component that encapsulates
  * all the requester state and functionality together.
  */
-const Requester = ({ requester, requestId, locale, project }) => {
+const Requester = ({
+  handleApproveRequest,
+  handleRejectRequest,
+  handleUpdateRequesters,
+  locale,
+  project,
+  requester,
+  requestId,
+}) => {
   const classes = useStyles();
 
   /**
@@ -152,8 +182,6 @@ const Requester = ({ requester, requestId, locale, project }) => {
     const cookies = new Cookies();
     const token = cookies.get("token");
 
-    console.log(token);
-
     const response = await apiRequest({
       method: "post",
       url: `/api/projects/${project.url_slug}/request_membership/approve/${requestId}/`,
@@ -167,13 +195,17 @@ const Requester = ({ requester, requestId, locale, project }) => {
     } else {
       console.log("Approved!");
     }
+
+    // Now notify parent list to update current list
+    // of requesters to immediately
+    // show the updated state in the UI.
+    handleUpdateRequesters();
   }
 
   // See https://github.com/climateconnect/climateconnect/issues/672
   async function handleRejectRequest() {
     const cookies = new Cookies();
     const token = cookies.get("token");
-    console.log(token);
 
     const response = await apiRequest({
       method: "post",
@@ -186,6 +218,11 @@ const Requester = ({ requester, requestId, locale, project }) => {
     } else {
       console.log("Denied request.");
     }
+
+    // Now notify parent list to update current list
+    // of requesters to immediately
+    // show the updated state in the UI.
+    handleUpdateRequesters();
   }
 
   return (
