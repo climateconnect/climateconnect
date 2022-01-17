@@ -9,7 +9,7 @@ import projectOverviewStyles from "../../../public/styles/projectOverviewStyles"
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
-import LikesDialog from "../dialogs/ProjectLikesDialog";
+import LikesDialog from "../dialogs/LikesDialog";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
