@@ -23,7 +23,6 @@ import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
-import LoadingSpinner from "../general/LoadingSpinner";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));
@@ -495,8 +494,8 @@ export default function BrowseContent({
         spinning: isFetchingMoreData || isFiltering,
       }}
     >
-      <Suspense fallback={<LoadingSpinner isLoading={true} />}>
-        <Container maxWidth="lg">
+      <Container maxWidth="lg">
+        <Suspense fallback={null}>
           <FilterSection
             filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
             onSubmit={handleSearchSubmit}
@@ -507,82 +506,90 @@ export default function BrowseContent({
             searchValue={filters.search}
             hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
           />
-          <Tabs
-            variant={isNarrowScreen ? "fullWidth" : "standard"}
-            value={tabValue}
-            onChange={handleTabChange}
-            indicatorColor="primary"
-            textColor="primary"
-            centered={true}
-          >
-            {TYPES_BY_TAB_VALUE.map((t, index) => {
-              const tabProps = {
-                label: type_names[t],
-                className: classes.tab,
-              };
-              if (index === TYPES_BY_TAB_VALUE.indexOf("ideas")) {
-                tabProps.label = (
-                  <div className={classes.ideasTabLabel}>
-                    <EmojiObjectsIcon className={classes.ideasIcon} /> {type_names[t]}
-                  </div>
-                );
-              }
-              if (index === 1) tabProps.ref = organizationsTabRef;
-              return <Tab {...tabProps} key={index} />;
-            })}
-          </Tabs>
+        </Suspense>
+        <Tabs
+          variant={isNarrowScreen ? "fullWidth" : "standard"}
+          value={tabValue}
+          onChange={handleTabChange}
+          indicatorColor="primary"
+          textColor="primary"
+          centered={true}
+        >
+          {TYPES_BY_TAB_VALUE.map((t, index) => {
+            const tabProps = {
+              label: type_names[t],
+              className: classes.tab,
+            };
+            if (index === TYPES_BY_TAB_VALUE.indexOf("ideas")) {
+              tabProps.label = (
+                <div className={classes.ideasTabLabel}>
+                  <EmojiObjectsIcon className={classes.ideasIcon} /> {type_names[t]}
+                </div>
+              );
+            }
+            if (index === 1) tabProps.ref = organizationsTabRef;
+            return <Tab {...tabProps} key={index} />;
+          })}
+        </Tabs>
 
-          <Divider className={classes.mainContentDivider} />
+        <Divider className={classes.mainContentDivider} />
 
-          <>
-            <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
-              <ProjectPreviews
-                className={classes.itemsContainer}
-                hasMore={state.hasMore.projects}
-                loadFunc={() => handleLoadMoreData("projects")}
+        <Suspense fallback={null}>
+          <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
+            <ProjectPreviews
+              className={classes.itemsContainer}
+              hasMore={state.hasMore.projects}
+              loadFunc={() => handleLoadMoreData("projects")}
+              parentHandlesGridItems
+              projects={state.items.projects}
+              firstProjectCardRef={firstProjectCardRef}
+              hubUrl={hubUrl}
+            />
+          </TabContentWrapper>
+        </Suspense>
+        <Suspense fallback={null}>
+          <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>
+            <OrganizationPreviews
+              hasMore={state.hasMore.organizations}
+              loadFunc={() => handleLoadMoreData("organizations")}
+              organizations={state.items.organizations}
+              parentHandlesGridItems
+            />
+          </TabContentWrapper>
+        </Suspense>
+        {!hideMembers && (
+          <Suspense fallback={null}>
+            <TabContentWrapper type={"members"} {...tabContentWrapperProps}>
+              <ProfilePreviews
+                hasMore={state.hasMore.members}
+                loadFunc={() => handleLoadMoreData("members")}
                 parentHandlesGridItems
-                projects={state.items.projects}
-                firstProjectCardRef={firstProjectCardRef}
-                hubUrl={hubUrl}
+                profiles={state.items.members}
+                showAdditionalInfo
               />
             </TabContentWrapper>
-            <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>
-              <OrganizationPreviews
-                hasMore={state.hasMore.organizations}
-                loadFunc={() => handleLoadMoreData("organizations")}
-                organizations={state.items.organizations}
-                parentHandlesGridItems
-              />
-            </TabContentWrapper>
-            {!hideMembers && (
-              <TabContentWrapper type={"members"} {...tabContentWrapperProps}>
-                <ProfilePreviews
-                  hasMore={state.hasMore.members}
-                  loadFunc={() => handleLoadMoreData("members")}
-                  parentHandlesGridItems
-                  profiles={state.items.members}
-                  showAdditionalInfo
-                />
-              </TabContentWrapper>
-            )}
-            <TabContentWrapper type={"ideas"} {...tabContentWrapperProps}>
-              <IdeasBoard
-                hasMore={state.hasMore.ideas}
-                loadFunc={() => handleLoadMoreData("ideas")}
-                ideas={state.items.ideas}
-                allHubs={allHubs}
-                userOrganizations={userOrganizations}
-                onUpdateIdeaRating={handleUpdateIdeaRating}
-                initialIdeaUrlSlug={initialIdeaUrlSlug}
-                hubLocation={hubLocation}
-                hubData={hubData}
-                filters={filters}
-                resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
-                filterChoices={filterChoices}
-              />
-            </TabContentWrapper>
-          </>
-        </Container>
+          </Suspense>
+        )}
+        <Suspense fallback={null}>
+          <TabContentWrapper type={"ideas"} {...tabContentWrapperProps}>
+            <IdeasBoard
+              hasMore={state.hasMore.ideas}
+              loadFunc={() => handleLoadMoreData("ideas")}
+              ideas={state.items.ideas}
+              allHubs={allHubs}
+              userOrganizations={userOrganizations}
+              onUpdateIdeaRating={handleUpdateIdeaRating}
+              initialIdeaUrlSlug={initialIdeaUrlSlug}
+              hubLocation={hubLocation}
+              hubData={hubData}
+              filters={filters}
+              resetTabsWhereFiltersWereApplied={resetTabsWhereFiltersWereApplied}
+              filterChoices={filterChoices}
+            />
+          </TabContentWrapper>
+        </Suspense>
+      </Container>
+      <Suspense fallback={null}>
         <Tutorial
           fixedPosition
           pointerRefs={{
