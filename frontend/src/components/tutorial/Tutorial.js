@@ -33,7 +33,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggeredBy, hubName }) {
+export default function Tutorial({
+  fixedPosition,
+  hubName,
+  handleTabChange,
+  nextStepTriggeredBy,
+  pointerRefs,
+  typesByTabValue,
+}) {
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const classes = useStyles();
   const cookies = new Cookies();
@@ -104,6 +111,19 @@ export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggered
     [step]
   );
 
+  const handleSetStep = (nextStep) => {
+    const tabLocationHash = tutorialSteps[nextStep]?.tabOfRef;
+    if (tabLocationHash && tabLocationHash !== window.location.hash) {
+      handleTabChange(null, typesByTabValue.indexOf(tabLocationHash.replace("#", "")));
+      //The timeout is needed to make sure the tab change is done before updating the step.
+      setTimeout(() => {
+        setStep(nextStep);
+      }, 50);
+    } else {
+      setStep(nextStep);
+    }
+  };
+
   const onClickSkip = () => {
     const finishedSteps = cookies.get("finishedTutorialSteps");
     cookies.set("lastStepBeforeSkipTutorial", getLastCompletedTutorialStep(finishedSteps), {
@@ -127,7 +147,7 @@ export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggered
       expires: oneYearFromNow,
       sameSite: "lax",
     });
-    setStep(0);
+    handleSetStep(0);
   };
 
   const handleClickForward = ({ isStartingStep }) => {
@@ -138,7 +158,7 @@ export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggered
       sameSite: "lax",
     });
     const nextStep = getTutorialStepFromCookie(tutorialSteps, newCookieValue, user);
-    setStep(!isStartingStep || nextStep > 0 ? nextStep : 1);
+    handleSetStep(!isStartingStep || nextStep > 0 ? nextStep : 1);
   };
 
   const handleClickBackward = () => {
@@ -148,7 +168,7 @@ export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggered
       expires: oneYearFromNow,
       sameSite: "lax",
     });
-    setStep(getTutorialStepFromCookie(tutorialSteps, newCookieValue, user));
+    handleSetStep(getTutorialStepFromCookie(tutorialSteps, newCookieValue, user));
   };
 
   const forwardWithValue = ({ variable, value }) => {
@@ -166,7 +186,9 @@ export default function Tutorial({ fixedPosition, pointerRefs, nextStepTriggered
       sameSite: "lax",
     });
     setTutorialVariables(curTutorialVariables);
-    setStep(getTutorialStepFromCookie(tutorialSteps, getNewCookieValue("forward", step), user));
+    handleSetStep(
+      getTutorialStepFromCookie(tutorialSteps, getNewCookieValue("forward", step), user)
+    );
   };
 
   if (!isNarrowScreen) {

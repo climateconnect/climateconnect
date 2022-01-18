@@ -597,6 +597,8 @@ export default function BrowseContent({
           }}
           hubName={hubName}
           nextStepTriggeredBy={nextStepTriggeredBy}
+          handleTabChange={handleTabChange}
+          typesByTabValue={TYPES_BY_TAB_VALUE}
         />
       </Suspense>
     </LoadingContext.Provider>

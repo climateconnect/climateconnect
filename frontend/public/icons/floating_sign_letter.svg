@@ -1,10 +1,1 @@
-<svg id="Komponente_52_21" data-name="Komponente 52 – 21" xmlns="http://www.w3.org/2000/svg" width="83.001" height="128.653" viewBox="0 0 83.001 128.653">
-  <ellipse id="freepik--shadow--inject-1--inject-15" cx="38.48" cy="13.216" rx="38.48" ry="13.216" transform="translate(3 102.222)" fill="#E6E6E6" opacity="0.67"/>
-  <g id="Gruppe_6662" data-name="Gruppe 6662" transform="translate(-823 -1301)">
-    <path id="Vereinigungsmenge_17" data-name="Vereinigungsmenge 17" d="M-9744.405,74H-9767a7,7,0,0,1-7-7V7a7,7,0,0,1,7-7h69a7,7,0,0,1,7,7V67a7,7,0,0,1-7,7h-22.6l-11.9,20Z" transform="translate(10597 1301)" fill="#F3D516"/>
-    <g id="drafts-24px" transform="translate(834.585 1309.585)">
-      <path id="Pfad_8350" data-name="Pfad 8350" d="M0,0H60.831V60.831H0Z" fill="none"/>
-      <path id="Pfad_8351" data-name="Pfad 8351" d="M52.667,18.742a5.024,5.024,0,0,0-2.383-4.309L27.346,1,4.408,14.434A5.046,5.046,0,0,0,2,18.742V44.089a5.084,5.084,0,0,0,5.069,5.069H47.623a5.084,5.084,0,0,0,5.069-5.069ZM27.346,31.416,6.41,18.337,27.346,6.069,48.282,18.337Z" transform="translate(3.069 1.535)" fill="#F8F8F8"/>
-    </g>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="83.001" height="128.653" xmlns:v="https://vecta.io/nano"><ellipse cx="41.48" cy="115.438" rx="38.48" ry="13.216" fill="#e6e6e6" opacity=".67"/><path d="M29.595 74H7a7 7 0 0 1-7-7V7a7 7 0 0 1 7-7h69a7 7 0 0 1 7 7v60a7 7 0 0 1-7 7H53.4L41.5 94z" fill="#f3d516"/><path d="M67.321 28.862c.012-1.754-.891-3.387-2.383-4.309L42 11.12 19.062 24.554c-1.498.919-2.41 2.551-2.408 4.308v25.347c.008 2.796 2.273 5.061 5.069 5.069h40.554c2.796-.008 5.061-2.273 5.069-5.069zM42 41.536L21.064 28.457 42 16.189l20.936 12.268z" fill="#f8f8f8"/></svg>
