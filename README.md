@@ -187,6 +187,12 @@ yarn format
 
 _See npm scripts in `package.json` for more._
 
+You can analyze size of the (frontend) bundle with
+
+```sh
+yarn analyze-bundle
+```
+
 ## Deploy
 
 ### Frontend
