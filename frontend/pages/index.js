@@ -74,7 +74,6 @@ const useStyles = makeStyles((theme) => ({
 
 export async function getServerSideProps(ctx) {
   const { token } = NextCookies(ctx);
-  console.log("getting serverside props");
   if (ctx.resolvedUrl === "/" && token) {
     console.log("redirecting!!!");
     return {
