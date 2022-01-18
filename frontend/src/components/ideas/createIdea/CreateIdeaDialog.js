@@ -118,6 +118,7 @@ export default function CreateIdeaDialog({
         locale: locale,
       });
       const url_slug = response.data;
+
       //TODO: link idea!
       resetTabsWhereFiltersWereApplied();
       redirect(
@@ -128,6 +129,7 @@ export default function CreateIdeaDialog({
         },
         window.location.hash
       );
+
       setWaitingForCreation(false);
     } catch (e) {
       console.log("there has been an error :,(");
