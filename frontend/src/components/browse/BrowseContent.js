@@ -23,6 +23,7 @@ import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
+import LoadingSpinner from "../general/LoadingSpinner";
 
 const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
 const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));
@@ -534,7 +535,7 @@ export default function BrowseContent({
 
         <Divider className={classes.mainContentDivider} />
 
-        <Suspense fallback={null}>
+        <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
             <ProjectPreviews
               className={classes.itemsContainer}
@@ -546,8 +547,6 @@ export default function BrowseContent({
               hubUrl={hubUrl}
             />
           </TabContentWrapper>
-        </Suspense>
-        <Suspense fallback={null}>
           <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>
             <OrganizationPreviews
               hasMore={state.hasMore.organizations}
@@ -556,9 +555,7 @@ export default function BrowseContent({
               parentHandlesGridItems
             />
           </TabContentWrapper>
-        </Suspense>
-        {!hideMembers && (
-          <Suspense fallback={null}>
+          {!hideMembers && (
             <TabContentWrapper type={"members"} {...tabContentWrapperProps}>
               <ProfilePreviews
                 hasMore={state.hasMore.members}
@@ -568,9 +565,7 @@ export default function BrowseContent({
                 showAdditionalInfo
               />
             </TabContentWrapper>
-          </Suspense>
-        )}
-        <Suspense fallback={null}>
+          )}
           <TabContentWrapper type={"ideas"} {...tabContentWrapperProps}>
             <IdeasBoard
               hasMore={state.hasMore.ideas}
