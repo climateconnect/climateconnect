@@ -162,6 +162,12 @@ We use `eslint` for linting. Watch files to fix lint issues with
 yarn lint:watch
 ```
 
+You can analyze size of the (frontend) bundle with
+
+```sh
+yarn analyze-bundle
+```
+
 ## Deploy
 
 ### Frontend
