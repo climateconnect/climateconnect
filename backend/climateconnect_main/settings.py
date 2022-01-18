@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import ssl
 from datetime import timedelta
 
 from dotenv import find_dotenv, load_dotenv
@@ -269,6 +270,9 @@ CHANNEL_LAYERS = {
 
 # For Celery we use Redis as a broker URL
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_BROKER_USE_SSL = {
+    'ssl_cert_reqs': ssl.CERT_REQUIRED
+}
 CELERY_TIMEZONE = "UTC"
 LOCALES = ['en', 'de']
 
