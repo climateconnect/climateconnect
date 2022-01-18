@@ -11,7 +11,7 @@ azure-storage-common==2.1.0
 black==21.12b0
 billiard==3.6.3.0
 cachetools==4.1.0
-celery==5.0.5
+celery==5.2.2
 certifi==2020.4.5.1
 cffi==1.15.0
 channels==2.4.0
