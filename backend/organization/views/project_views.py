@@ -987,3 +987,63 @@ class SetProjectSharedView(APIView):
             raise NotFound(detail='Project not found.', code=status.HTTP_404_NOT_FOUND)
         save_content_shared(request, project)
         return Response(status=status.HTTP_201_CREATED)
+
+class SetPostLikeView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, post_id):
+        if 'liking' not in request.data:
+            return Response({
+                'message': 'Missing required parameters'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            raise NotFound(detail="Post not found.", code=status.HTTP_404_NOT_FOUND)
+
+        if request.data['liking'] == True:
+            if Like.objects.filter(user=request.user, id=post_id).exists():
+                raise ValidationError("You've already liked this post.")
+            else:
+                post_like = Like.objects.create(user=request.user, post=post)
+                #create_post_like_notification(post_like)
+                return Response({
+                    'message': 'You have liked this post.',
+                    'liking': True
+                }, status=status.HTTP_201_CREATED)
+        if request.data['liking'] == False:
+            try:
+                liking_user_object = Like.objects.get(user=request.user, post=post)
+            except Like.DoesNotExist:
+                raise NotFound(
+                    detail="You haven't been liking this post.", code=status.HTTP_404_NOT_FOUND)
+            liking_user_object.delete()
+            return Response({'message': 'You do not like this post anymore.', 'liking': False}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({
+                'message': 'Invalid value for variable "liking"'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+class ListPostLikesView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ProjectLikeSerializer
+
+    def get_queryset(self):
+        try:
+            post = Post.objects.get(id=self.kwargs['post_id'])
+        except Post.DoesNotExist:
+            return None
+        
+        likes = Like.objects.filter(post=post)
+        return likes
+
+class IsUserLikingPost(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, post_id):
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            raise NotFound(detail="Post not found:"+post_id, code=status.HTTP_404_NOT_FOUND)
+        is_liking = Like.objects.filter(
+            user=request.user, post=post).exists()
+        return Response({'is_liking': is_liking}, status=status.HTTP_200_OK)         

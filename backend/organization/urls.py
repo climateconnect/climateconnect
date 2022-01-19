@@ -172,4 +172,16 @@ urlpatterns = [
         'organizations/<str:url_slug>/set_shared_organization/',
         organization_views.SetOrganisationSharedView.as_view(), name="set-shared-organization-view"
     ),
+    path(
+        'set_post_like/<int:post_id>/',
+        project_views.SetPostLikeView.as_view(), name='set-post-like-view'
+    ),
+    path(
+        'is_user_liking_post/<int:post_id>/',
+        project_views.IsUserLikingPost.as_view(), name='is_user_liking_post-view'
+    ),
+    path(
+        'post_likes/<int:post_id>/',
+        project_views.ListPostLikesView.as_view(), name='list-post-likes-view'
+    ),
 ]
