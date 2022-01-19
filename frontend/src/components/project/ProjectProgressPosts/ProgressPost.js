@@ -147,7 +147,7 @@ function PostLikeButton({ texts, post, token, locale }) {
   const handleToggleLike = () => {
     if (!token)
       showFeedbackMessage({
-        message: <span>{texts.please_log_in_to_like_a_project}</span>,
+        message: <span>{texts.please_log_in_to_like_a_post}</span>,
         error: true,
         promptLogIn: true,
       });
@@ -271,6 +271,9 @@ function PostLikeButton({ texts, post, token, locale }) {
         project={post}
         onClose={toggleShowLikes}
         url={"post/" + post.title + "?show_likes=true"}
+        pleaseLogInText={`${texts.please_log_in} ${texts.to_see_this_posts_likes}!`}
+        titleText={`${texts.likes_of} ${post.title}`}
+        noLikesYetText={texts.this_post_does_not_have_any_likes_yet}
       />
       <ConfirmDialog
         open={confirmDialogOpen}

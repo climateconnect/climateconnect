@@ -140,6 +140,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Please log in to like a project.",
       de: "Bitte logge dich ein, um ein Projekt zu liken.",
     },
+    please_log_in_to_like_a_post: {
+      en: "Please log in to like a post.",
+      de: "Bitte logge dich ein, um einen Post zu liken.",
+    },
     you_cant_leave_a_project_as_the_creator: {
       en: `You can't leave a project as the Super Admin. Please give the Super Admin role to another team member by clicking "Manage Members" in the team tab`,
       de: `Du kannst das Projekt als Super Admin nicht verlassen. Bitte übertrage diese Rolle auf ein anderes Teammitglied, indem du "Mitglieder verwalten" im Team-Tab klickst`,
@@ -306,6 +310,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "to see this project's likes",
       de: ", um die Likes des Projektes zu sehen",
     },
+    to_see_this_posts_likes: {
+      en: "to see this post's likes",
+      de: ", um die Likes des Posts zu sehen",
+    },
     we_could_not_find_any_members_of_this_project: {
       en: "We could not find any members of this project.",
       de: "Wir konnten keine Mitglieder für dieses Projekt finden.",
@@ -371,6 +379,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     this_project_does_not_have_any_likes_yet: {
       en: "This project does not have any likes yet.",
       de: "Dieses Projekt hat noch keine Likes",
+    },
+    this_post_does_not_have_any_likes_yet: {
+      en: "This post does not have any likes yet.",
+      de: "Dieser Post hat noch keine Likes",
     },
     following_since: {
       en: "Following since",
