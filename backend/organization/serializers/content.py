@@ -10,6 +10,7 @@ class PostSerializer(serializers.ModelSerializer):
   #TODO: get likes
   author_user = serializers.SerializerMethodField()
   replies = serializers.SerializerMethodField()
+  number_of_likes = serializers.SerializerMethodField()
 
   class Meta:
     model = Post
@@ -17,7 +18,8 @@ class PostSerializer(serializers.ModelSerializer):
       'id', 'author_user', 'title', 
       'content', 'created_at', 
       'updated_at', 'event_date', 
-      'is_hidden', 'replies'
+      'is_hidden', 'replies', 
+      'number_of_likes'
     )
 
   def get_author_user(self, obj):
@@ -28,6 +30,9 @@ class PostSerializer(serializers.ModelSerializer):
     top_level_comments = obj.post_comment.exclude(parent_comment_id__isnull=False)
     serializer = PostCommentSerializer(top_level_comments, many=True)
     return serializer.data
+
+  def get_number_of_likes(self, obj):
+    return obj.post_liked.count()
 
 class PostCommentSerializer(serializers.ModelSerializer):
   #TODO: add additional functionality such as 'is_abusive', 'deleted_at', 'updated_at'
