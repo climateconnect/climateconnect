@@ -1,17 +1,11 @@
-import {
-  Button,
-  Card,
-  IconButton,
-  makeStyles,
-  Menu,
-  MenuItem,
-  TextField,
-  Typography,
-} from "@material-ui/core";
-import React, { useContext, useState } from "react";
+import { IconButton, makeStyles, Menu, MenuItem, TextField, Typography } from "@material-ui/core";
+import React, { useContext, useEffect, useState } from "react";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import ButtonIcon from "../Buttons/ButtonIcon";
+import ConfirmDialog from "../../dialogs/ConfirmDialog";
 import DateDisplay from "../../general/DateDisplay";
+import FeedbackContext from "../../context/FeedbackContext";
+import LikeButton from "../Buttons/LikeButton";
+import LikesDialog from "../../dialogs/LikesDialog";
 import { apiRequest } from "../../../../public/lib/apiOperations";
 import ROLE_TYPES from "../../../../public/data/role_types";
 import UserContext from "../../context/UserContext";
@@ -109,16 +103,8 @@ export default function ProgressPost({
           </Typography>
         </div>
         <div className={classes.headerRight}>
-          {/*Button: Placeholder for LikeButton Component */}
+          <PostLikeButton texts={texts} post={post} token={token} locale={locale} />
 
-          <Button
-            className={classes.likeButton}
-            variant="contained"
-            color="primary"
-            startIcon={<ButtonIcon icon="like" size={25} color="white" />}
-          >
-            Like • 12
-          </Button>
           {userPermission &&
             [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(userPermission) && (
               <>
@@ -142,6 +128,161 @@ export default function ProgressPost({
         InputProps={{
           disableUnderline: true,
         }}
+      />
+    </>
+  );
+}
+
+function PostLikeButton({ texts, post, token, locale }) {
+
+  const classes = useStyles();
+
+  /** Belonging to the LikeButton */
+  const [numberOfPostLikes, setNumberOfPostLikes] = useState(post.number_of_likes);
+  const [isUserLikingPost, setIsUserLikingPost] = useState(false);
+  const [pendingLike, setPendingLike] = useState(false);
+
+  const { showFeedbackMessage } = useContext(FeedbackContext);
+
+  const handleToggleLike = () => {
+    if (!token)
+      showFeedbackMessage({
+        message: <span>{texts.please_log_in_to_like_a_project}</span>,
+        error: true,
+        promptLogIn: true,
+      });
+    else if (isUserLikingPost) setConfirmDialogOpen(true);
+    else toggleLike();
+  };
+  const toggleLike = async () => {
+    setIsUserLikingPost(isUserLikingPost);
+    setPendingLike(true);
+    await apiRequest({
+      method: "post",
+      url: "/api/set_post_like/" + post.id + "/",
+      payload: { liking: !isUserLikingPost },
+      token: token,
+      locale: locale,
+    })
+      .then(function (response) {
+        setIsUserLikingPost(response.data.liking);
+        if (response.data.liking) {
+          setNumberOfPostLikes(numberOfPostLikes + 1);
+        } else {
+          setNumberOfPostLikes(numberOfPostLikes - 1);
+        }
+        setPendingLike(false);
+        getLikes();
+        showFeedbackMessage({
+          message: response.data.message,
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error && error.reponse) console.log(error.response);
+      });
+  };
+
+  /** Belonging to the LikesDialog */
+  const [initiallyCaughtLikes, setInitiallyCaughtLikes] = useState(false);
+  const [likes, setLikes] = useState([]);
+  const [showLikes, setShowLikes] = useState(false);
+
+  const toggleShowLikes = async () => {
+    setShowLikes(!showLikes);
+    if (!initiallyCaughtLikes) {
+      await getLikes();
+      setInitiallyCaughtLikes(true);
+    }
+  };
+
+  /** Belonging to the ConfirmDialog */
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+
+  const onLikeDialogClose = (confirmed) => {
+    if (confirmed) toggleLike();
+    setConfirmDialogOpen(false);
+  };
+
+  /** Belonging to the LikeButton & the ConfirmDialog */
+  const getLikes = async () => {
+    await apiRequest({
+        method: "get",
+        url: "/api/post_likes/" + post.id + "/",
+        token: token,
+        locale: locale,
+      }).then(response => {
+        setLikes(response.data.results);
+      }).catch (error => {
+      console.log(error);
+      if (error.response && error.response.data) console.log("Error: " + error.response.data.detail);
+    });
+  };
+
+  /** On the first render: Get information on whether the user is liking the post */
+  useEffect(async function () {
+    await apiRequest({
+      method: "get",
+      url: "/api/is_user_liking_post/" + post.id + "/",
+      token: token,
+      locale: locale,
+    })
+      .then((response) => {
+        setIsUserLikingPost(response.data.is_liking);
+      })
+      .catch((error) => {
+        if (error.response && error.response.data)
+          console.log("Error: " + error.response.data.detail);
+        return null;
+      });
+  }, []);
+
+  /** Whenever the button enters or leaves the state 'pendingLike' (a like is currently processed):
+  *     Warn the user about possibly losing data when leaving the page 
+  */
+  useEffect(() => {
+    if (pendingLike) {
+      window.addEventListener("beforeunload", (e) => {
+        e.preventDefault();
+        return (e.returnValue = texts.changes_might_not_be_saved);
+      });
+    } else {
+      window.removeEventListener("beforeunload", null);
+    }
+  }, [pendingLike]);
+
+  return (
+    <>
+      <LikeButton
+        texts={texts}
+        project={post}
+        likes={likes}
+        numberOfLikes={numberOfPostLikes}
+        isUserLiking={isUserLikingPost}
+        likingChangePending={pendingLike}
+        handleToggleLikeProject={handleToggleLike}
+        toggleShowLikes={toggleShowLikes}
+        hasAdminPermissions={true}
+      />
+      <LikesDialog
+        open={showLikes}
+        loading={!initiallyCaughtLikes}
+        likes={likes}
+        project={post}
+        onClose={toggleShowLikes}
+        url={"post/" + post.title + "?show_likes=true"}
+      />
+      <ConfirmDialog
+        open={confirmDialogOpen}
+        onClose={onLikeDialogClose}
+        title={texts.do_you_really_want_to_dislike}
+        text={
+          <span className={classes.dialogText}>
+            {texts.are_you_sure_that_you_want_to_dislike_this_project}
+          </span>
+        }
+        confirmText={texts.yes}
+        cancelText={texts.no}
       />
     </>
   );
