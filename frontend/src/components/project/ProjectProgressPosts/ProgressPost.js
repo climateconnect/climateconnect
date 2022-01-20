@@ -13,6 +13,7 @@ import getTexts from "../../../../public/texts/texts";
 
 const useStyles = makeStyles((theme) => ({
   header: {
+    marginTop: theme.spacing(1),
     display: "flex",
     justifyContent: "space-between",
   },
@@ -27,15 +28,10 @@ const useStyles = makeStyles((theme) => ({
   textField: {
     marginBottom: theme.spacing(2),
   },
-  likeButton: {
-    height: 35,
-    padding: theme.spacing(2),
-    margin: theme.spacing(1),
-  },
-  menuButton: {
-    width: 35,
-    height: 35,
-    margin: theme.spacing(1),
+  menuButton: { 
+    width: 40,
+    height: 40,
+    marginLeft: theme.spacing(1),
   },
 }));
 
