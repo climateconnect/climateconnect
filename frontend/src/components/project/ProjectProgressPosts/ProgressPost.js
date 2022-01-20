@@ -10,6 +10,7 @@ import { apiRequest } from "../../../../public/lib/apiOperations";
 import ROLE_TYPES from "../../../../public/data/role_types";
 import UserContext from "../../context/UserContext";
 import getTexts from "../../../../public/texts/texts";
+import { getParams } from "../../../../public/lib/generalOperations";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -104,7 +105,7 @@ export default function ProgressPost({
           </Typography>
         </div>
         <div className={classes.headerRight}>
-          <PostLikeButton texts={texts} post={post} token={token} locale={locale} />
+          <PostLikeButton texts={texts} post={post} token={token} locale={locale} project={project}/>
 
           {userPermission &&
             [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(userPermission) && (
@@ -134,7 +135,7 @@ export default function ProgressPost({
   );
 }
 
-function PostLikeButton({ texts, post, token, locale }) {
+function PostLikeButton({ texts, post, token, locale, project }) {
 
   const classes = useStyles();
 
@@ -238,6 +239,15 @@ function PostLikeButton({ texts, post, token, locale }) {
       });
   }, []);
 
+  /** On the first render: Check URL for LikeDialogs to display */
+  useEffect(() => {
+    const params = getParams(window.location.href);
+    if (params?.post_id != post.id) return;
+    if (params?.show_post_likes && !showLikes) {
+      toggleShowLikes();
+    }  
+  },[]);
+
   /** Whenever the button enters or leaves the state 'pendingLike' (a like is currently processed):
   *     Warn the user about possibly losing data when leaving the page 
   */
@@ -269,9 +279,8 @@ function PostLikeButton({ texts, post, token, locale }) {
         open={showLikes}
         loading={!initiallyCaughtLikes}
         likes={likes}
-        project={post}
         onClose={toggleShowLikes}
-        url={"post/" + post.title + "?show_likes=true"}
+        url={`/projects/${project.url_slug}?show_likes_of_post=true&post_id=${post.id}`}
         pleaseLogInText={`${texts.please_log_in} ${texts.to_see_this_posts_likes}!`}
         titleText={`${texts.likes_of} ${post.title}`}
         noLikesYetText={texts.this_post_does_not_have_any_likes_yet}

@@ -93,6 +93,8 @@ export default function Notification({ notification, isPlaceholder }) {
       return <PersonJoinedIdeaNotification notification={notification} />;
     else if (type === "project_like")
       return <ProjectLikeNotification notification={notification} />;
+    else if (type === "post_like")
+      return <PostLikeNotification notification={notification} />;
     else return <></>;
   }
 }
@@ -237,6 +239,25 @@ const ProjectLikeNotification = ({ notification }) => {
         image: notification.project_like.thumbnail_image,
       }}
       primaryText={`${likingUserName} ${texts.liked_your_project}`}
+      secondaryText={texts.congratulations}
+    />
+  );
+};
+
+const PostLikeNotification = ({ notification }) => {
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "notification", locale: locale, post: notification.post });
+  const likingUserName =
+    notification.post_like.first_name + " " + notification.post_like.last_name;
+  
+    return (
+    <GenericNotification
+      link={`/projects/${notification.post.project_url_slug}?show_post_likes=true&post_id=${notification.post.id}`}
+      avatar={{
+        alt: likingUserName,
+        image: notification.post_like.thumbnail_image,
+      }}
+      primaryText={`${likingUserName} ${texts.liked_your_post_on_project}`}
       secondaryText={texts.congratulations}
     />
   );

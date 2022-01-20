@@ -38,6 +38,7 @@ export default function getTexts({
   user,
   climateMatchQuestion,
   creator,
+  post,
 }) {
   // These are the multiple text files for various translations. They're
   // split up to reduce the amount of work required to download
@@ -68,7 +69,7 @@ export default function getTexts({
     }),
     landing_page: getLandingPageTexts({ classes: classes, isNarrowScreen: isNarrowScreen }),
     navigation: navigation_texts,
-    notification: getNotificationTexts({ idea: idea, project: project }),
+    notification: getNotificationTexts({ idea: idea, project: project, post: post }),
     organization: getOrganizationTexts({ organization: organization, locale: locale }),
     profile: getProfileTexts({ profile: profile, locale: locale }),
     project: getProjectTexts({
