@@ -11,6 +11,7 @@ import ROLE_TYPES from "../../../../public/data/role_types";
 import UserContext from "../../context/UserContext";
 import getTexts from "../../../../public/texts/texts";
 import { getParams } from "../../../../public/lib/generalOperations";
+import { NOTIFICATION_TYPES } from "../../communication/notifications/Notification";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -194,6 +195,7 @@ function PostLikeButton({ texts, post, token, locale, project }) {
     setShowLikes(!showLikes);
     if (!initiallyCaughtLikes) {
       await getLikes();
+      handleReadNotifications(NOTIFICATION_TYPES.indexOf("post_like"));
       setInitiallyCaughtLikes(true);
     }
   };
@@ -220,6 +222,17 @@ function PostLikeButton({ texts, post, token, locale, project }) {
       if (error.response && error.response.data) console.log("Error: " + error.response.data.detail);
     });
   };
+
+  /**Set notifications read */
+  const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
+
+  const handleReadNotifications = async (notificationType) => {
+    const notificationToSetRead = notifications.filter(
+      (n) => n.notification_type === notificationType && n.post.id === post.id
+    );
+    await setNotificationsRead(token, notificationToSetRead, locale);
+    await refreshNotifications();
+    }  
 
   /** On the first render: Get information on whether the user is liking the post */
   useEffect(async function () {
