@@ -64,6 +64,7 @@ const NOTIFICATION_TYPES = [
   "idea_comment",
   "reply_to_idea_comment",
   "person_joined_idea",
+  "post_like"
 ];
 
 export default function Notification({ notification, isPlaceholder }) {

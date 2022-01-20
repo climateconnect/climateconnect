@@ -24,6 +24,7 @@ class Notification(models.Model):
     IDEA_COMMENT = 11
     REPLY_TO_IDEA_COMMENT = 12
     PERSON_JOINED_IDEA = 13
+    POST_LIKE = 14
     NOTIFICATION_TYPES = (
         (BROADCAST, "broadcast"),
         (PRIVATE_MESSAGE, "private_message"),
@@ -38,7 +39,8 @@ class Notification(models.Model):
         (PROJECT_LIKE, "project_like"),
         (IDEA_COMMENT, "idea_comment"),
         (REPLY_TO_IDEA_COMMENT, "reply_to_idea_comment"),
-        (PERSON_JOINED_IDEA, "person_joined_idea")
+        (PERSON_JOINED_IDEA, "person_joined_idea"),
+        (POST_LIKE, "post_like")
     )
 
     notification_type = models.IntegerField(
@@ -97,6 +99,12 @@ class Notification(models.Model):
     project_update_post = models.ForeignKey(
         Post, related_name="notification_project_update_post",
         verbose_name="Project Post", on_delete=models.CASCADE,
+        null=True, blank=True
+    )
+
+    post_like = models.ForeignKey(
+        Like, related_name="notification_post_like",
+        verbose_name="Post Like", on_delete=models.CASCADE,
         null=True, blank=True
     )
 

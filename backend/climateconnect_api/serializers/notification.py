@@ -10,6 +10,8 @@ from climateconnect_api.models import (
 )
 from chat_messages.serializers.message import MessageSerializer
 from organization.serializers.content import ProjectCommentSerializer
+from organization.models.content import Post
+from organization.models.project import Project
 
 class NotificationSerializer(serializers.ModelSerializer):
     last_message = serializers.SerializerMethodField()
@@ -25,6 +27,8 @@ class NotificationSerializer(serializers.ModelSerializer):
     idea_comment_parent = serializers.SerializerMethodField()
     idea_supporter = serializers.SerializerMethodField()
     idea_supporter_chat = serializers.SerializerMethodField()
+    post = serializers.SerializerMethodField()
+    post_like = serializers.SerializerMethodField()
 
     class Meta:
         model = Notification
@@ -44,7 +48,9 @@ class NotificationSerializer(serializers.ModelSerializer):
             'idea_comment',
             'idea_comment_parent',
             'idea_supporter',
-            'idea_supporter_chat'
+            'idea_supporter_chat',
+            'post',
+            'post_like'
         )
 
     def get_last_message(self, obj):
@@ -152,3 +158,22 @@ class NotificationSerializer(serializers.ModelSerializer):
             idea = obj.idea_supporter.idea
             chat = MessageParticipants.objects.get(related_idea=idea)
             return chat.chat_uuid
+
+    def get_post(self, obj):
+        if obj.post_like: 
+            post = Post.objects.get(id = obj.post_like.post.id)
+            project = Project.objects.get(url_slug = post.project.url_slug)
+            return {
+                "id": post.id,
+                "title": post.title,
+                "project_url_slug": project.url_slug,
+                "project_name": project.name,
+            }
+
+    def get_post_like(self, obj):
+        if obj.post_like:
+            liking_user = UserProfile.objects.get(
+                user=obj.post_like.user
+            )
+            serializer = UserProfileStubSerializer(liking_user)
+            return serializer.data
