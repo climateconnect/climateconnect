@@ -177,6 +177,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Are you sure that you want to remove your like from this project?",
       de: "Bist du sicher, dass du dieses Projekt nicht mehr liken möchtest?",
     },
+    are_you_sure_that_you_want_to_dislike_this_post: {
+      en: "Are you sure that you want to remove your like from this post?",
+      de: "Bist du sicher, dass du diesen Post nicht mehr liken möchtest?",
+    },
     do_you_really_want_to_leave_this_project: {
       en: "Do you really want to leave this project?",
       de: "Möchtest du dieses Projekt wirklich verlassen?",

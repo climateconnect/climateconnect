@@ -33,6 +33,11 @@ const useStyles = makeStyles((theme) => ({
     height: 40,
     marginLeft: theme.spacing(1),
   },
+  dialogText: {
+    textAlign: "center",
+    margin: "0 auto",
+    display: "block",
+  },
 }));
 
 export default function ProgressPost({
@@ -277,7 +282,7 @@ function PostLikeButton({ texts, post, token, locale }) {
         title={texts.do_you_really_want_to_dislike}
         text={
           <span className={classes.dialogText}>
-            {texts.are_you_sure_that_you_want_to_dislike_this_project}
+            {texts.are_you_sure_that_you_want_to_dislike_this_post}
           </span>
         }
         confirmText={texts.yes}
