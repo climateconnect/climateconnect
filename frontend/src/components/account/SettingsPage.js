@@ -97,6 +97,10 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       key: "email_on_idea_join",
       text: texts.email_on_new_idea_join_text,
     },
+    {
+      key: "email_on_new_post_like",
+      text: texts.email_on_new_post_like_text,
+    },
   ];
 
   const possibleCookiePreferences = [
