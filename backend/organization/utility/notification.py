@@ -17,7 +17,8 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 
 from organization.models import Comment, ProjectMember
-from organization.models.content import ProjectComment
+from organization.models.project import Project
+from organization.models.content import Post, ProjectComment
 from organization.serializers.content import ProjectCommentSerializer
 
 
@@ -124,6 +125,20 @@ def create_project_like_notification(project_like):
             user = User.objects.get(id=member['user'])
             create_user_notification(user, notification)
             send_project_like_email(user, project_like, notification) 
+
+def create_post_like_notification(post_like):
+    notification = Notification.objects.create(
+        notification_type=Notification.POST_LIKE, post_like=post_like
+    )
+    post = Post.objects.get(id = post_like.post.id)
+    project = Project.objects.get(url_slug = post.project.url_slug)
+    project_team = ProjectMember.objects.filter(
+        project=project).values('user')
+
+    for member in project_team:
+        if not member['user'] == post_like.user.id:
+            user = User.objects.get(id=member['user'])
+            create_user_notification(user, notification) 
 
 
             

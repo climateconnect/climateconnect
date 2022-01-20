@@ -50,6 +50,7 @@ from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
     create_comment_mention_notification,
+    create_post_like_notification,
     create_project_comment_notification,
     create_project_comment_reply_notification,
     create_project_follower_notification,
@@ -1005,7 +1006,7 @@ class SetPostLikeView(APIView):
                 raise ValidationError("You've already liked this post.")
             else:
                 post_like = Like.objects.create(user=request.user, post=post)
-                #create_post_like_notification(post_like)
+                create_post_like_notification(post_like)
                 return Response({
                     'message': 'You have liked this post.',
                     'liking': True
