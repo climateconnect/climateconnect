@@ -6,7 +6,8 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from organization.utility.email import (
     send_mention_email, send_project_follower_email,
-    send_project_like_email, send_post_like_email)
+    send_project_like_email, send_post_like_email,
+    send_new_project_post_email)
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.notification import (EmailNotification,
                                                     Notification,
@@ -159,3 +160,4 @@ def create_new_project_post_notification(new_post):
         if not member['user'] == new_post.author_user.id:
             user = User.objects.get(id=member['user'])
             create_user_notification(user, notification)
+            send_new_project_post_email(user, new_post, project, notification)
