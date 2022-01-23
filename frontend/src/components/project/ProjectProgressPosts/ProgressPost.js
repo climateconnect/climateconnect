@@ -1,5 +1,5 @@
 import { IconButton, makeStyles, Menu, MenuItem, TextField, Typography } from "@material-ui/core";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ConfirmDialog from "../../dialogs/ConfirmDialog";
 import DateDisplay from "../../general/DateDisplay";
@@ -80,9 +80,20 @@ export default function ProgressPost({
       });
     });
   };
+
+  const postHeaderRef = useRef(null);
+  /* Scrolling the post into view doesn't work properly yet
+  useEffect(() => {
+    const params = getParams(window.location.href);
+    if (params?.post_id != post.id) return;
+    if (params?.show_post) {
+      postHeaderRef.current.scrollIntoView({block: "start", behavior: "smooth"});
+    }  
+  },[])*/
+
   return (
     <>
-      <div className={classes.header}>
+      <div className={classes.header} ref={postHeaderRef}>
         <div className={classes.headerLeft}>
           {post.created_at && (
             <Typography>

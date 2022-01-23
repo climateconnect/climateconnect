@@ -55,6 +55,7 @@ from organization.utility.notification import (
     create_project_comment_reply_notification,
     create_project_follower_notification,
     create_project_like_notification,
+    create_new_project_post_notification,
     get_mentions)
 from organization.utility.organization import check_organization
 from organization.utility.project import (create_new_project,
@@ -521,6 +522,7 @@ class ProjectPostAPIView(APIView):
         except Project.DoesNotExist:
             raise NotFound(detail='Project not found.', code=status.HTTP_404_NOT_FOUND)
         post = Post.objects.create(project=project, author_user=request.user, title=request.data['title'] ,content=request.data['content'], event_date=request.data['event_date'])
+        create_new_project_post_notification(post)
         return Response({'id': post.id}, status=status.HTTP_201_CREATED)
 
     def patch(self, request, url_slug, format=None):

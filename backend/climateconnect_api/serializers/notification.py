@@ -29,6 +29,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     idea_supporter_chat = serializers.SerializerMethodField()
     post = serializers.SerializerMethodField()
     post_like = serializers.SerializerMethodField()
+    project_update_post = serializers.SerializerMethodField()
 
     class Meta:
         model = Notification
@@ -50,7 +51,8 @@ class NotificationSerializer(serializers.ModelSerializer):
             'idea_supporter',
             'idea_supporter_chat',
             'post',
-            'post_like'
+            'post_like',
+            'project_update_post'
         )
 
     def get_last_message(self, obj):
@@ -103,6 +105,14 @@ class NotificationSerializer(serializers.ModelSerializer):
             return {
                 "name": obj.project_like.project.name,
                 "url_slug": obj.project_like.project.url_slug
+            }
+        if obj.project_update_post:
+            post = Post.objects.get(id = obj.project_update_post.id)
+            project = Project.objects.get(url_slug = post.project.url_slug)
+            return {
+                "name": project.name,
+                "url_slug": project.url_slug,
+                "thumbnail_image": project.thumbnail_image.url
             }
 
     def get_project_follower(self, obj):
@@ -169,6 +179,12 @@ class NotificationSerializer(serializers.ModelSerializer):
                 "project_url_slug": project.url_slug,
                 "project_name": project.name,
             }
+        if obj.project_update_post:
+            post = Post.objects.get(id = obj.project_update_post.id)
+            return {
+                "id": post.id,
+                "title": post.title,
+            }
 
     def get_post_like(self, obj):
         if obj.post_like:
@@ -177,3 +193,11 @@ class NotificationSerializer(serializers.ModelSerializer):
             )
             serializer = UserProfileStubSerializer(liking_user)
             return serializer.data
+
+    def get_project_update_post(self, obj):
+        if obj.project_update_post:
+            post_creator = UserProfile.objects.get(
+                user=obj.project_update_post.author_user
+            )
+            serializer = UserProfileStubSerializer(post_creator)
+            return serializer.data        

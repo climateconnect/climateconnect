@@ -1,3 +1,4 @@
+from itertools import chain
 import re
 from datetime import datetime, timedelta
 
@@ -19,6 +20,7 @@ from django.db.models import Q
 from organization.models import Comment, ProjectMember
 from organization.models.project import Project
 from organization.models.content import Post, ProjectComment
+from organization.models.followers import ProjectFollower
 from organization.serializers.content import ProjectCommentSerializer
 
 
@@ -141,4 +143,19 @@ def create_post_like_notification(post_like):
             create_user_notification(user, notification) 
             send_post_like_email(user, post_like, post, notification)
 
-            
+def create_new_project_post_notification(new_post):
+    notification = Notification.objects.create(
+        notification_type=Notification.PROJECT_UPDATE_POST, project_update_post=new_post
+    )
+    
+    project = Project.objects.get(url_slug = new_post.project.url_slug)
+    project_team = ProjectMember.objects.filter(
+        project=project).values('user')
+    followers = ProjectFollower.objects.filter(project = new_post.project).values('user')
+    #ToDo: remove double entries
+    team_and_followers = list(chain(project_team,followers))
+    
+    for member in team_and_followers:
+        if not member['user'] == new_post.author_user.id:
+            user = User.objects.get(id=member['user'])
+            create_user_notification(user, notification)

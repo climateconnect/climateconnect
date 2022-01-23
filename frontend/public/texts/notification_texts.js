@@ -50,5 +50,13 @@ export default function getNotificationTexts({ idea, project, post }) {
       en: `has mentioned you in a comment`,
       de: `hat dich in einem Kommentar erwähnt`,
     },
+    created_a_new_post_on_project: {
+      en: `created a new post on : "${project?.name}": "${post?.title}"`,
+      de: `hat einen neuen Post zu "${project?.name}" erstellt: "${post?.title}"`,
+    },
+    click_here_to_take_a_look: {
+      en: `Click here to take a look!`,
+      de: `Klicke hier, um ihn anzusehen!`,
+    }
   };
 }
