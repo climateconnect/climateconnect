@@ -66,7 +66,8 @@ class UserAccountSettingsView(APIView):
             "email_on_new_project_like",
             "email_on_mention",
             "email_on_idea_join",
-            "email_on_new_post_like"
+            "email_on_new_post_like",
+            "email_on_new_project_update_post"
         ]
 
         if "send_newsletter" in request.data:
@@ -111,6 +112,9 @@ class UserAccountSettingsView(APIView):
             user.user_profile.email_on_idea_join = request.data["email_on_idea_join"]
             user.user_profile.email_on_new_post_like = request.data[
                 "email_on_new_post_like"
+            ]
+            user.user_profile.email_on_new_project_update_post = request.data[
+                "email_on_new_project_update_post"
             ]
             user.user_profile.save()
 

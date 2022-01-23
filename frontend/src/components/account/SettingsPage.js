@@ -101,6 +101,10 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       key: "email_on_new_post_like",
       text: texts.email_on_new_post_like_text,
     },
+    {
+      key: "email_on_new_project_update_post",
+      text: texts.email_on_new_project_update_post_text,
+    },
   ];
 
   const possibleCookiePreferences = [

@@ -243,7 +243,8 @@ class UserAccountSettingsSerializer(serializers.ModelSerializer):
             'url_slug', 'email_on_private_chat_message', 'email_on_group_chat_message',
             'email_on_comment_on_your_project', 'email_on_reply_to_your_comment',
             'email_on_mention', 'email_on_new_project_follower', 'email_on_new_project_like',
-            'email_on_comment_on_your_idea', 'email_on_idea_join', 'email_on_new_post_like'
+            'email_on_comment_on_your_idea', 'email_on_idea_join', 'email_on_new_post_like',
+            'email_on_new_project_update_post'
         )
 
     def get_email(self, obj):

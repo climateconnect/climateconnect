@@ -95,6 +95,10 @@
     "en": "Get notified when somebody likes your a post of your project",
     "de": "Ich möchte benachrichtigt werden, wenn jemand einen Post von meinem Projekt liked"
   },
+  "email_on_new_project_update_post_text": {
+    "en": "Get notified about new posts on your project and projects you follow",
+    "de": "Ich möchte über neue Posts auf meinem Projekt und Projekten, denen ich folge, benachrichtig werden"
+  },
   "email_on_mention_text": {
     "en": "Get notified when somebody mentions you in comment.",
     "de": "Ich möchte benachrichtigt werden, wenn mich jemand in einem Kommentar erwähnt"
