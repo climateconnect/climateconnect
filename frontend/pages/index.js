@@ -164,7 +164,9 @@ export default function Index() {
           <HubsBox isLoading={isLoading} hubs={elements.hubs} />
           <JoinCommunityBox h1ClassName={classes.h1ClassName} />
           <OrganizationsSharedBox isLoading={isLoading} organizations={elements.organizations} />
-          {process.env.DONATION_CAMPAIGN_RUNNING && <DonationsBanner h1ClassName={classes.h1ClassName} />}
+          {process.env.DONATION_CAMPAIGN_RUNNING && (
+            <DonationsBanner h1ClassName={classes.h1ClassName} />
+          )}
           <OurTeamBox h1ClassName={classes.h1ClassName} />
           <StartNowBanner h1ClassName={classes.h1ClassName} />
         </div>
