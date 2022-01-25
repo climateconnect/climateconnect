@@ -3,7 +3,7 @@ import {
   Snackbar,
   SnackbarContent,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import Head from "next/head";
