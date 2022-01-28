@@ -74,6 +74,8 @@ const useStyles = makeStyles((theme) => ({
 
 export async function getServerSideProps(ctx) {
   const { token } = NextCookies(ctx);
+  console.log("id:")
+  console.log(ctx?.req?.headers["x-real-ip"] || ctx?.req?.connection?.remoteAddress)
   if (ctx.resolvedUrl === "/" && token) {
     console.log("redirecting!!!");
     return {
