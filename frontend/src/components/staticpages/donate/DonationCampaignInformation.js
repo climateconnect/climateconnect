@@ -117,8 +117,7 @@ export default function DonationCampaignInformation() {
   const handleToggleExpanded = () => {
     setExpanded(!expanded);
   };
-
-  if (!donationGoal) return <></>;
+  if (!donationGoal?.goal_amount) return <></>;
   return (
     <>
       {open && (
