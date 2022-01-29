@@ -149,9 +149,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Calls API endpoint to return a current list
- * of Climate Connect users, that have requested to
+ * Calls endpoint to return a current list
+ * of users that have requested to
  * join a specific project (i.e. requested membership).
+ *
+ * Note that the response includes a list of requests
+ * (with corresponding request ID), and the users themselves.
  */
 async function getMembershipRequests(url_slug) {
   const resp = await apiRequest({
@@ -163,10 +166,7 @@ async function getMembershipRequests(url_slug) {
     // TODO: error appropriately here
   }
 
-  // TODO(piper):
-  // Requeset IDs, are the order of entries
-  // returned from the array?
-
+  // TODO: we should probably have an associated timestamp with each request too.
   return resp.data.results;
 }
 
@@ -211,7 +211,7 @@ export default function ProjectContent({
     const membershipRequests = await getMembershipRequests(project.url_slug);
 
     // Now transform to a shape of objects where a specific request ID is
-    // alongside a suer profile
+    // alongside a user profile.
     const userRequests = membershipRequests.map((r) => {
       let user = {};
       user.requestId = r.id;
@@ -270,6 +270,7 @@ export default function ProjectContent({
                     </Button>
                   </>
                 )}
+              {/* Otherwise if not a project admin, just show the Leave Project button */}
               <Button
                 className={classes.leaveProjectButton}
                 variant="contained"
