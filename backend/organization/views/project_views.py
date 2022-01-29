@@ -928,12 +928,24 @@ class ListProjectRequestersView(ListAPIView):
         except Project.DoesNotExist:
             return Response(data={'message': f'Project does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Only show requests that are open
-        membership_requests = MembershipRequests.objects.filter(
-            target_project=project, rejected_at=None, approved_at=None
+        all_requests = MembershipRequests.objects.all()
+        print(f"Total number of membership requests: {len(all_requests)}")
+
+        # TODO: we should prevent requests that are
+        # from the project creator before ever being
+        # requested again. Should implement this check clientside.
+
+        # Only show requests that are currently open, as
+        # in they haven't been approved nor rejected.
+        open_membership_requests = MembershipRequests.objects.filter(
+            target_project=project,
+            rejected_at=None,
+            approved_at=None,
         )
 
-        return membership_requests
+        print(f"Total number of OPEN membership requests for this project: {len(open_membership_requests)}")
+
+        return open_membership_requests
 class ListProjectLikesView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ProjectLikeSerializer
