@@ -33,7 +33,6 @@ import MessageContent from "../communication/MessageContent";
 import ProjectFollowersDialog from "../dialogs/ProjectFollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
-import RequestMembershipButton from "./RequestMembershipButton";
 import ROLE_TYPES from "../../../public/data/role_types";
 import SocialMediaShareButton from "../shareContent/SocialMediaShareButton";
 import UserContext from "../context/UserContext";
