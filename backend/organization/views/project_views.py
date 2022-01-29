@@ -995,8 +995,8 @@ class LeaveProject(RetrieveUpdateAPIView):
             #TODO: Implement a signal to send dev a message
             return Response(data={'message':f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except:
-            ##Send E to dev
-            ##send to dev logs E= traceback.format_exc()
+            # Send E to dev
+            # send to dev logs E= traceback.format_exc()
             return Response(data={'message':f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -1050,9 +1050,7 @@ class RequestJoinProject(RetrieveUpdateAPIView):
             project_admins = get_project_admin_creators(project)
             create_project_join_request_notification(requester=user, project_admins=project_admins, project=project)
 
-            # TODO(piper): propagate this to
-            # the /requesters endpoint; update the
-            # request model to have the requestId associated with it
+            # Now pass the requestId back to the client.
             return Response({ "requestId": request_id }, status=status.HTTP_200_OK)
         except:
             logging.error(traceback.format_exc())
@@ -1063,15 +1061,10 @@ class ManageJoinProject(RetrieveUpdateAPIView):
     """
     A view that enables a user to request to join a project
     """
-    # permission_classes = [UserPermission, ApproveDenyProjectMemberRequest]
     permission_classes = [ApproveDenyProjectMemberRequest]
-
-    # permission_classes = [UserPermission]
-    # ApproveDenyProjectMemberRequest
     lookup_field = 'project_slug'
 
     def post(self, request, project_slug, request_action, request_id):
-
         try:
             project = Project.objects.filter(url_slug=project_slug).first()
         except:
@@ -1085,53 +1078,24 @@ class ManageJoinProject(RetrieveUpdateAPIView):
                 return Response({'message': 'Request Does Not Exist'}, status=status.HTTP_404_NOT_FOUND)
 
             if request_manager.validation_failed:
-                #request_manager.errors
-                print('TEST')
                 return Response({f"message': 'Operation Failed. Errors: {' | '.join(request_manager.errors)}"}, status=status.HTTP_400_BAD_REQUEST)
 
             if request_action == 'approve':
                 request_manager.approve_request()
                 create_project_join_request_approval_notification(requester=request.user,project=project)
             elif request_action == 'reject':
-                print('Within here...')
                 request_manager.reject_request()
             else:
                 raise NotImplementedError(f"membership request action <{request_action}> is not implemented ")
 
             return Response(data={'message':'Operation Succeeded'}, status=status.HTTP_200_OK)
         except:
-            print('except 2')
-            print(traceback.format_exc())
             return Response({
                             'message': f'Internal Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    # TODO(Piper): ran into this issue where we needed to define a get_queryset
-    # https://stackoverflow.com/questions/40721512/assertionerror-at-posts-postlist-should-either-include-a-queryset-attribut
-    #
-    # and then after adding, got this
-    # Expected view ManageJoinProject to be called with a URL keyword argument named "pk"
-    # on the subsequent request
     def get_queryset(self):
-        # {'project_slug': 'TPP7', 'request_action': 'reject', 'request_id': '4'}
-        # return MembershipRequests.objects.filter(id=int(self.kwargs['pk']))
         membership_requests = MembershipRequests.objects.all()
         return membership_requests
-
-    # TODO(piper): Fix this (WIP - 12/31/21)
-    # def get_queryset(self):
-    #     project = Project.objects.get(url_slug=str(self.kwargs['url_slug']))
-    #     return ProjectMember.objects.filter(id=int(self.kwargs['pk']), project=project)
-            # return Response(data={'message': f'User and/or Project not found '}, status=status.HTTP_404_NOT_FOUND)
-
-        # except ProjectMember.MultipleObjectsReturned:
-        #     # Multiple records for the same user/ project id. Duplicate records.
-        #     # TODO: Implement a signal to send dev a message
-        #     return Response(data={'message': f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        # except:
-        #     # Send E to dev
-        #     # send to dev logs E= traceback.format_exc()
-        #     return Response(data={'message': f'We ran into some issues processing your request.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 class SetProjectSharedView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, url_slug):
