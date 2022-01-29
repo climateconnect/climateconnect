@@ -173,8 +173,7 @@ urlpatterns = [
     path(
         'projects/<str:project_slug>/request_membership/<str:request_action>/<str:request_id>/',
          project_views.ManageJoinProject.as_view(),
-         # TODO: we might need to genericize this name to support both approve and reject
-         name = 'approve-join-entity'
+         name = 'request-membership-action-entity'
     ),
     path(
         'projects/<str:url_slug>/set_shared_project/',
