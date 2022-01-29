@@ -931,10 +931,6 @@ class ListProjectRequestersView(ListAPIView):
         all_requests = MembershipRequests.objects.all()
         print(f"Total number of membership requests: {len(all_requests)}")
 
-        # TODO: we should prevent requests that are
-        # from the project creator before ever being
-        # requested again. Should implement this check clientside.
-
         # Only show requests that are currently open, as
         # in they haven't been approved nor rejected.
         open_membership_requests = MembershipRequests.objects.filter(
