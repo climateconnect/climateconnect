@@ -1,7 +1,8 @@
-import { Container, Divider, makeStyles, Tab, Tabs, useMediaQuery } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Container, Divider, Tab, Tabs, useMediaQuery } from "@material-ui/core";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import _ from "lodash";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState, Suspense, useMemo } from "react";
 import Cookies from "universal-cookie";
 import getFilters from "../../../public/data/possibleFilters";
 import { splitFiltersFromQueryObject } from "../../../public/lib/filterOperations";
@@ -22,13 +23,15 @@ import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";
 import LoadingContext from "../context/LoadingContext";
 import UserContext from "../context/UserContext";
-import IdeasBoard from "../ideas/IdeasBoard";
-import FilterSection from "../indexPage/FilterSection";
-import OrganizationPreviews from "../organization/OrganizationPreviews";
-import ProfilePreviews from "../profile/ProfilePreviews";
-import ProjectPreviews from "../project/ProjectPreviews";
-import Tutorial from "../tutorial/Tutorial";
-import TabContentWrapper from "./TabContentWrapper";
+import LoadingSpinner from "../general/LoadingSpinner";
+
+const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
+const IdeasBoard = React.lazy(() => import("../ideas/IdeasBoard"));
+const OrganizationPreviews = React.lazy(() => import("../organization/OrganizationPreviews"));
+const ProfilePreviews = React.lazy(() => import("../profile/ProfilePreviews"));
+const ProjectPreviews = React.lazy(() => import("../project/ProjectPreviews"));
+const Tutorial = React.lazy(() => import("../tutorial/Tutorial"));
+const TabContentWrapper = React.lazy(() => import("./TabContentWrapper"));
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -100,7 +103,7 @@ export default function BrowseContent({
     },
     urlEnding: "",
   };
-  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+
   const token = new Cookies().get("token");
   //saving these refs for the tutorial
   const firstProjectCardRef = useRef(null);
@@ -116,7 +119,7 @@ export default function BrowseContent({
     TYPES_BY_TAB_VALUE.push("ideas");
   }
   const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "general", locale: locale });
+  const texts = useMemo(() => getTexts({ page: "general", locale: locale }), [locale]);
   const type_names = {
     projects: texts.projects,
     organizations: isNarrowScreen ? texts.orgs : texts.organizations,
@@ -126,6 +129,7 @@ export default function BrowseContent({
   const [hash, setHash] = useState(null);
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
+  const isNarrowScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const isMobileScreen = useMediaQuery((theme) => theme.breakpoints.down("xs"));
 
   // Always default to filters being expanded
@@ -273,7 +277,7 @@ export default function BrowseContent({
     setTabValue(newValue);
   };
 
-  /* We always save filter values in the url in english. 
+  /* We always save filter values in the url in english.
   Therefore we need to get the name in the current language
   when retrieving them from the query object */
   const getValueInCurrentLanguage = (metadata, value) => {
@@ -492,16 +496,18 @@ export default function BrowseContent({
       }}
     >
       <Container maxWidth="lg">
-        <FilterSection
-          filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
-          onSubmit={handleSearchSubmit}
-          setFiltersExpanded={isMobileScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
-          type={TYPES_BY_TAB_VALUE[tabValue]}
-          customSearchBarLabels={customSearchBarLabels}
-          filterButtonRef={filterButtonRef}
-          searchValue={filters.search}
-          hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
-        />
+        <Suspense fallback={null}>
+          <FilterSection
+            filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
+            onSubmit={handleSearchSubmit}
+            setFiltersExpanded={isMobileScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
+            type={TYPES_BY_TAB_VALUE[tabValue]}
+            customSearchBarLabels={customSearchBarLabels}
+            filterButtonRef={filterButtonRef}
+            searchValue={filters.search}
+            hideFilterButton={tabValue === TYPES_BY_TAB_VALUE.indexOf("ideas")}
+          />
+        </Suspense>
         <Tabs
           variant={isNarrowScreen ? "fullWidth" : "standard"}
           value={tabValue}
@@ -529,7 +535,7 @@ export default function BrowseContent({
 
         <Divider className={classes.mainContentDivider} />
 
-        <>
+        <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
             <ProjectPreviews
               className={classes.itemsContainer}
@@ -576,23 +582,25 @@ export default function BrowseContent({
               filterChoices={filterChoices}
             />
           </TabContentWrapper>
-        </>
+        </Suspense>
       </Container>
-      <Tutorial
-        fixedPosition
-        pointerRefs={{
-          projectCardRef: firstProjectCardRef,
-          filterButtonRef: filterButtonRef,
-          organizationsTabRef: organizationsTabRef,
-          hubsSubHeaderRef: hubsSubHeaderRef,
-          hubQuickInfoRef: hubQuickInfoRef,
-          hubProjectsButtonRef: hubProjectsButtonRef,
-        }}
-        hubName={hubName}
-        nextStepTriggeredBy={nextStepTriggeredBy}
-        handleTabChange={handleTabChange}
-        typesByTabValue={TYPES_BY_TAB_VALUE}
-      />
+      <Suspense fallback={null}>
+        <Tutorial
+          fixedPosition
+          pointerRefs={{
+            projectCardRef: firstProjectCardRef,
+            filterButtonRef: filterButtonRef,
+            organizationsTabRef: organizationsTabRef,
+            hubsSubHeaderRef: hubsSubHeaderRef,
+            hubQuickInfoRef: hubQuickInfoRef,
+            hubProjectsButtonRef: hubProjectsButtonRef,
+          }}
+          hubName={hubName}
+          nextStepTriggeredBy={nextStepTriggeredBy}
+          handleTabChange={handleTabChange}
+          typesByTabValue={TYPES_BY_TAB_VALUE}
+        />
+      </Suspense>
     </LoadingContext.Provider>
   );
 }

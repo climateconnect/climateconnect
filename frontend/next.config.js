@@ -1,8 +1,12 @@
 const pick = require("lodash/pick");
 
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
+
 require("dotenv").config();
 
-module.exports = {
+module.exports = withBundleAnalyzer({
   // Read set variables from `.env` file
   env: pick(process.env, [
     "API_HOST",
@@ -49,4 +53,4 @@ module.exports = {
       },
     ];
   },
-};
+});

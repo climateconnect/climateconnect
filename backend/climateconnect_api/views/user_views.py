@@ -1,4 +1,3 @@
-
 from ideas.serializers.idea import IdeaFromIdeaSupporterSerializer
 from ideas.models.support import IdeaSupporter
 
@@ -22,13 +21,15 @@ from climateconnect_api.utility.translation import (edit_translations)
 from climateconnect_main.utility.general import get_image_from_data_url
 from django.conf import settings
 from django.contrib.auth import authenticate, login
-# Backend imports
+
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
 from django.db.models import Count, Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
-# Rest imports
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 from django_filters.rest_framework import DjangoFilterBackend
 from knox.views import LoginView as KnoxLoginView
 from location.models import Location
@@ -151,6 +152,10 @@ class ListMemberProfilesView(ListAPIView):
     search_fields = ['name']
     serializer_class = UserProfileStubSerializer
 
+    @method_decorator(cache_page(settings.DEFAULT_CACHE_TIMEOUT))
+    def dispatch(self, *args, **kwargs):
+        return super(ListMemberProfilesView, self).dispatch(*args, **kwargs)
+
     def get_queryset(self):
         user_profiles = UserProfile.objects\
             .filter(is_profile_verified=True)\
@@ -256,6 +261,7 @@ class ListMemberProjectsView(ListAPIView):
                 is_active=True
             ).order_by('-id')
 
+
 class ListMemberIdeasView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
@@ -268,6 +274,7 @@ class ListMemberIdeasView(ListAPIView):
         return IdeaSupporter.objects.filter(
             user=searched_user
         ).order_by('-id')
+
 
 class ListMemberOrganizationsView(ListAPIView):
     permission_classes = [AllowAny]

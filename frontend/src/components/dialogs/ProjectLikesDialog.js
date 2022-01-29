@@ -97,7 +97,7 @@ const ProjectLikes = ({ likes, texts, locale }) => {
                   >
                     <Avatar
                       className={classes.avatar}
-                      src={getImageUrl(l.user_profile.image)}
+                      src={getImageUrl(l.user_profile.thumbnail_image)}
                       alt={l.user_profile.first_name + " " + l.user_profile.last_name}
                     />
                     <Typography component="span" color="secondary" className={classes.username}>
