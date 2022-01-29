@@ -32,7 +32,7 @@ from organization.models import (Organization, OrganizationTagging,
                                  ProjectCollaborators, ProjectComment,
                                  ProjectFollower, ProjectMember,
                                  ProjectParents, ProjectStatus, ProjectTagging,
-                                 ProjectTags)
+                                 ProjectTags, ProjectLike)
 
 from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
