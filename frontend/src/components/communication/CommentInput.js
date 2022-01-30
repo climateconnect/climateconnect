@@ -128,8 +128,6 @@ function CommentInput({
               className={classes.commentButton}
               onClick={(event) => handleSendComment(event)}
             >
-              {/* TODO(piper): should update to "post" comment instead of send, which implies chat */}
-              {/* {texts.send}  */}
               Post
             </Button>
             {onCancel && (
