@@ -367,13 +367,13 @@ function SmallScreenOverview({
         <div className={classes.infoBottomBar}>
           {/* If the user is an admin on the project, or is already part
             of the project (has read only permissions), then we don't want to show the membership request button. */}
-          {!hasAdminPermissions ||
-            (userPermission && [ROLE_TYPES.read_only_type].includes(userPermission) && (
-              <JoinButton
-                handleSendProjectJoinRequest={handleSendProjectJoinRequest}
-                requestedToJoin={requestedToJoinProject}
-              />
-            ))}
+          {(!hasAdminPermissions ||
+            (userPermission && [ROLE_TYPES.read_only_type].includes(userPermission))) && (
+            <JoinButton
+              handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+              requestedToJoin={requestedToJoinProject}
+            />
+          )}
 
           <FollowButton
             isUserFollowing={isUserFollowing}
@@ -474,13 +474,13 @@ function LargeScreenOverview({
           <div className={classes.infoBottomBar}>
             {/* If the user is an admin on the project, or is already part
             of the project (has read only permissions), then we don't want to show the membership request button. */}
-            {!hasAdminPermissions ||
-              (userPermission && [ROLE_TYPES.read_only_type].includes(userPermission) && (
-                <JoinButton
-                  handleSendProjectJoinRequest={handleSendProjectJoinRequest}
-                  requestedToJoin={requestedToJoinProject}
-                />
-              ))}
+            {(!hasAdminPermissions ||
+              (userPermission && [ROLE_TYPES.read_only_type].includes(userPermission))) && (
+              <JoinButton
+                handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+                requestedToJoin={requestedToJoinProject}
+              />
+            )}
 
             <LikeButton
               texts={texts}
