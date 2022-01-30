@@ -153,6 +153,38 @@ export default function ProjectOverview({
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
   /**
+   * Calls endpoint to return a current list
+   * of users that have requested to
+   * join a specific project (i.e. requested membership).
+   *
+   * Note that the response includes a list of requests
+   * (with corresponding request ID), and the users themselves.
+   */
+  async function getMembershipRequests(url_slug) {
+    const resp = await apiRequest({
+      method: "get",
+      url: `/api/projects/${url_slug}/requesters/`,
+    });
+
+    if (!resp?.data?.results) {
+      // TODO: error appropriately here
+    }
+
+    const requestedMembers = resp.data.results;
+
+    // Now update the state, and thus button state,
+    // if the current user has already requested to join the project,
+    // based on results from the backend.
+    const members = requestedMembers.filter((m) => m.user_profile.url_slug === user.url_slug);
+    if (members.length > 0) {
+      setRequestedToJoinProject(true);
+    }
+
+    // TODO: we should probably have an associated timestamp with each request too.
+    return requestedMembers;
+  }
+
+  /**
    * Calls backend, sending a request to join this project based
    * on user token stored in cookies.
    */
@@ -183,10 +215,9 @@ export default function ProjectOverview({
         },
       });
 
-      console.log(response);
+      setRequestedToJoinProject(true);
     } catch (error) {
       if (error?.response?.data?.message === "Request already exists to join project") {
-        console.log("Already requested to join this project!");
         setRequestedToJoinProject(true);
       }
     }
@@ -200,10 +231,19 @@ export default function ProjectOverview({
   useEffect(() => {
     if (!gotParams) {
       const params = getParams(window.location.href);
-      if (params.show_followers && !showFollowers) toggleShowFollowers();
+      if (params.show_followers && !showFollowers) {
+        toggleShowFollowers();
+      }
       setGotParams(true);
     }
-  });
+
+    if (!requestedToJoinProject) {
+      // Call the list of current requesters for this project,
+      // so that we can update the state of the button as "Requested"
+      // for the user.
+      getMembershipRequests(project.url_slug);
+    }
+  }, []);
 
   return (
     <Container className={classes.projectOverview}>
