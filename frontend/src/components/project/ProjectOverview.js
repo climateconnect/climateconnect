@@ -200,6 +200,8 @@ export default function ProjectOverview({
     const cookies = new Cookies();
     const token = cookies.get("token");
 
+    debugger;
+
     try {
       const response = await apiRequest({
         method: "post",
@@ -237,10 +239,11 @@ export default function ProjectOverview({
       setGotParams(true);
     }
 
-    if (!requestedToJoinProject) {
-      // Call the list of current requesters for this project,
-      // so that we can update the state of the button as "Requested"
-      // for the user.
+    // For non-creators, call the list of current requesters for this project,
+    // so that we can update the state of the button as "Requested"
+    // for the user.
+
+    if (!hasAdminPermissions && !requestedToJoinProject) {
       getMembershipRequests(project.url_slug);
     }
   }, []);
@@ -407,13 +410,13 @@ function SmallScreenOverview({
         <div className={classes.infoBottomBar}>
           {/* If the user is an admin on the project, or is already part
             of the project (has read only permissions), then we don't want to show the membership request button. */}
-          {(!hasAdminPermissions ||
-            (userPermission && [ROLE_TYPES.read_only_type].includes(userPermission))) && (
-            <JoinButton
-              handleSendProjectJoinRequest={handleSendProjectJoinRequest}
-              requestedToJoin={requestedToJoinProject}
-            />
-          )}
+          {!hasAdminPermissions &&
+            !(userPermission && [ROLE_TYPES.read_only_type].includes(userPermission)) && (
+              <JoinButton
+                handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+                requestedToJoin={requestedToJoinProject}
+              />
+            )}
 
           <FollowButton
             isUserFollowing={isUserFollowing}
@@ -514,13 +517,13 @@ function LargeScreenOverview({
           <div className={classes.infoBottomBar}>
             {/* If the user is an admin on the project, or is already part
             of the project (has read only permissions), then we don't want to show the membership request button. */}
-            {(!hasAdminPermissions ||
-              (userPermission && [ROLE_TYPES.read_only_type].includes(userPermission))) && (
-              <JoinButton
-                handleSendProjectJoinRequest={handleSendProjectJoinRequest}
-                requestedToJoin={requestedToJoinProject}
-              />
-            )}
+            {!hasAdminPermissions &&
+              !(userPermission && [ROLE_TYPES.read_only_type].includes(userPermission)) && (
+                <JoinButton
+                  handleSendProjectJoinRequest={handleSendProjectJoinRequest}
+                  requestedToJoin={requestedToJoinProject}
+                />
+              )}
 
             <LikeButton
               texts={texts}
