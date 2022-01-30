@@ -205,20 +205,6 @@ export default function ProjectOverview({
     }
   });
 
-  // TODO(Piper): 1/29/22 - ensure that we don't send a join request
-  // for projects we own / are admin of / creator of. Ensure that
-  // we don't blindly make a call to request membership; should
-  // check membership status *first*.
-  useEffect(() => {
-    if (!requestedToJoinProject) {
-      try {
-        handleSendProjectJoinRequest();
-      } catch (error) {
-        console.error();
-      }
-    }
-  }, []);
-
   return (
     <Container className={classes.projectOverview}>
       {screenSize?.belowSmall ? (
