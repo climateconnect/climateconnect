@@ -341,8 +341,8 @@ async function getNotifications(token) {
 }
 
 async function getDonationGoalData(locale) {
-  if(process.env.DONATION_CAMPAIGN_RUNNING !== "true") {
-    return null
+  if (process.env.DONATION_CAMPAIGN_RUNNING !== "true") {
+    return null;
   }
   try {
     const resp = await apiRequest({
