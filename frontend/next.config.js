@@ -35,11 +35,11 @@ module.exports = withBundleAnalyzer({
         destination: "/browse",
         has: [
           {
-            type: 'cookie',
-            key: 'token',
-          }
+            type: "cookie",
+            key: "token",
+          },
         ],
-        permanent: false
+        permanent: false,
       },
       {
         source: "/spenden",
@@ -53,8 +53,7 @@ module.exports = withBundleAnalyzer({
       },
       {
         source: "/klimakuechen-erlangen",
-        destination:
-          "/de/projects/klimakuechen?hubPage=erlangen",
+        destination: "/de/projects/klimakuechen?hubPage=erlangen",
         permanent: true,
       },
       {
