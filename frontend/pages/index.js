@@ -1,5 +1,4 @@
 import { Button, makeStyles } from "@material-ui/core";
-import NextCookies from "next-cookies";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
