@@ -27,8 +27,6 @@ from django.contrib.gis.db.models.functions import Distance
 from django.db.models import Count, Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 
 from django_filters.rest_framework import DjangoFilterBackend
 from knox.views import LoginView as KnoxLoginView
@@ -151,10 +149,6 @@ class ListMemberProfilesView(ListAPIView):
     filterset_fields = ['name']
     search_fields = ['name']
     serializer_class = UserProfileStubSerializer
-
-    @method_decorator(cache_page(settings.DEFAULT_CACHE_TIMEOUT))
-    def dispatch(self, *args, **kwargs):
-        return super(ListMemberProfilesView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         user_profiles = UserProfile.objects\
