@@ -190,7 +190,6 @@ export default function MiniProfileInput({
           />
         </>
       )}
-      {/* TODO(piper): take this availability time and build the interface for project request membership */}
       {!hideHoursPerWeek && (
         <>
           <Typography className={classes.fieldLabel} color="primary">
