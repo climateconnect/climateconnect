@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
     zIndex: 1,
     position: "fixed",
     bottom: 0,
-    right: "200px",
+    right: "10%",
   },
 }));
 
@@ -44,7 +44,7 @@ export default function ContactAmbassadorButton({ localAmbassador }) {
       {localAmbassador && (
         <div className={classes.root} onClick={handleClickContact}>
           <ContactCreatorButtonInfo
-            creatorName={localAmbassador.title}
+            creatorName={`${localAmbassador.user?.first_name} ${localAmbassador.user?.last_name}`}
             creatorImageURL={localAmbassador.user?.image}
             creatorsRoleInProject={localAmbassador.title_de}
           />

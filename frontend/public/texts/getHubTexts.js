@@ -125,8 +125,8 @@ export default function getHubTexts({ hubName, localAmbassador }) {
       de: `Bitte melde dich an, um ${localAmbassador?.first_name} zu kontaktieren.`,
     },
     contact_ambassador: {
-      en: "Contact Local Ambassador",
-      de: "Lokaler Klimavernetzer Kontaktieren",
+      en: `Contact ${localAmbassador?.title}`,
+      de: `${localAmbassador?.title} kontaktieren`,
     },
   };
 

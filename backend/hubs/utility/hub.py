@@ -1,6 +1,4 @@
-from hubs.models import Hub
-from hubs.models.hub import HubStat
-
+from hubs.models import Hub, HubStat, LocalAmbassador
 
 def get_hub_attribute(hub: Hub, attribute_name, language_code: str) -> str:
     if hub.language != None and language_code != hub.language.language_code and \
@@ -23,3 +21,11 @@ def get_hub_stat_attribute(hub_stat: HubStat, attribute_name, language_code: str
         if attribute_translation and len(attribute_translation) > 0:
             return attribute_translation
     return getattr(hub_stat, attribute_name)
+
+def get_local_ambassador_attribute(local_ambassador: LocalAmbassador, language_code: str):
+    lang_translation_attr = "title_{}".format(language_code)
+    if hasattr(local_ambassador, lang_translation_attr):
+        translation = getattr(local_ambassador, lang_translation_attr)
+        if language_code != "en" and translation is not None:
+            return translation
+    return local_ambassador.title

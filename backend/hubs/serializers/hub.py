@@ -1,7 +1,7 @@
 from location.models import Location
 from location.serializers import LocationSerializer
 from django.utils.translation import get_language
-from hubs.utility.hub import get_hub_attribute, get_hub_stat_attribute
+from hubs.utility.hub import get_hub_attribute, get_hub_stat_attribute, get_local_ambassador_attribute
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 from hubs.models import Hub, HubStat, LocalAmbassador
@@ -81,20 +81,15 @@ class HubSerializer(serializers.ModelSerializer):
 class LocalAmbassadorSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
-    title_de = serializers.SerializerMethodField()
     class Meta:
         model = LocalAmbassador
         fields = (
             "title",
-            "user",
-            "title_de"
+            "user"
         )
 
     def get_title(self, obj):
-        return obj.title
-
-    def get_title_de(self, obj):
-        return obj.title_de
+        return get_local_ambassador_attribute(obj, get_language())
 
     def get_user(self, obj):
         user = UserProfile.objects.filter(id=obj.user.id)
