@@ -1,4 +1,4 @@
-import { Button } from "@material-ui/core";
+import { Button, Hidden } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext } from "react";
 import { redirect } from "../../../public/lib/apiOperations";
@@ -40,7 +40,7 @@ export default function ContactAmbassadorButton({ localAmbassador }) {
   };
 
   return (
-    <>
+      <Hidden xsDown>
       {localAmbassador && (
         <div className={classes.root} onClick={handleClickContact}>
           <ContactCreatorButtonInfo
@@ -53,6 +53,6 @@ export default function ContactAmbassadorButton({ localAmbassador }) {
           </Button>
         </div>
       )}
-    </>
+    </Hidden>
   );
 }
